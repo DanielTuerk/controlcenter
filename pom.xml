@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>net.wbz.moba</groupId>
+
+    <artifactId>controlcenter</artifactId>
+    <name>Control Center</name>
+    <packaging>pom</packaging>
+    <version>0.1-SNAPSHOT</version>
+
+    <modules>
+        <module>communication</module>
+        <module>utils</module>
+        <module>database</module>
+        <module>testgui</module>
+        <module>web</module>
+    </modules>
+
+    <developers>
+        <developer>
+            <id>dtuerk</id>
+            <name>Daniel Türk</name>
+            <email>Daniel.Tuerk@w-b-z.com</email>
+        </developer>
+    </developers>
+
+    <repositories>
+        <repository>
+            <id>source.db4o</id>
+            <url>http://source.db4o.com/maven</url>
+        </repository>
+    </repositories>
+
+    <build>
+
+        <plugins>
+            <!-- COMPILING -->
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.3</version>
+                <configuration>
+                    <source>1.6</source>
+                    <target>1.6</target>
+                    <debug>true</debug>
+                </configuration>
+            </plugin>
+
+        </plugins>
+    </build>
+
+    <dependencyManagement>
+        <dependencies>
+
+
+        </dependencies>
+    </dependencyManagement>
+
+    <dependencies>
+        <!-- Logging -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${org.slf4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>jcl-over-slf4j</artifactId>
+            <version>${org.slf4j.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>${logback.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+
+        <!-- Joda Time -->
+        <dependency>
+            <groupId>joda-time</groupId>
+            <artifactId>joda-time</artifactId>
+            <version>${joda.time.version}</version>
+        </dependency>
+
+        <!-- Google Guava -->
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>13.0.1</version>
+        </dependency>
+
+
+        <!--+++ Jakarta's Commons Lang +++ -->
+        <dependency>
+            <groupId>commons-lang</groupId>
+            <artifactId>commons-lang</artifactId>
+            <version>2.6</version>
+        </dependency>
+
+
+
+
+        <!-- Guice -->
+        <dependency>
+            <groupId>com.google.inject</groupId>
+            <artifactId>guice</artifactId>
+            <version>3.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.inject.extensions</groupId>
+            <artifactId>guice-servlet</artifactId>
+            <version>3.0</version>
+        </dependency>
+
+
+
+
+
+        <!--&lt;!&ndash; Spring &ndash;&gt;-->
+
+
+
+
+
+        <!--<dependency>-->
+            <!--<groupId>org.springframework</groupId>-->
+            <!--<artifactId>spring-test</artifactId>-->
+            <!--<version>${spring.version}</version>-->
+            <!--<scope>test</scope>-->
+        <!--</dependency>-->
+
+        <!--<dependency>-->
+            <!--<groupId>org.springframework</groupId>-->
+            <!--<artifactId>spring-oxm</artifactId>-->
+            <!--<version>${spring.version}</version>-->
+        <!--</dependency>-->
+
+        <!--<dependency>-->
+            <!--<groupId>org.springframework.ws</groupId>-->
+            <!--<artifactId>spring-xml</artifactId>-->
+            <!--<version>2.0.2.RELEASE</version>-->
+        <!--</dependency>-->
+
+        <!--<dependency>-->
+            <!--<groupId>org.springframework</groupId>-->
+            <!--<artifactId>spring-web</artifactId>-->
+            <!--<version>${spring.version}</version>-->
+        <!--</dependency>-->
+
+        <!--&lt;!&ndash; Spring Cache &ndash;&gt;-->
+        <!--<dependency>-->
+            <!--<groupId>cglib</groupId>-->
+            <!--<artifactId>cglib</artifactId>-->
+            <!--<version>2.2</version>-->
+        <!--</dependency>-->
+        <!--&lt;!&ndash;<dependency>&ndash;&gt;-->
+        <!--&lt;!&ndash;<groupId>net.sf.ehcache</groupId>&ndash;&gt;-->
+        <!--&lt;!&ndash;<artifactId>ehcache</artifactId>&ndash;&gt;-->
+        <!--&lt;!&ndash;<version>1.6.1</version>&ndash;&gt;-->
+        <!--&lt;!&ndash;</dependency>&ndash;&gt;-->
+
+
+        <!--&lt;!&ndash; Spring WebMVC &ndash;&gt;-->
+        <!--<dependency>-->
+            <!--<groupId>org.springframework</groupId>-->
+            <!--<artifactId>spring-webmvc</artifactId>-->
+            <!--<version>${spring.version}</version>-->
+        <!--</dependency>-->
+
+        <!--&lt;!&ndash; +++ SPRING FRAMEWORK +++ &ndash;&gt;-->
+        <!--<dependency>-->
+            <!--<groupId>org.springframework</groupId>-->
+            <!--<artifactId>spring-context</artifactId>-->
+            <!--<version>${spring.version}</version>-->
+            <!--<exclusions>-->
+                <!--&lt;!&ndash; Exclude Commons Logging in favor of SLF4j &ndash;&gt;-->
+                <!--<exclusion>-->
+                    <!--<groupId>commons-logging</groupId>-->
+                    <!--<artifactId>commons-logging</artifactId>-->
+                <!--</exclusion>-->
+            <!--</exclusions>-->
+        <!--</dependency>-->
+
+
+
+
+    </dependencies>
+
+    <properties>
+        <!-- setting this makes build more platform independent by explicitly specifying an encoding -->
+        <logback.version>0.9.15</logback.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <spring.version>3.1.3.RELEASE</spring.version>
+        <googlecollections.version>1.0</googlecollections.version>
+        <jcloverslf4j.version>1.5.10</jcloverslf4j.version>
+
+        <org.slf4j.version>1.5.10</org.slf4j.version>
+        <joda.time.version>2.1</joda.time.version>
+        <joda.time.jsptags.version>1.0.2</joda.time.jsptags.version>
+        <com.google.collections.version>1.0</com.google.collections.version>
+        <javax.servlet.api.version>2.5</javax.servlet.api.version>
+        <javax.servlet.jsp.api.version>2.1</javax.servlet.jsp.api.version>
+        <javax.servlet.jstl.version>1.2</javax.servlet.jstl.version>
+        <org.tuckey.urlrewritefilter.version>3.2.0</org.tuckey.urlrewritefilter.version>
+
+        <org.codehaus.jackson.version>1.8.3</org.codehaus.jackson.version>
+        <build.helper.maven.plugin.version>1.5</build.helper.maven.plugin.version>
+
+        <gwt.version>2.5.0</gwt.version>
+    </properties>
+
+</project>

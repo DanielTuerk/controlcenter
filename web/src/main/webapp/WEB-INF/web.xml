@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE web-app
+        PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
+        "http://java.sun.com/dtd/web-app_2_3.dtd">
+
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://java.sun.com/xml/ns/javaee"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+         id="WebApp_ID" version="2.5">
+
+    <filter>
+        <filter-name>guiceFilter</filter-name>
+        <filter-class>com.google.inject.servlet.GuiceFilter</filter-class>
+    </filter>
+
+    <filter-mapping>
+        <filter-name>guiceFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <listener>
+        <listener-class>net.wbz.moba.controlcenter.web.config.MyGuiceServletConfig</listener-class>
+    </listener>
+
+    <servlet>
+        <servlet-name>remoteLoggingServiceImpl</servlet-name>
+        <servlet-class>com.google.gwt.libideas.logging.server.RemoteLoggingServiceImpl</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>remoteLoggingServiceImpl</servlet-name>
+        <url-pattern>/Test/logging</url-pattern>
+    </servlet-mapping>
+
+    <welcome-file-list>
+        <welcome-file>ControlCenterApp.html</welcome-file>
+    </welcome-file-list>
+
+</web-app>

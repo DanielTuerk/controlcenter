@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module>
+  <!-- Inherit our applications main module.                      -->
+  <!--<inherits name='net.wbz.moba.controlcenter.web'/>-->
+
+  <!--&lt;!&ndash; Specify the path to any remote services.                   &ndash;&gt;-->
+  <!--<servlet path="/Test/greet" class="net.wbz.moba.controlcenter.web.server.GreetingServiceImpl" />-->
+
+</module>

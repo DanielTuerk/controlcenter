@@ -1,0 +1,303 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <!-- POM file generated with GWT webAppCreator -->
+    <parent>
+        <groupId>net.wbz.moba</groupId>
+        <artifactId>controlcenter</artifactId>
+        <version>0.1-SNAPSHOT</version>
+    </parent>
+
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>controlcenter-web</artifactId>
+    <name>Control Center - Web</name>
+
+    <packaging>war</packaging>
+
+    <properties>
+        <!-- Convenience property to set the GWT version -->
+        <gwtVersion>2.1.0</gwtVersion>
+        <!-- GWT needs at least java 1.5 -->
+        <maven.compiler.source>1.6</maven.compiler.source>
+        <maven.compiler.target>1.6</maven.compiler.target>
+        <webappDirectory>${project.build.directory}/${project.build.finalName}</webappDirectory>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>net.wbz.moba</groupId>
+            <artifactId>controlcenter-communication-api</artifactId>
+            <version>0.1-SNAPSHOT</version>
+        </dependency>
+
+        <dependency>
+            <groupId>net.wbz.moba</groupId>
+            <artifactId>controlcenter-communication-manager</artifactId>
+            <version>0.1-SNAPSHOT</version>
+        </dependency>
+
+        <dependency>
+            <groupId>net.wbz.moba</groupId>
+            <artifactId>controlcenter-database</artifactId>
+            <version>0.1-SNAPSHOT</version>
+        </dependency>
+
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.7</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- ###############   GWT  ####################### -->
+
+        <dependency>
+            <groupId>com.google.gwt</groupId>
+            <artifactId>gwt-servlet</artifactId>
+            <version>${gwt.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.google.gwt</groupId>
+            <artifactId>gwt-user</artifactId>
+            <version>${gwt.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.orange.links</groupId>
+            <artifactId>links</artifactId>
+            <version>3.1.2</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/lib/gwt-links-1.4.2.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>com.allen_sauer.gwt</groupId>
+            <artifactId>dnd</artifactId>
+            <version>3.1.2</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/lib/gwt-dnd-3.1.2.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>com.google.gwt</groupId>
+            <artifactId>incubator</artifactId>
+            <version>1</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/lib/gwt-incubator-20101117-r1766.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava-gwt</artifactId>
+            <version>13.0.1</version>
+        </dependency>
+
+
+
+        <!-- #####################  Server #################### -->
+        <!--<dependency>-->
+            <!--<groupId>org.reflections</groupId>-->
+            <!--<artifactId>reflections</artifactId>-->
+            <!--<version>0.9.8</version>-->
+        <!--</dependency>-->
+
+        <!--<dependency>-->
+            <!--<groupId>org.springframework</groupId>-->
+            <!--<artifactId>spring-test</artifactId>-->
+            <!--<version>${spring.version}</version>-->
+            <!--<scope>test</scope>-->
+        <!--</dependency>-->
+
+        <!--<dependency>-->
+            <!--<groupId>org.springframework</groupId>-->
+            <!--<artifactId>spring-oxm</artifactId>-->
+            <!--<version>${spring.version}</version>-->
+        <!--</dependency>-->
+
+        <!--<dependency>-->
+            <!--<groupId>org.springframework.ws</groupId>-->
+            <!--<artifactId>spring-xml</artifactId>-->
+            <!--<version>2.0.2.RELEASE</version>-->
+        <!--</dependency>-->
+
+        <!--<dependency>-->
+            <!--<groupId>org.springframework</groupId>-->
+            <!--<artifactId>spring-web</artifactId>-->
+            <!--<version>${spring.version}</version>-->
+        <!--</dependency>-->
+
+        <!--&lt;!&ndash; Spring Cache &ndash;&gt;-->
+        <!--<dependency>-->
+            <!--<groupId>cglib</groupId>-->
+            <!--<artifactId>cglib</artifactId>-->
+            <!--<version>2.2</version>-->
+        <!--</dependency>-->
+
+        <!--&lt;!&ndash; Spring WebMVC &ndash;&gt;-->
+        <!--<dependency>-->
+            <!--<groupId>org.springframework</groupId>-->
+            <!--<artifactId>spring-webmvc</artifactId>-->
+            <!--<version>${spring.version}</version>-->
+        <!--</dependency>-->
+
+        <!--&lt;!&ndash; +++ SPRING FRAMEWORK +++ &ndash;&gt;-->
+        <!--<dependency>-->
+            <!--<groupId>org.springframework</groupId>-->
+            <!--<artifactId>spring-context</artifactId>-->
+            <!--<version>${spring.version}</version>-->
+            <!--<exclusions>-->
+                <!--&lt;!&ndash; Exclude Commons Logging in favor of SLF4j &ndash;&gt;-->
+                <!--<exclusion>-->
+                    <!--<groupId>commons-logging</groupId>-->
+                    <!--<artifactId>commons-logging</artifactId>-->
+                <!--</exclusion>-->
+            <!--</exclusions>-->
+        <!--</dependency>-->
+
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-validator-annotation-processor</artifactId>
+            <version>4.1.0.Final</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-validator</artifactId>
+            <version>4.2.0.Final</version>
+        </dependency>
+
+
+
+        <dependency>
+            <groupId>org.rxtx</groupId>
+            <artifactId>rxtx</artifactId>
+            <version>2.2.pre</version>
+            <scope>runtime</scope>
+        </dependency>
+
+    </dependencies>
+
+    <build>
+        <!-- Generate compiled stuff in the folder used for developing mode -->
+        <outputDirectory>${webappDirectory}/WEB-INF/classes</outputDirectory>
+              <finalName>controlcenter</finalName>
+        <plugins>
+
+            <!-- GWT Maven Plugin -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>gwt-maven-plugin</artifactId>
+                <version>${gwt.version}</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>compile</goal>
+                            <goal>test</goal>
+                            <goal>i18n</goal>
+                            <goal>generateAsync</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <!-- Plugin configuration. There are many available options, see gwt-maven-plugin
+             documentation at codehaus.org -->
+                <configuration>
+                    <runTarget>ControlCenterApp.html</runTarget>
+                    <hostedWebapp>${webappDirectory}</hostedWebapp>
+                    <i18nMessagesBundle>net.wbz.moba.controlcenter.web.client.Messages</i18nMessagesBundle>
+                </configuration>
+            </plugin>
+
+            <!-- Copy static web files before executing gwt:run -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>2.1.1</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>exploded</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <webappDirectory>${webappDirectory}</webappDirectory>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-install-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>install-qspring</id>
+                        <phase>validate</phase>
+                        <configuration>
+                            <file>${project.basedir}/lib/gspring-0.1-SNAPSHOT-rpc.jar</file>
+                            <repositoryLayout>default</repositoryLayout>
+                            <groupId>org.gspring.mvc</groupId>
+                            <artifactId>gspring</artifactId>
+                            <version>0.1</version>
+                            <packaging>jar</packaging>
+                            <generatePom>true</generatePom>
+                        </configuration>
+                        <goals>
+                            <goal>install-file</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+
+
+            <!--<plugin>-->
+                <!--<groupId>org.simplericity.jettyconsole</groupId>-->
+                <!--<artifactId>jetty-console-maven-plugin</artifactId>-->
+                <!--<version>1.45</version>-->
+                <!--<executions>-->
+                    <!--<execution>-->
+                        <!--<goals>-->
+                            <!--<goal>createconsole</goal>-->
+                        <!--</goals>-->
+                    <!--</execution>-->
+                <!--</executions>-->
+
+                <!--<configuration>-->
+                    <!--<additionalDependencies>-->
+                        <!--<additionalDependency>-->
+                            <!--<artifactId>jetty-console-log4j-plugin</artifactId>-->
+                        <!--</additionalDependency>-->
+                        <!--<additionalDependency>-->
+                            <!--<artifactId>jetty-console-jettyxml-plugin</artifactId>-->
+                        <!--</additionalDependency>-->
+                        <!--<additionalDependency>-->
+                            <!--<artifactId>jetty-console-ajp-plugin</artifactId>-->
+                        <!--</additionalDependency>-->
+                        <!--<additionalDependency>-->
+                            <!--<artifactId>jetty-console-gzip-plugin</artifactId>-->
+                        <!--</additionalDependency>-->
+                        <!--<additionalDependency>-->
+                            <!--<artifactId>jetty-console-startstop-plugin</artifactId>-->
+                        <!--</additionalDependency>-->
+                        <!--&lt;!&ndash; Custom plugin &ndash;&gt;-->
+                        <!--&lt;!&ndash;<additionalDependency>&ndash;&gt;-->
+                            <!--&lt;!&ndash;<groupId>org.simplericity.puffinsecrets</groupId>&ndash;&gt;-->
+                            <!--&lt;!&ndash;<artifactId>puffin-secrets-contextpath-plugin</artifactId>&ndash;&gt;-->
+                            <!--&lt;!&ndash;<version>1.0-SNAPSHOT</version>&ndash;&gt;-->
+                        <!--&lt;!&ndash;</additionalDependency>&ndash;&gt;-->
+                    <!--</additionalDependencies>-->
+                    <!--<archive>-->
+                        <!--<manifestEntries>-->
+                            <!--<BuildNumber>${project.version}</BuildNumber>-->
+                        <!--</manifestEntries>-->
+                    <!--</archive>-->
+                    <!--<properties>-->
+                        <!--contextPath=/controlcenter-->
+                    <!--</properties>-->
+                <!--</configuration>-->
+            <!--</plugin>-->
+
+        </plugins>
+    </build>
+
+</project>

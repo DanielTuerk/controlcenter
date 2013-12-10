@@ -22,7 +22,7 @@
 
         <dependency>
                     <groupId>net.wbz.moba</groupId>
-                    <artifactId>controlcenter-communication-com1</artifactId>
+                    <artifactId>controlcenter-communication-serial</artifactId>
                     <version>0.1-SNAPSHOT</version>
                 </dependency>
     </dependencies>

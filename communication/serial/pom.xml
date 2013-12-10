@@ -9,8 +9,8 @@
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>controlcenter-communication-com1</artifactId>
-    <name>Control Center - Communication - COM1</name>
+    <artifactId>controlcenter-communication-serial</artifactId>
+    <name>Control Center - Communication - Serial</name>
     <packaging>jar</packaging>
 
     <dependencies>

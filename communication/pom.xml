@@ -15,7 +15,7 @@
    <modules>
         <module>api</module>
         <module>manager</module>
-        <module>com1</module>
+        <module>serial</module>
     </modules>
 
 </project>

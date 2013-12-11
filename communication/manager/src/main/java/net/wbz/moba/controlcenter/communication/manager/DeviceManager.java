@@ -4,7 +4,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import net.wbz.moba.controlcenter.communication.api.Device;
 import net.wbz.moba.controlcenter.communication.api.DeviceAccessException;
-import net.wbz.moba.controlcenter.communication.com1.Com1Device;
+import net.wbz.moba.controlcenter.communication.serial.SerialDevice;
 
 import java.util.List;
 import java.util.Map;
@@ -30,7 +30,7 @@ public class DeviceManager {
     private Device createDevice(DEVICE_TYPE type, String deviceId) {
         switch (type) {
             case COM1:
-                return new Com1Device(deviceId);
+                return new SerialDevice(deviceId);
             default:
                 throw new RuntimeException("no device found for type " + type.name());
         }

@@ -1,4 +1,4 @@
-package net.wbz.moba.controlcenter.communication.com1;
+package net.wbz.moba.controlcenter.communication.serial;
 
 import gnu.io.CommPortIdentifier;
 import gnu.io.PortInUseException;
@@ -21,8 +21,8 @@ import java.util.Map;
 /**
  * @author Daniel Tuerk (daniel.tuerk@jambit.com)
  */
-public class Com1Device implements Device {
-    private static final Logger log = LoggerFactory.getLogger(Com1Device.class);
+public class SerialDevice implements Device {
+    private static final Logger log = LoggerFactory.getLogger(SerialDevice.class);
 
     private OutputStream outputStream = null;
     private InputStream inputStream = null;
@@ -34,17 +34,15 @@ public class Com1Device implements Device {
 
     private final String deviceId;
 
-    public Com1Device(String deviceId) {
+    public SerialDevice(String deviceId) {
 
         this.deviceId = deviceId;
     }
 
     @Override
     public void connect() {
-        log.info("connect COM1");
+        log.info("connect COM");
         try {
-//            System.setProperty("gnu.io.rxtx.SerialPorts", "/dev/ttyUSB0");
-//            System.setProperty("gnu.io.rxtx.SerialPorts", "/dev/tty.usbserial-FTG3FYGN");
             System.setProperty("gnu.io.rxtx.SerialPorts", deviceId);
             Enumeration portList = CommPortIdentifier.getPortIdentifiers();
             while (portList.hasMoreElements()) {
@@ -59,8 +57,7 @@ public class Com1Device implements Device {
                             SerialPort.DATABITS_8,
                             SerialPort.STOPBITS_1,
                             SerialPort.PARITY_NONE);
-                    log.info("connected to COM1");
-
+                    log.info("connected to COM");
 
                 } catch (PortInUseException e) {
                     log.error("COM1 in use", e);
@@ -76,7 +73,7 @@ public class Com1Device implements Device {
     }
 
     public static void main(String[] args) {
-        Com1Device com1 = new Com1Device("/dev/tty.usbserial-FTG3FYGN");
+        SerialDevice com1 = new SerialDevice("/dev/tty.usbserial-FTG3FYGN");
         com1.connect();
 
         try {

@@ -10,11 +10,13 @@ import com.sun.istack.internal.Nullable;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.ArrayList;
+
 import java.util.List;
 
 /**
@@ -40,7 +42,6 @@ public class DatabaseFactory {
     }
 
     private void startUp() {
-//        try {
         log.info("load existing databases from " + storageLocationPath.toString());
         for (File databaseFile : storageLocationPath.listFiles(new FilenameFilter() {
             @Override
@@ -51,9 +52,6 @@ public class DatabaseFactory {
             Database db = new Database(databaseFile.getName().substring(0, databaseFile.getName().length() - DB_SUFFIX.length()), databaseFile);
             databases.add(db);
         }
-//        } catch (IOException e) {
-//            log.error("can't load databases from file", e);
-//        }
     }
 
     /**
@@ -117,6 +115,7 @@ public class DatabaseFactory {
 
     public void deleteDatabase(String key) {
         //TODO
+        throw new NotImplementedException();
     }
 
     public List<String> getExistingDatabaseNames() {

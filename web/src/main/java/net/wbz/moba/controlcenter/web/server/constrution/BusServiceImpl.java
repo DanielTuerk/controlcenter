@@ -9,7 +9,7 @@ import com.google.inject.Singleton;
 import com.google.inject.name.Named;
 import com.sun.istack.internal.Nullable;
 import net.wbz.moba.controlcenter.communication.api.Device;
-import net.wbz.moba.controlcenter.communication.com1.Com1Device;
+import net.wbz.moba.controlcenter.communication.serial.SerialDevice;
 import net.wbz.moba.controlcenter.communication.manager.DeviceManager;
 import net.wbz.moba.controlcenter.db.Database;
 import net.wbz.moba.controlcenter.db.DatabaseFactory;
@@ -21,7 +21,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * @author Daniel Tuerk (daniel.tuerk@jambit.com)
@@ -88,7 +87,7 @@ public class BusServiceImpl extends RemoteServiceServlet implements BusService {
             public DeviceInfo apply(@Nullable Device input) {
                 DeviceInfo deviceInfo = new DeviceInfo();
                 deviceInfo.setKey(deviceManager.getDeviceId(input));
-                if (input instanceof Com1Device) {
+                if (input instanceof SerialDevice) {
                     deviceInfo.setType(DeviceInfo.DEVICE_TYPE.COM1);
                 }
                 return deviceInfo;

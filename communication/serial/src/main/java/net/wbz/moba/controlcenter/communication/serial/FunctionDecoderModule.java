@@ -1,4 +1,4 @@
-package net.wbz.moba.controlcenter.communication.com1;
+package net.wbz.moba.controlcenter.communication.serial;
 
 import net.wbz.moba.controlcenter.communication.api.Device;
 import net.wbz.moba.controlcenter.communication.api.OutputModule;

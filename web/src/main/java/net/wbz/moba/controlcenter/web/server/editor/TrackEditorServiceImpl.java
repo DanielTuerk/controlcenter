@@ -19,23 +19,16 @@ import javax.inject.Inject;
 /**
  * @author Daniel Tuerk (daniel.tuerk@jambit.com)
  */
-//@Service("trackeditor")
-    @Singleton
+@Singleton
 public class TrackEditorServiceImpl extends RemoteServiceServlet implements TrackEditorService {
 
-    private static final Logger log = LoggerFactory.getLogger(TrackEditorServiceImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(TrackEditorServiceImpl.class);
 
     private final ConstructionServiceImpl constructionService;
 
     @Inject
     public TrackEditorServiceImpl(ConstructionServiceImpl constructionService) {
         this.constructionService = constructionService;
-    }
-
-
-    //    @PostConstruct
-    public void postConstruct() {
-        constructionService.getCurrentConstruction();
     }
 
     @Override
@@ -48,10 +41,10 @@ public class TrackEditorServiceImpl extends RemoteServiceServlet implements Trac
 
     @Override
     public TrackPart[] loadTrack() {
-        log.info("load db");
+        LOG.info("load db");
         ObjectContainer database = constructionService.getDatabase(constructionService.getCurrentConstruction()).getObjectContainer();
 
-        log.info("query db");
+        LOG.info("query db");
         ObjectSet<DataContainer> f = database.query(
                 new Predicate<DataContainer>() {
                     @Override
@@ -61,20 +54,16 @@ public class TrackEditorServiceImpl extends RemoteServiceServlet implements Trac
                 }, new QueryComparator<DataContainer>() {
                     @Override
                     public int compare(DataContainer dataContainer, DataContainer dataContainer1) {
-                        log.info("compare data container");
+                        LOG.info("compare data container");
                         return Long.valueOf(dataContainer1.getDateTime()).compareTo(dataContainer.getDateTime());
                     }
                 }
         );
         if (!f.isEmpty()) {
-            log.info("return track parts");
+            LOG.info("return track parts");
             return (TrackPart[]) f.get(0).getData();
         }
         return new TrackPart[0];
     }
 
-    //    @PreDestroy
-    public void cleanUp() {
-
-    }
 }

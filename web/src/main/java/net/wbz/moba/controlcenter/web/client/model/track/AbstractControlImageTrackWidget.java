@@ -9,18 +9,28 @@ import net.wbz.moba.controlcenter.web.client.editor.track.ClickActionViewerWidge
 import net.wbz.moba.controlcenter.web.client.editor.track.EditTrackWidgetHandler;
 import net.wbz.moba.controlcenter.web.shared.track.model.Configuration;
 import net.wbz.moba.controlcenter.web.shared.track.model.TrackPart;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
+ * A {@link net.wbz.moba.controlcenter.web.client.model.track.AbstractImageTrackWidget} with click control
+ * to toggle the state of the {@link net.wbz.moba.controlcenter.web.shared.track.model.TrackPart}.
+ *
  * @author Daniel Tuerk (daniel.tuerk@jambit.com)
  */
 abstract public class AbstractControlImageTrackWidget<T extends TrackPart> extends AbstractImageTrackWidget<T>
         implements EditTrackWidgetHandler, ClickActionViewerWidgetHandler {
 
+    //protected static final Logger LOG = LoggerFactory.getLogger(AbstractControlImageTrackWidget.class);
+
     private final ListBox selectBit = new ListBox();
     private final TextBox txtAdress = new TextBox();
 
-    public AbstractControlImageTrackWidget() {
+    private int trackPartConfigAdress = -1;
+    private int trackPartConfigBit = -1;
 
+    public AbstractControlImageTrackWidget() {
+        // repaint the widget by change of the device connection state
         BusConnection.getInstance().addListener(new BusConnectionListener() {
             @Override
             public void connected() {
@@ -33,19 +43,16 @@ abstract public class AbstractControlImageTrackWidget<T extends TrackPart> exten
                 // TODO disable widget?
             }
         });
-
     }
 
     @Override
     public void repaint() {
-        //TODO track part config can be -1
         Configuration widgetConfig = getStoredWidgetConfiguration();
-        if (widgetConfig.getAdress() > -1 && widgetConfig.getOutput() > -1) {
-
+        if (widgetConfig.isValid()) {
             ServiceUtils.getBusService().isBusConnected(new AsyncCallback<Boolean>() {
                 @Override
                 public void onFailure(Throwable caught) {
-                    //To change body of implemented methods use File | Settings | File Templates.
+                   //LOG.error("can't request bus state",caught);
                 }
 
                 @Override
@@ -55,7 +62,7 @@ abstract public class AbstractControlImageTrackWidget<T extends TrackPart> exten
 
                             @Override
                             public void onFailure(Throwable caught) {
-                                //To change body of implemented methods use File | Settings | File Templates.
+                             //LOG.error("can't load track part state",caught);
                             }
 
                             @Override
@@ -68,13 +75,14 @@ abstract public class AbstractControlImageTrackWidget<T extends TrackPart> exten
                 }
             });
         } else {
-            System.err.println("widet has no track part config: " + getClass().getName());
+            //LOG.error("widget has no track part config: " + getClass().getName());
         }
     }
 
     @Override
     public void onClick() {
-        ServiceUtils.getTrackViewerService().toogleTrackPart(getStoredWidgetConfiguration(), !trackPartState, new AsyncCallback<Void>() {
+        Configuration widgetConfiguration = getStoredWidgetConfiguration();
+        ServiceUtils.getTrackViewerService().toogleTrackPart(widgetConfiguration, !trackPartState, new AsyncCallback<Void>() {
             @Override
             public void onFailure(Throwable caught) {
             }
@@ -107,7 +115,7 @@ abstract public class AbstractControlImageTrackWidget<T extends TrackPart> exten
 
     public Configuration getStoredWidgetConfiguration() {
         Configuration configuration = new Configuration();
-        configuration.setAdress(trackPartConfigAdress);
+        configuration.setAddress(trackPartConfigAdress);
         configuration.setOutput(trackPartConfigBit);
         return configuration;
     }
@@ -151,9 +159,6 @@ abstract public class AbstractControlImageTrackWidget<T extends TrackPart> exten
         return verticalPanel;
     }
 
-    private int trackPartConfigAdress = -1;
-    private int trackPartConfigBit = -1;
-
     @Override
     public void onConfirmCallback() {
         trackPartConfigAdress = Integer.parseInt(txtAdress.getText());
@@ -163,11 +168,12 @@ abstract public class AbstractControlImageTrackWidget<T extends TrackPart> exten
     @Override
     public void initFromTrackPart(T trackPart) {
         if (trackPart != null && trackPart.getConfiguration() != null) {
-            trackPartConfigAdress = trackPart.getConfiguration().getAdress();
+            trackPartConfigAdress = trackPart.getConfiguration().getAddress();
             trackPartConfigBit = trackPart.getConfiguration().getOutput();
+
+            setAltText(trackPart.getConfiguration().toString());
         }
     }
-
 
     public void setTrackPartConfigAdress(int trackPartConfigAdress) {
         this.trackPartConfigAdress = trackPartConfigAdress;

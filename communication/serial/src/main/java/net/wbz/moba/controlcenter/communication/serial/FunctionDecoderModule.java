@@ -2,6 +2,8 @@ package net.wbz.moba.controlcenter.communication.serial;
 
 import net.wbz.moba.controlcenter.communication.api.Device;
 import net.wbz.moba.controlcenter.communication.api.OutputModule;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -12,6 +14,8 @@ import java.math.BigInteger;
  * @author Daniel Tuerk (daniel.tuerk@jambit.com)
  */
 public class FunctionDecoderModule implements OutputModule {
+
+    private static final Logger LOG = LoggerFactory.getLogger(FunctionDecoderModule.class);
 
     private OutputStream outputStream = null;
     private InputStream inputStream = null;
@@ -72,8 +76,9 @@ public class FunctionDecoderModule implements OutputModule {
             // to write data to the address you need BIT 8 at '1' (+128)
             outputStream.write(new byte[]{(byte) ((int) address + 128), data});
             outputStream.flush();
-            System.out.println("write bit of " + address + ": " + data);
+            LOG.debug("write bit of " + address + ": " + data);
         } catch (IOException e) {
+            LOG.error(String.format("can't send data(%sd) to module %d", address, data));
         }
     }
 
@@ -102,17 +107,17 @@ public class FunctionDecoderModule implements OutputModule {
 
     private void read() {
         try {
-            System.out.println(Thread.currentThread().getId() + " - " + this.toString() + " - start read of " + address);
+            LOG.debug(Thread.currentThread().getId() + " - " + this.toString() + " - start read of " + address);
             outputStream.write(new byte[]{address, 0});
             outputStream.flush();
             int result = inputStream.read();
-            System.out.println(Thread.currentThread().getId() + " - " + this.toString() + " - bit of " + address + ": " + result);
+            LOG.debug(Thread.currentThread().getId() + " - " + this.toString() + " - bit of " + address + ": " + result);
             BigInteger byteResult = BigInteger.valueOf((long) result);
             for (int i = 0; i < bits.length; i++) {
                 bits[i] = byteResult.testBit(i);
             }
         } catch (IOException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            LOG.error(String.format("can't read data of module %d", address));
         }
     }
 
@@ -127,10 +132,10 @@ public class FunctionDecoderModule implements OutputModule {
         try {
             Thread.sleep(500);
         } catch (InterruptedException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            //ignore
         }
         int actualValue = getValue();
-        if(actualValue > 0) {
+        if (actualValue > 0) {
             send((byte) 0);
         } else {
             send((byte) 1);
@@ -139,7 +144,7 @@ public class FunctionDecoderModule implements OutputModule {
         try {
             Thread.sleep(500);
         } catch (InterruptedException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            //ignore
         }
         sendData();
     }

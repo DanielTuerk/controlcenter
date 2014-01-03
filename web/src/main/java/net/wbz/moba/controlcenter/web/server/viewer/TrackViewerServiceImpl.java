@@ -28,23 +28,30 @@ public class TrackViewerServiceImpl extends RemoteServiceServlet implements Trac
 
     @Override
     public void toogleTrackPart(Configuration configuration, boolean state) {
-        try {
-            deviceManager.getConnectedDevice().getOutputModule((byte) configuration.getAdress()).setBit(getBitOfConfiguration(configuration), state);
-        } catch (DeviceAccessException e) {
-            log.error("can't toggle track part", e);
-            throw new RpcTokenException("can't toggle track part");
+        if (configuration.isValid()) {
+            try {
+                deviceManager.getConnectedDevice().getOutputModule((byte) configuration.getAddress())
+                        .setBit(getBitOfConfiguration(configuration), state);
+            } catch (DeviceAccessException e) {
+                log.error("can't toggle track part", e);
+                throw new RpcTokenException("can't toggle track part");
+            }
         }
     }
 
     @Override
     public boolean getTrackPartState(Configuration configuration) {
-        try {
-            return deviceManager.getConnectedDevice().getOutputModule((byte) configuration.getAdress()).getBitState(getBitOfConfiguration(configuration));
-        } catch (DeviceAccessException e) {
-            String msg = "can't load state of track part";
-            log.error(msg, e);
-            throw new RpcTokenException(msg);
+        if (configuration.isValid()) {
+            try {
+                return deviceManager.getConnectedDevice().getOutputModule((byte) configuration.getAddress())
+                        .getBitState(getBitOfConfiguration(configuration));
+            } catch (DeviceAccessException e) {
+                String msg = "can't load state of track part";
+                log.error(msg, e);
+                throw new RpcTokenException(msg);
+            }
         }
+        throw new RpcTokenException("invalid configuration: " + configuration);
     }
 
     private Device.BIT getBitOfConfiguration(Configuration configuration) {

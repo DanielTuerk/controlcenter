@@ -7,16 +7,16 @@ import java.io.Serializable;
  */
 public class Configuration implements Serializable {
 
-    private int adress;
+    private int address;
 
     private int output;
 
-    public int getAdress() {
-        return adress;
+    public int getAddress() {
+        return address;
     }
 
-    public void setAdress(int adress) {
-        this.adress = adress;
+    public void setAddress(int address) {
+        this.address = address;
     }
 
     public int getOutput() {
@@ -25,5 +25,17 @@ public class Configuration implements Serializable {
 
     public void setOutput(int output) {
         this.output = output;
+    }
+
+    public boolean isValid() {
+        return address > -1 && output > -1;
+    }
+
+    @Override
+    public String toString() {
+        return "Configuration{" +
+                "address=" + address +
+                ", output=" + output +
+                '}';
     }
 }

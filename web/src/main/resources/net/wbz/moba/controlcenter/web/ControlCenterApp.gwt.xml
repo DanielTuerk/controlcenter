@@ -26,6 +26,4 @@
     <source path='client'/>
     <source path='shared'/>
 
-    <!--<servlet path='/construction' class='net.wbz.moba.controlcenter.web.server.constrution.ConstructionServiceImpl'/>-->
-
 </module>

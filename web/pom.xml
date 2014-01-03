@@ -171,52 +171,52 @@
 
 
 
-            <!--<plugin>-->
-                <!--<groupId>org.simplericity.jettyconsole</groupId>-->
-                <!--<artifactId>jetty-console-maven-plugin</artifactId>-->
-                <!--<version>1.45</version>-->
-                <!--<executions>-->
-                    <!--<execution>-->
-                        <!--<goals>-->
-                            <!--<goal>createconsole</goal>-->
-                        <!--</goals>-->
-                    <!--</execution>-->
-                <!--</executions>-->
+            <plugin>
+                <groupId>org.simplericity.jettyconsole</groupId>
+                <artifactId>jetty-console-maven-plugin</artifactId>
+                <version>1.45</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>createconsole</goal>
+                        </goals>
+                    </execution>
+                </executions>
 
-                <!--<configuration>-->
-                    <!--<additionalDependencies>-->
+                <configuration>
+                    <additionalDependencies>
+                        <additionalDependency>
+                            <artifactId>jetty-console-log4j-plugin</artifactId>
+                        </additionalDependency>
+                        <additionalDependency>
+                            <artifactId>jetty-console-jettyxml-plugin</artifactId>
+                        </additionalDependency>
+                        <additionalDependency>
+                            <artifactId>jetty-console-ajp-plugin</artifactId>
+                        </additionalDependency>
+                        <additionalDependency>
+                            <artifactId>jetty-console-gzip-plugin</artifactId>
+                        </additionalDependency>
+                        <additionalDependency>
+                            <artifactId>jetty-console-startstop-plugin</artifactId>
+                        </additionalDependency>
+                        <!-- Custom plugin -->
                         <!--<additionalDependency>-->
-                            <!--<artifactId>jetty-console-log4j-plugin</artifactId>-->
+                            <!--<groupId>org.simplericity.puffinsecrets</groupId>-->
+                            <!--<artifactId>puffin-secrets-contextpath-plugin</artifactId>-->
+                            <!--<version>1.0-SNAPSHOT</version>-->
                         <!--</additionalDependency>-->
-                        <!--<additionalDependency>-->
-                            <!--<artifactId>jetty-console-jettyxml-plugin</artifactId>-->
-                        <!--</additionalDependency>-->
-                        <!--<additionalDependency>-->
-                            <!--<artifactId>jetty-console-ajp-plugin</artifactId>-->
-                        <!--</additionalDependency>-->
-                        <!--<additionalDependency>-->
-                            <!--<artifactId>jetty-console-gzip-plugin</artifactId>-->
-                        <!--</additionalDependency>-->
-                        <!--<additionalDependency>-->
-                            <!--<artifactId>jetty-console-startstop-plugin</artifactId>-->
-                        <!--</additionalDependency>-->
-                        <!--&lt;!&ndash; Custom plugin &ndash;&gt;-->
-                        <!--&lt;!&ndash;<additionalDependency>&ndash;&gt;-->
-                            <!--&lt;!&ndash;<groupId>org.simplericity.puffinsecrets</groupId>&ndash;&gt;-->
-                            <!--&lt;!&ndash;<artifactId>puffin-secrets-contextpath-plugin</artifactId>&ndash;&gt;-->
-                            <!--&lt;!&ndash;<version>1.0-SNAPSHOT</version>&ndash;&gt;-->
-                        <!--&lt;!&ndash;</additionalDependency>&ndash;&gt;-->
-                    <!--</additionalDependencies>-->
-                    <!--<archive>-->
-                        <!--<manifestEntries>-->
-                            <!--<BuildNumber>${project.version}</BuildNumber>-->
-                        <!--</manifestEntries>-->
-                    <!--</archive>-->
-                    <!--<properties>-->
-                        <!--contextPath=/controlcenter-->
-                    <!--</properties>-->
-                <!--</configuration>-->
-            <!--</plugin>-->
+                    </additionalDependencies>
+                    <archive>
+                        <manifestEntries>
+                            <BuildNumber>${project.version}</BuildNumber>
+                        </manifestEntries>
+                    </archive>
+                    <properties>
+                        contextPath=/controlcenter
+                    </properties>
+                </configuration>
+            </plugin>
 
         </plugins>
     </build>

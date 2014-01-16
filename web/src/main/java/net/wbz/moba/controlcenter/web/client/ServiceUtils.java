@@ -7,6 +7,10 @@ import net.wbz.moba.controlcenter.web.shared.constrution.ConstrutionService;
 import net.wbz.moba.controlcenter.web.shared.constrution.ConstrutionServiceAsync;
 import net.wbz.moba.controlcenter.web.shared.editor.TrackEditorService;
 import net.wbz.moba.controlcenter.web.shared.editor.TrackEditorServiceAsync;
+import net.wbz.moba.controlcenter.web.shared.scenario.ScenarioEditorService;
+import net.wbz.moba.controlcenter.web.shared.scenario.ScenarioEditorServiceAsync;
+import net.wbz.moba.controlcenter.web.shared.scenario.ScenarioService;
+import net.wbz.moba.controlcenter.web.shared.scenario.ScenarioServiceAsync;
 import net.wbz.moba.controlcenter.web.shared.viewer.TrackViewerService;
 import net.wbz.moba.controlcenter.web.shared.viewer.TrackViewerServiceAsync;
 
@@ -15,10 +19,15 @@ import net.wbz.moba.controlcenter.web.shared.viewer.TrackViewerServiceAsync;
  */
 public class ServiceUtils {
 
-    private static final TrackEditorServiceAsync trackEditorService = GWT.create(TrackEditorService.class);
-    private static final TrackViewerServiceAsync trackViewerService = GWT.create(TrackViewerService.class);
-    private static final ConstrutionServiceAsync construtionService = GWT.create(ConstrutionService.class);
+    private static final ScenarioEditorServiceAsync scenarioEditorService = GWT.create(ScenarioEditorService.class);
+
     private static final BusServiceAsync busService = GWT.create(BusService.class);
+
+    private static final TrackViewerServiceAsync trackViewerService = GWT.create(TrackViewerService.class);
+    private static final TrackEditorServiceAsync trackEditorService = GWT.create(TrackEditorService.class);
+
+    private static final ConstrutionServiceAsync construtionService = GWT.create(ConstrutionService.class);
+    private static final ScenarioServiceAsync scenarioService = GWT.create(ScenarioService.class);
 
     public static ConstrutionServiceAsync getConstrutionService() {
         return construtionService;
@@ -34,5 +43,13 @@ public class ServiceUtils {
 
     public static BusServiceAsync getBusService() {
         return busService;
+    }
+
+    public static ScenarioEditorServiceAsync getScenarioEditorService() {
+        return scenarioEditorService;
+    }
+
+    public static ScenarioServiceAsync getScenarioService() {
+        return scenarioService;
     }
 }

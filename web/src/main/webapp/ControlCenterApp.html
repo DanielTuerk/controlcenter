@@ -6,9 +6,9 @@
 <!-- differences in layout.                        -->
 
 <html>
-  <head>
-      <meta charset="utf-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <meta http-equiv="content-type" content="text/html; charset=UTF-8">
 
@@ -18,9 +18,9 @@
 
     <link type="text/css" rel="stylesheet" href="ControlCenterApp.css" media="screen">
 
-      <!--<link rel="stylesheet" href="ControlCenterApp_print.css" type="text/css" media="print" />-->
+    <!--<link rel="stylesheet" href="ControlCenterApp_print.css" type="text/css" media="print" />-->
 
-      <!--<link rel="stylesheet" href="ControlCenterApp_handheld.css" type="text/css" media="handheld" />-->
+    <!--<link rel="stylesheet" href="ControlCenterApp_handheld.css" type="text/css" media="handheld" />-->
 
     <!--                                           -->
     <!-- Any title is fine                         -->
@@ -32,26 +32,34 @@
     <!-- If you add any GWT meta tags, they must   -->
     <!-- be added before this line.                -->
     <!--                                           -->
+
+    <!-- before your module(*.nocache.js) loading  -->
+    <!--[if lt IE 9]>
+    <script  src="http://html5shim.googlecode.com/svn/trunk/html5.js" type="application/javascript"></script>
+    <![endif]-->
+    <!--[if IE 7]>
+    <link rel="stylesheet" href="{your module name}/css/font-awesome-ie7.css">
+    <![endif]-->
     <script type="text/javascript" language="javascript" src="Test/Test.nocache.js"></script>
-  </head>
+</head>
 
-  <!--                                           -->
-  <!-- The body can have arbitrary html, or      -->
-  <!-- you can leave the body empty if you want  -->
-  <!-- to create a completely dynamic UI.        -->
-  <!--                                           -->
-  <body>
+<!--                                           -->
+<!-- The body can have arbitrary html, or      -->
+<!-- you can leave the body empty if you want  -->
+<!-- to create a completely dynamic UI.        -->
+<!--                                           -->
+<body>
 
-    <!-- OPTIONAL: include this if you want history support -->
-    <iframe src="javascript:''" id="__gwt_historyFrame" tabIndex='-1' style="position:absolute;width:0;height:0;border:0"></iframe>
+<!-- OPTIONAL: include this if you want history support -->
+<iframe src="javascript:''" id="__gwt_historyFrame" tabIndex='-1' style="position:absolute;width:0;height:0;border:0"></iframe>
 
-    <!-- RECOMMENDED if your web app will not function without JavaScript enabled -->
-    <noscript>
-      <div style="width: 22em; position: absolute; left: 50%; margin-left: -11em; color: red; background-color: white; border: 1px solid red; padding: 4px; font-family: sans-serif">
+<!-- RECOMMENDED if your web app will not function without JavaScript enabled -->
+<noscript>
+    <div style="width: 22em; position: absolute; left: 50%; margin-left: -11em; color: red; background-color: white; border: 1px solid red; padding: 4px; font-family: sans-serif">
         Your web browser must have JavaScript enabled
         in order for this application to display correctly.
-      </div>
-    </noscript>
+    </div>
+</noscript>
 
-  </body>
+</body>
 </html>

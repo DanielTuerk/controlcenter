@@ -60,6 +60,7 @@ public class DatabaseFactory {
      */
     private EmbeddedConfiguration getNewConfiguration() {
         EmbeddedConfiguration configuration = Db4oEmbedded.newConfiguration();
+        configuration.common().updateDepth(2); // store first level collections in object
         // add translators for classes which can't be translate automaticly be DB4O
         configuration.common().objectClass(DateTime.class).translate(new DateTimeTranslator());
         return configuration;

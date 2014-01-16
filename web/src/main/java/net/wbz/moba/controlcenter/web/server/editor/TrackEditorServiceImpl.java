@@ -32,16 +32,17 @@ public class TrackEditorServiceImpl extends RemoteServiceServlet implements Trac
 
     @Override
     public void saveTrack(TrackPart[] trackParts) {
-        ObjectContainer database = constructionService.getDatabase(constructionService.getCurrentConstruction()).getObjectContainer();
+        ObjectContainer database = constructionService.getObjectContainerOfCurrentConstruction();
         DataContainer dataContainer = new DataContainer(DateTime.now().getMillis(), trackParts);
         database.store(dataContainer);
         database.commit();
     }
 
+
     @Override
     public TrackPart[] loadTrack() {
         log.info("load db");
-        ObjectContainer database = constructionService.getDatabase(constructionService.getCurrentConstruction()).getObjectContainer();
+        ObjectContainer database = constructionService.getObjectContainerOfCurrentConstruction();
 
         log.info("query db");
         Query query = database.query();

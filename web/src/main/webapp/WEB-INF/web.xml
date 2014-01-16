@@ -22,13 +22,23 @@
         <listener-class>net.wbz.moba.controlcenter.web.config.MyGuiceServletConfig</listener-class>
     </listener>
 
+    <servlet>
+        <servlet-name>EventService</servlet-name>
+        <servlet-class>de.novanic.eventservice.service.EventServiceImpl
+        </servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>EventService</servlet-name>
+        <url-pattern>/Test/gwteventservice</url-pattern>
+    </servlet-mapping>
+
     <!--<servlet>-->
-        <!--<servlet-name>remoteLoggingServiceImpl</servlet-name>-->
-        <!--<servlet-class>com.google.gwt.libideas.logging.server.RemoteLoggingServiceImpl</servlet-class>-->
+    <!--<servlet-name>remoteLoggingServiceImpl</servlet-name>-->
+    <!--<servlet-class>com.google.gwt.libideas.logging.server.RemoteLoggingServiceImpl</servlet-class>-->
     <!--</servlet>-->
     <!--<servlet-mapping>-->
-        <!--<servlet-name>remoteLoggingServiceImpl</servlet-name>-->
-        <!--<url-pattern>/Test/logging</url-pattern>-->
+    <!--<servlet-name>remoteLoggingServiceImpl</servlet-name>-->
+    <!--<url-pattern>/Test/logging</url-pattern>-->
     <!--</servlet-mapping>-->
 
     <welcome-file-list>

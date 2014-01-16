@@ -19,7 +19,14 @@
 
     <inherits name="com.google.common.collect.Collect"/>
 
+    <inherits name="com.github.gwtbootstrap.Bootstrap" />
+
+    <set-property name="bootstrap.responsiveDesign" value="true"/>
+
+
     <!-- Specify the app entry point class.                         -->
+
+    <inherits name="de.novanic.eventservice.GWTEventService"/>
     <entry-point class='net.wbz.moba.controlcenter.web.client.ControlCenterApp'/>
 
     <!-- Specify the paths for translatable code                    -->

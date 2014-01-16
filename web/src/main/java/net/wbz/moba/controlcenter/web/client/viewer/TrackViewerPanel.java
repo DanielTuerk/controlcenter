@@ -1,5 +1,9 @@
 package net.wbz.moba.controlcenter.web.client.viewer;
 
+import com.github.gwtbootstrap.client.ui.Label;
+import com.github.gwtbootstrap.client.ui.constants.LabelType;
+import com.google.gwt.event.dom.client.MouseOverEvent;
+import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.gen2.logging.shared.Log;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Widget;
@@ -22,6 +26,8 @@ public class TrackViewerPanel extends AbstractTrackPanel {
     public static final int PERCENTAGE_MAX = 99;
     public static final int PERCENTAGE_START_TRACK = 30;
 
+    private Label lblTrackPartConfig = new Label();
+
     @Override
     protected void onLoad() {
         addStyleName("boundary");
@@ -37,6 +43,8 @@ public class TrackViewerPanel extends AbstractTrackPanel {
 
         DialogBoxUtil.getLoading().setProgressPercentage(PERCENTAGE_START_TRACK, "load track");
 
+        lblTrackPartConfig.setType(LabelType.INFO);
+        add(lblTrackPartConfig, 0, 0);
 
         ServiceUtils.getTrackEditorService().loadTrack(new AsyncCallback<TrackPart[]>() {
             @Override
@@ -50,7 +58,7 @@ public class TrackViewerPanel extends AbstractTrackPanel {
                 int maxLeft = 0;
                 int percentage = PERCENTAGE_START_TRACK;
                 for (int i = 0; i < trackParts.length; i++) {
-                    TrackPart trackPart = trackParts[i];
+                    final TrackPart trackPart = trackParts[i];
                     if (i + 1 % 6 == 0) {
                         percentage += 10;
                         if (percentage > PERCENTAGE_MAX) {
@@ -60,6 +68,8 @@ public class TrackViewerPanel extends AbstractTrackPanel {
                     DialogBoxUtil.getLoading().setProgressPercentage(percentage, "add trackpart " + (i + 1) + "/" + trackParts.length);
 
                     AbstractImageTrackWidget trackWidget = ModelManager.getInstance().getWidgetOf(trackPart);
+
+
                     AbsoluteTrackPosition trackPosition = trackWidget.getTrackPosition(trackPart.getGridPosition(), getZoomLevel());
                     if (maxTop < trackPosition.getTop()) {
                         maxTop = trackPosition.getTop();
@@ -67,7 +77,14 @@ public class TrackViewerPanel extends AbstractTrackPanel {
                     if (maxLeft < trackPosition.getLeft()) {
                         maxLeft = trackPosition.getLeft();
                     }
-                    addTrackWidget(new ViewerPaletteWidget(trackWidget), trackPosition.getLeft(), trackPosition.getTop());
+                    ViewerPaletteWidget widget = new ViewerPaletteWidget(trackWidget);
+                    widget.addMouseOverHandler(new MouseOverHandler() {
+                        @Override
+                        public void onMouseOver(MouseOverEvent event) {
+                            lblTrackPartConfig.setText(String.valueOf(trackPart.getConfiguration()));
+                        }
+                    });
+                    addTrackWidget(widget, trackPosition.getLeft(), trackPosition.getTop());
 
                     if(trackWidget instanceof ClickActionViewerWidgetHandler) {
                         ((ClickActionViewerWidgetHandler) trackWidget).repaint();
@@ -77,6 +94,7 @@ public class TrackViewerPanel extends AbstractTrackPanel {
                 DialogBoxUtil.getLoading().setProgressPercentage(PERCENTAGE_MAX, "set dimension");
                 setPixelSize(maxLeft + TrackEditorContainer.draggableOffsetWidth, maxTop + TrackEditorContainer.draggableOffsetHeight);
                 DialogBoxUtil.getLoading().hide();
+
             }
         });
     }

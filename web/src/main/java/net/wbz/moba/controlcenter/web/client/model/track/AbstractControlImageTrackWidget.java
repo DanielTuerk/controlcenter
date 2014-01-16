@@ -9,8 +9,6 @@ import net.wbz.moba.controlcenter.web.client.editor.track.ClickActionViewerWidge
 import net.wbz.moba.controlcenter.web.client.editor.track.EditTrackWidgetHandler;
 import net.wbz.moba.controlcenter.web.shared.track.model.Configuration;
 import net.wbz.moba.controlcenter.web.shared.track.model.TrackPart;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * A {@link net.wbz.moba.controlcenter.web.client.model.track.AbstractImageTrackWidget} with click control
@@ -20,8 +18,6 @@ import org.slf4j.LoggerFactory;
  */
 abstract public class AbstractControlImageTrackWidget<T extends TrackPart> extends AbstractImageTrackWidget<T>
         implements EditTrackWidgetHandler, ClickActionViewerWidgetHandler {
-
-    //protected static final Logger LOG = LoggerFactory.getLogger(AbstractControlImageTrackWidget.class);
 
     private final ListBox selectBit = new ListBox();
     private final TextBox txtAdress = new TextBox();
@@ -94,6 +90,8 @@ abstract public class AbstractControlImageTrackWidget<T extends TrackPart> exten
             }
         });
     }
+
+
 
 
     private boolean trackPartState = true;
@@ -171,7 +169,8 @@ abstract public class AbstractControlImageTrackWidget<T extends TrackPart> exten
             trackPartConfigAdress = trackPart.getConfiguration().getAddress();
             trackPartConfigBit = trackPart.getConfiguration().getOutput();
 
-            setAltText(trackPart.getConfiguration().toString());
+            //
+            setTitle(trackPart.getConfiguration().toString());
         }
     }
 

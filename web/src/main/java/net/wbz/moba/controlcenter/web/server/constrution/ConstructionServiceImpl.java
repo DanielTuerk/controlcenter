@@ -36,6 +36,10 @@ public class ConstructionServiceImpl extends RemoteServiceServlet implements Con
         this.databaseFactory = databaseFactory;
     }
 
+    public ObjectContainer getObjectContainerOfCurrentConstruction() {
+        return getDatabase(getCurrentConstruction()).getObjectContainer();
+    }
+
     @Override
     public Construction getCurrentConstruction() {
         return currentConstruction;

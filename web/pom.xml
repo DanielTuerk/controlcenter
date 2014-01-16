@@ -24,23 +24,42 @@
         <webappDirectory>${project.build.directory}/${project.build.finalName}</webappDirectory>
     </properties>
 
+    <repositories>
+        <repository>
+            <id>sonatype</id>
+            <url>http://oss.sonatype.org/content/repositories/snapshots</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+        </repository>
+    </repositories>
+
     <dependencies>
         <dependency>
             <groupId>net.wbz.moba</groupId>
             <artifactId>controlcenter-communication-api</artifactId>
-            <version>0.1-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
 
         <dependency>
             <groupId>net.wbz.moba</groupId>
             <artifactId>controlcenter-communication-manager</artifactId>
-            <version>0.1-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
 
         <dependency>
             <groupId>net.wbz.moba</groupId>
             <artifactId>controlcenter-database</artifactId>
-            <version>0.1-SNAPSHOT</version>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>net.wbz.moba</groupId>
+            <artifactId>controlcenter-utils</artifactId>
+            <version>${project.version}</version>
         </dependency>
 
         <dependency>
@@ -92,7 +111,26 @@
             <version>13.0.1</version>
         </dependency>
 
+        <dependency>
+            <groupId>de.novanic.gwteventservice</groupId>
+            <artifactId>gwteventservice</artifactId>
+            <version>1.2.1</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/lib/gwteventservice-1.2.1.jar</systemPath>
+        </dependency>
 
+        <dependency>
+            <groupId>de.novanic.gwteventservice</groupId>
+            <artifactId>gwteventservice</artifactId>
+            <version>1.2.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.github.gwtbootstrap</groupId>
+            <artifactId>gwt-bootstrap</artifactId>
+            <version>2.2.1.0</version>
+            <scope>provided</scope>
+        </dependency>
 
         <!-- #####################  Server #################### -->
 
@@ -109,7 +147,6 @@
         </dependency>
 
 
-
         <dependency>
             <groupId>org.rxtx</groupId>
             <artifactId>rxtx</artifactId>
@@ -117,12 +154,18 @@
             <scope>runtime</scope>
         </dependency>
 
+        <dependency>
+            <groupId>org.reflections</groupId>
+            <artifactId>reflections</artifactId>
+            <version>0.9.5</version>
+        </dependency>
+
     </dependencies>
 
     <build>
         <!-- Generate compiled stuff in the folder used for developing mode -->
         <outputDirectory>${webappDirectory}/WEB-INF/classes</outputDirectory>
-              <finalName>controlcenter</finalName>
+        <finalName>controlcenter</finalName>
         <plugins>
 
             <!-- GWT Maven Plugin -->
@@ -168,9 +211,6 @@
             </plugin>
 
 
-
-
-
             <plugin>
                 <groupId>org.simplericity.jettyconsole</groupId>
                 <artifactId>jetty-console-maven-plugin</artifactId>
@@ -202,9 +242,9 @@
                         </additionalDependency>
                         <!-- Custom plugin -->
                         <!--<additionalDependency>-->
-                            <!--<groupId>org.simplericity.puffinsecrets</groupId>-->
-                            <!--<artifactId>puffin-secrets-contextpath-plugin</artifactId>-->
-                            <!--<version>1.0-SNAPSHOT</version>-->
+                        <!--<groupId>org.simplericity.puffinsecrets</groupId>-->
+                        <!--<artifactId>puffin-secrets-contextpath-plugin</artifactId>-->
+                        <!--<version>1.0-SNAPSHOT</version>-->
                         <!--</additionalDependency>-->
                     </additionalDependencies>
                     <archive>

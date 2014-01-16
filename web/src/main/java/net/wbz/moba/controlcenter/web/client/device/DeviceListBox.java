@@ -1,8 +1,8 @@
 package net.wbz.moba.controlcenter.web.client.device;
 
+import com.github.gwtbootstrap.client.ui.ListBox;
 import com.google.common.collect.Lists;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.ListBox;
 import net.wbz.moba.controlcenter.web.client.ServiceUtils;
 import net.wbz.moba.controlcenter.web.shared.DeviceInfo;
 
@@ -19,12 +19,12 @@ public class DeviceListBox extends ListBox {
     public DeviceListBox() {
         setVisibleItemCount(1);
 
-       reload();
+        reload();
     }
 
     private DeviceInfo getDevice(String value) {
-        for(DeviceInfo deviceInfo : devices) {
-            if(deviceInfo.getKey().endsWith(value)) {
+        for (DeviceInfo deviceInfo : devices) {
+            if (deviceInfo.getKey().endsWith(value)) {
                 return deviceInfo;
             }
         }

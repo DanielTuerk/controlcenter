@@ -39,7 +39,7 @@ public class ScenarioServiceImpl extends RemoteServiceServlet implements Scenari
     @Override
     public void start(long scenarioId) {
         final Scenario scenario = scenarioManager.getScenarioById(scenarioId);
-        if (scenario.getRunState() != Scenario.RUN_STATE.RUNNING) {
+        if (scenario.getRunState() != Scenario.RUN_STATE.RUNNING) { //TODO multiple ok -> check by modification for conflicts
             FutureTask<Boolean> scenarioRunTask = new FutureTask<Boolean>(new ScenarioRunCallable(scenario, trackViewerService, eventBroadcaster));
             executor.execute(scenarioRunTask);
         } else if (scenario.getRunState() == Scenario.RUN_STATE.PAUSED) {

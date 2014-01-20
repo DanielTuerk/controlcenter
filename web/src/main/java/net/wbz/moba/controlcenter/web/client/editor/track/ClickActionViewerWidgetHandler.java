@@ -8,4 +8,6 @@ public interface ClickActionViewerWidgetHandler {
     public void onClick();
 
     public void repaint();
+
+    public void repaint(boolean state);
 }

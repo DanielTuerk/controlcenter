@@ -7,7 +7,11 @@ import com.google.inject.Singleton;
 import net.wbz.moba.controlcenter.communication.api.Device;
 import net.wbz.moba.controlcenter.communication.api.DeviceAccessException;
 import net.wbz.moba.controlcenter.communication.manager.DeviceManager;
+import net.wbz.moba.controlcenter.web.server.EventBroadcaster;
+import net.wbz.moba.controlcenter.web.shared.scenario.Scenario;
+import net.wbz.moba.controlcenter.web.shared.scenario.ScenarioStateEvent;
 import net.wbz.moba.controlcenter.web.shared.track.model.Configuration;
+import net.wbz.moba.controlcenter.web.shared.viewer.TrackPartStateEvent;
 import net.wbz.moba.controlcenter.web.shared.viewer.TrackViewerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,9 +25,12 @@ public class TrackViewerServiceImpl extends RemoteServiceServlet implements Trac
 
     private final DeviceManager deviceManager;
 
+    private final EventBroadcaster eventBroadcaster;
+
     @Inject
-    public TrackViewerServiceImpl(DeviceManager deviceManager) {
+    public TrackViewerServiceImpl(DeviceManager deviceManager, EventBroadcaster eventBroadcaster) {
         this.deviceManager = deviceManager;
+        this.eventBroadcaster = eventBroadcaster;
     }
 
     @Override
@@ -43,8 +50,10 @@ public class TrackViewerServiceImpl extends RemoteServiceServlet implements Trac
     public boolean getTrackPartState(Configuration configuration) {
         if (configuration.isValid()) {
             try {
-                return deviceManager.getConnectedDevice().getOutputModule((byte) configuration.getAddress())
+                boolean newState = deviceManager.getConnectedDevice().getOutputModule((byte) configuration.getAddress())
                         .getBitState(getBitOfConfiguration(configuration));
+                fireEvents(configuration, newState);
+                return newState;
             } catch (DeviceAccessException e) {
                 String msg = "can't load state of track part";
                 log.error(msg, e);
@@ -75,5 +84,9 @@ public class TrackViewerServiceImpl extends RemoteServiceServlet implements Trac
             default:
                 throw new RuntimeException("invalid output bit " + configuration.getOutput());
         }
+    }
+
+    private void fireEvents(Configuration configuration, boolean newState) {
+        eventBroadcaster.fireEvent(new TrackPartStateEvent(configuration, newState));
     }
 }

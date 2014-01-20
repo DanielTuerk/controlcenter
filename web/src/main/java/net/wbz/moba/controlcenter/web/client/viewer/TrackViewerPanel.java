@@ -2,21 +2,30 @@ package net.wbz.moba.controlcenter.web.client.viewer;
 
 import com.github.gwtbootstrap.client.ui.Label;
 import com.github.gwtbootstrap.client.ui.constants.LabelType;
+import com.google.common.collect.Maps;
 import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.gen2.logging.shared.Log;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Widget;
+import de.novanic.eventservice.client.event.Event;
+import de.novanic.eventservice.client.event.listener.RemoteEventListener;
+import net.wbz.moba.controlcenter.web.client.EventReceiver;
 import net.wbz.moba.controlcenter.web.client.ServiceUtils;
 import net.wbz.moba.controlcenter.web.client.editor.track.AbstractTrackPanel;
 import net.wbz.moba.controlcenter.web.client.editor.track.ClickActionViewerWidgetHandler;
 import net.wbz.moba.controlcenter.web.client.editor.track.TrackEditorContainer;
 import net.wbz.moba.controlcenter.web.client.editor.track.ViewerPaletteWidget;
 import net.wbz.moba.controlcenter.web.client.model.track.AbsoluteTrackPosition;
+import net.wbz.moba.controlcenter.web.client.model.track.AbstractControlImageTrackWidget;
 import net.wbz.moba.controlcenter.web.client.model.track.AbstractImageTrackWidget;
 import net.wbz.moba.controlcenter.web.client.model.track.ModelManager;
 import net.wbz.moba.controlcenter.web.client.util.DialogBoxUtil;
+import net.wbz.moba.controlcenter.web.shared.track.model.Configuration;
 import net.wbz.moba.controlcenter.web.shared.track.model.TrackPart;
+import net.wbz.moba.controlcenter.web.shared.viewer.TrackPartStateEvent;
+
+import java.util.Map;
 
 /**
  * @author Daniel Tuerk (daniel.tuerk@jambit.com)
@@ -28,9 +37,23 @@ public class TrackViewerPanel extends AbstractTrackPanel {
 
     private Label lblTrackPartConfig = new Label();
 
+    private Map<Configuration, AbstractControlImageTrackWidget> trackWidgets = Maps.newConcurrentMap();
+
     @Override
     protected void onLoad() {
         addStyleName("boundary");
+
+         /* Logic for GWTEventService starts here */
+        //add a listener to the SERVER_MESSAGE_DOMAIN
+        EventReceiver.getInstance().addListener(TrackPartStateEvent.class, new RemoteEventListener() {
+            public void apply(Event anEvent) {
+                if (anEvent instanceof TrackPartStateEvent) {
+                    TrackPartStateEvent event = (TrackPartStateEvent) anEvent;
+                    trackWidgets.get(event.getConfiguration()).repaint(event.isOn());
+                }
+            }
+        });
+
 
         DialogBoxUtil.getLoading().setProgressPercentage(0);
         DialogBoxUtil.getLoading().center();
@@ -54,6 +77,8 @@ public class TrackViewerPanel extends AbstractTrackPanel {
 
             @Override
             public void onSuccess(TrackPart[] trackParts) {
+                trackWidgets.clear();
+
                 int maxTop = 0;
                 int maxLeft = 0;
                 int percentage = PERCENTAGE_START_TRACK;
@@ -69,6 +94,9 @@ public class TrackViewerPanel extends AbstractTrackPanel {
 
                     AbstractImageTrackWidget trackWidget = ModelManager.getInstance().getWidgetOf(trackPart);
 
+                    if(trackWidget instanceof AbstractControlImageTrackWidget) {
+                        trackWidgets.put(trackPart.getConfiguration(), (AbstractControlImageTrackWidget) trackWidget);
+                    }
 
                     AbsoluteTrackPosition trackPosition = trackWidget.getTrackPosition(trackPart.getGridPosition(), getZoomLevel());
                     if (maxTop < trackPosition.getTop()) {

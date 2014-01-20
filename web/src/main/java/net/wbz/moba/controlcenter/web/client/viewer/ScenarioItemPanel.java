@@ -1,6 +1,8 @@
 package net.wbz.moba.controlcenter.web.client.viewer;
 
 import com.github.gwtbootstrap.client.ui.Button;
+import com.github.gwtbootstrap.client.ui.Collapse;
+import com.github.gwtbootstrap.client.ui.CollapseTrigger;
 import com.github.gwtbootstrap.client.ui.TextArea;
 import com.github.gwtbootstrap.client.ui.constants.ButtonType;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -18,9 +20,10 @@ import java.util.List;
 /**
  * @author Daniel Tuerk (daniel.tuerk@jambit.com)
  */
-public class ScenarioItemPanel extends DockPanel {
+public class ScenarioItemPanel extends VerticalPanel {
 
     public static final String BREAK_LINE = "&#13;"; //13 - mac?
+    private static final int MIN_LINES_EDIT_TEXTAREA = 5;
     private Scenario scenario;
 
     private final Button btnPlay = new Button("play");
@@ -41,8 +44,29 @@ public class ScenarioItemPanel extends DockPanel {
     protected void onLoad() {
         super.onLoad();
         HorizontalPanel titlePanel = new HorizontalPanel();
-        titlePanel.add(new Label(scenario.getName()));
-        Button btnEditScenario = new Button("edit");
+
+        titlePanel.add(new com.github.gwtbootstrap.client.ui.Label(scenario.getName() + " [" + scenario.getId() + "]"));
+
+        CollapseTrigger collapseCommands = new CollapseTrigger("commandsContainer");
+        ToggleButton btnCollapse = new ToggleButton(">>");
+
+        collapseCommands.add(btnCollapse);
+        final Collapse collapse = new Collapse();
+//        collapse.setId("commandsContainer");
+        collapse.setWidget(contentPanel);
+
+        btnCollapse.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                collapse.toggle();
+            }
+        });
+
+        titlePanel.add(collapseCommands);
+
+        add(titlePanel);
+
+
         btnEditScenario.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
@@ -54,11 +78,11 @@ public class ScenarioItemPanel extends DockPanel {
                 showEditScenario(sb.toString());
             }
         });
-        titlePanel.add(btnEditScenario);
-        add(titlePanel, DockPanel.NORTH);
+
+        add(collapse);
+
 
         HorizontalPanel btnControlGroupPanel = new HorizontalPanel();
-
         btnPlay.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
@@ -76,7 +100,6 @@ public class ScenarioItemPanel extends DockPanel {
             }
         });
         btnControlGroupPanel.add(btnPlay);
-
         btnPause.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
@@ -94,7 +117,6 @@ public class ScenarioItemPanel extends DockPanel {
             }
         });
         btnControlGroupPanel.add(btnPause);
-
         btnStop.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
@@ -112,7 +134,6 @@ public class ScenarioItemPanel extends DockPanel {
             }
         });
         btnControlGroupPanel.add(btnStop);
-
         btnToggleRepeatMode.setValue(scenario.getMode() == Scenario.MODE.REPEAT);
         btnToggleRepeatMode.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
             @Override
@@ -134,20 +155,21 @@ public class ScenarioItemPanel extends DockPanel {
             }
         });
         btnControlGroupPanel.add(btnToggleRepeatMode);
+        add(btnControlGroupPanel);
+
 
         updateScenarioRunState(scenario.getRunState());
 
-        add(btnControlGroupPanel, DockPanel.SOUTH);
-
         initEditPanel();
         showCommandList(scenario.getCommands());
-
-        add(contentPanel, DockPanel.CENTER);
     }
+
+    private Button btnEditScenario = new Button("edit");
 
     private void showCommandList(List<ScenarioCommand> commands) {
         contentPanel.clear();
         VerticalPanel commandListPanel = new VerticalPanel();
+        commandListPanel.add(btnEditScenario);
         for (ScenarioCommand scenarioCommand : commands) {
             commandListPanel.add(new Label(scenarioCommand.toText()));
         }
@@ -157,6 +179,13 @@ public class ScenarioItemPanel extends DockPanel {
     private void initEditPanel() {
         commandListEditPanel = new HorizontalPanel();
         txtCommandList = new TextArea();
+
+        int showLines = MIN_LINES_EDIT_TEXTAREA;
+        if (scenario.getCommands().size() > MIN_LINES_EDIT_TEXTAREA) {
+            showLines = scenario.getCommands().size();
+        }
+        txtCommandList.setVisibleLines(showLines);
+
         commandListEditPanel.add(txtCommandList);
         Button btnSave = new Button("save");
         btnSave.setType(ButtonType.PRIMARY);

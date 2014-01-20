@@ -29,7 +29,6 @@ public class EventReceiver {
     }
 
     public void addListener(Class<? extends Event> eventClazz, RemoteEventListener listener) {
-        RemoteEventServiceFactory.getInstance().getRemoteEventService().addListener(
-                DomainFactory.getDomain(eventClazz.getName()), listener);
+        theRemoteEventService.addListener(DomainFactory.getDomain(eventClazz.getName()), listener);
     }
 }

@@ -5,17 +5,17 @@ import net.wbz.moba.controlcenter.web.shared.track.model.Configuration;
 /**
  * @author Daniel Tuerk (daniel.tuerk@jambit.com)
  */
-public class ScenarioToggleCommand extends ScenarioCommand {
+public class ToggleScenarioCommand extends ScenarioCommand {
 
     private Configuration configuration;
     private boolean state;
 
-    public ScenarioToggleCommand(Configuration configuration, boolean state) {
+    public ToggleScenarioCommand(Configuration configuration, boolean state) {
         this.configuration = configuration;
         this.state = state;
     }
 
-    public ScenarioToggleCommand() {
+    public ToggleScenarioCommand() {
     }
 
     public Configuration getConfiguration() {

@@ -8,6 +8,7 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.gen2.logging.shared.Log;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import de.novanic.eventservice.client.event.Event;
 import de.novanic.eventservice.client.event.domain.Domain;
@@ -73,7 +74,7 @@ public class ScenarioViewerPanel extends VerticalPanel {
 
         add(inputCreate);
 
-        add(scenarioItemsContainerPanel);
+        add(new ScrollPanel(scenarioItemsContainerPanel));
         loadScenarios();
     }
 

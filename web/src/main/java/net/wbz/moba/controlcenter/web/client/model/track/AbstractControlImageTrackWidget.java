@@ -25,6 +25,8 @@ abstract public class AbstractControlImageTrackWidget<T extends TrackPart> exten
     private int trackPartConfigAdress = -1;
     private int trackPartConfigBit = -1;
 
+    private boolean trackPartState = true;
+
     public AbstractControlImageTrackWidget() {
         // repaint the widget by change of the device connection state
         BusConnection.getInstance().addListener(new BusConnectionListener() {
@@ -42,13 +44,21 @@ abstract public class AbstractControlImageTrackWidget<T extends TrackPart> exten
     }
 
     @Override
+    public void repaint(boolean state) {
+        if (trackPartState != state) {
+            trackPartState = state;
+            changeState();
+        }
+    }
+
+    @Override
     public void repaint() {
         Configuration widgetConfig = getStoredWidgetConfiguration();
         if (widgetConfig.isValid()) {
             ServiceUtils.getBusService().isBusConnected(new AsyncCallback<Boolean>() {
                 @Override
                 public void onFailure(Throwable caught) {
-                   //LOG.error("can't request bus state",caught);
+                    //LOG.error("can't request bus state",caught);
                 }
 
                 @Override
@@ -58,7 +68,7 @@ abstract public class AbstractControlImageTrackWidget<T extends TrackPart> exten
 
                             @Override
                             public void onFailure(Throwable caught) {
-                             //LOG.error("can't load track part state",caught);
+                                //LOG.error("can't load track part state",caught);
                             }
 
                             @Override
@@ -90,11 +100,6 @@ abstract public class AbstractControlImageTrackWidget<T extends TrackPart> exten
             }
         });
     }
-
-
-
-
-    private boolean trackPartState = true;
 
     private void toggleState() {
         trackPartState = !trackPartState;

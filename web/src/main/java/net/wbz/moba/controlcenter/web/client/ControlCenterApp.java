@@ -80,7 +80,7 @@ public class ControlCenterApp implements EntryPoint {
         initAppMenu();
 
         DockLayoutPanel dockLayoutPanel = new DockLayoutPanel(Style.Unit.PX);
-        dockLayoutPanel.addNorth(appMenu, 30);
+        dockLayoutPanel.addNorth(appMenu, 43);
 
         dockLayoutPanel.addSouth(new StatePanel(), 50);
 

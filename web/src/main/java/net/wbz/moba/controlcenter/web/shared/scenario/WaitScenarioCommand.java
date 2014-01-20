@@ -3,15 +3,15 @@ package net.wbz.moba.controlcenter.web.shared.scenario;
 /**
  * @author Daniel Tuerk (daniel.tuerk@jambit.com)
  */
-public class ScenarioWaitCommand extends ScenarioCommand {
+public class WaitScenarioCommand extends ScenarioCommand {
 
     private int seconds;
 
-    public ScenarioWaitCommand(int seconds) {
+    public WaitScenarioCommand(int seconds) {
         this.seconds = seconds;
     }
 
-    public ScenarioWaitCommand() {
+    public WaitScenarioCommand() {
         seconds=0;
     }
 

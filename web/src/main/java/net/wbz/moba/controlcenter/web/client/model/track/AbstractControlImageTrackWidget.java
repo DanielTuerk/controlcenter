@@ -95,7 +95,7 @@ abstract public class AbstractControlImageTrackWidget<T extends TrackPart> exten
 
             @Override
             public void onSuccess(Void result) {
-                toggleState();
+                //toggleState();
 
             }
         });

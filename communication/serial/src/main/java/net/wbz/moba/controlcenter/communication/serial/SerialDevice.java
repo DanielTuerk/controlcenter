@@ -23,20 +23,43 @@ import java.util.Map;
  */
 public class SerialDevice implements Device {
     private static final Logger log = LoggerFactory.getLogger(SerialDevice.class);
+    private static final int DEFAULT_BAUD_RATE_FCC = 230400;
+    private static final int DEFAULT_BAUD_RATE_STAERZ_INTERFACE = 19200;
 
     private OutputStream outputStream = null;
     private InputStream inputStream = null;
 
     private Map<Byte, OutputModule> modules = new HashMap<Byte, OutputModule>();
+    private Map<Byte, OutputModule> trainModules = new HashMap<Byte, OutputModule>();
     private Map<Byte, InputModule> inputModules = new HashMap<Byte, InputModule>();
 
     private SerialPort serialPort = null;
 
     private final String deviceId;
+    private final int baudRate;
 
     public SerialDevice(String deviceId) {
+        this(deviceId, DEFAULT_BAUD_RATE_FCC);
+    }
 
+    public SerialDevice(String deviceId, int baudRate) {
         this.deviceId = deviceId;
+        this.baudRate = baudRate;
+    }
+
+    @Override
+    public boolean getRailVoltage() throws IOException {
+        //TODO: FIXME doesn't work -> in FCC action at 109 bit 8 (but also bit 6 is set)
+        outputStream.write(new byte[]{(byte)0, (byte)127, (byte)1});
+        outputStream.flush();
+        int result =inputStream.read();
+        return result != 0;
+    }
+
+    @Override
+    public void setRailVoltage(boolean state) throws IOException {
+        outputStream.write(new byte[]{0, (byte) 255, (byte) (state ? 1 : 0)});
+        outputStream.flush();
     }
 
     @Override
@@ -47,18 +70,17 @@ public class SerialDevice implements Device {
             Enumeration portList = CommPortIdentifier.getPortIdentifiers();
             while (portList.hasMoreElements()) {
                 CommPortIdentifier portId = (CommPortIdentifier) portList.nextElement();
-                log.info("port id: " + portId.getName());
                 try {
                     serialPort = (SerialPort) portId.open("net.wbz.moba.controlcenter", 2000);
-
                     outputStream = serialPort.getOutputStream();
                     inputStream = serialPort.getInputStream();
-                    serialPort.setSerialPortParams(19200,
+                    serialPort.setSerialPortParams(baudRate,
                             SerialPort.DATABITS_8,
                             SerialPort.STOPBITS_1,
                             SerialPort.PARITY_NONE);
                     log.info("connected to COM");
 
+                    return;
                 } catch (PortInUseException e) {
                     log.error("COM1 in use", e);
                 } catch (UnsupportedCommOperationException e) {
@@ -72,21 +94,9 @@ public class SerialDevice implements Device {
         }
     }
 
-    public static void main(String[] args) {
-        SerialDevice com1 = new SerialDevice("/dev/tty.usbserial-FTG3FYGN");
-        com1.connect();
-
-        try {
-            com1.getInputModule((byte) 50);
-        } catch (DeviceAccessException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        }
-
-        com1.disconnect();
-    }
-
     @Override
     public void disconnect() {
+        log.info("disconnecting COM device");
         if (serialPort != null) {
             try {
                 serialPort.getOutputStream().close();
@@ -102,6 +112,7 @@ public class SerialDevice implements Device {
             inputStream = null;
             serialPort.removeEventListener();
             serialPort.close();
+            log.info("COM device disconnected");
         }
     }
 
@@ -116,8 +127,8 @@ public class SerialDevice implements Device {
             if (outputStream == null || inputStream == null) {
                 throw new DeviceAccessException("COM1 device not connected");
             }
-            OutputModule module = new FunctionDecoderModule(address);
-            module.initialize(outputStream,inputStream);
+            OutputModule module = new FunctionDecoderModule((byte) 1, address);
+            module.initialize(outputStream, inputStream);
             modules.put(address, module);
         }
         return modules.get(address);
@@ -135,6 +146,19 @@ public class SerialDevice implements Device {
             inputModules.put(address, module);
         }
         return inputModules.get(address);
+    }
+
+    @Override
+    public synchronized OutputModule getTrainModule(byte address) throws DeviceAccessException {
+        if (!trainModules.containsKey(address)) {
+            if (outputStream == null || inputStream == null) {
+                throw new DeviceAccessException("serial device not connected");
+            }
+            OutputModule module = new FunctionDecoderModule((byte) 0, address);
+            module.initialize(outputStream, inputStream);
+            trainModules.put(address, module);
+        }
+        return trainModules.get(address);
     }
 
 }

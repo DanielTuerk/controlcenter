@@ -22,4 +22,8 @@ public interface BusService extends RemoteService {
     public void deleteDevice(DeviceInfo deviceInfo);
 
     public ArrayList<DeviceInfo> getDevices();
+
+    public boolean getRailVoltage();
+
+    public void toggleRailVoltage();
 }

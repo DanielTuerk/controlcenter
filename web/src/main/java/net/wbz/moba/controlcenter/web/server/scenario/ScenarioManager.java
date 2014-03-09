@@ -79,8 +79,7 @@ public class ScenarioManager {
         scenarios.clear();
 
         ObjectContainer database = getStorageObjectContainer();
-        Query query = database.query();
-        ObjectSet<Scenario> result = query.execute();
+        ObjectSet<Scenario> result = database.query(Scenario.class);
         while (result.hasNext()) {
             scenarios.add(result.next());
         }

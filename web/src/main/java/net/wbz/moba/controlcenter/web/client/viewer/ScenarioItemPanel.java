@@ -1,8 +1,6 @@
 package net.wbz.moba.controlcenter.web.client.viewer;
 
 import com.github.gwtbootstrap.client.ui.Button;
-import com.github.gwtbootstrap.client.ui.Collapse;
-import com.github.gwtbootstrap.client.ui.CollapseTrigger;
 import com.github.gwtbootstrap.client.ui.TextArea;
 import com.github.gwtbootstrap.client.ui.constants.ButtonType;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -20,58 +18,38 @@ import java.util.List;
 /**
  * @author Daniel Tuerk (daniel.tuerk@jambit.com)
  */
-public class ScenarioItemPanel extends VerticalPanel {
+public class ScenarioItemPanel extends AbstractItemPanel<Scenario> {
 
     public static final String BREAK_LINE = "&#13;"; //13 - mac?
     private static final int MIN_LINES_EDIT_TEXTAREA = 5;
-    private Scenario scenario;
 
     private final Button btnPlay = new Button("play");
     private final Button btnStop = new Button("stop");
     private final Button btnPause = new Button("pause");
     private final ToggleButton btnToggleRepeatMode = new ToggleButton("repeat");
-    private final Panel contentPanel = new SimplePanel();
 
     //edit
     private Panel commandListEditPanel;
     private TextArea txtCommandList;
 
     public ScenarioItemPanel(Scenario scenario) {
-        this.scenario = scenario;
+        super(scenario);
+    }
+
+    @Override
+    protected String getItemTitle() {
+        return getModel().getName() + " [" + getModel().getId() + "]";
     }
 
     @Override
     protected void onLoad() {
         super.onLoad();
-        HorizontalPanel titlePanel = new HorizontalPanel();
-
-        titlePanel.add(new com.github.gwtbootstrap.client.ui.Label(scenario.getName() + " [" + scenario.getId() + "]"));
-
-        CollapseTrigger collapseCommands = new CollapseTrigger("commandsContainer");
-        ToggleButton btnCollapse = new ToggleButton(">>");
-
-        collapseCommands.add(btnCollapse);
-        final Collapse collapse = new Collapse();
-//        collapse.setId("commandsContainer");
-        collapse.setWidget(contentPanel);
-
-        btnCollapse.addClickHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-                collapse.toggle();
-            }
-        });
-
-        titlePanel.add(collapseCommands);
-
-        add(titlePanel);
-
 
         btnEditScenario.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
                 StringBuilder sb = new StringBuilder();
-                for (ScenarioCommand command : scenario.getCommands()) {
+                for (ScenarioCommand command : getModel().getCommands()) {
                     sb.append(command.toText());
                     sb.append(BREAK_LINE);
                 }
@@ -79,14 +57,12 @@ public class ScenarioItemPanel extends VerticalPanel {
             }
         });
 
-        add(collapse);
-
 
         HorizontalPanel btnControlGroupPanel = new HorizontalPanel();
         btnPlay.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                ServiceUtils.getScenarioService().start(scenario.getId(), new AsyncCallback<Void>() {
+                ServiceUtils.getScenarioService().start(getModel().getId(), new AsyncCallback<Void>() {
                     @Override
                     public void onFailure(Throwable caught) {
                         //TODO
@@ -103,7 +79,7 @@ public class ScenarioItemPanel extends VerticalPanel {
         btnPause.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                ServiceUtils.getScenarioService().pause(scenario.getId(), new AsyncCallback<Void>() {
+                ServiceUtils.getScenarioService().pause(getModel().getId(), new AsyncCallback<Void>() {
                     @Override
                     public void onFailure(Throwable caught) {
                         //TODO
@@ -120,7 +96,7 @@ public class ScenarioItemPanel extends VerticalPanel {
         btnStop.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                ServiceUtils.getScenarioService().stop(scenario.getId(), new AsyncCallback<Void>() {
+                ServiceUtils.getScenarioService().stop(getModel().getId(), new AsyncCallback<Void>() {
                     @Override
                     public void onFailure(Throwable caught) {
                         //TODO
@@ -134,11 +110,11 @@ public class ScenarioItemPanel extends VerticalPanel {
             }
         });
         btnControlGroupPanel.add(btnStop);
-        btnToggleRepeatMode.setValue(scenario.getMode() == Scenario.MODE.REPEAT);
+        btnToggleRepeatMode.setValue(getModel().getMode() == Scenario.MODE.REPEAT);
         btnToggleRepeatMode.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
             @Override
             public void onValueChange(ValueChangeEvent<Boolean> event) {
-                ServiceUtils.getScenarioEditorService().updateScenarioRunMode(scenario.getId(),
+                ServiceUtils.getScenarioEditorService().updateScenarioRunMode(getModel().getId(),
                         event.getValue() ? Scenario.MODE.REPEAT : Scenario.MODE.SINGLE,
                         new AsyncCallback<Void>() {
                             @Override
@@ -158,22 +134,22 @@ public class ScenarioItemPanel extends VerticalPanel {
         add(btnControlGroupPanel);
 
 
-        updateScenarioRunState(scenario.getRunState());
+        updateScenarioRunState(getModel().getRunState());
 
         initEditPanel();
-        showCommandList(scenario.getCommands());
+        showCommandList(getModel().getCommands());
     }
 
     private Button btnEditScenario = new Button("edit");
 
     private void showCommandList(List<ScenarioCommand> commands) {
-        contentPanel.clear();
+        getCollapseContentPanel().clear();
         VerticalPanel commandListPanel = new VerticalPanel();
         commandListPanel.add(btnEditScenario);
         for (ScenarioCommand scenarioCommand : commands) {
             commandListPanel.add(new Label(scenarioCommand.toText()));
         }
-        contentPanel.add(commandListPanel);
+        getCollapseContentPanel().add(commandListPanel);
     }
 
     private void initEditPanel() {
@@ -181,8 +157,8 @@ public class ScenarioItemPanel extends VerticalPanel {
         txtCommandList = new TextArea();
 
         int showLines = MIN_LINES_EDIT_TEXTAREA;
-        if (scenario.getCommands().size() > MIN_LINES_EDIT_TEXTAREA) {
-            showLines = scenario.getCommands().size();
+        if (getModel().getCommands().size() > MIN_LINES_EDIT_TEXTAREA) {
+            showLines = getModel().getCommands().size();
         }
         txtCommandList.setVisibleLines(showLines);
 
@@ -193,7 +169,7 @@ public class ScenarioItemPanel extends VerticalPanel {
             @Override
             public void onClick(ClickEvent event) {
                 String[] commands = txtCommandList.getText().split("\n");
-                ServiceUtils.getScenarioEditorService().updateScenarioCommands(scenario.getId(), commands,
+                ServiceUtils.getScenarioEditorService().updateScenarioCommands(getModel().getId(), commands,
                         new AsyncCallback<Scenario>() {
                             @Override
                             public void onFailure(Throwable caught) {
@@ -202,7 +178,7 @@ public class ScenarioItemPanel extends VerticalPanel {
 
                             @Override
                             public void onSuccess(Scenario result) {
-                                scenario = result;
+                                setModel(result);
                                 showCommandList(result.getCommands());
                             }
                         }
@@ -214,7 +190,7 @@ public class ScenarioItemPanel extends VerticalPanel {
         btnCancel.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                showCommandList(scenario.getCommands());
+                showCommandList(getModel().getCommands());
             }
         });
         btnCancel.setType(ButtonType.INVERSE);
@@ -222,13 +198,9 @@ public class ScenarioItemPanel extends VerticalPanel {
     }
 
     private void showEditScenario(String commandsText) {
-        contentPanel.clear();
+        getCollapseContentPanel().clear();
         txtCommandList.setValue(new HTML(commandsText).getHTML());
-        contentPanel.add(commandListEditPanel);
-    }
-
-    public Scenario getScenario() {
-        return scenario;
+        getCollapseContentPanel().add(commandListEditPanel);
     }
 
     public void updateScenarioRunState(Scenario.RUN_STATE runState) {

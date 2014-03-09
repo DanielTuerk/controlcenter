@@ -28,6 +28,8 @@ import net.wbz.moba.controlcenter.web.shared.viewer.TrackPartStateEvent;
 import java.util.Map;
 
 /**
+ * TODO: each widget request his state -> change to list or events?
+ *
  * @author Daniel Tuerk (daniel.tuerk@jambit.com)
  */
 public class TrackViewerPanel extends AbstractTrackPanel {
@@ -49,7 +51,12 @@ public class TrackViewerPanel extends AbstractTrackPanel {
             public void apply(Event anEvent) {
                 if (anEvent instanceof TrackPartStateEvent) {
                     TrackPartStateEvent event = (TrackPartStateEvent) anEvent;
-                    trackWidgets.get(event.getConfiguration()).repaint(event.isOn());
+                    if (trackWidgets.containsKey(event.getConfiguration())) {
+                        trackWidgets.get(event.getConfiguration()).repaint(event.isOn());
+                    } else {
+                        net.wbz.moba.controlcenter.web.client.util.Log.console("can't find widget of " + event.getConfiguration().toString());
+                    }
+
                 }
             }
         });
@@ -94,7 +101,7 @@ public class TrackViewerPanel extends AbstractTrackPanel {
 
                     AbstractImageTrackWidget trackWidget = ModelManager.getInstance().getWidgetOf(trackPart);
 
-                    if(trackWidget instanceof AbstractControlImageTrackWidget) {
+                    if (trackWidget instanceof AbstractControlImageTrackWidget) {
                         trackWidgets.put(trackPart.getConfiguration(), (AbstractControlImageTrackWidget) trackWidget);
                     }
 
@@ -114,7 +121,7 @@ public class TrackViewerPanel extends AbstractTrackPanel {
                     });
                     addTrackWidget(widget, trackPosition.getLeft(), trackPosition.getTop());
 
-                    if(trackWidget instanceof ClickActionViewerWidgetHandler) {
+                    if (trackWidget instanceof ClickActionViewerWidgetHandler) {
                         ((ClickActionViewerWidgetHandler) trackWidget).repaint();
                     }
 

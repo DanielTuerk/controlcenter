@@ -38,4 +38,24 @@ public class Configuration implements Serializable {
                 ", output=" + output +
                 '}';
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Configuration that = (Configuration) o;
+
+        if (address != that.address) return false;
+        if (output != that.output) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = address;
+        result = 31 * result + output;
+        return result;
+    }
 }

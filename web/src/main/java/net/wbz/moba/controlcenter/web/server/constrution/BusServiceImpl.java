@@ -9,6 +9,7 @@ import com.google.inject.Singleton;
 import com.google.inject.name.Named;
 import com.sun.istack.internal.Nullable;
 import net.wbz.moba.controlcenter.communication.api.Device;
+import net.wbz.moba.controlcenter.communication.api.DeviceAccessException;
 import net.wbz.moba.controlcenter.communication.serial.SerialDevice;
 import net.wbz.moba.controlcenter.communication.manager.DeviceManager;
 import net.wbz.moba.controlcenter.db.Database;
@@ -93,6 +94,30 @@ public class BusServiceImpl extends RemoteServiceServlet implements BusService {
                 return deviceInfo;
             }
         }));
+    }
+
+    @Override
+    public boolean getRailVoltage() {
+        if(isBusConnected()) {
+
+            try {
+                return deviceManager.getConnectedDevice().getRailVoltage();
+            } catch (Exception e) {
+                LOGGER.error("can't read rail voltage", e);
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public void toggleRailVoltage() {
+        if(isBusConnected()) {
+            try {
+                deviceManager.getConnectedDevice().setRailVoltage(!getRailVoltage());
+            } catch (Exception e) {
+                LOGGER.error("can't toggle rail voltage", e);
+            }
+        }
     }
 
     @Override

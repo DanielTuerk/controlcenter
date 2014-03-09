@@ -1,6 +1,7 @@
 package net.wbz.moba.controlcenter.web.shared.scenario;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
+import net.wbz.moba.controlcenter.web.shared.AbstractIdModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,11 +9,9 @@ import java.util.List;
 /**
  * @author Daniel Tuerk (daniel.tuerk@jambit.com)
  */
-public class Scenario implements IsSerializable {
+public class Scenario extends AbstractIdModel {
 
     private String name;
-
-    private long id=-1L;
 
     /**
      * @gwt.typeArgs <ScenarioCommand>
@@ -34,13 +33,6 @@ public class Scenario implements IsSerializable {
         this.name = name;
     }
 
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
 
     public MODE getMode() {
         return mode;

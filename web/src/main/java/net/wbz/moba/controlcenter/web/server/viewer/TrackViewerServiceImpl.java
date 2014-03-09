@@ -6,6 +6,7 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import net.wbz.moba.controlcenter.communication.api.Device;
 import net.wbz.moba.controlcenter.communication.api.DeviceAccessException;
+import net.wbz.moba.controlcenter.communication.api.OutputModule;
 import net.wbz.moba.controlcenter.communication.manager.DeviceManager;
 import net.wbz.moba.controlcenter.web.server.EventBroadcaster;
 import net.wbz.moba.controlcenter.web.shared.scenario.Scenario;
@@ -38,7 +39,8 @@ public class TrackViewerServiceImpl extends RemoteServiceServlet implements Trac
         if (configuration.isValid()) {
             try {
                 deviceManager.getConnectedDevice().getOutputModule((byte) configuration.getAddress())
-                        .setBit(getBitOfConfiguration(configuration), state);
+                        .setBit(getBitOfConfiguration(configuration), state).sendData();
+                fireEvents(configuration,state);
             } catch (DeviceAccessException e) {
                 log.error("can't toggle track part", e);
                 throw new RpcTokenException("can't toggle track part");
@@ -50,10 +52,8 @@ public class TrackViewerServiceImpl extends RemoteServiceServlet implements Trac
     public boolean getTrackPartState(Configuration configuration) {
         if (configuration.isValid()) {
             try {
-                boolean newState = deviceManager.getConnectedDevice().getOutputModule((byte) configuration.getAddress())
+                return deviceManager.getConnectedDevice().getOutputModule((byte) configuration.getAddress())
                         .getBitState(getBitOfConfiguration(configuration));
-                fireEvents(configuration, newState);
-                return newState;
             } catch (DeviceAccessException e) {
                 String msg = "can't load state of track part";
                 log.error(msg, e);

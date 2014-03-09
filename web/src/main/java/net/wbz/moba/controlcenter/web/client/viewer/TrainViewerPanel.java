@@ -7,30 +7,33 @@ import com.google.gwt.gen2.logging.shared.Log;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import net.wbz.moba.controlcenter.web.client.ServiceUtils;
 import net.wbz.moba.controlcenter.web.shared.scenario.Scenario;
-import net.wbz.moba.controlcenter.web.shared.scenario.ScenarioStateEvent;
+import net.wbz.moba.controlcenter.web.shared.train.Train;
+import net.wbz.moba.controlcenter.web.shared.train.TrainStateEvent;
 
 import java.util.List;
 
 /**
- * @author Daniel Tuerk (daniel.tuerk@jambit.com)
+ * TODO: reload trains for configuration changes
+ *
+ * Created by Daniel on 08.03.14.
  */
-public class ScenarioViewerPanel extends AbstractItemViewerPanel<ScenarioItemPanel, ScenarioStateEvent> {
+public class TrainViewerPanel extends AbstractItemViewerPanel<TrainItemPanel, TrainStateEvent> {
 
-    public ScenarioViewerPanel() {
-        super(ScenarioStateEvent.class);
+    public TrainViewerPanel() {
+        super(TrainStateEvent.class);
     }
 
     @Override
-    protected void eventCallback(ScenarioItemPanel eventItem, ScenarioStateEvent scenarioStateEvent) {
-        eventItem.updateScenarioRunState(scenarioStateEvent.getState());
+    protected void eventCallback(TrainItemPanel eventItem, TrainStateEvent trainStateEvent) {
+
     }
 
     @Override
-    protected ClickHandler getBtnNewClickHandler(final TextBox textBox) {
+    protected ClickHandler getBtnNewClickHandler(final TextBox name) {
         return new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                ServiceUtils.getScenarioEditorService().createScenario(textBox.getText(), new AsyncCallback<Void>() {
+                ServiceUtils.getTrainEditorService().createTrain(name.getText(), new AsyncCallback<Void>() {
                     @Override
                     public void onFailure(Throwable caught) {
                         Log.severe("", "", caught);     //TODO
@@ -38,7 +41,7 @@ public class ScenarioViewerPanel extends AbstractItemViewerPanel<ScenarioItemPan
 
                     @Override
                     public void onSuccess(Void result) {
-                        textBox.setText("");
+                        name.setText("");
                         loadData();
                     }
                 });
@@ -48,17 +51,16 @@ public class ScenarioViewerPanel extends AbstractItemViewerPanel<ScenarioItemPan
 
     @Override
     protected void loadItems() {
-        ServiceUtils.getScenarioEditorService().getScenarios(new AsyncCallback<List<Scenario>>() {
+        ServiceUtils.getTrainEditorService().getTrains(new AsyncCallback<List<Train>>() {
             @Override
             public void onFailure(Throwable caught) {
                 Log.severe("", "", caught);     //TODO
             }
 
             @Override
-            public void onSuccess(List<Scenario> result) {
-                for (Scenario scenario : result) {
-                    ScenarioItemPanel scenarioItemPanel = new ScenarioItemPanel(scenario);
-                    addItemPanel(scenarioItemPanel);
+            public void onSuccess(List<Train> result) {
+                for (Train train : result) {
+                    addItemPanel(new TrainItemPanel(train));
                 }
             }
         });

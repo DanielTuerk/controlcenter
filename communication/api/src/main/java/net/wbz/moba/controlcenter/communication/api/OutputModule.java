@@ -10,7 +10,9 @@ public interface OutputModule {
 
     public void initialize(OutputStream outputStream, InputStream inputStream);
 
-    public void setBit(Device.BIT bit, boolean state);
+    public OutputModule setBit(Device.BIT bit, boolean state);
 
     public boolean getBitState(Device.BIT bit);
+
+    public void sendData();
 }

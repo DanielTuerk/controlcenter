@@ -28,10 +28,9 @@ public class ControlCenterApp implements EntryPoint {
     private WelcomePage welcomePageContainer;
 
     public ControlCenterApp() {
-        // signal before straigt
         ModelManager.getInstance().registerModel(new SignalHorizontalWidget());
         ModelManager.getInstance().registerModel(new SignalVerticalWidget());
-        // straigt after signal because signal extends straight
+        // straight after signal because signal extends straight
         ModelManager.getInstance().registerModel(new StraightVerticalWidget());
         ModelManager.getInstance().registerModel(new StraightHorizontalWidget());
         ModelManager.getInstance().registerModel(new CurveTopRightWidget());
@@ -86,7 +85,6 @@ public class ControlCenterApp implements EntryPoint {
 
         // load the track viewer
         contentContainerPanel = new SimplePanel();
-//        contentContainerPanel.add(trackViewerContainer);
         contentContainerPanel.setStyleName("contentContainerPanel");
         dockLayoutPanel.add(contentContainerPanel);
 
@@ -95,7 +93,6 @@ public class ControlCenterApp implements EntryPoint {
         RootLayoutPanel.get().add(dockLayoutPanel);
     }
 
-
     private void initAppMenu() {
         appMenu.setShowEditorCommand(new Command() {
             @Override
@@ -103,14 +100,12 @@ public class ControlCenterApp implements EntryPoint {
                 showTrackEditor();
             }
         });
-
         appMenu.setShowViewerCommand(new Command() {
             @Override
             public void execute() {
                 showTrackViewer();
             }
         });
-
     }
 
     public void showTrackEditor() {
@@ -121,6 +116,5 @@ public class ControlCenterApp implements EntryPoint {
     public void showTrackViewer() {
         contentContainerPanel.remove(trackEditorContainer);
         contentContainerPanel.add(trackViewerContainer);
-
     }
 }

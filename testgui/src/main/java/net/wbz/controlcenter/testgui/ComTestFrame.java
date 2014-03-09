@@ -109,7 +109,7 @@ public class ComTestFrame extends JFrame {
 
     private void send(Device.BIT bit, boolean state) {
         try {
-            device.getOutputModule((byte) Integer.parseInt(txtAdress.getText())).setBit(bit, state);
+            device.getOutputModule((byte) Integer.parseInt(txtAdress.getText())).setBit(bit, state).sendData();
         } catch (DeviceAccessException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }

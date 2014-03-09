@@ -14,6 +14,8 @@ import net.wbz.moba.controlcenter.web.server.constrution.ConstructionServiceImpl
 import net.wbz.moba.controlcenter.web.server.editor.TrackEditorServiceImpl;
 import net.wbz.moba.controlcenter.web.server.scenario.ScenarioEditorServiceImpl;
 import net.wbz.moba.controlcenter.web.server.scenario.ScenarioServiceImpl;
+import net.wbz.moba.controlcenter.web.server.train.TrainEditorServiceImpl;
+import net.wbz.moba.controlcenter.web.server.train.TrainServiceImpl;
 import net.wbz.moba.controlcenter.web.server.viewer.TrackViewerServiceImpl;
 
 import java.io.File;
@@ -35,6 +37,8 @@ public class MyGuiceServletConfig extends GuiceServletContextListener {
                 serve("/Test/trackeditor").with(TrackEditorServiceImpl.class);
                 serve("/Test/scenarioservice").with(ScenarioServiceImpl.class);
                 serve("/Test/scenarioEditor").with(ScenarioEditorServiceImpl.class);
+                serve("/Test/trainEditor").with(TrainEditorServiceImpl.class);
+                serve("/Test/trainService").with(TrainServiceImpl.class);
             }
 
             @Provides
@@ -62,6 +66,13 @@ public class MyGuiceServletConfig extends GuiceServletContextListener {
             @Named("scenario")
             public DatabaseFactory scenarioDatabaseFactory() {
                 return new DatabaseFactory(getHomeSubDir("scenario"));
+            }
+
+            @Provides
+            @Singleton
+            @Named("trains")
+            public DatabaseFactory trainsDatabaseFactory() {
+                return new DatabaseFactory(getHomeSubDir("trains"));
             }
 
             @Provides

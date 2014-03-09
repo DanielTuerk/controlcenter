@@ -19,15 +19,21 @@ public class FunctionDecoderModule implements OutputModule {
 
     private OutputStream outputStream = null;
     private InputStream inputStream = null;
+    private final byte sxBus;
     private final byte address;
     private final boolean[] bits = {false, false, false, false, false, false, false, false};
 
     public FunctionDecoderModule(byte address) {
+        this((byte) 1, address);
+    }
+
+    public FunctionDecoderModule(byte sxBus, byte address) {
+        this.sxBus = sxBus;
         this.address = address;
     }
 
     @Override
-    public void setBit(Device.BIT bit, boolean state) {
+    public OutputModule setBit(Device.BIT bit, boolean state) {
         switch (bit) {
             case BIT_1:
                 bits[0] = state;
@@ -54,7 +60,7 @@ public class FunctionDecoderModule implements OutputModule {
                 bits[7] = state;
                 break;
         }
-        sendData();
+        return this;
     }
 
     private int getValue() {
@@ -67,18 +73,19 @@ public class FunctionDecoderModule implements OutputModule {
         return data;
     }
 
-    private void sendData() {
+    @Override
+    public void sendData() {
         send((byte) getValue());
     }
 
     private void send(byte data) {
         try {
             // to write data to the address you need BIT 8 at '1' (+128)
-            outputStream.write(new byte[]{(byte) ((int) address + 128), data});
+            outputStream.write(new byte[]{sxBus, (byte) ((int) address + 128), data});
             outputStream.flush();
-            LOG.debug("write bit of " + address + ": " + data);
+            LOG.debug("write bit of " + this.address + ": " + data);
         } catch (IOException e) {
-            LOG.error(String.format("can't send data(%sd) to module %d", address, data));
+            LOG.error(String.format("can't send data(%sd) to module %d", address, data), e);
         }
     }
 
@@ -108,7 +115,7 @@ public class FunctionDecoderModule implements OutputModule {
     private void read() {
         try {
             LOG.debug(Thread.currentThread().getId() + " - " + this.toString() + " - start read of " + address);
-            outputStream.write(new byte[]{address, 0});
+            outputStream.write(new byte[]{sxBus, address, 0});
             outputStream.flush();
             int result = inputStream.read();
             LOG.debug(Thread.currentThread().getId() + " - " + this.toString() + " - bit of " + address + ": " + result);

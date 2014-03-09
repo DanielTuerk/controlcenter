@@ -1,25 +1,21 @@
 package net.wbz.moba.controlcenter.web.shared.scenario;
 
 import de.novanic.eventservice.client.event.Event;
+import net.wbz.moba.controlcenter.web.shared.AbstractStateEvent;
 
 /**
  * @author Daniel Tuerk (daniel.tuerk@jambit.com)
  */
-public class ScenarioStateEvent implements Event {
+public class ScenarioStateEvent extends AbstractStateEvent {
 
-    public long scenarioId;
     public Scenario.RUN_STATE state;
 
     public ScenarioStateEvent() {
     }
 
     public ScenarioStateEvent(long scenarioId, Scenario.RUN_STATE state) {
-        this.scenarioId = scenarioId;
+        super(scenarioId);
         this.state = state;
-    }
-
-    public long getScenarioId() {
-        return scenarioId;
     }
 
     public Scenario.RUN_STATE getState() {

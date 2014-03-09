@@ -21,6 +21,8 @@
 
     <inherits name="com.github.gwtbootstrap.Bootstrap" />
 
+    <inherits name="com.kiouri.sliderbar.SliderBarMVP" />
+
     <set-property name="bootstrap.responsiveDesign" value="true"/>
 
 

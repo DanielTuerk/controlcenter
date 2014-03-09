@@ -51,7 +51,6 @@ h1 {
     background-color: #a9a9a9;
 }
 
-
 .boundary {
     background-color: #d3d3d3;
     width: 100%;
@@ -60,7 +59,7 @@ h1 {
 
 .contentContainerPanel {
     width: 100%;
-height: 100%;
+    height: 100%;
 }
 
 .loadingBar {
@@ -69,17 +68,38 @@ height: 100%;
     background-color: #90ee90;
 }
 
-.statePanel{
-    background-image: url("img/bg.png");
+.statePanel {
+
+    min-height: 40px;
+    padding-top: 10px;
+    padding-left: 20px;
+    padding-right: 20px;
+    background-color: #e3ebed;
+    background-image: -moz-linear-gradient(top, #ffffff, #f2f2f2);
+    background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#ffffff), to(#f2f2f2));
+    background-image: -webkit-linear-gradient(top, #ffffff, #f2f2f2);
+    background-image: -o-linear-gradient(top, #ffffff, #f2f2f2);
+    background-image: linear-gradient(to bottom, #ffffff, #f2f2f2);
     background-repeat: repeat-x;
-    height: 25px;
-    width: 100%;
+    border: 1px solid #d4d4d4;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+    -webkit-box-shadow: 0 1px 4px rgba(0, 0, 0, 0.065);
+    -moz-box-shadow: 0 1px 4px rgba(0, 0, 0, 0.065);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.065);
+    *zoom: 1;
+
+    /*background-image: url("img/bg.png");*/
+    /*background-repeat: repeat-x;*/
+    /*height: 25px;*/
+    /*width: 100%;*/
 }
 
 /*@media screen {*/
-    /*.contentContainerPanel {*/
-        /*width: 400px*/
-    /*}*/
+/*.contentContainerPanel {*/
+/*width: 400px*/
+/*}*/
 /*}*/
 
 .widget_track {
@@ -88,7 +108,6 @@ height: 100%;
     background-color: white;
 }
 
-
 .widget_track_straight_vertical {
     -webkit-transform: rotate(90deg);
     -moz-transform: rotate(90deg);
@@ -96,21 +115,23 @@ height: 100%;
     -o-transform: rotate(90deg);
 }
 
-
 .widget_track_curve_bottom_right {
 }
+
 .widget_track_curve_bottom_left {
     -webkit-transform: rotate(270deg);
     -moz-transform: rotate(270deg);
     -ms-transform: rotate(270deg);
     -o-transform: rotate(270deg);
 }
+
 .widget_track_curve_top_right {
     -webkit-transform: rotate(90deg);
     -moz-transform: rotate(90deg);
     -ms-transform: rotate(90deg);
     -o-transform: rotate(90deg);
 }
+
 .widget_track_curve_top_left {
     -webkit-transform: rotate(180deg);
     -moz-transform: rotate(180deg);
@@ -118,42 +139,47 @@ height: 100%;
     -o-transform: rotate(180deg);
 }
 
-
-
 .widget_track_switch_right_top_to_bottom {
     -webkit-transform: rotate(90deg);
     -moz-transform: rotate(90deg);
     -ms-transform: rotate(90deg);
     -o-transform: rotate(90deg);
 }
+
 .widget_track_switch_right_left_to_right {
 }
+
 .widget_track_switch_right_right_to_left {
     -webkit-transform: rotate(180deg);
     -moz-transform: rotate(180deg);
     -ms-transform: rotate(180deg);
     -o-transform: rotate(180deg);
 }
+
 .widget_track_switch_right_bottom_to_top {
     -webkit-transform: rotate(270deg);
     -moz-transform: rotate(270deg);
     -ms-transform: rotate(270deg);
     -o-transform: rotate(270deg);
 }
+
 .widget_track_switch_left_top_to_bottom {
     -webkit-transform: rotate(90deg);
     -moz-transform: rotate(90deg);
     -ms-transform: rotate(90deg);
     -o-transform: rotate(90deg);
 }
+
 .widget_track_switch_left_left_to_right {
 }
+
 .widget_track_switch_left_right_to_left {
     -webkit-transform: rotate(180deg);
     -moz-transform: rotate(180deg);
     -ms-transform: rotate(180deg);
     -o-transform: rotate(180deg);
 }
+
 .widget_track_switch_left_bottom_to_top {
     -webkit-transform: rotate(270deg);
     -moz-transform: rotate(270deg);

@@ -36,9 +36,9 @@ public class TrainServiceImpl extends RemoteServiceServlet implements TrainServi
 
     @Override
     public void updateDrivingLevel(long id, int level) {
-        if (level >= 0 && level <= 31) {
+        if (level >= 0 && level <= 127) {
             int address = trainManager.getTrain(id).getAddress();
-            BigInteger wrappedLevel = BigInteger.valueOf((long) ((int)level*4.09677));
+            BigInteger wrappedLevel = BigInteger.valueOf((long) ((int)level));
             try {
                 deviceManager.getConnectedDevice().getTrainModule((byte) address)
                         .setBit(Device.BIT.BIT_1, wrappedLevel.testBit(0))

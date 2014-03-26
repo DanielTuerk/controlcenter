@@ -7,19 +7,22 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.google.inject.name.Named;
-import com.sun.istack.internal.Nullable;
+import net.wbz.moba.controlcenter.communication.api.AllBusDataConsumer;
 import net.wbz.moba.controlcenter.communication.api.Device;
-import net.wbz.moba.controlcenter.communication.api.DeviceAccessException;
-import net.wbz.moba.controlcenter.communication.serial.SerialDevice;
 import net.wbz.moba.controlcenter.communication.manager.DeviceManager;
+import net.wbz.moba.controlcenter.communication.serial.SerialDevice;
 import net.wbz.moba.controlcenter.db.Database;
 import net.wbz.moba.controlcenter.db.DatabaseFactory;
 import net.wbz.moba.controlcenter.db.StorageException;
+import net.wbz.moba.controlcenter.web.server.EventBroadcaster;
+import net.wbz.moba.controlcenter.web.shared.BusData;
+import net.wbz.moba.controlcenter.web.shared.BusDataEvent;
 import net.wbz.moba.controlcenter.web.shared.BusService;
 import net.wbz.moba.controlcenter.web.shared.DeviceInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -35,10 +38,12 @@ public class BusServiceImpl extends RemoteServiceServlet implements BusService {
     private Device activeDevice;
     private final Database settingsDatabase;
     private final DeviceManager deviceManager;
+    private final EventBroadcaster eventBroadcaster;
 
     @Inject
-    public BusServiceImpl(DeviceManager deviceManager, @Named("settings") DatabaseFactory databaseFactory) {
+    public BusServiceImpl(DeviceManager deviceManager, @Named("settings") DatabaseFactory databaseFactory, EventBroadcaster eventBroadcaster) {
         this.deviceManager = deviceManager;
+        this.eventBroadcaster = eventBroadcaster;
         if (!databaseFactory.getExistingDatabaseNames().contains(BUS_DB_KEY)) {
             try {
                 settingsDatabase = databaseFactory.addDatabase(BUS_DB_KEY);
@@ -49,7 +54,7 @@ public class BusServiceImpl extends RemoteServiceServlet implements BusService {
             try {
                 settingsDatabase = databaseFactory.getStorage(BUS_DB_KEY);
                 ObjectSet<DeviceInfo> storedDevices = settingsDatabase.getObjectContainer().query(DeviceInfo.class);
-                for(DeviceInfo deviceInfo : storedDevices) {
+                for (DeviceInfo deviceInfo : storedDevices) {
                     deviceManager.registerDevice(DeviceManager.DEVICE_TYPE.valueOf(
                             deviceInfo.getType().name()), deviceInfo.getKey());
                 }
@@ -58,6 +63,8 @@ public class BusServiceImpl extends RemoteServiceServlet implements BusService {
                 throw new RuntimeException("no DB found for BUS key: " + BUS_DB_KEY);
             }
         }
+
+
     }
 
     @Override
@@ -98,7 +105,7 @@ public class BusServiceImpl extends RemoteServiceServlet implements BusService {
 
     @Override
     public boolean getRailVoltage() {
-        if(isBusConnected()) {
+        if (isBusConnected()) {
 
             try {
                 return deviceManager.getConnectedDevice().getRailVoltage();
@@ -111,7 +118,7 @@ public class BusServiceImpl extends RemoteServiceServlet implements BusService {
 
     @Override
     public void toggleRailVoltage() {
-        if(isBusConnected()) {
+        if (isBusConnected()) {
             try {
                 deviceManager.getConnectedDevice().setRailVoltage(!getRailVoltage());
             } catch (Exception e) {
@@ -121,9 +128,22 @@ public class BusServiceImpl extends RemoteServiceServlet implements BusService {
     }
 
     @Override
+    public BusData[] readBusBlock(int busNr) {
+
+        return new BusData[0];
+    }
+
+    @Override
     public void connectBus() {
         if (activeDevice != null) {
             activeDevice.connect();
+
+            activeDevice.getBusDataDispatcher().registerConsumer(new AllBusDataConsumer() {
+                @Override
+                public void valueChanged(int bus, int address, int value) {
+                    eventBroadcaster.fireEvent(new BusDataEvent(bus, address, value));
+                }
+            });
         }
     }
 

@@ -186,3 +186,7 @@ h1 {
     -ms-transform: rotate(270deg);
     -o-transform: rotate(270deg);
 }
+
+.contentPanel {
+    overflow: scroll;
+}

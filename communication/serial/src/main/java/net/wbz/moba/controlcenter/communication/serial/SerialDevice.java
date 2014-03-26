@@ -4,16 +4,13 @@ import gnu.io.CommPortIdentifier;
 import gnu.io.PortInUseException;
 import gnu.io.SerialPort;
 import gnu.io.UnsupportedCommOperationException;
-import net.wbz.moba.controlcenter.communication.api.Device;
-import net.wbz.moba.controlcenter.communication.api.DeviceAccessException;
-import net.wbz.moba.controlcenter.communication.api.InputModule;
-import net.wbz.moba.controlcenter.communication.api.OutputModule;
+import net.wbz.moba.controlcenter.communication.api.*;
+import net.wbz.moba.controlcenter.communication.serial.data.BusData;
+import net.wbz.moba.controlcenter.communication.serial.data.BusDataChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
@@ -37,6 +34,9 @@ public class SerialDevice implements Device {
 
     private final String deviceId;
     private final int baudRate;
+    private BusDataChannel busDataChannel;
+
+    private final BusDataDispatcher busDataDispatcher = new BusDataDispatcher();
 
     public SerialDevice(String deviceId) {
         this(deviceId, DEFAULT_BAUD_RATE_FCC);
@@ -47,20 +47,26 @@ public class SerialDevice implements Device {
         this.baudRate = baudRate;
     }
 
+
     @Override
     public boolean getRailVoltage() throws IOException {
-        //TODO: FIXME doesn't work -> in FCC action at 109 bit 8 (but also bit 6 is set)
-        outputStream.write(new byte[]{(byte)0, (byte)127, (byte)1});
-        outputStream.flush();
-        int result =inputStream.read();
-        return result != 0;
+        //TODO: check it -> in FCC action at 109 bit 8 (but also bit 6 is set)
+
+        //TODO refactor to consumer?
+//        outputStream.write(new byte[]{(byte) 0, (byte) 109, (byte) 1});
+//        outputStream.flush();
+//        int result = inputStream.read();
+//        return result != 0;
+        return false;
     }
 
     @Override
     public void setRailVoltage(boolean state) throws IOException {
-        outputStream.write(new byte[]{0, (byte) 255, (byte) (state ? 1 : 0)});
-        outputStream.flush();
+        busDataChannel.send(new BusData(0, 109, (state ? 1 : 0)));
+//        outputStream.write(new byte[]{0, (byte) 109, (byte) (state ? 1 : 0)});
+//        outputStream.flush();
     }
+
 
     @Override
     public void connect() {
@@ -78,7 +84,10 @@ public class SerialDevice implements Device {
                             SerialPort.DATABITS_8,
                             SerialPort.STOPBITS_1,
                             SerialPort.PARITY_NONE);
+                    serialPort.setFlowControlMode(SerialPort.FLOWCONTROL_NONE);
                     log.info("connected to COM");
+
+                    busDataChannel = new BusDataChannel(inputStream, outputStream, busDataDispatcher);
 
                     return;
                 } catch (PortInUseException e) {
@@ -89,6 +98,7 @@ public class SerialDevice implements Device {
                     log.error("I/O error", e);
                 }
             }
+
         } catch (Exception e) {
             log.error("can't load port list", e);
         }
@@ -96,6 +106,10 @@ public class SerialDevice implements Device {
 
     @Override
     public void disconnect() {
+        log.debug("close channel");
+        if (busDataChannel != null) {
+            busDataChannel.shutdownNow();
+        }
         log.info("disconnecting COM device");
         if (serialPort != null) {
             try {
@@ -127,7 +141,8 @@ public class SerialDevice implements Device {
             if (outputStream == null || inputStream == null) {
                 throw new DeviceAccessException("COM1 device not connected");
             }
-            OutputModule module = new FunctionDecoderModule((byte) 1, address);
+            OutputModule module = new FunctionDecoderModule((byte) 1, address, busDataChannel);
+            busDataDispatcher.registerConsumer(module.getConsumer());
             module.initialize(outputStream, inputStream);
             modules.put(address, module);
         }
@@ -136,6 +151,7 @@ public class SerialDevice implements Device {
 
     @Override
     public synchronized InputModule getInputModule(byte address) throws DeviceAccessException {
+        //TODO remove
         if (!inputModules.containsKey(address)) {
             if (outputStream == null || inputStream == null) {
                 throw new DeviceAccessException("COM1 device not connected");
@@ -154,11 +170,48 @@ public class SerialDevice implements Device {
             if (outputStream == null || inputStream == null) {
                 throw new DeviceAccessException("serial device not connected");
             }
-            OutputModule module = new FunctionDecoderModule((byte) 0, address);
-            module.initialize(outputStream, inputStream);
+            OutputModule module = new FunctionDecoderModule((byte) 0, address, busDataChannel);
+            busDataDispatcher.registerConsumer(module.getConsumer());
             trainModules.put(address, module);
         }
         return trainModules.get(address);
     }
 
+    public static void main(String[] args) {
+        SerialDevice serialDevice = new SerialDevice("/dev/tty.usbserial-00002014");
+        serialDevice.connect();
+        BufferedReader console = new BufferedReader(new InputStreamReader(System.in));
+        System.out.print("Geben Sie etwas ein: ");
+        String line;
+        try {
+            boolean running = true;
+            while (running) {
+                line = console.readLine();
+                if (line.equals("exit")) {
+                    running = false;
+                } else if (line.equals("fcc 1")) {
+                    serialDevice.setRailVoltage(true);
+                } else if (line.equals("fcc 0")) {
+                    serialDevice.setRailVoltage(false);
+                } else if(line.startsWith("send ")) {
+                    String[] parts = line.split(" ");
+                    serialDevice.sendDebug(new BusData(Integer.parseInt(parts[1]),
+                            Integer.parseInt(parts[1]),Integer.parseInt(parts[1])));
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        serialDevice.disconnect();
+
+    }
+
+    private void sendDebug(BusData data) {
+        busDataChannel.send(data);
+    }
+
+    public BusDataDispatcher getBusDataDispatcher() {
+        return busDataDispatcher;
+    }
 }

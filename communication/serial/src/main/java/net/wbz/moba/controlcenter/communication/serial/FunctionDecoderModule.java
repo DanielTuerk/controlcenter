@@ -1,11 +1,13 @@
 package net.wbz.moba.controlcenter.communication.serial;
 
+import net.wbz.moba.controlcenter.communication.api.BusDataConsumer;
 import net.wbz.moba.controlcenter.communication.api.Device;
 import net.wbz.moba.controlcenter.communication.api.OutputModule;
+import net.wbz.moba.controlcenter.communication.serial.data.BusData;
+import net.wbz.moba.controlcenter.communication.serial.data.BusDataChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.math.BigInteger;
@@ -23,13 +25,32 @@ public class FunctionDecoderModule implements OutputModule {
     private final byte address;
     private final boolean[] bits = {false, false, false, false, false, false, false, false};
 
-    public FunctionDecoderModule(byte address) {
-        this((byte) 1, address);
+    private final BusDataChannel busDataChannel;
+    private final BusDataConsumer consumer;
+
+    public FunctionDecoderModule(byte address,BusDataChannel busDataChannel) {
+        this((byte) 1, address,busDataChannel);
     }
 
-    public FunctionDecoderModule(byte sxBus, byte address) {
+    public FunctionDecoderModule(byte sxBus, byte address, BusDataChannel busDataChannel) {
         this.sxBus = sxBus;
         this.address = address;
+        this.busDataChannel=busDataChannel;
+
+        consumer=new BusDataConsumer((int) sxBus, (int) address) {
+            @Override
+            public void valueChanged(int value) {
+                BigInteger byteResult = BigInteger.valueOf((long) value);
+                for (int i = 0; i < bits.length; i++) {
+                    bits[i] = byteResult.testBit(i);
+                }
+            }
+        };
+    }
+
+    @Override
+    public void initialize(OutputStream outputStream, InputStream inputStream) {
+
     }
 
     @Override
@@ -78,15 +99,21 @@ public class FunctionDecoderModule implements OutputModule {
         send((byte) getValue());
     }
 
+    @Override
+    public BusDataConsumer getConsumer() {
+        return consumer;
+    }
+
     private void send(byte data) {
-        try {
-            // to write data to the address you need BIT 8 at '1' (+128)
-            outputStream.write(new byte[]{sxBus, (byte) ((int) address + 128), data});
-            outputStream.flush();
-            LOG.debug("write bit of " + this.address + ": " + data);
-        } catch (IOException e) {
-            LOG.error(String.format("can't send data(%sd) to module %d", address, data), e);
-        }
+        busDataChannel.send(new BusData((int) sxBus, (int) address, (int) data));
+//        try {
+//            // to write data to the address you need BIT 8 at '1' (+128)
+//            outputStream.write(new byte[]{sxBus, (byte) ((int) address + 128), data});
+//            outputStream.flush();
+//            LOG.debug("write bit of " + this.address + ": " + data);
+//        } catch (IOException e) {
+//            LOG.error(String.format("can't send data(%sd) to module %d", address, data), e);
+//        }
     }
 
     @Override
@@ -112,47 +139,23 @@ public class FunctionDecoderModule implements OutputModule {
         return false;
     }
 
-    private void read() {
-        try {
-            LOG.debug(Thread.currentThread().getId() + " - " + this.toString() + " - start read of " + address);
-            outputStream.write(new byte[]{sxBus, address, 0});
-            outputStream.flush();
-            int result = inputStream.read();
-            LOG.debug(Thread.currentThread().getId() + " - " + this.toString() + " - bit of " + address + ": " + result);
-            BigInteger byteResult = BigInteger.valueOf((long) result);
-            for (int i = 0; i < bits.length; i++) {
-                bits[i] = byteResult.testBit(i);
-            }
-        } catch (IOException e) {
-            LOG.error(String.format("can't read data of module %d", address));
-        }
-    }
+//    private void read() {
+//       // TODO
+////        deque.push(new WriteTask());
+//
+//        try {
+//            LOG.debug(Thread.currentThread().getId() + " - " + this.toString() + " - start read of " + address);
+//            outputStream.write(new byte[]{sxBus, address, 0});
+//            outputStream.flush();
+//            int result = inputStream.read();
+//            LOG.debug(Thread.currentThread().getId() + " - " + this.toString() + " - bit of " + address + ": " + result);
+//            BigInteger byteResult = BigInteger.valueOf((long) result);
+//            for (int i = 0; i < bits.length; i++) {
+//                bits[i] = byteResult.testBit(i);
+//            }
+//        } catch (IOException e) {
+//            LOG.error(String.format("can't read data of module %d", address));
+//        }
+//    }
 
-    @Override
-    public void initialize(OutputStream outputStream, InputStream inputStream) {
-        this.outputStream = outputStream;
-        this.inputStream = inputStream;
-
-        // read state from bus
-        read();
-        // reset to standard
-        try {
-            Thread.sleep(500);
-        } catch (InterruptedException e) {
-            //ignore
-        }
-        int actualValue = getValue();
-        if (actualValue > 0) {
-            send((byte) 0);
-        } else {
-            send((byte) 1);
-        }
-        // write state to bus to change
-        try {
-            Thread.sleep(500);
-        } catch (InterruptedException e) {
-            //ignore
-        }
-        sendData();
-    }
 }

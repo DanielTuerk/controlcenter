@@ -9,7 +9,6 @@ import net.wbz.moba.controlcenter.web.shared.train.TrainEditorService;
 import net.wbz.moba.controlcenter.web.shared.train.TrainFunction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.List;
 
@@ -56,7 +55,7 @@ public class TrainEditorServiceImpl extends RemoteServiceServlet implements Trai
 
     @Override
     public void deleteTrain(long trainId) {
-        throw new NotImplementedException();
+        throw new RuntimeException();
     }
 
     @Override

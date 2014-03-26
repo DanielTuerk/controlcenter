@@ -6,12 +6,11 @@ import com.db4o.config.EmbeddedConfiguration;
 import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
-import com.sun.istack.internal.Nullable;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
+import javax.annotation.Nullable;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
@@ -115,7 +114,7 @@ public class DatabaseFactory {
 
     public void deleteDatabase(String key) {
         //TODO
-        throw new NotImplementedException();
+        throw new RuntimeException("not implemented");
     }
 
     public List<String> getExistingDatabaseNames() {

@@ -7,11 +7,13 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.ui.DockLayoutPanel;
 import com.google.gwt.user.client.ui.RootLayoutPanel;
+import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
 import net.wbz.moba.controlcenter.web.client.device.StatePanel;
 import net.wbz.moba.controlcenter.web.client.editor.track.TrackEditorContainer;
 import net.wbz.moba.controlcenter.web.client.model.track.*;
-import net.wbz.moba.controlcenter.web.client.viewer.TrackViewerContainer;
+import net.wbz.moba.controlcenter.web.client.viewer.bus.BusMonitorPanel;
+import net.wbz.moba.controlcenter.web.client.viewer.track.TrackViewerContainer;
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
@@ -22,6 +24,7 @@ public class ControlCenterApp implements EntryPoint {
 
     private TrackEditorContainer trackEditorContainer;
     private TrackViewerContainer trackViewerContainer;
+    private BusMonitorPanel busMonitorPanel;
 
     private SimplePanel contentContainerPanel;
 
@@ -75,6 +78,7 @@ public class ControlCenterApp implements EntryPoint {
 
         trackViewerContainer = new TrackViewerContainer();
         trackEditorContainer = new TrackEditorContainer();
+        busMonitorPanel=new BusMonitorPanel();
 
         initAppMenu();
 
@@ -84,7 +88,7 @@ public class ControlCenterApp implements EntryPoint {
         dockLayoutPanel.addSouth(new StatePanel(), 50);
 
         // load the track viewer
-        contentContainerPanel = new SimplePanel();
+        contentContainerPanel = new ScrollPanel();
         contentContainerPanel.setStyleName("contentContainerPanel");
         dockLayoutPanel.add(contentContainerPanel);
 
@@ -106,15 +110,28 @@ public class ControlCenterApp implements EntryPoint {
                 showTrackViewer();
             }
         });
+        appMenu.setShowBusMonitorCommand(new Command() {
+            @Override
+            public void execute() {
+                showBusMonitor();
+            }
+        });
     }
 
     public void showTrackEditor() {
         contentContainerPanel.remove(trackViewerContainer);
+        contentContainerPanel.remove(busMonitorPanel);
         contentContainerPanel.add(trackEditorContainer);
     }
 
     public void showTrackViewer() {
         contentContainerPanel.remove(trackEditorContainer);
+        contentContainerPanel.remove(busMonitorPanel);
         contentContainerPanel.add(trackViewerContainer);
+    }
+    public void showBusMonitor() {
+        contentContainerPanel.remove(trackEditorContainer);
+        contentContainerPanel.remove(trackViewerContainer);
+        contentContainerPanel.add(busMonitorPanel);
     }
 }

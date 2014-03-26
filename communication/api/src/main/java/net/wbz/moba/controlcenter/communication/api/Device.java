@@ -24,4 +24,6 @@ public interface Device extends Serializable {
 
     public OutputModule getTrainModule(byte address) throws DeviceAccessException;
 
+    public BusDataDispatcher getBusDataDispatcher();
+
 }

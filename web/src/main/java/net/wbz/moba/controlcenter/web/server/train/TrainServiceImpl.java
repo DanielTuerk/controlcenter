@@ -13,7 +13,6 @@ import net.wbz.moba.controlcenter.web.shared.train.TrainFunction;
 import net.wbz.moba.controlcenter.web.shared.train.TrainService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.math.BigInteger;
 
@@ -113,7 +112,7 @@ public class TrainServiceImpl extends RemoteServiceServlet implements TrainServi
                     break;
 
                 default:
-                    throw new NotImplementedException();
+                    throw new RuntimeException();
             }
 
         } catch (DeviceAccessException e) {

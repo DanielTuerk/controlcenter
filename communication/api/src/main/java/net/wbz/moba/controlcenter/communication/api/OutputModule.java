@@ -15,4 +15,6 @@ public interface OutputModule {
     public boolean getBitState(Device.BIT bit);
 
     public void sendData();
+
+    public BusDataConsumer getConsumer() ;
 }

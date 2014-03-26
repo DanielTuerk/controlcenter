@@ -1,11 +1,11 @@
-package net.wbz.moba.controlcenter.web.client.viewer;
+package net.wbz.moba.controlcenter.web.client.viewer.controls;
 
 import com.github.gwtbootstrap.client.ui.Button;
 import com.github.gwtbootstrap.client.ui.InputAddOn;
 import com.github.gwtbootstrap.client.ui.TextBox;
 import com.google.common.collect.Maps;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.user.client.ui.ScrollPanel;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import de.novanic.eventservice.client.event.Event;
 import de.novanic.eventservice.client.event.listener.RemoteEventListener;
@@ -17,12 +17,14 @@ import java.util.Map;
 /**
  * Created by Daniel on 08.03.14.
  */
-abstract public class AbstractItemViewerPanel<ItemPanel extends AbstractItemPanel, EventType extends AbstractStateEvent> extends VerticalPanel {
+abstract public class AbstractItemViewerPanel<ItemPanel extends AbstractItemPanel, EventType extends AbstractStateEvent> extends FlowPanel {
 
     private final Map<Long, ItemPanel> itemPanelByIdMap = Maps.newHashMap();
     private final VerticalPanel itemsContainerPanel = new VerticalPanel();
 
     public AbstractItemViewerPanel(Class<EventType> eventClass) {
+
+        addStyleName("contentPanel");
         InputAddOn inputCreate = new InputAddOn();
         final TextBox txtName = new TextBox();
         inputCreate.add(txtName);
@@ -31,7 +33,7 @@ abstract public class AbstractItemViewerPanel<ItemPanel extends AbstractItemPane
         inputCreate.add(btnNew);
 
         add(inputCreate);
-        add(new ScrollPanel(itemsContainerPanel));
+        add(itemsContainerPanel);
 
         /* Logic for GWTEventService starts here */
         //add a listener to the SERVER_MESSAGE_DOMAIN

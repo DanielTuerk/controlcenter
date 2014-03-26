@@ -1,8 +1,9 @@
 package net.wbz.moba.controlcenter.web.shared.scenario;
 
-import com.google.common.collect.Lists;
 import com.google.gwt.user.client.rpc.IsSerializable;
 import net.wbz.moba.controlcenter.web.shared.StringUtils;
+
+import java.util.Arrays;
 
 /**
  * @author Daniel Tuerk (daniel.tuerk@jambit.com)
@@ -16,6 +17,6 @@ public abstract class ScenarioCommand implements IsSerializable {
     abstract public String[] convertParameters();
 
     public String toText() {
-        return getCommand() + "(" + StringUtils.join(Lists.newArrayList(convertParameters()), ",") + ")";
+        return getCommand() + "(" + StringUtils.join(Arrays.asList(convertParameters()), ",") + ")";
     }
 }

@@ -7,6 +7,7 @@ import com.github.gwtbootstrap.client.ui.Navbar;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.Command;
 
 /**
  * @author Daniel Tuerk (daniel.tuerk@jambit.com)
@@ -14,6 +15,7 @@ import com.google.gwt.event.dom.client.ClickHandler;
 public class AppMenu extends Navbar {
 
     private Scheduler.ScheduledCommand showEditorCommand;
+    private Command showBusMonitorCommand;
 
     public void setShowEditorCommand(Scheduler.ScheduledCommand showEditorCommand) {
         this.showEditorCommand = showEditorCommand;
@@ -55,6 +57,24 @@ public class AppMenu extends Navbar {
         Nav nav = new Nav();
         nav.add(linkEditor);
         add(nav);
+
+        NavLink linkBusMonitor= new NavLink("Bus Monitor");
+        linkBusMonitor.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                showBusMonitorCommand.execute();
+            }
+        });
+        Nav navBusMonitor = new Nav();
+        navBusMonitor.add(linkBusMonitor);
+        add(navBusMonitor);
     }
 
+    public void setShowBusMonitorCommand(Command showBusMonitorCommand) {
+        this.showBusMonitorCommand = showBusMonitorCommand;
+    }
+
+    public Command getShowBusMonitorCommand() {
+        return showBusMonitorCommand;
+    }
 }

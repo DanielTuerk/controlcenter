@@ -1,4 +1,4 @@
-package net.wbz.moba.controlcenter.web.client.viewer;
+package net.wbz.moba.controlcenter.web.client.viewer.track;
 
 import com.github.gwtbootstrap.client.ui.Label;
 import com.github.gwtbootstrap.client.ui.constants.LabelType;
@@ -6,6 +6,7 @@ import com.google.common.collect.Maps;
 import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.gen2.logging.shared.Log;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Widget;
 import de.novanic.eventservice.client.event.Event;
@@ -21,6 +22,7 @@ import net.wbz.moba.controlcenter.web.client.model.track.AbstractControlImageTra
 import net.wbz.moba.controlcenter.web.client.model.track.AbstractImageTrackWidget;
 import net.wbz.moba.controlcenter.web.client.model.track.ModelManager;
 import net.wbz.moba.controlcenter.web.client.util.DialogBoxUtil;
+import net.wbz.moba.controlcenter.web.client.viewer.controls.ViewerControlsPanel;
 import net.wbz.moba.controlcenter.web.shared.track.model.Configuration;
 import net.wbz.moba.controlcenter.web.shared.track.model.TrackPart;
 import net.wbz.moba.controlcenter.web.shared.viewer.TrackPartStateEvent;
@@ -127,9 +129,8 @@ public class TrackViewerPanel extends AbstractTrackPanel {
 
                 }
                 DialogBoxUtil.getLoading().setProgressPercentage(PERCENTAGE_MAX, "set dimension");
-                setPixelSize(maxLeft + TrackEditorContainer.draggableOffsetWidth, maxTop + TrackEditorContainer.draggableOffsetHeight);
+                setPixelSize(Window.getClientWidth() - ViewerControlsPanel.WIDTH_PIXEL, maxTop + TrackEditorContainer.draggableOffsetHeight);
                 DialogBoxUtil.getLoading().hide();
-
             }
         });
     }

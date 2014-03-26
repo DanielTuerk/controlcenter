@@ -1,7 +1,6 @@
-package net.wbz.moba.controlcenter.web.client.viewer;
+package net.wbz.moba.controlcenter.web.client.viewer.controls;
 
-import com.github.gwtbootstrap.client.ui.Button;
-import com.github.gwtbootstrap.client.ui.ButtonGroup;
+import com.github.gwtbootstrap.client.ui.*;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -10,10 +9,11 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.ToggleButton;
-import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.widgetideas.graphics.client.Color;
 import com.kiouri.sliderbar.client.event.BarValueChangedEvent;
 import com.kiouri.sliderbar.client.event.BarValueChangedHandler;
-import com.kiouri.sliderbar.client.solution.simplevertical.SliderBarSimpleVertical;
+import com.kiouri.sliderbar.client.solution.simplehorizontal.SliderBarSimpleHorizontal;
+import com.kiouri.sliderbar.client.view.SliderBar;
 import net.wbz.moba.controlcenter.web.client.ServiceUtils;
 import net.wbz.moba.controlcenter.web.shared.train.Train;
 import net.wbz.moba.controlcenter.web.shared.train.TrainFunction;
@@ -25,7 +25,7 @@ import net.wbz.moba.controlcenter.web.shared.train.TrainFunction;
  */
 public class TrainItemPanel extends AbstractItemPanel<Train> {
 
-    private Panel contentPanel = new VerticalPanel();
+    private Panel contentPanel = new FluidContainer();
 
     public TrainItemPanel(Train train) {
         super(train);
@@ -49,14 +49,27 @@ public class TrainItemPanel extends AbstractItemPanel<Train> {
                 editDialog.show();
             }
         });
-        contentPanel.add(btnEditTrain);
+        Row row = new Row();
+        row.add(new Column(1, btnEditTrain));
+        contentPanel.add(row);
+
+
+        Row rowDrivingFunctions = new Row();
 
         ButtonGroup btnGroupDirection = new ButtonGroup();
         btnGroupDirection.add(addDirectionButton(Train.DIRECTION.FORWARD));
         btnGroupDirection.add(addDirectionButton(Train.DIRECTION.BACKWARD));
-        contentPanel.add(btnGroupDirection);
+        rowDrivingFunctions.add(new Column(1, btnGroupDirection));
 
-        SliderBarSimpleVertical sliderDrivingLevel = new SliderBarSimpleVertical(127, "100px", true);
+
+
+
+
+        contentPanel.add(rowDrivingFunctions);
+
+                                  //TODO: generic driving level from train config
+        SliderBar sliderDrivingLevel = new SliderBarSimpleHorizontal(127, "150px", true);
+        sliderDrivingLevel.drawMarks(Color.WHITE.toString(), 6);
         sliderDrivingLevel.addBarValueChangedHandler(new BarValueChangedHandler() {
             public void onBarValueChanged(BarValueChangedEvent event) {
                 ServiceUtils.getTrainService().updateDrivingLevel(getModel().getId(), event.getValue(), new AsyncCallback<Void>() {
@@ -70,11 +83,17 @@ public class TrainItemPanel extends AbstractItemPanel<Train> {
                 });
             }
         });
-        contentPanel.add(sliderDrivingLevel);
 //        sliderBar.drawMarks("white",6);
 //        sliderBar.setMinMarkStep(3);
 //        sliderBar.setValue(valueInt);
 //        sliderBar.setMaxValue(valueInt);
+
+
+
+
+        Row drivingRow = new Row();
+        drivingRow.add(new Column(3,sliderDrivingLevel));
+        contentPanel.add(drivingRow);
 
         initFunctions();
 
@@ -83,7 +102,10 @@ public class TrainItemPanel extends AbstractItemPanel<Train> {
     }
 
     private void initFunctions() {
+        int count=0;
+        Row row=new Row();
         for (final TrainFunction functionEntry : getModel().getFunctions()) {
+
 
             ToggleButton btnToggleFunction = new ToggleButton(functionEntry.getFunction().name());
             btnToggleFunction.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
@@ -100,7 +122,18 @@ public class TrainItemPanel extends AbstractItemPanel<Train> {
                     });
                 }
             });
-            contentPanel.add(btnToggleFunction);
+
+            if(count%2==0){
+                row=new Row();
+                contentPanel.add(row);
+            }
+            row.add(new Column(1,btnToggleFunction));
+
+//            contentPanel.add(btnToggleFunction);
+//        row.add(col);
+//        contentPanel.add(row);
+            count++;
+
         }
     }
 

@@ -1,4 +1,4 @@
-package net.wbz.moba.controlcenter.web.client.viewer;
+package net.wbz.moba.controlcenter.web.client.viewer.controls;
 
 import com.github.gwtbootstrap.client.ui.Button;
 import com.github.gwtbootstrap.client.ui.TextArea;

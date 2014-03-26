@@ -40,6 +40,7 @@ public class TrackViewerServiceImpl extends RemoteServiceServlet implements Trac
             try {
                 deviceManager.getConnectedDevice().getOutputModule((byte) configuration.getAddress())
                         .setBit(getBitOfConfiguration(configuration), state).sendData();
+                //TODO
                 fireEvents(configuration,state);
             } catch (DeviceAccessException e) {
                 log.error("can't toggle track part", e);

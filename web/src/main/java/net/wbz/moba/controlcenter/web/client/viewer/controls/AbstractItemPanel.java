@@ -1,17 +1,17 @@
-package net.wbz.moba.controlcenter.web.client.viewer;
+package net.wbz.moba.controlcenter.web.client.viewer.controls;
 
-import com.github.gwtbootstrap.client.ui.Collapse;
-import com.github.gwtbootstrap.client.ui.CollapseTrigger;
-import com.github.gwtbootstrap.client.ui.TextArea;
+import com.github.gwtbootstrap.client.ui.*;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.user.client.ui.*;
+import com.google.gwt.user.client.ui.Panel;
+import com.google.gwt.user.client.ui.SimplePanel;
+import com.google.gwt.user.client.ui.ToggleButton;
 import net.wbz.moba.controlcenter.web.shared.AbstractIdModel;
 
 /**
  * @author Daniel Tuerk (daniel.tuerk@jambit.com)
  */
-abstract public class AbstractItemPanel<Model extends AbstractIdModel> extends VerticalPanel {
+abstract public class AbstractItemPanel<Model extends AbstractIdModel> extends FluidContainer {
 
     public static final String BREAK_LINE = "&#13;"; //13 - mac?
     private static final int MIN_LINES_EDIT_TEXTAREA = 5;
@@ -36,9 +36,14 @@ abstract public class AbstractItemPanel<Model extends AbstractIdModel> extends V
     @Override
     protected void onLoad() {
         super.onLoad();
-        HorizontalPanel titlePanel = new HorizontalPanel();
+        Row row = new Row();
+        Column titleColumn = new Column(2);
+        titleColumn.add(new Label(getItemTitle()));
+        row.add(titleColumn);
 
-        titlePanel.add(new com.github.gwtbootstrap.client.ui.Label(getItemTitle()));
+//        HorizontalPanel titlePanel = new HorizontalPanel();
+
+//        titlePanel.add();
 
         CollapseTrigger collapseCommands = new CollapseTrigger("commandsContainer");
         ToggleButton btnCollapse = new ToggleButton(">>");
@@ -53,13 +58,22 @@ abstract public class AbstractItemPanel<Model extends AbstractIdModel> extends V
                 collapse.toggle();
             }
         });
-
-        titlePanel.add(collapseCommands);
-
-        add(titlePanel);
+        row.add(new Column(1, btnCollapse));
 
 
-        add(collapse);
+//        Column editColumn = new Column(1);
+//        editColumn.add(btnCollapse);
+//        row.add(editColumn);
+
+        add(row);
+//        titlePanel.add(collapseCommands);
+//
+//        add(titlePanel);
+
+        Row collapseRow = new Row();
+        collapseRow.add(new Column(3, collapse.asWidget()));
+
+        add(collapseRow);
 
     }
 

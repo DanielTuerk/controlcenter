@@ -8,6 +8,15 @@ import com.google.gwt.user.client.ui.Widget;
  */
 abstract public class AbstractTrackPanel extends AbsolutePanel {
 
+    protected AbstractTrackPanel() {
+        addStyleName("contentPanel");
+    }
+
+    @Override
+    protected void onLoad() {
+        super.onLoad();
+    }
+
     public int getZoomLevel() {
         return 0;
     }

@@ -52,7 +52,7 @@ public class BusDataDispatcher implements BusDataReceiver {
     }
 
     private void fireChange(final int busNr, final int address, final int data) {
-        log.debug("value changed: " + busNr + " - " + address + " >> " + data);
+//        log.debug("value changed: " + busNr + " - " + address + " >> " + data);
         for (final BusDataConsumer consumer : consumers) {
             if (consumer instanceof AllBusDataConsumer) {
                 executorService.submit(new Runnable() {

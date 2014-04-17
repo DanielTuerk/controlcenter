@@ -68,6 +68,7 @@ public class AppMenu extends Navbar {
         Nav navBusMonitor = new Nav();
         navBusMonitor.add(linkBusMonitor);
         add(navBusMonitor);
+
     }
 
     public void setShowBusMonitorCommand(Command showBusMonitorCommand) {

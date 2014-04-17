@@ -3,6 +3,7 @@ package net.wbz.moba.controlcenter.web.client.editor.track;
 import com.allen_sauer.gwt.dnd.client.PickupDragController;
 import com.allen_sauer.gwt.dnd.client.drop.GridConstrainedDropController;
 import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.gen2.logging.shared.Log;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -20,7 +21,7 @@ import java.util.List;
 /**
  * @author Daniel Tuerk (daniel.tuerk@jambit.com)
  */
-public class TrackEditorContainer extends SplitLayoutPanel {
+public class TrackEditorContainer extends FlowPanel {
 
     private static int draggableOffsetPadding = 2;
 
@@ -41,7 +42,6 @@ public class TrackEditorContainer extends SplitLayoutPanel {
     }
 
     public TrackEditorContainer() {
-        super(5);
         this.setSize("100%", "100%");
         //
         boundaryPanel = new TrackEditorPanel();
@@ -70,9 +70,9 @@ public class TrackEditorContainer extends SplitLayoutPanel {
 
 
 
-        addNorth(titelPanel,30);
+//        addNorth(titelPanel,30);
 
-        addWest(palette, 200);
+//        addWest(palette, 200);
 
         MenuBar menuBar = new MenuBar();
         menuBar.addItem(new MenuItem("Save", false, new Command() {
@@ -112,14 +112,26 @@ public class TrackEditorContainer extends SplitLayoutPanel {
         });
 
 
-        addNorth(menuBar, 30);
+        add(menuBar);
 
 
-        add(boundaryPanel);
+        FlowPanel editorPanel = new FlowPanel();
+
+        palette.getElement().getStyle().setFloat(Style.Float.LEFT);
+
+        editorPanel.add(palette);
+
+
+        ScrollPanel scrollPanel = new ScrollPanel(boundaryPanel);
+        editorPanel.add(scrollPanel);
+
+        add(editorPanel);
     }
 
     @Override
     protected void onLoad() {
+        super.onLoad();
+
         Log.info("load track " + new Date().toString());
 
         for (int i = boundaryPanel.getWidgetCount() - 1; i >= 0; i--) {

@@ -17,7 +17,7 @@ public class PalettePanel extends VerticalPanel   {
     public PalettePanel(PickupDragController dragController) {
         this.dragController = dragController;
 
-        setWidth("100%");
+        setWidth("200px");
         addStyleName("pallete");
         setSpacing(2);
         setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
@@ -30,12 +30,6 @@ public class PalettePanel extends VerticalPanel   {
             add(new Label(entry.getKey()));
             add(entry.getValue());
         }
-
-
-    }
-
-    @Override
-    protected void onLoad() {
 
 
     }

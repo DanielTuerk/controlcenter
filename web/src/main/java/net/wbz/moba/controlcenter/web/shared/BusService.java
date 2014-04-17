@@ -27,5 +27,5 @@ public interface BusService extends RemoteService {
 
     public void toggleRailVoltage();
 
-    public BusData[] readBusBlock(int busNr);
+    public BusData[] readBusData(int busNr);
 }

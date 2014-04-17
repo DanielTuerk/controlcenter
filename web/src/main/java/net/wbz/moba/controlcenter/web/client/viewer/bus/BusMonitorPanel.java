@@ -6,11 +6,14 @@ import com.github.gwtbootstrap.client.ui.TabPane;
 import com.github.gwtbootstrap.client.ui.TabPanel;
 import com.github.gwtbootstrap.client.ui.resources.Bootstrap;
 import com.google.common.collect.Maps;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Panel;
 import de.novanic.eventservice.client.event.Event;
 import de.novanic.eventservice.client.event.listener.RemoteEventListener;
 import net.wbz.moba.controlcenter.web.client.EventReceiver;
+import net.wbz.moba.controlcenter.web.client.ServiceUtils;
+import net.wbz.moba.controlcenter.web.shared.BusData;
 import net.wbz.moba.controlcenter.web.shared.BusDataEvent;
 
 import java.util.Map;
@@ -28,7 +31,6 @@ public class BusMonitorPanel extends TabPanel {
 
         for (int i = 0; i < 2; i++) {
             Panel tabContent = new FlowPanel();
-
 
 
             Map<Integer, BusAddressItemPanel> addressItemPanelMap = Maps.newHashMap();
@@ -57,8 +59,6 @@ public class BusMonitorPanel extends TabPanel {
             add(tab);
         }
 
-        selectTab(0);
-
         listener = new RemoteEventListener() {
             public void apply(Event anEvent) {
                 //TODO
@@ -74,7 +74,25 @@ public class BusMonitorPanel extends TabPanel {
     @Override
     protected void onLoad() {
         super.onLoad();
+
+        for (int busNr = 0; busNr < 2; busNr++) {
+            final int finalBusNr = busNr;
+            ServiceUtils.getBusService().readBusData(busNr, new AsyncCallback<BusData[]>() {
+                @Override
+                public void onFailure(Throwable caught) {
+                }
+
+                @Override
+                public void onSuccess(BusData[] result) {
+                    for (BusData busData : result) {
+                        addressItemMapping.get(finalBusNr).get(busData.getAddress()).updateData(busData.getValue());
+                    }
+                }
+            });
+        }
         EventReceiver.getInstance().addListener(BusDataEvent.class, listener);
+
+        selectTab(0);
     }
 
     @Override

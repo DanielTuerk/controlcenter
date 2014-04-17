@@ -29,16 +29,7 @@ public class TrainItemPanel extends AbstractItemPanel<Train> {
 
     public TrainItemPanel(Train train) {
         super(train);
-    }
 
-    @Override
-    protected String getItemTitle() {
-        return getModel().getName();
-    }
-
-    @Override
-    protected void onLoad() {
-        super.onLoad();
 
         Button btnEditTrain = new Button("edit");
         btnEditTrain.addClickHandler(new ClickHandler() {
@@ -67,7 +58,7 @@ public class TrainItemPanel extends AbstractItemPanel<Train> {
 
         contentPanel.add(rowDrivingFunctions);
 
-                                  //TODO: generic driving level from train config
+        //TODO: generic driving level from train config
         SliderBar sliderDrivingLevel = new SliderBarSimpleHorizontal(127, "150px", true);
         sliderDrivingLevel.drawMarks(Color.WHITE.toString(), 6);
         sliderDrivingLevel.addBarValueChangedHandler(new BarValueChangedHandler() {
@@ -98,6 +89,17 @@ public class TrainItemPanel extends AbstractItemPanel<Train> {
         initFunctions();
 
         getCollapseContentPanel().add(contentPanel);
+
+    }
+
+    @Override
+    protected String getItemTitle() {
+        return getModel().getName();
+    }
+
+    @Override
+    protected void onLoad() {
+        super.onLoad();
 
     }
 

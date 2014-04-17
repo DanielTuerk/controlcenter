@@ -24,6 +24,7 @@ import org.slf4j.LoggerFactory;
 
 import com.sun.istack.internal.Nullable;
 import java.io.IOException;
+import java.math.BigInteger;
 import java.util.ArrayList;
 
 /**
@@ -128,9 +129,13 @@ public class BusServiceImpl extends RemoteServiceServlet implements BusService {
     }
 
     @Override
-    public BusData[] readBusBlock(int busNr) {
-
-        return new BusData[0];
+    public BusData[] readBusData(int busNr) {
+        byte[] busData = activeDevice.getBusDataDispatcher().getData(busNr);
+        BusData[] replyData  = new BusData[busData.length];
+        for(int i=0;i<busData.length;i++) {
+            replyData[i] = new BusData(i,(int)busData[i]);
+        }
+        return replyData;
     }
 
     @Override
@@ -140,7 +145,8 @@ public class BusServiceImpl extends RemoteServiceServlet implements BusService {
 
             activeDevice.getBusDataDispatcher().registerConsumer(new AllBusDataConsumer() {
                 @Override
-                public void valueChanged(int bus, int address, int value) {
+                public void
+                valueChanged(int bus, int address, int value) {
                     eventBroadcaster.fireEvent(new BusDataEvent(bus, address, value));
                 }
             });

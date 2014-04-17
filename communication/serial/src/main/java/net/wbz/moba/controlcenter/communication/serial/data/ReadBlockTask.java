@@ -12,7 +12,8 @@ import java.util.Arrays;
 /**
  * @author Daniel Tuerk (daniel.tuerk@jambit.com)
  */
-public class ReadBlockTask extends AbstractSerialAccessTask<Void> {
+public class
+        ReadBlockTask extends AbstractSerialAccessTask<Void> {
     private static final Logger log = LoggerFactory.getLogger(ReadBlockTask.class);
 
     private final BusDataReceiver receiver;
@@ -39,10 +40,11 @@ public class ReadBlockTask extends AbstractSerialAccessTask<Void> {
         getOutputStream().write(new byte[]{(byte) address, (byte) data});
         getOutputStream().flush();
 
-        long start = System.currentTimeMillis();
-        log.info("READ ALL - start");
-        int foo = getInputStream().read(reply);
-        log.info("READ ALL - end: " + (System.currentTimeMillis() - start) + " - "+foo);
+//        long start = System.currentTimeMillis();
+//        log.info("READ ALL - start");
+        getInputStream().read(reply);
+//        int foo = getInputStream().read(reply);
+//        log.info("READ ALL - end: " + (System.currentTimeMillis() - start) + " - "+foo);
 //        for(byte value : reply) {
 //            log.info("bus reply: " + (int)value);
 //        }

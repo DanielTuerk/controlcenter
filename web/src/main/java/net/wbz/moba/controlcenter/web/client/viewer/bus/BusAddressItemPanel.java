@@ -22,9 +22,12 @@ public class BusAddressItemPanel extends FlowPanel {
 
     public void updateData(int data) {
         BigInteger bits = new BigInteger(String.valueOf(data));
+        // check the bits of each address and show it in revert order for the widgets
+        int bit=7;
         for (int i = 0; i < 8; i++) {
             Label label = (Label) dataPanel.getWidget(i);
-            label.setText(String.valueOf(bits.testBit(i) ? 1 : 0));
+            label.setText(String.valueOf(bits.testBit(bit) ? 1 : 0));
+            bit--;
         }
     }
 }

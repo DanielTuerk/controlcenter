@@ -62,7 +62,7 @@ public class SerialDevice implements Device {
 
     @Override
     public void setRailVoltage(boolean state) throws IOException {
-        busDataChannel.send(new BusData(0, 109, (state ? 1 : 0)));
+        busDataChannel.send(new BusData(0, 109, (state ? 127 : 0)));
 //        outputStream.write(new byte[]{0, (byte) 109, (byte) (state ? 1 : 0)});
 //        outputStream.flush();
     }

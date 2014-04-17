@@ -15,7 +15,8 @@ import java.util.concurrent.*;
  */
 public class BusDataChannel {
     private static final Logger log = LoggerFactory.getLogger(BusDataChannel.class);
-    private static final long DELAY = 5000L;
+    private static final long DELAY = 1000L;
+//    private static final long DELAY = 5000L;
 
     private final Deque<AbstractSerialAccessTask> queue = new LinkedBlockingDeque<>();
     private final ScheduledExecutorService scheduledExecutorService;
@@ -41,14 +42,14 @@ public class BusDataChannel {
         scheduledExecutorService.scheduleWithFixedDelay(new Runnable() {
             @Override
             public void run() {
-                log.debug("start access");
+//                log.debug("start access");
                 AbstractSerialAccessTask task;
                 if (!queue.isEmpty()) {
                     task = queue.poll();
                 } else {
                     task = new ReadBlockTask(inputStream, outputStream, receiver);
                 }
-                log.debug("execute access task:" + task.getClass().getSimpleName());
+//                log.debug("execute access task:" + task.getClass().getSimpleName());
                 try {
                     serialTaskExecutor.submit(task).get();
                 } catch (InterruptedException e) {
@@ -57,7 +58,7 @@ public class BusDataChannel {
                 } catch (ExecutionException e) {
                     log.error("execution error of serial access", e);
                 }
-                log.debug("finished access");
+//                log.debug("finished access");
             }
         }, 0L, DELAY, TimeUnit.MILLISECONDS);
     }

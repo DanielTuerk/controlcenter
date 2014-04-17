@@ -22,7 +22,7 @@ import net.wbz.moba.controlcenter.web.shared.DeviceInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.Nullable;
+import com.sun.istack.internal.Nullable;
 import java.io.IOException;
 import java.util.ArrayList;
 

@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 
 /**
- * @author Daniel Tuerk (daniel.tuerk@jambit.com)
+ * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
  */
 @Singleton
 public class ScenarioEditorServiceImpl extends RemoteServiceServlet implements ScenarioEditorService {

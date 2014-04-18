@@ -7,7 +7,7 @@ import de.novanic.eventservice.service.EventExecutorService;
 import de.novanic.eventservice.service.EventExecutorServiceFactory;
 
 /**
- * @author Daniel Tuerk (daniel.tuerk@jambit.com)
+ * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
  */
 @Singleton
 public class EventBroadcaster {

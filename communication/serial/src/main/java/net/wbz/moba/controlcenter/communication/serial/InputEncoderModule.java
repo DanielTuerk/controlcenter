@@ -8,7 +8,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 /**
- * @author Daniel Tuerk (daniel.tuerk@jambit.com)
+ * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
  */
 public class InputEncoderModule implements InputModule {
 

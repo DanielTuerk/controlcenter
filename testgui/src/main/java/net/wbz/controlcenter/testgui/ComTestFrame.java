@@ -10,7 +10,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
 /**
- * @author Daniel Tuerk (daniel.tuerk@jambit.com)
+ * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
  */
 public class ComTestFrame extends JFrame {
 

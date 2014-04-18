@@ -14,9 +14,13 @@ import java.io.*;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Queue;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.FutureTask;
 
 /**
- * @author Daniel Tuerk (daniel.tuerk@jambit.com)
+ * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
  */
 public class SerialDevice implements Device {
     private static final Logger log = LoggerFactory.getLogger(SerialDevice.class);
@@ -37,6 +41,8 @@ public class SerialDevice implements Device {
     private BusDataChannel busDataChannel;
 
     private final BusDataDispatcher busDataDispatcher = new BusDataDispatcher();
+
+    private Queue<DeviceConnectionListener> listeners = new ConcurrentLinkedQueue<>();
 
     public SerialDevice(String deviceId) {
         this(deviceId, DEFAULT_BAUD_RATE_FCC);
@@ -62,7 +68,7 @@ public class SerialDevice implements Device {
 
     @Override
     public void setRailVoltage(boolean state) throws IOException {
-        busDataChannel.send(new BusData(0, 109, (state ? 127 : 0)));
+        busDataChannel.send(new BusData(1, 127, (state ? 160 : 0)));
 //        outputStream.write(new byte[]{0, (byte) 109, (byte) (state ? 1 : 0)});
 //        outputStream.flush();
     }
@@ -89,6 +95,16 @@ public class SerialDevice implements Device {
 
                     busDataChannel = new BusDataChannel(inputStream, outputStream, busDataDispatcher);
 
+                    for (final DeviceConnectionListener listener : listeners) {
+                        new FutureTask<Void>(new Callable<Void>() {
+                            @Override
+                            public Void call() throws Exception {
+                                listener.connected(SerialDevice.this);
+                                return null;
+                            }
+                        }).run();
+                    }
+
                     return;
                 } catch (PortInUseException e) {
                     log.error("COM1 in use", e);
@@ -110,6 +126,7 @@ public class SerialDevice implements Device {
         if (busDataChannel != null) {
             busDataChannel.shutdownNow();
         }
+        busDataChannel=null;
         log.info("disconnecting COM device");
         if (serialPort != null) {
             try {
@@ -127,7 +144,21 @@ public class SerialDevice implements Device {
             serialPort.removeEventListener();
             serialPort.close();
             log.info("COM device disconnected");
+
+            for (final DeviceConnectionListener listener : listeners) {
+                new FutureTask<Void>(new Callable<Void>() {
+                    @Override
+                    public Void call() throws Exception {
+                        listener.disconnected(SerialDevice.this);
+                        return null;
+                    }
+                }).run();
+            }
         }
+        modules.clear();
+        trainModules.clear();
+        inputModules.clear();
+        busDataChannel=null;
     }
 
     @Override
@@ -177,8 +208,27 @@ public class SerialDevice implements Device {
         return trainModules.get(address);
     }
 
+    private void sendDebug(BusData data) {
+        busDataChannel.send(data);
+    }
+
+    public BusDataDispatcher getBusDataDispatcher() {
+        return busDataDispatcher;
+    }
+
+    @Override
+    public void addDeviceConnectionListener(DeviceConnectionListener listener) {
+        listeners.add(listener);
+    }
+
+    @Override
+    public void removeDeviceConnectionListener(DeviceConnectionListener listener) {
+        listeners.remove(listener);
+    }
+
+
     public static void main(String[] args) {
-        SerialDevice serialDevice = new SerialDevice("/dev/tty.usbserial-00002014");
+        SerialDevice serialDevice = new SerialDevice("COM4");
         serialDevice.connect();
         BufferedReader console = new BufferedReader(new InputStreamReader(System.in));
         System.out.print("Geben Sie etwas ein: ");
@@ -193,10 +243,10 @@ public class SerialDevice implements Device {
                     serialDevice.setRailVoltage(true);
                 } else if (line.equals("fcc 0")) {
                     serialDevice.setRailVoltage(false);
-                } else if(line.startsWith("send ")) {
+                } else if (line.startsWith("send ")) {
                     String[] parts = line.split(" ");
                     serialDevice.sendDebug(new BusData(Integer.parseInt(parts[1]),
-                            Integer.parseInt(parts[1]),Integer.parseInt(parts[1])));
+                            Integer.parseInt(parts[2]), Integer.parseInt(parts[3])));
                 }
             }
         } catch (IOException e) {
@@ -207,11 +257,4 @@ public class SerialDevice implements Device {
 
     }
 
-    private void sendDebug(BusData data) {
-        busDataChannel.send(data);
-    }
-
-    public BusDataDispatcher getBusDataDispatcher() {
-        return busDataDispatcher;
-    }
 }

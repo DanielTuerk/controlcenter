@@ -6,7 +6,7 @@ import net.wbz.moba.controlcenter.web.shared.track.model.Straight;
 import net.wbz.moba.controlcenter.web.shared.track.model.TrackPart;
 
 /**
- * @author Daniel Tuerk (daniel.tuerk@jambit.com)
+ * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
  */
 abstract public class AbstractSignalWidget extends AbstractControlImageTrackWidget<Signal> {
 

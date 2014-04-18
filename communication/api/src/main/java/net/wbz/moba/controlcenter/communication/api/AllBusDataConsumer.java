@@ -1,7 +1,9 @@
 package net.wbz.moba.controlcenter.communication.api;
 
 /**
- * @author Daniel Tuerk (daniel.tuerk@jambit.com)
+ * This consumer is informed by state changes of all addresses of each existing SX bus.
+ *
+ * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
  */
 abstract public class AllBusDataConsumer extends BusDataConsumer {
     protected AllBusDataConsumer() {

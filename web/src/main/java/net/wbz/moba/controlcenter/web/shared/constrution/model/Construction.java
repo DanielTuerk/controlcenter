@@ -3,7 +3,7 @@ package net.wbz.moba.controlcenter.web.shared.constrution.model;
 import java.io.Serializable;
 
 /**
- * @author Daniel Tuerk (daniel.tuerk@jambit.com)
+ * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
  */
 public class Construction implements Serializable {
 

@@ -3,7 +3,7 @@ package net.wbz.moba.controlcenter.db;
 /**
  * Exception for storage access.
  *
- * @author Daniel Tuerk (daniel.tuerk@jambit.com)
+ * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
  */
 public class StorageException extends Exception {
 

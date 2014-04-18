@@ -1,7 +1,7 @@
 package net.wbz.moba.controlcenter.web.client.editor.track;
 
 /**
- * @author Daniel Tuerk (daniel.tuerk@jambit.com)
+ * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
  */
 public interface ClickActionViewerWidgetHandler {
 

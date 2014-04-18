@@ -5,7 +5,7 @@ import com.google.common.collect.Lists;
 import java.util.List;
 
 /**
- * @author Daniel Tuerk (daniel.tuerk@jambit.com)
+ * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
  */
 public class BusConnection {
 

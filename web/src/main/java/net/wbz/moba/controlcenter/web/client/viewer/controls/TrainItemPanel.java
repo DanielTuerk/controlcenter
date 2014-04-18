@@ -53,37 +53,20 @@ public class TrainItemPanel extends AbstractItemPanel<Train> {
         rowDrivingFunctions.add(new Column(1, btnGroupDirection));
 
 
-
-
-
         contentPanel.add(rowDrivingFunctions);
 
         //TODO: generic driving level from train config
-        SliderBar sliderDrivingLevel = new SliderBarSimpleHorizontal(127, "150px", true);
+        sliderDrivingLevel = new SliderBarSimpleHorizontal(127, "150px", true);
         sliderDrivingLevel.drawMarks(Color.WHITE.toString(), 6);
-        sliderDrivingLevel.addBarValueChangedHandler(new BarValueChangedHandler() {
-            public void onBarValueChanged(BarValueChangedEvent event) {
-                ServiceUtils.getTrainService().updateDrivingLevel(getModel().getId(), event.getValue(), new AsyncCallback<Void>() {
-                    @Override
-                    public void onFailure(Throwable caught) {
-                    }
 
-                    @Override
-                    public void onSuccess(Void result) {
-                    }
-                });
-            }
-        });
 //        sliderBar.drawMarks("white",6);
 //        sliderBar.setMinMarkStep(3);
-//        sliderBar.setValue(valueInt);
+        sliderDrivingLevel.setValue(lastValueHotFixOfStupidValueChangeSliderEvent);
 //        sliderBar.setMaxValue(valueInt);
 
 
-
-
         Row drivingRow = new Row();
-        drivingRow.add(new Column(3,sliderDrivingLevel));
+        drivingRow.add(new Column(3, sliderDrivingLevel));
         contentPanel.add(drivingRow);
 
         initFunctions();
@@ -92,20 +75,45 @@ public class TrainItemPanel extends AbstractItemPanel<Train> {
 
     }
 
+    private SliderBar sliderDrivingLevel;
+
     @Override
     protected String getItemTitle() {
         return getModel().getName();
     }
 
+    int lastValueHotFixOfStupidValueChangeSliderEvent = 0;
+
     @Override
     protected void onLoad() {
         super.onLoad();
+        sliderDrivingLevel.addBarValueChangedHandler(new BarValueChangedHandler() {
+            public void onBarValueChanged(BarValueChangedEvent event) {
+                if (event.getValue() != lastValueHotFixOfStupidValueChangeSliderEvent) {
+                    lastValueHotFixOfStupidValueChangeSliderEvent = event.getValue();
+                    ServiceUtils.getTrainService().updateDrivingLevel(getModel().getId(), event.getValue(), new AsyncCallback<Void>() {
+                        @Override
+                        public void onFailure(Throwable caught) {
+                        }
 
+                        @Override
+                        public void onSuccess(Void result) {
+                        }
+                    });
+                }
+            }
+        });
+    }
+
+    @Override
+    protected void onUnload() {
+
+        super.onUnload();
     }
 
     private void initFunctions() {
-        int count=0;
-        Row row=new Row();
+        int count = 0;
+        Row row = new Row();
         for (final TrainFunction functionEntry : getModel().getFunctions()) {
 
 
@@ -125,11 +133,11 @@ public class TrainItemPanel extends AbstractItemPanel<Train> {
                 }
             });
 
-            if(count%2==0){
-                row=new Row();
+            if (count % 2 == 0) {
+                row = new Row();
                 contentPanel.add(row);
             }
-            row.add(new Column(1,btnToggleFunction));
+            row.add(new Column(1, btnToggleFunction));
 
 //            contentPanel.add(btnToggleFunction);
 //        row.add(col);

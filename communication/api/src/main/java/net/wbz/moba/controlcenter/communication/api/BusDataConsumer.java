@@ -1,7 +1,9 @@
 package net.wbz.moba.controlcenter.communication.api;
 
 /**
- * @author Daniel Tuerk (daniel.tuerk@jambit.com)
+ * Consumers are informed by state changes of the configured bus and address.
+ *
+ * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
  */
 abstract public class BusDataConsumer {
 

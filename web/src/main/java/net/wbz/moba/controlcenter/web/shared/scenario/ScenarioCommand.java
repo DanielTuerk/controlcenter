@@ -6,7 +6,7 @@ import net.wbz.moba.controlcenter.web.shared.StringUtils;
 import java.util.Arrays;
 
 /**
- * @author Daniel Tuerk (daniel.tuerk@jambit.com)
+ * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
  */
 public abstract class ScenarioCommand implements IsSerializable {
 

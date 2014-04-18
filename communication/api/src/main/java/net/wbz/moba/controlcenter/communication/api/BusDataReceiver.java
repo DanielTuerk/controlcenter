@@ -1,7 +1,11 @@
 package net.wbz.moba.controlcenter.communication.api;
 
 /**
- * @author Daniel Tuerk (daniel.tuerk@jambit.com)
+ * The receiver will be informed for received data from the SX bus.
+ *
+ * Must be registered to the active connected device.
+ *
+ * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
  */
 public interface BusDataReceiver {
 

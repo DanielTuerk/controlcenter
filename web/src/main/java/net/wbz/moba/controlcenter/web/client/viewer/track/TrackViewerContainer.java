@@ -5,7 +5,7 @@ import com.google.gwt.user.client.ui.ScrollPanel;
 import net.wbz.moba.controlcenter.web.client.viewer.controls.ViewerControlsPanel;
 
 /**
- * @author Daniel Tuerk (daniel.tuerk@jambit.com)
+ * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
  */
 public class TrackViewerContainer extends DockPanel {
 

@@ -3,7 +3,7 @@ package net.wbz.moba.controlcenter.web.shared;
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
- * @author Daniel Tuerk (daniel.tuerk@jambit.com)
+ * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
  */
 public class DeviceInfo implements IsSerializable {
 

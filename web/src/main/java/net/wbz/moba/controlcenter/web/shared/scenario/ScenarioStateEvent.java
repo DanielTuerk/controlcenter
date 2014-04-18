@@ -4,7 +4,7 @@ import de.novanic.eventservice.client.event.Event;
 import net.wbz.moba.controlcenter.web.shared.AbstractStateEvent;
 
 /**
- * @author Daniel Tuerk (daniel.tuerk@jambit.com)
+ * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
  */
 public class ScenarioStateEvent extends AbstractStateEvent {
 

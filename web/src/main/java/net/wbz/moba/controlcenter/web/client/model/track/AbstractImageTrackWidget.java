@@ -8,7 +8,7 @@ import net.wbz.moba.controlcenter.web.shared.track.model.GridPosition;
 import net.wbz.moba.controlcenter.web.shared.track.model.TrackPart;
 
 /**
- * @author Daniel Tuerk (daniel.tuerk@jambit.com)
+ * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
  */
 abstract public class AbstractImageTrackWidget<T extends TrackPart> extends Image {
 

@@ -4,18 +4,20 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import net.wbz.moba.controlcenter.communication.api.Device;
 import net.wbz.moba.controlcenter.communication.api.DeviceAccessException;
+import net.wbz.moba.controlcenter.communication.api.DeviceConnectionListener;
 import net.wbz.moba.controlcenter.communication.serial.SerialDevice;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
- * @author Daniel Tuerk (daniel.tuerk@jambit.com)
+ * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
  */
 public class DeviceManager {
 
     private final Map<String, Device> devices = Maps.newHashMap();
-
 
     public enum DEVICE_TYPE {COM1}
 
@@ -77,4 +79,17 @@ public class DeviceManager {
         }
         throw new RuntimeException("no device found to delete");
     }
+
+    public void addDeviceConnectionListener(DeviceConnectionListener listener) {
+        for(Device device : devices.values()) {
+            device.addDeviceConnectionListener(listener);
+        }
+    }
+
+    public void removeDeviceConnectionListener(DeviceConnectionListener listener) {
+        for(Device device : devices.values()) {
+            device.removeDeviceConnectionListener(listener);
+        }
+    }
+
 }

@@ -6,7 +6,7 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import java.math.BigInteger;
 
 /**
- * @author Daniel Tuerk (daniel.tuerk@jambit.com)
+ * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
  */
 public class BusAddressItemPanel extends FlowPanel {
     private final FlowPanel dataPanel = new FlowPanel();
@@ -26,6 +26,7 @@ public class BusAddressItemPanel extends FlowPanel {
         int bit=7;
         for (int i = 0; i < 8; i++) {
             Label label = (Label) dataPanel.getWidget(i);
+//            label.addStyleName("flashlight");
             label.setText(String.valueOf(bits.testBit(bit) ? 1 : 0));
             bit--;
         }

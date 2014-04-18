@@ -5,7 +5,7 @@ import com.db4o.ObjectContainer;
 import java.io.File;
 
 /**
- * @author Daniel Tuerk (daniel.tuerk@jambit.com)
+ * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
  */
 public class Database {
 

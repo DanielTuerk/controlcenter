@@ -8,7 +8,7 @@ import com.google.gwt.user.client.ui.ToggleButton;
 import net.wbz.moba.controlcenter.web.client.ServiceUtils;
 
 /**
- * @author Daniel Tuerk (daniel.tuerk@jambit.com)
+ * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
  */
 public class BusConnectionToggleButton extends ToggleButton {
 

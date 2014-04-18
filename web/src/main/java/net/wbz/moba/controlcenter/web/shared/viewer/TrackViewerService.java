@@ -5,7 +5,7 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 import net.wbz.moba.controlcenter.web.shared.track.model.Configuration;
 
 /**
- * @author Daniel Tuerk (daniel.tuerk@jambit.com)
+ * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
  */
 @RemoteServiceRelativePath("trackviewer")
 public interface TrackViewerService extends RemoteService {

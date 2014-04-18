@@ -18,7 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * @author Daniel Tuerk (daniel.tuerk@jambit.com)
+ * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
  */
 @Singleton
 public class TrackViewerServiceImpl extends RemoteServiceServlet implements TrackViewerService {
@@ -41,7 +41,7 @@ public class TrackViewerServiceImpl extends RemoteServiceServlet implements Trac
                 deviceManager.getConnectedDevice().getOutputModule((byte) configuration.getAddress())
                         .setBit(getBitOfConfiguration(configuration), state).sendData();
                 //TODO
-                fireEvents(configuration,state);
+//                fireEvents(configuration,state);
             } catch (DeviceAccessException e) {
                 log.error("can't toggle track part", e);
                 throw new RpcTokenException("can't toggle track part");

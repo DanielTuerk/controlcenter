@@ -1,8 +1,10 @@
 package net.wbz.moba.controlcenter.communication.serial.data;
 
+import com.google.common.io.ByteStreams;
 import net.wbz.moba.controlcenter.communication.api.BusDataReceiver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import sun.misc.IOUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -10,7 +12,7 @@ import java.io.OutputStream;
 import java.util.Arrays;
 
 /**
- * @author Daniel Tuerk (daniel.tuerk@jambit.com)
+ * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
  */
 public class
         ReadBlockTask extends AbstractSerialAccessTask<Void> {
@@ -20,7 +22,7 @@ public class
 
     public ReadBlockTask(InputStream inputStream, OutputStream outputStream, BusDataReceiver receiver) {
         super(inputStream, outputStream);
-        this.receiver=receiver;
+        this.receiver = receiver;
     }
 
     @Override
@@ -28,8 +30,8 @@ public class
         byte[] replyBus0 = new byte[226];
         readBlock(120, 3, replyBus0);
 
-        receiver.recevied(0, Arrays.copyOfRange(replyBus0,0,112));
-        receiver.recevied(1, Arrays.copyOfRange(replyBus0,113,225));
+        receiver.recevied(0, Arrays.copyOfRange(replyBus0, 0, 112));
+        receiver.recevied(1, Arrays.copyOfRange(replyBus0, 113, 225));
 //        byte[] replyBus1 = new byte[192];
 //        readBlock(120, 120, replyBus1);
 //        receiver.recevied(0, replyBus1);
@@ -37,12 +39,18 @@ public class
     }
 
     private void readBlock(int address, int data, byte[] reply) throws IOException {
+
         getOutputStream().write(new byte[]{(byte) address, (byte) data});
         getOutputStream().flush();
 
 //        long start = System.currentTimeMillis();
 //        log.info("READ ALL - start");
-        getInputStream().read(reply);
+
+//
+        int lenght = getInputStream().read(reply);
+        if (lenght != reply.length) {
+            throw new RuntimeException("block length invalid ("+lenght+")");
+        }
 //        int foo = getInputStream().read(reply);
 //        log.info("READ ALL - end: " + (System.currentTimeMillis() - start) + " - "+foo);
 //        for(byte value : reply) {

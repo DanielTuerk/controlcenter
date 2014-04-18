@@ -14,7 +14,7 @@ import net.wbz.moba.controlcenter.web.shared.track.model.TrackPart;
  * A {@link net.wbz.moba.controlcenter.web.client.model.track.AbstractImageTrackWidget} with click control
  * to toggle the state of the {@link net.wbz.moba.controlcenter.web.shared.track.model.TrackPart}.
  *
- * @author Daniel Tuerk (daniel.tuerk@jambit.com)
+ * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
  */
 abstract public class AbstractControlImageTrackWidget<T extends TrackPart> extends AbstractImageTrackWidget<T>
         implements EditTrackWidgetHandler, ClickActionViewerWidgetHandler {
@@ -74,7 +74,7 @@ abstract public class AbstractControlImageTrackWidget<T extends TrackPart> exten
                             @Override
                             public void onSuccess(Boolean result) {
                                 trackPartState = result;
-                                changeState();
+//                                changeState();
                             }
                         });
                     }

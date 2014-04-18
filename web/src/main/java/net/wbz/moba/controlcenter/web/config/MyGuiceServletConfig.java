@@ -21,7 +21,7 @@ import net.wbz.moba.controlcenter.web.server.viewer.TrackViewerServiceImpl;
 import java.io.File;
 
 /**
- * @author Daniel Tuerk (daniel.tuerk@jambit.com)
+ * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
  */
 public class MyGuiceServletConfig extends GuiceServletContextListener {
 

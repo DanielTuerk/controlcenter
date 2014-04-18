@@ -3,7 +3,9 @@ package net.wbz.moba.controlcenter.web.shared.track.model;
 import java.io.Serializable;
 
 /**
- * @author Daniel Tuerk (daniel.tuerk@jambit.com)
+ * TODO: bus nr?
+ *
+ * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
  */
 public class Configuration implements Serializable {
 

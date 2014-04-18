@@ -5,9 +5,9 @@ import net.wbz.moba.controlcenter.web.shared.track.model.Straight;
 import net.wbz.moba.controlcenter.web.shared.track.model.TrackPart;
 
 /**
- * @author Daniel Tuerk (daniel.tuerk@jambit.com)
+ * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
  */
-abstract public class AbstractStraightWidget extends AbstractImageTrackWidget<Straight> {
+abstract public class AbstractStraightWidget extends AbstractControlImageTrackWidget<Straight> {
 
     @Override
     public String getImageUrl() {
@@ -15,11 +15,17 @@ abstract public class AbstractStraightWidget extends AbstractImageTrackWidget<St
     }
 
     @Override
+    public String getActiveStateImageUrl() {
+        return "img/widget/track/straight_green.png";
+    }
+
+    @Override
     public TrackPart getTrackPart(Widget containerWidget, int zoomLevel) {
-        Straight curve = new Straight();
-        curve.setDirection(getStraightDirection());
-        curve.setGridPosition(getGridPosition(containerWidget, zoomLevel));
-        return curve;
+        Straight straight = new Straight();
+        straight.setDirection(getStraightDirection());
+        straight.setGridPosition(getGridPosition(containerWidget, zoomLevel));
+        straight.setConfiguration(getStoredWidgetConfiguration());
+        return straight;
     }
 
     abstract public Straight.DIRECTION getStraightDirection();

@@ -7,7 +7,7 @@ import org.joda.time.DateTime;
 /**
  * Translator for DB40 to store and load objects with <code>joda.DateTime</code> members.
  *
- * @author Daniel Tuerk (daniel.tuerk@jambit.com)
+ * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
  */
 public class DateTimeTranslator implements ObjectConstructor {
 

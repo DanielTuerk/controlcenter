@@ -32,7 +32,7 @@ import java.util.Map;
 /**
  * TODO: each widget request his state -> change to list or events?
  *
- * @author Daniel Tuerk (daniel.tuerk@jambit.com)
+ * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
  */
 public class TrackViewerPanel extends AbstractTrackPanel {
 

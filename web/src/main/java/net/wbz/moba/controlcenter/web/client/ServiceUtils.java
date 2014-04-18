@@ -19,7 +19,7 @@ import net.wbz.moba.controlcenter.web.shared.viewer.TrackViewerService;
 import net.wbz.moba.controlcenter.web.shared.viewer.TrackViewerServiceAsync;
 
 /**
- * @author Daniel Tuerk (daniel.tuerk@jambit.com)
+ * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
  */
 public class ServiceUtils {
 

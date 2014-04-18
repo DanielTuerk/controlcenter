@@ -1,7 +1,7 @@
 package net.wbz.moba.controlcenter.communication.api;
 
 /**
- * @author Daniel Tuerk (daniel.tuerk@jambit.com)
+ * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
  */
 public class DeviceAccessException extends Exception {
     public DeviceAccessException(String s) {

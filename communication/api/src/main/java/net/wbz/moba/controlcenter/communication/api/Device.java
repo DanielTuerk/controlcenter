@@ -4,13 +4,17 @@ import java.io.IOException;
 import java.io.Serializable;
 
 /**
- * @author Daniel Tuerk (daniel.tuerk@jambit.com)
+ * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
  */
 public interface Device extends Serializable {
 
     public boolean getRailVoltage() throws IOException;
 
     public void setRailVoltage(boolean state) throws IOException;
+
+    void addDeviceConnectionListener(DeviceConnectionListener listener);
+
+    void removeDeviceConnectionListener(DeviceConnectionListener listener);
 
     public enum BIT {BIT_1, BIT_2, BIT_3, BIT_4, BIT_5, BIT_6, BIT_7, BIT_8}
 
@@ -25,5 +29,7 @@ public interface Device extends Serializable {
     public OutputModule getTrainModule(byte address) throws DeviceAccessException;
 
     public BusDataDispatcher getBusDataDispatcher();
+
+
 
 }

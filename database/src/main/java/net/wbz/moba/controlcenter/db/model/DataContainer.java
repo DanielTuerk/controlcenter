@@ -1,7 +1,7 @@
 package net.wbz.moba.controlcenter.db.model;
 
 /**
- * @author Daniel Tuerk (daniel.tuerk@jambit.com)
+ * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
  */
 public class DataContainer {
 

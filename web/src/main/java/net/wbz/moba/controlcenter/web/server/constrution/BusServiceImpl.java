@@ -28,7 +28,7 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 
 /**
- * @author Daniel Tuerk (daniel.tuerk@jambit.com)
+ * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
  */
 @Singleton
 public class BusServiceImpl extends RemoteServiceServlet implements BusService {

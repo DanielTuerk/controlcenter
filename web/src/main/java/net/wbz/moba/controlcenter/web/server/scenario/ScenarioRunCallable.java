@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
 import java.util.concurrent.Callable;
 
 /**
- * @author Daniel Tuerk (daniel.tuerk@jambit.com)
+ * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
  */
 public class ScenarioRunCallable implements Callable<Boolean> {
     private static final Logger LOG = LoggerFactory.getLogger(ScenarioRunCallable.class);

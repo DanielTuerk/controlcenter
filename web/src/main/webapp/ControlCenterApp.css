@@ -190,3 +190,7 @@ h1 {
 .contentPanel {
     overflow: scroll;
 }
+
+.flashlight {
+    background-color: red;
+}

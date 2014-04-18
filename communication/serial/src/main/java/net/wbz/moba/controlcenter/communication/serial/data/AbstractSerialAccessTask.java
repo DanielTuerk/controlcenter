@@ -5,7 +5,7 @@ import java.io.OutputStream;
 import java.util.concurrent.Callable;
 
 /**
- * @author Daniel Tuerk (daniel.tuerk@jambit.com)
+ * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
  */
 abstract public class AbstractSerialAccessTask<T> implements Callable<T> {
 

@@ -9,7 +9,7 @@ import com.google.gwt.user.client.ui.ToggleButton;
 import net.wbz.moba.controlcenter.web.shared.AbstractIdModel;
 
 /**
- * @author Daniel Tuerk (daniel.tuerk@jambit.com)
+ * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
  */
 abstract public class AbstractItemPanel<Model extends AbstractIdModel> extends FluidContainer {
 

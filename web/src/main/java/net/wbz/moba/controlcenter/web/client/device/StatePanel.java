@@ -2,16 +2,13 @@ package net.wbz.moba.controlcenter.web.client.device;
 
 import com.github.gwtbootstrap.client.ui.Button;
 import com.github.gwtbootstrap.client.ui.Label;
-import com.github.gwtbootstrap.client.ui.TextBox;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
-import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.*;
 import net.wbz.moba.controlcenter.web.client.ServiceUtils;
-import net.wbz.moba.controlcenter.web.shared.DeviceInfo;
 
 /**
  * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
@@ -28,14 +25,14 @@ public class StatePanel extends HorizontalPanel {
         add(busConnectionToggleButton);
         add(deviceListBox);
 
-        final DialogBox configureDeviceDialog  = createDialogBox();
+        final DeviceConfigModal configureDeviceModal  = new DeviceConfigModal(deviceListBox);
 
         Button configButton = new Button("Config");
         configButton.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                configureDeviceDialog.center();
-                configureDeviceDialog.show();
+//                configureDeviceModal.center();
+                configureDeviceModal.show();
             }
         });
         add(configButton);
@@ -65,76 +62,5 @@ public class StatePanel extends HorizontalPanel {
 
     @Override
     protected void onLoad() {
-    }
-
-
-    /**
-     * Create the dialog box for this example.
-     *
-     * @return the new dialog box
-     */
-    private DialogBox createDialogBox() {
-        // Create a dialog box and set the caption text
-        final DialogBox dialogBox = new DialogBox();
-        dialogBox.ensureDebugId("cwDialogBox");
-        dialogBox.setText("Configure Device");
-
-        // Create a table to layout the content
-        VerticalPanel dialogContents = new VerticalPanel();
-        dialogContents.setSpacing(4);
-        dialogBox.setWidget(dialogContents);
-
-        dialogContents.add(new Label("Key: "));
-        final TextBox txtKey = new TextBox();
-        dialogContents.add(txtKey);
-
-        // Add a close button at the bottom of the dialog
-        Button btnConfirm = new Button(
-                "Confirm", new ClickHandler() {
-            public void onClick(ClickEvent event) {
-
-                DeviceInfo deviceInfo = new DeviceInfo();
-                deviceInfo.setType(DeviceInfo.DEVICE_TYPE.COM1);
-                deviceInfo.setKey(txtKey.getValue());
-
-                ServiceUtils.getBusService().createDevice(deviceInfo, new AsyncCallback<Void>() {
-                    @Override
-                    public void onFailure(Throwable caught) {
-                        dialogBox.hide();
-                    }
-
-                    @Override
-                    public void onSuccess(Void result) {
-                        dialogBox.hide();
-
-                        deviceListBox.reload();
-                    }
-                });
-
-
-            }
-        });
-        dialogContents.add(btnConfirm);
-
-
-        // Add a close button at the bottom of the dialog
-        Button closeButton = new Button(
-                "Close", new ClickHandler() {
-            public void onClick(ClickEvent event) {
-                dialogBox.hide();
-            }
-        });
-        dialogContents.add(closeButton);
-        if (LocaleInfo.getCurrentLocale().isRTL()) {
-            dialogContents.setCellHorizontalAlignment(
-                    closeButton, HasHorizontalAlignment.ALIGN_LEFT);
-
-        } else {
-            dialogContents.setCellHorizontalAlignment(
-                    closeButton, HasHorizontalAlignment.ALIGN_RIGHT);
-        }
-
-        // Return the dialog box
-        return dialogBox;
     }
 }

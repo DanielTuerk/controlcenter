@@ -194,3 +194,15 @@ h1 {
 .flashlight {
     background-color: red;
 }
+
+.unnknownBlock {
+    background-color: goldenrod;
+}
+
+.usedBlock {
+    background-color: darkred;
+}
+
+.freeBlock {
+    background-color: limegreen;
+}

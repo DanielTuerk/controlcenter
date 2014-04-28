@@ -7,16 +7,11 @@ import net.wbz.moba.controlcenter.web.shared.track.model.TrackPart;
 /**
  * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
  */
-abstract public class AbstractStraightWidget extends AbstractControlImageTrackWidget<Straight> {
+abstract public class AbstractStraightWidget extends AbstractBlockImageTrackWidget<Straight> {
 
     @Override
     public String getImageUrl() {
         return "img/widget/track/straight.png";
-    }
-
-    @Override
-    public String getActiveStateImageUrl() {
-        return "img/widget/track/straight_green.png";
     }
 
     @Override

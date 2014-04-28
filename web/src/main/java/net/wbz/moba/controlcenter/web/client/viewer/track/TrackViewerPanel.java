@@ -17,14 +17,12 @@ import net.wbz.moba.controlcenter.web.client.editor.track.AbstractTrackPanel;
 import net.wbz.moba.controlcenter.web.client.editor.track.ClickActionViewerWidgetHandler;
 import net.wbz.moba.controlcenter.web.client.editor.track.TrackEditorContainer;
 import net.wbz.moba.controlcenter.web.client.editor.track.ViewerPaletteWidget;
-import net.wbz.moba.controlcenter.web.client.model.track.AbsoluteTrackPosition;
-import net.wbz.moba.controlcenter.web.client.model.track.AbstractControlImageTrackWidget;
-import net.wbz.moba.controlcenter.web.client.model.track.AbstractImageTrackWidget;
-import net.wbz.moba.controlcenter.web.client.model.track.ModelManager;
+import net.wbz.moba.controlcenter.web.client.model.track.*;
 import net.wbz.moba.controlcenter.web.client.util.DialogBoxUtil;
 import net.wbz.moba.controlcenter.web.client.viewer.controls.ViewerControlsPanel;
 import net.wbz.moba.controlcenter.web.shared.track.model.Configuration;
 import net.wbz.moba.controlcenter.web.shared.track.model.TrackPart;
+import net.wbz.moba.controlcenter.web.shared.viewer.TrackPartBlockEvent;
 import net.wbz.moba.controlcenter.web.shared.viewer.TrackPartStateEvent;
 
 import java.util.Map;
@@ -41,7 +39,8 @@ public class TrackViewerPanel extends AbstractTrackPanel {
 
     private Label lblTrackPartConfig = new Label();
 
-    private Map<Configuration, AbstractControlImageTrackWidget> trackWidgets = Maps.newConcurrentMap();
+    private Map<Configuration, AbstractControlImageTrackWidget> controlTrackWidgets = Maps.newConcurrentMap();
+    private Map<Configuration, AbstractBlockImageTrackWidget> blockTrackWidgets = Maps.newConcurrentMap();
 
     @Override
     protected void onLoad() {
@@ -53,8 +52,15 @@ public class TrackViewerPanel extends AbstractTrackPanel {
             public void apply(Event anEvent) {
                 if (anEvent instanceof TrackPartStateEvent) {
                     TrackPartStateEvent event = (TrackPartStateEvent) anEvent;
-                    if (trackWidgets.containsKey(event.getConfiguration())) {
-                        trackWidgets.get(event.getConfiguration()).repaint(event.isOn());
+                    if (controlTrackWidgets.containsKey(event.getConfiguration())) {
+                        controlTrackWidgets.get(event.getConfiguration()).repaint(event.isOn());
+                    } else if (blockTrackWidgets.containsKey(event.getConfiguration())) {
+                        BlockPart blockPart = blockTrackWidgets.get(event.getConfiguration());
+                        if (event.isOn()) {
+                            blockPart.usedBlock();
+                        } else {
+                            blockPart.freeBlock();
+                        }
                     } else {
                         net.wbz.moba.controlcenter.web.client.util.Log.console("can't find widget of " + event.getConfiguration().toString());
                     }
@@ -62,6 +68,30 @@ public class TrackViewerPanel extends AbstractTrackPanel {
                 }
             }
         });
+//        EventReceiver.getInstance().addListener(TrackPartBlockEvent.class, new RemoteEventListener() {
+//            public void apply(Event anEvent) {
+//                if (anEvent instanceof TrackPartBlockEvent) {
+//                    TrackPartBlockEvent event = (TrackPartBlockEvent) anEvent;
+//                    if (blockTrackWidgets.containsKey(event.getConfig())) {
+//                        BlockPart blockPart = blockTrackWidgets.get(event.getConfig());
+//                        switch (event.getState()) {
+//                            case UNKNOWN:
+//                                blockPart.unknownBlock();
+//                                break;
+//                            case USED:
+//                                blockPart.usedBlock();
+//                                break;
+//                            case FREE:
+//                                blockPart.freeBlock();
+//                                break;
+//                        }
+//                    } else {
+//                        net.wbz.moba.controlcenter.web.client.util.Log.console("can't find widget of " + event.getConfig().toString());
+//                    }
+//
+//                }
+//            }
+//        });
 
 
         DialogBoxUtil.getLoading().setProgressPercentage(0);
@@ -86,7 +116,8 @@ public class TrackViewerPanel extends AbstractTrackPanel {
 
             @Override
             public void onSuccess(TrackPart[] trackParts) {
-                trackWidgets.clear();
+                controlTrackWidgets.clear();
+                blockTrackWidgets.clear();
 
                 int maxTop = 0;
                 int maxLeft = 0;
@@ -104,7 +135,9 @@ public class TrackViewerPanel extends AbstractTrackPanel {
                     AbstractImageTrackWidget trackWidget = ModelManager.getInstance().getWidgetOf(trackPart);
 
                     if (trackWidget instanceof AbstractControlImageTrackWidget) {
-                        trackWidgets.put(trackPart.getConfiguration(), (AbstractControlImageTrackWidget) trackWidget);
+                        controlTrackWidgets.put(trackPart.getConfiguration(), (AbstractControlImageTrackWidget) trackWidget);
+                    } else if (trackWidget instanceof AbstractBlockImageTrackWidget && trackPart.getConfiguration() !=null) {
+                        blockTrackWidgets.put(trackPart.getConfiguration(), (AbstractBlockImageTrackWidget) trackWidget);
                     }
 
                     AbsoluteTrackPosition trackPosition = trackWidget.getTrackPosition(trackPart.getGridPosition(), getZoomLevel());

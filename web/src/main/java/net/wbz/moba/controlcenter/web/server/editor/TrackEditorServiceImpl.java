@@ -104,7 +104,7 @@ public class TrackEditorServiceImpl extends RemoteServiceServlet implements Trac
 
             for(final TrackPart trackPart : trackParts) {
                 final Configuration trackPartConfiguration = trackPart.getConfiguration();
-                if(!uniqueTrackPartConfigs.contains(trackPartConfiguration)) {
+                if(trackPartConfiguration!=null && trackPartConfiguration.isValid() && !uniqueTrackPartConfigs.contains(trackPartConfiguration)) {
                     uniqueTrackPartConfigs.add(trackPartConfiguration);
 
                     //TODO bus nr
@@ -119,6 +119,7 @@ public class TrackEditorServiceImpl extends RemoteServiceServlet implements Trac
             }
             // register consumers if an device is already connected
             try {
+                deviceManager.getConnectedDevice().getBusDataDispatcher().unregisterConsumers(busDataConsumersOfTheCurrentTrack);
                 deviceManager.getConnectedDevice().getBusDataDispatcher().registerConsumers(busDataConsumersOfTheCurrentTrack);
             } catch (DeviceAccessException e) {
                 //ignore

@@ -2,7 +2,6 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
-    <!-- POM file generated with GWT webAppCreator -->
     <parent>
         <groupId>net.wbz.moba</groupId>
         <artifactId>controlcenter</artifactId>
@@ -92,12 +91,6 @@
             <systemPath>${project.basedir}/lib/gwt-links-1.4.2.jar</systemPath>
         </dependency>
         <dependency>
-            <groupId>com.allen_sauer.gwt</groupId>
-            <artifactId>dnd</artifactId>
-            <version>3.1.2</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/lib/gwt-dnd-3.1.2.jar</systemPath>
-        </dependency>    <dependency>
             <groupId>com.allen_sauer.gwt</groupId>
             <artifactId>dnd</artifactId>
             <version>3.1.2</version>

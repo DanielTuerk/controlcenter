@@ -3,8 +3,12 @@ package net.wbz.moba.controlcenter.web.client.device;
 import com.github.gwtbootstrap.client.ui.ListBox;
 import com.google.common.collect.Lists;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import de.novanic.eventservice.client.event.Event;
+import de.novanic.eventservice.client.event.listener.RemoteEventListener;
+import net.wbz.moba.controlcenter.web.client.EventReceiver;
 import net.wbz.moba.controlcenter.web.client.ServiceUtils;
 import net.wbz.moba.controlcenter.web.shared.DeviceInfo;
+import net.wbz.moba.controlcenter.web.shared.DeviceInfoEvent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,8 +21,13 @@ public class DeviceListBox extends ListBox {
     private final List<DeviceInfo> devices = Lists.newArrayList();
 
     public DeviceListBox() {
+        EventReceiver.getInstance().addListener(DeviceInfoEvent.class, new RemoteEventListener() {
+            @Override
+            public void apply(Event event) {
+                reload();
+            }
+        });
         setVisibleItemCount(1);
-
         reload();
     }
 
@@ -32,6 +41,7 @@ public class DeviceListBox extends ListBox {
     }
 
     public void reload() {
+
         ServiceUtils.getBusService().getDevices(new AsyncCallback<ArrayList<DeviceInfo>>() {
             @Override
             public void onFailure(Throwable caught) {
@@ -40,6 +50,7 @@ public class DeviceListBox extends ListBox {
 
             @Override
             public void onSuccess(ArrayList<DeviceInfo> result) {
+                clear();
                 for (DeviceInfo device : result) {
                     addItem(device.getKey());
                 }

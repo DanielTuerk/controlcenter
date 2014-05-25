@@ -1,4 +1,4 @@
-package net.wbz.moba.controlcenter.web.shared.constrution.model;
+package net.wbz.moba.controlcenter.web.shared.constrution;
 
 import java.io.Serializable;
 

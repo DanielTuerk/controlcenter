@@ -7,7 +7,8 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.*;
+import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.ToggleButton;
 import net.wbz.moba.controlcenter.web.client.ServiceUtils;
 
 /**
@@ -25,13 +26,12 @@ public class StatePanel extends HorizontalPanel {
         add(busConnectionToggleButton);
         add(deviceListBox);
 
-        final DeviceConfigModal configureDeviceModal  = new DeviceConfigModal(deviceListBox);
+        final DeviceConfigModal configureDeviceModal = new DeviceConfigModal();
 
         Button configButton = new Button("Config");
         configButton.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-//                configureDeviceModal.center();
                 configureDeviceModal.show();
             }
         });

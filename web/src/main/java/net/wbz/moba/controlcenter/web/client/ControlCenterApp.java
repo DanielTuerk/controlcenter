@@ -32,6 +32,7 @@ public class ControlCenterApp implements EntryPoint {
     private WelcomePage welcomePageContainer;
 
     public ControlCenterApp() {
+        // TODO: ugly
         ModelManager.getInstance().registerModel(new SignalHorizontalWidget());
         ModelManager.getInstance().registerModel(new SignalVerticalWidget());
         // straight after signal because signal extends straight

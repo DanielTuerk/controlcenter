@@ -1,10 +1,8 @@
 package net.wbz.moba.controlcenter.communication.serial.data;
 
-import com.google.common.io.ByteStreams;
 import net.wbz.moba.controlcenter.communication.api.BusDataReceiver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sun.misc.IOUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -30,11 +28,11 @@ public class
         byte[] replyBus0 = new byte[226];
         readBlock(120, 3, replyBus0);
 
-        receiver.recevied(0, Arrays.copyOfRange(replyBus0, 0, 112));
-        receiver.recevied(1, Arrays.copyOfRange(replyBus0, 113, 225));
+        receiver.received(0, Arrays.copyOfRange(replyBus0, 0, 112));
+        receiver.received(1, Arrays.copyOfRange(replyBus0, 113, 225));
 //        byte[] replyBus1 = new byte[192];
 //        readBlock(120, 120, replyBus1);
-//        receiver.recevied(0, replyBus1);
+//        receiver.received(0, replyBus1);
         return null;
     }
 

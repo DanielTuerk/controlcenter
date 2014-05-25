@@ -9,5 +9,5 @@ package net.wbz.moba.controlcenter.communication.api;
  */
 public interface BusDataReceiver {
 
-    public void recevied(int busNr, byte[] data);
+    public void received(int busNr, byte[] data);
 }

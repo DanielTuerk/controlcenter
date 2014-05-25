@@ -1,16 +1,9 @@
 package net.wbz.moba.controlcenter.web.client.model.track;
 
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.*;
-import net.wbz.moba.controlcenter.web.client.ServiceUtils;
-import net.wbz.moba.controlcenter.web.client.device.BusConnection;
-import net.wbz.moba.controlcenter.web.client.device.BusConnectionListener;
-import net.wbz.moba.controlcenter.web.client.editor.track.ClickActionViewerWidgetHandler;
 import net.wbz.moba.controlcenter.web.client.editor.track.EditTrackWidgetHandler;
 import net.wbz.moba.controlcenter.web.shared.track.model.Configuration;
-import net.wbz.moba.controlcenter.web.shared.track.model.Straight;
 import net.wbz.moba.controlcenter.web.shared.track.model.TrackPart;
-import sun.org.mozilla.javascript.internal.ast.Block;
 
 /**
  *
@@ -20,33 +13,31 @@ abstract public class AbstractBlockImageTrackWidget<T extends TrackPart> extends
         implements EditTrackWidgetHandler, BlockPart {
 
     private final ListBox selectBit = new ListBox();
-    private final TextBox txtAdress = new TextBox();
+    private final TextBox txtAddress = new TextBox();
 
-    private int trackPartConfigAdress = -1;
+    private int trackPartConfigAddress = -1;
     private int trackPartConfigBit = -1;
-
-    private boolean trackPartState = true;
 
     public AbstractBlockImageTrackWidget() {
     }
 
     @Override
     public void freeBlock() {
-        removeStyleName("unnknownBlock");
+        removeStyleName("unknownBlock");
         removeStyleName("usedBlock");
         addStyleName("freeBlock");
     }
 
     @Override
     public void unknownBlock() {
-        addStyleName("unnknownBlock");
+        addStyleName("unknownBlock");
         removeStyleName("usedBlock");
         removeStyleName("freeBlock");
     }
 
     @Override
     public void usedBlock() {
-        removeStyleName("unnknownBlock");
+        removeStyleName("unknownBlock");
         addStyleName("usedBlock");
         removeStyleName("freeBlock");
     }
@@ -54,7 +45,7 @@ abstract public class AbstractBlockImageTrackWidget<T extends TrackPart> extends
 
     public Configuration getStoredWidgetConfiguration() {
         Configuration configuration = new Configuration();
-        configuration.setAddress(trackPartConfigAdress);
+        configuration.setAddress(trackPartConfigAddress);
         configuration.setOutput(trackPartConfigBit);
         return configuration;
     }
@@ -71,8 +62,8 @@ abstract public class AbstractBlockImageTrackWidget<T extends TrackPart> extends
         cellFormatter.setHorizontalAlignment(
                 0, 0, HasHorizontalAlignment.ALIGN_CENTER);
 
-        if (trackPartConfigAdress >= 0) {
-            txtAdress.setText(String.valueOf(trackPartConfigAdress));
+        if (trackPartConfigAddress >= 0) {
+            txtAddress.setText(String.valueOf(trackPartConfigAddress));
         }
 
         for (int index = 0; index < 8; index++) {
@@ -83,8 +74,8 @@ abstract public class AbstractBlockImageTrackWidget<T extends TrackPart> extends
         }
 
         // Add some standard form options
-        layout.setHTML(1, 0, "Adress:");
-        layout.setWidget(1, 1, txtAdress);
+        layout.setHTML(1, 0, "Address:");
+        layout.setWidget(1, 1, txtAddress);
         layout.setHTML(2, 0, "Bit:");
         layout.setWidget(2, 1, selectBit);
 
@@ -100,17 +91,17 @@ abstract public class AbstractBlockImageTrackWidget<T extends TrackPart> extends
 
     @Override
     public void onConfirmCallback() {
-        trackPartConfigAdress = Integer.parseInt(txtAdress.getText());
+        trackPartConfigAddress = Integer.parseInt(txtAddress.getText());
         trackPartConfigBit = Integer.parseInt(selectBit.getItemText(selectBit.getSelectedIndex()));
     }
 
     @Override
     public void initFromTrackPart(T trackPart) {
         if (trackPart != null && trackPart.getConfiguration() != null) {
-            trackPartConfigAdress = trackPart.getConfiguration().getAddress();
+            trackPartConfigAddress = trackPart.getConfiguration().getAddress();
             trackPartConfigBit = trackPart.getConfiguration().getOutput();
 
-            //
+            //TODO: why?
             setTitle(trackPart.getConfiguration().toString());
         }
     }

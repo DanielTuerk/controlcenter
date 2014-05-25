@@ -6,12 +6,11 @@ import com.db4o.config.EmbeddedConfiguration;
 import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
-import com.sun.istack.internal.Nullable;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-//import com.sun.istack.internal.Nullable;
+import javax.annotation.Nullable;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
@@ -95,9 +94,8 @@ public class DatabaseFactory {
      * Add a new storage to the factory.
      * Binary will be created if not existing.
      *
-     * @param group sub directory of the storage
-     * @param name  file name of the storage
-     * @return storage
+     * @param key name of the storage
+     * @return created {@link net.wbz.moba.controlcenter.db.Database}
      */
     public synchronized Database addDatabase(String key) throws IOException {
         File storageDir = storageLocationPath;

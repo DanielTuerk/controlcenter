@@ -68,7 +68,7 @@ public class BusDataDispatcher implements BusDataReceiver {
     }
 
     @Override
-    public void recevied(int busNr, byte[] data) {
+    public void received(int busNr, byte[] data) {
         if (busData.containsKey(busNr)) {
             byte[] oldData = busData.get(busNr);
             for (int i = 0; i < data.length; i++) {

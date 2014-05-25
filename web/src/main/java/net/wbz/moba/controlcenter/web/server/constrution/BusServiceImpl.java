@@ -22,7 +22,7 @@ import net.wbz.moba.controlcenter.web.shared.DeviceInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.sun.istack.internal.Nullable;
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -34,15 +34,20 @@ import java.util.ArrayList;
 public class BusServiceImpl extends RemoteServiceServlet implements BusService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(BusServiceImpl.class);
+
     public static final String BUS_DB_KEY = "bus";
 
     private Device activeDevice;
+
     private final Database settingsDatabase;
+
     private final DeviceManager deviceManager;
+
     private final EventBroadcaster eventBroadcaster;
 
     @Inject
-    public BusServiceImpl(DeviceManager deviceManager, @Named("settings") DatabaseFactory databaseFactory, EventBroadcaster eventBroadcaster) {
+    public BusServiceImpl(DeviceManager deviceManager, @Named("settings") DatabaseFactory databaseFactory,
+                          EventBroadcaster eventBroadcaster) {
         this.deviceManager = deviceManager;
         this.eventBroadcaster = eventBroadcaster;
         if (!databaseFactory.getExistingDatabaseNames().contains(BUS_DB_KEY)) {
@@ -64,7 +69,6 @@ public class BusServiceImpl extends RemoteServiceServlet implements BusService {
                 throw new RuntimeException("no DB found for BUS key: " + BUS_DB_KEY);
             }
         }
-
 
     }
 
@@ -131,9 +135,9 @@ public class BusServiceImpl extends RemoteServiceServlet implements BusService {
     @Override
     public BusData[] readBusData(int busNr) {
         byte[] busData = activeDevice.getBusDataDispatcher().getData(busNr);
-        BusData[] replyData  = new BusData[busData.length];
-        for(int i=0;i<busData.length;i++) {
-            replyData[i] = new BusData(i,(int)busData[i]);
+        BusData[] replyData = new BusData[busData.length];
+        for (int i = 0; i < busData.length; i++) {
+            replyData[i] = new BusData(i, (int) busData[i]);
         }
         return replyData;
     }

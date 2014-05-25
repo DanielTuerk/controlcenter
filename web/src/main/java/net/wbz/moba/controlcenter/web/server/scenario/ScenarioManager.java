@@ -2,7 +2,6 @@ package net.wbz.moba.controlcenter.web.server.scenario;
 
 import com.db4o.ObjectContainer;
 import com.db4o.ObjectSet;
-import com.db4o.query.Query;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
@@ -25,7 +24,7 @@ import java.util.Map;
 
 /**
  * Manipulation for the {@link net.wbz.moba.controlcenter.web.shared.scenario.Scenario}
- * in an {@link net.wbz.moba.controlcenter.web.shared.constrution.model.Construction}.
+ * in an {@link net.wbz.moba.controlcenter.web.shared.constrution.Construction}.
  * <p/>
  * {@link net.wbz.moba.controlcenter.web.shared.scenario.Scenario}s are stored in an own database named by the
  * corresponding construction. Access and manipulation of each {@link net.wbz.moba.controlcenter.web.shared.scenario.Scenario}

@@ -12,7 +12,7 @@ import java.util.ArrayList;
 public interface BusService extends RemoteService {
 
     public void connectBus();
-    public void disonnectBus();
+    public void disconnectBus();
     public boolean isBusConnected();
 
     public void changeDevice(DeviceInfo deviceInfo);

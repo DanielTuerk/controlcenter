@@ -44,7 +44,7 @@ public class BusConnectionToggleButton extends ToggleButton {
                         }
                     });
                 } else {
-                    ServiceUtils.getBusService().disonnectBus(new AsyncCallback<Void>() {
+                    ServiceUtils.getBusService().disconnectBus(new AsyncCallback<Void>() {
                         @Override
                         public void onFailure(Throwable caught) {
                             setValue(true);

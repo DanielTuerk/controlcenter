@@ -15,10 +15,7 @@ import net.wbz.moba.controlcenter.db.Database;
 import net.wbz.moba.controlcenter.db.DatabaseFactory;
 import net.wbz.moba.controlcenter.db.StorageException;
 import net.wbz.moba.controlcenter.web.server.EventBroadcaster;
-import net.wbz.moba.controlcenter.web.shared.BusData;
-import net.wbz.moba.controlcenter.web.shared.BusDataEvent;
-import net.wbz.moba.controlcenter.web.shared.BusService;
-import net.wbz.moba.controlcenter.web.shared.DeviceInfo;
+import net.wbz.moba.controlcenter.web.shared.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -79,6 +76,8 @@ public class BusServiceImpl extends RemoteServiceServlet implements BusService {
                 deviceInfo.getType().name()), deviceInfo.getKey());
         settingsDatabase.getObjectContainer().store(deviceInfo);
         settingsDatabase.getObjectContainer().commit();
+
+        eventBroadcaster.fireEvent(new DeviceInfoEvent(deviceInfo, DeviceInfoEvent.TYPE.CREATE));
     }
 
     @Override
@@ -87,6 +86,8 @@ public class BusServiceImpl extends RemoteServiceServlet implements BusService {
         deviceManager.removeDevice(device);
         settingsDatabase.getObjectContainer().delete(deviceInfo);
         settingsDatabase.getObjectContainer().commit();
+
+        eventBroadcaster.fireEvent(new DeviceInfoEvent(deviceInfo, DeviceInfoEvent.TYPE.REMOVE));
     }
 
     @Override
@@ -154,7 +155,7 @@ public class BusServiceImpl extends RemoteServiceServlet implements BusService {
     }
 
     @Override
-    public void disonnectBus() {
+    public void disconnectBus() {
         if (activeDevice != null) {
             activeDevice.disconnect();
         }

@@ -7,15 +7,16 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.google.inject.name.Named;
-import net.wbz.moba.controlcenter.communication.api.AllBusDataConsumer;
-import net.wbz.moba.controlcenter.communication.api.Device;
-import net.wbz.moba.controlcenter.communication.manager.DeviceManager;
-import net.wbz.moba.controlcenter.communication.serial.SerialDevice;
 import net.wbz.moba.controlcenter.db.Database;
 import net.wbz.moba.controlcenter.db.DatabaseFactory;
 import net.wbz.moba.controlcenter.db.StorageException;
 import net.wbz.moba.controlcenter.web.server.EventBroadcaster;
 import net.wbz.moba.controlcenter.web.shared.*;
+import net.wbz.selectrix4java.SerialDevice;
+import net.wbz.selectrix4java.api.bus.AllBusDataConsumer;
+import net.wbz.selectrix4java.api.device.Device;
+import net.wbz.selectrix4java.api.device.DeviceAccessException;
+import net.wbz.selectrix4java.manager.DeviceManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,7 +35,7 @@ public class BusServiceImpl extends RemoteServiceServlet implements BusService {
 
     public static final String BUS_DB_KEY = "bus";
 
-    private Device activeDevice;
+    private net.wbz.selectrix4java.api.device.Device activeDevice;
 
     private final Database settingsDatabase;
 
@@ -58,8 +59,9 @@ public class BusServiceImpl extends RemoteServiceServlet implements BusService {
                 settingsDatabase = databaseFactory.getStorage(BUS_DB_KEY);
                 ObjectSet<DeviceInfo> storedDevices = settingsDatabase.getObjectContainer().query(DeviceInfo.class);
                 for (DeviceInfo deviceInfo : storedDevices) {
+                    // TODO - values from config
                     deviceManager.registerDevice(DeviceManager.DEVICE_TYPE.valueOf(
-                            deviceInfo.getType().name()), deviceInfo.getKey());
+                            deviceInfo.getType().name()), deviceInfo.getKey(), SerialDevice.DEFAULT_BAUD_RATE_FCC);
                 }
 
             } catch (StorageException e) {
@@ -76,8 +78,9 @@ public class BusServiceImpl extends RemoteServiceServlet implements BusService {
 
     @Override
     public synchronized void createDevice(DeviceInfo deviceInfo) {
+        //TODO
         deviceManager.registerDevice(DeviceManager.DEVICE_TYPE.valueOf(
-                deviceInfo.getType().name()), deviceInfo.getKey());
+                deviceInfo.getType().name()), deviceInfo.getKey(), SerialDevice.DEFAULT_BAUD_RATE_FCC);
         settingsDatabase.getObjectContainer().store(deviceInfo);
         settingsDatabase.getObjectContainer().commit();
 
@@ -86,7 +89,7 @@ public class BusServiceImpl extends RemoteServiceServlet implements BusService {
 
     @Override
     public synchronized void deleteDevice(DeviceInfo deviceInfo) {
-        Device device = deviceManager.getDeviceById(deviceInfo.getKey());
+        net.wbz.selectrix4java.api.device.Device device = deviceManager.getDeviceById(deviceInfo.getKey());
         deviceManager.removeDevice(device);
         settingsDatabase.getObjectContainer().delete(deviceInfo);
         settingsDatabase.getObjectContainer().commit();
@@ -146,22 +149,33 @@ public class BusServiceImpl extends RemoteServiceServlet implements BusService {
     @Override
     public void connectBus() {
         if (activeDevice != null) {
-            activeDevice.connect();
+            try {
+                activeDevice.connect();
 
-            activeDevice.getBusDataDispatcher().registerConsumer(new AllBusDataConsumer() {
-                @Override
-                public void
-                valueChanged(int bus, int address, int value) {
-                    eventBroadcaster.fireEvent(new BusDataEvent(bus, address, value));
-                }
-            });
+
+                // TODO: really required?
+                activeDevice.getBusDataDispatcher().registerConsumer(new AllBusDataConsumer() {
+                    @Override
+                    public void
+                    valueChanged(int bus, int address, int value) {
+                        eventBroadcaster.fireEvent(new BusDataEvent(bus, address, value));
+                    }
+                });
+            } catch (DeviceAccessException e) {
+                LOGGER.error("connect",e);
+            }
+
         }
     }
 
     @Override
     public void disconnectBus() {
         if (activeDevice != null) {
-            activeDevice.disconnect();
+            try {
+                activeDevice.disconnect();
+            } catch (DeviceAccessException e) {
+                LOGGER.error("disconnect",e);
+            }
         }
     }
 

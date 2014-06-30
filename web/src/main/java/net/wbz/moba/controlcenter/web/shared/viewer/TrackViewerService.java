@@ -10,6 +10,6 @@ import net.wbz.moba.controlcenter.web.shared.track.model.Configuration;
 @RemoteServiceRelativePath("trackviewer")
 public interface TrackViewerService extends RemoteService {
 
-    public void toogleTrackPart(Configuration configuration, boolean state);
+    public void toggleTrackPart(Configuration configuration, boolean state);
     public boolean getTrackPartState(Configuration configuration);
 }

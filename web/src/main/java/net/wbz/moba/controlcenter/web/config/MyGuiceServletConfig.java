@@ -7,7 +7,6 @@ import com.google.inject.Singleton;
 import com.google.inject.name.Named;
 import com.google.inject.servlet.GuiceServletContextListener;
 import com.google.inject.servlet.ServletModule;
-import net.wbz.moba.controlcenter.communication.manager.DeviceManager;
 import net.wbz.moba.controlcenter.db.DatabaseFactory;
 import net.wbz.moba.controlcenter.web.server.constrution.BusServiceImpl;
 import net.wbz.moba.controlcenter.web.server.constrution.ConstructionServiceImpl;
@@ -17,6 +16,7 @@ import net.wbz.moba.controlcenter.web.server.scenario.ScenarioServiceImpl;
 import net.wbz.moba.controlcenter.web.server.train.TrainEditorServiceImpl;
 import net.wbz.moba.controlcenter.web.server.train.TrainServiceImpl;
 import net.wbz.moba.controlcenter.web.server.viewer.TrackViewerServiceImpl;
+import net.wbz.selectrix4java.manager.DeviceManager;
 
 import java.io.File;
 
@@ -27,7 +27,7 @@ public class MyGuiceServletConfig extends GuiceServletContextListener {
 
     @Override
     protected Injector getInjector() {
-        Injector parent = Guice.createInjector(new ServletModule() {
+        return Guice.createInjector(new ServletModule() {
 
             @Override
             protected void configureServlets() {
@@ -97,7 +97,6 @@ public class MyGuiceServletConfig extends GuiceServletContextListener {
                 return file;
             }
         });
-        return parent;
     }
 
 }

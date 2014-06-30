@@ -4,17 +4,14 @@ import com.google.gwt.user.client.rpc.RpcTokenException;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import net.wbz.moba.controlcenter.communication.api.Device;
-import net.wbz.moba.controlcenter.communication.api.DeviceAccessException;
-import net.wbz.moba.controlcenter.communication.api.OutputModule;
-import net.wbz.moba.controlcenter.communication.manager.DeviceManager;
 import net.wbz.moba.controlcenter.web.shared.train.Train;
 import net.wbz.moba.controlcenter.web.shared.train.TrainFunction;
 import net.wbz.moba.controlcenter.web.shared.train.TrainService;
+import net.wbz.selectrix4java.api.device.DeviceAccessException;
+import net.wbz.selectrix4java.api.train.TrainModule;
+import net.wbz.selectrix4java.manager.DeviceManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.math.BigInteger;
 
 /**
  * Created by Daniel on 08.03.14.
@@ -37,15 +34,8 @@ public class TrainServiceImpl extends RemoteServiceServlet implements TrainServi
     public void updateDrivingLevel(long id, int level) {
         if (level >= 0 && level <= 127) {
             int address = trainManager.getTrain(id).getAddress();
-            BigInteger wrappedLevel = BigInteger.valueOf((long) ((int)level));
             try {
-                deviceManager.getConnectedDevice().getTrainModule((byte) address)
-                        .setBit(Device.BIT.BIT_1, wrappedLevel.testBit(0))
-                        .setBit(Device.BIT.BIT_2, wrappedLevel.testBit(1))
-                        .setBit(Device.BIT.BIT_3, wrappedLevel.testBit(2))
-                        .setBit(Device.BIT.BIT_4, wrappedLevel.testBit(3))
-                        .setBit(Device.BIT.BIT_5, wrappedLevel.testBit(4))
-                        .sendData();
+                deviceManager.getConnectedDevice().getTrainModule((byte) address).setDrivingLevel(level);
             } catch (DeviceAccessException e) {
                 String msg = "can't change level of train " + id;
                 LOG.error(msg, e);
@@ -61,10 +51,8 @@ public class TrainServiceImpl extends RemoteServiceServlet implements TrainServi
     public void toggleDrivingDirection(long id, Train.DIRECTION direction) {
         int address = trainManager.getTrain(id).getAddress();
         try {
-            deviceManager.getConnectedDevice().getTrainModule((byte) address)
-                    // true = backward; false = forward
-                    .setBit(Device.BIT.BIT_6, direction == Train.DIRECTION.BACKWARD)
-                    .sendData();
+            deviceManager.getConnectedDevice().getTrainModule((byte) address).setDirection(
+                    direction == Train.DIRECTION.FORWARD ? TrainModule.DRIVING_DIRECTION.FORWARD : TrainModule.DRIVING_DIRECTION.BACKWARD);
         } catch (DeviceAccessException e) {
             String msg = "can't change level of train " + id;
             LOG.error(msg, e);
@@ -75,40 +63,39 @@ public class TrainServiceImpl extends RemoteServiceServlet implements TrainServi
     @Override
     public void setFunctionState(long id, TrainFunction.FUNCTION function, boolean state) {
         int address = trainManager.getTrain(id).getAddress();
-        OutputModule trainModule;
         try {
             switch (function) {
                 case LIGHT:
-                    trainModule = deviceManager.getConnectedDevice().getTrainModule((byte) address);
-                    trainModule.setBit(Device.BIT.BIT_7, state).sendData();
+                    deviceManager.getConnectedDevice().getTrainModule((byte) address).setLight(state);
                     break;
                 case HORN:
-                    trainModule = deviceManager.getConnectedDevice().getTrainModule((byte) address);
-                    trainModule.setBit(Device.BIT.BIT_8, state).sendData();
+                    deviceManager.getConnectedDevice().getTrainModule((byte) address).setHorn(state);
                     break;
+
+                //TODO
                 case F1:
-                    toggleExtraFunction(address, Device.BIT.BIT_1, state);
+//                    toggleExtraFunction(address, Device.BIT.BIT_1, state);
                     break;
                 case F2:
-                    toggleExtraFunction(address, Device.BIT.BIT_2, state);
+//                    toggleExtraFunction(address, Device.BIT.BIT_2, state);
                     break;
                 case F3:
-                    toggleExtraFunction(address, Device.BIT.BIT_3, state);
+//                    toggleExtraFunction(address, Device.BIT.BIT_3, state);
                     break;
                 case F4:
-                    toggleExtraFunction(address, Device.BIT.BIT_4, state);
+//                    toggleExtraFunction(address, Device.BIT.BIT_4, state);
                     break;
                 case F5:
-                    toggleExtraFunction(address, Device.BIT.BIT_5, state);
+//                    toggleExtraFunction(address, Device.BIT.BIT_5, state);
                     break;
                 case F6:
-                    toggleExtraFunction(address, Device.BIT.BIT_6, state);
+//                    toggleExtraFunction(address, Device.BIT.BIT_6, state);
                     break;
                 case F7:
-                    toggleExtraFunction(address, Device.BIT.BIT_7, state);
+//                    toggleExtraFunction(address, Device.BIT.BIT_7, state);
                     break;
                 case F8:
-                    toggleExtraFunction(address, Device.BIT.BIT_8, state);
+//                    toggleExtraFunction(address, Device.BIT.BIT_8, state);
                     break;
 
                 default:
@@ -122,7 +109,7 @@ public class TrainServiceImpl extends RemoteServiceServlet implements TrainServi
         }
     }
 
-    private void toggleExtraFunction(int address, Device.BIT bit, boolean state) throws DeviceAccessException {
-        deviceManager.getConnectedDevice().getTrainModule((byte) (address + 1)).setBit(bit, state).sendData();
-    }
+//    private void toggleExtraFunction(int address, Device.BIT bit, boolean state) throws DeviceAccessException {
+//        deviceManager.getConnectedDevice().getTrainModule((byte) (address + 1)).setBit(bit, state).sendData();
+//    }
 }

@@ -20,7 +20,6 @@ import java.util.List;
 /**
  * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
  */
-//@Service("construction")
 @Singleton
 public class ConstructionServiceImpl extends RemoteServiceServlet implements ConstrutionService {
 

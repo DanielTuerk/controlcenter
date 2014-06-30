@@ -38,26 +38,14 @@
 
     <dependencies>
         <dependency>
-            <groupId>net.wbz.moba</groupId>
-            <artifactId>controlcenter-communication-api</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>net.wbz.moba</groupId>
-            <artifactId>controlcenter-communication-manager</artifactId>
-            <version>${project.version}</version>
+            <groupId>net.wbz.selectrix4java</groupId>
+            <artifactId>selectrix4java-manager</artifactId>
+            <version>${selectrix.version}</version>
         </dependency>
 
         <dependency>
             <groupId>net.wbz.moba</groupId>
             <artifactId>controlcenter-database</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>net.wbz.moba</groupId>
-            <artifactId>controlcenter-utils</artifactId>
             <version>${project.version}</version>
         </dependency>
 

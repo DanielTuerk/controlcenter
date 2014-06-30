@@ -48,7 +48,7 @@ public class ScenarioRunCallable implements Callable<Boolean> {
                     ToggleScenarioCommand toggleCommand = (ToggleScenarioCommand) command;
                     Configuration trackPartConfiguration = toggleCommand.getConfiguration();
                     if (trackViewerService.getTrackPartState(trackPartConfiguration) != toggleCommand.isState()) {
-                        trackViewerService.toogleTrackPart(trackPartConfiguration, toggleCommand.isState());
+                        trackViewerService.toggleTrackPart(trackPartConfiguration, toggleCommand.isState());
                     }
                 } else {
                     LOG.error(String.format("invalid scenario command %s", scenario.getClass().getName()));

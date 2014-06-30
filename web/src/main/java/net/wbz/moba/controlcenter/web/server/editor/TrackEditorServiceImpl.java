@@ -3,31 +3,27 @@ package net.wbz.moba.controlcenter.web.server.editor;
 import com.db4o.ObjectContainer;
 import com.db4o.ObjectSet;
 import com.db4o.query.Query;
-import com.google.common.base.Predicate;
-import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.google.inject.Singleton;
-import net.wbz.moba.controlcenter.communication.api.BusDataConsumer;
-import net.wbz.moba.controlcenter.communication.api.Device;
-import net.wbz.moba.controlcenter.communication.api.DeviceAccessException;
-import net.wbz.moba.controlcenter.communication.api.DeviceConnectionListener;
-import net.wbz.moba.controlcenter.communication.manager.DeviceManager;
 import net.wbz.moba.controlcenter.db.model.DataContainer;
 import net.wbz.moba.controlcenter.web.server.EventBroadcaster;
 import net.wbz.moba.controlcenter.web.server.constrution.ConstructionServiceImpl;
-import net.wbz.moba.controlcenter.web.shared.BusDataEvent;
 import net.wbz.moba.controlcenter.web.shared.editor.TrackEditorService;
 import net.wbz.moba.controlcenter.web.shared.track.model.Configuration;
 import net.wbz.moba.controlcenter.web.shared.track.model.TrackPart;
 import net.wbz.moba.controlcenter.web.shared.viewer.TrackPartStateEvent;
+import net.wbz.selectrix4java.api.bus.BusDataConsumer;
+import net.wbz.selectrix4java.api.device.Device;
+import net.wbz.selectrix4java.api.device.DeviceAccessException;
+import net.wbz.selectrix4java.api.device.DeviceConnectionListener;
+import net.wbz.selectrix4java.manager.DeviceManager;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import java.math.BigInteger;
-import java.util.Collections;
 import java.util.List;
 
 /**

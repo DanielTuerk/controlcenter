@@ -12,10 +12,8 @@
     <version>0.1-SNAPSHOT</version>
 
     <modules>
-        <module>communication</module>
         <module>utils</module>
         <module>database</module>
-        <module>testgui</module>
         <module>web</module>
     </modules>
 
@@ -115,6 +113,8 @@
     </dependencies>
 
     <properties>
+
+        <selectrix.version>0.1-SNAPSHOT</selectrix.version>
         <!-- setting this makes build more platform independent by explicitly specifying an encoding -->
         <logback.version>0.9.15</logback.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

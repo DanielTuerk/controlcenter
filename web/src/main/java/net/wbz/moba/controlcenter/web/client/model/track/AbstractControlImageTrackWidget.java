@@ -88,7 +88,7 @@ abstract public class AbstractControlImageTrackWidget<T extends TrackPart> exten
     @Override
     public void onClick() {
         Configuration widgetConfiguration = getStoredWidgetConfiguration();
-        ServiceUtils.getTrackViewerService().toogleTrackPart(widgetConfiguration, !trackPartState, new AsyncCallback<Void>() {
+        ServiceUtils.getTrackViewerService().toggleTrackPart(widgetConfiguration, !trackPartState, new AsyncCallback<Void>() {
             @Override
             public void onFailure(Throwable caught) {
             }

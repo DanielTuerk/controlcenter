@@ -4,16 +4,13 @@ import com.google.gwt.user.client.rpc.RpcTokenException;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import net.wbz.moba.controlcenter.communication.api.Device;
-import net.wbz.moba.controlcenter.communication.api.DeviceAccessException;
-import net.wbz.moba.controlcenter.communication.api.OutputModule;
-import net.wbz.moba.controlcenter.communication.manager.DeviceManager;
 import net.wbz.moba.controlcenter.web.server.EventBroadcaster;
-import net.wbz.moba.controlcenter.web.shared.scenario.Scenario;
-import net.wbz.moba.controlcenter.web.shared.scenario.ScenarioStateEvent;
 import net.wbz.moba.controlcenter.web.shared.track.model.Configuration;
 import net.wbz.moba.controlcenter.web.shared.viewer.TrackPartStateEvent;
 import net.wbz.moba.controlcenter.web.shared.viewer.TrackViewerService;
+import net.wbz.selectrix4java.api.bus.BusAddress;
+import net.wbz.selectrix4java.api.device.DeviceAccessException;
+import net.wbz.selectrix4java.manager.DeviceManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,11 +32,17 @@ public class TrackViewerServiceImpl extends RemoteServiceServlet implements Trac
     }
 
     @Override
-    public void toogleTrackPart(Configuration configuration, boolean state) {
+    public void toggleTrackPart(Configuration configuration, boolean state) {
         if (configuration.isValid()) {
             try {
-                deviceManager.getConnectedDevice().getOutputModule((byte) configuration.getAddress())
-                        .setBit(getBitOfConfiguration(configuration), state).sendData();
+                BusAddress busAddress = deviceManager.getConnectedDevice().getBusAddress(1, (byte) configuration.getAddress());
+                if (state) {
+                    busAddress.setBit(configuration.getOutput());
+                } else {
+                    busAddress.clearBit(configuration.getOutput());
+                }
+                busAddress.send();
+
                 //TODO
 //                fireEvents(configuration,state);
             } catch (DeviceAccessException e) {
@@ -53,8 +56,8 @@ public class TrackViewerServiceImpl extends RemoteServiceServlet implements Trac
     public boolean getTrackPartState(Configuration configuration) {
         if (configuration.isValid()) {
             try {
-                return deviceManager.getConnectedDevice().getOutputModule((byte) configuration.getAddress())
-                        .getBitState(getBitOfConfiguration(configuration));
+                return deviceManager.getConnectedDevice().getBusAddress(1,(byte) configuration.getAddress()).
+                        getBitState(configuration.getOutput());
             } catch (DeviceAccessException e) {
                 String msg = "can't load state of track part";
                 log.error(msg, e);
@@ -62,29 +65,6 @@ public class TrackViewerServiceImpl extends RemoteServiceServlet implements Trac
             }
         }
         throw new RpcTokenException("invalid configuration: " + configuration);
-    }
-
-    private Device.BIT getBitOfConfiguration(Configuration configuration) {
-        switch (configuration.getOutput()) {
-            case 1:
-                return Device.BIT.BIT_1;
-            case 2:
-                return Device.BIT.BIT_2;
-            case 3:
-                return Device.BIT.BIT_3;
-            case 4:
-                return Device.BIT.BIT_4;
-            case 5:
-                return Device.BIT.BIT_5;
-            case 6:
-                return Device.BIT.BIT_6;
-            case 7:
-                return Device.BIT.BIT_7;
-            case 8:
-                return Device.BIT.BIT_8;
-            default:
-                throw new RuntimeException("invalid output bit " + configuration.getOutput());
-        }
     }
 
     private void fireEvents(Configuration configuration, boolean newState) {

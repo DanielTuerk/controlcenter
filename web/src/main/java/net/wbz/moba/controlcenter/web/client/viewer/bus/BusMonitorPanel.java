@@ -75,21 +75,21 @@ public class BusMonitorPanel extends TabPanel {
     protected void onLoad() {
         super.onLoad();
 
-        for (int busNr = 0; busNr < 2; busNr++) {
-            final int finalBusNr = busNr;
-            ServiceUtils.getBusService().readBusData(busNr, new AsyncCallback<BusData[]>() {
-                @Override
-                public void onFailure(Throwable caught) {
-                }
-
-                @Override
-                public void onSuccess(BusData[] result) {
-                    for (BusData busData : result) {
-                        addressItemMapping.get(finalBusNr).get(busData.getAddress()).updateData(busData.getValue());
-                    }
-                }
-            });
-        }
+//        for (int busNr = 0; busNr < 2; busNr++) {
+//            final int finalBusNr = busNr;
+//            ServiceUtils.getBusService().readBusData(busNr, new AsyncCallback<BusData[]>() {
+//                @Override
+//                public void onFailure(Throwable caught) {
+//                }
+//
+//                @Override
+//                public void onSuccess(BusData[] result) {
+//                    for (BusData busData : result) {
+//                        addressItemMapping.get(finalBusNr).get(busData.getAddress()).updateData(busData.getValue());
+//                    }
+//                }
+//            });
+//        }
         EventReceiver.getInstance().addListener(BusDataEvent.class, listener);
 
         selectTab(0);

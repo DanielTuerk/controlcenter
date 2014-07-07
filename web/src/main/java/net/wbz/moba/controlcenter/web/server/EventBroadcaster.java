@@ -15,7 +15,7 @@ public class EventBroadcaster {
 
     public EventBroadcaster() {
         EventExecutorServiceFactory theSF = EventExecutorServiceFactory.getInstance();
-        eventExecutorService = theSF.getEventExecutorService("foobar");
+        eventExecutorService = theSF.getEventExecutorService("event");
     }
 
     public synchronized void fireEvent(Event event) {

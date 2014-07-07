@@ -28,7 +28,7 @@ public class ViewerPaletteWidget extends PaletteWidget {
         }
     }
 
-                        public void addMouseOverHandler(MouseOverHandler handler) {
-                            getShim().addMouseOverHandler(handler);
-                        }
+    public void addMouseOverHandler(MouseOverHandler handler) {
+        getShim().addMouseOverHandler(handler);
+    }
 }

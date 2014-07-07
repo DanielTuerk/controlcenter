@@ -138,6 +138,7 @@ public class BusServiceImpl extends RemoteServiceServlet implements BusService {
 
     @Override
     public BusData[] readBusData(int busNr) {
+        //TODO required?
         byte[] busData = activeDevice.getBusDataDispatcher().getData(busNr);
         BusData[] replyData = new BusData[busData.length];
         for (int i = 0; i < busData.length; i++) {

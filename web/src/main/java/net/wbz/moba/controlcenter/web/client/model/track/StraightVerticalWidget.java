@@ -14,19 +14,14 @@ public class StraightVerticalWidget extends AbstractStraightWidget {
 
     @Override
     public AbstractImageTrackWidget<Straight> getClone(Straight trackPart) {
-        return new StraightVerticalWidget();
-    }
-
-    @Override
-    public void initFromTrackPart(Straight trackPart) {
+        StraightVerticalWidget widget = new StraightVerticalWidget();
+        widget.initFromTrackPart(trackPart);
+        return widget;
     }
 
     @Override
     public boolean isRepresentationOf(Straight trackPart) {
-        if (trackPart instanceof Straight) {
-            return trackPart.getDirection() == Straight.DIRECTION.VERTICAL;
-        }
-        return false;
+        return trackPart.getDirection() == Straight.DIRECTION.VERTICAL;
     }
 
     @Override

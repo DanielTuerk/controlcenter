@@ -1,6 +1,8 @@
 package net.wbz.moba.controlcenter.web.client.model.track;
 
 import net.wbz.moba.controlcenter.web.shared.track.model.Switch;
+import org.vectomatic.dom.svg.OMSVGDocument;
+import org.vectomatic.dom.svg.OMSVGSVGElement;
 
 /**
  * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
@@ -17,7 +19,7 @@ public class SwitchLeftBottomToTopWidget extends AbstractSwitchLeftWidget {
     }
 
     @Override
-    public AbstractImageTrackWidget<Switch> getClone(Switch trackPart) {
+    public AbstractSvgTrackWidget<Switch> getClone(Switch trackPart) {
         SwitchLeftBottomToTopWidget clone = new SwitchLeftBottomToTopWidget();
         clone.initFromTrackPart(trackPart);
         return clone;

@@ -108,6 +108,15 @@ h1 {
     background-color: white;
 }
 
+/* TODO refactor image to div */
+.widget_track_straight_horizontal {
+    /*width: 25px;*/
+    /*height: 5px;*/
+    /*border-bottom: solid #ffffff 10px;*/
+    /*border-top: solid #ffffff 10px;*/
+    /*background-color: black*/
+}
+
 .widget_track_straight_vertical {
     -webkit-transform: rotate(90deg);
     -moz-transform: rotate(90deg);
@@ -205,5 +214,13 @@ h1 {
 
 .freeBlock {
     background-color: limegreen;
+}
+
+.svgContainer {
+    position:absolute;
+    top:1em;
+    bottom:0px;
+    left:0px;
+    right:0px;
 }
 

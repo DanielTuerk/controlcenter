@@ -1,19 +1,14 @@
 package net.wbz.moba.controlcenter.web.client.model.track;
 
-import com.google.gwt.user.client.ui.*;
 import net.wbz.moba.controlcenter.web.client.editor.track.EditTrackWidgetHandler;
-import net.wbz.moba.controlcenter.web.shared.track.model.Configuration;
 import net.wbz.moba.controlcenter.web.shared.track.model.TrackPart;
 
 /**
  *
  * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
  */
-abstract public class AbstractBlockImageTrackWidget<T extends TrackPart> extends AbstractImageTrackWidget<T>
+abstract public class AbstractBlockSvgTrackWidget<T extends TrackPart> extends AbstractSvgTrackWidget<T>
         implements EditTrackWidgetHandler, BlockPart {
-
-    public AbstractBlockImageTrackWidget() {
-    }
 
     @Override
     public void freeBlock() {

@@ -23,6 +23,8 @@
 
     <inherits name="com.kiouri.sliderbar.SliderBarMVP" />
 
+    <inherits name="org.vectomatic.libgwtsvg"/>
+
     <set-property name="bootstrap.responsiveDesign" value="true"/>
 
 

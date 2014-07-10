@@ -3,14 +3,14 @@ package net.wbz.moba.controlcenter.web.client.editor.track;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.MouseOverHandler;
-import net.wbz.moba.controlcenter.web.client.model.track.AbstractImageTrackWidget;
+import net.wbz.moba.controlcenter.web.client.model.track.AbstractSvgTrackWidget;
 
 /**
  * Widget wrapper class used by {@link net.wbz.moba.controlcenter.web.client.editor.track.PalettePanel}.
  */
 public class ViewerPaletteWidget extends PaletteWidget {
 
-    public ViewerPaletteWidget(AbstractImageTrackWidget widget) {
+    public ViewerPaletteWidget(AbstractSvgTrackWidget widget) {
         super(widget);
     }
 

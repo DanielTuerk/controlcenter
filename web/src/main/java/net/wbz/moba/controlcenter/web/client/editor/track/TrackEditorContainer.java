@@ -10,7 +10,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.*;
 import net.wbz.moba.controlcenter.web.client.ServiceUtils;
 import net.wbz.moba.controlcenter.web.client.model.track.AbsoluteTrackPosition;
-import net.wbz.moba.controlcenter.web.client.model.track.AbstractImageTrackWidget;
+import net.wbz.moba.controlcenter.web.client.model.track.AbstractSvgTrackWidget;
 import net.wbz.moba.controlcenter.web.client.model.track.ModelManager;
 import net.wbz.moba.controlcenter.web.shared.track.model.TrackPart;
 
@@ -60,7 +60,7 @@ public class TrackEditorContainer extends FlowPanel {
 
         PalettePanel palette = new PalettePanel(dragController);
 
-        for (AbstractImageTrackWidget widget : ModelManager.getInstance().getWidgets()) {
+        for (AbstractSvgTrackWidget widget : ModelManager.getInstance().getWidgets()) {
                 palette.addPaletteItem(widget);
         }
 
@@ -83,8 +83,8 @@ public class TrackEditorContainer extends FlowPanel {
                     Widget paletteWidget = getBoundaryPanel().getWidget(i);
                     if (paletteWidget instanceof PaletteWidget) {
                         Widget w = ((PaletteWidget) paletteWidget).getPaletteWidgetItem();
-                        if (w instanceof AbstractImageTrackWidget) {
-                            trackParts.add(((AbstractImageTrackWidget) w).getTrackPart(getBoundaryPanel(), getBoundaryPanel().getZoomLevel()));
+                        if (w instanceof AbstractSvgTrackWidget) {
+                            trackParts.add(((AbstractSvgTrackWidget) w).getTrackPart(getBoundaryPanel(), getBoundaryPanel().getZoomLevel()));
                         }
                     }
                 }
@@ -148,7 +148,7 @@ public class TrackEditorContainer extends FlowPanel {
             public void onSuccess(TrackPart[] trackParts) {
                 Log.info("load track success " + new Date().toString());
                 for (TrackPart trackPart : trackParts) {
-                    AbstractImageTrackWidget trackWidget = ModelManager.getInstance().getWidgetOf(trackPart);
+                    AbstractSvgTrackWidget trackWidget = ModelManager.getInstance().getWidgetOf(trackPart);
                     AbsoluteTrackPosition trackPosition = trackWidget.getTrackPosition(trackPart.getGridPosition(), boundaryPanel.getZoomLevel());
                     PaletteWidget paletteWidget = new EditorPaletteWidget(trackWidget);
                     dragController.makeDraggable(paletteWidget);

@@ -20,18 +20,18 @@ public class ModelManager {
         return instance;
     }
 
-    private final List<AbstractImageTrackWidget> widgets = new ArrayList<AbstractImageTrackWidget>();
+    private final List<AbstractSvgTrackWidget> widgets = new ArrayList<AbstractSvgTrackWidget>();
 
-    public void registerModel(AbstractImageTrackWidget widgetClass) {
+    public void registerModel(AbstractSvgTrackWidget widgetClass) {
         widgets.add(widgetClass);
     }
 
-    public List<AbstractImageTrackWidget> getWidgets() {
+    public List<AbstractSvgTrackWidget> getWidgets() {
         return widgets;
     }
 
-    public AbstractImageTrackWidget getWidgetOf(TrackPart trackPart) {
-        for (AbstractImageTrackWidget widget : widgets) {
+    public AbstractSvgTrackWidget getWidgetOf(TrackPart trackPart) {
+        for (AbstractSvgTrackWidget widget : widgets) {
             try {
                 if (widget.isRepresentationOf(trackPart)) {
                     return widget.getClone(trackPart);

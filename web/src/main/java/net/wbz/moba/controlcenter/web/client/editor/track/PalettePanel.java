@@ -3,7 +3,7 @@ package net.wbz.moba.controlcenter.web.client.editor.track;
 import com.allen_sauer.gwt.dnd.client.PickupDragController;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.client.ui.*;
-import net.wbz.moba.controlcenter.web.client.model.track.AbstractImageTrackWidget;
+import net.wbz.moba.controlcenter.web.client.model.track.AbstractSvgTrackWidget;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -34,8 +34,8 @@ public class PalettePanel extends VerticalPanel   {
 
     }
 
-    private void addPaletteItem(AbstractImageTrackWidget widget, int index) {
-        if (!palleteGroupMapping.containsKey(widget.getPaletteTitel())) {
+    private void addPaletteItem(AbstractSvgTrackWidget widget, int index) {
+        if (!palleteGroupMapping.containsKey(widget.getPaletteTitle())) {
             FlowPanel paletteGroup = new FlowPanel() {
 
                 /**
@@ -56,8 +56,8 @@ public class PalettePanel extends VerticalPanel   {
                     return result;
                 }
             };
-            palleteGroupMapping.put(widget.getPaletteTitel(), paletteGroup);
-            add(new Label(widget.getPaletteTitel()));
+            palleteGroupMapping.put(widget.getPaletteTitle(), paletteGroup);
+            add(new Label(widget.getPaletteTitle()));
             add(paletteGroup);
         }
 
@@ -66,15 +66,15 @@ public class PalettePanel extends VerticalPanel   {
         paletteWidget.getElement().getStyle().setFloat(Style.Float.LEFT);
         paletteWidget.getElement().getStyle().setMarginLeft(5, Style.Unit.PX);
         if (index > -1) {
-            palleteGroupMapping.get(widget.getPaletteTitel()).insert(paletteWidget, index);
+            palleteGroupMapping.get(widget.getPaletteTitle()).insert(paletteWidget, index);
         } else {
-            palleteGroupMapping.get(widget.getPaletteTitel()).add(paletteWidget);
+            palleteGroupMapping.get(widget.getPaletteTitle()).add(paletteWidget);
 
         }
     }
 
 
-    public void addPaletteItem(AbstractImageTrackWidget widget) {
+    public void addPaletteItem(AbstractSvgTrackWidget widget) {
         addPaletteItem(widget, -1);
     }
 

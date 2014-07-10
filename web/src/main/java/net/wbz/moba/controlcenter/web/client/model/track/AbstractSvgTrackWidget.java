@@ -1,17 +1,21 @@
 package net.wbz.moba.controlcenter.web.client.model.track;
 
 import com.google.common.base.Strings;
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.client.ui.*;
 import net.wbz.moba.controlcenter.web.client.TrackUtils;
 import net.wbz.moba.controlcenter.web.client.editor.track.EditTrackWidgetHandler;
 import net.wbz.moba.controlcenter.web.shared.track.model.Configuration;
 import net.wbz.moba.controlcenter.web.shared.track.model.GridPosition;
 import net.wbz.moba.controlcenter.web.shared.track.model.TrackPart;
+import org.vectomatic.dom.svg.OMSVGDocument;
+import org.vectomatic.dom.svg.OMSVGSVGElement;
+import org.vectomatic.dom.svg.utils.OMSVGParser;
 
 /**
  * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
  */
-abstract public class AbstractImageTrackWidget<T extends TrackPart> extends Image implements EditTrackWidgetHandler {
+abstract public class AbstractSvgTrackWidget<T extends TrackPart> extends SimplePanel implements EditTrackWidgetHandler {
 
     private final ListBox selectBit = new ListBox();
     private final TextBox txtAddress = new TextBox();
@@ -19,14 +23,43 @@ abstract public class AbstractImageTrackWidget<T extends TrackPart> extends Imag
     private int trackPartConfigAddress = -1;
     private int trackPartConfigBit = -1;
 
-    public AbstractImageTrackWidget() {
-        setUrl(getImageUrl());
+    private final OMSVGDocument svgDocument = OMSVGParser.currentDocument();
+    private final OMSVGSVGElement svgRootElement;
+
+    public AbstractSvgTrackWidget() {
         addStyleName("widget_track");
+
         String additionalStyle = getTrackWidgetStyleName();
         if (!Strings.isNullOrEmpty(additionalStyle)) {
             addStyleName(additionalStyle);
         }
+
+        // Create the root svg element
+        svgRootElement = svgDocument.createSVGSVGElement();
+        svgRootElement.setWidth(Style.Unit.PX, 25);
+        svgRootElement.setHeight(Style.Unit.PX, 25);
+
+        addSvgContent(svgDocument, svgRootElement);
+
+        getElement().appendChild(svgRootElement.getElement());
     }
+
+    abstract protected void addSvgContent(OMSVGDocument doc, OMSVGSVGElement svg);
+
+    protected void clearSvgContent() {
+        for (int i = svgRootElement.getChildNodes().getLength() - 1; i >= 0; i--) {
+            svgRootElement.removeChild(svgRootElement.getChildNodes().getItem(i));
+        }
+    }
+
+    protected OMSVGDocument getSvgDocument() {
+        return svgDocument;
+    }
+
+    protected OMSVGSVGElement getSvgRootElement() {
+        return svgRootElement;
+    }
+
 
     public Configuration getStoredWidgetConfiguration() {
         Configuration configuration = new Configuration();
@@ -69,7 +102,7 @@ abstract public class AbstractImageTrackWidget<T extends TrackPart> extends Imag
         }
 
         // Add some standard form options
-        layout.setHTML(1, 0, "Adress:");
+        layout.setHTML(1, 0, "Address:");
         layout.setWidget(1, 1, txtAddress);
         layout.setHTML(2, 0, "Bit:");
         layout.setWidget(2, 1, selectBit);
@@ -92,15 +125,13 @@ abstract public class AbstractImageTrackWidget<T extends TrackPart> extends Imag
 
     abstract public boolean isRepresentationOf(T trackPart);
 
-    abstract public String getImageUrl();
-
     abstract public String getTrackWidgetStyleName();
 
     abstract public TrackPart getTrackPart(Widget containerWidget, int zoomLevel);
 
-    abstract public String getPaletteTitel();
+    abstract public String getPaletteTitle();
 
-    abstract public AbstractImageTrackWidget<T> getClone(T trackPart);
+    abstract public AbstractSvgTrackWidget<T> getClone(T trackPart);
 
     public AbsoluteTrackPosition getTrackPosition(GridPosition gridPosition, int zoomLevel) {
         return new AbsoluteTrackPosition(TrackUtils.getLeftPositionFromX(gridPosition.getX(), zoomLevel),

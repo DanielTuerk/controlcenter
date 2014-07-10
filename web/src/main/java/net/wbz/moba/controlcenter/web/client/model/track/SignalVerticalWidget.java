@@ -2,6 +2,8 @@ package net.wbz.moba.controlcenter.web.client.model.track;
 
 import net.wbz.moba.controlcenter.web.shared.track.model.Signal;
 import net.wbz.moba.controlcenter.web.shared.track.model.Straight;
+import org.vectomatic.dom.svg.OMSVGDocument;
+import org.vectomatic.dom.svg.OMSVGSVGElement;
 
 /**
  * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
@@ -19,19 +21,15 @@ public class SignalVerticalWidget extends AbstractSignalWidget {
     }
 
     @Override
-    public AbstractImageTrackWidget<Signal> getClone(Signal trackPart) {
+    public AbstractSvgTrackWidget<Signal> getClone(Signal trackPart) {
         SignalVerticalWidget clone = new SignalVerticalWidget();
         clone.initFromTrackPart(trackPart);
         return clone;
     }
 
-
     @Override
     public boolean isRepresentationOf(Signal trackPart) {
-        if (trackPart instanceof Signal) {
-            return trackPart.getDirection() == Straight.DIRECTION.HORIZONTAL;
-        }
-        return false;
+        return trackPart != null && trackPart.getDirection() == getStraightDirection();
     }
-
 }
+

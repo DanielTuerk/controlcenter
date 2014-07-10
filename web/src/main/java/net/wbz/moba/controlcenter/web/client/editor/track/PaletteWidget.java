@@ -4,7 +4,7 @@ import com.allen_sauer.gwt.dnd.client.HasDragHandle;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.FocusPanel;
 import com.google.gwt.user.client.ui.Widget;
-import net.wbz.moba.controlcenter.web.client.model.track.AbstractImageTrackWidget;
+import net.wbz.moba.controlcenter.web.client.model.track.AbstractSvgTrackWidget;
 
 /**
  * Widget wrapper class used by {@link PalettePanel}.
@@ -13,13 +13,13 @@ public class PaletteWidget extends AbsolutePanel implements HasDragHandle {
 
     private FocusPanel shim = new FocusPanel();
 
-    private final AbstractImageTrackWidget widget;
+    private final AbstractSvgTrackWidget widget;
 
     public FocusPanel getShim() {
         return shim;
     }
 
-    public AbstractImageTrackWidget getWidget() {
+    public AbstractSvgTrackWidget getWidget() {
         return widget;
     }
 
@@ -28,19 +28,19 @@ public class PaletteWidget extends AbsolutePanel implements HasDragHandle {
      *
      * @param widget the widget to be wrapped
      */
-    public PaletteWidget(AbstractImageTrackWidget widget) {
+    public PaletteWidget(AbstractSvgTrackWidget widget) {
         this.widget = widget;
         add(widget);
     }
 
-    public AbstractImageTrackWidget getPaletteWidgetItem() {
+    public AbstractSvgTrackWidget getPaletteWidgetItem() {
         return widget;
     }
 
     public PaletteWidget cloneWidget() {
         Widget clone;
 
-        if (widget instanceof AbstractImageTrackWidget) {
+        if (widget instanceof AbstractSvgTrackWidget) {
             clone = widget.getClone(null);
         } else {
             throw new IllegalStateException("Unhandled Widget class " + widget.getClass().getName());
@@ -51,7 +51,7 @@ public class PaletteWidget extends AbsolutePanel implements HasDragHandle {
         clone.setTitle(widget.getTitle());
 
         // Wrap the cloned widget in a new PaletteWidget instance
-        return new PaletteWidget((AbstractImageTrackWidget) clone);
+        return new PaletteWidget((AbstractSvgTrackWidget) clone);
     }
 
     @Override

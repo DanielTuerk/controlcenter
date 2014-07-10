@@ -1,6 +1,8 @@
 package net.wbz.moba.controlcenter.web.client.model.track;
 
+import net.wbz.moba.controlcenter.web.client.util.SvgTrackUtil;
 import net.wbz.moba.controlcenter.web.shared.track.model.Straight;
+import org.vectomatic.dom.svg.OMSVGRectElement;
 
 /**
  * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
@@ -18,7 +20,7 @@ public class StraightHorizontalWidget extends AbstractStraightWidget {
     }
 
     @Override
-    public AbstractImageTrackWidget<Straight> getClone(Straight trackPart) {
+    public AbstractSvgTrackWidget<Straight> getClone(Straight trackPart) {
         StraightHorizontalWidget widget = new StraightHorizontalWidget();
         widget.initFromTrackPart(trackPart);
         return widget;

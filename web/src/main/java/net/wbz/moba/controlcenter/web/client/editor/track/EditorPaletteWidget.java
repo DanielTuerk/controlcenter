@@ -7,14 +7,14 @@ import com.google.gwt.event.dom.client.DoubleClickHandler;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.Panel;
-import net.wbz.moba.controlcenter.web.client.model.track.AbstractImageTrackWidget;
+import net.wbz.moba.controlcenter.web.client.model.track.AbstractSvgTrackWidget;
 
 /**
  * Widget wrapper class used by {@link net.wbz.moba.controlcenter.web.client.editor.track.PalettePanel}.
  */
 public class EditorPaletteWidget extends PaletteWidget{
 
-    public EditorPaletteWidget(AbstractImageTrackWidget widget) {
+    public EditorPaletteWidget(AbstractSvgTrackWidget widget) {
         super(widget);
         if (getWidget() instanceof EditTrackWidgetHandler) {
             getShim().addDoubleClickHandler(new EditWidgetDoubleClickHandler((EditTrackWidgetHandler) getWidget()));

@@ -3,11 +3,13 @@ package net.wbz.moba.controlcenter.web.client.model.track;
 import com.google.gwt.user.client.ui.Widget;
 import net.wbz.moba.controlcenter.web.shared.track.model.Switch;
 import net.wbz.moba.controlcenter.web.shared.track.model.TrackPart;
+import org.vectomatic.dom.svg.OMSVGDocument;
+import org.vectomatic.dom.svg.OMSVGSVGElement;
 
 /**
  * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
  */
-abstract public class AbstractSwitchWidget extends AbstractControlImageTrackWidget<Switch> {
+abstract public class AbstractSwitchWidget extends AbstractControlSvgTrackWidget<Switch> {
 
     @Override
     public TrackPart getTrackPart(Widget containerWidget, int zoomLevel) {
@@ -23,17 +25,14 @@ abstract public class AbstractSwitchWidget extends AbstractControlImageTrackWidg
 
     @Override
     public boolean isRepresentationOf(Switch switchTrackPart) {
-        if (switchTrackPart.getCurrentDirection() == getDirection() &&
-                switchTrackPart.getCurrentPresentation() == getPresentation()) {
-            return true;
-        }
-        return false;
+        return switchTrackPart.getCurrentDirection() == getDirection() &&
+                switchTrackPart.getCurrentPresentation() == getPresentation();
     }
 
     abstract protected Switch.PRESENTATION getPresentation();
 
     @Override
-    public String getPaletteTitel() {
+    public String getPaletteTitle() {
         return "Switch";
     }
 

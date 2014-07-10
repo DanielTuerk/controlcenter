@@ -22,7 +22,6 @@ import net.wbz.moba.controlcenter.web.client.util.DialogBoxUtil;
 import net.wbz.moba.controlcenter.web.client.viewer.controls.ViewerControlsPanel;
 import net.wbz.moba.controlcenter.web.shared.track.model.Configuration;
 import net.wbz.moba.controlcenter.web.shared.track.model.TrackPart;
-import net.wbz.moba.controlcenter.web.shared.viewer.TrackPartBlockEvent;
 import net.wbz.moba.controlcenter.web.shared.viewer.TrackPartStateEvent;
 
 import java.util.Map;
@@ -39,8 +38,8 @@ public class TrackViewerPanel extends AbstractTrackPanel {
 
     private Label lblTrackPartConfig = new Label();
 
-    private Map<Configuration, AbstractControlImageTrackWidget> controlTrackWidgets = Maps.newConcurrentMap();
-    private Map<Configuration, AbstractBlockImageTrackWidget> blockTrackWidgets = Maps.newConcurrentMap();
+    private Map<Configuration, AbstractControlSvgTrackWidget> controlTrackWidgets = Maps.newConcurrentMap();
+    private Map<Configuration, AbstractBlockSvgTrackWidget> blockTrackWidgets = Maps.newConcurrentMap();
 
     @Override
     protected void onLoad() {
@@ -132,12 +131,12 @@ public class TrackViewerPanel extends AbstractTrackPanel {
                     }
                     DialogBoxUtil.getLoading().setProgressPercentage(percentage, "add trackpart " + (i + 1) + "/" + trackParts.length);
 
-                    AbstractImageTrackWidget trackWidget = ModelManager.getInstance().getWidgetOf(trackPart);
+                    AbstractSvgTrackWidget trackWidget = ModelManager.getInstance().getWidgetOf(trackPart);
 
-                    if (trackWidget instanceof AbstractControlImageTrackWidget) {
-                        controlTrackWidgets.put(trackPart.getConfiguration(), (AbstractControlImageTrackWidget) trackWidget);
-                    } else if (trackWidget instanceof AbstractBlockImageTrackWidget && trackPart.getConfiguration() !=null) {
-                        blockTrackWidgets.put(trackPart.getConfiguration(), (AbstractBlockImageTrackWidget) trackWidget);
+                    if (trackWidget instanceof AbstractControlSvgTrackWidget) {
+                        controlTrackWidgets.put(trackPart.getConfiguration(), (AbstractControlSvgTrackWidget) trackWidget);
+                    } else if (trackWidget instanceof AbstractBlockSvgTrackWidget && trackPart.getConfiguration() !=null) {
+                        blockTrackWidgets.put(trackPart.getConfiguration(), (AbstractBlockSvgTrackWidget) trackWidget);
                     }
 
                     AbsoluteTrackPosition trackPosition = trackWidget.getTrackPosition(trackPart.getGridPosition(), getZoomLevel());

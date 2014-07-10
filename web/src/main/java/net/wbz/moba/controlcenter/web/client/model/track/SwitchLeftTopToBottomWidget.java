@@ -17,7 +17,7 @@ public class SwitchLeftTopToBottomWidget extends AbstractSwitchLeftWidget {
     }
 
     @Override
-    public AbstractImageTrackWidget<Switch> getClone(Switch trackPart) {
+    public AbstractSvgTrackWidget<Switch> getClone(Switch trackPart) {
         SwitchLeftTopToBottomWidget clone = new SwitchLeftTopToBottomWidget();
         clone.initFromTrackPart(trackPart);
         return clone;

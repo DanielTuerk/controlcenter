@@ -1,29 +1,28 @@
 package net.wbz.moba.controlcenter.web.client.model.track;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.*;
 import net.wbz.moba.controlcenter.web.client.ServiceUtils;
 import net.wbz.moba.controlcenter.web.client.device.BusConnection;
 import net.wbz.moba.controlcenter.web.client.device.BusConnectionListener;
 import net.wbz.moba.controlcenter.web.client.editor.track.ClickActionViewerWidgetHandler;
-import net.wbz.moba.controlcenter.web.client.editor.track.EditTrackWidgetHandler;
 import net.wbz.moba.controlcenter.web.shared.track.model.Configuration;
 import net.wbz.moba.controlcenter.web.shared.track.model.TrackPart;
+import org.vectomatic.dom.svg.OMSVGDocument;
+import org.vectomatic.dom.svg.OMSVGSVGElement;
 
 /**
- * A {@link net.wbz.moba.controlcenter.web.client.model.track.AbstractImageTrackWidget} with click control
+ * A {@link AbstractSvgTrackWidget} with click control
  * to toggle the state of the {@link net.wbz.moba.controlcenter.web.shared.track.model.TrackPart}.
  *
  * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
  */
-abstract public class AbstractControlImageTrackWidget<T extends TrackPart> extends AbstractImageTrackWidget<T>
+abstract public class AbstractControlSvgTrackWidget<T extends TrackPart> extends AbstractSvgTrackWidget<T>
         implements ClickActionViewerWidgetHandler {
-
-
 
     private boolean trackPartState = true;
 
-    public AbstractControlImageTrackWidget() {
+    public AbstractControlSvgTrackWidget() {
+        super();
         // repaint the widget by change of the device connection state
         BusConnection.getInstance().addListener(new BusConnectionListener() {
             @Override
@@ -47,6 +46,17 @@ abstract public class AbstractControlImageTrackWidget<T extends TrackPart> exten
         }
     }
 
+    private void changeState() {
+        clearSvgContent();
+        if (!trackPartState) {
+            addSvgContent(getSvgDocument(), getSvgRootElement());
+        } else {
+            addActiveStateSvgContent(getSvgDocument(), getSvgRootElement());
+        }
+    }
+
+    abstract protected void addActiveStateSvgContent(OMSVGDocument doc, OMSVGSVGElement svg);
+
     @Override
     public void repaint() {
         Configuration widgetConfig = getStoredWidgetConfiguration();
@@ -54,7 +64,7 @@ abstract public class AbstractControlImageTrackWidget<T extends TrackPart> exten
             ServiceUtils.getBusService().isBusConnected(new AsyncCallback<Boolean>() {
                 @Override
                 public void onFailure(Throwable caught) {
-                    //LOG.error("can't request bus state",caught);
+                    //TODO LOG.error("can't request bus state",caught);
                 }
 
                 @Override
@@ -77,6 +87,7 @@ abstract public class AbstractControlImageTrackWidget<T extends TrackPart> exten
                 }
             });
         } else {
+            //TODO
             //LOG.error("widget has no track part config: " + getClass().getName());
         }
     }
@@ -91,26 +102,8 @@ abstract public class AbstractControlImageTrackWidget<T extends TrackPart> exten
 
             @Override
             public void onSuccess(Void result) {
-                //toggleState();
-
             }
         });
     }
-
-    private void toggleState() {
-        trackPartState = !trackPartState;
-        changeState();
-    }
-
-    private void changeState() {
-        if (!trackPartState) {
-            setUrl(getImageUrl());
-        } else {
-            setUrl(getActiveStateImageUrl());
-        }
-    }
-
-    public abstract String getActiveStateImageUrl();
-
 
 }

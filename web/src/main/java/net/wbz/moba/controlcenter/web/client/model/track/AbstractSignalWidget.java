@@ -1,23 +1,33 @@
 package net.wbz.moba.controlcenter.web.client.model.track;
 
 import com.google.gwt.user.client.ui.Widget;
+import net.wbz.moba.controlcenter.web.client.util.SvgTrackUtil;
 import net.wbz.moba.controlcenter.web.shared.track.model.Signal;
 import net.wbz.moba.controlcenter.web.shared.track.model.Straight;
 import net.wbz.moba.controlcenter.web.shared.track.model.TrackPart;
+import org.vectomatic.dom.svg.OMSVGDocument;
+import org.vectomatic.dom.svg.OMSVGSVGElement;
+import org.vectomatic.dom.svg.utils.SVGConstants;
 
 /**
  * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
  */
-abstract public class AbstractSignalWidget extends AbstractControlImageTrackWidget<Signal> {
+abstract public class AbstractSignalWidget extends AbstractControlSvgTrackWidget<Signal> {
 
     @Override
-    public String getImageUrl() {
-        return "img/widget/track/straight_signal_stop.png";
+    protected void addSvgContent(OMSVGDocument doc, OMSVGSVGElement svg) {
+        addSvgContent(doc, svg, SVGConstants.CSS_RED_VALUE, SVGConstants.CSS_WHITE_VALUE);
     }
 
     @Override
-    public String getActiveStateImageUrl() {
-        return "img/widget/track/straight_signal_drive.png";
+    protected void addActiveStateSvgContent(OMSVGDocument doc, OMSVGSVGElement svg) {
+        addSvgContent(doc, svg, SVGConstants.CSS_WHITE_VALUE, SVGConstants.CSS_RED_VALUE);
+    }
+
+    private void addSvgContent(OMSVGDocument doc, OMSVGSVGElement svg, String color, String colorActive) {
+        svg.appendChild(SvgTrackUtil.createRectangle(doc, 0f, 10f, 25f, 5f));
+        svg.appendChild(SvgTrackUtil.createCircle(doc, 12.5f, 6f, 5f, color));
+        svg.appendChild(SvgTrackUtil.createCircle(doc, 12.5f, 19f, 5f, colorActive));
     }
 
     @Override
@@ -32,7 +42,7 @@ abstract public class AbstractSignalWidget extends AbstractControlImageTrackWidg
     abstract public Straight.DIRECTION getStraightDirection();
 
     @Override
-    public String getPaletteTitel() {
+    public String getPaletteTitle() {
         return "Signal";
     }
 

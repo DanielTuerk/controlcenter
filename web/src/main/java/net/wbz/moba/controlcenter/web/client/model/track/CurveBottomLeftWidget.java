@@ -1,6 +1,8 @@
 package net.wbz.moba.controlcenter.web.client.model.track;
 
 import net.wbz.moba.controlcenter.web.shared.track.model.Curve;
+import org.vectomatic.dom.svg.OMSVGDocument;
+import org.vectomatic.dom.svg.OMSVGSVGElement;
 
 /**
  * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
@@ -17,7 +19,7 @@ public class CurveBottomLeftWidget extends AbstractCurveWidget {
     }
 
     @Override
-    public AbstractImageTrackWidget<Curve> getClone(Curve trackPart) {
+    public AbstractSvgTrackWidget<Curve> getClone(Curve trackPart) {
         return new CurveBottomLeftWidget();
     }
 

@@ -1,17 +1,20 @@
 package net.wbz.moba.controlcenter.web.client.model.track;
 
 import com.google.gwt.user.client.ui.Widget;
+import net.wbz.moba.controlcenter.web.client.util.SvgTrackUtil;
 import net.wbz.moba.controlcenter.web.shared.track.model.Curve;
 import net.wbz.moba.controlcenter.web.shared.track.model.TrackPart;
+import org.vectomatic.dom.svg.OMSVGDocument;
+import org.vectomatic.dom.svg.OMSVGSVGElement;
 
 /**
  * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
  */
-abstract public class AbstractCurveWidget extends AbstractImageTrackWidget<Curve> {
+abstract public class AbstractCurveWidget extends AbstractSvgTrackWidget<Curve> {
 
     @Override
-    public String getImageUrl() {
-        return "img/widget/track/curve.png";
+    protected void addSvgContent(OMSVGDocument doc, OMSVGSVGElement svg) {
+        svg.appendChild(SvgTrackUtil.createLine(doc, 12f, 26f, 26f, 12f, 5));
     }
 
     @Override
@@ -30,7 +33,7 @@ abstract public class AbstractCurveWidget extends AbstractImageTrackWidget<Curve
     abstract public Curve.DIRECTION getCurveDirection();
 
     @Override
-    public String getPaletteTitel() {
+    public String getPaletteTitle() {
         return "Curve";
     }
 }

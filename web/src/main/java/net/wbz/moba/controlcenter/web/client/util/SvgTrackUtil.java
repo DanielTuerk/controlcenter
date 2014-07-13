@@ -68,11 +68,11 @@ public class SvgTrackUtil {
     /**
      * Create a circle.
      *
-     * @param doc {@link org.vectomatic.dom.svg.OMSVGDocument}
-     * @param x position x
-     * @param y position y
+     * @param doc    {@link org.vectomatic.dom.svg.OMSVGDocument}
+     * @param x      position x
+     * @param y      position y
      * @param radius radius
-     * @param color color to fill circle {@link SVGConstants}
+     * @param color  color to fill circle {@link SVGConstants}
      * @return {@link OMSVGCircleElement}
      */
     public static OMSVGCircleElement createCircle(OMSVGDocument doc, float x, float y, float radius, String color) {

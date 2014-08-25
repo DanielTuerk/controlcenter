@@ -1,4 +1,4 @@
-package net.wbz.moba.controlcenter.web.client.viewer.controls;
+package net.wbz.moba.controlcenter.web.client.viewer.controls.scenario;
 
 import com.github.gwtbootstrap.client.ui.Button;
 import com.github.gwtbootstrap.client.ui.TextArea;
@@ -9,16 +9,21 @@ import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.*;
+import com.google.gwt.user.client.ui.Label;
 import net.wbz.moba.controlcenter.web.client.ServiceUtils;
+import net.wbz.moba.controlcenter.web.client.viewer.controls.AbstractItemPanel;
 import net.wbz.moba.controlcenter.web.shared.scenario.Scenario;
 import net.wbz.moba.controlcenter.web.shared.scenario.ScenarioCommand;
+import net.wbz.moba.controlcenter.web.shared.scenario.ScenarioStateEvent;
 
 import java.util.List;
 
 /**
+ * TODO: it's broken and need to refactor
+ *
  * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
  */
-public class ScenarioItemPanel extends AbstractItemPanel<Scenario> {
+public class ScenarioItemPanel extends AbstractItemPanel<Scenario, ScenarioStateEvent> {
 
     public static final String BREAK_LINE = "&#13;"; //13 - mac?
     private static final int MIN_LINES_EDIT_TEXTAREA = 5;
@@ -37,14 +42,14 @@ public class ScenarioItemPanel extends AbstractItemPanel<Scenario> {
     }
 
     @Override
-    protected String getItemTitle() {
-        return getModel().getName() + " [" + getModel().getId() + "]";
+    protected Panel createHeaderPanel() {
+        Panel headerPanel = new FlowPanel();
+        headerPanel.add(new com.github.gwtbootstrap.client.ui.Label(getModel().getName() + " [" + getModel().getId() + "]"));
+        return headerPanel;
     }
 
     @Override
-    protected void onLoad() {
-        super.onLoad();
-
+    public Panel createCollapseContentPanel() {
         btnEditScenario.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
@@ -134,22 +139,24 @@ public class ScenarioItemPanel extends AbstractItemPanel<Scenario> {
         add(btnControlGroupPanel);
 
 
-        updateScenarioRunState(getModel().getRunState());
+//        updateItemData(getModel().getRunState());
 
         initEditPanel();
         showCommandList(getModel().getCommands());
+
+        return commandListEditPanel;
     }
 
     private Button btnEditScenario = new Button("edit");
 
     private void showCommandList(List<ScenarioCommand> commands) {
-        getCollapseContentPanel().clear();
+        commandListEditPanel.clear();
         VerticalPanel commandListPanel = new VerticalPanel();
         commandListPanel.add(btnEditScenario);
         for (ScenarioCommand scenarioCommand : commands) {
             commandListPanel.add(new Label(scenarioCommand.toText()));
         }
-        getCollapseContentPanel().add(commandListPanel);
+        commandListEditPanel.add(commandListPanel);
     }
 
     private void initEditPanel() {
@@ -198,13 +205,14 @@ public class ScenarioItemPanel extends AbstractItemPanel<Scenario> {
     }
 
     private void showEditScenario(String commandsText) {
-        getCollapseContentPanel().clear();
+        createCollapseContentPanel().clear();
         txtCommandList.setValue(new HTML(commandsText).getHTML());
-        getCollapseContentPanel().add(commandListEditPanel);
+        createCollapseContentPanel().add(commandListEditPanel);
     }
 
-    public void updateScenarioRunState(Scenario.RUN_STATE runState) {
-        switch (runState) {
+    @Override
+    public void updateItemData(ScenarioStateEvent event) {
+        switch (event.getState()) {
             case RUNNING:
                 btnPlay.setEnabled(false);
                 btnPause.setEnabled(true);

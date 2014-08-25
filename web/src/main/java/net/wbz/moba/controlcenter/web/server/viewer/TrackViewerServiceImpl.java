@@ -35,16 +35,15 @@ public class TrackViewerServiceImpl extends RemoteServiceServlet implements Trac
     public void toggleTrackPart(Configuration configuration, boolean state) {
         if (configuration.isValid()) {
             try {
-                BusAddress busAddress = deviceManager.getConnectedDevice().getBusAddress(1, (byte) configuration.getAddress());
-                if (state) {
-                    busAddress.setBit(configuration.getOutput());
-                } else {
-                    busAddress.clearBit(configuration.getOutput());
+                if (deviceManager.getConnectedDevice() != null) {
+                    BusAddress busAddress = deviceManager.getConnectedDevice().getBusAddress(1, (byte) configuration.getAddress());
+                    if (state) {
+                        busAddress.setBit(configuration.getOutput());
+                    } else {
+                        busAddress.clearBit(configuration.getOutput());
+                    }
+                    busAddress.send();
                 }
-                busAddress.send();
-
-                //TODO
-//                fireEvents(configuration,state);
             } catch (DeviceAccessException e) {
                 log.error("can't toggle track part", e);
                 throw new RpcTokenException("can't toggle track part");
@@ -56,8 +55,10 @@ public class TrackViewerServiceImpl extends RemoteServiceServlet implements Trac
     public boolean getTrackPartState(Configuration configuration) {
         if (configuration.isValid()) {
             try {
-                return deviceManager.getConnectedDevice().getBusAddress(1,(byte) configuration.getAddress()).
-                        getBitState(configuration.getOutput());
+                if (deviceManager.getConnectedDevice() != null) {
+                    return deviceManager.getConnectedDevice().getBusAddress(1, (byte) configuration.getAddress()).
+                            getBitState(configuration.getOutput());
+                }
             } catch (DeviceAccessException e) {
                 String msg = "can't load state of track part";
                 log.error(msg, e);

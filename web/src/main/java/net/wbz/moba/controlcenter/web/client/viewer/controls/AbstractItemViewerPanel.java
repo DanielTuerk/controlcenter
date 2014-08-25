@@ -20,7 +20,7 @@ import java.util.Map;
 abstract public class AbstractItemViewerPanel<ItemPanel extends AbstractItemPanel, EventType extends AbstractStateEvent> extends FlowPanel {
 
     private final Map<Long, ItemPanel> itemPanelByIdMap = Maps.newHashMap();
-    private final VerticalPanel itemsContainerPanel = new VerticalPanel();
+    private final FlowPanel itemsContainerPanel = new FlowPanel();
 
     public AbstractItemViewerPanel(Class<EventType> eventClass) {
 
@@ -40,12 +40,12 @@ abstract public class AbstractItemViewerPanel<ItemPanel extends AbstractItemPane
         EventReceiver.getInstance().addListener(eventClass, new RemoteEventListener() {
             public void apply(Event anEvent) {
                 //TODO
-                EventType scenarioStateEvent = (EventType) anEvent;
+                EventType eventType = (EventType) anEvent;
 
-                if (itemPanelByIdMap.containsKey(scenarioStateEvent.getItemId())) {
-                    eventCallback(itemPanelByIdMap.get(scenarioStateEvent.getItemId()), scenarioStateEvent);
+                if (itemPanelByIdMap.containsKey(eventType.getItemId())) {
+                    eventCallback(itemPanelByIdMap.get(eventType.getItemId()), eventType);
                 } else {
-                    net.wbz.moba.controlcenter.web.client.util.Log.console("event: can't find item " + scenarioStateEvent.getItemId());
+                    net.wbz.moba.controlcenter.web.client.util.Log.console("event: can't find item " + eventType.getItemId());
                 }
             }
         });

@@ -1,4 +1,4 @@
-package net.wbz.moba.controlcenter.web.client.viewer.controls;
+package net.wbz.moba.controlcenter.web.client.viewer.controls.scenario;
 
 import com.github.gwtbootstrap.client.ui.TextBox;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -6,6 +6,7 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.gen2.logging.shared.Log;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import net.wbz.moba.controlcenter.web.client.ServiceUtils;
+import net.wbz.moba.controlcenter.web.client.viewer.controls.AbstractItemViewerPanel;
 import net.wbz.moba.controlcenter.web.shared.scenario.Scenario;
 import net.wbz.moba.controlcenter.web.shared.scenario.ScenarioStateEvent;
 
@@ -22,7 +23,7 @@ public class ScenarioViewerPanel extends AbstractItemViewerPanel<ScenarioItemPan
 
     @Override
     protected void eventCallback(ScenarioItemPanel eventItem, ScenarioStateEvent scenarioStateEvent) {
-        eventItem.updateScenarioRunState(scenarioStateEvent.getState());
+        eventItem.updateItemData(scenarioStateEvent);
     }
 
     @Override

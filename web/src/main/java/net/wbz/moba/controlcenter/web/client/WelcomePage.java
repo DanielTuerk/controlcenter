@@ -29,7 +29,13 @@ public class WelcomePage extends HorizontalPanel {
     @Override
     protected void onLoad() {
         setSpacing(10);
-        setSize("100%","100%");
+        setSize("100%", "100%");
+
+        //TODO add test panels: maybe with annotation of panel and gwt reflection (gwt en)
+//        HorizontalPanel testPanel = new HorizontalPanel();
+//        testPanel.setBorderWidth(5);
+//        testPanel.add(new ViewerControlsPanel());
+//        add(testPanel);
 
         DecoratorPanel createPanel = new DecoratorPanel();
         VerticalPanel createPanelContent = new VerticalPanel();
@@ -48,16 +54,16 @@ public class WelcomePage extends HorizontalPanel {
 
                     @Override
                     public void onSuccess(Void result) {
-                               ServiceUtils.getConstrutionService().setCurrentConstruction(construction,new AsyncCallback<Void>() {
-                                   @Override
-                                   public void onFailure(Throwable caught) {
-                                   }
+                        ServiceUtils.getConstrutionService().setCurrentConstruction(construction, new AsyncCallback<Void>() {
+                            @Override
+                            public void onFailure(Throwable caught) {
+                            }
 
-                                   @Override
-                                   public void onSuccess(Void result) {
-                                       createConstructionClickHandler.onClick(null);
-                                   }
-                               });
+                            @Override
+                            public void onSuccess(Void result) {
+                                createConstructionClickHandler.onClick(null);
+                            }
+                        });
                     }
                 });
             }

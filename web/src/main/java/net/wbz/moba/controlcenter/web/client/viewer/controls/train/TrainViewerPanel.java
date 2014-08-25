@@ -1,4 +1,4 @@
-package net.wbz.moba.controlcenter.web.client.viewer.controls;
+package net.wbz.moba.controlcenter.web.client.viewer.controls.train;
 
 import com.github.gwtbootstrap.client.ui.TextBox;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -6,6 +6,7 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.gen2.logging.shared.Log;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import net.wbz.moba.controlcenter.web.client.ServiceUtils;
+import net.wbz.moba.controlcenter.web.client.viewer.controls.AbstractItemViewerPanel;
 import net.wbz.moba.controlcenter.web.shared.train.Train;
 import net.wbz.moba.controlcenter.web.shared.train.TrainStateEvent;
 
@@ -24,7 +25,7 @@ public class TrainViewerPanel extends AbstractItemViewerPanel<TrainItemPanel, Tr
 
     @Override
     protected void eventCallback(TrainItemPanel eventItem, TrainStateEvent trainStateEvent) {
-
+        eventItem.updateItemData(trainStateEvent);
     }
 
     @Override
@@ -59,6 +60,7 @@ public class TrainViewerPanel extends AbstractItemViewerPanel<TrainItemPanel, Tr
             @Override
             public void onSuccess(List<Train> result) {
                 for (Train train : result) {
+
                     addItemPanel(new TrainItemPanel(train));
                 }
             }

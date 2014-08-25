@@ -1,4 +1,4 @@
-package net.wbz.moba.controlcenter.web.client.viewer.controls;
+package net.wbz.moba.controlcenter.web.client.viewer.controls.train;
 
 import com.github.gwtbootstrap.client.ui.*;
 import com.github.gwtbootstrap.client.ui.constants.ButtonType;

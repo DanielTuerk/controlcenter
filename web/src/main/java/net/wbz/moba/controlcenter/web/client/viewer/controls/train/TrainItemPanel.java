@@ -1,12 +1,14 @@
-package net.wbz.moba.controlcenter.web.client.viewer.controls;
+package net.wbz.moba.controlcenter.web.client.viewer.controls.train;
 
 import com.github.gwtbootstrap.client.ui.*;
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.DialogBox;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.ToggleButton;
 import com.google.gwt.widgetideas.graphics.client.Color;
@@ -15,21 +17,78 @@ import com.kiouri.sliderbar.client.event.BarValueChangedHandler;
 import com.kiouri.sliderbar.client.solution.simplehorizontal.SliderBarSimpleHorizontal;
 import com.kiouri.sliderbar.client.view.SliderBar;
 import net.wbz.moba.controlcenter.web.client.ServiceUtils;
-import net.wbz.moba.controlcenter.web.shared.train.Train;
-import net.wbz.moba.controlcenter.web.shared.train.TrainFunction;
+import net.wbz.moba.controlcenter.web.client.viewer.controls.AbstractItemPanel;
+import net.wbz.moba.controlcenter.web.shared.train.*;
 
 /**
  * TODO: poll state changes from server (like scenario)
  * <p/>
  * Created by Daniel on 08.03.14.
  */
-public class TrainItemPanel extends AbstractItemPanel<Train> {
+public class TrainItemPanel extends AbstractItemPanel<Train, TrainStateEvent> {
 
-    private Panel contentPanel = new FluidContainer();
+    private Panel contentPanel;
+
+    private SliderBar sliderDrivingLevel;
+
+    private Button btnDirectionForward;
+    private Button btnDirectionBackward;
+
+    /**
+     * TODO
+     */
+    private int lastValueHotFixOfStupidValueChangeSliderEvent = 0;
+
+    private final Label lblName;
+    private final Label lblState;
+    private final Label lblStateDetails;
 
     public TrainItemPanel(Train train) {
         super(train);
+        lblName = new Label(getModel().getName());
+        lblState = new Label("state");
+        lblStateDetails = new Label("TODO state");
+    }
 
+    @Override
+    protected Panel createHeaderPanel() {
+        Panel headerPanel = new FlowPanel();
+        lblName.getElement().getStyle().setDisplay(Style.Display.BLOCK);
+        headerPanel.add(lblName);
+        headerPanel.add(lblState);
+        headerPanel.add(lblStateDetails);
+        return headerPanel;
+    }
+
+    @Override
+    public void updateItemData(TrainStateEvent event) {
+        if (event instanceof TrainHornStateEvent) {
+            //TODO
+        } else if (event instanceof TrainLightStateEvent) {
+            //TODO
+        } else if (event instanceof TrainFunctionStateEvent) {
+            //TODO
+        } else if (event instanceof TrainDrivingDirectionEvent) {
+            lblState.setText(((TrainDrivingDirectionEvent) event).getDirection().name());
+            switch (((TrainDrivingDirectionEvent) event).getDirection()) {
+                case BACKWARD:
+                    btnDirectionBackward.setToggle(true);
+                    btnDirectionForward.setToggle(false);
+                    break;
+                case FORWARD:
+                    btnDirectionForward.setToggle(true);
+                    btnDirectionBackward.setToggle(false);
+                    break;
+            }
+        } else if (event instanceof TrainDrivingLevelEvent) {
+            lblStateDetails.setText("speed: " + ((TrainDrivingLevelEvent) event).getSpeed());
+        }
+    }
+
+    @Override
+    public Panel createCollapseContentPanel() {
+
+        contentPanel = new FluidContainer();
 
         Button btnEditTrain = new Button("edit");
         btnEditTrain.addClickHandler(new ClickHandler() {
@@ -48,8 +107,10 @@ public class TrainItemPanel extends AbstractItemPanel<Train> {
         Row rowDrivingFunctions = new Row();
 
         ButtonGroup btnGroupDirection = new ButtonGroup();
-        btnGroupDirection.add(addDirectionButton(Train.DIRECTION.FORWARD));
-        btnGroupDirection.add(addDirectionButton(Train.DIRECTION.BACKWARD));
+        btnDirectionForward = createDirectionButton(Train.DIRECTION.FORWARD);
+        btnGroupDirection.add(btnDirectionForward);
+        btnDirectionBackward = createDirectionButton(Train.DIRECTION.BACKWARD);
+        btnGroupDirection.add(btnDirectionBackward);
         rowDrivingFunctions.add(new Column(1, btnGroupDirection));
 
 
@@ -63,30 +124,6 @@ public class TrainItemPanel extends AbstractItemPanel<Train> {
 //        sliderBar.setMinMarkStep(3);
         sliderDrivingLevel.setValue(lastValueHotFixOfStupidValueChangeSliderEvent);
 //        sliderBar.setMaxValue(valueInt);
-
-
-        Row drivingRow = new Row();
-        drivingRow.add(new Column(3, sliderDrivingLevel));
-        contentPanel.add(drivingRow);
-
-        initFunctions();
-
-        getCollapseContentPanel().add(contentPanel);
-
-    }
-
-    private SliderBar sliderDrivingLevel;
-
-    @Override
-    protected String getItemTitle() {
-        return getModel().getName();
-    }
-
-    int lastValueHotFixOfStupidValueChangeSliderEvent = 0;
-
-    @Override
-    protected void onLoad() {
-        super.onLoad();
         sliderDrivingLevel.addBarValueChangedHandler(new BarValueChangedHandler() {
             public void onBarValueChanged(BarValueChangedEvent event) {
                 if (event.getValue() != lastValueHotFixOfStupidValueChangeSliderEvent) {
@@ -103,19 +140,21 @@ public class TrainItemPanel extends AbstractItemPanel<Train> {
                 }
             }
         });
-    }
 
-    @Override
-    protected void onUnload() {
 
-        super.onUnload();
+        Row drivingRow = new Row();
+        drivingRow.add(new Column(3, sliderDrivingLevel));
+        contentPanel.add(drivingRow);
+
+        initFunctions();
+
+        return contentPanel;
     }
 
     private void initFunctions() {
         int count = 0;
         Row row = new Row();
         for (final TrainFunction functionEntry : getModel().getFunctions()) {
-
 
             ToggleButton btnToggleFunction = new ToggleButton(functionEntry.getFunction().name());
             btnToggleFunction.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
@@ -139,16 +178,22 @@ public class TrainItemPanel extends AbstractItemPanel<Train> {
             }
             row.add(new Column(1, btnToggleFunction));
 
-//            contentPanel.add(btnToggleFunction);
-//        row.add(col);
-//        contentPanel.add(row);
             count++;
-
         }
     }
 
-    private Button addDirectionButton(final Train.DIRECTION direction) {
-        Button btnDirection = new Button(direction == Train.DIRECTION.FORWARD ? "<<" : ">>");
+    private Button createDirectionButton(final Train.DIRECTION direction) {
+        Button btnDirection;
+        switch (direction) {
+            case BACKWARD:
+                btnDirection = new Button(">>");
+                break;
+            case FORWARD:
+                btnDirection = new Button("<<");
+                break;
+            default:
+                throw new RuntimeException("unknown direction to create the direction button (" + direction.name() + ")");
+        }
         btnDirection.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {

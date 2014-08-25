@@ -44,27 +44,16 @@ public class TrackEditorServiceImpl extends RemoteServiceServlet implements Trac
     public TrackEditorServiceImpl(ConstructionServiceImpl constructionService, DeviceManager deviceManager, EventBroadcaster eventBroadcaster) {
         this.constructionService = constructionService;
         this.eventBroadcaster = eventBroadcaster;
-        this.deviceManager=deviceManager;
+        this.deviceManager = deviceManager;
         deviceManager.addDeviceConnectionListener(new DeviceConnectionListener() {
             @Override
             public void connected(Device device) {
-//                try {
-                    device.getBusDataDispatcher().registerConsumers(busDataConsumersOfTheCurrentTrack);
-//                            new AllBusDataConsumer() {
-//                        @Override
-//                        public void
-//                        valueChanged(int bus, int address, int value) {
-//                            eventBroadcaster.fireEvent(new BusDataEvent(bus, address, value));
-//                        }
-//                    });
-//                } catch (DeviceAccessException e) {
-//                    e.printStackTrace();
-//                }
+                device.getBusDataDispatcher().registerConsumers(busDataConsumersOfTheCurrentTrack);
             }
 
             @Override
             public void disconnected(Device device) {
-
+                device.getBusDataDispatcher().unregisterConsumers(busDataConsumersOfTheCurrentTrack);
             }
         });
     }
@@ -98,17 +87,17 @@ public class TrackEditorServiceImpl extends RemoteServiceServlet implements Trac
 
             List<Configuration> uniqueTrackPartConfigs = Lists.newArrayList();
 
-            for(final TrackPart trackPart : trackParts) {
+            for (final TrackPart trackPart : trackParts) {
                 final Configuration trackPartConfiguration = trackPart.getConfiguration();
-                if(trackPartConfiguration!=null && trackPartConfiguration.isValid() && !uniqueTrackPartConfigs.contains(trackPartConfiguration)) {
+                if (trackPartConfiguration != null && trackPartConfiguration.isValid() && !uniqueTrackPartConfigs.contains(trackPartConfiguration)) {
                     uniqueTrackPartConfigs.add(trackPartConfiguration);
 
                     //TODO bus nr
-                    busDataConsumersOfTheCurrentTrack.add(new BusDataConsumer(1,trackPartConfiguration.getAddress()) {
+                    busDataConsumersOfTheCurrentTrack.add(new BusDataConsumer(1, trackPartConfiguration.getAddress()) {
                         @Override
                         public void valueChanged(int value) {
                             eventBroadcaster.fireEvent(new TrackPartStateEvent(trackPartConfiguration,
-                                    BigInteger.valueOf(value).testBit(trackPartConfiguration.getOutput()-1)));
+                                    BigInteger.valueOf(value).testBit(trackPartConfiguration.getOutput() - 1)));
                         }
                     });
                 }

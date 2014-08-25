@@ -114,7 +114,7 @@
 
     <properties>
 
-        <selectrix.version>0.1-SNAPSHOT</selectrix.version>
+        <selectrix.version>0.2-SNAPSHOT</selectrix.version>
         <!-- setting this makes build more platform independent by explicitly specifying an encoding -->
         <logback.version>0.9.15</logback.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

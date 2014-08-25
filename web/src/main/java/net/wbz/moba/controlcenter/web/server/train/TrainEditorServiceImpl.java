@@ -13,13 +13,12 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 
 /**
- * Created by Daniel on 08.03.14.
+ * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
  */
 @Singleton
 public class TrainEditorServiceImpl extends RemoteServiceServlet implements TrainEditorService {
 
     private static final Logger LOG = LoggerFactory.getLogger(TrainEditorServiceImpl.class);
-
 
     private final TrainManager trainManager;
 

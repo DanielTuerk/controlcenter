@@ -224,3 +224,16 @@ h1 {
     right:0px;
 }
 
+.abstractItemPanelHeaderContent {
+    float: left;
+    width: calc(100% - 80px);
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+.fillParent {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+

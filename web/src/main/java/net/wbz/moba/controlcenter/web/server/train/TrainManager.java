@@ -9,7 +9,14 @@ import com.google.inject.name.Named;
 import net.wbz.moba.controlcenter.db.Database;
 import net.wbz.moba.controlcenter.db.DatabaseFactory;
 import net.wbz.moba.controlcenter.db.StorageException;
-import net.wbz.moba.controlcenter.web.shared.train.Train;
+import net.wbz.moba.controlcenter.web.server.EventBroadcaster;
+import net.wbz.moba.controlcenter.web.shared.train.*;
+import net.wbz.selectrix4java.api.device.Device;
+import net.wbz.selectrix4java.api.device.DeviceAccessException;
+import net.wbz.selectrix4java.api.device.DeviceConnectionListener;
+import net.wbz.selectrix4java.api.train.TrainDataListener;
+import net.wbz.selectrix4java.api.train.TrainModule;
+import net.wbz.selectrix4java.manager.DeviceManager;
 
 import java.io.IOException;
 import java.util.List;
@@ -27,7 +34,9 @@ public class TrainManager {
     private final Database database;
 
     @Inject
-    public TrainManager(@Named(TRAINS_DB_KEY) DatabaseFactory databaseFactory) {
+    public TrainManager(@Named(TRAINS_DB_KEY) DatabaseFactory databaseFactory, final EventBroadcaster eventBroadcaster,
+                        final DeviceManager deviceManager) {
+
         if (!databaseFactory.getExistingDatabaseNames().contains(TRAINS_DB_KEY)) {
             try {
                 database = databaseFactory.addDatabase(TRAINS_DB_KEY);
@@ -42,6 +51,50 @@ public class TrainManager {
                 throw new RuntimeException("no DB found for trains key: " + TRAINS_DB_KEY);
             }
         }
+
+        deviceManager.addDeviceConnectionListener(new DeviceConnectionListener() {
+            @Override
+            public void connected(Device device) {
+                try {
+                    for (Train train : getTrains()) {
+                        deviceManager.getConnectedDevice().getTrainModule((byte) train.getId()).addTrainDataListener(new TrainDataListener() {
+                            @Override
+                            public void drivingLevelChanged(int i) {
+                                eventBroadcaster.fireEvent(new TrainDrivingLevelEvent(i));
+                            }
+
+                            @Override
+                            public void drivingDirectionChanged(TrainModule.DRIVING_DIRECTION driving_direction) {
+                                eventBroadcaster.fireEvent(new TrainDrivingDirectionEvent(driving_direction));
+                            }
+
+                            @Override
+                            public void functionStateChanged(byte b, int i, boolean b2) {
+                                eventBroadcaster.fireEvent(new TrainFunctionStateEvent(b, i, b2));
+                            }
+
+                            @Override
+                            public void lightStateChanged(boolean b) {
+                                eventBroadcaster.fireEvent(new TrainLightStateEvent(b));
+                            }
+
+                            @Override
+                            public void hornStateChanged(boolean b) {
+                                eventBroadcaster.fireEvent(new TrainHornStateEvent(b));
+                            }
+                        });
+                    }
+                } catch (DeviceAccessException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void disconnected(Device device) {
+
+            }
+        });
+
     }
 
     public Train getTrain(long id) {
@@ -63,6 +116,7 @@ public class TrainManager {
         ObjectSet<Train> storedDevices = database.getObjectContainer().query(Train.class);
         for (Train train : storedDevices) {
             trains.put(train.getId(), train);
+
         }
     }
 

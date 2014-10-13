@@ -38,6 +38,7 @@ public class BusConnectionToggleButton extends ToggleButton {
                                 @Override
                                 public void onSuccess(Void result) {
                                     setValue(true);
+                                    // TODO should be an event from server
                                     BusConnection.getInstance().setConnected();
                                 }
                             });

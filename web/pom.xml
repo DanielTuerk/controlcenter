@@ -41,6 +41,10 @@
             <groupId>net.wbz.selectrix4java</groupId>
             <artifactId>selectrix4java-manager</artifactId>
             <version>${selectrix.version}</version>
+        </dependency><dependency>
+            <groupId>net.wbz.selectrix4java</groupId>
+            <artifactId>selectrix4java-test</artifactId>
+            <version>${selectrix.version}</version>
         </dependency>
 
         <dependency>

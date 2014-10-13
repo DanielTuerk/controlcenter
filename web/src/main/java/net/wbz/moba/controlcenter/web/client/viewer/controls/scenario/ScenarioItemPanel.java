@@ -3,13 +3,13 @@ package net.wbz.moba.controlcenter.web.client.viewer.controls.scenario;
 import com.github.gwtbootstrap.client.ui.Button;
 import com.github.gwtbootstrap.client.ui.TextArea;
 import com.github.gwtbootstrap.client.ui.constants.ButtonType;
+import com.google.common.collect.Lists;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.*;
-import com.google.gwt.user.client.ui.Label;
 import net.wbz.moba.controlcenter.web.client.ServiceUtils;
 import net.wbz.moba.controlcenter.web.client.viewer.controls.AbstractItemPanel;
 import net.wbz.moba.controlcenter.web.shared.scenario.Scenario;
@@ -39,6 +39,11 @@ public class ScenarioItemPanel extends AbstractItemPanel<Scenario, ScenarioState
 
     public ScenarioItemPanel(Scenario scenario) {
         super(scenario);
+    }
+
+    @Override
+    protected List<Class<ScenarioStateEvent>> getStateEventClasses() {
+        return Lists.newArrayList(ScenarioStateEvent.class);
     }
 
     @Override

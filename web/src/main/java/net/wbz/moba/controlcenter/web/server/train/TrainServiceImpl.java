@@ -4,7 +4,6 @@ import com.google.gwt.user.client.rpc.RpcTokenException;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import net.wbz.moba.controlcenter.web.server.EventBroadcaster;
 import net.wbz.moba.controlcenter.web.shared.train.Train;
 import net.wbz.moba.controlcenter.web.shared.train.TrainFunction;
 import net.wbz.moba.controlcenter.web.shared.train.TrainService;
@@ -15,7 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Created by Daniel on 08.03.14.
+ * Implementation of the {@link net.wbz.moba.controlcenter.web.shared.train.TrainService}.
  */
 @Singleton
 public class TrainServiceImpl extends RemoteServiceServlet implements TrainService {
@@ -33,7 +32,7 @@ public class TrainServiceImpl extends RemoteServiceServlet implements TrainServi
 
     @Override
     public void updateDrivingLevel(long id, int level) {
-        if (level >= 0 && level <= 127) {
+        if (level >= 0 && level <= 31) {
             int address = trainManager.getTrain(id).getAddress();
             try {
                 deviceManager.getConnectedDevice().getTrainModule((byte) address).setDrivingLevel(level);
@@ -45,7 +44,6 @@ public class TrainServiceImpl extends RemoteServiceServlet implements TrainServi
         } else {
             throw new RpcTokenException("invalid level " + level + " (0-127)");
         }
-
     }
 
     @Override

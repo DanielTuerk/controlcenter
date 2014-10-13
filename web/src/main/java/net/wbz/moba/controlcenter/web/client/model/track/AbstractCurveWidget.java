@@ -10,7 +10,7 @@ import org.vectomatic.dom.svg.OMSVGSVGElement;
 /**
  * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
  */
-abstract public class AbstractCurveWidget extends AbstractSvgTrackWidget<Curve> {
+abstract public class AbstractCurveWidget extends AbstractBlockSvgTrackWidget<Curve> {
 
     @Override
     protected void addSvgContent(OMSVGDocument doc, OMSVGSVGElement svg) {
@@ -22,6 +22,7 @@ abstract public class AbstractCurveWidget extends AbstractSvgTrackWidget<Curve> 
         Curve curve = new Curve();
         curve.setDirection(getCurveDirection());
         curve.setGridPosition(getGridPosition(containerWidget, zoomLevel));
+        curve.setConfiguration(getStoredWidgetConfiguration());
         return curve;
     }
 

@@ -27,8 +27,6 @@ import net.wbz.moba.controlcenter.web.shared.viewer.TrackPartStateEvent;
 import java.util.Map;
 
 /**
- * TODO: each widget request his state -> change to list or events?
- *
  * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
  */
 public class TrackViewerPanel extends AbstractTrackPanel {
@@ -67,30 +65,6 @@ public class TrackViewerPanel extends AbstractTrackPanel {
                 }
             }
         });
-//        EventReceiver.getInstance().addListener(TrackPartBlockEvent.class, new RemoteEventListener() {
-//            public void apply(Event anEvent) {
-//                if (anEvent instanceof TrackPartBlockEvent) {
-//                    TrackPartBlockEvent event = (TrackPartBlockEvent) anEvent;
-//                    if (blockTrackWidgets.containsKey(event.getConfig())) {
-//                        BlockPart blockPart = blockTrackWidgets.get(event.getConfig());
-//                        switch (event.getState()) {
-//                            case UNKNOWN:
-//                                blockPart.unknownBlock();
-//                                break;
-//                            case USED:
-//                                blockPart.usedBlock();
-//                                break;
-//                            case FREE:
-//                                blockPart.freeBlock();
-//                                break;
-//                        }
-//                    } else {
-//                        net.wbz.moba.controlcenter.web.client.util.Log.console("can't find widget of " + event.getConfig().toString());
-//                    }
-//
-//                }
-//            }
-//        });
 
 
         DialogBoxUtil.getLoading().setProgressPercentage(0);

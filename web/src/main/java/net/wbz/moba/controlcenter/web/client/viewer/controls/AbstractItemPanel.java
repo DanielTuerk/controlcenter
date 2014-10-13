@@ -2,16 +2,17 @@ package net.wbz.moba.controlcenter.web.client.viewer.controls;
 
 import com.github.gwtbootstrap.client.ui.Collapse;
 import com.github.gwtbootstrap.client.ui.CollapseTrigger;
-import com.github.gwtbootstrap.client.ui.FluidContainer;
-import com.github.gwtbootstrap.client.ui.TextArea;
-import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Panel;
+import de.novanic.eventservice.client.event.Event;
+import de.novanic.eventservice.client.event.listener.RemoteEventListener;
+import net.wbz.moba.controlcenter.web.client.EventReceiver;
 import net.wbz.moba.controlcenter.web.shared.AbstractIdModel;
 import net.wbz.moba.controlcenter.web.shared.AbstractStateEvent;
-import net.wbz.moba.controlcenter.web.shared.scenario.Scenario;
+
+import java.util.List;
 
 /**
  * Abstract container panel for the specified {@link net.wbz.moba.controlcenter.web.shared.AbstractIdModel}.
@@ -31,7 +32,17 @@ abstract public class AbstractItemPanel<Model extends AbstractIdModel, StateEven
 
     public AbstractItemPanel(Model model) {
         this.model = model;
+        for (Class<StateEvent> stateEventClass : getStateEventClasses()) {
+            EventReceiver.getInstance().addListener(stateEventClass, new RemoteEventListener() {
+                @Override
+                public void apply(Event event) {
+                    updateItemData((StateEvent) event);
+                }
+            });
+        }
     }
+
+    abstract protected List<Class<StateEvent>> getStateEventClasses();
 
     /**
      * TODO Change to update model, or create a new item panel (scenario)
@@ -43,21 +54,14 @@ abstract public class AbstractItemPanel<Model extends AbstractIdModel, StateEven
     }
 
     abstract protected Panel createHeaderPanel();
+
     abstract public void updateItemData(StateEvent event);
 
     @Override
     protected void onLoad() {
         super.onLoad();
 
-//        getElement().getStyle().setFloat(Style.Float.NONE);
-
         collapseContentPanel = createCollapseContentPanel();
-
-//        Row row = new Row();
-//        Column titleColumn = new Column(2);
-//        titleColumn.add(new Label(getItemTitle()));
-//        row.add(titleColumn);
-
 
         //header
         FlowPanel headerPanel = new FlowPanel();
@@ -65,17 +69,14 @@ abstract public class AbstractItemPanel<Model extends AbstractIdModel, StateEven
         headerPanelContent.addStyleName("abstractItemPanelHeaderContent");
         assert headerPanelContent != null;
 
-//        headerPanelContent.getElement().getStyle().setDisplay(Style.Display.BLOCK);
-//        headerPanelContent.setWidth("320px");
         headerPanel.add(headerPanelContent);
 
         // collapse
         CollapseTrigger collapseCommands = new CollapseTrigger("commandsContainer");
 
         net.wbz.moba.controlcenter.web.client.widgets.ToggleButton btnCollapse = new net.wbz.moba.controlcenter.web.client.widgets.ToggleButton(">>");
-        btnCollapse.setPixelSize(40,40);
+        btnCollapse.setPixelSize(40, 40);
         collapseCommands.add(btnCollapse);
-//        btnCollapse.getElement().getStyle().setDisplay(Style.Display.BLOCK);
         headerPanel.add(btnCollapse);
 
         add(headerPanel);

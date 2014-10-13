@@ -35,8 +35,6 @@ public class TrackEditorContainer extends FlowPanel {
 
     private PickupDragController dragController;
 
-
-
     public AbstractTrackPanel getBoundaryPanel() {
         return boundaryPanel;
     }
@@ -67,12 +65,6 @@ public class TrackEditorContainer extends FlowPanel {
 
         HorizontalPanel titelPanel = new HorizontalPanel();
         titelPanel.add(new Label("Track Editor"));
-
-
-
-//        addNorth(titelPanel,30);
-
-//        addWest(palette, 200);
 
         MenuBar menuBar = new MenuBar();
         menuBar.addItem(new MenuItem("Save", false, new Command() {

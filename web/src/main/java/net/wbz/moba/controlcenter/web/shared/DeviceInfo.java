@@ -7,7 +7,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  */
 public class DeviceInfo implements IsSerializable {
 
-    public enum DEVICE_TYPE {COM1}
+    public enum DEVICE_TYPE {SERIAL,TEST}
 
     private String key;
     private DEVICE_TYPE type;

@@ -57,7 +57,7 @@ public class TrainManager {
             public void connected(Device device) {
                 try {
                     for (Train train : getTrains()) {
-                        deviceManager.getConnectedDevice().getTrainModule((byte) train.getId()).addTrainDataListener(new TrainDataListener() {
+                        deviceManager.getConnectedDevice().getTrainModule((byte) train.getAddress()).addTrainDataListener(new TrainDataListener() {
                             @Override
                             public void drivingLevelChanged(int i) {
                                 eventBroadcaster.fireEvent(new TrainDrivingLevelEvent(i));
@@ -65,12 +65,12 @@ public class TrainManager {
 
                             @Override
                             public void drivingDirectionChanged(TrainModule.DRIVING_DIRECTION driving_direction) {
-                                eventBroadcaster.fireEvent(new TrainDrivingDirectionEvent(driving_direction));
+                                eventBroadcaster.fireEvent(new TrainDrivingDirectionEvent(driving_direction.name()));
                             }
 
                             @Override
-                            public void functionStateChanged(byte b, int i, boolean b2) {
-                                eventBroadcaster.fireEvent(new TrainFunctionStateEvent(b, i, b2));
+                            public void functionStateChanged(byte functionAddress, int functionBit, boolean active) {
+                                eventBroadcaster.fireEvent(new TrainFunctionStateEvent(functionAddress, functionBit, active));
                             }
 
                             @Override

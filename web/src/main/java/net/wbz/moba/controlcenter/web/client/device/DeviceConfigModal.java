@@ -79,7 +79,11 @@ public class DeviceConfigModal extends Modal {
             @Override
             public void onClick(ClickEvent event) {
                 DeviceInfo deviceInfo = new DeviceInfo();
-                deviceInfo.setType(DeviceInfo.DEVICE_TYPE.COM1);
+                if ("test".equals(txtDeviceName.getText())) {
+                    deviceInfo.setType(DeviceInfo.DEVICE_TYPE.TEST);
+                } else {
+                    deviceInfo.setType(DeviceInfo.DEVICE_TYPE.SERIAL);
+                }
                 deviceInfo.setKey(txtDeviceName.getValue());
 
                 ServiceUtils.getBusService().createDevice(deviceInfo, new AsyncCallback<Void>() {

@@ -23,12 +23,9 @@ public class TrackViewerServiceImpl extends RemoteServiceServlet implements Trac
 
     private final DeviceManager deviceManager;
 
-    private final EventBroadcaster eventBroadcaster;
-
     @Inject
-    public TrackViewerServiceImpl(DeviceManager deviceManager, EventBroadcaster eventBroadcaster) {
+    public TrackViewerServiceImpl(DeviceManager deviceManager) {
         this.deviceManager = deviceManager;
-        this.eventBroadcaster = eventBroadcaster;
     }
 
     @Override
@@ -68,7 +65,4 @@ public class TrackViewerServiceImpl extends RemoteServiceServlet implements Trac
         throw new RpcTokenException("invalid configuration: " + configuration);
     }
 
-    private void fireEvents(Configuration configuration, boolean newState) {
-        eventBroadcaster.fireEvent(new TrackPartStateEvent(configuration, newState));
-    }
 }

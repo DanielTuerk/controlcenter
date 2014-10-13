@@ -16,13 +16,13 @@ import net.wbz.selectrix4java.SerialDevice;
 import net.wbz.selectrix4java.api.bus.AllBusDataConsumer;
 import net.wbz.selectrix4java.api.device.Device;
 import net.wbz.selectrix4java.api.device.DeviceAccessException;
+import net.wbz.selectrix4java.api.device.DeviceConnectionListener;
 import net.wbz.selectrix4java.manager.DeviceManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
-import java.math.BigInteger;
 import java.util.ArrayList;
 
 /**
@@ -69,6 +69,17 @@ public class BusServiceImpl extends RemoteServiceServlet implements BusService {
             }
         }
 
+        deviceManager.addDeviceConnectionListener(new DeviceConnectionListener() {
+            @Override
+            public void connected(Device device) {
+
+            }
+
+            @Override
+            public void disconnected(Device device) {
+
+            }
+        });
     }
 
     @Override
@@ -91,9 +102,10 @@ public class BusServiceImpl extends RemoteServiceServlet implements BusService {
     public synchronized void deleteDevice(DeviceInfo deviceInfo) {
         net.wbz.selectrix4java.api.device.Device device = deviceManager.getDeviceById(deviceInfo.getKey());
         deviceManager.removeDevice(device);
-        settingsDatabase.getObjectContainer().delete(deviceInfo);
+        for(Object deviceInfoInDB : settingsDatabase.getObjectContainer().queryByExample(deviceInfo)) {
+            settingsDatabase.getObjectContainer().delete(deviceInfoInDB);
+        }
         settingsDatabase.getObjectContainer().commit();
-
         eventBroadcaster.fireEvent(new DeviceInfoEvent(deviceInfo, DeviceInfoEvent.TYPE.REMOVE));
     }
 
@@ -105,7 +117,9 @@ public class BusServiceImpl extends RemoteServiceServlet implements BusService {
                 DeviceInfo deviceInfo = new DeviceInfo();
                 deviceInfo.setKey(deviceManager.getDeviceId(input));
                 if (input instanceof SerialDevice) {
-                    deviceInfo.setType(DeviceInfo.DEVICE_TYPE.COM1);
+                    deviceInfo.setType(DeviceInfo.DEVICE_TYPE.SERIAL);
+                }else {
+                    deviceInfo.setType(DeviceInfo.DEVICE_TYPE.TEST);
                 }
                 return deviceInfo;
             }
@@ -152,20 +166,9 @@ public class BusServiceImpl extends RemoteServiceServlet implements BusService {
         if (activeDevice != null) {
             try {
                 activeDevice.connect();
-
-
-                // TODO: really required?
-                activeDevice.getBusDataDispatcher().registerConsumer(new AllBusDataConsumer() {
-                    @Override
-                    public void
-                    valueChanged(int bus, int address, int value) {
-                        eventBroadcaster.fireEvent(new BusDataEvent(bus, address, value));
-                    }
-                });
             } catch (DeviceAccessException e) {
-                LOGGER.error("connect",e);
+                LOGGER.error(String.format("can't connect active device: %s", activeDevice.getClass().getName()),e);
             }
-
         }
     }
 

@@ -7,8 +7,8 @@ import de.novanic.eventservice.client.event.Event;
 import de.novanic.eventservice.client.event.listener.RemoteEventListener;
 import net.wbz.moba.controlcenter.web.client.EventReceiver;
 import net.wbz.moba.controlcenter.web.client.ServiceUtils;
-import net.wbz.moba.controlcenter.web.shared.DeviceInfo;
-import net.wbz.moba.controlcenter.web.shared.DeviceInfoEvent;
+import net.wbz.moba.controlcenter.web.shared.bus.DeviceInfo;
+import net.wbz.moba.controlcenter.web.shared.bus.DeviceInfoEvent;
 
 import java.util.ArrayList;
 import java.util.List;

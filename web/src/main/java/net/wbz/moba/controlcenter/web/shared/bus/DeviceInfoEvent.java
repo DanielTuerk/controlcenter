@@ -1,4 +1,4 @@
-package net.wbz.moba.controlcenter.web.shared;
+package net.wbz.moba.controlcenter.web.shared.bus;
 
 import de.novanic.eventservice.client.event.Event;
 

@@ -1,0 +1,119 @@
+/** Add css rules here for your application. */
+
+/** Example rules used by the template application (remove for your app) */
+h1 {
+    font-size: 2em;
+    font-weight: bold;
+    color: #777777;
+    margin: 40px 0px 70px;
+    text-align: center;
+}
+
+.sendButton {
+    display: block;
+    font-size: 16pt;
+}
+
+/** Most GWT widgets already have a style name defined */
+.gwt-DialogBox {
+    width: 400px;
+}
+
+.dialogVPanel {
+    margin: 5px;
+}
+
+.serverResponseLabelError {
+    color: red;
+}
+
+/** Set ids using widget.getElement().setId("idOfElement") */
+#closeButton {
+    margin: 15px 6px 6px;
+}
+
+/** TODO: DnD */
+.getting-started-label {
+    border: 1px solid #99AACC;
+    background-color: #AACCFF;
+    padding: 0.1em;
+}
+
+.getting-started-blue {
+    border: 1px solid blue;
+}
+
+.getting-started-green {
+    border: 1px solid green;
+}
+
+.pallete {
+    background-color: #a9a9a9;
+}
+
+.boundary {
+    background-color: #d3d3d3;
+    width: 100%;
+    height: 100%;
+}
+
+.contentContainerPanel {
+    width: 100%;
+    height: 100%;
+}
+
+.loadingBar {
+    height: 20px;
+    width: 0px;
+    background-color: #90ee90;
+}
+
+.statePanel {
+
+    min-height: 40px;
+    padding-top: 10px;
+    padding-left: 20px;
+    padding-right: 20px;
+    background-color: #e3ebed;
+    background-image: -moz-linear-gradient(top, #ffffff, #f2f2f2);
+    background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#ffffff), to(#f2f2f2));
+    background-image: -webkit-linear-gradient(top, #ffffff, #f2f2f2);
+    background-image: -o-linear-gradient(top, #ffffff, #f2f2f2);
+    background-image: linear-gradient(to bottom, #ffffff, #f2f2f2);
+    background-repeat: repeat-x;
+    border: 1px solid #d4d4d4;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+    -webkit-box-shadow: 0 1px 4px rgba(0, 0, 0, 0.065);
+    -moz-box-shadow: 0 1px 4px rgba(0, 0, 0, 0.065);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.065);
+    *zoom: 1;
+
+    /*background-image: url("img/bg.png");*/
+    /*background-repeat: repeat-x;*/
+    /*height: 25px;*/
+    /*width: 100%;*/
+}
+
+/*@media screen {*/
+/*.contentContainerPanel {*/
+/*width: 400px*/
+/*}*/
+/*}*/
+
+
+
+.abstractItemPanelHeaderContent {
+    float: left;
+    width: calc(100% - 80px);
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+.fillParent {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+

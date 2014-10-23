@@ -109,14 +109,6 @@
             <version>13.0.1</version>
         </dependency>
 
-        <!--<dependency>-->
-            <!--<groupId>de.novanic.gwteventservice</groupId>-->
-            <!--<artifactId>gwteventservice</artifactId>-->
-            <!--<version>1.2.1</version>-->
-            <!--<scope>system</scope>-->
-            <!--<systemPath>${project.basedir}/lib/gwteventservice-1.2.1.jar</systemPath>-->
-        <!--</dependency>-->
-
         <dependency>
             <groupId>de.novanic.gwteventservice</groupId>
             <artifactId>gwteventservice</artifactId>

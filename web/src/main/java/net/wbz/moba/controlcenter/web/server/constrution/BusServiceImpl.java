@@ -74,12 +74,12 @@ public class BusServiceImpl extends RemoteServiceServlet implements BusService {
         deviceManager.addDeviceConnectionListener(new DeviceConnectionListener() {
             @Override
             public void connected(Device device) {
-
+                BusServiceImpl.this.eventBroadcaster.fireEvent(new DeviceInfoEvent(getDeviceInfo(device), DeviceInfoEvent.TYPE.CONNECTED));
             }
 
             @Override
             public void disconnected(Device device) {
-
+                BusServiceImpl.this.eventBroadcaster.fireEvent(new DeviceInfoEvent(getDeviceInfo(device), DeviceInfoEvent.TYPE.DISCONNECTED));
             }
         });
     }
@@ -116,16 +116,20 @@ public class BusServiceImpl extends RemoteServiceServlet implements BusService {
         return Lists.newArrayList(Lists.transform(deviceManager.getDevices(), new Function<Device, DeviceInfo>() {
             @Override
             public DeviceInfo apply(@Nullable Device input) {
-                DeviceInfo deviceInfo = new DeviceInfo();
-                deviceInfo.setKey(deviceManager.getDeviceId(input));
-                if (input instanceof SerialDevice) {
-                    deviceInfo.setType(DeviceInfo.DEVICE_TYPE.SERIAL);
-                }else {
-                    deviceInfo.setType(DeviceInfo.DEVICE_TYPE.TEST);
-                }
-                return deviceInfo;
+                return getDeviceInfo(input);
             }
         }));
+    }
+
+    private DeviceInfo getDeviceInfo(Device device) {
+        DeviceInfo deviceInfo = new DeviceInfo();
+        deviceInfo.setKey(deviceManager.getDeviceId(device));
+        if (device instanceof SerialDevice) {
+            deviceInfo.setType(DeviceInfo.DEVICE_TYPE.SERIAL);
+        } else {
+            deviceInfo.setType(DeviceInfo.DEVICE_TYPE.TEST);
+        }
+        return deviceInfo;
     }
 
     @Override

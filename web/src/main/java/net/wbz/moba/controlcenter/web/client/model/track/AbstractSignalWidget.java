@@ -16,12 +16,12 @@ abstract public class AbstractSignalWidget extends AbstractControlSvgTrackWidget
 
     @Override
     protected void addSvgContent(OMSVGDocument doc, OMSVGSVGElement svg) {
-        addSvgContent(doc, svg, SVGConstants.CSS_RED_VALUE, SVGConstants.CSS_WHITE_VALUE);
+        addSvgContent(doc, svg, SVGConstants.CSS_WHITE_VALUE, SVGConstants.CSS_GREEN_VALUE);
     }
 
     @Override
     protected void addActiveStateSvgContent(OMSVGDocument doc, OMSVGSVGElement svg) {
-        addSvgContent(doc, svg, SVGConstants.CSS_WHITE_VALUE, SVGConstants.CSS_GREEN_VALUE);
+        addSvgContent(doc, svg, SVGConstants.CSS_RED_VALUE, SVGConstants.CSS_WHITE_VALUE);
     }
 
     private void addSvgContent(OMSVGDocument doc, OMSVGSVGElement svg, String color, String colorActive) {

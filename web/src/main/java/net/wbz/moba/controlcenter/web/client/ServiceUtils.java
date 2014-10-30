@@ -2,7 +2,7 @@ package net.wbz.moba.controlcenter.web.client;
 
 import com.google.gwt.core.client.GWT;
 import net.wbz.moba.controlcenter.web.shared.bus.BusService;
-import net.wbz.moba.controlcenter.web.shared.BusServiceAsync;
+import net.wbz.moba.controlcenter.web.shared.bus.BusServiceAsync;
 import net.wbz.moba.controlcenter.web.shared.constrution.ConstrutionService;
 import net.wbz.moba.controlcenter.web.shared.constrution.ConstrutionServiceAsync;
 import net.wbz.moba.controlcenter.web.shared.editor.TrackEditorService;

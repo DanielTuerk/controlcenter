@@ -24,6 +24,8 @@ import net.wbz.moba.controlcenter.web.shared.track.model.Configuration;
 import net.wbz.moba.controlcenter.web.shared.track.model.TrackPart;
 import net.wbz.moba.controlcenter.web.shared.viewer.TrackPartStateEvent;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -36,8 +38,11 @@ public class TrackViewerPanel extends AbstractTrackPanel {
 
     private Label lblTrackPartConfig = new Label();
 
-    private Map<Configuration, AbstractControlSvgTrackWidget> controlTrackWidgets = Maps.newConcurrentMap();
-    private Map<Configuration, AbstractBlockSvgTrackWidget> blockTrackWidgets = Maps.newConcurrentMap();
+    /**
+     * TODO: multiple widgets for one configuration
+     */
+    private Map<Configuration, List<AbstractControlSvgTrackWidget>> controlTrackWidgets = Maps.newConcurrentMap();
+    private Map<Configuration, List<AbstractBlockSvgTrackWidget>> blockTrackWidgets = Maps.newConcurrentMap();
 
     @Override
     protected void onLoad() {
@@ -50,13 +55,17 @@ public class TrackViewerPanel extends AbstractTrackPanel {
                 if (anEvent instanceof TrackPartStateEvent) {
                     TrackPartStateEvent event = (TrackPartStateEvent) anEvent;
                     if (controlTrackWidgets.containsKey(event.getConfiguration())) {
-                        controlTrackWidgets.get(event.getConfiguration()).repaint(event.isOn());
-                    } else if (blockTrackWidgets.containsKey(event.getConfiguration())) {
-                        BlockPart blockPart = blockTrackWidgets.get(event.getConfiguration());
-                        if (event.isOn()) {
-                            blockPart.usedBlock();
-                        } else {
-                            blockPart.freeBlock();
+                        for (AbstractControlSvgTrackWidget controlSvgTrackWidget : controlTrackWidgets.get(event.getConfiguration())) {
+                            controlSvgTrackWidget.repaint(event.isOn());
+                        }
+                    }
+                    if (blockTrackWidgets.containsKey(event.getConfiguration())) {
+                        for (BlockPart blockPart : blockTrackWidgets.get(event.getConfiguration())) {
+                            if (event.isOn()) {
+                                blockPart.usedBlock();
+                            } else {
+                                blockPart.freeBlock();
+                            }
                         }
                     } else {
                         net.wbz.moba.controlcenter.web.client.util.Log.console("can't find widget of " + event.getConfiguration().toString());
@@ -66,7 +75,7 @@ public class TrackViewerPanel extends AbstractTrackPanel {
             }
         });
 
-
+        // TODO progress bar not working
         DialogBoxUtil.getLoading().setProgressPercentage(0);
         DialogBoxUtil.getLoading().center();
         DialogBoxUtil.getLoading().show();
@@ -108,9 +117,15 @@ public class TrackViewerPanel extends AbstractTrackPanel {
                     AbstractSvgTrackWidget trackWidget = ModelManager.getInstance().getWidgetOf(trackPart);
 
                     if (trackWidget instanceof AbstractControlSvgTrackWidget) {
-                        controlTrackWidgets.put(trackPart.getConfiguration(), (AbstractControlSvgTrackWidget) trackWidget);
+                        if (!controlTrackWidgets.containsKey(trackPart.getConfiguration())) {
+                            controlTrackWidgets.put(trackPart.getConfiguration(), new ArrayList<AbstractControlSvgTrackWidget>());
+                        }
+                        controlTrackWidgets.get(trackPart.getConfiguration()).add((AbstractControlSvgTrackWidget) trackWidget);
                     } else if (trackWidget instanceof AbstractBlockSvgTrackWidget && trackPart.getConfiguration() !=null) {
-                        blockTrackWidgets.put(trackPart.getConfiguration(), (AbstractBlockSvgTrackWidget) trackWidget);
+                        if (!blockTrackWidgets.containsKey(trackPart.getConfiguration())) {
+                            blockTrackWidgets.put(trackPart.getConfiguration(), new ArrayList<AbstractBlockSvgTrackWidget>());
+                        }
+                        blockTrackWidgets.get(trackPart.getConfiguration()).add((AbstractBlockSvgTrackWidget) trackWidget);
                     }
 
                     AbsoluteTrackPosition trackPosition = trackWidget.getTrackPosition(trackPart.getGridPosition(), getZoomLevel());

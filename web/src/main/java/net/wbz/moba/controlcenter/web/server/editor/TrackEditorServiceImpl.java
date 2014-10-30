@@ -92,12 +92,15 @@ public class TrackEditorServiceImpl extends RemoteServiceServlet implements Trac
                 if (trackPartConfiguration != null && trackPartConfiguration.isValid() && !uniqueTrackPartConfigs.contains(trackPartConfiguration)) {
                     uniqueTrackPartConfigs.add(trackPartConfiguration);
 
+                    // TODO: fire initial data of the bus for all track parts; maybe register
                     //TODO bus nr
                     busDataConsumersOfTheCurrentTrack.add(new BusDataConsumer(1, trackPartConfiguration.getAddress()) {
                         @Override
                         public void valueChanged(int oldValue, int newValue) {
-                            eventBroadcaster.fireEvent(new TrackPartStateEvent(trackPartConfiguration,
+                            if (BigInteger.valueOf(newValue).testBit(trackPartConfiguration.getOutput() - 1) != BigInteger.valueOf(oldValue).testBit(trackPartConfiguration.getOutput() - 1)) {
+                                eventBroadcaster.fireEvent(new TrackPartStateEvent(trackPartConfiguration,
                                     BigInteger.valueOf(newValue).testBit(trackPartConfiguration.getOutput() - 1)));
+                            }
                         }
                     });
                 }

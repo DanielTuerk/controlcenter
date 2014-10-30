@@ -7,7 +7,7 @@ import de.novanic.eventservice.client.event.Event;
  */
 public class DeviceInfoEvent implements Event {
 
-    public enum TYPE {CREATE, REMOVE, MODIFY}
+    public enum TYPE {CREATE, REMOVE, MODIFY,CONNECTED,DISCONNECTED}
 
     private DeviceInfo deviceInfo;
     private TYPE eventType;

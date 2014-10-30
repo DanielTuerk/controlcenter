@@ -13,8 +13,8 @@ abstract public class AbstractSwitchLeftWidget extends AbstractSwitchWidget {
     @Override
     protected void addSvgContent(OMSVGDocument doc, OMSVGSVGElement svg) {
         svg.appendChild(SvgTrackUtil.createRectangle(doc, 0f, 10f, 25f, 5f));
-        svg.appendChild(SvgTrackUtil.createLine(doc, 0f, 12.5f, 12.5f, 0f, 2));
-        svg.appendChild(SvgTrackUtil.createLine(doc, 6f, 12.5f, 18.5f, 0f, 2));
+        svg.appendChild(SvgTrackUtil.createLine(doc, 0f, 12.5f, 10f, 0f, 2));
+        svg.appendChild(SvgTrackUtil.createLine(doc, 5f, 12.5f, 15f, 0f, 2));
     }
 
     @Override

@@ -73,7 +73,6 @@ abstract public class AbstractSvgTrackWidget<T extends TrackPart> extends Simple
             trackPartConfigAddress = trackPart.getConfiguration().getAddress();
             trackPartConfigBit = trackPart.getConfiguration().getOutput();
 
-            //
             setTitle(trackPart.getConfiguration().toString());
         }
     }
@@ -85,7 +84,7 @@ abstract public class AbstractSvgTrackWidget<T extends TrackPart> extends Simple
         FlexTable.FlexCellFormatter cellFormatter = layout.getFlexCellFormatter();
 
         // Add a title to the form
-        layout.setHTML(0, 0, "Module Adress");
+        layout.setHTML(0, 0, "Module Address");
         cellFormatter.setColSpan(0, 0, 2);
         cellFormatter.setHorizontalAlignment(
                 0, 0, HasHorizontalAlignment.ALIGN_CENTER);

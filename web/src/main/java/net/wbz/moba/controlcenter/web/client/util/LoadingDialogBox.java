@@ -8,6 +8,7 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 /**
  * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
  */
+@Deprecated
 public class LoadingDialogBox extends DialogBox {
 
 

@@ -82,6 +82,7 @@ public class BusServiceImpl extends RemoteServiceServlet implements BusService {
                 BusServiceImpl.this.eventBroadcaster.fireEvent(new DeviceInfoEvent(getDeviceInfo(device), DeviceInfoEvent.TYPE.DISCONNECTED));
             }
         });
+
     }
 
     @Override
@@ -90,7 +91,7 @@ public class BusServiceImpl extends RemoteServiceServlet implements BusService {
     }
 
     @Override
-    public synchronized void createDevice(DeviceInfo deviceInfo) {
+    public void createDevice(DeviceInfo deviceInfo) {
         //TODO
         deviceManager.registerDevice(DeviceManager.DEVICE_TYPE.valueOf(
                 deviceInfo.getType().name()), deviceInfo.getKey(), SerialDevice.DEFAULT_BAUD_RATE_FCC);
@@ -101,8 +102,8 @@ public class BusServiceImpl extends RemoteServiceServlet implements BusService {
     }
 
     @Override
-    public synchronized void deleteDevice(DeviceInfo deviceInfo) {
-        net.wbz.selectrix4java.api.device.Device device = deviceManager.getDeviceById(deviceInfo.getKey());
+    public void deleteDevice(DeviceInfo deviceInfo) {
+        Device device = deviceManager.getDeviceById(deviceInfo.getKey());
         deviceManager.removeDevice(device);
         for(Object deviceInfoInDB : settingsDatabase.getObjectContainer().queryByExample(deviceInfo)) {
             settingsDatabase.getObjectContainer().delete(deviceInfoInDB);

@@ -93,7 +93,6 @@
 }
 
 .contentPanel {
-    overflow: scroll;
 }
 
 .unknownBlock {
@@ -101,7 +100,7 @@
 }
 
 .usedBlock {
-    background-color: darkred;
+    background-color: rgba(174, 0, 0, 0.50);
 }
 
 .freeBlock {

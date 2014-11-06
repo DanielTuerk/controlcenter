@@ -1,11 +1,21 @@
 package net.wbz.moba.controlcenter.web.client.util;
 
 /**
- * Created by Daniel on 27.01.14.
+ * Logger for the browser java script console.
  */
 public class Log {
-    public static native void console(String text)
+    public static native void info(String text)
 /*-{
     console.log(text);
+}-*/;
+
+    public static native void error(String text)
+/*-{
+    console.error(text);
+}-*/;
+
+    public static native void warn(String text)
+/*-{
+    console.warn(text);
 }-*/;
 }

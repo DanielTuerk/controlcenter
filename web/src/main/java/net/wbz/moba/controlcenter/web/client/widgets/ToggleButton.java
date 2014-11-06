@@ -2,38 +2,69 @@ package net.wbz.moba.controlcenter.web.client.widgets;
 
 import com.github.gwtbootstrap.client.ui.Button;
 import com.github.gwtbootstrap.client.ui.constants.IconType;
+import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 
 /**
  * Toggle button for gwt bootstrap.
- * Bootstrap doesn't support it atm. and the gwt implementation is crappy for layouts.
- *
- * TODO: state
+ * Bootstrap doesn't use an extra class (#setToggle() for normal button).
+ * The gwt implementation is crappy for layouts.
  *
  * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
  */
 public class ToggleButton extends Button {
 
-    public ToggleButton() {
-    }
+    private String toggledCaption;
+    private String tempCaption;
 
-    public ToggleButton(ClickHandler handler) {
-        super(handler);
+    public ToggleButton() {
+        this(null);
     }
 
     public ToggleButton(String caption) {
+        this(caption, null);
+    }
+
+    public ToggleButton(String caption, String toggledCaption) {
         super(caption);
+        this.toggledCaption = toggledCaption;
+        setToggle(true);
     }
 
-    public ToggleButton(String caption, ClickHandler handler) {
-        super(caption, handler);
+    public void addToggleHandler(final ToggleHandler handler) {
+        addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent clickEvent) {
+                if (!isToggled()) {
+                    if (toggledCaption != null) {
+                        tempCaption = getText();
+                        setText(toggledCaption);
+                    }
+                    handler.isOn();
+                } else {
+                    if (toggledCaption != null) {
+                        setText(tempCaption);
+                    }
+                    handler.isOff();
+                }
+            }
+        });
     }
 
-    public ToggleButton(String caption, IconType icon) {
-        super(caption, icon);
-    }
 
-    public ToggleButton(String caption, IconType icon, ClickHandler handler) {
-        super(caption, icon, handler);
+    /**
+     * Handler for the state change of an {@link net.wbz.moba.controlcenter.web.client.widgets.ToggleButton}.
+     */
+    public interface ToggleHandler {
+
+        /**
+         * Button is toggled on.
+         */
+        public void isOn();
+
+        /**
+         * Button is toggled off.
+         */
+        public void isOff();
     }
 }

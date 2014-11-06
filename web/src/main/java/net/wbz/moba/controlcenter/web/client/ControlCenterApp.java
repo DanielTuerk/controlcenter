@@ -5,15 +5,14 @@ import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.DockLayoutPanel;
 import com.google.gwt.user.client.ui.RootLayoutPanel;
-import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
 import net.wbz.moba.controlcenter.web.client.device.StatePanel;
 import net.wbz.moba.controlcenter.web.client.editor.track.TrackEditorContainer;
 import net.wbz.moba.controlcenter.web.client.model.track.*;
 import net.wbz.moba.controlcenter.web.client.viewer.bus.BusMonitorPanel;
+import net.wbz.moba.controlcenter.web.client.viewer.settings.ConfigPanel;
 import net.wbz.moba.controlcenter.web.client.viewer.track.TrackViewerContainer;
 
 /**
@@ -26,6 +25,7 @@ public class ControlCenterApp implements EntryPoint {
     private TrackEditorContainer trackEditorContainer;
     private TrackViewerContainer trackViewerContainer;
     private BusMonitorPanel busMonitorPanel;
+    private ConfigPanel configPanel;
 
     private SimplePanel contentContainerPanel;
 
@@ -81,6 +81,7 @@ public class ControlCenterApp implements EntryPoint {
         trackViewerContainer = new TrackViewerContainer();
         trackEditorContainer = new TrackEditorContainer();
         busMonitorPanel=new BusMonitorPanel();
+        configPanel =new ConfigPanel();
 
         initAppMenu();
 
@@ -90,7 +91,7 @@ public class ControlCenterApp implements EntryPoint {
         dockLayoutPanel.addSouth(new StatePanel(), 50);
 
         // load the track viewer
-        contentContainerPanel = new ScrollPanel();
+        contentContainerPanel = new SimplePanel();
         contentContainerPanel.setStyleName("contentContainerPanel");
         dockLayoutPanel.add(contentContainerPanel);
 
@@ -118,22 +119,38 @@ public class ControlCenterApp implements EntryPoint {
                 showBusMonitor();
             }
         });
+        appMenu.setShowConfigCommand(new Command() {
+            @Override
+            public void execute() {
+                showSettings();
+            }
+        });
+    }
+
+    private void showSettings() {
+        contentContainerPanel.remove(trackViewerContainer);
+        contentContainerPanel.remove(trackEditorContainer);
+        contentContainerPanel.remove(busMonitorPanel);
+        contentContainerPanel.add(configPanel);
     }
 
     public void showTrackEditor() {
         contentContainerPanel.remove(trackViewerContainer);
         contentContainerPanel.remove(busMonitorPanel);
+        contentContainerPanel.remove(configPanel);
         contentContainerPanel.add(trackEditorContainer);
     }
 
     public void showTrackViewer() {
         contentContainerPanel.remove(trackEditorContainer);
         contentContainerPanel.remove(busMonitorPanel);
+        contentContainerPanel.remove(configPanel);
         contentContainerPanel.add(trackViewerContainer);
     }
     public void showBusMonitor() {
         contentContainerPanel.remove(trackEditorContainer);
         contentContainerPanel.remove(trackViewerContainer);
+        contentContainerPanel.remove(configPanel);
         contentContainerPanel.add(busMonitorPanel);
     }
 }

@@ -6,7 +6,6 @@ import com.github.gwtbootstrap.client.ui.TextBox;
 import com.google.common.collect.Maps;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.VerticalPanel;
 import de.novanic.eventservice.client.event.Event;
 import de.novanic.eventservice.client.event.listener.RemoteEventListener;
 import net.wbz.moba.controlcenter.web.client.EventReceiver;
@@ -23,7 +22,6 @@ abstract public class AbstractItemViewerPanel<ItemPanel extends AbstractItemPane
     private final FlowPanel itemsContainerPanel = new FlowPanel();
 
     public AbstractItemViewerPanel(Class<EventType> eventClass) {
-
         addStyleName("contentPanel");
         InputAddOn inputCreate = new InputAddOn();
         final TextBox txtName = new TextBox();
@@ -33,10 +31,10 @@ abstract public class AbstractItemViewerPanel<ItemPanel extends AbstractItemPane
         inputCreate.add(btnNew);
 
         add(inputCreate);
+
+        // TODO: scrollable container
         add(itemsContainerPanel);
 
-        /* Logic for GWTEventService starts here */
-        //add a listener to the SERVER_MESSAGE_DOMAIN
         EventReceiver.getInstance().addListener(eventClass, new RemoteEventListener() {
             public void apply(Event anEvent) {
                 //TODO
@@ -45,7 +43,7 @@ abstract public class AbstractItemViewerPanel<ItemPanel extends AbstractItemPane
                 if (itemPanelByIdMap.containsKey(eventType.getItemId())) {
                     eventCallback(itemPanelByIdMap.get(eventType.getItemId()), eventType);
                 } else {
-                    net.wbz.moba.controlcenter.web.client.util.Log.console("event: can't find item " + eventType.getItemId());
+                    net.wbz.moba.controlcenter.web.client.util.Log.info("event: can't find item " + eventType.getItemId());
                 }
             }
         });

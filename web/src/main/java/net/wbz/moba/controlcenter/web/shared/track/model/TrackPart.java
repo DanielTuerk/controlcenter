@@ -11,6 +11,7 @@ public class TrackPart implements IsSerializable, Serializable {
 
     private GridPosition gridPosition;
     private Configuration configuration;
+    private boolean initialState;
 
     public Configuration getConfiguration() {
         return configuration;
@@ -26,5 +27,13 @@ public class TrackPart implements IsSerializable, Serializable {
 
     public void setGridPosition(GridPosition gridPosition) {
         this.gridPosition = gridPosition;
+    }
+
+    public boolean isInitialState() {
+        return initialState;
+    }
+
+    public void setInitialState(boolean initialState) {
+        this.initialState = initialState;
     }
 }

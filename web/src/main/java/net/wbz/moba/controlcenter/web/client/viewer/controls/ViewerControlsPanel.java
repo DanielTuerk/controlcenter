@@ -11,11 +11,8 @@ import net.wbz.moba.controlcenter.web.client.viewer.controls.train.TrainViewerPa
  */
 public class ViewerControlsPanel extends TabPanel {
 
-    public static int WIDTH_PIXEL = 400;
-
     public ViewerControlsPanel() {
         super(Bootstrap.Tabs.ABOVE);
-        setWidth(WIDTH_PIXEL+"px");
 
         TabPane trainTab = new TabPane();
         trainTab.setHeading("Train");

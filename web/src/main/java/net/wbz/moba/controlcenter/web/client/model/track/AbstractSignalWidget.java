@@ -10,6 +10,9 @@ import org.vectomatic.dom.svg.OMSVGSVGElement;
 import org.vectomatic.dom.svg.utils.SVGConstants;
 
 /**
+ * Abstract widget for an signal.
+ * This signal can be toggled to change the state of the configured bit.
+ *
  * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
  */
 abstract public class AbstractSignalWidget extends AbstractControlSvgTrackWidget<Signal> {

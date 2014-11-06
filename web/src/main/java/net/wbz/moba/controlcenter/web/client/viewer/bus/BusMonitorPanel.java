@@ -8,6 +8,7 @@ import com.github.gwtbootstrap.client.ui.resources.Bootstrap;
 import com.google.common.collect.Maps;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Panel;
+import com.google.gwt.user.client.ui.ScrollPanel;
 import de.novanic.eventservice.client.event.Event;
 import de.novanic.eventservice.client.event.listener.RemoteEventListener;
 import net.wbz.moba.controlcenter.web.client.EventReceiver;
@@ -52,7 +53,7 @@ public class BusMonitorPanel extends TabPanel {
 
             TabPane tab = new TabPane();
             tab.setHeading("Bus " + i);
-            tab.add(tabContent);
+            tab.add(new ScrollPanel(tabContent));
             add(tab);
         }
 

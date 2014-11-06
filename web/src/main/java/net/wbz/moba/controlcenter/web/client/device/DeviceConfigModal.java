@@ -3,6 +3,9 @@ package net.wbz.moba.controlcenter.web.client.device;
 import com.github.gwtbootstrap.client.ui.*;
 import com.github.gwtbootstrap.client.ui.constants.AlertType;
 import com.github.gwtbootstrap.client.ui.constants.FormType;
+import com.github.gwtbootstrap.client.ui.event.HideEvent;
+import com.github.gwtbootstrap.client.ui.event.HideHandler;
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -31,6 +34,9 @@ public class DeviceConfigModal extends Modal {
     private Column devicesColumn;
 
     public DeviceConfigModal() {
+        super(true);
+        setKeyboard(true);
+
         EventReceiver.getInstance().addListener(DeviceInfoEvent.class, new RemoteEventListener() {
             @Override
             public void apply(Event event) {
@@ -58,6 +64,7 @@ public class DeviceConfigModal extends Modal {
         );
         ModalFooter modalFooter = new ModalFooter(btnClose);
         add(modalFooter);
+
     }
 
 
@@ -78,8 +85,10 @@ public class DeviceConfigModal extends Modal {
         SubmitButton btnCreateDevice = new SubmitButton("Create", new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                DeviceInfo deviceInfo = new DeviceInfo();
-                if ("test".equals(txtDeviceName.getText())) {
+                //TODO validation feedback on dialog
+                if (Strings.isNullOrEmpty(txtDeviceName.getText())) {
+                    DeviceInfo deviceInfo = new DeviceInfo();
+                    if ("test".equals(txtDeviceName.getText())) {
                     deviceInfo.setType(DeviceInfo.DEVICE_TYPE.TEST);
                 } else {
                     deviceInfo.setType(DeviceInfo.DEVICE_TYPE.SERIAL);
@@ -98,6 +107,7 @@ public class DeviceConfigModal extends Modal {
                         reloadDeviceList();
                     }
                 });
+                }
             }
         });
         createForm.add(btnCreateDevice);

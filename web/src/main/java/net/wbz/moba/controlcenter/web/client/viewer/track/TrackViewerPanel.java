@@ -3,6 +3,7 @@ package net.wbz.moba.controlcenter.web.client.viewer.track;
 import com.github.gwtbootstrap.client.ui.Label;
 import com.github.gwtbootstrap.client.ui.constants.LabelType;
 import com.google.common.collect.Maps;
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.gen2.logging.shared.Log;
@@ -29,6 +30,12 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * Panel for the track viewer.
+ *
+ * Loading the track and add all {@link net.wbz.moba.controlcenter.web.shared.track.model.TrackPart}s to the panel.
+ * Register the event listener to receive state changes of all added
+ * {@link net.wbz.moba.controlcenter.web.shared.track.model.TrackPart}s.
+ *
  * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
  */
 public class TrackViewerPanel extends AbstractTrackPanel {
@@ -38,54 +45,27 @@ public class TrackViewerPanel extends AbstractTrackPanel {
 
     private Label lblTrackPartConfig = new Label();
 
-    /**
-     * TODO: multiple widgets for one configuration
-     */
     private Map<Configuration, List<AbstractControlSvgTrackWidget>> controlTrackWidgets = Maps.newConcurrentMap();
     private Map<Configuration, List<AbstractBlockSvgTrackWidget>> blockTrackWidgets = Maps.newConcurrentMap();
 
     @Override
     protected void onLoad() {
+
         addStyleName("boundary");
 
-         /* Logic for GWTEventService starts here */
-        //add a listener to the SERVER_MESSAGE_DOMAIN
         EventReceiver.getInstance().addListener(TrackPartStateEvent.class, new RemoteEventListener() {
             public void apply(Event anEvent) {
                 if (anEvent instanceof TrackPartStateEvent) {
                     TrackPartStateEvent event = (TrackPartStateEvent) anEvent;
-                    if (controlTrackWidgets.containsKey(event.getConfiguration())) {
-                        for (AbstractControlSvgTrackWidget controlSvgTrackWidget : controlTrackWidgets.get(event.getConfiguration())) {
-                            controlSvgTrackWidget.repaint(event.isOn());
-                        }
-                    }
-                    if (blockTrackWidgets.containsKey(event.getConfiguration())) {
-                        for (BlockPart blockPart : blockTrackWidgets.get(event.getConfiguration())) {
-                            if (event.isOn()) {
-                                blockPart.usedBlock();
-                            } else {
-                                blockPart.freeBlock();
-                            }
-                        }
-                    } else {
-                        net.wbz.moba.controlcenter.web.client.util.Log.console("can't find widget of " + event.getConfiguration().toString());
-                    }
-
+                    updateTrackPartState(event.getConfiguration(), event.isOn());
                 }
             }
         });
 
-        // TODO progress bar not working
-        DialogBoxUtil.getLoading().setProgressPercentage(0);
-        DialogBoxUtil.getLoading().center();
-        DialogBoxUtil.getLoading().show();
-        DialogBoxUtil.getLoading().setProgressPercentage(1, "remove existing track");
 
         for (int i = getWidgetCount() - 1; i >= 0; i--) {
             remove(i);
         }
-
-        DialogBoxUtil.getLoading().setProgressPercentage(PERCENTAGE_START_TRACK, "load track");
 
         lblTrackPartConfig.setType(LabelType.INFO);
         add(lblTrackPartConfig, 0, 0);
@@ -112,10 +92,8 @@ public class TrackViewerPanel extends AbstractTrackPanel {
                             percentage = PERCENTAGE_MAX;
                         }
                     }
-                    DialogBoxUtil.getLoading().setProgressPercentage(percentage, "add trackpart " + (i + 1) + "/" + trackParts.length);
 
                     AbstractSvgTrackWidget trackWidget = ModelManager.getInstance().getWidgetOf(trackPart);
-
                     if (trackWidget instanceof AbstractControlSvgTrackWidget) {
                         if (!controlTrackWidgets.containsKey(trackPart.getConfiguration())) {
                             controlTrackWidgets.put(trackPart.getConfiguration(), new ArrayList<AbstractControlSvgTrackWidget>());
@@ -144,14 +122,8 @@ public class TrackViewerPanel extends AbstractTrackPanel {
                     });
                     addTrackWidget(widget, trackPosition.getLeft(), trackPosition.getTop());
 
-                    if (trackWidget instanceof ClickActionViewerWidgetHandler) {
-                        ((ClickActionViewerWidgetHandler) trackWidget).repaint();
-                    }
-
+                    updateTrackPartState(trackPart.getConfiguration(), trackPart.isInitialState());
                 }
-                DialogBoxUtil.getLoading().setProgressPercentage(PERCENTAGE_MAX, "set dimension");
-                setPixelSize(Window.getClientWidth() - ViewerControlsPanel.WIDTH_PIXEL, maxTop + TrackEditorContainer.draggableOffsetHeight);
-                DialogBoxUtil.getLoading().hide();
             }
         });
     }
@@ -159,5 +131,22 @@ public class TrackViewerPanel extends AbstractTrackPanel {
     @Override
     public void addTrackWidget(Widget widget, int left, int top) {
         add(widget, left, top);
+    }
+
+    private void updateTrackPartState(Configuration configuration, boolean state) {
+        if (controlTrackWidgets.containsKey(configuration)) {
+            for (AbstractControlSvgTrackWidget controlSvgTrackWidget : controlTrackWidgets.get(configuration)) {
+                controlSvgTrackWidget.repaint(state);
+            }
+        }
+        if (blockTrackWidgets.containsKey(configuration)) {
+            for (BlockPart blockPart : blockTrackWidgets.get(configuration)) {
+                if (state) {
+                    blockPart.usedBlock();
+                } else {
+                    blockPart.freeBlock();
+                }
+            }
+        }
     }
 }

@@ -1,19 +1,23 @@
 package net.wbz.moba.controlcenter.web.client.viewer.bus;
 
-import com.github.gwtbootstrap.client.ui.Column;
-import com.github.gwtbootstrap.client.ui.Row;
-import com.github.gwtbootstrap.client.ui.TabPane;
-import com.github.gwtbootstrap.client.ui.TabPanel;
-import com.github.gwtbootstrap.client.ui.resources.Bootstrap;
 import com.google.common.collect.Maps;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.ScrollPanel;
+import com.google.gwt.user.client.ui.Widget;
 import de.novanic.eventservice.client.event.Event;
 import de.novanic.eventservice.client.event.listener.RemoteEventListener;
 import net.wbz.moba.controlcenter.web.client.EventReceiver;
 import net.wbz.moba.controlcenter.web.shared.bus.BusDataEvent;
+import org.gwtbootstrap3.client.ui.Column;
+import org.gwtbootstrap3.client.ui.Row;
+import org.gwtbootstrap3.client.ui.TabPane;
+import org.gwtbootstrap3.client.ui.TabPanel;
+import org.gwtbootstrap3.client.ui.constants.ColumnSize;
+import org.gwtbootstrap3.client.ui.constants.TabPosition;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -25,7 +29,8 @@ public class BusMonitorPanel extends TabPanel {
     private final RemoteEventListener listener;
 
     public BusMonitorPanel() {
-        super(Bootstrap.Tabs.LEFT);
+        super();
+        setTabPosition(TabPosition.LEFT);
 
         for (int i = 0; i < 2; i++) {
             Panel tabContent = new FlowPanel();
@@ -34,26 +39,30 @@ public class BusMonitorPanel extends TabPanel {
             Map<Integer, BusAddressItemPanel> addressItemPanelMap = Maps.newHashMap();
 
             Row row = null;
+            List<BusAddressItemPanel> panelsInRow = new ArrayList<>();
+
             for (int j = 0; j < 127; j++) {
+                BusAddressItemPanel value = new BusAddressItemPanel(j);
+                addressItemPanelMap.put(j, value);
+                panelsInRow.add(value);
 
                 if (j % 6 == 0) {
                     row = new Row();
                     tabContent.add(row);
+                    Widget firstItem = panelsInRow.get(0);
+                    panelsInRow.remove(0);
+                    Column column = new Column(ColumnSize.LG_2, firstItem, panelsInRow.toArray(new BusAddressItemPanel[panelsInRow.size()]));
+                    row.add(column);
+                    panelsInRow.clear();
                 }
-
-
-                BusAddressItemPanel value = new BusAddressItemPanel(j);
-                addressItemPanelMap.put(j, value);
-
-                Column column = new Column(2, value);
-                row.add(column);
 
             }
             addressItemMapping.put(i, addressItemPanelMap);
 
             TabPane tab = new TabPane();
-            tab.setHeading("Bus " + i);
+            tab.setTitle("Bus " + i);
             tab.add(new ScrollPanel(tabContent));
+            tab.setActive(i == 0);
             add(tab);
         }
 
@@ -72,25 +81,7 @@ public class BusMonitorPanel extends TabPanel {
     @Override
     protected void onLoad() {
         super.onLoad();
-
-//        for (int busNr = 0; busNr < 2; busNr++) {
-//            final int finalBusNr = busNr;
-//            ServiceUtils.getBusService().readBusData(busNr, new AsyncCallback<BusData[]>() {
-//                @Override
-//                public void onFailure(Throwable caught) {
-//                }
-//
-//                @Override
-//                public void onSuccess(BusData[] result) {
-//                    for (BusData busData : result) {
-//                        addressItemMapping.get(finalBusNr).get(busData.getAddress()).updateData(busData.getValue());
-//                    }
-//                }
-//            });
-//        }
         EventReceiver.getInstance().addListener(BusDataEvent.class, listener);
-
-        selectTab(0);
     }
 
     @Override

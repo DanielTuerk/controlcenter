@@ -1,20 +1,23 @@
 package net.wbz.moba.controlcenter.web.client.viewer.controls.scenario;
 
-import com.github.gwtbootstrap.client.ui.Button;
-import com.github.gwtbootstrap.client.ui.TextArea;
-import com.github.gwtbootstrap.client.ui.constants.ButtonType;
 import com.google.common.collect.Lists;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.*;
+import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.Panel;
 import net.wbz.moba.controlcenter.web.client.ServiceUtils;
 import net.wbz.moba.controlcenter.web.client.viewer.controls.AbstractItemPanel;
 import net.wbz.moba.controlcenter.web.shared.scenario.Scenario;
 import net.wbz.moba.controlcenter.web.shared.scenario.ScenarioCommand;
 import net.wbz.moba.controlcenter.web.shared.scenario.ScenarioStateEvent;
+import org.gwtbootstrap3.client.ui.*;
+import org.gwtbootstrap3.client.ui.constants.ButtonType;
+import org.gwtbootstrap3.client.ui.gwt.FlowPanel;
+import org.gwtbootstrap3.extras.toggleswitch.client.ui.ToggleSwitch;
 
 import java.util.List;
 
@@ -31,10 +34,10 @@ public class ScenarioItemPanel extends AbstractItemPanel<Scenario, ScenarioState
     private final Button btnPlay = new Button("play");
     private final Button btnStop = new Button("stop");
     private final Button btnPause = new Button("pause");
-    private final ToggleButton btnToggleRepeatMode = new ToggleButton("repeat");
+    private final ToggleSwitch btnToggleRepeatMode = new ToggleSwitch();
 
     //edit
-    private Panel commandListEditPanel;
+    private PanelCollapse commandListEditPanel;
     private TextArea txtCommandList;
 
     public ScenarioItemPanel(Scenario scenario) {
@@ -49,12 +52,12 @@ public class ScenarioItemPanel extends AbstractItemPanel<Scenario, ScenarioState
     @Override
     protected Panel createHeaderPanel() {
         Panel headerPanel = new FlowPanel();
-        headerPanel.add(new com.github.gwtbootstrap.client.ui.Label(getModel().getName() + " [" + getModel().getId() + "]"));
+        headerPanel.add(new Label(getModel().getName() + " [" + getModel().getId() + "]"));
         return headerPanel;
     }
 
     @Override
-    public Panel createCollapseContentPanel() {
+    public PanelCollapse createCollapseContentPanel() {
         btnEditScenario.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
@@ -120,6 +123,8 @@ public class ScenarioItemPanel extends AbstractItemPanel<Scenario, ScenarioState
             }
         });
         btnControlGroupPanel.add(btnStop);
+
+        btnToggleRepeatMode.setLabelText("repeat");
         btnToggleRepeatMode.setValue(getModel().getMode() == Scenario.MODE.REPEAT);
         btnToggleRepeatMode.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
             @Override
@@ -156,7 +161,7 @@ public class ScenarioItemPanel extends AbstractItemPanel<Scenario, ScenarioState
 
     private void showCommandList(List<ScenarioCommand> commands) {
         commandListEditPanel.clear();
-        VerticalPanel commandListPanel = new VerticalPanel();
+        FlowPanel commandListPanel = new FlowPanel();
         commandListPanel.add(btnEditScenario);
         for (ScenarioCommand scenarioCommand : commands) {
             commandListPanel.add(new Label(scenarioCommand.toText()));
@@ -165,7 +170,7 @@ public class ScenarioItemPanel extends AbstractItemPanel<Scenario, ScenarioState
     }
 
     private void initEditPanel() {
-        commandListEditPanel = new HorizontalPanel();
+        commandListEditPanel = new PanelCollapse();
         txtCommandList = new TextArea();
 
         int showLines = MIN_LINES_EDIT_TEXTAREA;
@@ -205,7 +210,7 @@ public class ScenarioItemPanel extends AbstractItemPanel<Scenario, ScenarioState
                 showCommandList(getModel().getCommands());
             }
         });
-        btnCancel.setType(ButtonType.INVERSE);
+        btnCancel.setType(ButtonType.WARNING);
         commandListEditPanel.add(btnCancel);
     }
 

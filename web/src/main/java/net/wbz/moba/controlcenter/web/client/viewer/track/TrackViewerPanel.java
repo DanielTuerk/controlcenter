@@ -1,29 +1,26 @@
 package net.wbz.moba.controlcenter.web.client.viewer.track;
 
-import com.github.gwtbootstrap.client.ui.Label;
-import com.github.gwtbootstrap.client.ui.constants.LabelType;
 import com.google.common.collect.Maps;
-import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.gen2.logging.shared.Log;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.widgetideas.client.ProgressBar;
 import de.novanic.eventservice.client.event.Event;
 import de.novanic.eventservice.client.event.listener.RemoteEventListener;
 import net.wbz.moba.controlcenter.web.client.EventReceiver;
 import net.wbz.moba.controlcenter.web.client.ServiceUtils;
 import net.wbz.moba.controlcenter.web.client.editor.track.AbstractTrackPanel;
-import net.wbz.moba.controlcenter.web.client.editor.track.ClickActionViewerWidgetHandler;
-import net.wbz.moba.controlcenter.web.client.editor.track.TrackEditorContainer;
 import net.wbz.moba.controlcenter.web.client.editor.track.ViewerPaletteWidget;
 import net.wbz.moba.controlcenter.web.client.model.track.*;
-import net.wbz.moba.controlcenter.web.client.util.DialogBoxUtil;
-import net.wbz.moba.controlcenter.web.client.viewer.controls.ViewerControlsPanel;
 import net.wbz.moba.controlcenter.web.shared.track.model.Configuration;
 import net.wbz.moba.controlcenter.web.shared.track.model.TrackPart;
 import net.wbz.moba.controlcenter.web.shared.viewer.TrackPartStateEvent;
+import org.gwtbootstrap3.client.ui.Label;
+import org.gwtbootstrap3.client.ui.Progress;
+import org.gwtbootstrap3.client.ui.constants.LabelType;
+import org.gwtbootstrap3.client.ui.constants.ProgressType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,7 +28,7 @@ import java.util.Map;
 
 /**
  * Panel for the track viewer.
- *
+ * <p/>
  * Loading the track and add all {@link net.wbz.moba.controlcenter.web.shared.track.model.TrackPart}s to the panel.
  * Register the event listener to receive state changes of all added
  * {@link net.wbz.moba.controlcenter.web.shared.track.model.TrackPart}s.
@@ -53,6 +50,8 @@ public class TrackViewerPanel extends AbstractTrackPanel {
 
         addStyleName("boundary");
 
+//        setVisible(false);
+
         EventReceiver.getInstance().addListener(TrackPartStateEvent.class, new RemoteEventListener() {
             public void apply(Event anEvent) {
                 if (anEvent instanceof TrackPartStateEvent) {
@@ -69,6 +68,15 @@ public class TrackViewerPanel extends AbstractTrackPanel {
 
         lblTrackPartConfig.setType(LabelType.INFO);
         add(lblTrackPartConfig, 0, 0);
+
+//        <b:Progress active="true" type="STRIPED">
+//        <b:ProgressBar type="SUCCESS" percent="40"/>
+//        </b:Progress>
+//        Progress progress = new Progress();
+//        progress.setActive(true);
+//        progress.setType(ProgressType.STRIPED);
+//        final ProgressBar progressBar = new ProgressBar(0);
+//        progress.add(progressBar);
 
         ServiceUtils.getTrackEditorService().loadTrack(new AsyncCallback<TrackPart[]>() {
             @Override
@@ -99,7 +107,7 @@ public class TrackViewerPanel extends AbstractTrackPanel {
                             controlTrackWidgets.put(trackPart.getConfiguration(), new ArrayList<AbstractControlSvgTrackWidget>());
                         }
                         controlTrackWidgets.get(trackPart.getConfiguration()).add((AbstractControlSvgTrackWidget) trackWidget);
-                    } else if (trackWidget instanceof AbstractBlockSvgTrackWidget && trackPart.getConfiguration() !=null) {
+                    } else if (trackWidget instanceof AbstractBlockSvgTrackWidget && trackPart.getConfiguration() != null) {
                         if (!blockTrackWidgets.containsKey(trackPart.getConfiguration())) {
                             blockTrackWidgets.put(trackPart.getConfiguration(), new ArrayList<AbstractBlockSvgTrackWidget>());
                         }
@@ -141,10 +149,14 @@ public class TrackViewerPanel extends AbstractTrackPanel {
         }
         if (blockTrackWidgets.containsKey(configuration)) {
             for (BlockPart blockPart : blockTrackWidgets.get(configuration)) {
-                if (state) {
-                    blockPart.usedBlock();
+                if (configuration.isValid()) {
+                    if (state) {
+                        blockPart.usedBlock();
+                    } else {
+                        blockPart.freeBlock();
+                    }
                 } else {
-                    blockPart.freeBlock();
+                    blockPart.unknownBlock();
                 }
             }
         }

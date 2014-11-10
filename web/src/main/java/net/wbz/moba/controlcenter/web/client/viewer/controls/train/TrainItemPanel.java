@@ -1,23 +1,24 @@
 package net.wbz.moba.controlcenter.web.client.viewer.controls.train;
 
-import com.github.gwtbootstrap.client.ui.*;
 import com.google.common.collect.Maps;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Panel;
-import com.google.gwt.user.client.ui.ToggleButton;
-import com.google.gwt.widgetideas.graphics.client.Color;
-import com.kiouri.sliderbar.client.event.BarValueChangedEvent;
-import com.kiouri.sliderbar.client.event.BarValueChangedHandler;
-import com.kiouri.sliderbar.client.solution.simplehorizontal.SliderBarSimpleHorizontal;
-import com.kiouri.sliderbar.client.view.SliderBar;
 import net.wbz.moba.controlcenter.web.client.ServiceUtils;
+import net.wbz.moba.controlcenter.web.client.util.EmptyCallback;
 import net.wbz.moba.controlcenter.web.client.viewer.controls.AbstractItemPanel;
 import net.wbz.moba.controlcenter.web.shared.train.*;
+import org.gwtbootstrap3.client.ui.*;
+import org.gwtbootstrap3.client.ui.constants.ColumnSize;
+import org.gwtbootstrap3.client.ui.constants.IconType;
+import org.gwtbootstrap3.client.ui.constants.Toggle;
+import org.gwtbootstrap3.extras.slider.client.ui.Slider;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,13 +33,13 @@ public class TrainItemPanel extends AbstractItemPanel<Train, TrainStateEvent> {
      * Maximum decimal value of the driving level. (Bit 1-5 is on)
      */
     public static final int DRIVING_LEVEL_MAX_VALUE = 31;
-    private Panel contentPanel;
+    private PanelCollapse contentPanel;
 
-    private SliderBar sliderDrivingLevel;
+    private Slider sliderDrivingLevel;
 
     private Button btnDirectionForward;
     private Button btnDirectionBackward;
-    private Map<TrainFunction.FUNCTION, ToggleButton> functionButtons = Maps.newConcurrentMap();
+    private Map<TrainFunction.FUNCTION, Button> functionButtons = Maps.newConcurrentMap();
 
     /**
      * Stores the last programmatic value of the driving level slider to avoid callback handling.
@@ -80,9 +81,9 @@ public class TrainItemPanel extends AbstractItemPanel<Train, TrainStateEvent> {
     @Override
     public void updateItemData(TrainStateEvent event) {
         if (event instanceof TrainHornStateEvent) {
-            functionButtons.get(TrainFunction.FUNCTION.HORN).setValue(((TrainHornStateEvent) event).isState());
+            functionButtons.get(TrainFunction.FUNCTION.HORN).setActive(((TrainHornStateEvent) event).isState());
         } else if (event instanceof TrainLightStateEvent) {
-            functionButtons.get(TrainFunction.FUNCTION.LIGHT).setValue(((TrainLightStateEvent) event).isState());
+            functionButtons.get(TrainFunction.FUNCTION.LIGHT).setActive(((TrainLightStateEvent) event).isState());
         } else if (event instanceof TrainFunctionStateEvent) {
             TrainFunctionStateEvent functionStateEvent = (TrainFunctionStateEvent) event;
             TrainFunction.FUNCTION trainFunction;
@@ -114,32 +115,33 @@ public class TrainItemPanel extends AbstractItemPanel<Train, TrainStateEvent> {
                 default:
                     throw new RuntimeException("no function available for bit: " + functionStateEvent.getFunctionBit());
             }
-            functionButtons.get(trainFunction).setValue(functionStateEvent.isActive(), false);
+            functionButtons.get(trainFunction).setActive(functionStateEvent.isActive());
         } else if (event instanceof TrainDrivingDirectionEvent) {
             lblState.setText(((TrainDrivingDirectionEvent) event).getDirection().name());
             switch (((TrainDrivingDirectionEvent) event).getDirection()) {
                 case BACKWARD:
-                    btnDirectionBackward.setToggle(true);
-                    btnDirectionForward.setToggle(false);
+                    btnDirectionBackward.setActive(true);
+                    btnDirectionForward.setActive(false);
                     break;
                 case FORWARD:
-                    btnDirectionForward.setToggle(true);
-                    btnDirectionBackward.setToggle(false);
+                    btnDirectionForward.setActive(true);
+                    btnDirectionBackward.setActive(false);
                     break;
             }
         } else if (event instanceof TrainDrivingLevelEvent) {
             TrainDrivingLevelEvent drivingLevelEvent = (TrainDrivingLevelEvent) event;
             lastValueHotFixOfStupidValueChangeSliderEvent = drivingLevelEvent.getSpeed();
-            sliderDrivingLevel.setValue(drivingLevelEvent.getSpeed());
+            sliderDrivingLevel.setValue((double) drivingLevelEvent.getSpeed());
             lblStateDetails.setText("speed: " + drivingLevelEvent.getSpeed());
         }
     }
 
     @Override
-    public Panel createCollapseContentPanel() {
-        contentPanel = new FluidContainer();
+    public PanelCollapse createCollapseContentPanel() {
+        contentPanel = new PanelCollapse();
 
-        Button btnEditTrain = new Button("edit");
+        Button btnEditTrain = new Button();
+        btnEditTrain.setIcon(IconType.PENCIL);
         btnEditTrain.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
@@ -149,7 +151,7 @@ public class TrainItemPanel extends AbstractItemPanel<Train, TrainStateEvent> {
             }
         });
         Row row = new Row();
-        row.add(new Column(1, btnEditTrain));
+        row.add(new Column(ColumnSize.LG_1, btnEditTrain));
         contentPanel.add(row);
 
         Row rowDrivingFunctions = new Row();
@@ -159,33 +161,27 @@ public class TrainItemPanel extends AbstractItemPanel<Train, TrainStateEvent> {
         btnGroupDirection.add(btnDirectionForward);
         btnDirectionBackward = createDirectionButton(Train.DIRECTION.BACKWARD);
         btnGroupDirection.add(btnDirectionBackward);
-        rowDrivingFunctions.add(new Column(1, btnGroupDirection));
+
+        final Label lblSliderValue = new Label("0");
+        lblSliderValue.getElement().getStyle().setMarginRight(15, Style.Unit.PX);
+        lblSliderValue.getElement().getStyle().setMarginLeft(10, Style.Unit.PX);
+        sliderDrivingLevel = new Slider(0, DRIVING_LEVEL_MAX_VALUE, 0);
+//        sliderDrivingLevel.drawMarks(Color.WHITE.toString(), 6);
+//        sliderDrivingLevel.setValue(lastValueHotFixOfStupidValueChangeSliderEvent);
+        sliderDrivingLevel.addValueChangeHandler(
+                new ValueChangeHandler<Double>() {
+                    @Override
+                    public void onValueChange(ValueChangeEvent<Double> doubleValueChangeEvent) {
+                        lblSliderValue.setText(doubleValueChangeEvent.getValue().toString());
+                        ServiceUtils.getTrainService().updateDrivingLevel(
+                                getModel().getId(), doubleValueChangeEvent.getValue().intValue(), new EmptyCallback<Void>());
+                    }
+                }
+        );
+
+        rowDrivingFunctions.add(new Column(ColumnSize.LG_2, btnGroupDirection, lblSliderValue, sliderDrivingLevel));
 
         contentPanel.add(rowDrivingFunctions);
-
-        sliderDrivingLevel = new SliderBarSimpleHorizontal(DRIVING_LEVEL_MAX_VALUE, "150px", true);
-        sliderDrivingLevel.drawMarks(Color.WHITE.toString(), 6);
-        sliderDrivingLevel.setValue(lastValueHotFixOfStupidValueChangeSliderEvent);
-        sliderDrivingLevel.addBarValueChangedHandler(new BarValueChangedHandler() {
-            public void onBarValueChanged(BarValueChangedEvent event) {
-                if (event.getValue() != lastValueHotFixOfStupidValueChangeSliderEvent) {
-                    lastValueHotFixOfStupidValueChangeSliderEvent = event.getValue();
-                    ServiceUtils.getTrainService().updateDrivingLevel(getModel().getId(), event.getValue(), new AsyncCallback<Void>() {
-                        @Override
-                        public void onFailure(Throwable caught) {
-                        }
-
-                        @Override
-                        public void onSuccess(Void result) {
-                        }
-                    });
-                }
-            }
-        });
-
-        Row drivingRow = new Row();
-        drivingRow.add(new Column(3, sliderDrivingLevel));
-        contentPanel.add(drivingRow);
 
         initFunctions();
 
@@ -193,35 +189,22 @@ public class TrainItemPanel extends AbstractItemPanel<Train, TrainStateEvent> {
     }
 
     private void initFunctions() {
-        int count = 0;
-        Row row = new Row();
-        for (final TrainFunction functionEntry : getModel().getFunctions()) {
 
-            final ToggleButton btnToggleFunction = new ToggleButton(functionEntry.getFunction().name());
-            functionButtons.put(functionEntry.getFunction(), btnToggleFunction);
+        Column functionsColumn = new Column(ColumnSize.LG_1.getCssName());
+        contentPanel.add(functionsColumn);
+        for (final TrainFunction functionEntry : getModel().getFunctions()) {
+            final Button btnToggleFunction = new Button(functionEntry.getFunction().name());
+            btnToggleFunction.setDataToggle(Toggle.BUTTON);
             btnToggleFunction.addClickHandler(new ClickHandler() {
                                                   @Override
                                                   public void onClick(ClickEvent clickEvent) {
-                                                      ServiceUtils.getTrainService().setFunctionState(getModel().getId(), functionEntry.getFunction(), btnToggleFunction.isDown(), new AsyncCallback<Void>() {
-                                                          @Override
-                                                          public void onFailure(Throwable caught) {
-                                                          }
-
-                                                          @Override
-                                                          public void onSuccess(Void result) {
-                                                          }
-                                                      });
+                                                      ServiceUtils.getTrainService().setFunctionState(getModel().getId(),
+                                                              functionEntry.getFunction(), btnToggleFunction.isActive(), new EmptyCallback<Void>());
                                                   }
                                               }
             );
-
-            if (count % 2 == 0) {
-                row = new Row();
-                contentPanel.add(row);
-            }
-            row.add(new Column(1, btnToggleFunction));
-
-            count++;
+            functionButtons.put(functionEntry.getFunction(), btnToggleFunction);
+            functionsColumn.add(btnToggleFunction);
         }
     }
 

@@ -1,31 +1,33 @@
 package net.wbz.moba.controlcenter.web.client.device;
 
-import com.github.gwtbootstrap.client.ui.Button;
-import com.github.gwtbootstrap.client.ui.Label;
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.FlowPanel;
 import de.novanic.eventservice.client.event.Event;
 import de.novanic.eventservice.client.event.listener.RemoteEventListener;
 import net.wbz.moba.controlcenter.web.client.EventReceiver;
 import net.wbz.moba.controlcenter.web.client.ServiceUtils;
 import net.wbz.moba.controlcenter.web.client.util.EmptyCallback;
-import net.wbz.moba.controlcenter.web.client.widgets.ToggleButton;
 import net.wbz.moba.controlcenter.web.shared.bus.DeviceInfoEvent;
 import net.wbz.moba.controlcenter.web.shared.viewer.RailVoltageEvent;
+import org.gwtbootstrap3.client.ui.Button;
+import org.gwtbootstrap3.client.ui.Label;
+import org.gwtbootstrap3.extras.toggleswitch.client.ui.ToggleSwitch;
+import org.gwtbootstrap3.extras.toggleswitch.client.ui.base.constants.ColorType;
 
 /**
  * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
  */
-public class StatePanel extends FlowPanel {
+public class StatePanel extends org.gwtbootstrap3.client.ui.gwt.FlowPanel {
 
-    private ToggleButton toggleRailVoltage;
+    private ToggleSwitch toggleRailVoltage;
     private Button btnDeviceConfig;
     private BusConnectionToggleButton busConnectionToggleButton;
 
     public StatePanel() {
-
         setStyleName("statePanel");
 
         // add event receiver for the device connection state
@@ -59,15 +61,13 @@ public class StatePanel extends FlowPanel {
         add(btnDeviceConfig);
 
         add(new Label("SX-Bus"));
-        toggleRailVoltage = new ToggleButton("Rail Voltage");
-        toggleRailVoltage.addToggleHandler(new ToggleButton.ToggleHandler() {
+        toggleRailVoltage = new ToggleSwitch();
+        toggleRailVoltage.setOffColor(ColorType.DANGER);
+        toggleRailVoltage.setOnColor(ColorType.SUCCESS);
+        toggleRailVoltage.setLabelText("Voltage");
+        toggleRailVoltage.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
             @Override
-            public void isOn() {
-                toggleRailVoltageState();
-            }
-
-            @Override
-            public void isOff() {
+            public void onValueChange(ValueChangeEvent<Boolean> booleanValueChangeEvent) {
                 toggleRailVoltageState();
             }
         });
@@ -75,7 +75,7 @@ public class StatePanel extends FlowPanel {
         EventReceiver.getInstance().addListener(RailVoltageEvent.class, new RemoteEventListener() {
             public void apply(Event anEvent) {
                 if (anEvent instanceof RailVoltageEvent) {
-                    toggleRailVoltage.setActive(((RailVoltageEvent) anEvent).isState());
+                    toggleRailVoltage.setValue(((RailVoltageEvent) anEvent).isState(), false);
                 }
             }
         });
@@ -106,6 +106,6 @@ public class StatePanel extends FlowPanel {
     private void updateDeviceConnectionState(boolean connected) {
         toggleRailVoltage.setEnabled(connected);
         btnDeviceConfig.setEnabled(!connected);
-        busConnectionToggleButton.setActive(connected);
+        busConnectionToggleButton.setValue(connected, false);
     }
 }

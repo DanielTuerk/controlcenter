@@ -1,10 +1,10 @@
 package net.wbz.moba.controlcenter.web.client.util;
 
-import com.github.gwtbootstrap.client.ui.Alert;
-import com.github.gwtbootstrap.client.ui.constants.AlertType;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.FlowPanel;
+import org.gwtbootstrap3.client.ui.Alert;
+import org.gwtbootstrap3.client.ui.constants.AlertType;
 
 /**
  * Created by Daniel on 17.05.2014.
@@ -18,8 +18,7 @@ public class AlertUtil {
     }
 
     public static void showAlert(final com.google.gwt.user.client.ui.Panel parent, String text, AlertType alertType, int showTimeMillis) {
-        final Alert alert = new Alert(text, alertType, true);
-        alert.setAnimation(true);
+        final Alert alert = new Alert(text, alertType);
         alert.getElement().getStyle().setZIndex(1000);
         parent.add(alert);
         Timer timer = new Timer() {

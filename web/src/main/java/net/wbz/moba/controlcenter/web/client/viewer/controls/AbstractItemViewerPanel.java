@@ -1,15 +1,17 @@
 package net.wbz.moba.controlcenter.web.client.viewer.controls;
 
-import com.github.gwtbootstrap.client.ui.Button;
-import com.github.gwtbootstrap.client.ui.InputAddOn;
-import com.github.gwtbootstrap.client.ui.TextBox;
 import com.google.common.collect.Maps;
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.FlowPanel;
 import de.novanic.eventservice.client.event.Event;
 import de.novanic.eventservice.client.event.listener.RemoteEventListener;
 import net.wbz.moba.controlcenter.web.client.EventReceiver;
 import net.wbz.moba.controlcenter.web.shared.AbstractStateEvent;
+import org.gwtbootstrap3.client.ui.Button;
+import org.gwtbootstrap3.client.ui.InputGroup;
+import org.gwtbootstrap3.client.ui.InputGroupButton;
+import org.gwtbootstrap3.client.ui.TextBox;
 
 import java.util.Map;
 
@@ -23,12 +25,16 @@ abstract public class AbstractItemViewerPanel<ItemPanel extends AbstractItemPane
 
     public AbstractItemViewerPanel(Class<EventType> eventClass) {
         addStyleName("contentPanel");
-        InputAddOn inputCreate = new InputAddOn();
+
+        InputGroup inputCreate = new InputGroup();
+        inputCreate.getElement().getStyle().setPaddingBottom(10, Style.Unit.PX);
         final TextBox txtName = new TextBox();
         inputCreate.add(txtName);
+        InputGroupButton groupButton = new InputGroupButton();
         Button btnNew = new Button("new");
         btnNew.addClickHandler(getBtnNewClickHandler(txtName));
-        inputCreate.add(btnNew);
+        groupButton.add(btnNew);
+        inputCreate.add(groupButton);
 
         add(inputCreate);
 

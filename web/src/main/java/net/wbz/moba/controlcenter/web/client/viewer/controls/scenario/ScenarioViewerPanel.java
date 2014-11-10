@@ -1,6 +1,5 @@
 package net.wbz.moba.controlcenter.web.client.viewer.controls.scenario;
 
-import com.github.gwtbootstrap.client.ui.TextBox;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.gen2.logging.shared.Log;
@@ -9,6 +8,7 @@ import net.wbz.moba.controlcenter.web.client.ServiceUtils;
 import net.wbz.moba.controlcenter.web.client.viewer.controls.AbstractItemViewerPanel;
 import net.wbz.moba.controlcenter.web.shared.scenario.Scenario;
 import net.wbz.moba.controlcenter.web.shared.scenario.ScenarioStateEvent;
+import org.gwtbootstrap3.client.ui.TextBox;
 
 import java.util.List;
 

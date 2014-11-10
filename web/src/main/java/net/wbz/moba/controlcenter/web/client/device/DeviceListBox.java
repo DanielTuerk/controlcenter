@@ -1,6 +1,5 @@
 package net.wbz.moba.controlcenter.web.client.device;
 
-import com.github.gwtbootstrap.client.ui.ListBox;
 import com.google.common.collect.Lists;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import de.novanic.eventservice.client.event.Event;
@@ -9,6 +8,8 @@ import net.wbz.moba.controlcenter.web.client.EventReceiver;
 import net.wbz.moba.controlcenter.web.client.ServiceUtils;
 import net.wbz.moba.controlcenter.web.shared.bus.DeviceInfo;
 import net.wbz.moba.controlcenter.web.shared.bus.DeviceInfoEvent;
+import org.gwtbootstrap3.extras.select.client.ui.Option;
+import org.gwtbootstrap3.extras.select.client.ui.Select;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +17,7 @@ import java.util.List;
 /**
  * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
  */
-public class DeviceListBox extends ListBox {
+public class DeviceListBox extends Select {
 
     private final List<DeviceInfo> devices = Lists.newArrayList();
 
@@ -27,7 +28,8 @@ public class DeviceListBox extends ListBox {
                 reload();
             }
         });
-        setVisibleItemCount(1);
+//        setVisibleItemCount(1);
+
         reload();
     }
 
@@ -45,17 +47,22 @@ public class DeviceListBox extends ListBox {
         ServiceUtils.getBusService().getDevices(new AsyncCallback<ArrayList<DeviceInfo>>() {
             @Override
             public void onFailure(Throwable caught) {
-                addItem("error:can't load: " + caught.getMessage());
+                setValue("error:can't load: " + caught.getMessage());
             }
 
             @Override
             public void onSuccess(ArrayList<DeviceInfo> result) {
-                clear();
-                for (DeviceInfo device : result) {
-                    addItem(device.getKey());
-                }
                 devices.clear();
                 devices.addAll(result);
+
+                DeviceListBox.this.clear();
+                for (DeviceInfo device : result) {
+                    Option child = new Option();
+                    child.setValue(device.getKey());
+                    child.setText(device.getKey());
+                    add(child);
+                }
+                DeviceListBox.this.refresh();
             }
         });
     }
@@ -65,6 +72,6 @@ public class DeviceListBox extends ListBox {
     }
 
     public DeviceInfo getSelectedDevice() {
-        return getDevice(getValue(getSelectedIndex()));
+        return getDevice(getValue());
     }
 }

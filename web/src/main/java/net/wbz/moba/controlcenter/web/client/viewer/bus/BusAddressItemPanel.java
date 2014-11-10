@@ -1,7 +1,7 @@
 package net.wbz.moba.controlcenter.web.client.viewer.bus;
 
-import com.github.gwtbootstrap.client.ui.Label;
 import com.google.gwt.user.client.ui.FlowPanel;
+import org.gwtbootstrap3.client.ui.Label;
 
 import java.math.BigInteger;
 
@@ -12,7 +12,6 @@ public class BusAddressItemPanel extends FlowPanel {
     private final FlowPanel dataPanel = new FlowPanel();
 
     public BusAddressItemPanel(int address) {
-//        getElement().getStyle().setFloat(Style.Float.LEFT);
         add(new Label(String.valueOf(address)));
         for (int i = 1; i < 9; i++) {
             dataPanel.add(new Label());
@@ -26,7 +25,6 @@ public class BusAddressItemPanel extends FlowPanel {
         int bit=7;
         for (int i = 0; i < 8; i++) {
             Label label = (Label) dataPanel.getWidget(i);
-//            label.addStyleName("flashlight");
             label.setText(String.valueOf(bits.testBit(bit) ? 1 : 0));
             bit--;
         }

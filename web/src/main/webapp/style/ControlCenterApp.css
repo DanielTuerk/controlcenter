@@ -118,6 +118,8 @@ h1 {
 }
 
 .appMenu {
+    height: 49px;
+    padding-right: 20px;
 }
 
 .configPanel {
@@ -126,5 +128,14 @@ h1 {
 
 .configPanel_entry {
     padding-left: 20px;
+}
+
+.viewerControls_tabContent {
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.trainPanel_slider {
+margin-left: 20px;
 }
 

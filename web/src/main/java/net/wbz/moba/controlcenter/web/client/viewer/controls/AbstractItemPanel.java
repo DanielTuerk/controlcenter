@@ -1,16 +1,17 @@
 package net.wbz.moba.controlcenter.web.client.viewer.controls;
 
-import com.github.gwtbootstrap.client.ui.Collapse;
-import com.github.gwtbootstrap.client.ui.CollapseTrigger;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.client.ui.Panel;
 import de.novanic.eventservice.client.event.Event;
 import de.novanic.eventservice.client.event.listener.RemoteEventListener;
 import net.wbz.moba.controlcenter.web.client.EventReceiver;
 import net.wbz.moba.controlcenter.web.shared.AbstractIdModel;
 import net.wbz.moba.controlcenter.web.shared.AbstractStateEvent;
+import org.gwtbootstrap3.client.ui.Button;
+import org.gwtbootstrap3.client.ui.PanelBody;
+import org.gwtbootstrap3.client.ui.PanelCollapse;
+import org.gwtbootstrap3.client.ui.PanelHeader;
+import org.gwtbootstrap3.client.ui.constants.Toggle;
 
 import java.util.List;
 
@@ -22,11 +23,11 @@ import java.util.List;
  *
  * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
  */
-abstract public class AbstractItemPanel<Model extends AbstractIdModel, StateEvent extends AbstractStateEvent> extends FlowPanel {
+abstract public class AbstractItemPanel<Model extends AbstractIdModel, StateEvent extends AbstractStateEvent> extends org.gwtbootstrap3.client.ui.Panel {
 
     private Model model;
 
-    private Panel collapseContentPanel;
+    private PanelCollapse collapseContentPanel;
 
     private Panel headerPanelContent;
 
@@ -64,40 +65,32 @@ abstract public class AbstractItemPanel<Model extends AbstractIdModel, StateEven
         collapseContentPanel = createCollapseContentPanel();
 
         //header
-        FlowPanel headerPanel = new FlowPanel();
+        PanelHeader panelHeader = new PanelHeader();
         headerPanelContent = createHeaderPanel();
         headerPanelContent.addStyleName("abstractItemPanelHeaderContent");
         assert headerPanelContent != null;
-
-        headerPanel.add(headerPanelContent);
+        panelHeader.add(headerPanelContent);
 
         // collapse
-        CollapseTrigger collapseCommands = new CollapseTrigger("commandsContainer");
-
-        net.wbz.moba.controlcenter.web.client.widgets.ToggleButton btnCollapse = new net.wbz.moba.controlcenter.web.client.widgets.ToggleButton(">>");
-        btnCollapse.setPixelSize(40, 40);
-        collapseCommands.add(btnCollapse);
-        headerPanel.add(btnCollapse);
-
-        add(headerPanel);
+        String collapseContainerId = "collapse" + getModel().getId();
+        Button btnCollapse = new Button(">>");
+        panelHeader.add(btnCollapse);
+        btnCollapse.setDataTarget("#" + collapseContainerId);
+        btnCollapse.setDataToggle(Toggle.COLLAPSE);
+        add(panelHeader);
 
         // details
-        final Collapse detailsPanel = new Collapse();
-        detailsPanel.setWidget(collapseContentPanel);
-
-        btnCollapse.addClickHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-                detailsPanel.toggle();
-            }
-        });
-
-        add(detailsPanel);
+        PanelBody panelBody = new PanelBody();
+        panelBody.getElement().getStyle().setPadding(0, Style.Unit.PX);
+        collapseContentPanel = createCollapseContentPanel();
+        collapseContentPanel.setId(collapseContainerId);
+        panelBody.add(collapseContentPanel);
+        add(panelBody);
     }
 
     public Model getModel() {
         return model;
     }
 
-    public abstract Panel createCollapseContentPanel();
+    public abstract PanelCollapse createCollapseContentPanel();
 }

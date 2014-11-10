@@ -19,18 +19,20 @@
 
     <inherits name="com.google.common.collect.Collect"/>
 
-    <inherits name="com.github.gwtbootstrap.Bootstrap" />
-
     <inherits name="com.kiouri.sliderbar.SliderBarMVP" />
 
     <inherits name="org.vectomatic.libgwtsvg"/>
 
-    <set-property name="bootstrap.responsiveDesign" value="true"/>
+    <inherits name="org.gwtbootstrap3.GwtBootstrap3"/>
+    <inherits name="org.gwtbootstrap3.extras.toggleswitch.ToggleSwitch"/>
+
 
 
     <!-- Specify the app entry point class.                         -->
 
     <inherits name="de.novanic.eventservice.GWTEventService"/>
+    <inherits name="org.gwtbootstrap3.extras.select.Select"/>
+    <inherits name="org.gwtbootstrap3.extras.slider.Slider"/>
     <entry-point class='net.wbz.moba.controlcenter.web.client.ControlCenterApp'/>
 
     <!-- Specify the paths for translatable code                    -->

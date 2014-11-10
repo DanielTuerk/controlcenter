@@ -150,7 +150,8 @@ public class BusServiceImpl extends RemoteServiceServlet implements BusService {
     public void toggleRailVoltage() {
         if (isBusConnected()) {
             try {
-                deviceManager.getConnectedDevice().setRailVoltage(!getRailVoltage());
+                Device connectedDevice = deviceManager.getConnectedDevice();
+                connectedDevice.setRailVoltage(!connectedDevice.getRailVoltage());
             } catch (Exception e) {
                 LOGGER.error("can't toggle rail voltage", e);
             }

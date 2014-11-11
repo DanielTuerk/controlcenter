@@ -1,5 +1,6 @@
 package net.wbz.moba.controlcenter.web.client.viewer.bus;
 
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.client.ui.FlowPanel;
 import org.gwtbootstrap3.client.ui.Label;
 
@@ -8,13 +9,14 @@ import java.math.BigInteger;
 /**
  * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
  */
-public class BusAddressItemPanel extends FlowPanel {
-    private final FlowPanel dataPanel = new FlowPanel();
+public class BusAddressItemPanel extends org.gwtbootstrap3.client.ui.gwt.FlowPanel {
+    private final FlowPanel dataPanel = new org.gwtbootstrap3.client.ui.gwt.FlowPanel();
 
     public BusAddressItemPanel(int address) {
+        getElement().getStyle().setFloat(Style.Float.LEFT);
         add(new Label(String.valueOf(address)));
         for (int i = 1; i < 9; i++) {
-            dataPanel.add(new Label());
+            dataPanel.add(new Label("0"));
         }
         add(dataPanel);
     }

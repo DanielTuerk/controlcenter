@@ -8,10 +8,12 @@ import com.google.gwt.user.client.ui.SimplePanel;
  */
 abstract public class AbstractConfigEntry {
 
-    abstract public String getGroup();
-    abstract public String getName();
+    public abstract String getGroup();
+    public abstract String getName();
 
-    abstract protected Panel getContentPanel();
+    protected abstract Panel getContentPanel();
 
-    abstract protected void save();
+    protected abstract void save();
+
+    protected abstract void reset();
 }

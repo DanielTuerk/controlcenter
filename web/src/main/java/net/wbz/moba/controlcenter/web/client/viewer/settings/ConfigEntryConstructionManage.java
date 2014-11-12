@@ -7,6 +7,7 @@ import com.google.gwt.user.client.ui.SimplePanel;
  * @author Daniel Tuerk
  */
 public class ConfigEntryConstructionManage extends AbstractConstructionConfigEntry {
+
     @Override
     public String getName() {
         return "Manage";
@@ -19,6 +20,11 @@ public class ConfigEntryConstructionManage extends AbstractConstructionConfigEnt
 
     @Override
     protected void save() {
+
+    }
+
+    @Override
+    protected void reset() {
 
     }
 }

@@ -9,6 +9,7 @@ import org.gwtbootstrap3.client.ui.constants.FormType;
  * @author Daniel Tuerk
  */
 public class ConfigEntryCommonStartup extends AbstractCommonConfigEntry {
+
     @Override
     public String getName() {
         return "Startup";
@@ -26,6 +27,11 @@ public class ConfigEntryCommonStartup extends AbstractCommonConfigEntry {
 
     @Override
     protected void save() {
+
+    }
+
+    @Override
+    protected void reset() {
 
     }
 }

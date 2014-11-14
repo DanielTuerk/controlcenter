@@ -28,4 +28,14 @@ public interface BusService extends RemoteService {
     public void toggleRailVoltage();
 
     public BusData[] readBusData(int busNr);
+
+    /**
+     * Simple access to the selectrix bus. Set value for the bit of the current connected device.
+     *
+     * @param busNr number of bus
+     * @param address address of bit
+     * @param bit bit number (1-8)
+     * @param state {@link java.lang.Boolean} new state for the bit
+     */
+    public void sendBusData(int busNr, int address, int bit, boolean state);
 }

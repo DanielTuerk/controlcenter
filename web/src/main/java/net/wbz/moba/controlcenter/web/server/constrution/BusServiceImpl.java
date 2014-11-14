@@ -105,7 +105,7 @@ public class BusServiceImpl extends RemoteServiceServlet implements BusService {
     public void deleteDevice(DeviceInfo deviceInfo) {
         Device device = deviceManager.getDeviceById(deviceInfo.getKey());
         deviceManager.removeDevice(device);
-        for(Object deviceInfoInDB : settingsDatabase.getObjectContainer().queryByExample(deviceInfo)) {
+        for (Object deviceInfoInDB : settingsDatabase.getObjectContainer().queryByExample(deviceInfo)) {
             settingsDatabase.getObjectContainer().delete(deviceInfoInDB);
         }
         settingsDatabase.getObjectContainer().commit();
@@ -170,12 +170,23 @@ public class BusServiceImpl extends RemoteServiceServlet implements BusService {
     }
 
     @Override
+    public void sendBusData(int busNr, int address, int bit, boolean state) {
+        if (activeDevice != null) {
+            try {
+                activeDevice.getBusAddress(busNr, (byte) address).setBit(bit).send();
+            } catch (DeviceAccessException e) {
+                LOGGER.error(String.format("can't send data (bus: %d, address: %d, bit: %d)", busNr, address, bit), e);
+            }
+        }
+    }
+
+    @Override
     public void connectBus() {
         if (activeDevice != null) {
             try {
                 activeDevice.connect();
             } catch (DeviceAccessException e) {
-                LOGGER.error(String.format("can't connect active device: %s", activeDevice.getClass().getName()),e);
+                LOGGER.error(String.format("can't connect active device: %s", activeDevice.getClass().getName()), e);
             }
         }
     }
@@ -186,7 +197,7 @@ public class BusServiceImpl extends RemoteServiceServlet implements BusService {
             try {
                 activeDevice.disconnect();
             } catch (DeviceAccessException e) {
-                LOGGER.error("disconnect",e);
+                LOGGER.error("disconnect", e);
             }
         }
     }

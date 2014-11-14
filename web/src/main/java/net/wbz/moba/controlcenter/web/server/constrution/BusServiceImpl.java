@@ -173,7 +173,11 @@ public class BusServiceImpl extends RemoteServiceServlet implements BusService {
     public void sendBusData(int busNr, int address, int bit, boolean state) {
         if (activeDevice != null) {
             try {
-                activeDevice.getBusAddress(busNr, (byte) address).setBit(bit).send();
+                if (state) {
+                    activeDevice.getBusAddress(busNr, (byte) address).setBit(bit).send();
+                } else {
+                    activeDevice.getBusAddress(busNr, (byte) address).clearBit(bit).send();
+                }
             } catch (DeviceAccessException e) {
                 LOGGER.error(String.format("can't send data (bus: %d, address: %d, bit: %d)", busNr, address, bit), e);
             }

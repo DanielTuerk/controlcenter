@@ -3,8 +3,10 @@ package net.wbz.moba.controlcenter.web.client;
 import com.google.gwt.core.client.GWT;
 import net.wbz.moba.controlcenter.web.shared.bus.BusService;
 import net.wbz.moba.controlcenter.web.shared.bus.BusServiceAsync;
-import net.wbz.moba.controlcenter.web.shared.constrution.ConstrutionService;
-import net.wbz.moba.controlcenter.web.shared.constrution.ConstrutionServiceAsync;
+import net.wbz.moba.controlcenter.web.shared.config.ConfigService;
+import net.wbz.moba.controlcenter.web.shared.config.ConfigServiceAsync;
+import net.wbz.moba.controlcenter.web.shared.constrution.ConstructionService;
+import net.wbz.moba.controlcenter.web.shared.constrution.ConstructionServiceAsync;
 import net.wbz.moba.controlcenter.web.shared.editor.TrackEditorService;
 import net.wbz.moba.controlcenter.web.shared.editor.TrackEditorServiceAsync;
 import net.wbz.moba.controlcenter.web.shared.scenario.ScenarioEditorService;
@@ -30,13 +32,15 @@ public class ServiceUtils {
     private static final TrackViewerServiceAsync trackViewerService = GWT.create(TrackViewerService.class);
     private static final TrackEditorServiceAsync trackEditorService = GWT.create(TrackEditorService.class);
 
-    private static final ConstrutionServiceAsync construtionService = GWT.create(ConstrutionService.class);
+    private static final ConstructionServiceAsync construtionService = GWT.create(ConstructionService.class);
     private static final ScenarioServiceAsync scenarioService = GWT.create(ScenarioService.class);
 
     private static final TrainEditorServiceAsync trainEditorService = GWT.create(TrainEditorService.class);
     private static final TrainServiceAsync trainService = GWT.create(TrainService.class);
 
-    public static ConstrutionServiceAsync getConstrutionService() {
+    private static final ConfigServiceAsync configService = GWT.create(ConfigService.class);
+
+    public static ConstructionServiceAsync getConstrutionService() {
         return construtionService;
     }
 
@@ -66,5 +70,9 @@ public class ServiceUtils {
 
     public static TrainServiceAsync getTrainService() {
         return trainService;
+    }
+
+    public static ConfigServiceAsync getConfigService() {
+        return configService;
     }
 }

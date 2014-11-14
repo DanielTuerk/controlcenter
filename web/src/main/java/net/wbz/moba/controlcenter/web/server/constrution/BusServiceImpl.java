@@ -50,25 +50,13 @@ public class BusServiceImpl extends RemoteServiceServlet implements BusService {
                           EventBroadcaster eventBroadcaster) {
         this.deviceManager = deviceManager;
         this.eventBroadcaster = eventBroadcaster;
-        if (!databaseFactory.getExistingDatabaseNames().contains(BUS_DB_KEY)) {
-            try {
-                settingsDatabase = databaseFactory.addDatabase(BUS_DB_KEY);
-            } catch (IOException e) {
-                throw new RuntimeException("can't init database for the 'bus' settings", e);
-            }
-        } else {
-            try {
-                settingsDatabase = databaseFactory.getStorage(BUS_DB_KEY);
-                ObjectSet<DeviceInfo> storedDevices = settingsDatabase.getObjectContainer().query(DeviceInfo.class);
-                for (DeviceInfo deviceInfo : storedDevices) {
-                    // TODO - values from config
-                    deviceManager.registerDevice(DeviceManager.DEVICE_TYPE.valueOf(
-                            deviceInfo.getType().name()), deviceInfo.getKey(), SerialDevice.DEFAULT_BAUD_RATE_FCC);
-                }
+        settingsDatabase=databaseFactory.getOrCreateDatabase(BUS_DB_KEY);
 
-            } catch (StorageException e) {
-                throw new RuntimeException("no DB found for BUS key: " + BUS_DB_KEY);
-            }
+        ObjectSet<DeviceInfo> storedDevices = settingsDatabase.getObjectContainer().query(DeviceInfo.class);
+        for (DeviceInfo deviceInfo : storedDevices) {
+            // TODO - values from config
+            deviceManager.registerDevice(DeviceManager.DEVICE_TYPE.valueOf(
+                    deviceInfo.getType().name()), deviceInfo.getKey(), SerialDevice.DEFAULT_BAUD_RATE_FCC);
         }
 
         deviceManager.addDeviceConnectionListener(new DeviceConnectionListener() {

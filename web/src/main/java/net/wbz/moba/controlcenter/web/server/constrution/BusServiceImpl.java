@@ -11,11 +11,9 @@ import net.wbz.moba.controlcenter.db.Database;
 import net.wbz.moba.controlcenter.db.DatabaseFactory;
 import net.wbz.moba.controlcenter.db.StorageException;
 import net.wbz.moba.controlcenter.web.server.EventBroadcaster;
-import net.wbz.moba.controlcenter.web.shared.bus.BusData;
-import net.wbz.moba.controlcenter.web.shared.bus.BusService;
-import net.wbz.moba.controlcenter.web.shared.bus.DeviceInfo;
-import net.wbz.moba.controlcenter.web.shared.bus.DeviceInfoEvent;
+import net.wbz.moba.controlcenter.web.shared.bus.*;
 import net.wbz.selectrix4java.SerialDevice;
+import net.wbz.selectrix4java.api.bus.AllBusDataConsumer;
 import net.wbz.selectrix4java.api.device.Device;
 import net.wbz.selectrix4java.api.device.DeviceAccessException;
 import net.wbz.selectrix4java.api.device.DeviceConnectionListener;
@@ -45,9 +43,12 @@ public class BusServiceImpl extends RemoteServiceServlet implements BusService {
 
     private final EventBroadcaster eventBroadcaster;
 
+    private final AllBusDataConsumer allBusDataConsumer;
+    private boolean trackingActive = false;
+
     @Inject
     public BusServiceImpl(DeviceManager deviceManager, @Named("settings") DatabaseFactory databaseFactory,
-                          EventBroadcaster eventBroadcaster) {
+                          final EventBroadcaster eventBroadcaster) {
         this.deviceManager = deviceManager;
         this.eventBroadcaster = eventBroadcaster;
         if (!databaseFactory.getExistingDatabaseNames().contains(BUS_DB_KEY)) {
@@ -71,15 +72,25 @@ public class BusServiceImpl extends RemoteServiceServlet implements BusService {
             }
         }
 
+        allBusDataConsumer = new AllBusDataConsumer() {
+
+            @Override
+            public void valueChanged(int bus, int address, int oldValue, int newValue) {
+                eventBroadcaster.fireEvent(new BusDataEvent(bus, address, newValue));
+            }
+        };
+
         deviceManager.addDeviceConnectionListener(new DeviceConnectionListener() {
             @Override
             public void connected(Device device) {
                 BusServiceImpl.this.eventBroadcaster.fireEvent(new DeviceInfoEvent(getDeviceInfo(device), DeviceInfoEvent.TYPE.CONNECTED));
+
             }
 
             @Override
             public void disconnected(Device device) {
                 BusServiceImpl.this.eventBroadcaster.fireEvent(new DeviceInfoEvent(getDeviceInfo(device), DeviceInfoEvent.TYPE.DISCONNECTED));
+                device.getBusDataDispatcher().unregisterConsumer(allBusDataConsumer);
             }
         });
 
@@ -167,6 +178,22 @@ public class BusServiceImpl extends RemoteServiceServlet implements BusService {
             replyData[i] = new BusData(i, (int) busData[i]);
         }
         return replyData;
+    }
+
+    @Override
+    public void startTrackingBus() {
+        if (activeDevice != null && !trackingActive) {
+            activeDevice.getBusDataDispatcher().registerConsumer(allBusDataConsumer);
+            trackingActive = true;
+        }
+    }
+
+    @Override
+    public void stopTrackingBus() {
+        if (activeDevice != null && trackingActive) {
+            activeDevice.getBusDataDispatcher().unregisterConsumer(allBusDataConsumer);
+            trackingActive = false;
+        }
     }
 
     @Override

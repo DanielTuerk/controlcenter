@@ -6,7 +6,10 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import de.novanic.eventservice.client.event.Event;
 import de.novanic.eventservice.client.event.listener.RemoteEventListener;
 import net.wbz.moba.controlcenter.web.client.EventReceiver;
+import net.wbz.moba.controlcenter.web.client.ServiceUtils;
+import net.wbz.moba.controlcenter.web.client.util.EmptyCallback;
 import net.wbz.moba.controlcenter.web.shared.bus.BusDataEvent;
+import net.wbz.moba.controlcenter.web.shared.bus.DeviceInfoEvent;
 import org.gwtbootstrap3.client.ui.Panel;
 import org.gwtbootstrap3.client.ui.PanelBody;
 import org.gwtbootstrap3.client.ui.PanelHeader;
@@ -22,6 +25,7 @@ public class BusMonitorPanel extends FlowPanel {
 
     private final Map<Integer, Map<Integer, BusAddressItemPanel>> addressItemMapping = Maps.newHashMap();
     private RemoteEventListener listener;
+    private RemoteEventListener connectionListener;
     private List<Panel> busPanels = new ArrayList<>();
 
     public BusMonitorPanel() {
@@ -62,6 +66,17 @@ public class BusMonitorPanel extends FlowPanel {
                 addressItemMapping.get(busDataEvent.getBus()).get(busDataEvent.getAddress()).updateData(busDataEvent.getData());
             }
         };
+        connectionListener = new RemoteEventListener() {
+            @Override
+            public void apply(Event event) {
+                DeviceInfoEvent deviceInfoEvent = (DeviceInfoEvent) event;
+                if (deviceInfoEvent.getEventType() == DeviceInfoEvent.TYPE.CONNECTED) {
+                    ServiceUtils.getBusService().startTrackingBus(new EmptyCallback<Void>());
+                } else if (deviceInfoEvent.getEventType() == DeviceInfoEvent.TYPE.DISCONNECTED) {
+                    ServiceUtils.getBusService().stopTrackingBus(new EmptyCallback<Void>());
+                }
+            }
+        };
     }
 
     @Override
@@ -70,13 +85,17 @@ public class BusMonitorPanel extends FlowPanel {
         for (Panel busPanel : busPanels) {
             add(busPanel);
         }
+        ServiceUtils.getBusService().startTrackingBus(new EmptyCallback<Void>());
         EventReceiver.getInstance().addListener(BusDataEvent.class, listener);
+        EventReceiver.getInstance().addListener(DeviceInfoEvent.class, connectionListener);
     }
 
     @Override
     protected void onUnload() {
         super.onUnload();
+        ServiceUtils.getBusService().stopTrackingBus(new EmptyCallback<Void>());
         EventReceiver.getInstance().removeListener(BusDataEvent.class, listener);
+        EventReceiver.getInstance().removeListener(DeviceInfoEvent.class, connectionListener);
         for (Panel busPanel : busPanels) {
             remove(busPanel);
         }

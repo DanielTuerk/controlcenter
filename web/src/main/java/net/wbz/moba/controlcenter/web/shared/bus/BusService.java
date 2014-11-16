@@ -30,6 +30,17 @@ public interface BusService extends RemoteService {
     public BusData[] readBusData(int busNr);
 
     /**
+     * Start the listener for all buses.
+     * Consumer will receive all changes from device and delegate to throw the {@link net.wbz.moba.controlcenter.web.shared.bus.BusDataEvent}s.
+     */
+    public void startTrackingBus();
+
+    /**
+     * Stop the listener for all buses.
+     * Unregister the Consumer will stop throwing the {@link net.wbz.moba.controlcenter.web.shared.bus.BusDataEvent}s.
+     */
+    public void stopTrackingBus();
+    /**
      * Simple access to the selectrix bus. Set value for the bit of the current connected device.
      *
      * @param busNr number of bus

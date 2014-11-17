@@ -3,10 +3,13 @@ package net.wbz.moba.controlcenter.web.client.viewer.bus;
 import com.google.common.collect.Maps;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.Label;
+
 import de.novanic.eventservice.client.event.Event;
 import de.novanic.eventservice.client.event.listener.RemoteEventListener;
 import net.wbz.moba.controlcenter.web.client.EventReceiver;
 import net.wbz.moba.controlcenter.web.shared.bus.BusDataEvent;
+
 import org.gwtbootstrap3.client.ui.Panel;
 import org.gwtbootstrap3.client.ui.PanelBody;
 import org.gwtbootstrap3.client.ui.PanelHeader;
@@ -42,11 +45,13 @@ public class BusMonitorPanel extends FlowPanel {
             panel.add(panelHeader);
             panel.add(panelBody);
             busPanels.add(panel);
-
+            
             Map<Integer, BusAddressItemPanel> addressItemPanelMap = Maps.newHashMap();
 
             for (int j = 0; j < 127; j++) {
-                BusAddressItemPanel busAddressItemPanel = new BusAddressItemPanel(j);
+            	Label lbl_address = new Label("Address");
+                BusAddressItemPanel busAddressItemPanel = new BusAddressItemPanel(i,j);
+                busAddressItemPanel.add(lbl_address);
                 busAddressItemPanel.getElement().getStyle().setPaddingRight(5, Style.Unit.PX);
                 busAddressItemPanel.getElement().getStyle().setPaddingBottom(5, Style.Unit.PX);
                 panelBody.add(busAddressItemPanel);

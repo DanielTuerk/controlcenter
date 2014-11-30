@@ -1,5 +1,6 @@
 package net.wbz.moba.controlcenter.web.shared.config;
 
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
@@ -9,10 +10,12 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 @RemoteServiceRelativePath("config")
 public interface ConfigService extends RemoteService {
 
-    static ConfigEntryItem showWelcome = new ConfigEntryItem("manage.startup.showWelcome", ConfigEntryItem.ItemType.BOOLEAN);
-    public static String MANAGE_STARTUP_WELCOME=showWelcome.getKey();
+    public String loadValue(String configKey) throws ConfigNotAvailableException;
+    public void saveValue(String configKey, String value);
 
-    public void save(ConfigEntryItem[] item);
-    public ConfigEntryItem[] load(String group);
-    public ConfigEntryItem getValue(String key);
+//    public void save(ConfigEntryItem[] item);
+//    public ConfigEntryItem[] load(String group);
+//    public String getValue(ConfigEntryItem item);
+//    public void setValue(ConfigEntryItem item, String value);
+//    public void setValues(ConfigEntryItem[] item, String[] value);
 }

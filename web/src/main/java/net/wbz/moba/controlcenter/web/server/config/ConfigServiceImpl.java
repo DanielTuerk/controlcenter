@@ -9,7 +9,7 @@ import com.google.inject.Singleton;
 import com.google.inject.name.Named;
 import net.wbz.moba.controlcenter.db.Database;
 import net.wbz.moba.controlcenter.db.DatabaseFactory;
-import net.wbz.moba.controlcenter.web.shared.config.ConfigEntryItem;
+import net.wbz.moba.controlcenter.web.shared.config.ConfigNotAvailableException;
 import net.wbz.moba.controlcenter.web.shared.config.ConfigService;
 
 import javax.annotation.Nullable;
@@ -26,8 +26,8 @@ public class ConfigServiceImpl extends RemoteServiceServlet implements ConfigSer
     private static final String CONFIG_DB_KEY = "config";
     private final Database configDatabase;
 
-    private transient boolean configUpToDate = false;
-    private final List<ConfigEntryItem> cachedConfig = new ArrayList<>();
+//    private transient boolean configUpToDate = false;
+//    private final List<ConfigEntryItem> cachedConfig = new ArrayList<>();
 
     @Inject
     public ConfigServiceImpl(@Named("settings") DatabaseFactory databaseFactory) {
@@ -35,25 +35,44 @@ public class ConfigServiceImpl extends RemoteServiceServlet implements ConfigSer
     }
 
     @Override
-    public void save(ConfigEntryItem[] items) {
-        for (ConfigEntryItem item : items) {
-            configDatabase.getObjectContainer().store(item);
-            configUpToDate = false;
+    public String loadValue(String configKey) throws ConfigNotAvailableException {
+        ConfigValue configValue = new ConfigValue(configKey);
+        ObjectSet<ConfigValue> configItems = configDatabase.getObjectContainer().queryByExample(configValue);
+        if(configItems.size() == 1){
+            return configItems.get(0).getValue();
         }
+        throw new ConfigNotAvailableException("config with key '"+configKey+"' not found");
     }
 
     @Override
-    public ConfigEntryItem[] load(final String group) {
-        cachedConfig.clear();
-        ObjectSet<ConfigEntryItem> configItems = configDatabase.getObjectContainer().query(ConfigEntryItem.class);
-        cachedConfig.addAll(configItems);
-
-        Collection<ConfigEntryItem> result = Collections2.filter(cachedConfig, new Predicate<ConfigEntryItem>() {
-            @Override
-            public boolean apply(@Nullable ConfigEntryItem item) {
-                return item.getKey().startsWith(group);
-            }
-        });
-        return result.toArray(new ConfigEntryItem[result.size()]);
+    public void saveValue(String configKey, String value) {
+        ConfigValue configValue = new ConfigValue(configKey,value);
+        configDatabase.getObjectContainer().store(configValue);
     }
+
+//    @Override
+//    public void save(ConfigEntryItem[] items) {
+//        for (ConfigEntryItem item : items) {
+//            configDatabase.getObjectContainer().store(item);
+//            configUpToDate = false;
+//        }
+//    }
+//
+//    @Override
+//    public ConfigEntryItem[] load(final String group) {
+//        cachedConfig.clear();
+//        ObjectSet<ConfigEntryItem> configItems = configDatabase.getObjectContainer().query(ConfigEntryItem.class);
+//        cachedConfig.addAll(configItems);
+//
+//        Collection<ConfigEntryItem> result = Collections2.filter(cachedConfig, new Predicate<ConfigEntryItem>() {
+//            @Override
+//            public boolean apply(@Nullable ConfigEntryItem item) {
+//                return item.getKey().startsWith(group);
+//            }
+//        });
+//        return result.toArray(new ConfigEntryItem[result.size()]);
+//    }
+
+
+
 }

@@ -1,60 +1,117 @@
 package net.wbz.moba.controlcenter.web.client.viewer.settings;
 
-import com.google.gwt.user.client.ui.CheckBox;
-import com.google.gwt.user.client.ui.Panel;
-import com.google.gwt.user.client.ui.SimplePanel;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Widget;
-import net.wbz.moba.controlcenter.web.shared.config.ConfigEntryItem;
-import org.gwtbootstrap3.client.ui.Form;
-import org.gwtbootstrap3.client.ui.constants.FormType;
-
-import java.util.HashMap;
-import java.util.Map;
+import net.wbz.moba.controlcenter.web.client.LocalStorage;
+import net.wbz.moba.controlcenter.web.client.ServiceUtils;
+import net.wbz.moba.controlcenter.web.client.util.EmptyCallback;
+import net.wbz.moba.controlcenter.web.client.util.Log;
 
 /**
  * @author Daniel Tuerk
  */
-abstract public class AbstractConfigEntry {
+abstract public class AbstractConfigEntry<T> {
 
-    private final Map<ConfigEntryItem, Widget> configEntryItems = new HashMap<>();
-    private String getConfigGroupKey() {
-        return getGroup() + "." + getName();
-    }
+    private T value = null;
+    private T originalValue;
+    private T defaultValue;
 
-    private void registerConfigEntry(String name, ConfigEntryItem.ItemType itemType) {
-        ConfigEntryItem configEntryItem = new ConfigEntryItem(getConfigGroupKey() + "." + name, itemType);
-        configEntryItems.put(configEntryItem, createConfigEntryWidget(configEntryItem));
-    }
+    private final String group;
+    private final String name;
 
+    private final Widget widget;
 
-    private Widget createConfigEntryWidget(ConfigEntryItem configEntryItem) {
-        switch (configEntryItem.getItemType()) {
+    public enum STORAGE {LOCAL, REMOTE}
 
-            case BOOLEAN:
-                CheckBox cbxShowWelcomePage = new CheckBox(configEntryItem.getKey());
-                cbxShowWelcomePage.setValue(Boolean.parseBoolean(configEntryItem.getValue()), false);
-                return cbxShowWelcomePage;
-            case STRING:
+    private final STORAGE storageType;
+
+    public AbstractConfigEntry(STORAGE storageType, String group, String name, T defaultValue) {
+        this.storageType = storageType;
+        this.group = group;
+        this.name = name;
+        this.defaultValue = defaultValue;
+        widget = createConfigEntryWidget();
+
+        switch (storageType) {
+            case LOCAL:
+                handleStorageRead(LocalStorage.getInstance().get(getConfigKey()));
                 break;
-            case INTEGER:
+            case REMOTE:
+                ServiceUtils.getConfigService().loadValue(getConfigKey(), new AsyncCallback<String>() {
+
+                    @Override
+                    public void onFailure(Throwable throwable) {
+
+                        Log.error(throwable.getMessage());
+                    }
+
+                    @Override
+                    public void onSuccess(String value) {
+                        handleStorageRead(value);
+                    }
+                });
                 break;
         }
-        return null;
     }
 
-    public abstract String getGroup();
-    public abstract String getName();
-
-    public Panel getContentPanel() {
-        Form form = new Form();
-        form.setType(FormType.HORIZONTAL);
-        for (ConfigEntryItem configEntryItem : configEntryItems.values()) {
-            form.add(configEntryItem);
+    protected void handleStorageRead(String value) {
+        if (value != null) {
+            T convertedValue = convertValueFromString(value);
+            AbstractConfigEntry.this.value = convertedValue;
+            AbstractConfigEntry.this.originalValue = convertedValue;
+            valueChanged();
         }
-        return form;
     }
 
-    protected abstract void save();
+    abstract protected void valueChanged();
 
-    protected abstract void reset();
+    abstract protected T convertValueFromString(String input);
+
+    abstract protected String convertValueToString(T input);
+
+    abstract protected Widget createConfigEntryWidget();
+
+    private String getConfigKey() {
+        return group + "." + name;
+    }
+
+    public T getValue() {
+        return value != null ? value : defaultValue;
+    }
+
+    public void setValue(T value) {
+        this.value = value;
+        valueChanged();
+    }
+
+    public Widget getWidget() {
+        return widget;
+    }
+
+    public String getGroup() {
+        return group;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void save() {
+        T inputValue = getInputValue();
+        switch (storageType) {
+            case LOCAL:
+                LocalStorage.getInstance().set(getConfigKey(), convertValueToString(inputValue));
+                break;
+            case REMOTE:
+                ServiceUtils.getConfigService().saveValue(getConfigKey(), convertValueToString(inputValue), new EmptyCallback<Void>());
+                break;
+        }
+
+    }
+
+    protected abstract T getInputValue();
+
+    public void reset() {
+        setValue(originalValue);
+    }
 }

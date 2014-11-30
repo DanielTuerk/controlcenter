@@ -8,6 +8,7 @@ import com.google.inject.name.Named;
 import com.google.inject.servlet.GuiceServletContextListener;
 import com.google.inject.servlet.ServletModule;
 import net.wbz.moba.controlcenter.db.DatabaseFactory;
+import net.wbz.moba.controlcenter.web.server.config.ConfigServiceImpl;
 import net.wbz.moba.controlcenter.web.server.constrution.BusServiceImpl;
 import net.wbz.moba.controlcenter.web.server.constrution.ConstructionServiceImpl;
 import net.wbz.moba.controlcenter.web.server.editor.TrackEditorServiceImpl;
@@ -39,6 +40,7 @@ public class MyGuiceServletConfig extends GuiceServletContextListener {
                 serve("/Test/scenarioEditor").with(ScenarioEditorServiceImpl.class);
                 serve("/Test/trainEditor").with(TrainEditorServiceImpl.class);
                 serve("/Test/trainService").with(TrainServiceImpl.class);
+                serve("/Test/config").with(ConfigServiceImpl.class);
             }
 
             @Provides

@@ -31,12 +31,6 @@ public class WelcomePage extends HorizontalPanel {
         setSpacing(10);
         setSize("100%", "100%");
 
-        //TODO add test panels: maybe with annotation of panel and gwt reflection (gwt en)
-//        HorizontalPanel testPanel = new HorizontalPanel();
-//        testPanel.setBorderWidth(5);
-//        testPanel.add(new ViewerControlsPanel());
-//        add(testPanel);
-
         DecoratorPanel createPanel = new DecoratorPanel();
         VerticalPanel createPanelContent = new VerticalPanel();
         createPanelContent.setSpacing(10);
@@ -46,7 +40,8 @@ public class WelcomePage extends HorizontalPanel {
             @Override
             public void onClick(ClickEvent event) {
                 final Construction construction = new Construction();
-                construction.setName(txtCreateName.getText());
+                final String constructionName = txtCreateName.getText();
+                construction.setName(constructionName);
                 ServiceUtils.getConstrutionService().createConstruction(construction, new AsyncCallback<Void>() {
                     @Override
                     public void onFailure(Throwable caught) {
@@ -61,6 +56,7 @@ public class WelcomePage extends HorizontalPanel {
 
                             @Override
                             public void onSuccess(Void result) {
+                                Settings.getInstance().getLastUsedConstruction().setValue(constructionName);
                                 createConstructionClickHandler.onClick(null);
                             }
                         });

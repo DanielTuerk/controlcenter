@@ -37,20 +37,7 @@ public class TrainManager {
     public TrainManager(@Named(TRAINS_DB_KEY) DatabaseFactory databaseFactory, final EventBroadcaster eventBroadcaster,
                         final DeviceManager deviceManager) {
 
-        if (!databaseFactory.getExistingDatabaseNames().contains(TRAINS_DB_KEY)) {
-            try {
-                database = databaseFactory.addDatabase(TRAINS_DB_KEY);
-            } catch (IOException e) {
-                throw new RuntimeException("can't init database for the 'bus' settings", e);
-            }
-        } else {
-            try {
-                database = databaseFactory.getStorage(TRAINS_DB_KEY);
-                loadFromDatabase();
-            } catch (StorageException e) {
-                throw new RuntimeException("no DB found for trains key: " + TRAINS_DB_KEY);
-            }
-        }
+        database=databaseFactory.getOrCreateDatabase(TRAINS_DB_KEY);
 
         deviceManager.addDeviceConnectionListener(new DeviceConnectionListener() {
             @Override

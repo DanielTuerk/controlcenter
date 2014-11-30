@@ -134,4 +134,29 @@ public class DatabaseFactory {
 //            }
 //        }
 //    }
+
+    /**
+     * Load the {@link net.wbz.moba.controlcenter.db.Database} for the given key.
+     * If not existing, the database will be created.
+     *
+     * @param dbKey {@link java.lang.String} key of database
+     * @return {@link net.wbz.moba.controlcenter.db.Database}
+     */
+    public Database getOrCreateDatabase(String dbKey) {
+        Database database;
+        if (!getExistingDatabaseNames().contains(dbKey)) {
+            try {
+                database = addDatabase(dbKey);
+            } catch (IOException e) {
+                throw new RuntimeException("can't init database for the 'bus' settings", e);
+            }
+        } else {
+            try {
+                database = getStorage(dbKey);
+            } catch (StorageException e) {
+                throw new RuntimeException("no DB found for BUS key: " + dbKey);
+            }
+        }
+        return database;
+    }
 }

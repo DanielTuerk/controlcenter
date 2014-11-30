@@ -1,12 +1,19 @@
 package net.wbz.moba.controlcenter.web.client.viewer.settings;
 
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.logical.shared.ResizeEvent;
+import com.google.gwt.event.logical.shared.ResizeHandler;
+import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.FlowPanel;
-import org.gwtbootstrap3.client.ui.AnchorListItem;
-import org.gwtbootstrap3.client.ui.NavPills;
-import org.gwtbootstrap3.client.ui.NavbarLink;
+import net.wbz.moba.controlcenter.web.client.Settings;
+import org.gwtbootstrap3.client.ui.*;
+import org.gwtbootstrap3.client.ui.constants.ButtonType;
+import org.gwtbootstrap3.client.ui.constants.Pull;
+import org.gwtbootstrap3.extras.growl.client.ui.Growl;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,14 +23,137 @@ import java.util.Map;
 /**
  * @author Daniel Tuerk
  */
-public class ConfigPanel extends FlowPanel {
+public class ConfigPanel extends Panel {
 
     private final Map<String, List<AbstractConfigEntry>> configEntries = new HashMap<>();
     private final List<AnchorListItem> navLinks = new ArrayList<>();
+    private PanelBody configBody;
+    private PanelHeader configHeader;
+    private PanelFooter configFooter;
+
+    private HandlerRegistration resizeListenerHandle;
 
     public ConfigPanel() {
-        registerEntry(new ConfigEntryConstructionManage());
-        registerEntry(new ConfigEntryCommonStartup());
+        registerEntry(Settings.getInstance().getLastUsedConstruction());
+        registerEntry(Settings.getInstance().getShowWelcome());
+
+        addStyleName("configPanel");
+
+        getElement().getStyle().setHeight(100, Style.Unit.PCT);
+
+        configHeader = new PanelHeader();
+        configHeader.getElement().getStyle().setHeight(60, Style.Unit.PX);
+        NavPills navList = new NavPills();
+        navList.getElement().getStyle().setWidth(20, Style.Unit.PCT);
+        navList.getElement().getStyle().setFloat(Style.Float.LEFT);
+        configHeader.add(navList);
+
+        configBody = new PanelBody();
+        configBody.getElement().getStyle().setOverflowY(Style.Overflow.AUTO);
+
+        final FlowPanel configEntryContainer = new FlowPanel();
+        configEntryContainer.addStyleName("configPanel_entry");
+
+
+        // TODO: build menu for config groups
+
+
+        // TODO: create contents for groups
+
+        // TODO: add click handler to load content of selected group from menu
+
+
+        for (final String configEntryGroup : configEntries.keySet()) {
+
+            final AnchorListItem navLink = new AnchorListItem(configEntryGroup);
+            navLink.addClickHandler(new ClickHandler() {
+                @Override
+                public void onClick(ClickEvent clickEvent) {
+                    for (AnchorListItem existingNavLink : navLinks) {
+                        existingNavLink.setActive(false);
+                    }
+                    configEntryContainer.clear();
+
+                    Form form = new Form();
+
+                    for (AbstractConfigEntry configEntry : configEntries.get(configEntryGroup)) {
+
+//                        String subGroup = null;
+//                        String[] split = configEntry.getGroup().split(".");
+//                        if(split.length > 1) {
+//                            Panel panel = new Panel();
+//                            PanelHeader panelHeader = new PanelHeader();
+//                            panelHeader.setText(split[1]);
+//                            PanelBody panelBody = new PanelBody();
+//                            panelBody.add(configEntry.getWidget());
+//                            panel.add(panelHeader);
+//                            panel.add(panelBody);
+//                        }
+
+
+                        FieldSet fieldSet = new FieldSet();
+                        fieldSet.add(configEntry.getWidget());
+                        form.add(fieldSet);
+                    }
+                    configEntryContainer.add(form);
+                    navLink.setActive(true);
+                }
+            });
+            navList.add(navLink);
+            navLinks.add(navLink);
+        }
+
+        configBody.add(configEntryContainer);
+
+        configFooter = new PanelFooter();
+
+        Button btnSave = new Button("Save");
+        btnSave.setType(ButtonType.SUCCESS);
+        btnSave.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent clickEvent) {
+                for (List<AbstractConfigEntry> configEntryList : configEntries.values()) {
+                    for (AbstractConfigEntry configEntry : configEntryList) {
+                        configEntry.save();
+                    }
+                }
+                Growl.growl("Settings saved!");
+            }
+        });
+        configFooter.add(btnSave);
+
+        Button btnCancel = new Button("Cancel");
+        btnCancel.setType(ButtonType.DANGER);
+        btnCancel.setPull(Pull.RIGHT);
+        btnCancel.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent clickEvent) {
+                for (List<AbstractConfigEntry> configEntryList : configEntries.values()) {
+                    for (AbstractConfigEntry configEntry : configEntryList) {
+
+                        configEntry.reset();
+                    }
+                }
+            }
+        });
+        configFooter.add(btnCancel);
+    }
+
+
+    /**
+     * TODO: groups not supported yet
+     * @param configEntry
+     * @return
+     */
+    private Panel getPanelForGroup(AbstractConfigEntry configEntry) {
+        Panel panel = new Panel();
+        PanelHeader panelHeader = new PanelHeader();
+        panelHeader.setText(configEntry.getGroup());
+        PanelBody panelBody = new PanelBody();
+        panelBody.add(configEntry.getWidget());
+        panel.add(panelHeader);
+        panel.add(panelBody);
+        return panel;
     }
 
     private void registerEntry(AbstractConfigEntry configEntry) {
@@ -36,47 +166,38 @@ public class ConfigPanel extends FlowPanel {
     @Override
     protected void onLoad() {
         super.onLoad();
-        addStyleName("configPanel");
 
-        final FlowPanel configEntryContainer = new FlowPanel();
-        configEntryContainer.addStyleName("configPanel_entry");
+        add(configHeader);
+        add(configBody);
+        add(configFooter);
 
-        NavPills navList = new NavPills();
-        navList.setWidth("200px");
-//        navList.getElement().getStyle().setFloat(Style.Float.LEFT);
-        navList.setStacked(true);
+        updatePanelHeight();
 
-//        boolean isFirst = true;
-        for (Map.Entry<String, List<AbstractConfigEntry>> configEntriesEntrySet : configEntries.entrySet()) {
+        resizeListenerHandle = Window.addResizeHandler(new ResizeHandler() {
 
-//            if (!isFirst) {
-//                navList.add(new Divider());
-//            }
-
-//            navList.add(new NavHeader(configEntriesEntrySet.getKey()));
-
-            for (final AbstractConfigEntry configEntry : configEntriesEntrySet.getValue()) {
-                final AnchorListItem navLink = new AnchorListItem(configEntry.getName());
-                navLink.addClickHandler(new ClickHandler() {
-                    @Override
-                    public void onClick(ClickEvent clickEvent) {
-                        for (AnchorListItem existingNavLink : navLinks) {
-                            existingNavLink.setActive(false);
-                        }
-                        configEntryContainer.clear();
-                        configEntryContainer.add(configEntry.getContentPanel());
-
-                        navLink.setActive(true);
-                    }
-                });
-                navList.add(navLink);
-                navLinks.add(navLink);
+            @Override
+            public void onResize(ResizeEvent event) {
+                Scheduler.get().scheduleDeferred(
+                        new Scheduler.ScheduledCommand() {
+                            public void execute() {
+                                updatePanelHeight();
+                            }
+                        });
             }
+        });
+    }
 
-//            isFirst = false;
-        }
+    private void updatePanelHeight() {
+        configBody.setHeight(getParent().getOffsetHeight() -
+                (configHeader.getOffsetHeight() + configFooter.getOffsetHeight()) + "px");
+    }
 
-        add(navList);
-        add(configEntryContainer);
+    @Override
+    protected void onUnload() {
+        super.onUnload();
+        resizeListenerHandle.removeHandler();
+        remove(configHeader);
+        remove(configBody);
+        remove(configFooter);
     }
 }

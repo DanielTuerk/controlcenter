@@ -8,7 +8,6 @@ import com.google.inject.Singleton;
 import com.google.inject.name.Named;
 import net.wbz.moba.controlcenter.db.Database;
 import net.wbz.moba.controlcenter.db.DatabaseFactory;
-import net.wbz.moba.controlcenter.db.StorageException;
 import net.wbz.moba.controlcenter.web.server.EventBroadcaster;
 import net.wbz.moba.controlcenter.web.shared.train.*;
 import net.wbz.selectrix4java.api.device.Device;
@@ -18,7 +17,6 @@ import net.wbz.selectrix4java.api.train.TrainDataListener;
 import net.wbz.selectrix4java.api.train.TrainModule;
 import net.wbz.selectrix4java.manager.DeviceManager;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -37,7 +35,8 @@ public class TrainManager {
     public TrainManager(@Named(TRAINS_DB_KEY) DatabaseFactory databaseFactory, final EventBroadcaster eventBroadcaster,
                         final DeviceManager deviceManager) {
 
-        database=databaseFactory.getOrCreateDatabase(TRAINS_DB_KEY);
+        database = databaseFactory.getOrCreateDatabase(TRAINS_DB_KEY);
+        loadFromDatabase();
 
         deviceManager.addDeviceConnectionListener(new DeviceConnectionListener() {
             @Override
@@ -103,7 +102,6 @@ public class TrainManager {
         ObjectSet<Train> storedDevices = database.getObjectContainer().query(Train.class);
         for (Train train : storedDevices) {
             trains.put(train.getId(), train);
-
         }
     }
 

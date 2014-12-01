@@ -9,11 +9,13 @@ import com.google.inject.Singleton;
 import com.google.inject.name.Named;
 import net.wbz.moba.controlcenter.db.Database;
 import net.wbz.moba.controlcenter.db.DatabaseFactory;
-import net.wbz.moba.controlcenter.db.StorageException;
 import net.wbz.moba.controlcenter.web.server.EventBroadcaster;
 import net.wbz.moba.controlcenter.web.shared.bus.*;
+import net.wbz.moba.controlcenter.web.shared.viewer.RailVoltageEvent;
 import net.wbz.selectrix4java.SerialDevice;
 import net.wbz.selectrix4java.api.bus.AllBusDataConsumer;
+import net.wbz.selectrix4java.api.bus.BusDataConsumer;
+import net.wbz.selectrix4java.api.device.AbstractDevice;
 import net.wbz.selectrix4java.api.device.Device;
 import net.wbz.selectrix4java.api.device.DeviceAccessException;
 import net.wbz.selectrix4java.api.device.DeviceConnectionListener;
@@ -22,7 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
-import java.io.IOException;
+import java.math.BigInteger;
 import java.util.ArrayList;
 
 /**
@@ -109,7 +111,7 @@ public class BusServiceImpl extends RemoteServiceServlet implements BusService {
 
     @Override
     public void createDevice(DeviceInfo deviceInfo) {
-        //TODO
+        //TODO - device settings (e.g. serial/test)
         deviceManager.registerDevice(DeviceManager.DEVICE_TYPE.valueOf(
                 deviceInfo.getType().name()), deviceInfo.getKey(), SerialDevice.DEFAULT_BAUD_RATE_FCC);
         settingsDatabase.getObjectContainer().store(deviceInfo);

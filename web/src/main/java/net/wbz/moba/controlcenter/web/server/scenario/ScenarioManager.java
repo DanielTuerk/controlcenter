@@ -12,6 +12,7 @@ import net.wbz.moba.controlcenter.db.StorageException;
 import net.wbz.moba.controlcenter.web.server.constrution.ConstructionServiceImpl;
 import net.wbz.moba.controlcenter.web.shared.scenario.Scenario;
 import net.wbz.moba.controlcenter.web.shared.scenario.ScenarioCommand;
+import org.apache.commons.lang.NotImplementedException;
 import org.reflections.Reflections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -122,6 +123,7 @@ public class ScenarioManager {
     }
 
     public void deleteDatabase(long scenarioId) {
+        throw new NotImplementedException();
 // TODO
 //   databaseFactory.deleteDatabase(getDatabaseKey(getScenarioById(scenarioId)));
     }

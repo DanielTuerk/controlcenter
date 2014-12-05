@@ -7,7 +7,7 @@ import com.google.inject.name.Named;
 import net.wbz.moba.controlcenter.db.Database;
 import net.wbz.moba.controlcenter.db.DatabaseFactory;
 import net.wbz.moba.controlcenter.db.StorageException;
-import net.wbz.moba.controlcenter.web.shared.constrution.ConstrutionService;
+import net.wbz.moba.controlcenter.web.shared.constrution.ConstructionService;
 import net.wbz.moba.controlcenter.web.shared.constrution.Construction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,7 +21,7 @@ import java.util.List;
  * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
  */
 @Singleton
-public class ConstructionServiceImpl extends RemoteServiceServlet implements ConstrutionService {
+public class ConstructionServiceImpl extends RemoteServiceServlet implements ConstructionService {
 
     private static final Logger log = LoggerFactory.getLogger(ConstructionServiceImpl.class);
 

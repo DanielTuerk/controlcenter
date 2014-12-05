@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module rename-to='Test'>
+
     <!-- Inherit the core Web Toolkit stuff.                        -->
     <inherits name='com.google.gwt.user.User'/>
 
@@ -33,6 +34,7 @@
     <inherits name="de.novanic.eventservice.GWTEventService"/>
     <inherits name="org.gwtbootstrap3.extras.select.Select"/>
     <inherits name="org.gwtbootstrap3.extras.slider.Slider"/>
+    <inherits name="org.gwtbootstrap3.extras.growl.Growl"/>
     <entry-point class='net.wbz.moba.controlcenter.web.client.ControlCenterApp'/>
 
     <!-- Specify the paths for translatable code                    -->

@@ -4,6 +4,8 @@ import de.novanic.eventservice.client.event.Event;
 import net.wbz.moba.controlcenter.web.shared.track.model.Configuration;
 
 /**
+ * Event for the state change of the rail voltage.
+ *
  * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
  */
 public class RailVoltageEvent implements Event {

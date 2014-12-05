@@ -9,11 +9,13 @@ import com.google.inject.Singleton;
 import com.google.inject.name.Named;
 import net.wbz.moba.controlcenter.db.Database;
 import net.wbz.moba.controlcenter.db.DatabaseFactory;
-import net.wbz.moba.controlcenter.db.StorageException;
 import net.wbz.moba.controlcenter.web.server.EventBroadcaster;
 import net.wbz.moba.controlcenter.web.shared.bus.*;
+import net.wbz.moba.controlcenter.web.shared.viewer.RailVoltageEvent;
 import net.wbz.selectrix4java.SerialDevice;
 import net.wbz.selectrix4java.api.bus.AllBusDataConsumer;
+import net.wbz.selectrix4java.api.bus.BusDataConsumer;
+import net.wbz.selectrix4java.api.device.AbstractDevice;
 import net.wbz.selectrix4java.api.device.Device;
 import net.wbz.selectrix4java.api.device.DeviceAccessException;
 import net.wbz.selectrix4java.api.device.DeviceConnectionListener;
@@ -22,7 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
-import java.io.IOException;
+import java.math.BigInteger;
 import java.util.ArrayList;
 
 /**
@@ -51,25 +53,13 @@ public class BusServiceImpl extends RemoteServiceServlet implements BusService {
                           final EventBroadcaster eventBroadcaster) {
         this.deviceManager = deviceManager;
         this.eventBroadcaster = eventBroadcaster;
-        if (!databaseFactory.getExistingDatabaseNames().contains(BUS_DB_KEY)) {
-            try {
-                settingsDatabase = databaseFactory.addDatabase(BUS_DB_KEY);
-            } catch (IOException e) {
-                throw new RuntimeException("can't init database for the 'bus' settings", e);
-            }
-        } else {
-            try {
-                settingsDatabase = databaseFactory.getStorage(BUS_DB_KEY);
-                ObjectSet<DeviceInfo> storedDevices = settingsDatabase.getObjectContainer().query(DeviceInfo.class);
-                for (DeviceInfo deviceInfo : storedDevices) {
-                    // TODO - values from config
-                    deviceManager.registerDevice(DeviceManager.DEVICE_TYPE.valueOf(
-                            deviceInfo.getType().name()), deviceInfo.getKey(), SerialDevice.DEFAULT_BAUD_RATE_FCC);
-                }
+        settingsDatabase = databaseFactory.getOrCreateDatabase(BUS_DB_KEY);
 
-            } catch (StorageException e) {
-                throw new RuntimeException("no DB found for BUS key: " + BUS_DB_KEY);
-            }
+        ObjectSet<DeviceInfo> storedDevices = settingsDatabase.getObjectContainer().query(DeviceInfo.class);
+        for (DeviceInfo deviceInfo : storedDevices) {
+            // TODO - values from config
+            deviceManager.registerDevice(DeviceManager.DEVICE_TYPE.valueOf(
+                    deviceInfo.getType().name()), deviceInfo.getKey(), SerialDevice.DEFAULT_BAUD_RATE_FCC);
         }
 
         allBusDataConsumer = new AllBusDataConsumer() {
@@ -80,17 +70,35 @@ public class BusServiceImpl extends RemoteServiceServlet implements BusService {
             }
         };
 
+        /**
+         * Consumer to receive the state change from the bus for the rail voltage.
+         * Event {@link net.wbz.moba.controlcenter.web.shared.viewer.RailVoltageEvent} is thrown by the
+         * {@link net.wbz.moba.controlcenter.web.server.EventBroadcaster} to inform the client.
+         */
+        final BusDataConsumer railVoltageConsumer = new BusDataConsumer(1, AbstractDevice.RAILVOLTAGE_ADDRESS) {
+            @Override
+            public void valueChanged(int oldValue, int newValue) {
+                if (oldValue != newValue) {
+                    boolean newState = BigInteger.valueOf(newValue).testBit(7);
+                    if (BigInteger.valueOf(oldValue).testBit(7) != newState) {
+                        eventBroadcaster.fireEvent(new RailVoltageEvent(newState));
+                    }
+                }
+            }
+        };
+
         deviceManager.addDeviceConnectionListener(new DeviceConnectionListener() {
             @Override
             public void connected(Device device) {
                 BusServiceImpl.this.eventBroadcaster.fireEvent(new DeviceInfoEvent(getDeviceInfo(device), DeviceInfoEvent.TYPE.CONNECTED));
-
+                device.getBusDataDispatcher().registerConsumer(railVoltageConsumer);
             }
 
             @Override
             public void disconnected(Device device) {
                 BusServiceImpl.this.eventBroadcaster.fireEvent(new DeviceInfoEvent(getDeviceInfo(device), DeviceInfoEvent.TYPE.DISCONNECTED));
                 device.getBusDataDispatcher().unregisterConsumer(allBusDataConsumer);
+                device.getBusDataDispatcher().unregisterConsumer(railVoltageConsumer);
             }
         });
 
@@ -103,7 +111,7 @@ public class BusServiceImpl extends RemoteServiceServlet implements BusService {
 
     @Override
     public void createDevice(DeviceInfo deviceInfo) {
-        //TODO
+        //TODO - device settings (e.g. serial/test)
         deviceManager.registerDevice(DeviceManager.DEVICE_TYPE.valueOf(
                 deviceInfo.getType().name()), deviceInfo.getKey(), SerialDevice.DEFAULT_BAUD_RATE_FCC);
         settingsDatabase.getObjectContainer().store(deviceInfo);

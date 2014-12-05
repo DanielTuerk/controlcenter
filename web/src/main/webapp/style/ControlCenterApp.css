@@ -123,11 +123,12 @@ h1 {
 }
 
 .configPanel {
-    padding: 20px;
+    margin-top: 1px;
 }
 
 .configPanel_entry {
     padding-left: 20px;
+    float: left;
 }
 
 .viewerControls_tabContent {

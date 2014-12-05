@@ -5,15 +5,24 @@ import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.DockLayoutPanel;
 import com.google.gwt.user.client.ui.RootLayoutPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
+import com.google.gwt.user.client.ui.Widget;
 import net.wbz.moba.controlcenter.web.client.device.StatePanel;
 import net.wbz.moba.controlcenter.web.client.editor.track.TrackEditorContainer;
 import net.wbz.moba.controlcenter.web.client.model.track.*;
 import net.wbz.moba.controlcenter.web.client.viewer.bus.BusMonitorPanel;
 import net.wbz.moba.controlcenter.web.client.viewer.settings.ConfigPanel;
 import net.wbz.moba.controlcenter.web.client.viewer.track.TrackViewerContainer;
+import net.wbz.moba.controlcenter.web.shared.constrution.Construction;
+import org.gwtbootstrap3.extras.growl.client.ui.Growl;
+import org.gwtbootstrap3.extras.growl.client.ui.GrowlHelper;
+import org.gwtbootstrap3.extras.growl.client.ui.GrowlOptions;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
@@ -30,6 +39,8 @@ public class ControlCenterApp implements EntryPoint {
     private SimplePanel contentContainerPanel;
 
     private WelcomePage welcomePageContainer;
+
+    private List<Widget> containerPanels = new ArrayList<>();
 
     public ControlCenterApp() {
         // TODO: ugly
@@ -56,7 +67,47 @@ public class ControlCenterApp implements EntryPoint {
      * This is the entry point method.
      */
     public void onModuleLoad() {
-        loadWelcomePage();
+        if (Settings.getInstance().getShowWelcome().getValue()) {
+            loadWelcomePage();
+        } else {
+
+            ServiceUtils.getConstrutionService().loadConstructions(new AsyncCallback<Construction[]>() {
+                @Override
+                public void onFailure(Throwable throwable) {
+
+                }
+
+                @Override
+                public void onSuccess(Construction[] constructions) {
+                    String lastUsedConstruction = Settings.getInstance().getLastUsedConstruction().getValue();
+                    Construction constructionToLoad = null;
+                    for (Construction construction : constructions) {
+                        if (construction.getName().equals(lastUsedConstruction)) {
+                            constructionToLoad = construction;
+                            break;
+                        }
+                    }
+                    if (constructionToLoad != null) {
+                        ServiceUtils.getConstrutionService().setCurrentConstruction(constructionToLoad, new AsyncCallback<Void>() {
+                            @Override
+                            public void onFailure(Throwable caught) {
+                            }
+
+                            @Override
+                            public void onSuccess(Void result) {
+                                loadControlCenter();
+                            }
+                        });
+                    } else {
+                        GrowlOptions growlOptions = GrowlHelper.getNewOptions();
+                        growlOptions.setWarningType();
+                        Growl.growl("can't load last used construction", growlOptions);
+
+                        loadWelcomePage();
+                    }
+                }
+            });
+        }
     }
 
     private void loadWelcomePage() {
@@ -76,12 +127,18 @@ public class ControlCenterApp implements EntryPoint {
     }
 
     private void loadControlCenter() {
-        RootLayoutPanel.get().remove(welcomePageContainer);
+        if(RootLayoutPanel.get().getWidgetIndex(welcomePageContainer) >= 0) {
+            RootLayoutPanel.get().remove(welcomePageContainer);
+        }
 
         trackViewerContainer = new TrackViewerContainer();
+        containerPanels.add(trackViewerContainer);
         trackEditorContainer = new TrackEditorContainer();
-        busMonitorPanel=new BusMonitorPanel();
-        configPanel =new ConfigPanel();
+        containerPanels.add(trackEditorContainer);
+        busMonitorPanel = new BusMonitorPanel();
+        containerPanels.add(busMonitorPanel);
+        configPanel = new ConfigPanel();
+        containerPanels.add(configPanel);
 
         initAppMenu();
 
@@ -95,7 +152,7 @@ public class ControlCenterApp implements EntryPoint {
         contentContainerPanel.setStyleName("contentContainerPanel");
         dockLayoutPanel.add(contentContainerPanel);
 
-        showTrackViewer();
+        show(trackViewerContainer);
 
         RootLayoutPanel.get().add(dockLayoutPanel);
     }
@@ -104,53 +161,34 @@ public class ControlCenterApp implements EntryPoint {
         appMenu.setShowEditorCommand(new Command() {
             @Override
             public void execute() {
-                showTrackEditor();
+                show(trackEditorContainer);
             }
         });
         appMenu.setShowViewerCommand(new Command() {
             @Override
             public void execute() {
-                showTrackViewer();
+                show(trackViewerContainer);
             }
         });
         appMenu.setShowBusMonitorCommand(new Command() {
             @Override
             public void execute() {
-                showBusMonitor();
+                show(busMonitorPanel);
             }
         });
         appMenu.setShowConfigCommand(new Command() {
             @Override
             public void execute() {
-                showSettings();
+                show(configPanel);
             }
         });
     }
 
-    private void showSettings() {
-        contentContainerPanel.remove(trackViewerContainer);
-        contentContainerPanel.remove(trackEditorContainer);
-        contentContainerPanel.remove(busMonitorPanel);
-        contentContainerPanel.add(configPanel);
+    private void show(Widget containerPanel) {
+        for(Widget container  :containerPanels){
+            contentContainerPanel.remove(container);
+        }
+        contentContainerPanel.add(containerPanel);
     }
 
-    public void showTrackEditor() {
-        contentContainerPanel.remove(trackViewerContainer);
-        contentContainerPanel.remove(busMonitorPanel);
-        contentContainerPanel.remove(configPanel);
-        contentContainerPanel.add(trackEditorContainer);
-    }
-
-    public void showTrackViewer() {
-        contentContainerPanel.remove(trackEditorContainer);
-        contentContainerPanel.remove(busMonitorPanel);
-        contentContainerPanel.remove(configPanel);
-        contentContainerPanel.add(trackViewerContainer);
-    }
-    public void showBusMonitor() {
-        contentContainerPanel.remove(trackEditorContainer);
-        contentContainerPanel.remove(trackViewerContainer);
-        contentContainerPanel.remove(configPanel);
-        contentContainerPanel.add(busMonitorPanel);
-    }
 }

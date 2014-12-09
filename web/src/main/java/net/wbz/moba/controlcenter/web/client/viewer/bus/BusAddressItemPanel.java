@@ -6,8 +6,6 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.FlowPanel;
-
-import de.novanic.eventservice.client.event.listener.RemoteEventListener;
 import net.wbz.moba.controlcenter.web.client.ServiceUtils;
 import net.wbz.moba.controlcenter.web.client.util.EmptyCallback;
 import org.gwtbootstrap3.client.ui.Button;
@@ -23,10 +21,7 @@ import java.util.Map;
 public class BusAddressItemPanel extends
 		org.gwtbootstrap3.client.ui.gwt.FlowPanel {
 	private final FlowPanel dataPanel = new FlowPanel();
-	private final Map<Integer, Button> bitButtons = new HashMap<>();
-	private RemoteEventListener listener;
-	static boolean isWorking = false;
-
+	private final Map<Integer, ItemPanelButton> bitButtons = new HashMap<>();
 	public BusAddressItemPanel(final int busNr, final int address) {
 		getElement().getStyle().setFloat(Style.Float.LEFT);
 		Label lblAddress = new Label(String.valueOf(address));
@@ -60,7 +55,7 @@ public class BusAddressItemPanel extends
 			lbl.getElement().getStyle().setPaddingRight(8, Unit.PX);
 			lbl.getElement().getStyle().setBackgroundColor("MediumPurple");
 
-			final Button btns = new Button("0");
+			final ItemPanelButton btns = new ItemPanelButton();
 			btns.getElement().getStyle().setPaddingTop(3, Unit.PX);
 			btns.getElement().getStyle().setPaddingBottom(3, Unit.PX);
 			btns.getElement().getStyle().setPaddingLeft(6, Unit.PX);
@@ -70,6 +65,7 @@ public class BusAddressItemPanel extends
 			bitPanelButton.add(btns);
 
 			final int bitNr = i;
+			//change the state of buttons on a click
 			btns.addClickHandler(new ClickHandler() {
 
 				@Override
@@ -78,45 +74,33 @@ public class BusAddressItemPanel extends
 					ServiceUtils.getBusService().sendBusData(busNr, address,
 							bitNr, btns.getText().equals("0") ? true : false,
 							new EmptyCallback<Void>());
+				
 				}
 			});
 
 		}
 		add(dataPanel);
+	
 
 	}
+   /**
+   * Updates the definite components of GUI,nodes (the set of button) of Flow Pane
+   * @param data  the actual data
+   */
+	  public void updateData(int data) {
+	        BigInteger bits = new BigInteger(String.valueOf(data));
+	        // check the bits of each address and show it in revert order for the
+	        // widgets
+	        for (int i = 0; i < 8; i++) {
+	            String dataBtn = bitButtons.get(i + 1).getText();
+	            bitButtons.get(i + 1).setText(
+	                    String.valueOf(bits.testBit(i) ? 1 : 0));
+	            if (!dataBtn.equals(bitButtons.get(i + 1).getText())) {
 
-	public void updateData(int data) {
-		BigInteger bits = new BigInteger(String.valueOf(data));
-		// check the bits of each address and show it in revert order for the
-		// widgets
-		for (int i = 0; i < 8; i++) {
-			String dataBtn = bitButtons.get(i + 1).getText();
-			bitButtons.get(i + 1).setText(
-					String.valueOf(bits.testBit(i) ? 1 : 0));
-			if (!dataBtn.equals(bitButtons.get(i + 1).getText())) {
-                 
-				setColor(bitButtons.get(i + 1));
-			}
-		}
-	}
-	public void setColor(final Button btn){
-		 if(isWorking){
-		 return;
-		 }
-		 isWorking= true;
-		final String originalColor = btn.getElement().getStyle()
-				.getBackgroundColor();
-		btn.getElement().getStyle().setBackgroundColor("LightSteelBlue ");
-		  Timer timer = new Timer() {
-			@Override
-			public void run() {
-				btn.getElement().getStyle().setBackgroundColor(originalColor);
-				BusAddressItemPanel.isWorking = false;
-			}
-		};
-		timer.schedule(2000);
+	                bitButtons.get(i + 1).setColor();
+	            }
+	        }
+	    }
 	
 	
-	}
 	}

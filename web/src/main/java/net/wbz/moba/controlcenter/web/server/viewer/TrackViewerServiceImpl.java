@@ -8,9 +8,9 @@ import net.wbz.moba.controlcenter.web.server.EventBroadcaster;
 import net.wbz.moba.controlcenter.web.shared.track.model.Configuration;
 import net.wbz.moba.controlcenter.web.shared.viewer.TrackPartStateEvent;
 import net.wbz.moba.controlcenter.web.shared.viewer.TrackViewerService;
-import net.wbz.selectrix4java.api.bus.BusAddress;
-import net.wbz.selectrix4java.api.device.DeviceAccessException;
-import net.wbz.selectrix4java.manager.DeviceManager;
+import net.wbz.selectrix4java.bus.BusAddress;
+import net.wbz.selectrix4java.device.DeviceAccessException;
+import net.wbz.selectrix4java.device.DeviceManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -13,10 +13,17 @@ import com.google.gwt.user.client.ui.Widget;
 import net.wbz.moba.controlcenter.web.client.device.StatePanel;
 import net.wbz.moba.controlcenter.web.client.editor.track.TrackEditorContainer;
 import net.wbz.moba.controlcenter.web.client.model.track.*;
+import net.wbz.moba.controlcenter.web.client.model.track.signal.SignalHorizontalWidget;
+import net.wbz.moba.controlcenter.web.client.model.track.signal.SignalVerticalWidget;
 import net.wbz.moba.controlcenter.web.client.viewer.bus.BusMonitorPanel;
 import net.wbz.moba.controlcenter.web.client.viewer.settings.ConfigPanel;
 import net.wbz.moba.controlcenter.web.client.viewer.track.TrackViewerContainer;
 import net.wbz.moba.controlcenter.web.shared.constrution.Construction;
+import org.gwtbootstrap3.client.ui.Button;
+import org.gwtbootstrap3.client.ui.Popover;
+import org.gwtbootstrap3.client.ui.constants.Placement;
+import org.gwtbootstrap3.client.ui.constants.Trigger;
+import org.gwtbootstrap3.client.ui.gwt.FlowPanel;
 import org.gwtbootstrap3.extras.growl.client.ui.Growl;
 import org.gwtbootstrap3.extras.growl.client.ui.GrowlHelper;
 import org.gwtbootstrap3.extras.growl.client.ui.GrowlOptions;
@@ -67,6 +74,36 @@ public class ControlCenterApp implements EntryPoint {
      * This is the entry point method.
      */
     public void onModuleLoad() {
+
+//        FlowPanel flowPanel = new FlowPanel();
+//
+//        Button btn = new Button("test");
+//        Button btn2 = new Button("test2");
+//btn2.getElement().getStyle().setTop(200, Style.Unit.PX);
+//btn2.getElement().getStyle().setLeft(200, Style.Unit.PX);
+//
+//
+//
+//        Popover   popover= new Popover();
+//        popover.setWidget(btn);
+////        popover.setContainer("body");
+//        popover.setTitle("Control");
+//        popover.setTrigger(Trigger.CLICK);
+//        popover.setPlacement(Placement.RIGHT);
+//
+//        popover.setContent("content");
+////        popover.reconfigure();
+////        popover.show();
+//
+//
+//        flowPanel.add(btn);
+//        flowPanel.add(btn2);
+//        RootLayoutPanel.get().add(flowPanel);
+//
+//
+//        new net.wbz.moba.controlcenter.web.client.Popover(btn).show();
+//        new net.wbz.moba.controlcenter.web.client.Popover(btn2).show();
+
         if (Settings.getInstance().getShowWelcome().getValue()) {
             loadWelcomePage();
         } else {
@@ -111,18 +148,13 @@ public class ControlCenterApp implements EntryPoint {
     }
 
     private void loadWelcomePage() {
-        welcomePageContainer = new WelcomePage(new ClickHandler() {
+        ClickHandler clickHandler = new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
                 loadControlCenter();
             }
-        }, new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-                loadControlCenter();
-            }
-        }
-        );
+        };
+        welcomePageContainer = new WelcomePage(clickHandler, clickHandler);
         RootLayoutPanel.get().add(welcomePageContainer);
     }
 

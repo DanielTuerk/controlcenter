@@ -6,7 +6,6 @@ import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.gen2.logging.shared.Log;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.gwt.widgetideas.client.ProgressBar;
 import de.novanic.eventservice.client.event.Event;
 import de.novanic.eventservice.client.event.listener.RemoteEventListener;
 import net.wbz.moba.controlcenter.web.client.EventReceiver;
@@ -18,9 +17,7 @@ import net.wbz.moba.controlcenter.web.shared.track.model.Configuration;
 import net.wbz.moba.controlcenter.web.shared.track.model.TrackPart;
 import net.wbz.moba.controlcenter.web.shared.viewer.TrackPartStateEvent;
 import org.gwtbootstrap3.client.ui.Label;
-import org.gwtbootstrap3.client.ui.Progress;
 import org.gwtbootstrap3.client.ui.constants.LabelType;
-import org.gwtbootstrap3.client.ui.constants.ProgressType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,8 +39,8 @@ public class TrackViewerPanel extends AbstractTrackPanel {
 
     private Label lblTrackPartConfig = new Label();
 
-    private Map<Configuration, List<AbstractControlSvgTrackWidget>> controlTrackWidgets = Maps.newConcurrentMap();
-    private Map<Configuration, List<AbstractBlockSvgTrackWidget>> blockTrackWidgets = Maps.newConcurrentMap();
+    private Map<Configuration, List<AbstractSvgTrackWidget>> trackWidgets = Maps.newConcurrentMap();
+//    private Map<Configuration, List<AbstractBlockSvgTrackWidget>> blockTrackWidgets = Maps.newConcurrentMap();
 
     @Override
     protected void onLoad() {
@@ -86,8 +83,8 @@ public class TrackViewerPanel extends AbstractTrackPanel {
 
             @Override
             public void onSuccess(TrackPart[] trackParts) {
-                controlTrackWidgets.clear();
-                blockTrackWidgets.clear();
+                trackWidgets.clear();
+//                blockTrackWidgets.clear();
 
                 int maxTop = 0;
                 int maxLeft = 0;
@@ -102,17 +99,17 @@ public class TrackViewerPanel extends AbstractTrackPanel {
                     }
 
                     AbstractSvgTrackWidget trackWidget = ModelManager.getInstance().getWidgetOf(trackPart);
-                    if (trackWidget instanceof AbstractControlSvgTrackWidget) {
-                        if (!controlTrackWidgets.containsKey(trackPart.getConfiguration())) {
-                            controlTrackWidgets.put(trackPart.getConfiguration(), new ArrayList<AbstractControlSvgTrackWidget>());
-                        }
-                        controlTrackWidgets.get(trackPart.getConfiguration()).add((AbstractControlSvgTrackWidget) trackWidget);
-                    } else if (trackWidget instanceof AbstractBlockSvgTrackWidget && trackPart.getConfiguration() != null) {
-                        if (!blockTrackWidgets.containsKey(trackPart.getConfiguration())) {
-                            blockTrackWidgets.put(trackPart.getConfiguration(), new ArrayList<AbstractBlockSvgTrackWidget>());
-                        }
-                        blockTrackWidgets.get(trackPart.getConfiguration()).add((AbstractBlockSvgTrackWidget) trackWidget);
+//                    if (trackWidget instanceof AbstractControlSvgTrackWidget) {
+                    if (!trackWidgets.containsKey(trackPart.getConfiguration())) {
+                        trackWidgets.put(trackPart.getConfiguration(), new ArrayList<AbstractSvgTrackWidget>());
                     }
+                    trackWidgets.get(trackPart.getConfiguration()).add(trackWidget);
+//                    } else if (trackWidget instanceof AbstractBlockSvgTrackWidget && trackPart.getConfiguration() != null) {
+//                        if (!blockTrackWidgets.containsKey(trackPart.getConfiguration())) {
+//                            blockTrackWidgets.put(trackPart.getConfiguration(), new ArrayList<AbstractBlockSvgTrackWidget>());
+//                        }
+//                        blockTrackWidgets.get(trackPart.getConfiguration()).add((AbstractBlockSvgTrackWidget) trackWidget);
+//                    }
 
                     AbsoluteTrackPosition trackPosition = trackWidget.getTrackPosition(trackPart.getGridPosition(), getZoomLevel());
                     if (maxTop < trackPosition.getTop()) {
@@ -142,23 +139,36 @@ public class TrackViewerPanel extends AbstractTrackPanel {
     }
 
     private void updateTrackPartState(Configuration configuration, boolean state) {
-        if (controlTrackWidgets.containsKey(configuration)) {
-            for (AbstractControlSvgTrackWidget controlSvgTrackWidget : controlTrackWidgets.get(configuration)) {
-                controlSvgTrackWidget.repaint(state);
-            }
-        }
-        if (blockTrackWidgets.containsKey(configuration)) {
-            for (BlockPart blockPart : blockTrackWidgets.get(configuration)) {
-                if (configuration.isValid()) {
-                    if (state) {
-                        blockPart.usedBlock();
+        if (trackWidgets.containsKey(configuration)) {
+            for (AbstractSvgTrackWidget controlSvgTrackWidget : trackWidgets.get(configuration)) {
+                if (controlSvgTrackWidget instanceof BlockPart) {
+                    BlockPart blockPart = (BlockPart) controlSvgTrackWidget;
+                    if (configuration.isValid()) {
+                        if (state) {
+                            blockPart.usedBlock();
+                        } else {
+                            blockPart.freeBlock();
+                        }
                     } else {
-                        blockPart.freeBlock();
+                        blockPart.unknownBlock();
                     }
-                } else {
-                    blockPart.unknownBlock();
+                } else if (controlSvgTrackWidget instanceof AbstractControlSvgTrackWidget) {
+                    ((AbstractControlSvgTrackWidget) controlSvgTrackWidget).repaint(state);
                 }
             }
         }
+//        if (blockTrackWidgets.containsKey(configuration)) {
+//            for (BlockPart blockPart : blockTrackWidgets.get(configuration)) {
+//                if (configuration.isValid()) {
+//                    if (state) {
+//                        blockPart.usedBlock();
+//                    } else {
+//                        blockPart.freeBlock();
+//                    }
+//                } else {
+//                    blockPart.unknownBlock();
+//                }
+//            }
+//        }
     }
 }

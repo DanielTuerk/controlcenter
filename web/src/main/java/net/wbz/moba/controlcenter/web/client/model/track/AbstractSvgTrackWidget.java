@@ -2,12 +2,17 @@ package net.wbz.moba.controlcenter.web.client.model.track;
 
 import com.google.common.base.Strings;
 import com.google.gwt.dom.client.Style;
-import com.google.gwt.user.client.ui.*;
+import com.google.gwt.user.client.ui.SimplePanel;
+import com.google.gwt.user.client.ui.Widget;
 import net.wbz.moba.controlcenter.web.client.TrackUtils;
 import net.wbz.moba.controlcenter.web.client.editor.track.EditTrackWidgetHandler;
 import net.wbz.moba.controlcenter.web.shared.track.model.Configuration;
 import net.wbz.moba.controlcenter.web.shared.track.model.GridPosition;
 import net.wbz.moba.controlcenter.web.shared.track.model.TrackPart;
+import org.gwtbootstrap3.client.ui.*;
+import org.gwtbootstrap3.client.ui.constants.FormType;
+import org.gwtbootstrap3.extras.select.client.ui.Option;
+import org.gwtbootstrap3.extras.select.client.ui.Select;
 import org.vectomatic.dom.svg.OMSVGDocument;
 import org.vectomatic.dom.svg.OMSVGSVGElement;
 import org.vectomatic.dom.svg.utils.OMSVGParser;
@@ -17,7 +22,9 @@ import org.vectomatic.dom.svg.utils.OMSVGParser;
  */
 abstract public class AbstractSvgTrackWidget<T extends TrackPart> extends SimplePanel implements EditTrackWidgetHandler {
 
-    private final ListBox selectBit = new ListBox();
+    public static final String ID_FORM_ADDRESS = "formAddress";
+    private static final String ID_FORM_BIT = "formBit";
+    private final Select selectBit = new Select();
     private final TextBox txtAddress = new TextBox();
 
     private int trackPartConfigAddress = -1;
@@ -69,57 +76,63 @@ abstract public class AbstractSvgTrackWidget<T extends TrackPart> extends Simple
     }
 
     protected void initFromTrackPart(T trackPart) {
-        if (trackPart != null && trackPart.getConfiguration() != null) {
-            trackPartConfigAddress = trackPart.getConfiguration().getAddress();
-            trackPartConfigBit = trackPart.getConfiguration().getOutput();
+        // TODO null - should never happen!
+//        if (trackPart != null && trackPart.getConfiguration() != null) {
+        trackPartConfigAddress = trackPart.getConfiguration().getAddress();
+        trackPartConfigBit = trackPart.getConfiguration().getOutput();
 
-            setTitle(trackPart.getConfiguration().toString());
-        }
+        setTitle(trackPart.getConfiguration().toString());
+//        }
     }
 
     @Override
-    public VerticalPanel getDialogContent() {
-        FlexTable layout = new FlexTable();
-        layout.setCellSpacing(6);
-        FlexTable.FlexCellFormatter cellFormatter = layout.getFlexCellFormatter();
+    public Widget getDialogContent() {
+        Form form = new Form();
+        form.setType(FormType.HORIZONTAL);
 
-        // Add a title to the form
-        layout.setHTML(0, 0, "Module Address");
-        cellFormatter.setColSpan(0, 0, 2);
-        cellFormatter.setHorizontalAlignment(
-                0, 0, HasHorizontalAlignment.ALIGN_CENTER);
+        FieldSet fieldSet = new FieldSet();
 
+        // module address
+        FormGroup groupModuleAddress = new FormGroup();
+        FormLabel lblAddress = new FormLabel();
+        lblAddress.setText("Address");
+        lblAddress.setFor(ID_FORM_ADDRESS);
+        groupModuleAddress.add(lblAddress);
+        txtAddress.setId(ID_FORM_ADDRESS);
         if (trackPartConfigAddress >= 0) {
             txtAddress.setText(String.valueOf(trackPartConfigAddress));
         }
+        groupModuleAddress.add(txtAddress);
+        fieldSet.add(groupModuleAddress);
 
+        // module bit
+        FormGroup groupBit = new FormGroup();
+        FormLabel lblBit = new FormLabel();
+        lblBit.setFor(ID_FORM_BIT);
+        lblBit.setText("Bit");
+        groupBit.add(lblBit);
+        selectBit.setId(ID_FORM_BIT);
         for (int index = 0; index < 8; index++) {
-            selectBit.addItem(String.valueOf(index + 1));
+            Option option = new Option();
+            String value = String.valueOf(index + 1);
+            option.setValue(value);
+            option.setText(value);
+            selectBit.add(option);
             if (index + 1 == trackPartConfigBit) {
-                selectBit.setSelectedIndex(index);
+                selectBit.setValue(option);
             }
         }
+        groupBit.add(selectBit);
+        fieldSet.add(groupBit);
 
-        // Add some standard form options
-        layout.setHTML(1, 0, "Address:");
-        layout.setWidget(1, 1, txtAddress);
-        layout.setHTML(2, 0, "Bit:");
-        layout.setWidget(2, 1, selectBit);
-
-        // Wrap the content in a DecoratorPanel
-        DecoratorPanel decPanel = new DecoratorPanel();
-        decPanel.setWidget(layout);
-
-        VerticalPanel verticalPanel = new VerticalPanel();
-        verticalPanel.add(decPanel);
-
-        return verticalPanel;
+        form.add(fieldSet);
+        return form;
     }
 
     @Override
     public void onConfirmCallback() {
         trackPartConfigAddress = Integer.parseInt(txtAddress.getText());
-        trackPartConfigBit = Integer.parseInt(selectBit.getItemText(selectBit.getSelectedIndex()));
+        trackPartConfigBit = Integer.parseInt(selectBit.getValue());
     }
 
     abstract public boolean isRepresentationOf(T trackPart);
@@ -142,5 +155,6 @@ abstract public class AbstractSvgTrackWidget<T extends TrackPart> extends Simple
                 TrackUtils.getXFromLeftPosition(getAbsoluteLeft() - containerWidget.getAbsoluteLeft(), zoomLevel),
                 TrackUtils.getYFromTopPosition(getAbsoluteTop() - containerWidget.getAbsoluteTop(), zoomLevel));
     }
+
 
 }

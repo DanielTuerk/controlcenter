@@ -7,9 +7,9 @@ import com.google.inject.Singleton;
 import net.wbz.moba.controlcenter.web.shared.train.Train;
 import net.wbz.moba.controlcenter.web.shared.train.TrainFunction;
 import net.wbz.moba.controlcenter.web.shared.train.TrainService;
-import net.wbz.selectrix4java.api.device.DeviceAccessException;
-import net.wbz.selectrix4java.api.train.TrainModule;
-import net.wbz.selectrix4java.manager.DeviceManager;
+import net.wbz.selectrix4java.device.DeviceAccessException;
+import net.wbz.selectrix4java.device.DeviceManager;
+import net.wbz.selectrix4java.train.TrainModule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -4,15 +4,19 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.DoubleClickEvent;
 import com.google.gwt.event.dom.client.DoubleClickHandler;
-import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.DialogBox;
-import com.google.gwt.user.client.ui.Panel;
+import com.google.gwt.user.client.ui.Widget;
 import net.wbz.moba.controlcenter.web.client.model.track.AbstractSvgTrackWidget;
+import org.gwtbootstrap3.client.ui.Button;
+import org.gwtbootstrap3.client.ui.Modal;
+import org.gwtbootstrap3.client.ui.ModalBody;
+import org.gwtbootstrap3.client.ui.ModalFooter;
+import org.gwtbootstrap3.client.ui.constants.ButtonType;
+import org.gwtbootstrap3.client.ui.constants.Pull;
 
 /**
  * Widget wrapper class used by {@link net.wbz.moba.controlcenter.web.client.editor.track.PalettePanel}.
  */
-public class EditorPaletteWidget extends PaletteWidget{
+public class EditorPaletteWidget extends PaletteWidget {
 
     public EditorPaletteWidget(AbstractSvgTrackWidget widget) {
         super(widget);
@@ -31,39 +35,43 @@ public class EditorPaletteWidget extends PaletteWidget{
 
         @Override
         public void onDoubleClick(DoubleClickEvent event) {
-            DialogBox dialogBox = createDialogBox();
-            dialogBox.center();
-            dialogBox.show();
+            Modal modal = createModal();
+            modal.show();
         }
 
-        private DialogBox createDialogBox() {
+        private Modal createModal() {
             // Create a dialog box and set the caption text
-            final DialogBox dialogBox = new DialogBox();
-            dialogBox.ensureDebugId("cwDialogBox");
-            dialogBox.setText("Edit");
+            final Modal modal = new Modal();
+            modal.setFade(true);
+            modal.setTitle("Edit");
 
-            Panel contentPanel = handler.getDialogContent();
-            dialogBox.setWidget(contentPanel);
+            ModalBody modalBody = new ModalBody();
+            Widget contentPanel = handler.getDialogContent();
+            modalBody.add(contentPanel);
+            modal.add(modalBody);
 
-
-            contentPanel.add(new Button(
-                    "Ok", new ClickHandler() {
+            ModalFooter modalFooter = new ModalFooter();
+            Button btnOk = new Button("Ok", new ClickHandler() {
                 public void onClick(ClickEvent event) {
                     handler.onConfirmCallback();
-                    dialogBox.hide();
+                    modal.hide();
                 }
-            }));
+            });
+            btnOk.setType(ButtonType.PRIMARY);
+            btnOk.setPull(Pull.RIGHT);
+            modalFooter.add(btnOk);
 
-            // Add a close button at the bottom of the dialog
-            contentPanel.add(new Button(
-                    "Close", new ClickHandler() {
+            Button btnClose = new Button("Close", new ClickHandler() {
                 public void onClick(ClickEvent event) {
-                    dialogBox.hide();
+                    modal.hide();
                 }
-            }));
+            });
+            btnClose.setType(ButtonType.DANGER);
+            btnClose.setPull(Pull.LEFT);
+            modalFooter.add(btnClose);
+            modal.add(modalFooter);
 
-            // Return the dialog box
-            return dialogBox;
+            return modal;
         }
     }
 

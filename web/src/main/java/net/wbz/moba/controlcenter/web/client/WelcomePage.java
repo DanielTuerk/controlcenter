@@ -91,6 +91,7 @@ public class WelcomePage extends HorizontalPanel {
 
                                 @Override
                                 public void onSuccess(Void result) {
+                                    Settings.getInstance().getLastUsedConstruction().setValue(construction.getName());
                                     loadedConstructionClickHandler.onClick(null);
                                 }
                             });

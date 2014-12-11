@@ -10,12 +10,12 @@ import net.wbz.moba.controlcenter.db.Database;
 import net.wbz.moba.controlcenter.db.DatabaseFactory;
 import net.wbz.moba.controlcenter.web.server.EventBroadcaster;
 import net.wbz.moba.controlcenter.web.shared.train.*;
-import net.wbz.selectrix4java.api.device.Device;
-import net.wbz.selectrix4java.api.device.DeviceAccessException;
-import net.wbz.selectrix4java.api.device.DeviceConnectionListener;
-import net.wbz.selectrix4java.api.train.TrainDataListener;
-import net.wbz.selectrix4java.api.train.TrainModule;
-import net.wbz.selectrix4java.manager.DeviceManager;
+import net.wbz.selectrix4java.device.Device;
+import net.wbz.selectrix4java.device.DeviceAccessException;
+import net.wbz.selectrix4java.device.DeviceConnectionListener;
+import net.wbz.selectrix4java.device.DeviceManager;
+import net.wbz.selectrix4java.train.TrainDataListener;
+import net.wbz.selectrix4java.train.TrainModule;
 
 import java.util.List;
 import java.util.Map;

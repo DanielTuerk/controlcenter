@@ -17,7 +17,7 @@ import net.wbz.moba.controlcenter.web.server.scenario.ScenarioServiceImpl;
 import net.wbz.moba.controlcenter.web.server.train.TrainEditorServiceImpl;
 import net.wbz.moba.controlcenter.web.server.train.TrainServiceImpl;
 import net.wbz.moba.controlcenter.web.server.viewer.TrackViewerServiceImpl;
-import net.wbz.selectrix4java.manager.DeviceManager;
+import net.wbz.selectrix4java.device.DeviceManager;
 
 import java.io.File;
 

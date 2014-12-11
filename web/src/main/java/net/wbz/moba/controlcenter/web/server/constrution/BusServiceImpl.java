@@ -12,14 +12,10 @@ import net.wbz.moba.controlcenter.db.DatabaseFactory;
 import net.wbz.moba.controlcenter.web.server.EventBroadcaster;
 import net.wbz.moba.controlcenter.web.shared.bus.*;
 import net.wbz.moba.controlcenter.web.shared.viewer.RailVoltageEvent;
-import net.wbz.selectrix4java.SerialDevice;
-import net.wbz.selectrix4java.api.bus.AllBusDataConsumer;
-import net.wbz.selectrix4java.api.bus.BusDataConsumer;
-import net.wbz.selectrix4java.api.device.AbstractDevice;
-import net.wbz.selectrix4java.api.device.Device;
-import net.wbz.selectrix4java.api.device.DeviceAccessException;
-import net.wbz.selectrix4java.api.device.DeviceConnectionListener;
-import net.wbz.selectrix4java.manager.DeviceManager;
+import net.wbz.selectrix4java.bus.AllBusDataConsumer;
+import net.wbz.selectrix4java.bus.BusDataConsumer;
+import net.wbz.selectrix4java.device.*;
+import net.wbz.selectrix4java.device.serial.SerialDevice;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,7 +33,7 @@ public class BusServiceImpl extends RemoteServiceServlet implements BusService {
 
     public static final String BUS_DB_KEY = "bus";
 
-    private net.wbz.selectrix4java.api.device.Device activeDevice;
+    private net.wbz.selectrix4java.device.Device activeDevice;
 
     private final Database settingsDatabase;
 

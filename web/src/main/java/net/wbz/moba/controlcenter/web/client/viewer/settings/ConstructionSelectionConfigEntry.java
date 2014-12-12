@@ -16,6 +16,9 @@ public class ConstructionSelectionConfigEntry extends SelectionConfigEntry {
 
     @Override
     protected void handleStorageRead(final String value) {
+        // at first initialize value for direct usage
+        ConstructionSelectionConfigEntry.super.handleStorageRead(value);
+        // load available options for the select component
         ServiceUtils.getConstrutionService().loadConstructions(new AsyncCallback<Construction[]>() {
             @Override
             public void onFailure(Throwable caught) {
@@ -27,7 +30,7 @@ public class ConstructionSelectionConfigEntry extends SelectionConfigEntry {
                 for (Construction construction : result) {
                     addOption(construction.getName());
                 }
-                ConstructionSelectionConfigEntry.super.handleStorageRead(value);
+
             }
         });
     }

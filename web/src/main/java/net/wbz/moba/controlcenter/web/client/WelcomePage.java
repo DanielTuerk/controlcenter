@@ -56,7 +56,7 @@ public class WelcomePage extends HorizontalPanel {
 
                             @Override
                             public void onSuccess(Void result) {
-                                Settings.getInstance().getLastUsedConstruction().setValue(constructionName);
+                                Settings.getInstance().getLastUsedConstruction().setValueAndSave(construction.getName());
                                 createConstructionClickHandler.onClick(null);
                             }
                         });
@@ -91,7 +91,7 @@ public class WelcomePage extends HorizontalPanel {
 
                                 @Override
                                 public void onSuccess(Void result) {
-                                    Settings.getInstance().getLastUsedConstruction().setValue(construction.getName());
+                                    Settings.getInstance().getLastUsedConstruction().setValueAndSave(construction.getName());
                                     loadedConstructionClickHandler.onClick(null);
                                 }
                             });

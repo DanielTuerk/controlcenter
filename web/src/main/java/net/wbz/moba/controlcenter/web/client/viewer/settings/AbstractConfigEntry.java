@@ -79,6 +79,11 @@ abstract public class AbstractConfigEntry<T> {
         return value != null ? value : defaultValue;
     }
 
+    public void setValueAndSave(T value) {
+        setValue(value);
+        save(value);
+    }
+
     public void setValue(T value) {
         this.value = value;
         valueChanged();
@@ -98,15 +103,18 @@ abstract public class AbstractConfigEntry<T> {
 
     public void save() {
         T inputValue = getInputValue();
+       save(inputValue);
+    }
+
+    private void save(T value) {
         switch (storageType) {
             case LOCAL:
-                LocalStorage.getInstance().set(getConfigKey(), convertValueToString(inputValue));
+                LocalStorage.getInstance().set(getConfigKey(), convertValueToString(value));
                 break;
             case REMOTE:
-                ServiceUtils.getConfigService().saveValue(getConfigKey(), convertValueToString(inputValue), new EmptyCallback<Void>());
+                ServiceUtils.getConfigService().saveValue(getConfigKey(), convertValueToString(value), new EmptyCallback<Void>());
                 break;
         }
-
     }
 
     protected abstract T getInputValue();

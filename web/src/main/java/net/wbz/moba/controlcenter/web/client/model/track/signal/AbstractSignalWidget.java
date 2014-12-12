@@ -11,7 +11,16 @@ import net.wbz.moba.controlcenter.web.shared.track.model.Signal;
 import net.wbz.moba.controlcenter.web.shared.track.model.Straight;
 import net.wbz.moba.controlcenter.web.shared.track.model.TrackPart;
 import org.gwtbootstrap3.client.ui.*;
+import org.gwtbootstrap3.client.ui.constants.ColumnSize;
+import org.gwtbootstrap3.client.ui.constants.Pull;
+import org.gwtbootstrap3.client.ui.constants.Toggle;
+import org.gwtbootstrap3.client.ui.constants.WellSize;
 import org.gwtbootstrap3.client.ui.gwt.FlowPanel;
+import org.gwtbootstrap3.client.ui.html.ClearFix;
+import org.gwtbootstrap3.client.ui.html.Text;
+import org.gwtbootstrap3.extras.select.client.ui.Option;
+import org.gwtbootstrap3.extras.select.client.ui.Select;
+import org.gwtbootstrap3.extras.toggleswitch.client.ui.ToggleSwitch;
 import org.vectomatic.dom.svg.OMSVGDocument;
 import org.vectomatic.dom.svg.OMSVGSVGElement;
 import org.vectomatic.dom.svg.utils.OMSVGParser;
@@ -27,6 +36,7 @@ abstract public class AbstractSignalWidget extends AbstractControlSvgTrackWidget
     private Configuration[] storedConfigurations;
     private Signal.TYPE signalType;
     private Popover popover;
+    private SignalEditDialogContent dialogContent;
 
     public AbstractSignalWidget() {
         popover = new Popover(this);
@@ -54,6 +64,8 @@ abstract public class AbstractSignalWidget extends AbstractControlSvgTrackWidget
         } else {
             signalType = Signal.TYPE.BLOCK;
         }
+
+        dialogContent = new SignalEditDialogContent(trackPart);
 
         Button btnDrive = new Button("drive");
         btnDrive.addClickHandler(new ClickHandler() {
@@ -109,37 +121,7 @@ abstract public class AbstractSignalWidget extends AbstractControlSvgTrackWidget
 
     @Override
     public Widget getDialogContent() {
-        TabListItem active = null;
-
-        TabPanel tabPanel = new TabPanel();
-        NavTabs navTabs = new NavTabs();
-        TabContent tabContent = new TabContent();
-        for (Signal.TYPE signalType : Signal.TYPE.values()) {
-            TabPane tabPane = new TabPane();
-            tabContent.add(tabPane);
-
-            FlowPanel signalContent = new FlowPanel();
-            signalContent.getElement().getStyle().setPaddingTop(10, Style.Unit.PX);
-            tabPane.add(signalContent);
-
-            OMSVGDocument svgDocument = OMSVGParser.currentDocument();
-            OMSVGSVGElement svgRootElement = svgDocument.createSVGSVGElement();
-
-            SignalSvgBuilder.getInstance().addPreview(signalType, svgDocument, svgRootElement);
-
-            signalContent.getElement().appendChild(svgRootElement.getElement());
-            signalContent.add(new Label("config"));
-
-
-            TabListItem tabListItem = new TabListItem(signalType.name());
-            tabListItem.setDataTargetWidget(tabPane);
-            tabListItem.setActive(this.signalType == signalType);
-            navTabs.add(tabListItem);
-        }
-
-        tabPanel.add(navTabs);
-        tabPanel.add(tabContent);
-        return tabPanel;
+       return dialogContent.getDialogContent();
     }
 
     @Override

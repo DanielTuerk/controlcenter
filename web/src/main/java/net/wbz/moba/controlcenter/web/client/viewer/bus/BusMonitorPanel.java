@@ -1,21 +1,12 @@
 package net.wbz.moba.controlcenter.web.client.viewer.bus;
 
-import net.wbz.moba.controlcenter.web.client.util.EmptyCallback;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
-import com.google.common.collect.Maps;
-import com.google.gwt.dom.client.Style;
-import com.google.gwt.dom.client.Style.Float;
-import com.google.gwt.dom.client.Style.Unit;
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.PopupPanel;
-
-import de.novanic.eventservice.client.event.Event;
-import de.novanic.eventservice.client.event.listener.RemoteEventListener;
 import net.wbz.moba.controlcenter.web.client.EventReceiver;
 import net.wbz.moba.controlcenter.web.client.ServiceUtils;
+import net.wbz.moba.controlcenter.web.client.util.EmptyCallback;
 import net.wbz.moba.controlcenter.web.shared.bus.BusDataEvent;
 import net.wbz.moba.controlcenter.web.shared.bus.DeviceInfoEvent;
 
@@ -25,15 +16,26 @@ import org.gwtbootstrap3.client.ui.PanelHeader;
 import org.gwtbootstrap3.client.ui.Well;
 import org.gwtbootstrap3.client.ui.constants.WellSize;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import com.google.common.collect.Maps;
+import com.google.gwt.dom.client.Style;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.Label;
+
+import de.novanic.eventservice.client.event.Event;
+import de.novanic.eventservice.client.event.listener.RemoteEventListener;
 
 /**
+ * The BusMonitor shows the current data of each address for bus 0 and 1. The
+ * monitor appeares when it`s connected to the bus otherwise an information will
+ * be shown.
+ * 
  * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
  */
 public class BusMonitorPanel extends FlowPanel {
-
+	/**
+	 * Store the {@link BusAddressItemPanel} for each address in bus.
+	 */
 	private final Map<Integer, Map<Integer, BusAddressItemPanel>> addressItemMapping = Maps
 			.newHashMap();
 	private RemoteEventListener listener;
@@ -42,18 +44,17 @@ public class BusMonitorPanel extends FlowPanel {
 	final Well well = new Well();
 	final Label lbl = new Label();
 
+	/**
+	 * Constructs panels and initializes the widgets of a bus item panel.
+	 */
 	public BusMonitorPanel() {
 		super();
-		lbl.setText("Sorry, there is no connection.Please connect.");
-		lbl.getElement().getStyle().setFloat(Float.NONE);
-		lbl.getElement().getStyle().setColor("Black");
+		lbl.setText("Sorry, there is no connection. Please connect.");
+		lbl.addStyleName("lbl-well");
 		well.setSize(WellSize.LARGE);
 		well.add(lbl);
-		well.setHeight("70px");
-		well.setWidth("360px");
-		well.getElement().getStyle().setMarginLeft(480, Unit.PX);
-		well.getElement().getStyle().setMarginTop(280, Unit.PX);
-		
+		well.addStyleName("well-conn");
+
 		setHeight("100%");
 		for (int i = 0; i < 2; i++) {
 			Panel panel = new org.gwtbootstrap3.client.ui.Panel();
@@ -70,8 +71,8 @@ public class BusMonitorPanel extends FlowPanel {
 
 			Map<Integer, BusAddressItemPanel> addressItemPanelMap = Maps
 					.newHashMap();
-
 			for (int j = 0; j < 127; j++) {
+
 				BusAddressItemPanel busAddressItemPanel = new BusAddressItemPanel(
 						i, j);
 				busAddressItemPanel.getElement().getStyle()
@@ -84,7 +85,7 @@ public class BusMonitorPanel extends FlowPanel {
 			}
 			addressItemMapping.put(i, addressItemPanelMap);
 		}
-
+		// listener processes events on user side of busData
 		listener = new RemoteEventListener() {
 			public void apply(Event anEvent) {
 				BusDataEvent busDataEvent = (BusDataEvent) anEvent;
@@ -93,7 +94,10 @@ public class BusMonitorPanel extends FlowPanel {
 						.updateData(busDataEvent.getData());
 			}
 		};
+		// connectionListener processes events on user side of deviceInfo
 		connectionListener = new RemoteEventListener() {
+			// checks incoming event if device is connected or not
+			// and handle another methods depending on connection
 			@Override
 			public void apply(Event event) {
 				DeviceInfoEvent deviceInfoEvent = (DeviceInfoEvent) event;
@@ -103,12 +107,12 @@ public class BusMonitorPanel extends FlowPanel {
 					ServiceUtils.getBusService().startTrackingBus(
 							new EmptyCallback<Void>());
 					remove(well);
-					onLoad();
+					addBusPanels();
 
 				} else if (deviceInfoEvent.getEventType() == DeviceInfoEvent.TYPE.DISCONNECTED) {
 					ServiceUtils.getBusService().stopTrackingBus(
 							new EmptyCallback<Void>());
-					removePanel();
+					removeBusPanels();
 					add(well);
 				}
 			}
@@ -132,10 +136,10 @@ public class BusMonitorPanel extends FlowPanel {
 						if (result) {
 
 							remove(well);
-							addPanel();
+							addBusPanels();
 
 						} else {
-							removePanel();
+							removeBusPanels();
 							add(well);
 						}
 					}
@@ -155,16 +159,22 @@ public class BusMonitorPanel extends FlowPanel {
 				.removeListener(BusDataEvent.class, listener);
 		EventReceiver.getInstance().removeListener(DeviceInfoEvent.class,
 				connectionListener);
-		removePanel();
+		removeBusPanels();
 	}
 
-	public void removePanel() {
+	/**
+	 * Removes busPanels from BusMonitor.
+	 */
+	public void removeBusPanels() {
 		for (Panel busPanel : busPanels) {
 			remove(busPanel);
 		}
 	}
 
-	public void addPanel() {
+	/**
+	 * Adds busPanels to BusMonitor.
+	 */
+	public void addBusPanels() {
 		for (Panel busPanel : busPanels) {
 			add(busPanel);
 		}

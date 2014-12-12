@@ -3,19 +3,25 @@ package net.wbz.moba.controlcenter.web.client.viewer.bus;
 import org.gwtbootstrap3.client.ui.Button;
 
 import com.google.gwt.user.client.Timer;
-
+/**
+ * Button  which represents a single bit for a bus address.
+ * 
+ * Toggle the state of the bit and show different background color on change.
+ * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
+ *
+ */
 public class ItemPanelButton extends Button {
-	boolean isWorking = false;
+	 private boolean running = false;
 
 	/**
-	 * schedules a timer to set color for changed value of buttons and delay for
-	 * 2 seconds and sets original color back
+	 * Schedules a timer to set color on changing state of button and delay for
+	 * 2 seconds to switch back to original color.
 	 */
-	public void setColor() {
-		if (isWorking) {
+	public synchronized void setColor() {
+		if (running) {
 			return;
 		}
-		isWorking = true;
+		running = true;
 		final String originalColor = this.getElement().getStyle()
 				.getBackgroundColor();
 		this.getElement().getStyle()
@@ -25,7 +31,7 @@ public class ItemPanelButton extends Button {
 			public void run() {
 				ItemPanelButton.this.getElement().getStyle()
 						.setBackgroundColor(originalColor);
-				isWorking = false;
+				running = false;
 			}
 
 		};

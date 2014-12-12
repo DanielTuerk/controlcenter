@@ -142,3 +142,39 @@ margin-left: 20px;
 .green-btn{
 	background-color:green;
 }
+.well-conn{
+	height: 70px;
+	width: 360px;
+	margin-left: 480px;
+	margin-top:280px;
+}	
+.lbl-well{
+	float:none;
+	color:black;
+}
+.busMonitor-address-lbl{
+	background-color:#dcdcdc !important;
+	float:left !important;
+	width: 20px !important;
+	height: 48px !important;
+	padding-bottom: 20px !important;
+	padding-top: 20px !important;
+	padding-right: 0.1px !important;
+	padding-left: 0.1px !important;
+	border:  0.1px solid !important;
+	color:#2f4f4f !important;
+}	
+.busMonitor-lbl-bits{
+	padding-bottom: 5px !important;
+	padding-top: 5px !important;
+	padding-right: 8px !important;
+	padding-left: 8px !important;
+	background-color:mediumpurple !important;
+	
+}
+.busMonitor-btn-bits{
+	padding-bottom:3px !important;
+	padding-top:3px !important;
+	padding-left:6px !important;
+	padding-right:6px !important;
+}

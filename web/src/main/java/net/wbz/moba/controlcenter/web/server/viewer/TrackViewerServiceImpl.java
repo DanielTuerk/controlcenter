@@ -4,9 +4,7 @@ import com.google.gwt.user.client.rpc.RpcTokenException;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import net.wbz.moba.controlcenter.web.server.EventBroadcaster;
 import net.wbz.moba.controlcenter.web.shared.track.model.Configuration;
-import net.wbz.moba.controlcenter.web.shared.viewer.TrackPartStateEvent;
 import net.wbz.moba.controlcenter.web.shared.viewer.TrackViewerService;
 import net.wbz.selectrix4java.bus.BusAddress;
 import net.wbz.selectrix4java.device.DeviceAccessException;
@@ -35,9 +33,9 @@ public class TrackViewerServiceImpl extends RemoteServiceServlet implements Trac
                 if (deviceManager.getConnectedDevice() != null) {
                     BusAddress busAddress = deviceManager.getConnectedDevice().getBusAddress(1, (byte) configuration.getAddress());
                     if (state) {
-                        busAddress.setBit(configuration.getOutput());
+                        busAddress.setBit(configuration.getBit());
                     } else {
-                        busAddress.clearBit(configuration.getOutput());
+                        busAddress.clearBit(configuration.getBit());
                     }
                     busAddress.send();
                 }
@@ -54,7 +52,7 @@ public class TrackViewerServiceImpl extends RemoteServiceServlet implements Trac
             try {
                 if (deviceManager.getConnectedDevice() != null) {
                     return deviceManager.getConnectedDevice().getBusAddress(1, (byte) configuration.getAddress()).
-                            getBitState(configuration.getOutput());
+                            getBitState(configuration.getBit());
                 }
             } catch (DeviceAccessException e) {
                 String msg = "can't load state of track part";

@@ -22,7 +22,7 @@ abstract public class AbstractStraightWidget extends AbstractBlockSvgTrackWidget
         Straight straight = new Straight();
         straight.setDirection(getStraightDirection());
         straight.setGridPosition(getGridPosition(containerWidget, zoomLevel));
-        straight.setConfiguration(getStoredWidgetConfiguration());
+        straight.setFunctionConfigs(getStoredWidgetFunctionConfigs());
         return straight;
     }
 

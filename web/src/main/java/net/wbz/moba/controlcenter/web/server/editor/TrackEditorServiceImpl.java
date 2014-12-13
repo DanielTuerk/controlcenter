@@ -79,57 +79,12 @@ public class TrackEditorServiceImpl extends RemoteServiceServlet implements Trac
         ObjectSet<DataContainer> result = query.execute();
 
         if (!result.isEmpty()) {
-            Device connectedDevice = null;
-            try {
-                connectedDevice = deviceManager.getConnectedDevice();
-            } catch (DeviceAccessException e) {
-            }
+
 
             TrackPart[] trackParts = (TrackPart[]) result.get(0).getData();
 
-            // create consumers for the configuration of the track parts
-            log.info("create consumers of track parts");
-            busDataConsumersOfTheCurrentTrack.clear();
-
-            List<Configuration> uniqueTrackPartConfigs = Lists.newArrayList();
-
-            for (final TrackPart trackPart : trackParts) {
-                final Configuration trackPartConfiguration = trackPart.getConfiguration();
-
-                if (trackPartConfiguration != null && trackPartConfiguration.isValid()) {
-
-                    if (connectedDevice != null) {
-                        try {
-                            //TODO: bus number from config (maybe by type)
-                            trackPart.setInitialState(connectedDevice.getBusAddress(1, (byte) trackPartConfiguration.getAddress()).
-                                    getBitState(trackPartConfiguration.getOutput()));
-                        } catch (DeviceAccessException e) {
-                        }
-                    }
-                    if (!uniqueTrackPartConfigs.contains(trackPartConfiguration)) {
-                        uniqueTrackPartConfigs.add(trackPartConfiguration);
-
-                        // TODO: fire initial data of the bus for all track parts; maybe register
-                    //TODO bus nr
-                    busDataConsumersOfTheCurrentTrack.add(new BusDataConsumer(1, trackPartConfiguration.getAddress()) {
-                        @Override
-                        public void valueChanged(int oldValue, int newValue) {
-                            if (BigInteger.valueOf(newValue).testBit(trackPartConfiguration.getOutput() - 1) != BigInteger.valueOf(oldValue).testBit(trackPartConfiguration.getOutput() - 1)) {
-                                eventBroadcaster.fireEvent(new TrackPartStateEvent(trackPartConfiguration,
-                                    BigInteger.valueOf(newValue).testBit(trackPartConfiguration.getOutput() - 1)));
-                            }
-                        }
-                    });
-                    }
-                }
-            }
-//            // register consumers if an device is already connected TODO: really correct? widgets for event receiver doesn't exists atm
-//            try {
-//                deviceManager.getConnectedDevice().getBusDataDispatcher().unregisterConsumers(busDataConsumersOfTheCurrentTrack);
-//                deviceManager.getConnectedDevice().getBusDataDispatcher().registerConsumers(busDataConsumersOfTheCurrentTrack);
-//            } catch (DeviceAccessException e) {
-//                //ignore
-//            }
+            // TODO: the initial state of the bit was queried -> should only received by consumer! CHECK THIS!
+            registerConsumersForTrackPartConfigs(trackParts);
 
             log.info("return track parts");
             return trackParts;
@@ -142,5 +97,63 @@ public class TrackEditorServiceImpl extends RemoteServiceServlet implements Trac
     //    @PreDestroy
     public void cleanUp() {
         //TODO
+    }
+
+    /**
+     * TODO: needed? since refactor no registration after creation
+     *
+     * @param trackParts
+     */
+    private void registerConsumersForTrackPartConfigs(TrackPart[] trackParts) {
+
+        //unregister existing to create new ones from given track parts
+
+
+//        busDataConsumersOfTheCurrentTrack.clear();
+//
+//        // create consumers for the configuration of the track parts
+//        log.info("create consumers of track parts");
+//
+//        List<Configuration> uniqueTrackPartConfigs = Lists.newArrayList();
+//
+//        for (final TrackPart trackPart : trackParts) {
+//            final Configuration trackPartConfiguration = trackPart.getConfiguration();
+//
+//            if (trackPartConfiguration != null && trackPartConfiguration.isValid()) {
+//
+//                if (connectedDevice != null) {
+//                    try {
+//                        //TODO: bus number from config (maybe by type)
+//                        trackPart.setInitialState(connectedDevice.getBusAddress(1, (byte) trackPartConfiguration.getAddress()).
+//                                getBitState(trackPartConfiguration.getBit()));
+//                    } catch (DeviceAccessException e) {
+//                    }
+//                }
+//                if (!uniqueTrackPartConfigs.contains(trackPartConfiguration)) {
+//                    uniqueTrackPartConfigs.add(trackPartConfiguration);
+//
+//                    // TODO: fire initial data of the bus for all track parts; maybe register
+//                    //TODO bus nr
+//                    busDataConsumersOfTheCurrentTrack.add(new BusDataConsumer(1, trackPartConfiguration.getAddress()) {
+//                        @Override
+//                        public void valueChanged(int oldValue, int newValue) {
+//                            if (BigInteger.valueOf(newValue).testBit(trackPartConfiguration.getBit() - 1) != BigInteger.valueOf(oldValue).testBit(trackPartConfiguration.getBit() - 1)) {
+//                                eventBroadcaster.fireEvent(new TrackPartStateEvent(trackPartConfiguration,
+//                                        BigInteger.valueOf(newValue).testBit(trackPartConfiguration.getBit() - 1)));
+//                            }
+//                        }
+//                    });
+//                }
+//            }
+//        }
+//            // register consumers if an device is already connected TODO: really correct? widgets for event receiver doesn't exists atm
+//            try {
+//                deviceManager.getConnectedDevice().getBusDataDispatcher().unregisterConsumers(busDataConsumersOfTheCurrentTrack);
+//                deviceManager.getConnectedDevice().getBusDataDispatcher().registerConsumers(busDataConsumersOfTheCurrentTrack);
+//            } catch (DeviceAccessException e) {
+//                //ignore
+//            }
+
+
     }
 }

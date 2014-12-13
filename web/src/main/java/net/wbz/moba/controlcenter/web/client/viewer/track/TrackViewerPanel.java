@@ -99,17 +99,10 @@ public class TrackViewerPanel extends AbstractTrackPanel {
                     }
 
                     AbstractSvgTrackWidget trackWidget = ModelManager.getInstance().getWidgetOf(trackPart);
-//                    if (trackWidget instanceof AbstractControlSvgTrackWidget) {
-                    if (!trackWidgets.containsKey(trackPart.getConfiguration())) {
-                        trackWidgets.put(trackPart.getConfiguration(), new ArrayList<AbstractSvgTrackWidget>());
+                    if (!trackWidgets.containsKey(trackPart.getDefaultToggleFunctionConfig())) {
+                        trackWidgets.put(trackPart.getDefaultToggleFunctionConfig(), new ArrayList<AbstractSvgTrackWidget>());
                     }
-                    trackWidgets.get(trackPart.getConfiguration()).add(trackWidget);
-//                    } else if (trackWidget instanceof AbstractBlockSvgTrackWidget && trackPart.getConfiguration() != null) {
-//                        if (!blockTrackWidgets.containsKey(trackPart.getConfiguration())) {
-//                            blockTrackWidgets.put(trackPart.getConfiguration(), new ArrayList<AbstractBlockSvgTrackWidget>());
-//                        }
-//                        blockTrackWidgets.get(trackPart.getConfiguration()).add((AbstractBlockSvgTrackWidget) trackWidget);
-//                    }
+                    trackWidgets.get(trackPart.getDefaultToggleFunctionConfig()).add(trackWidget);
 
                     AbsoluteTrackPosition trackPosition = trackWidget.getTrackPosition(trackPart.getGridPosition(), getZoomLevel());
                     if (maxTop < trackPosition.getTop()) {
@@ -122,12 +115,12 @@ public class TrackViewerPanel extends AbstractTrackPanel {
                     widget.addMouseOverHandler(new MouseOverHandler() {
                         @Override
                         public void onMouseOver(MouseOverEvent event) {
-                            lblTrackPartConfig.setText(String.valueOf(trackPart.getConfiguration()));
+                            lblTrackPartConfig.setText(String.valueOf(trackPart.getDefaultToggleFunctionConfig()));
                         }
                     });
                     addTrackWidget(widget, trackPosition.getLeft(), trackPosition.getTop());
 
-                    updateTrackPartState(trackPart.getConfiguration(), trackPart.isInitialState());
+                    //updateTrackPartState(trackPart.getConfiguration(), trackPart.isInitialState());
                 }
             }
         });

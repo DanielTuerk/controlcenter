@@ -17,6 +17,9 @@ import org.vectomatic.dom.svg.OMSVGDocument;
 import org.vectomatic.dom.svg.OMSVGSVGElement;
 import org.vectomatic.dom.svg.utils.OMSVGParser;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
  */
@@ -68,20 +71,32 @@ abstract public class AbstractSvgTrackWidget<T extends TrackPart> extends Simple
     }
 
 
-    public Configuration getStoredWidgetConfiguration() {
+    /**
+     * TODO: refactor to config handler
+     * @return
+     */
+    public Map<String,Configuration> getStoredWidgetFunctionConfigs() {
+        Map<String, Configuration> functionConfigs=new HashMap<>();
         Configuration configuration = new Configuration();
+        configuration.setBus(1); //TODO
         configuration.setAddress(trackPartConfigAddress);
-        configuration.setOutput(trackPartConfigBit);
-        return configuration;
+        configuration.setBit(trackPartConfigBit);
+        configuration.setBitState(true);
+        functionConfigs.put(TrackPart.DEFAULT_TOGGLE_FUNCTION, configuration);
+        return functionConfigs;
     }
 
+    /**
+     * TODO: refactor to config handler
+     * @return
+     */
     protected void initFromTrackPart(T trackPart) {
         // TODO null - should never happen!
 //        if (trackPart != null && trackPart.getConfiguration() != null) {
-        trackPartConfigAddress = trackPart.getConfiguration().getAddress();
-        trackPartConfigBit = trackPart.getConfiguration().getOutput();
+        trackPartConfigAddress = trackPart.getDefaultToggleFunctionConfig().getAddress();
+        trackPartConfigBit = trackPart.getDefaultToggleFunctionConfig().getBit();
 
-        setTitle(trackPart.getConfiguration().toString());
+        setTitle(trackPart.getDefaultToggleFunctionConfig().toString());
 //        }
     }
 

@@ -22,7 +22,7 @@ abstract public class AbstractCurveWidget extends AbstractBlockSvgTrackWidget<Cu
         Curve curve = new Curve();
         curve.setDirection(getCurveDirection());
         curve.setGridPosition(getGridPosition(containerWidget, zoomLevel));
-        curve.setConfiguration(getStoredWidgetConfiguration());
+        curve.setFunctionConfigs(getStoredWidgetFunctionConfigs());
         return curve;
     }
 

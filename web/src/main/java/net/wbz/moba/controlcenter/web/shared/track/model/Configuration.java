@@ -3,15 +3,19 @@ package net.wbz.moba.controlcenter.web.shared.track.model;
 import java.io.Serializable;
 
 /**
- * TODO: bus nr?
+ * Configuration model of an function for the {@link net.wbz.moba.controlcenter.web.shared.track.model.TrackPart}.
  *
  * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
  */
 public class Configuration implements Serializable {
 
+    private int bus;
+
     private int address;
 
-    private int output;
+    private int bit;
+
+    private boolean bitState;
 
     public int getAddress() {
         return address;
@@ -21,23 +25,41 @@ public class Configuration implements Serializable {
         this.address = address;
     }
 
-    public int getOutput() {
-        return output;
+    public int getBit() {
+        return bit;
     }
 
-    public void setOutput(int output) {
-        this.output = output;
+    public void setBit(int bit) {
+        this.bit = bit;
     }
 
     public boolean isValid() {
-        return address > -1 && output > -1;
+        return address > -1 && bit > -1;
+    }
+
+    public boolean isBitState() {
+        return bitState;
+    }
+
+    public void setBitState(boolean bitState) {
+        this.bitState = bitState;
+    }
+
+    public int getBus() {
+        return bus;
+    }
+
+    public void setBus(int bus) {
+        this.bus = bus;
     }
 
     @Override
     public String toString() {
         return "Configuration{" +
-                "address=" + address +
-                ", output=" + output +
+                "bus=" + bus +
+                ", address=" + address +
+                ", bit=" + bit +
+                ", bitState=" + bitState +
                 '}';
     }
 
@@ -49,15 +71,19 @@ public class Configuration implements Serializable {
         Configuration that = (Configuration) o;
 
         if (address != that.address) return false;
-        if (output != that.output) return false;
+        if (bit != that.bit) return false;
+        if (bitState != that.bitState) return false;
+        if (bus != that.bus) return false;
 
         return true;
     }
 
     @Override
     public int hashCode() {
-        int result = address;
-        result = 31 * result + output;
+        int result = bus;
+        result = 31 * result + address;
+        result = 31 * result + bit;
+        result = 31 * result + (bitState ? 1 : 0);
         return result;
     }
 }

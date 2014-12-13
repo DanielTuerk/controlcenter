@@ -43,13 +43,13 @@ public class ToggleScenarioCommand extends ScenarioCommand {
     public void parseParameters(String... text) {
         configuration = new Configuration();
         configuration.setAddress(Integer.parseInt(text[0]));
-        configuration.setOutput(Integer.parseInt(text[1]));
+        configuration.setBit(Integer.parseInt(text[1]));
         state = Boolean.parseBoolean(text[2]);
     }
 
     @Override
     public String[] convertParameters() {
         return new String[]{String.valueOf(configuration.getAddress()),
-                String.valueOf(configuration.getOutput()), String.valueOf(state)};
+                String.valueOf(configuration.getBit()), String.valueOf(state)};
     }
 }

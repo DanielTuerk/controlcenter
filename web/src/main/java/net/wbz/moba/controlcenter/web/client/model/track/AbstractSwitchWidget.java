@@ -3,8 +3,6 @@ package net.wbz.moba.controlcenter.web.client.model.track;
 import com.google.gwt.user.client.ui.Widget;
 import net.wbz.moba.controlcenter.web.shared.track.model.Switch;
 import net.wbz.moba.controlcenter.web.shared.track.model.TrackPart;
-import org.vectomatic.dom.svg.OMSVGDocument;
-import org.vectomatic.dom.svg.OMSVGSVGElement;
 
 /**
  * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
@@ -17,7 +15,7 @@ abstract public class AbstractSwitchWidget extends AbstractControlSvgTrackWidget
         switchTrackPart.setGridPosition(getGridPosition(containerWidget, zoomLevel));
         switchTrackPart.setCurrentDirection(getDirection());
         switchTrackPart.setCurrentPresentation(getPresentation());
-        switchTrackPart.setConfiguration(getStoredWidgetConfiguration());
+        switchTrackPart.setFunctionConfigs(getStoredWidgetFunctionConfigs());
         return switchTrackPart;
     }
 

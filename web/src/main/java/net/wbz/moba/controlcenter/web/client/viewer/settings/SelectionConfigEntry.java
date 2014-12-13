@@ -33,6 +33,7 @@ abstract public class SelectionConfigEntry extends StringConfigEntry {
         child.setValue(value);
         child.setText(value);
         select.add(child);
+        select.refresh();
     }
 
     @Override

@@ -20,9 +20,8 @@ public class StraightHorizontalWidget extends AbstractStraightWidget {
     }
 
     @Override
-    public AbstractSvgTrackWidget<Straight> getClone(Straight trackPart) {
+    public AbstractSvgTrackWidget<Straight> getClone() {
         StraightHorizontalWidget widget = new StraightHorizontalWidget();
-        widget.initFromTrackPart(trackPart);
         return widget;
     }
 

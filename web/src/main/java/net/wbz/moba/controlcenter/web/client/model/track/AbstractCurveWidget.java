@@ -17,14 +17,14 @@ abstract public class AbstractCurveWidget extends AbstractBlockSvgTrackWidget<Cu
         svg.appendChild(SvgTrackUtil.createLine(doc, 12f, 26f, 26f, 12f, 5));
     }
 
-    @Override
-    public TrackPart getTrackPart(Widget containerWidget, int zoomLevel) {
-        Curve curve = new Curve();
-        curve.setDirection(getCurveDirection());
-        curve.setGridPosition(getGridPosition(containerWidget, zoomLevel));
-        curve.setFunctionConfigs(getStoredWidgetFunctionConfigs());
-        return curve;
-    }
+//    @Override
+//    public TrackPart getTrackPart(Widget containerWidget, int zoomLevel) {
+//        Curve curve = new Curve();
+//        curve.setDirection(getCurveDirection());
+//        curve.setGridPosition(getGridPosition(containerWidget, zoomLevel));
+//        curve.setFunctionConfigs(getStoredWidgetFunctionConfigs());
+//        return curve;
+//    }
 
     @Override
     public boolean isRepresentationOf(Curve trackPart) {

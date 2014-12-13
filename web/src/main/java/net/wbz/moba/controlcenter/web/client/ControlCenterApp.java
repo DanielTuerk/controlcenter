@@ -218,7 +218,10 @@ public class ControlCenterApp implements EntryPoint {
 
     private void show(Widget containerPanel) {
         for(Widget container  :containerPanels){
+            if(contentContainerPanel.getElement().isOrHasChild(container.getElement())){
+
             contentContainerPanel.remove(container);
+            }
         }
         contentContainerPanel.add(containerPanel);
     }

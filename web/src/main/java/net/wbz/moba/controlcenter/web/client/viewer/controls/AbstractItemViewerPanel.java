@@ -73,6 +73,7 @@ abstract public class AbstractItemViewerPanel<ItemPanel extends AbstractItemPane
     protected abstract void loadItems();
 
     public void addItemPanel(ItemPanel panel) {
+        panel.init();
         itemPanelByIdMap.put(panel.getModel().getId(), panel);
         itemsContainerPanel.add(panel);
     }

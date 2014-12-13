@@ -10,10 +10,8 @@ import org.vectomatic.dom.svg.OMSVGRectElement;
 public class StraightVerticalWidget extends AbstractStraightWidget {
 
     @Override
-    public AbstractSvgTrackWidget<Straight> getClone(Straight trackPart) {
-        StraightVerticalWidget widget = new StraightVerticalWidget();
-        widget.initFromTrackPart(trackPart);
-        return widget;
+    public AbstractSvgTrackWidget<Straight> getClone() {
+        return new StraightVerticalWidget();
     }
 
     @Override

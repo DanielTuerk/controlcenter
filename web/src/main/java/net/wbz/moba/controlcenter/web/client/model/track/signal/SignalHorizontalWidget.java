@@ -20,10 +20,8 @@ public class SignalHorizontalWidget extends AbstractSignalWidget {
     }
 
     @Override
-    public AbstractSvgTrackWidget<Signal> getClone(Signal trackPart) {
-        SignalHorizontalWidget clone = new SignalHorizontalWidget();
-        clone.initFromTrackPart(trackPart);
-        return clone;
+    public AbstractSvgTrackWidget<Signal> getClone() {
+        return new SignalHorizontalWidget();
     }
 
     @Override

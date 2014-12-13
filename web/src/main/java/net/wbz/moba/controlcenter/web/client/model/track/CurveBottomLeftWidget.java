@@ -9,9 +9,6 @@ import org.vectomatic.dom.svg.OMSVGSVGElement;
  */
 public class CurveBottomLeftWidget extends AbstractCurveWidget {
 
-    @Override
-    public void initFromTrackPart(Curve trackPart) {
-    }
 
     @Override
     public String getTrackWidgetStyleName() {
@@ -19,7 +16,7 @@ public class CurveBottomLeftWidget extends AbstractCurveWidget {
     }
 
     @Override
-    public AbstractSvgTrackWidget<Curve> getClone(Curve trackPart) {
+    public AbstractSvgTrackWidget<Curve> getClone() {
         return new CurveBottomLeftWidget();
     }
 

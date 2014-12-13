@@ -17,10 +17,8 @@ public class SwitchRightRightToLeftWidget extends AbstractSwitchRightWidget {
     }
 
     @Override
-    public AbstractSvgTrackWidget<Switch> getClone(Switch trackPart) {
-        SwitchRightRightToLeftWidget clone = new SwitchRightRightToLeftWidget();
-        clone.initFromTrackPart(trackPart);
-        return clone;
+    public AbstractSvgTrackWidget<Switch> getClone() {
+        return new SwitchRightRightToLeftWidget();
     }
 
 }

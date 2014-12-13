@@ -20,34 +20,35 @@ public class TrackPart implements IsSerializable, Serializable {
      */
     public static final String DEFAULT_TOGGLE_FUNCTION = "toggle";
 
+    /**
+     * Position of the track part in the grid system of the construction.
+     */
     private GridPosition gridPosition;
 
     /**
      * Function mapping for function name and configuration of the function.
      */
     private Map<String, Configuration> functionConfigs;
-//    private Configuration configuration;
-//    private boolean initialState;
 
     public Map<String, Configuration> getFunctionConfigs() {
-//        if(functionConfigs==null){
-//            functionConfigs=new HashMap<>();
-//            functionConfigs.put(DEFAULT_TOGGLE_FUNCTION, new Configuration());
-//        }
+        if (functionConfigs == null) {
+            // create dummy for saved instance without configuration; will be changed during first call of
+            // {@link TrackPart#setFunctionConfigs}
+            functionConfigs = new HashMap<>();
+            functionConfigs.put(DEFAULT_TOGGLE_FUNCTION, new Configuration());
+        }
         return functionConfigs;
     }
 
+    /**
+     * Return the {@link net.wbz.moba.controlcenter.web.shared.track.model.Configuration} of the default toggle
+     * function. {@link net.wbz.moba.controlcenter.web.shared.track.model.TrackPart#DEFAULT_TOGGLE_FUNCTION}
+     *
+     * @return {@link net.wbz.moba.controlcenter.web.shared.track.model.Configuration}
+     */
     public Configuration getDefaultToggleFunctionConfig() {
         return getFunctionConfigs().get(DEFAULT_TOGGLE_FUNCTION);
     }
-
-//    public Configuration getConfiguration() {
-//        return configuration;
-//    }
-
-//    public void setConfiguration(Configuration configuration) {
-//        this.configuration = configuration;
-//    }
 
     public GridPosition getGridPosition() {
         return gridPosition;
@@ -57,15 +58,13 @@ public class TrackPart implements IsSerializable, Serializable {
         this.gridPosition = gridPosition;
     }
 
+    /**
+     * TODO remove?
+     *
+     * @param functionConfigs
+     */
     public void setFunctionConfigs(Map<String, Configuration> functionConfigs) {
         this.functionConfigs = functionConfigs;
     }
 
-//    public boolean isInitialState() {
-//        return initialState;
-//    }
-//
-//    public void setInitialState(boolean initialState) {
-//        this.initialState = initialState;
-//    }
 }

@@ -14,7 +14,10 @@ import net.wbz.moba.controlcenter.web.client.viewer.controls.AbstractItemPanel;
 import net.wbz.moba.controlcenter.web.shared.scenario.Scenario;
 import net.wbz.moba.controlcenter.web.shared.scenario.ScenarioCommand;
 import net.wbz.moba.controlcenter.web.shared.scenario.ScenarioStateEvent;
-import org.gwtbootstrap3.client.ui.*;
+import org.gwtbootstrap3.client.ui.Button;
+import org.gwtbootstrap3.client.ui.Label;
+import org.gwtbootstrap3.client.ui.PanelCollapse;
+import org.gwtbootstrap3.client.ui.TextArea;
 import org.gwtbootstrap3.client.ui.constants.ButtonType;
 import org.gwtbootstrap3.client.ui.gwt.FlowPanel;
 import org.gwtbootstrap3.extras.toggleswitch.client.ui.ToggleSwitch;
@@ -31,14 +34,16 @@ public class ScenarioItemPanel extends AbstractItemPanel<Scenario, ScenarioState
     public static final String BREAK_LINE = "&#13;"; //13 - mac?
     private static final int MIN_LINES_EDIT_TEXTAREA = 5;
 
-    private final Button btnPlay = new Button("play");
-    private final Button btnStop = new Button("stop");
-    private final Button btnPause = new Button("pause");
-    private final ToggleSwitch btnToggleRepeatMode = new ToggleSwitch();
+
+    private ToggleSwitch btnToggleRepeatMode;
 
     //edit
     private PanelCollapse commandListEditPanel;
     private TextArea txtCommandList;
+    private Button btnPlay;
+    private Button btnStop;
+    private Button btnPause;
+    private Button btnEditScenario;
 
     public ScenarioItemPanel(Scenario scenario) {
         super(scenario);
@@ -58,6 +63,10 @@ public class ScenarioItemPanel extends AbstractItemPanel<Scenario, ScenarioState
 
     @Override
     public PanelCollapse createCollapseContentPanel() {
+        btnPlay = new Button("play");
+        btnStop = new Button("stop");
+        btnPause = new Button("pause");
+        btnEditScenario = new Button("edit");
         btnEditScenario.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
@@ -124,6 +133,7 @@ public class ScenarioItemPanel extends AbstractItemPanel<Scenario, ScenarioState
         });
         btnControlGroupPanel.add(btnStop);
 
+        btnToggleRepeatMode = new ToggleSwitch();
         btnToggleRepeatMode.setLabelText("repeat");
         btnToggleRepeatMode.setValue(getModel().getMode() == Scenario.MODE.REPEAT);
         btnToggleRepeatMode.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
@@ -157,7 +167,6 @@ public class ScenarioItemPanel extends AbstractItemPanel<Scenario, ScenarioState
         return commandListEditPanel;
     }
 
-    private Button btnEditScenario = new Button("edit");
 
     private void showCommandList(List<ScenarioCommand> commands) {
         commandListEditPanel.clear();

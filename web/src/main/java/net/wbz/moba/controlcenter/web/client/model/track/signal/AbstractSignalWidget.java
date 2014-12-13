@@ -96,16 +96,16 @@ abstract public class AbstractSignalWidget extends AbstractControlSvgTrackWidget
         popover.addContent(btnStop);
     }
 
-    @Override
-    public TrackPart getTrackPart(Widget containerWidget, int zoomLevel) {
-        Signal signal = new Signal();
-        signal.setDirection(getStraightDirection());
-        signal.setGridPosition(getGridPosition(containerWidget, zoomLevel));
-        signal.setFunctionConfigs(getStoredWidgetFunctionConfigs());
-        signal.setAdditionalConfigurations(storedConfigurations);
-        signal.setType(signalType);
-        return signal;
-    }
+//    @Override
+//    public TrackPart getTrackPart(Widget containerWidget, int zoomLevel) {
+//        Signal signal = new Signal();
+//        signal.setDirection(getStraightDirection());
+//        signal.setGridPosition(getGridPosition(containerWidget, zoomLevel));
+//        signal.setFunctionConfigs(getStoredWidgetFunctionConfigs());
+//        signal.setAdditionalConfigurations(storedConfigurations);
+//        signal.setType(signalType);
+//        return signal;
+//    }
 
     @Override
     public Widget getDialogContent() {

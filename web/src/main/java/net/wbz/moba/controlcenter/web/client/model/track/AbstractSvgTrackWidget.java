@@ -25,6 +25,11 @@ import java.util.Map;
  */
 abstract public class AbstractSvgTrackWidget<T extends TrackPart> extends SimplePanel implements EditTrackWidgetHandler {
 
+    /**
+     * Model for the widget.
+     */
+    private T trackPart = null;
+
     public static final String ID_FORM_ADDRESS = "formAddress";
     private static final String ID_FORM_BIT = "formBit";
     private final Select selectBit = new Select();
@@ -54,8 +59,17 @@ abstract public class AbstractSvgTrackWidget<T extends TrackPart> extends Simple
         getElement().appendChild(svgRootElement.getElement());
     }
 
+    /**
+     * Add the SVG content for the track part to the given {@link org.vectomatic.dom.svg.OMSVGSVGElement}.
+     *
+     * @param doc {@link org.vectomatic.dom.svg.OMSVGDocument}
+     * @param svg {@link org.vectomatic.dom.svg.OMSVGSVGElement}
+     */
     abstract protected void addSvgContent(OMSVGDocument doc, OMSVGSVGElement svg);
 
+    /**
+     * Clear the SVG content from the widget.
+     */
     protected void clearSvgContent() {
         for (int i = svgRootElement.getChildNodes().getLength() - 1; i >= 0; i--) {
             svgRootElement.removeChild(svgRootElement.getChildNodes().getItem(i));
@@ -70,13 +84,13 @@ abstract public class AbstractSvgTrackWidget<T extends TrackPart> extends Simple
         return svgRootElement;
     }
 
-
     /**
      * TODO: refactor to config handler
+     *
      * @return
      */
-    public Map<String,Configuration> getStoredWidgetFunctionConfigs() {
-        Map<String, Configuration> functionConfigs=new HashMap<>();
+    public Map<String, Configuration> getStoredWidgetFunctionConfigs() {
+        Map<String, Configuration> functionConfigs = new HashMap<>();
         Configuration configuration = new Configuration();
         configuration.setBus(1); //TODO
         configuration.setAddress(trackPartConfigAddress);
@@ -88,16 +102,16 @@ abstract public class AbstractSvgTrackWidget<T extends TrackPart> extends Simple
 
     /**
      * TODO: refactor to config handler
+     *
      * @return
      */
     protected void initFromTrackPart(T trackPart) {
-        // TODO null - should never happen!
-//        if (trackPart != null && trackPart.getConfiguration() != null) {
+        this.trackPart = trackPart;
+
         trackPartConfigAddress = trackPart.getDefaultToggleFunctionConfig().getAddress();
         trackPartConfigBit = trackPart.getDefaultToggleFunctionConfig().getBit();
 
         setTitle(trackPart.getDefaultToggleFunctionConfig().toString());
-//        }
     }
 
     @Override
@@ -152,19 +166,66 @@ abstract public class AbstractSvgTrackWidget<T extends TrackPart> extends Simple
 
     abstract public boolean isRepresentationOf(T trackPart);
 
+    /**
+     * CSS class name for the implementation.
+     *
+     * @return {@link java.lang.String}
+     */
     abstract public String getTrackWidgetStyleName();
 
-    abstract public TrackPart getTrackPart(Widget containerWidget, int zoomLevel);
+    /**
+     * Return the {@link net.wbz.moba.controlcenter.web.shared.track.model.TrackPart} of the widget with actual grid
+     * position.
+     *
+     * @param containerWidget {@link com.google.gwt.user.client.ui.Widget} parent container
+     * @param zoomLevel       level of zoom
+     * @return {@link net.wbz.moba.controlcenter.web.shared.track.model.TrackPart}
+     * @see {#getGridPosition}
+     */
+    public TrackPart getTrackPart(Widget containerWidget, int zoomLevel) {
+        trackPart.setGridPosition(getGridPosition(containerWidget, zoomLevel));
+        return trackPart;
+    }
 
+    /**
+     * Title of the widget in the palette of the editor.
+     *
+     * @return {@link java.lang.String}
+     */
     abstract public String getPaletteTitle();
 
-    abstract public AbstractSvgTrackWidget<T> getClone(T trackPart);
+    /**
+     * Create new instance for the given {@link net.wbz.moba.controlcenter.web.shared.track.model.TrackPart}.
+     *
+     * @param trackPart {@link net.wbz.moba.controlcenter.web.shared.track.model.TrackPart}
+     * @return {@link net.wbz.moba.controlcenter.web.client.model.track.AbstractSvgTrackWidget}
+     */
+    public AbstractSvgTrackWidget<T> getClone(T trackPart) {
+        AbstractSvgTrackWidget<T> clone = getClone();
+        clone.initFromTrackPart(trackPart);
+        return clone;
+    }
+
+    /**
+     * New instance of the implementation.
+     *
+     * @return {@link net.wbz.moba.controlcenter.web.client.model.track.AbstractSvgTrackWidget}
+     */
+    protected abstract AbstractSvgTrackWidget<T> getClone();
 
     public AbsoluteTrackPosition getTrackPosition(GridPosition gridPosition, int zoomLevel) {
         return new AbsoluteTrackPosition(TrackUtils.getLeftPositionFromX(gridPosition.getX(), zoomLevel),
                 TrackUtils.getTopPositionFromY(gridPosition.getY(), zoomLevel));
     }
 
+    /**
+     * Create and return the {@link net.wbz.moba.controlcenter.web.shared.track.model.GridPosition} of this track
+     * part from the absolute position of the container.
+     *
+     * @param containerWidget {@link com.google.gwt.user.client.ui.Widget} parent container
+     * @param zoomLevel       level of zoom
+     * @return {@link net.wbz.moba.controlcenter.web.shared.track.model.GridPosition}
+     */
     public GridPosition getGridPosition(Widget containerWidget, int zoomLevel) {
         return new GridPosition(
                 TrackUtils.getXFromLeftPosition(getAbsoluteLeft() - containerWidget.getAbsoluteLeft(), zoomLevel),

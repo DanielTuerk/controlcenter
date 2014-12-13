@@ -13,7 +13,7 @@ import org.gwtbootstrap3.client.ui.PanelCollapse;
 import org.gwtbootstrap3.client.ui.PanelHeader;
 import org.gwtbootstrap3.client.ui.constants.Toggle;
 
-import java.util.List;
+import java.util.*;
 
 /**
  * Abstract container panel for the specified {@link net.wbz.moba.controlcenter.web.shared.AbstractIdModel}.
@@ -30,17 +30,50 @@ abstract public class AbstractItemPanel<Model extends AbstractIdModel, StateEven
     private PanelCollapse collapseContentPanel;
 
     private Panel headerPanelContent;
+    private PanelBody panelBody;
+    private PanelHeader panelHeader;
+
+    private Map<Class<StateEvent>,RemoteEventListener> eventListeners = new HashMap<>();
 
     public AbstractItemPanel(Model model) {
         this.model = model;
+
+    }
+
+    public void init() {
         for (Class<StateEvent> stateEventClass : getStateEventClasses()) {
-            EventReceiver.getInstance().addListener(stateEventClass, new RemoteEventListener() {
+            eventListeners.put(stateEventClass, new RemoteEventListener() {
                 @Override
                 public void apply(Event event) {
                     updateItemData((StateEvent) event);
                 }
             });
         }
+
+        collapseContentPanel = createCollapseContentPanel();
+
+        //header
+        panelHeader = new PanelHeader();
+        headerPanelContent = createHeaderPanel();
+        headerPanelContent.addStyleName("abstractItemPanelHeaderContent");
+        assert headerPanelContent != null;
+        panelHeader.add(headerPanelContent);
+
+        // collapse
+        String collapseContainerId = "collapse" + getModel().getId();
+        Button btnCollapse = new Button(">>");
+        panelHeader.add(btnCollapse);
+        btnCollapse.setDataTarget("#" + collapseContainerId);
+        btnCollapse.setDataToggle(Toggle.COLLAPSE);
+
+
+        // details
+        panelBody = new PanelBody();
+        panelBody.getElement().getStyle().setPadding(0, Style.Unit.PX);
+        collapseContentPanel = createCollapseContentPanel();
+        collapseContentPanel.setId(collapseContainerId);
+        panelBody.add(collapseContentPanel);
+
     }
 
     abstract protected List<Class<StateEvent>> getStateEventClasses();
@@ -62,30 +95,24 @@ abstract public class AbstractItemPanel<Model extends AbstractIdModel, StateEven
     protected void onLoad() {
         super.onLoad();
 
-        collapseContentPanel = createCollapseContentPanel();
-
-        //header
-        PanelHeader panelHeader = new PanelHeader();
-        headerPanelContent = createHeaderPanel();
-        headerPanelContent.addStyleName("abstractItemPanelHeaderContent");
-        assert headerPanelContent != null;
-        panelHeader.add(headerPanelContent);
-
-        // collapse
-        String collapseContainerId = "collapse" + getModel().getId();
-        Button btnCollapse = new Button(">>");
-        panelHeader.add(btnCollapse);
-        btnCollapse.setDataTarget("#" + collapseContainerId);
-        btnCollapse.setDataToggle(Toggle.COLLAPSE);
         add(panelHeader);
-
-        // details
-        PanelBody panelBody = new PanelBody();
-        panelBody.getElement().getStyle().setPadding(0, Style.Unit.PX);
-        collapseContentPanel = createCollapseContentPanel();
-        collapseContentPanel.setId(collapseContainerId);
-        panelBody.add(collapseContentPanel);
         add(panelBody);
+
+        for (Map.Entry<Class<StateEvent>,RemoteEventListener> eventListenerEntry : eventListeners.entrySet()) {
+            EventReceiver.getInstance().addListener(eventListenerEntry.getKey(), eventListenerEntry.getValue());
+        }
+    }
+
+    @Override
+    protected void onUnload() {
+        super.onUnload();
+
+        for (Map.Entry<Class<StateEvent>,RemoteEventListener> eventListenerEntry : eventListeners.entrySet()) {
+            EventReceiver.getInstance().removeListener(eventListenerEntry.getKey(), eventListenerEntry.getValue());
+        }
+
+        remove(panelBody);
+        remove(panelHeader);
     }
 
     public Model getModel() {

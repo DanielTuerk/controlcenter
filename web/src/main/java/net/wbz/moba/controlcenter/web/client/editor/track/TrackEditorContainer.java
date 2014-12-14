@@ -13,6 +13,9 @@ import net.wbz.moba.controlcenter.web.client.model.track.AbsoluteTrackPosition;
 import net.wbz.moba.controlcenter.web.client.model.track.AbstractSvgTrackWidget;
 import net.wbz.moba.controlcenter.web.client.model.track.ModelManager;
 import net.wbz.moba.controlcenter.web.shared.track.model.TrackPart;
+import org.gwtbootstrap3.extras.growl.client.ui.Growl;
+import org.gwtbootstrap3.extras.growl.client.ui.GrowlHelper;
+import org.gwtbootstrap3.extras.growl.client.ui.GrowlOptions;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -59,7 +62,7 @@ public class TrackEditorContainer extends FlowPanel {
         PalettePanel palette = new PalettePanel(dragController);
 
         for (AbstractSvgTrackWidget widget : ModelManager.getInstance().getWidgets()) {
-                palette.addPaletteItem(widget);
+            palette.addPaletteItem(widget);
         }
 
 
@@ -76,20 +79,26 @@ public class TrackEditorContainer extends FlowPanel {
                     if (paletteWidget instanceof PaletteWidget) {
                         Widget w = ((PaletteWidget) paletteWidget).getPaletteWidgetItem();
                         if (w instanceof AbstractSvgTrackWidget) {
-                            trackParts.add(((AbstractSvgTrackWidget) w).getTrackPart(getBoundaryPanel(), getBoundaryPanel().getZoomLevel()));
+                            trackParts.add(((AbstractSvgTrackWidget) w).getTrackPart(getBoundaryPanel(),
+                                    getBoundaryPanel().getZoomLevel()));
                         }
                     }
                 }
 
-                ServiceUtils.getTrackEditorService().saveTrack(trackParts.toArray(new TrackPart[trackParts.size()]), new AsyncCallback<Void>() {
+                ServiceUtils.getTrackEditorService().saveTrack(trackParts.toArray(new TrackPart[trackParts.size()]),
+                        new AsyncCallback<Void>() {
                     @Override
                     public void onFailure(Throwable throwable) {
-                        Log.severe("save track error " + throwable.getLocalizedMessage());
+                        GrowlOptions growlOptions = GrowlHelper.getNewOptions();
+                        growlOptions.setDangerType();
+                        Growl.growl("error by save track: " + throwable.getMessage(), growlOptions);
                     }
 
                     @Override
                     public void onSuccess(Void aVoid) {
-                        Log.info("save track ok");//To change body of implemented methods use File | Settings | File Templates.
+                        GrowlOptions growlOptions = GrowlHelper.getNewOptions();
+                        growlOptions.setDangerType();
+                        Growl.growl("track saved!");
                     }
                 });
             }
@@ -141,6 +150,7 @@ public class TrackEditorContainer extends FlowPanel {
                 Log.info("load track success " + new Date().toString());
                 for (TrackPart trackPart : trackParts) {
                     AbstractSvgTrackWidget trackWidget = ModelManager.getInstance().getWidgetOf(trackPart);
+                    trackWidget.setEnabled(true);
                     AbsoluteTrackPosition trackPosition = trackWidget.getTrackPosition(trackPart.getGridPosition(), boundaryPanel.getZoomLevel());
                     PaletteWidget paletteWidget = new EditorPaletteWidget(trackWidget);
                     dragController.makeDraggable(paletteWidget);

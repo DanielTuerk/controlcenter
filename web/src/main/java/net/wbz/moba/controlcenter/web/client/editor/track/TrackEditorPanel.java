@@ -11,9 +11,6 @@ public class TrackEditorPanel extends AbstractTrackPanel {
     protected void onLoad() {
         addStyleName("boundary");
         setSize("100%", "800px");
-
-
-
     }
 
     @Override

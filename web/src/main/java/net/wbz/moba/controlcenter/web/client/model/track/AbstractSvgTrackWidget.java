@@ -33,11 +33,8 @@ abstract public class AbstractSvgTrackWidget<T extends TrackPart> extends Simple
 
     public static final String ID_FORM_ADDRESS = "formAddress";
     private static final String ID_FORM_BIT = "formBit";
-    private final Select selectBit = new Select();
-    private final TextBox txtAddress = new TextBox();
-
-    private int trackPartConfigAddress = -1;
-    private int trackPartConfigBit = -1;
+    private Select selectBit;
+    private TextBox txtAddress;
 
     private final OMSVGDocument svgDocument = OMSVGParser.currentDocument();
     private final OMSVGSVGElement svgRootElement;
@@ -97,8 +94,8 @@ abstract public class AbstractSvgTrackWidget<T extends TrackPart> extends Simple
         Map<String, Configuration> functionConfigs = new HashMap<>();
         Configuration configuration = new Configuration();
         configuration.setBus(1); //TODO
-        configuration.setAddress(trackPartConfigAddress);
-        configuration.setBit(trackPartConfigBit);
+        configuration.setAddress(trackPart.getDefaultToggleFunctionConfig().getAddress());
+        configuration.setBit(trackPart.getDefaultToggleFunctionConfig().getBit());
         configuration.setBitState(true);
         functionConfigs.put(TrackPart.DEFAULT_TOGGLE_FUNCTION, configuration);
         return functionConfigs;
@@ -112,9 +109,6 @@ abstract public class AbstractSvgTrackWidget<T extends TrackPart> extends Simple
     protected void initFromTrackPart(T trackPart) {
         this.trackPart = trackPart;
 
-        trackPartConfigAddress = trackPart.getDefaultToggleFunctionConfig().getAddress();
-        trackPartConfigBit = trackPart.getDefaultToggleFunctionConfig().getBit();
-
         setTitle(trackPart.getDefaultToggleFunctionConfig().toString());
     }
 
@@ -124,16 +118,17 @@ abstract public class AbstractSvgTrackWidget<T extends TrackPart> extends Simple
         form.setType(FormType.HORIZONTAL);
 
         FieldSet fieldSet = new FieldSet();
-
         // module address
         FormGroup groupModuleAddress = new FormGroup();
         FormLabel lblAddress = new FormLabel();
         lblAddress.setText("Address");
         lblAddress.setFor(ID_FORM_ADDRESS);
         groupModuleAddress.add(lblAddress);
+
+        txtAddress = new TextBox();
         txtAddress.setId(ID_FORM_ADDRESS);
-        if (trackPartConfigAddress >= 0) {
-            txtAddress.setText(String.valueOf(trackPartConfigAddress));
+        if (trackPart.getDefaultToggleFunctionConfig().getAddress() >= 0) {
+            txtAddress.setText(String.valueOf(trackPart.getDefaultToggleFunctionConfig().getAddress()));
         }
         groupModuleAddress.add(txtAddress);
         fieldSet.add(groupModuleAddress);
@@ -144,14 +139,16 @@ abstract public class AbstractSvgTrackWidget<T extends TrackPart> extends Simple
         lblBit.setFor(ID_FORM_BIT);
         lblBit.setText("Bit");
         groupBit.add(lblBit);
+
+        selectBit = new Select();
         selectBit.setId(ID_FORM_BIT);
-        for (int index = 0; index < 8; index++) {
+        for (int index = 1; index < 9; index++) {
             Option option = new Option();
-            String value = String.valueOf(index + 1);
+            String value = String.valueOf(index);
             option.setValue(value);
             option.setText(value);
             selectBit.add(option);
-            if (index + 1 == trackPartConfigBit) {
+            if (index == trackPart.getDefaultToggleFunctionConfig().getBit()) {
                 selectBit.setValue(option);
             }
         }
@@ -164,10 +161,16 @@ abstract public class AbstractSvgTrackWidget<T extends TrackPart> extends Simple
 
     @Override
     public void onConfirmCallback() {
-        trackPartConfigAddress = Integer.parseInt(txtAddress.getText());
-        trackPartConfigBit = Integer.parseInt(selectBit.getValue());
+        trackPart.getDefaultToggleFunctionConfig().setAddress(Integer.parseInt(txtAddress.getText()));
+        trackPart.getDefaultToggleFunctionConfig().setBit(Integer.parseInt(selectBit.getValue()));
     }
 
+    /**
+     * Check responsibility for the given {@link net.wbz.moba.controlcenter.web.shared.track.model.TrackPart}.
+     *
+     * @param trackPart {@link net.wbz.moba.controlcenter.web.shared.track.model.TrackPart}
+     * @return {@link net.wbz.moba.controlcenter.web.client.model.track.AbstractSvgTrackWidget}
+     */
     abstract public boolean isRepresentationOf(T trackPart);
 
     /**
@@ -236,10 +239,9 @@ abstract public class AbstractSvgTrackWidget<T extends TrackPart> extends Simple
                 TrackUtils.getYFromTopPosition(getAbsoluteTop() - containerWidget.getAbsoluteTop(), zoomLevel));
     }
 
-
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
-        if(!enabled) {
+        if (!enabled) {
             addStyleName(CSS_WIDGET_DISABLED);
         } else {
             removeStyleName(CSS_WIDGET_DISABLED);

@@ -25,6 +25,7 @@ import java.util.Map;
  */
 abstract public class AbstractSvgTrackWidget<T extends TrackPart> extends SimplePanel implements EditTrackWidgetHandler {
 
+    public static final String CSS_WIDGET_DISABLED = "widget-disabled";
     /**
      * Model for the widget.
      */
@@ -40,6 +41,7 @@ abstract public class AbstractSvgTrackWidget<T extends TrackPart> extends Simple
 
     private final OMSVGDocument svgDocument = OMSVGParser.currentDocument();
     private final OMSVGSVGElement svgRootElement;
+    private boolean enabled;
 
     public AbstractSvgTrackWidget() {
         addStyleName("widget_track");
@@ -55,6 +57,8 @@ abstract public class AbstractSvgTrackWidget<T extends TrackPart> extends Simple
         svgRootElement.setHeight(Style.Unit.PX, 25);
 
         addSvgContent(svgDocument, svgRootElement);
+
+        setEnabled(false);
 
         getElement().appendChild(svgRootElement.getElement());
     }
@@ -233,4 +237,16 @@ abstract public class AbstractSvgTrackWidget<T extends TrackPart> extends Simple
     }
 
 
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+        if(!enabled) {
+            addStyleName(CSS_WIDGET_DISABLED);
+        } else {
+            removeStyleName(CSS_WIDGET_DISABLED);
+        }
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
 }

@@ -20,23 +20,9 @@ abstract public class AbstractControlSvgTrackWidget<T extends TrackPart> extends
         implements ClickActionViewerWidgetHandler {
 
     /**
-     * Current state of the widget to toggle and repaint.
+     * Current state of the widget to toggle.
      */
     private boolean trackPartState = false;
-
-    @Override
-    public void repaint(boolean state) {
-        if (trackPartState != state) {
-            trackPartState = state;
-
-            clearSvgContent();
-            if (!trackPartState) {
-                addSvgContent(getSvgDocument(), getSvgRootElement());
-            } else {
-                addActiveStateSvgContent(getSvgDocument(), getSvgRootElement());
-            }
-        }
-    }
 
     /**
      * Add the svg items to the element which represents the active state of the widget.
@@ -48,8 +34,25 @@ abstract public class AbstractControlSvgTrackWidget<T extends TrackPart> extends
 
     @Override
     public void onClick() {
-        Configuration toggleFunctionConfig = getStoredWidgetFunctionConfigs().get(TrackPart.DEFAULT_TOGGLE_FUNCTION);
-        ServiceUtils.getTrackViewerService().toggleTrackPart(toggleFunctionConfig, !trackPartState, new EmptyCallback<Void>());
+        if (isEnabled()) {
+            Configuration toggleFunctionConfig = getStoredWidgetFunctionConfigs().get(TrackPart.DEFAULT_TOGGLE_FUNCTION);
+            ServiceUtils.getTrackViewerService().toggleTrackPart(toggleFunctionConfig, !trackPartState, new
+                    EmptyCallback<Void>());
+        }
     }
 
+    @Override
+    public void updateFunctionState(Configuration configuration, boolean state) {
+        // update the SVG for the state of the {@link TrackPart#DEFAULT_TOGGLE_FUNCTION}
+        Configuration toggleFunctionConfig = getStoredWidgetFunctionConfigs().get(TrackPart.DEFAULT_TOGGLE_FUNCTION);
+        if (toggleFunctionConfig.equals(configuration)) {
+            trackPartState = state;
+            clearSvgContent();
+            if (state == toggleFunctionConfig.isBitState()) {
+                addActiveStateSvgContent(getSvgDocument(), getSvgRootElement());
+            } else {
+                addSvgContent(getSvgDocument(), getSvgRootElement());
+            }
+        }
+    }
 }

@@ -34,7 +34,7 @@ public class Configuration implements Serializable {
     }
 
     public boolean isValid() {
-        return address > -1 && bit > -1;
+        return address > -1 && bit > 0 && bus >-1;
     }
 
     public boolean isBitState() {

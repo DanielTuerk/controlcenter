@@ -49,4 +49,13 @@ public interface BusService extends RemoteService {
      * @param state {@link java.lang.Boolean} new state for the bit
      */
     public void sendBusData(int busNr, int address, int bit, boolean state);
+
+    /**
+     * Send value for the given address of the bus number to the current connected device.
+     *
+     * @param busNr number of bus
+     * @param address address
+     * @param data data of address
+     */
+    public void sendBusData(int busNr, int address, int data);
 }

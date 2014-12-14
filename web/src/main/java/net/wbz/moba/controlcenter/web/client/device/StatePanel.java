@@ -1,6 +1,5 @@
 package net.wbz.moba.controlcenter.web.client.device;
 
-import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -23,15 +22,18 @@ import org.gwtbootstrap3.extras.toggleswitch.client.ui.base.constants.ColorType;
  */
 public class StatePanel extends org.gwtbootstrap3.client.ui.gwt.FlowPanel {
 
+    private final RemoteEventListener deviceInfoEventListener;
     private ToggleSwitch toggleRailVoltage;
     private Button btnDeviceConfig;
     private BusConnectionToggleButton busConnectionToggleButton;
+    private final SendDataModal sendDataModal = new SendDataModal();
+    private final Button btnSendData;
 
     public StatePanel() {
         setStyleName("statePanel");
 
         // add event receiver for the device connection state
-        EventReceiver.getInstance().addListener(DeviceInfoEvent.class, new RemoteEventListener() {
+        deviceInfoEventListener = new RemoteEventListener() {
             public void apply(Event anEvent) {
                 if (anEvent instanceof DeviceInfoEvent) {
                     DeviceInfoEvent event = (DeviceInfoEvent) anEvent;
@@ -42,7 +44,7 @@ public class StatePanel extends org.gwtbootstrap3.client.ui.gwt.FlowPanel {
                     }
                 }
             }
-        });
+        };
 
         DeviceListBox deviceListBox = new DeviceListBox();
         busConnectionToggleButton = new BusConnectionToggleButton(deviceListBox);
@@ -83,6 +85,14 @@ public class StatePanel extends org.gwtbootstrap3.client.ui.gwt.FlowPanel {
         add(toggleRailVoltage);
         add(new Label("v0.01.alpha"));
 
+        btnSendData = new Button("send");
+        btnSendData.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                sendDataModal.show();
+            }
+        });
+        add(btnSendData);
     }
 
     private void toggleRailVoltageState() {
@@ -91,6 +101,8 @@ public class StatePanel extends org.gwtbootstrap3.client.ui.gwt.FlowPanel {
 
     @Override
     protected void onLoad() {
+        EventReceiver.getInstance().addListener(DeviceInfoEvent.class, deviceInfoEventListener);
+
         ServiceUtils.getBusService().isBusConnected(new AsyncCallback<Boolean>() {
             @Override
             public void onFailure(Throwable throwable) {
@@ -103,9 +115,16 @@ public class StatePanel extends org.gwtbootstrap3.client.ui.gwt.FlowPanel {
         });
     }
 
+    @Override
+    protected void onUnload() {
+        super.onUnload();
+        EventReceiver.getInstance().removeListener(DeviceInfoEvent.class, deviceInfoEventListener);
+    }
+
     private void updateDeviceConnectionState(boolean connected) {
         toggleRailVoltage.setEnabled(connected);
         btnDeviceConfig.setEnabled(!connected);
         busConnectionToggleButton.setValue(connected, false);
+        btnSendData.setEnabled(connected);
     }
 }

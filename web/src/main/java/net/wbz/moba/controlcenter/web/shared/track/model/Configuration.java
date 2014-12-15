@@ -17,6 +17,16 @@ public class Configuration implements Serializable {
 
     private boolean bitState;
 
+    public Configuration(int bus, int address, int bit, boolean bitState) {
+        this.bus = bus;
+        this.address = address;
+        this.bit = bit;
+        this.bitState = bitState;
+    }
+
+    public Configuration() {
+    }
+
     public int getAddress() {
         return address;
     }

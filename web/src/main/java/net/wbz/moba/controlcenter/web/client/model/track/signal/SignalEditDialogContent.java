@@ -1,9 +1,11 @@
 package net.wbz.moba.controlcenter.web.client.model.track.signal;
 
+import com.google.common.collect.Maps;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Widget;
+import net.wbz.moba.controlcenter.web.shared.track.model.Configuration;
 import net.wbz.moba.controlcenter.web.shared.track.model.Signal;
 import org.gwtbootstrap3.client.ui.*;
 import org.gwtbootstrap3.client.ui.constants.ColumnSize;
@@ -18,12 +20,20 @@ import org.vectomatic.dom.svg.OMSVGDocument;
 import org.vectomatic.dom.svg.OMSVGSVGElement;
 import org.vectomatic.dom.svg.utils.OMSVGParser;
 
+import java.util.Map;
+
 /**
  * @author Daniel Tuerk
  */
 public class SignalEditDialogContent {
 
+    private static final String ID_TXT_ADDRESS = "txtAddress";
+    private static final String ID_SELECT_BIT = "selectBit";
+    private static final String ID_BTN_BIT_STATE = "btnBitState";
     private final Signal signal;
+
+    private Map<Signal.TYPE, TabListItem> signalTypesTabs = Maps.newHashMap();
+    private Map<String, Widget> idWidgets = Maps.newHashMap();
 
     public SignalEditDialogContent(Signal signal) {
         this.signal = signal;
@@ -49,11 +59,11 @@ public class SignalEditDialogContent {
 
             // tab nav
             TabListItem tabListItem = new TabListItem(signalType.name());
+            signalTypesTabs.put(signalType, tabListItem);
             tabListItem.setDataTargetWidget(tabPane);
             tabListItem.setActive(signal.getType() == signalType);
             navTabs.add(tabListItem);
         }
-
         tabPanel.add(navTabs);
         tabPanel.add(tabContent);
         return tabPanel;
@@ -88,26 +98,41 @@ public class SignalEditDialogContent {
         headersRow.add(new Column(ColumnSize.MD_2, new Text("Bit State")));
         container.add(headersRow);
 
-        for (Signal.LIGHT LIGHT : signalType.getLights()) {
+        for (Signal.LIGHT light : signalType.getLights()) {
+
+            Configuration existingLightConfig = signal.getLightFunction(light);
+            if (existingLightConfig == null) {
+                existingLightConfig = new Configuration();
+            }
 
             Row functionRow = new Row();
 
             Well wellLightName = new Well();
-            wellLightName.add(new Text(LIGHT.name()));
+            wellLightName.add(new Text(light.name()));
             wellLightName.setSize(WellSize.SMALL);
             functionRow.add(new Column(ColumnSize.MD_3, wellLightName));
 
-            functionRow.add(new Column(ColumnSize.MD_3, new TextBox()));
+            TextBox txtAddress = new TextBox();
+            idWidgets.put(getElementId(signalType, light, ID_TXT_ADDRESS), txtAddress);
+            txtAddress.setText(String.valueOf(existingLightConfig.getAddress()));
+            functionRow.add(new Column(ColumnSize.MD_3, txtAddress));
+
             Select selectBit = new Select();
+            idWidgets.put(getElementId(signalType, light, ID_SELECT_BIT), selectBit);
             selectBit.setWidth("auto");
             for (int i = 1; i <= 8; i++) {
                 Option bitOption = new Option();
                 bitOption.setText(String.valueOf(i));
                 selectBit.add(bitOption);
+                if (i == existingLightConfig.getBit()) {
+                    selectBit.setValue(bitOption);
+                }
             }
             functionRow.add(new Column(ColumnSize.MD_2, selectBit));
 
             final Button btnBitState = new Button("OFF");
+            btnBitState.setActive(existingLightConfig.isBitState());
+            idWidgets.put(getElementId(signalType, light, ID_BTN_BIT_STATE), btnBitState);
             btnBitState.setDataToggle(Toggle.BUTTON);
             btnBitState.addClickHandler(new ClickHandler() {
                 @Override
@@ -125,7 +150,33 @@ public class SignalEditDialogContent {
         }
 
         configPanel.add(container);
-
         return configPanel;
+    }
+
+    public void onConfirmCallback() {
+        // type
+        for (Map.Entry<Signal.TYPE, TabListItem> signalTypeTab : signalTypesTabs.entrySet()) {
+            if (signalTypeTab.getValue().isActive()) {
+                signal.setType(signalTypeTab.getKey());
+                break;
+            }
+        }
+
+        // lights
+        for (Signal.LIGHT light : signal.getType().getLights()) {
+
+            TextBox txtAddress = (TextBox) idWidgets.get(getElementId(signal.getType(), light, ID_TXT_ADDRESS));
+            Select selectBit = (Select) idWidgets.get(getElementId(signal.getType(), light, ID_SELECT_BIT));
+            Button btnBitState = (Button) idWidgets.get(getElementId(signal.getType(), light, ID_BTN_BIT_STATE));
+
+            signal.setLightFunctionConfig(light, new Configuration(1, Integer.parseInt
+                    (txtAddress.getText().trim()), Integer.parseInt(selectBit.getValue()),
+                    btnBitState.isActive()));
+        }
+
+    }
+
+    private String getElementId(Signal.TYPE signalType, Signal.LIGHT signalLight, String elementId) {
+        return signalType.name() + "." + signalLight.name() + "." + elementId;
     }
 }

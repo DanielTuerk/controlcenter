@@ -1,12 +1,25 @@
 package net.wbz.moba.controlcenter.web.shared.track.model;
 
 /**
- * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
+ * Widget to show and control a signal.
+ *
+ * s@author Daniel Tuerk (daniel.tuerk@w-b-z.com)
  */
 public class Signal extends Straight {
 
+    /**
+     * Available lights of the different signal types.
+     */
     public enum LIGHT {RED1, RED2, GREEN1, GREEN2, YELLOW1, YELLOW2, WHITE}
 
+    /**
+     *
+     */
+//    public enum FUNCTION {HP0,HP1,}
+
+    /**
+     * Types of signal with corresponding mapping of the lights.
+     */
     public enum TYPE {
         BLOCK(new LIGHT[]{LIGHT.RED1, LIGHT.GREEN1}),
         ENTER(new LIGHT[]{LIGHT.RED1, LIGHT.GREEN1, LIGHT.YELLOW1}),
@@ -26,8 +39,6 @@ public class Signal extends Straight {
 
     private TYPE type;
 
-    private Configuration[] additionalConfigurations;
-
     public TYPE getType() {
         return type;
     }
@@ -36,11 +47,25 @@ public class Signal extends Straight {
         this.type = type;
     }
 
-    public Configuration[] getAdditionalConfigurations() {
-        return additionalConfigurations;
+    /**
+     * Wrapper to access the function configuration by the
+     * {@link net.wbz.moba.controlcenter.web.shared.track.model.Signal.LIGHT} name.
+     *
+     * @param light {@link net.wbz.moba.controlcenter.web.shared.track.model.Signal.LIGHT}
+     * @return {@link net.wbz.moba.controlcenter.web.shared.track.model.Configuration} or <code>null</code>
+     */
+    public Configuration getLightFunction(LIGHT light) {
+        return getFunctionConfigs().get(light.name());
     }
 
-    public void setAdditionalConfigurations(Configuration[] additionalConfigurations) {
-        this.additionalConfigurations = additionalConfigurations;
+    /**
+     * Create or update the function configuration by the
+     * {@link net.wbz.moba.controlcenter.web.shared.track.model.Signal.LIGHT} name.
+     *
+     * @param light         {@link net.wbz.moba.controlcenter.web.shared.track.model.Signal.LIGHT}
+     * @param configuration {@link net.wbz.moba.controlcenter.web.shared.track.model.Configuration} or <code>null</code>
+     */
+    public void setLightFunctionConfig(LIGHT light, Configuration configuration) {
+        getFunctionConfigs().put(light.name(), configuration);
     }
 }

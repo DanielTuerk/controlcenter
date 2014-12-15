@@ -96,6 +96,8 @@ abstract public class AbstractSignalWidget extends AbstractControlSvgTrackWidget
         popover.addContent(btnStop);
     }
 
+//    private void switchSignalFunction(Signal.)
+
 //    @Override
 //    public TrackPart getTrackPart(Widget containerWidget, int zoomLevel) {
 //        Signal signal = new Signal();
@@ -113,7 +115,13 @@ abstract public class AbstractSignalWidget extends AbstractControlSvgTrackWidget
     }
 
     @Override
+    public void onConfirmCallback() {
+        dialogContent.onConfirmCallback();
+    }
+
+    @Override
     public void onClick() {
+
 //        if(signalType== Signal.TYPE.BLOCK) {
 //            super.onClick();
 //        } else {

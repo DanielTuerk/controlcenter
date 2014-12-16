@@ -53,11 +53,20 @@ abstract public class AbstractSvgTrackWidget<T extends TrackPart> extends Simple
         svgRootElement.setWidth(Style.Unit.PX, 25);
         svgRootElement.setHeight(Style.Unit.PX, 25);
 
-        addSvgContent(svgDocument, svgRootElement);
-
         setEnabled(false);
+    }
 
+    @Override
+    protected void onLoad() {
+        super.onLoad();
+        addSvgContent(svgDocument, svgRootElement);
         getElement().appendChild(svgRootElement.getElement());
+    }
+
+    @Override
+    protected void onUnload() {
+        super.onUnload();
+        getElement().removeChild(svgRootElement.getElement());
     }
 
     /**
@@ -191,6 +200,14 @@ abstract public class AbstractSvgTrackWidget<T extends TrackPart> extends Simple
      */
     public TrackPart getTrackPart(Widget containerWidget, int zoomLevel) {
         trackPart.setGridPosition(getGridPosition(containerWidget, zoomLevel));
+        return trackPart;
+    }
+
+    /**
+     * @return {@link T} model from initial call of
+     * {@link net.wbz.moba.controlcenter.web.client.model.track.AbstractSvgTrackWidget#initFromTrackPart}.
+     */
+    public T getTrackPart() {
         return trackPart;
     }
 

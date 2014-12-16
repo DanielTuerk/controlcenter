@@ -2,7 +2,7 @@ package net.wbz.moba.controlcenter.web.shared.track.model;
 
 /**
  * Widget to show and control a signal.
- *
+ * <p/>
  * s@author Daniel Tuerk (daniel.tuerk@w-b-z.com)
  */
 public class Signal extends Straight {
@@ -10,12 +10,16 @@ public class Signal extends Straight {
     /**
      * Available lights of the different signal types.
      */
-    public enum LIGHT {RED1, RED2, GREEN1, GREEN2, YELLOW1, YELLOW2, WHITE}
+    public enum LIGHT {
+        RED1, RED2, GREEN1, GREEN2, YELLOW1, YELLOW2, WHITE
+    }
 
     /**
-     *
+     * Available functions for the signal types.
      */
-//    public enum FUNCTION {HP0,HP1,}
+    public enum FUNCTION {
+        HP0, HP1, HP2, HP0_SH1
+    }
 
     /**
      * Types of signal with corresponding mapping of the lights.

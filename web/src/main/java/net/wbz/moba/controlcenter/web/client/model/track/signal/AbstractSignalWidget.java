@@ -1,17 +1,23 @@
 package net.wbz.moba.controlcenter.web.client.model.track.signal;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Widget;
 import net.wbz.moba.controlcenter.web.client.Popover;
+import net.wbz.moba.controlcenter.web.client.ServiceUtils;
 import net.wbz.moba.controlcenter.web.client.model.track.AbstractControlSvgTrackWidget;
+import net.wbz.moba.controlcenter.web.client.util.EmptyCallback;
+import net.wbz.moba.controlcenter.web.shared.bus.BusAddressBit;
 import net.wbz.moba.controlcenter.web.shared.track.model.Configuration;
 import net.wbz.moba.controlcenter.web.shared.track.model.Signal;
 import net.wbz.moba.controlcenter.web.shared.track.model.Straight;
-import net.wbz.moba.controlcenter.web.shared.track.model.TrackPart;
-import org.gwtbootstrap3.client.ui.*;
+import org.gwtbootstrap3.client.ui.Button;
 import org.vectomatic.dom.svg.OMSVGDocument;
 import org.vectomatic.dom.svg.OMSVGSVGElement;
+
+import java.util.Map;
 
 /**
  * Abstract widget for an signal.
@@ -21,10 +27,21 @@ import org.vectomatic.dom.svg.OMSVGSVGElement;
  */
 abstract public class AbstractSignalWidget extends AbstractControlSvgTrackWidget<Signal> {
 
-    private Configuration[] storedConfigurations;
-    private Signal.TYPE signalType;
+    /**
+     * Type of the signal. Default is BLOCK.
+     */
+    private Signal.TYPE signalType = Signal.TYPE.BLOCK;
     private Popover popover;
     private SignalEditDialogContent dialogContent;
+
+    /**
+     * Current active function of the signal.
+     */
+    private Signal.FUNCTION activeFunction = Signal.FUNCTION.HP0;
+    /**
+     * Marker for the last painted function to avoid repaint for same state.
+     */
+    private Signal.FUNCTION lastPaintedFunction = null;
 
     public AbstractSignalWidget() {
         popover = new Popover(this);
@@ -32,16 +49,12 @@ abstract public class AbstractSignalWidget extends AbstractControlSvgTrackWidget
 
     @Override
     protected void addSvgContent(OMSVGDocument doc, OMSVGSVGElement svg) {
-        // TODO: ugly
-        if (signalType == null) {
-            signalType = Signal.TYPE.BLOCK;
-        }
-        SignalSvgBuilder.getInstance().addSvgContent(signalType, doc, svg);
+        SignalSvgBuilder.getInstance().addSvgContent(signalType, Signal.FUNCTION.HP0, doc, svg);
     }
 
     @Override
     protected void addActiveStateSvgContent(OMSVGDocument doc, OMSVGSVGElement svg) {
-        SignalSvgBuilder.getInstance().addActiveStateSvgContent(signalType, doc, svg);
+        SignalSvgBuilder.getInstance().addSvgContent(signalType, activeFunction, doc, svg);
     }
 
     @Override
@@ -59,6 +72,7 @@ abstract public class AbstractSignalWidget extends AbstractControlSvgTrackWidget
         btnDrive.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
+                switchSignalFunction(Signal.FUNCTION.HP1);
                 popover.hide();
             }
         });
@@ -69,6 +83,7 @@ abstract public class AbstractSignalWidget extends AbstractControlSvgTrackWidget
             btnSlowDrive.addClickHandler(new ClickHandler() {
                 @Override
                 public void onClick(ClickEvent event) {
+                    switchSignalFunction(Signal.FUNCTION.HP2);
                     popover.hide();
                 }
             });
@@ -80,6 +95,7 @@ abstract public class AbstractSignalWidget extends AbstractControlSvgTrackWidget
             btnRouting.addClickHandler(new ClickHandler() {
                 @Override
                 public void onClick(ClickEvent event) {
+                    switchSignalFunction(Signal.FUNCTION.HP0_SH1);
                     popover.hide();
                 }
             });
@@ -90,28 +106,109 @@ abstract public class AbstractSignalWidget extends AbstractControlSvgTrackWidget
         btnStop.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
+                switchSignalFunction(Signal.FUNCTION.HP0);
                 popover.hide();
             }
         });
         popover.addContent(btnStop);
     }
 
-//    private void switchSignalFunction(Signal.)
+    private BusAddressBit convertFunctionConfig(Configuration configuration) {
+        if (configuration != null && configuration.isValid()) {
+            return new BusAddressBit(configuration.getBus(), configuration.getAddress(),
+                    configuration.getBit(), configuration.isBitState());
+        }
+        return null;
+    }
 
-//    @Override
-//    public TrackPart getTrackPart(Widget containerWidget, int zoomLevel) {
-//        Signal signal = new Signal();
-//        signal.setDirection(getStraightDirection());
-//        signal.setGridPosition(getGridPosition(containerWidget, zoomLevel));
-//        signal.setFunctionConfigs(getStoredWidgetFunctionConfigs());
-//        signal.setAdditionalConfigurations(storedConfigurations);
-//        signal.setType(signalType);
-//        return signal;
-//    }
+    private void switchSignalFunction(Signal.FUNCTION function) {
+        Signal signal = getTrackPart();
+
+        Map<Signal.LIGHT, BusAddressBit> availableLightConfig = Maps.newHashMap();
+
+        for (Signal.LIGHT light : signal.getType().getLights()) {
+            Configuration lightFunction = signal.getLightFunction(light);
+            if (lightFunction != null && lightFunction.isValid()) {
+                availableLightConfig.put(light, new BusAddressBit(lightFunction.getBus(), lightFunction.getAddress(),
+                        lightFunction.getBit(), !lightFunction.isBitState()));
+            }
+        }
+
+        switch (function) {
+            case HP0:
+                switch (signalType) {
+                    case BLOCK:
+                        availableLightConfig.put(Signal.LIGHT.RED1, convertFunctionConfig(signal.getLightFunction(Signal
+                                .LIGHT.RED1)));
+                        break;
+                    case BEFORE:
+                        availableLightConfig.put(Signal.LIGHT.YELLOW1, convertFunctionConfig(signal.getLightFunction
+                                (Signal.LIGHT.YELLOW1)));
+                        availableLightConfig.put(Signal.LIGHT.YELLOW2, convertFunctionConfig(signal.getLightFunction(Signal.LIGHT.YELLOW2)));
+                        break;
+                    case EXIT:
+                        availableLightConfig.put(Signal.LIGHT.RED1, convertFunctionConfig(signal.getLightFunction
+                                (Signal.LIGHT.RED1)));
+                        availableLightConfig.put(Signal.LIGHT.RED2, convertFunctionConfig(signal.getLightFunction(Signal.LIGHT.RED2)));
+                        break;
+                    case ENTER:
+                        availableLightConfig.put(Signal.LIGHT.RED1, convertFunctionConfig(signal.getLightFunction(Signal.LIGHT.RED1)));
+                        break;
+                }
+                break;
+            case HP1:
+                switch (signalType) {
+                    case BLOCK:
+                        availableLightConfig.put(Signal.LIGHT.GREEN1, convertFunctionConfig(signal.getLightFunction(Signal
+                                .LIGHT.GREEN1)));
+                        break;
+                    case BEFORE:
+                        availableLightConfig.put(Signal.LIGHT.GREEN1, convertFunctionConfig(signal.getLightFunction(Signal.LIGHT.GREEN1)));
+                        availableLightConfig.put(Signal.LIGHT.GREEN2, convertFunctionConfig(signal.getLightFunction(Signal.LIGHT.GREEN2)));
+                        break;
+                    case EXIT:
+                        availableLightConfig.put(Signal.LIGHT.GREEN1, convertFunctionConfig(signal.getLightFunction(Signal.LIGHT.GREEN1)));
+                        break;
+                    case ENTER:
+                        availableLightConfig.put(Signal.LIGHT.GREEN1, convertFunctionConfig(signal.getLightFunction(Signal.LIGHT.GREEN1)));
+                        break;
+                }
+                break;
+            case HP2:
+                switch (signalType) {
+                    case BEFORE:
+                        availableLightConfig.put(Signal.LIGHT.GREEN1, convertFunctionConfig(signal.getLightFunction(Signal.LIGHT.GREEN1)));
+                        availableLightConfig.put(Signal.LIGHT.YELLOW2, convertFunctionConfig(signal.getLightFunction(Signal.LIGHT.YELLOW2)));
+                        break;
+                    case EXIT:
+                        availableLightConfig.put(Signal.LIGHT.GREEN1, convertFunctionConfig(signal.getLightFunction(Signal.LIGHT.GREEN1)));
+                        availableLightConfig.put(Signal.LIGHT.YELLOW1, convertFunctionConfig(signal.getLightFunction(Signal.LIGHT.YELLOW1)));
+                        break;
+                    case ENTER:
+                        availableLightConfig.put(Signal.LIGHT.GREEN1, convertFunctionConfig(signal.getLightFunction(Signal.LIGHT.GREEN1)));
+                        availableLightConfig.put(Signal.LIGHT.YELLOW1, convertFunctionConfig(signal.getLightFunction(Signal.LIGHT.YELLOW1)));
+                        break;
+                }
+                break;
+            case HP0_SH1:
+                switch (signalType) {
+                    case EXIT:
+                        availableLightConfig.put(Signal.LIGHT.RED1, convertFunctionConfig(signal.getLightFunction(Signal.LIGHT.RED1)));
+                        availableLightConfig.put(Signal.LIGHT.WHITE, convertFunctionConfig(signal.getLightFunction
+                                (Signal.LIGHT.WHITE)));
+                        break;
+                }
+                break;
+        }
+        activeFunction = function;
+
+        ServiceUtils.getTrackViewerService().sendTrackPartStates(Lists.newArrayList(availableLightConfig.values()), new
+                EmptyCallback<Void>());
+    }
 
     @Override
     public Widget getDialogContent() {
-       return dialogContent.getDialogContent();
+        return dialogContent.getDialogContent();
     }
 
     @Override
@@ -121,17 +218,25 @@ abstract public class AbstractSignalWidget extends AbstractControlSvgTrackWidget
 
     @Override
     public void onClick() {
+        if (signalType == Signal.TYPE.BLOCK) {
+            if (activeFunction == Signal.FUNCTION.HP0) {
+                switchSignalFunction(Signal.FUNCTION.HP1);
+            } else {
+                switchSignalFunction(Signal.FUNCTION.HP0);
+            }
+        } else {
+            popover.toggle();
+        }
+    }
 
-//        if(signalType== Signal.TYPE.BLOCK) {
-//            super.onClick();
-//        } else {
-
-        //TODO
-
-//        popover.reconfigure();
-        popover.toggle();
-
-//        }
+    @Override
+    public void updateFunctionState(Configuration configuration, boolean state) {
+        // only update the SVG once for the function
+        if (lastPaintedFunction != activeFunction) {
+            clearSvgContent();
+            SignalSvgBuilder.getInstance().addSvgContent(signalType, activeFunction, getSvgDocument(), getSvgRootElement());
+            lastPaintedFunction = activeFunction;
+        }
     }
 
     abstract public Straight.DIRECTION getStraightDirection();
@@ -140,5 +245,4 @@ abstract public class AbstractSignalWidget extends AbstractControlSvgTrackWidget
     public String getPaletteTitle() {
         return "Signal";
     }
-
 }

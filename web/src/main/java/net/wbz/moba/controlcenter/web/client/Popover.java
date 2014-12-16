@@ -49,7 +49,7 @@ public class Popover extends FlowPanel {
         if (title != null) {
             Heading heading = new Heading(HeadingSize.H3);
             heading.addStyleName("popover-title");
-            heading.setText("test");
+            heading.setText(title);
             add(heading);
         }
 
@@ -79,6 +79,7 @@ public class Popover extends FlowPanel {
      * Open the popover on the left of the target widget.
      */
     public void show() {
+        //TODO: position
         if (!isShowing()) {
             showing = true;
             int left = targetWidget.getElement().getAbsoluteLeft() + targetWidget.getOffsetWidth();

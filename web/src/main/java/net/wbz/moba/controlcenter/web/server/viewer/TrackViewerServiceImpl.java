@@ -1,16 +1,21 @@
 package net.wbz.moba.controlcenter.web.server.viewer;
 
+import com.google.common.collect.Lists;
 import com.google.gwt.user.client.rpc.RpcTokenException;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import net.wbz.moba.controlcenter.web.shared.bus.BusAddressBit;
 import net.wbz.moba.controlcenter.web.shared.track.model.Configuration;
 import net.wbz.moba.controlcenter.web.shared.viewer.TrackViewerService;
 import net.wbz.selectrix4java.bus.BusAddress;
+import net.wbz.selectrix4java.device.Device;
 import net.wbz.selectrix4java.device.DeviceAccessException;
 import net.wbz.selectrix4java.device.DeviceManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.List;
 
 /**
  * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
@@ -61,6 +66,41 @@ public class TrackViewerServiceImpl extends RemoteServiceServlet implements Trac
             }
         }
         throw new RpcTokenException("invalid configuration: " + configuration);
+    }
+
+    @Override
+    public void sendTrackPartStates(List<BusAddressBit> busAddressBits) {
+        try {
+            Device connectedDevice = deviceManager.getConnectedDevice();
+
+            // collect addresses to change to avoid multiple send calls for single address
+            List<BusAddress> busAddressesToUpdateData = Lists.newArrayList();
+            for (BusAddressBit config : busAddressBits) {
+                if (config != null) {
+                    BusAddress busAddress = connectedDevice.getBusAddress(config.getBus(), (byte) config.getAddress());
+
+                    if (!busAddressesToUpdateData.contains(busAddress)) {
+                        busAddressesToUpdateData.add(busAddress);
+                    }
+
+                    if (config.isBitState()) {
+                        busAddress.setBit(config.getBit());
+                    } else {
+                        busAddress.clearBit(config.getBit());
+                    }
+                }
+            }
+
+            // send data of each address
+            for (BusAddress busAddress : busAddressesToUpdateData) {
+                busAddress.send();
+            }
+
+        } catch (DeviceAccessException e) {
+            String msg = "can't change data of addresses";
+            log.error(msg, e);
+            throw new RpcTokenException(msg);
+        }
     }
 
 }

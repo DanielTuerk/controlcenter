@@ -136,10 +136,17 @@ public class TrackViewerPanel extends AbstractTrackPanel {
                             trackWidget.setEnabled(result);
 
                             trackWidgets.add(trackWidget);
-                            if (!trackWidgetsOfConfiguration.containsKey(trackPart.getDefaultToggleFunctionConfig())) {
-                                trackWidgetsOfConfiguration.put(trackPart.getDefaultToggleFunctionConfig(), new ArrayList<AbstractSvgTrackWidget>());
+
+                            for (Configuration configuration : trackPart.getFunctionConfigs().values()) {
+
+                                if (!trackWidgetsOfConfiguration.containsKey(configuration)) {
+                                    trackWidgetsOfConfiguration.put(configuration, new ArrayList<AbstractSvgTrackWidget>());
+                                }
+                                // avoid same widget for equal bit state configuration
+                                if (!trackWidgetsOfConfiguration.get(configuration).contains(trackWidget)) {
+                                    trackWidgetsOfConfiguration.get(configuration).add(trackWidget);
+                                }
                             }
-                            trackWidgetsOfConfiguration.get(trackPart.getDefaultToggleFunctionConfig()).add(trackWidget);
 
                             AbsoluteTrackPosition trackPosition = trackWidget.getTrackPosition(trackPart.getGridPosition(), getZoomLevel());
                             if (maxTop < trackPosition.getTop()) {
@@ -195,18 +202,5 @@ public class TrackViewerPanel extends AbstractTrackPanel {
                 }
             }
         }
-//        if (blockTrackWidgets.containsKey(configuration)) {
-//            for (BlockPart blockPart : blockTrackWidgets.get(configuration)) {
-//                if (configuration.isValid()) {
-//                    if (state) {
-//                        blockPart.usedBlock();
-//                    } else {
-//                        blockPart.freeBlock();
-//                    }
-//                } else {
-//                    blockPart.unknownBlock();
-//                }
-//            }
-//        }
     }
 }

@@ -82,7 +82,6 @@ public class Configuration implements Serializable {
 
         if (address != that.address) return false;
         if (bit != that.bit) return false;
-        if (bitState != that.bitState) return false;
         if (bus != that.bus) return false;
 
         return true;
@@ -93,7 +92,6 @@ public class Configuration implements Serializable {
         int result = bus;
         result = 31 * result + address;
         result = 31 * result + bit;
-        result = 31 * result + (bitState ? 1 : 0);
         return result;
     }
 }

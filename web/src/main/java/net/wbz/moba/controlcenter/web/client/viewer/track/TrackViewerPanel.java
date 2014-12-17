@@ -38,6 +38,7 @@ public class TrackViewerPanel extends AbstractTrackPanel {
 
     public static final int PERCENTAGE_MAX = 99;
     public static final int PERCENTAGE_START_TRACK = 30;
+    public static final String ID = "trackViewerPanel";
 
     private Label lblTrackPartConfig = new Label();
 
@@ -70,6 +71,7 @@ public class TrackViewerPanel extends AbstractTrackPanel {
                 }
             }
         };
+        getElement().setId(ID);
     }
 
     private void enableTrackWidgets() {

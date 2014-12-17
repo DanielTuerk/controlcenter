@@ -9,6 +9,7 @@ import net.wbz.moba.controlcenter.web.client.Popover;
 import net.wbz.moba.controlcenter.web.client.ServiceUtils;
 import net.wbz.moba.controlcenter.web.client.model.track.AbstractControlSvgTrackWidget;
 import net.wbz.moba.controlcenter.web.client.util.EmptyCallback;
+import net.wbz.moba.controlcenter.web.client.viewer.track.TrackViewerPanel;
 import net.wbz.moba.controlcenter.web.shared.bus.BusAddressBit;
 import net.wbz.moba.controlcenter.web.shared.track.model.Configuration;
 import net.wbz.moba.controlcenter.web.shared.track.model.Signal;
@@ -44,7 +45,7 @@ abstract public class AbstractSignalWidget extends AbstractControlSvgTrackWidget
     private Signal.FUNCTION lastPaintedFunction = null;
 
     public AbstractSignalWidget() {
-        popover = new Popover(this);
+        popover = new Popover(TrackViewerPanel.ID, this);
     }
 
     @Override
@@ -218,14 +219,24 @@ abstract public class AbstractSignalWidget extends AbstractControlSvgTrackWidget
 
     @Override
     public void onClick() {
-        if (signalType == Signal.TYPE.BLOCK) {
-            if (activeFunction == Signal.FUNCTION.HP0) {
-                switchSignalFunction(Signal.FUNCTION.HP1);
+        if (isEnabled()) {
+            if (signalType == Signal.TYPE.BLOCK) {
+                if (activeFunction == Signal.FUNCTION.HP0) {
+                    switchSignalFunction(Signal.FUNCTION.HP1);
+                } else {
+                    switchSignalFunction(Signal.FUNCTION.HP0);
+                }
             } else {
-                switchSignalFunction(Signal.FUNCTION.HP0);
+                popover.toggle();
             }
-        } else {
-            popover.toggle();
+        }
+    }
+
+    @Override
+    protected void onUnload() {
+        super.onUnload();
+        if (popover.isShowing()) {
+            popover.hide();
         }
     }
 

@@ -8,7 +8,7 @@ import net.wbz.moba.controlcenter.web.shared.scenario.Scenario;
  */
 public class AbstractStateEvent implements Event {
 
-    public long itemId;
+    public long itemId=-1;
 
     public AbstractStateEvent() {
     }

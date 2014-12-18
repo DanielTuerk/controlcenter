@@ -10,8 +10,9 @@ public class TrainDrivingDirectionEvent extends TrainStateEvent {
         FORWARD, BACKWARD
     }
 
-    public TrainDrivingDirectionEvent(String driving_direction) {
-        this.direction = DRIVING_DIRECTION.valueOf(driving_direction);
+    public TrainDrivingDirectionEvent(long itemId, DRIVING_DIRECTION direction) {
+        super(itemId);
+        this.direction = direction;
     }
 
     public TrainDrivingDirectionEvent() {

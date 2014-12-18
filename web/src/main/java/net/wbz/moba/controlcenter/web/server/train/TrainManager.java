@@ -42,31 +42,33 @@ public class TrainManager {
             @Override
             public void connected(Device device) {
                 try {
-                    for (Train train : getTrains()) {
+                    for (final Train train : getTrains()) {
                         deviceManager.getConnectedDevice().getTrainModule((byte) train.getAddress()).addTrainDataListener(new TrainDataListener() {
                             @Override
                             public void drivingLevelChanged(int i) {
-                                eventBroadcaster.fireEvent(new TrainDrivingLevelEvent(i));
+                                eventBroadcaster.fireEvent(new TrainDrivingLevelEvent(train.getId(), i));
                             }
 
                             @Override
                             public void drivingDirectionChanged(TrainModule.DRIVING_DIRECTION driving_direction) {
-                                eventBroadcaster.fireEvent(new TrainDrivingDirectionEvent(driving_direction.name()));
+                                eventBroadcaster.fireEvent(new TrainDrivingDirectionEvent(train.getId(),
+                                        TrainDrivingDirectionEvent.DRIVING_DIRECTION.valueOf(
+                                                driving_direction.name())));
                             }
 
                             @Override
                             public void functionStateChanged(byte functionAddress, int functionBit, boolean active) {
-                                eventBroadcaster.fireEvent(new TrainFunctionStateEvent(functionAddress, functionBit, active));
+                                eventBroadcaster.fireEvent(new TrainFunctionStateEvent(train.getId(), functionAddress, functionBit, active));
                             }
 
                             @Override
-                            public void lightStateChanged(boolean b) {
-                                eventBroadcaster.fireEvent(new TrainLightStateEvent(b));
+                            public void lightStateChanged(boolean state) {
+                                eventBroadcaster.fireEvent(new TrainLightStateEvent(train.getId(), state));
                             }
 
                             @Override
-                            public void hornStateChanged(boolean b) {
-                                eventBroadcaster.fireEvent(new TrainHornStateEvent(b));
+                            public void hornStateChanged(boolean state) {
+                                eventBroadcaster.fireEvent(new TrainHornStateEvent(train.getId(), state));
                             }
                         });
                     }

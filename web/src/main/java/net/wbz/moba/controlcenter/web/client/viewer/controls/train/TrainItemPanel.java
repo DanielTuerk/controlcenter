@@ -20,8 +20,6 @@ import org.gwtbootstrap3.client.ui.constants.IconType;
 import org.gwtbootstrap3.client.ui.constants.Toggle;
 import org.gwtbootstrap3.extras.slider.client.ui.Slider;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -41,11 +39,6 @@ public class TrainItemPanel extends AbstractItemPanel<Train, TrainStateEvent> {
     private Button btnDirectionBackward;
     private Map<TrainFunction.FUNCTION, Button> functionButtons = Maps.newConcurrentMap();
 
-    /**
-     * Stores the last programmatic value of the driving level slider to avoid callback handling.
-     */
-    private int lastValueHotFixOfStupidValueChangeSliderEvent = 0;
-
     private final Label lblName;
     private final Label lblState;
     private final Label lblStateDetails;
@@ -57,16 +50,6 @@ public class TrainItemPanel extends AbstractItemPanel<Train, TrainStateEvent> {
         lblStateDetails = new Label("TODO state");
     }
 
-    @Override
-    protected List<Class<TrainStateEvent>> getStateEventClasses() {
-        List classes = new ArrayList<TrainStateEvent>();
-        classes.add(TrainHornStateEvent.class);
-        classes.add(TrainLightStateEvent.class);
-        classes.add(TrainFunctionStateEvent.class);
-        classes.add(TrainDrivingDirectionEvent.class);
-        classes.add(TrainDrivingLevelEvent.class);
-        return classes;
-    }
 
     @Override
     protected Panel createHeaderPanel() {
@@ -130,7 +113,6 @@ public class TrainItemPanel extends AbstractItemPanel<Train, TrainStateEvent> {
             }
         } else if (event instanceof TrainDrivingLevelEvent) {
             TrainDrivingLevelEvent drivingLevelEvent = (TrainDrivingLevelEvent) event;
-            lastValueHotFixOfStupidValueChangeSliderEvent = drivingLevelEvent.getSpeed();
             sliderDrivingLevel.setValue((double) drivingLevelEvent.getSpeed());
             lblStateDetails.setText("speed: " + drivingLevelEvent.getSpeed());
         }
@@ -166,15 +148,14 @@ public class TrainItemPanel extends AbstractItemPanel<Train, TrainStateEvent> {
         lblSliderValue.getElement().getStyle().setMarginRight(15, Style.Unit.PX);
         lblSliderValue.getElement().getStyle().setMarginLeft(10, Style.Unit.PX);
         sliderDrivingLevel = new Slider(0, DRIVING_LEVEL_MAX_VALUE, 0);
-//        sliderDrivingLevel.drawMarks(Color.WHITE.toString(), 6);
-//        sliderDrivingLevel.setValue(lastValueHotFixOfStupidValueChangeSliderEvent);
         sliderDrivingLevel.addValueChangeHandler(
                 new ValueChangeHandler<Double>() {
                     @Override
                     public void onValueChange(ValueChangeEvent<Double> doubleValueChangeEvent) {
                         lblSliderValue.setText(doubleValueChangeEvent.getValue().toString());
+                        int level = doubleValueChangeEvent.getValue().intValue();
                         ServiceUtils.getTrainService().updateDrivingLevel(
-                                getModel().getId(), doubleValueChangeEvent.getValue().intValue(), new EmptyCallback<Void>());
+                                getModel().getId(), level, new EmptyCallback<Void>());
                     }
                 }
         );
@@ -199,7 +180,8 @@ public class TrainItemPanel extends AbstractItemPanel<Train, TrainStateEvent> {
                                                   @Override
                                                   public void onClick(ClickEvent clickEvent) {
                                                       ServiceUtils.getTrainService().setFunctionState(getModel().getId(),
-                                                              functionEntry.getFunction(), btnToggleFunction.isActive(), new EmptyCallback<Void>());
+                                                              functionEntry.getFunction(), !btnToggleFunction
+                                                                      .isActive(), new EmptyCallback<Void>());
                                                   }
                                               }
             );

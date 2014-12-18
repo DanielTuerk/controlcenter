@@ -7,8 +7,9 @@ public class TrainLightStateEvent extends TrainStateEvent {
 
     private boolean state;
 
-    public TrainLightStateEvent(boolean b) {
-        state=b;
+    public TrainLightStateEvent(long itemId, boolean state) {
+        super(itemId);
+        this.state = state;
     }
 
     public TrainLightStateEvent() {

@@ -50,11 +50,6 @@ public class ScenarioItemPanel extends AbstractItemPanel<Scenario, ScenarioState
     }
 
     @Override
-    protected List<Class<ScenarioStateEvent>> getStateEventClasses() {
-        return Lists.newArrayList(ScenarioStateEvent.class);
-    }
-
-    @Override
     protected Panel createHeaderPanel() {
         Panel headerPanel = new FlowPanel();
         headerPanel.add(new Label(getModel().getName() + " [" + getModel().getId() + "]"));
@@ -157,9 +152,6 @@ public class ScenarioItemPanel extends AbstractItemPanel<Scenario, ScenarioState
         });
         btnControlGroupPanel.add(btnToggleRepeatMode);
         add(btnControlGroupPanel);
-
-
-//        updateItemData(getModel().getRunState());
 
         initEditPanel();
         showCommandList(getModel().getCommands());

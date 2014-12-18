@@ -33,23 +33,12 @@ abstract public class AbstractItemPanel<Model extends AbstractIdModel, StateEven
     private PanelBody panelBody;
     private PanelHeader panelHeader;
 
-    private Map<Class<StateEvent>,RemoteEventListener> eventListeners = new HashMap<>();
 
     public AbstractItemPanel(Model model) {
         this.model = model;
-
     }
 
     public void init() {
-        for (Class<StateEvent> stateEventClass : getStateEventClasses()) {
-            eventListeners.put(stateEventClass, new RemoteEventListener() {
-                @Override
-                public void apply(Event event) {
-                    updateItemData((StateEvent) event);
-                }
-            });
-        }
-
         collapseContentPanel = createCollapseContentPanel();
 
         //header
@@ -76,7 +65,6 @@ abstract public class AbstractItemPanel<Model extends AbstractIdModel, StateEven
 
     }
 
-    abstract protected List<Class<StateEvent>> getStateEventClasses();
 
     /**
      * TODO Change to update model, or create a new item panel (scenario)
@@ -94,23 +82,13 @@ abstract public class AbstractItemPanel<Model extends AbstractIdModel, StateEven
     @Override
     protected void onLoad() {
         super.onLoad();
-
         add(panelHeader);
         add(panelBody);
-
-        for (Map.Entry<Class<StateEvent>,RemoteEventListener> eventListenerEntry : eventListeners.entrySet()) {
-            EventReceiver.getInstance().addListener(eventListenerEntry.getKey(), eventListenerEntry.getValue());
-        }
     }
 
     @Override
     protected void onUnload() {
         super.onUnload();
-
-        for (Map.Entry<Class<StateEvent>,RemoteEventListener> eventListenerEntry : eventListeners.entrySet()) {
-            EventReceiver.getInstance().removeListener(eventListenerEntry.getKey(), eventListenerEntry.getValue());
-        }
-
         remove(panelBody);
         remove(panelHeader);
     }

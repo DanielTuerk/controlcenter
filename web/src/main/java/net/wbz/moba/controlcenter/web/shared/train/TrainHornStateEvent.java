@@ -9,8 +9,9 @@ public class TrainHornStateEvent extends TrainStateEvent {
 
     private boolean state;
 
-    public TrainHornStateEvent(boolean b) {
-        state=b;
+    public TrainHornStateEvent(long itemId, boolean state) {
+        super(itemId);
+        this.state = state;
     }
 
     public TrainHornStateEvent() {

@@ -8,7 +8,8 @@ public class TrainFunctionStateEvent extends TrainStateEvent {
     private int functionBit;
     private boolean active;
 
-    public TrainFunctionStateEvent(byte functionAddress, int functionBit, boolean active) {
+    public TrainFunctionStateEvent(long itemId, byte functionAddress, int functionBit, boolean active) {
+        super(itemId);
         this.functionAddress = functionAddress;
         this.functionBit = functionBit;
         this.active = active;

@@ -6,10 +6,10 @@ import com.google.gwt.gen2.logging.shared.Log;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import net.wbz.moba.controlcenter.web.client.ServiceUtils;
 import net.wbz.moba.controlcenter.web.client.viewer.controls.AbstractItemViewerPanel;
-import net.wbz.moba.controlcenter.web.shared.train.Train;
-import net.wbz.moba.controlcenter.web.shared.train.TrainStateEvent;
+import net.wbz.moba.controlcenter.web.shared.train.*;
 import org.gwtbootstrap3.client.ui.TextBox;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -19,13 +19,15 @@ import java.util.List;
  */
 public class TrainViewerPanel extends AbstractItemViewerPanel<TrainItemPanel, TrainStateEvent> {
 
-    public TrainViewerPanel() {
-        super(TrainStateEvent.class);
-    }
-
     @Override
-    protected void eventCallback(TrainItemPanel eventItem, TrainStateEvent trainStateEvent) {
-        eventItem.updateItemData(trainStateEvent);
+    protected List<Class<TrainStateEvent>> getStateEventClasses() {
+        List classes = new ArrayList<TrainStateEvent>();
+        classes.add(TrainHornStateEvent.class);
+        classes.add(TrainLightStateEvent.class);
+        classes.add(TrainFunctionStateEvent.class);
+        classes.add(TrainDrivingDirectionEvent.class);
+        classes.add(TrainDrivingLevelEvent.class);
+        return classes;
     }
 
     @Override

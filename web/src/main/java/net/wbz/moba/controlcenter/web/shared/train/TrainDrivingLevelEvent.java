@@ -8,7 +8,8 @@ import de.novanic.eventservice.client.event.Event;
 public class TrainDrivingLevelEvent extends TrainStateEvent{
     private int speed;
 
-    public TrainDrivingLevelEvent(int speed) {
+    public TrainDrivingLevelEvent(long itemId, int speed) {
+        super(itemId);
         this.speed = speed;
     }
 

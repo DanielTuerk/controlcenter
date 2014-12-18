@@ -1,5 +1,6 @@
 package net.wbz.moba.controlcenter.web.client.viewer.controls.scenario;
 
+import com.google.common.collect.Lists;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.gen2.logging.shared.Log;
@@ -18,12 +19,12 @@ import java.util.List;
 public class ScenarioViewerPanel extends AbstractItemViewerPanel<ScenarioItemPanel, ScenarioStateEvent> {
 
     public ScenarioViewerPanel() {
-        super(ScenarioStateEvent.class);
+        super();
     }
 
     @Override
-    protected void eventCallback(ScenarioItemPanel eventItem, ScenarioStateEvent scenarioStateEvent) {
-        eventItem.updateItemData(scenarioStateEvent);
+    protected List<Class<ScenarioStateEvent>> getStateEventClasses() {
+        return Lists.newArrayList(ScenarioStateEvent.class);
     }
 
     @Override

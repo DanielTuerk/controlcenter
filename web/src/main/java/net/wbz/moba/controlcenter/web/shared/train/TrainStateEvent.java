@@ -7,5 +7,10 @@ import net.wbz.moba.controlcenter.web.shared.AbstractStateEvent;
  */
 public class TrainStateEvent extends AbstractStateEvent {
 
+    public TrainStateEvent(long itemId) {
+        super(itemId);
+    }
 
+    public TrainStateEvent() {
+    }
 }

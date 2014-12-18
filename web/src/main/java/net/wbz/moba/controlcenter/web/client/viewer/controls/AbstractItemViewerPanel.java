@@ -13,6 +13,8 @@ import org.gwtbootstrap3.client.ui.InputGroup;
 import org.gwtbootstrap3.client.ui.InputGroupButton;
 import org.gwtbootstrap3.client.ui.TextBox;
 
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -22,8 +24,10 @@ abstract public class AbstractItemViewerPanel<ItemPanel extends AbstractItemPane
 
     private final Map<Long, ItemPanel> itemPanelByIdMap = Maps.newHashMap();
     private final FlowPanel itemsContainerPanel = new FlowPanel();
+    private final Map<Class<EventType>,RemoteEventListener> eventListeners = new HashMap<>();
 
-    public AbstractItemViewerPanel(Class<EventType> eventClass) {
+
+    public AbstractItemViewerPanel() {
         addStyleName("contentPanel");
 
         InputGroup inputCreate = new InputGroup();
@@ -41,21 +45,24 @@ abstract public class AbstractItemViewerPanel<ItemPanel extends AbstractItemPane
         // TODO: scrollable container
         add(itemsContainerPanel);
 
-        EventReceiver.getInstance().addListener(eventClass, new RemoteEventListener() {
-            public void apply(Event anEvent) {
-                //TODO
-                EventType eventType = (EventType) anEvent;
+        for (Class<EventType> stateEventClass : getStateEventClasses()) {
+            eventListeners.put(stateEventClass, new RemoteEventListener() {
+                public void apply(Event anEvent) {
+                    //TODO
+                    EventType eventType = (EventType) anEvent;
 
-                if (itemPanelByIdMap.containsKey(eventType.getItemId())) {
-                    eventCallback(itemPanelByIdMap.get(eventType.getItemId()), eventType);
-                } else {
-                    net.wbz.moba.controlcenter.web.client.util.Log.info("event: can't find item " + eventType.getItemId());
+                    if (itemPanelByIdMap.containsKey(eventType.getItemId())) {
+                        itemPanelByIdMap.get(eventType.getItemId()).updateItemData(eventType);
+                    } else {
+                        net.wbz.moba.controlcenter.web.client.util.Log.info("event: can't find item " + eventType.getItemId());
+                    }
                 }
-            }
-        });
+            });
+        }
+
     }
 
-    protected abstract void eventCallback(ItemPanel eventItem, EventType eventType);
+    abstract protected List<Class<EventType>> getStateEventClasses();
 
     abstract protected ClickHandler getBtnNewClickHandler(TextBox name);
 
@@ -63,9 +70,15 @@ abstract public class AbstractItemViewerPanel<ItemPanel extends AbstractItemPane
     protected void onLoad() {
         super.onLoad();
         loadData();
+        for (Map.Entry<Class<EventType>,RemoteEventListener> eventListenerEntry : eventListeners.entrySet()) {
+            EventReceiver.getInstance().addListener(eventListenerEntry.getKey(), eventListenerEntry.getValue());
+        }
     }
 
     protected void loadData() {
+        for (Map.Entry<Class<EventType>,RemoteEventListener> eventListenerEntry : eventListeners.entrySet()) {
+            EventReceiver.getInstance().removeListener(eventListenerEntry.getKey(), eventListenerEntry.getValue());
+        }
         itemsContainerPanel.clear();
         loadItems();
     }

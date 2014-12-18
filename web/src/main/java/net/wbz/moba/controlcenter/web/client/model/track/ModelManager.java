@@ -1,5 +1,7 @@
 package net.wbz.moba.controlcenter.web.client.model.track;
 
+import net.wbz.moba.controlcenter.web.client.model.track.signal.SignalHorizontalWidget;
+import net.wbz.moba.controlcenter.web.client.model.track.signal.SignalVerticalWidget;
 import net.wbz.moba.controlcenter.web.shared.track.model.TrackPart;
 
 import java.util.ArrayList;
@@ -23,6 +25,7 @@ public class ModelManager {
     private final List<AbstractSvgTrackWidget> widgets = new ArrayList<AbstractSvgTrackWidget>();
 
     public void registerModel(AbstractSvgTrackWidget widgetClass) {
+        widgetClass.initFromTrackPart(widgetClass.getNewTrackPart());
         widgets.add(widgetClass);
     }
 
@@ -41,5 +44,46 @@ public class ModelManager {
             }
         }
         return null; //TODO: exception
+    }
+
+    public void init() {
+        // TODO: ugly ugly ugly bullshit
+
+        registerModel(new SignalHorizontalWidget());
+
+        registerModel(new SignalVerticalWidget());
+
+        // straight after signal because signal extends straight
+
+        registerModel(new StraightVerticalWidget());
+
+        registerModel(new StraightHorizontalWidget());
+
+
+        registerModel(new CurveTopRightWidget());
+
+        registerModel(new CurveTopLeftWidget());
+
+        registerModel(new CurveBottomRightWidget());
+
+        registerModel(new CurveBottomLeftWidget());
+
+
+        registerModel(new SwitchLeftBottomToTopWidget());
+
+        registerModel(new SwitchLeftTopToBottomWidget());
+
+        registerModel(new SwitchLeftRightToLeftWidget());
+
+        registerModel(new SwitchLeftLeftToRightWidget());
+
+
+        registerModel(new SwitchRightBottomToTopWidget());
+
+        registerModel(new SwitchRightTopToBottomWidget());
+
+        registerModel(new SwitchRightRightToLeftWidget());
+
+        registerModel(new SwitchRightLeftToRightWidget());
     }
 }

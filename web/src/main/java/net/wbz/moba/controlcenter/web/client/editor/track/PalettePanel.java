@@ -8,34 +8,35 @@ import net.wbz.moba.controlcenter.web.client.model.track.AbstractSvgTrackWidget;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ *
+ * @author Daniel Tuerk
+ */
 public class PalettePanel extends VerticalPanel   {
 
     private final PickupDragController dragController;
 
-    private final Map<String, FlowPanel> palleteGroupMapping = new HashMap<String, FlowPanel>();
+    private final Map<String, FlowPanel> paletteGroupMapping = new HashMap<String, FlowPanel>();
 
     public PalettePanel(PickupDragController dragController) {
         this.dragController = dragController;
 
         setWidth("200px");
-        addStyleName("pallete");
+        addStyleName("palette");
         setSpacing(2);
         setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
 
         Label header = new Label("Widget Palette");
         add(header);
 
-
-        for(Map.Entry<String,FlowPanel> entry: palleteGroupMapping.entrySet()) {
+        for(Map.Entry<String,FlowPanel> entry: paletteGroupMapping.entrySet()) {
             add(new Label(entry.getKey()));
             add(entry.getValue());
         }
-
-
     }
 
     private void addPaletteItem(AbstractSvgTrackWidget widget, int index) {
-        if (!palleteGroupMapping.containsKey(widget.getPaletteTitle())) {
+        if (!paletteGroupMapping.containsKey(widget.getPaletteTitle())) {
             FlowPanel paletteGroup = new FlowPanel() {
 
                 /**
@@ -51,12 +52,13 @@ public class PalettePanel extends VerticalPanel   {
                     boolean result = super.remove(w);
                     if (w instanceof PaletteWidget) {
                         PaletteWidget clone = ((PaletteWidget) w).cloneWidget();
+                        clone.getWidget().setEnabled(true);
                         addPaletteItem(clone.getPaletteWidgetItem(), index);
                     }
                     return result;
                 }
             };
-            palleteGroupMapping.put(widget.getPaletteTitle(), paletteGroup);
+            paletteGroupMapping.put(widget.getPaletteTitle(), paletteGroup);
             add(new Label(widget.getPaletteTitle()));
             add(paletteGroup);
         }
@@ -65,16 +67,18 @@ public class PalettePanel extends VerticalPanel   {
         dragController.makeDraggable(paletteWidget);
         paletteWidget.getElement().getStyle().setFloat(Style.Float.LEFT);
         paletteWidget.getElement().getStyle().setMarginLeft(5, Style.Unit.PX);
+        paletteWidget.getElement().getStyle().setMarginBottom(5, Style.Unit.PX);
         if (index > -1) {
-            palleteGroupMapping.get(widget.getPaletteTitle()).insert(paletteWidget, index);
+            paletteGroupMapping.get(widget.getPaletteTitle()).insert(paletteWidget, index);
         } else {
-            palleteGroupMapping.get(widget.getPaletteTitle()).add(paletteWidget);
-
+            paletteGroupMapping.get(widget.getPaletteTitle()).add(paletteWidget);
         }
     }
 
-
     public void addPaletteItem(AbstractSvgTrackWidget widget) {
+        widget.setEnabled(true);
+        // TODO: bullshit - only done to register the double click handler
+        new EditorPaletteWidget(widget);
         addPaletteItem(widget, -1);
     }
 

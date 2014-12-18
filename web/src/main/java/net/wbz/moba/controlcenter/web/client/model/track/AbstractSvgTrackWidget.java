@@ -268,4 +268,10 @@ abstract public class AbstractSvgTrackWidget<T extends TrackPart> extends Simple
     public boolean isEnabled() {
         return enabled;
     }
+
+    /**
+     * TODO: to avoid same model of clone - palette
+     * @return
+     */
+    abstract public T getNewTrackPart();
 }

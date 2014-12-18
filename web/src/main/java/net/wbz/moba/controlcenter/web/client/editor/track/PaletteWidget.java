@@ -38,20 +38,14 @@ public class PaletteWidget extends AbsolutePanel implements HasDragHandle {
     }
 
     public PaletteWidget cloneWidget() {
-        Widget clone;
-
-        if (widget instanceof AbstractSvgTrackWidget) {
-            clone = widget.getClone(null);
-        } else {
-            throw new IllegalStateException("Unhandled Widget class " + widget.getClass().getName());
-        }
+        Widget clone = widget.getClone(widget.getNewTrackPart());
 
         // Copy a few obvious common widget properties
         clone.setStyleName(widget.getStyleName());
         clone.setTitle(widget.getTitle());
 
         // Wrap the cloned widget in a new PaletteWidget instance
-        return new PaletteWidget((AbstractSvgTrackWidget) clone);
+        return new EditorPaletteWidget((AbstractSvgTrackWidget) clone);
     }
 
     @Override

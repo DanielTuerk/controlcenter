@@ -20,11 +20,15 @@ import org.gwtbootstrap3.extras.growl.client.ui.GrowlOptions;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
  */
 public class TrackEditorContainer extends FlowPanel {
+
+    private Logger logger = Logger.getLogger(TrackEditorContainer.class.getName());
 
     private static int draggableOffsetPadding = 2;
 
@@ -66,8 +70,8 @@ public class TrackEditorContainer extends FlowPanel {
         }
 
 
-        HorizontalPanel titelPanel = new HorizontalPanel();
-        titelPanel.add(new Label("Track Editor"));
+        HorizontalPanel titlePanel = new HorizontalPanel();
+        titlePanel.add(new Label("Track Editor"));
 
         MenuBar menuBar = new MenuBar();
         menuBar.addItem(new MenuItem("Save", false, new Command() {
@@ -79,28 +83,36 @@ public class TrackEditorContainer extends FlowPanel {
                     if (paletteWidget instanceof PaletteWidget) {
                         Widget w = ((PaletteWidget) paletteWidget).getPaletteWidgetItem();
                         if (w instanceof AbstractSvgTrackWidget) {
-                            trackParts.add(((AbstractSvgTrackWidget) w).getTrackPart(getBoundaryPanel(),
-                                    getBoundaryPanel().getZoomLevel()));
+                            try {
+                                trackParts.add(((AbstractSvgTrackWidget) w).getTrackPart(getBoundaryPanel(),
+                                        getBoundaryPanel().getZoomLevel()));
+                            } catch (Exception e) {
+                                String msg = "ignore widget (can't save): " + ((AbstractSvgTrackWidget) w)
+                                        .getPaletteTitle() + " - " + e.getMessage();
+                                GrowlOptions growlOptions = GrowlHelper.getNewOptions();
+                                growlOptions.setDangerType();
+                                Growl.growl(msg, growlOptions);
+                                logger.log(Level.SEVERE, msg, e);
+                                e.printStackTrace();
+                            }
                         }
                     }
                 }
 
                 ServiceUtils.getTrackEditorService().saveTrack(trackParts.toArray(new TrackPart[trackParts.size()]),
                         new AsyncCallback<Void>() {
-                    @Override
-                    public void onFailure(Throwable throwable) {
-                        GrowlOptions growlOptions = GrowlHelper.getNewOptions();
-                        growlOptions.setDangerType();
-                        Growl.growl("error by save track: " + throwable.getMessage(), growlOptions);
-                    }
+                            @Override
+                            public void onFailure(Throwable throwable) {
+                                GrowlOptions growlOptions = GrowlHelper.getNewOptions();
+                                growlOptions.setDangerType();
+                                Growl.growl("error by save track: " + throwable.getMessage(), growlOptions);
+                            }
 
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        GrowlOptions growlOptions = GrowlHelper.getNewOptions();
-                        growlOptions.setDangerType();
-                        Growl.growl("track saved!");
-                    }
-                });
+                            @Override
+                            public void onSuccess(Void aVoid) {
+                                Growl.growl("track saved!");
+                            }
+                        });
             }
         }));
         menuBar.addItem("Delete", new Scheduler.ScheduledCommand() {

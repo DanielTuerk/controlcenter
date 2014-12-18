@@ -21,4 +21,12 @@ public class SwitchLeftRightToLeftWidget extends AbstractSwitchLeftWidget {
         return new SwitchLeftRightToLeftWidget();
     }
 
+    @Override
+    public Switch getNewTrackPart() {
+        Switch switchRightL = new Switch();
+        switchRightL.setCurrentDirection(Switch.DIRECTION.LEFT);
+        switchRightL.setCurrentPresentation(Switch.PRESENTATION.RIGHT_TO_LEFT);
+        return switchRightL;
+    }
+
 }

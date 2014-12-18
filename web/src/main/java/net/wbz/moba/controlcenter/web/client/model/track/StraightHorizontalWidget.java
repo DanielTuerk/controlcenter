@@ -26,6 +26,13 @@ public class StraightHorizontalWidget extends AbstractStraightWidget {
     }
 
     @Override
+    public Straight getNewTrackPart() {
+        Straight straight = new Straight();
+        straight.setDirection(Straight.DIRECTION.VERTICAL);
+        return straight;
+    }
+
+    @Override
     public boolean isRepresentationOf(Straight trackPart) {
         return trackPart.getDirection() == Straight.DIRECTION.HORIZONTAL;
     }

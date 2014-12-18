@@ -14,6 +14,13 @@ public class CurveTopRightWidget extends AbstractCurveWidget {
     }
 
     @Override
+    public Curve getNewTrackPart() {
+        Curve curveTopR = new Curve();
+        curveTopR.setDirection(Curve.DIRECTION.TOP_RIGHT);
+        return curveTopR;
+    }
+
+    @Override
     public String getTrackWidgetStyleName() {
         return "widget_track_curve_top_right";
     }

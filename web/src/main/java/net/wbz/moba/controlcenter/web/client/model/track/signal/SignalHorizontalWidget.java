@@ -25,6 +25,13 @@ public class SignalHorizontalWidget extends AbstractSignalWidget {
     }
 
     @Override
+    public Signal getNewTrackPart() {
+        Signal horizontalSignal = new Signal();
+        horizontalSignal.setDirection(Straight.DIRECTION.HORIZONTAL);
+        return horizontalSignal;
+    }
+
+    @Override
     public boolean isRepresentationOf(Signal trackPart) {
         return trackPart != null && trackPart.getDirection() == getStraightDirection();
     }

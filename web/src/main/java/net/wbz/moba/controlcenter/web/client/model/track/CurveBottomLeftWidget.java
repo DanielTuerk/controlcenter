@@ -21,6 +21,13 @@ public class CurveBottomLeftWidget extends AbstractCurveWidget {
     }
 
     @Override
+    public Curve getNewTrackPart() {
+        Curve curveBottomL = new Curve();
+        curveBottomL.setDirection(Curve.DIRECTION.BOTTOM_LEFT);
+        return curveBottomL;
+    }
+
+    @Override
     public Curve.DIRECTION getCurveDirection() {
         return Curve.DIRECTION.BOTTOM_LEFT;
     }

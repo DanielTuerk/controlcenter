@@ -19,11 +19,10 @@ import net.wbz.moba.controlcenter.web.client.viewer.bus.BusMonitorPanel;
 import net.wbz.moba.controlcenter.web.client.viewer.settings.ConfigPanel;
 import net.wbz.moba.controlcenter.web.client.viewer.track.TrackViewerContainer;
 import net.wbz.moba.controlcenter.web.shared.constrution.Construction;
-import org.gwtbootstrap3.client.ui.Button;
-import org.gwtbootstrap3.client.ui.Popover;
-import org.gwtbootstrap3.client.ui.constants.Placement;
-import org.gwtbootstrap3.client.ui.constants.Trigger;
-import org.gwtbootstrap3.client.ui.gwt.FlowPanel;
+import net.wbz.moba.controlcenter.web.shared.track.model.Curve;
+import net.wbz.moba.controlcenter.web.shared.track.model.Signal;
+import net.wbz.moba.controlcenter.web.shared.track.model.Straight;
+import net.wbz.moba.controlcenter.web.shared.track.model.Switch;
 import org.gwtbootstrap3.extras.growl.client.ui.Growl;
 import org.gwtbootstrap3.extras.growl.client.ui.GrowlHelper;
 import org.gwtbootstrap3.extras.growl.client.ui.GrowlOptions;
@@ -50,24 +49,7 @@ public class ControlCenterApp implements EntryPoint {
     private List<Widget> containerPanels = new ArrayList<>();
 
     public ControlCenterApp() {
-        // TODO: ugly
-        ModelManager.getInstance().registerModel(new SignalHorizontalWidget());
-        ModelManager.getInstance().registerModel(new SignalVerticalWidget());
-        // straight after signal because signal extends straight
-        ModelManager.getInstance().registerModel(new StraightVerticalWidget());
-        ModelManager.getInstance().registerModel(new StraightHorizontalWidget());
-        ModelManager.getInstance().registerModel(new CurveTopRightWidget());
-        ModelManager.getInstance().registerModel(new CurveTopLeftWidget());
-        ModelManager.getInstance().registerModel(new CurveBottomRightWidget());
-        ModelManager.getInstance().registerModel(new CurveBottomLeftWidget());
-        ModelManager.getInstance().registerModel(new SwitchLeftBottomToTopWidget());
-        ModelManager.getInstance().registerModel(new SwitchLeftTopToBottomWidget());
-        ModelManager.getInstance().registerModel(new SwitchLeftRightToLeftWidget());
-        ModelManager.getInstance().registerModel(new SwitchLeftLeftToRightWidget());
-        ModelManager.getInstance().registerModel(new SwitchRightBottomToTopWidget());
-        ModelManager.getInstance().registerModel(new SwitchRightTopToBottomWidget());
-        ModelManager.getInstance().registerModel(new SwitchRightRightToLeftWidget());
-        ModelManager.getInstance().registerModel(new SwitchRightLeftToRightWidget());
+       ModelManager.getInstance().init();
     }
 
     /**
@@ -159,7 +141,7 @@ public class ControlCenterApp implements EntryPoint {
     }
 
     private void loadControlCenter() {
-        if(RootLayoutPanel.get().getWidgetIndex(welcomePageContainer) >= 0) {
+        if (RootLayoutPanel.get().getWidgetIndex(welcomePageContainer) >= 0) {
             RootLayoutPanel.get().remove(welcomePageContainer);
         }
 
@@ -217,10 +199,10 @@ public class ControlCenterApp implements EntryPoint {
     }
 
     private void show(Widget containerPanel) {
-        for(Widget container  :containerPanels){
-            if(contentContainerPanel.getElement().isOrHasChild(container.getElement())){
+        for (Widget container : containerPanels) {
+            if (contentContainerPanel.getElement().isOrHasChild(container.getElement())) {
 
-            contentContainerPanel.remove(container);
+                contentContainerPanel.remove(container);
             }
         }
         contentContainerPanel.add(containerPanel);

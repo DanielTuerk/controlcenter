@@ -21,4 +21,12 @@ public class SwitchRightBottomToTopWidget extends AbstractSwitchRightWidget {
         return new SwitchRightBottomToTopWidget();
     }
 
+    @Override
+    public Switch getNewTrackPart() {
+        Switch switchRBottomT = new Switch();
+        switchRBottomT.setCurrentDirection(Switch.DIRECTION.RIGHT);
+        switchRBottomT.setCurrentPresentation(Switch.PRESENTATION.BOTTOM_TO_TOP);
+        return switchRBottomT;
+    }
+
 }

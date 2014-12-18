@@ -23,4 +23,12 @@ public class SwitchLeftBottomToTopWidget extends AbstractSwitchLeftWidget {
         return new SwitchLeftBottomToTopWidget();
     }
 
+    @Override
+    public Switch getNewTrackPart() {
+        Switch switchBottomTop = new Switch();
+        switchBottomTop.setCurrentDirection(Switch.DIRECTION.LEFT);
+        switchBottomTop.setCurrentPresentation(Switch.PRESENTATION.BOTTOM_TO_TOP);
+        return switchBottomTop;
+    }
+
 }

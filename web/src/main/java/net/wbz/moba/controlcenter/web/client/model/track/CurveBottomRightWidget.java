@@ -14,6 +14,13 @@ public class CurveBottomRightWidget extends AbstractCurveWidget {
     }
 
     @Override
+    public Curve getNewTrackPart() {
+        Curve curveBottomR = new Curve();
+        curveBottomR.setDirection(Curve.DIRECTION.BOTTOM_RIGHT);
+        return curveBottomR;
+    }
+
+    @Override
     public String getTrackWidgetStyleName() {
         return "widget_track_curve_bottom_right";
     }

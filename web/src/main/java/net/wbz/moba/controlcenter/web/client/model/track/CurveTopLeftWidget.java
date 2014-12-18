@@ -13,6 +13,13 @@ public class CurveTopLeftWidget extends AbstractCurveWidget {
         return new CurveTopLeftWidget();
     }
 
+    @Override
+    public Curve getNewTrackPart() {
+        Curve curveTopLeft = new Curve();
+        curveTopLeft.setDirection(Curve.DIRECTION.TOP_LEFT);
+        return curveTopLeft;
+    }
+
 
     @Override
     public String getTrackWidgetStyleName() {

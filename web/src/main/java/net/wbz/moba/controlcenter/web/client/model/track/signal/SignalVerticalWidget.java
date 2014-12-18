@@ -25,6 +25,14 @@ public class SignalVerticalWidget extends AbstractSignalWidget {
     }
 
     @Override
+    public Signal getNewTrackPart() {
+        Signal verticalSignal = new Signal();
+        verticalSignal.setDirection(Straight.DIRECTION.VERTICAL);
+        verticalSignal.setType(Signal.TYPE.BLOCK);
+        return verticalSignal;
+    }
+
+    @Override
     public boolean isRepresentationOf(Signal trackPart) {
         return trackPart != null && trackPart.getDirection() == getStraightDirection();
     }

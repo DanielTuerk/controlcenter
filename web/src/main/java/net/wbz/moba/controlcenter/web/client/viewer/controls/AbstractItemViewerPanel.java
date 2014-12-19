@@ -76,11 +76,21 @@ abstract public class AbstractItemViewerPanel<ItemPanel extends AbstractItemPane
     }
 
     protected void loadData() {
+        resetItems();
+        loadItems();
+    }
+
+    private void resetItems() {
         for (Map.Entry<Class<EventType>,RemoteEventListener> eventListenerEntry : eventListeners.entrySet()) {
             EventReceiver.getInstance().removeListener(eventListenerEntry.getKey(), eventListenerEntry.getValue());
         }
         itemsContainerPanel.clear();
-        loadItems();
+    }
+
+    @Override
+    protected void onUnload() {
+        super.onUnload();
+        resetItems();
     }
 
     protected abstract void loadItems();

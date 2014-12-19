@@ -4,26 +4,20 @@ package net.wbz.moba.controlcenter.web.shared.train;
  * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
  */
 public class TrainFunctionStateEvent extends TrainStateEvent {
-    private byte functionAddress;
-    private int functionBit;
+    private TrainFunction.FUNCTION function;
     private boolean active;
 
-    public TrainFunctionStateEvent(long itemId, byte functionAddress, int functionBit, boolean active) {
+    public TrainFunctionStateEvent(long itemId, TrainFunction.FUNCTION function, boolean active) {
         super(itemId);
-        this.functionAddress = functionAddress;
-        this.functionBit = functionBit;
+        this.function = function;
         this.active = active;
     }
 
     public TrainFunctionStateEvent() {
     }
 
-    public byte getFunctionAddress() {
-        return functionAddress;
-    }
-
-    public int getFunctionBit() {
-        return functionBit;
+    public TrainFunction.FUNCTION getFunction() {
+        return function;
     }
 
     public boolean isActive() {

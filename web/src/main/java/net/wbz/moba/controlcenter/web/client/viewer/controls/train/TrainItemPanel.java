@@ -23,7 +23,7 @@ import org.gwtbootstrap3.extras.slider.client.ui.Slider;
 import java.util.Map;
 
 /**
- * Created by Daniel on 08.03.14.
+ * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
  */
 public class TrainItemPanel extends AbstractItemPanel<Train, TrainStateEvent> {
 
@@ -39,15 +39,12 @@ public class TrainItemPanel extends AbstractItemPanel<Train, TrainStateEvent> {
     private Button btnDirectionBackward;
     private Map<TrainFunction.FUNCTION, Button> functionButtons = Maps.newConcurrentMap();
 
-    private final Label lblName;
-    private final Label lblState;
-    private final Label lblStateDetails;
+    private Label lblName;
+    private Label lblState;
+    private Label lblStateDetails;
 
     public TrainItemPanel(Train train) {
         super(train);
-        lblName = new Label(getModel().getName());
-        lblState = new Label("state");
-        lblStateDetails = new Label("TODO state");
     }
 
 
@@ -69,36 +66,7 @@ public class TrainItemPanel extends AbstractItemPanel<Train, TrainStateEvent> {
             functionButtons.get(TrainFunction.FUNCTION.LIGHT).setActive(((TrainLightStateEvent) event).isState());
         } else if (event instanceof TrainFunctionStateEvent) {
             TrainFunctionStateEvent functionStateEvent = (TrainFunctionStateEvent) event;
-            TrainFunction.FUNCTION trainFunction;
-            switch (functionStateEvent.getFunctionBit()) {
-                case 1:
-                    trainFunction = TrainFunction.FUNCTION.F1;
-                    break;
-                case 2:
-                    trainFunction = TrainFunction.FUNCTION.F2;
-                    break;
-                case 3:
-                    trainFunction = TrainFunction.FUNCTION.F3;
-                    break;
-                case 4:
-                    trainFunction = TrainFunction.FUNCTION.F4;
-                    break;
-                case 5:
-                    trainFunction = TrainFunction.FUNCTION.F5;
-                    break;
-                case 6:
-                    trainFunction = TrainFunction.FUNCTION.F6;
-                    break;
-                case 7:
-                    trainFunction = TrainFunction.FUNCTION.F7;
-                    break;
-                case 8:
-                    trainFunction = TrainFunction.FUNCTION.F8;
-                    break;
-                default:
-                    throw new RuntimeException("no function available for bit: " + functionStateEvent.getFunctionBit());
-            }
-            functionButtons.get(trainFunction).setActive(functionStateEvent.isActive());
+            functionButtons.get(functionStateEvent.getFunction()).setActive(functionStateEvent.isActive());
         } else if (event instanceof TrainDrivingDirectionEvent) {
             lblState.setText(((TrainDrivingDirectionEvent) event).getDirection().name());
             switch (((TrainDrivingDirectionEvent) event).getDirection()) {
@@ -121,6 +89,10 @@ public class TrainItemPanel extends AbstractItemPanel<Train, TrainStateEvent> {
     @Override
     public PanelCollapse createCollapseContentPanel() {
         contentPanel = new PanelCollapse();
+
+        lblName = new Label(getModel().getName());
+        lblState = new Label();
+        lblStateDetails = new Label();
 
         Button btnEditTrain = new Button();
         btnEditTrain.setIcon(IconType.PENCIL);
@@ -165,6 +137,23 @@ public class TrainItemPanel extends AbstractItemPanel<Train, TrainStateEvent> {
         contentPanel.add(rowDrivingFunctions);
 
         initFunctions();
+
+        // set the initial state for the train by using the event callback
+        if (getModel().getDrivingDirection() != null) {
+            updateItemData(new TrainDrivingDirectionEvent(getModel().getId(),
+                    TrainDrivingDirectionEvent.DRIVING_DIRECTION.valueOf(getModel().getDrivingDirection().name())));
+        }
+        updateItemData(new TrainDrivingLevelEvent(getModel().getId(), getModel().getDrivingLevel()));
+
+        for (TrainFunction trainFunction : getModel().getFunctions()) {
+            if (trainFunction.getFunction() == TrainFunction.FUNCTION.HORN) {
+                updateItemData(new TrainHornStateEvent(getModel().getId(), trainFunction.isState()));
+            } else if (trainFunction.getFunction() == TrainFunction.FUNCTION.LIGHT) {
+                updateItemData(new TrainLightStateEvent(getModel().getId(), trainFunction.isState()));
+            }
+            // TODO train functions
+
+        }
 
         return contentPanel;
     }

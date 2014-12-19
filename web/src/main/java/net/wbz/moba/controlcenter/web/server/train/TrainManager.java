@@ -46,11 +46,13 @@ public class TrainManager {
                         deviceManager.getConnectedDevice().getTrainModule((byte) train.getAddress()).addTrainDataListener(new TrainDataListener() {
                             @Override
                             public void drivingLevelChanged(int i) {
+                                train.setDrivingLevel(i);
                                 eventBroadcaster.fireEvent(new TrainDrivingLevelEvent(train.getId(), i));
                             }
 
                             @Override
                             public void drivingDirectionChanged(TrainModule.DRIVING_DIRECTION driving_direction) {
+                                train.setDrivingDirection(Train.DIRECTION.valueOf(driving_direction.name()));
                                 eventBroadcaster.fireEvent(new TrainDrivingDirectionEvent(train.getId(),
                                         TrainDrivingDirectionEvent.DRIVING_DIRECTION.valueOf(
                                                 driving_direction.name())));
@@ -58,16 +60,49 @@ public class TrainManager {
 
                             @Override
                             public void functionStateChanged(byte functionAddress, int functionBit, boolean active) {
-                                eventBroadcaster.fireEvent(new TrainFunctionStateEvent(train.getId(), functionAddress, functionBit, active));
+                                TrainFunction.FUNCTION trainFunction;
+                                switch (functionBit) {
+                                    case 1:
+                                        trainFunction = TrainFunction.FUNCTION.F1;
+                                        break;
+                                    case 2:
+                                        trainFunction = TrainFunction.FUNCTION.F2;
+                                        break;
+                                    case 3:
+                                        trainFunction = TrainFunction.FUNCTION.F3;
+                                        break;
+                                    case 4:
+                                        trainFunction = TrainFunction.FUNCTION.F4;
+                                        break;
+                                    case 5:
+                                        trainFunction = TrainFunction.FUNCTION.F5;
+                                        break;
+                                    case 6:
+                                        trainFunction = TrainFunction.FUNCTION.F6;
+                                        break;
+                                    case 7:
+                                        trainFunction = TrainFunction.FUNCTION.F7;
+                                        break;
+                                    case 8:
+                                        trainFunction = TrainFunction.FUNCTION.F8;
+                                        break;
+                                    default:
+                                        throw new RuntimeException("no function available for bit: " + functionBit);
+                                }
+                                train.getFunction(trainFunction).setState(active);
+                                eventBroadcaster.fireEvent(new TrainFunctionStateEvent(train.getId(), trainFunction,
+                                        active));
                             }
 
                             @Override
                             public void lightStateChanged(boolean state) {
+                                train.getFunction(TrainFunction.FUNCTION.LIGHT).setState(state);
                                 eventBroadcaster.fireEvent(new TrainLightStateEvent(train.getId(), state));
                             }
 
                             @Override
                             public void hornStateChanged(boolean state) {
+                                train.getFunction(TrainFunction.FUNCTION.HORN).setState(state);
                                 eventBroadcaster.fireEvent(new TrainHornStateEvent(train.getId(), state));
                             }
                         });

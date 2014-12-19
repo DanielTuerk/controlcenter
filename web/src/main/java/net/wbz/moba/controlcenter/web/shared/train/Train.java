@@ -1,7 +1,9 @@
 package net.wbz.moba.controlcenter.web.shared.train;
 
+import com.google.common.collect.Lists;
 import net.wbz.moba.controlcenter.web.shared.AbstractIdModel;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -18,9 +20,9 @@ public class Train extends AbstractIdModel {
 
     private DIRECTION drivingDirection;
 
-    private List<TrainFunction> functions;
+    private Map<TrainFunction.FUNCTION, TrainFunction> functions;
 
-    private int drivingLevel;
+    private int drivingLevel=0;
 
     public Train() {
     }
@@ -62,10 +64,14 @@ public class Train extends AbstractIdModel {
     }
 
     public List<TrainFunction> getFunctions() {
-        return functions;
+        return new ArrayList<>(functions.values());
     }
 
-    public void setFunctions(List<TrainFunction> functions) {
+    public TrainFunction getFunction(TrainFunction.FUNCTION function) {
+        return functions.get(function);
+    }
+
+    public void setFunctions(Map<TrainFunction.FUNCTION, TrainFunction> functions) {
         this.functions = functions;
     }
 }

@@ -56,36 +56,6 @@ public class ControlCenterApp implements EntryPoint {
      * This is the entry point method.
      */
     public void onModuleLoad() {
-
-//        FlowPanel flowPanel = new FlowPanel();
-//
-//        Button btn = new Button("test");
-//        Button btn2 = new Button("test2");
-//btn2.getElement().getStyle().setTop(200, Style.Unit.PX);
-//btn2.getElement().getStyle().setLeft(200, Style.Unit.PX);
-//
-//
-//
-//        Popover   popover= new Popover();
-//        popover.setWidget(btn);
-////        popover.setContainer("body");
-//        popover.setTitle("Control");
-//        popover.setTrigger(Trigger.CLICK);
-//        popover.setPlacement(Placement.RIGHT);
-//
-//        popover.setContent("content");
-////        popover.reconfigure();
-////        popover.show();
-//
-//
-//        flowPanel.add(btn);
-//        flowPanel.add(btn2);
-//        RootLayoutPanel.get().add(flowPanel);
-//
-//
-//        new net.wbz.moba.controlcenter.web.client.Popover(btn).show();
-//        new net.wbz.moba.controlcenter.web.client.Popover(btn2).show();
-
         if (Settings.getInstance().getShowWelcome().getValue()) {
             loadWelcomePage();
         } else {

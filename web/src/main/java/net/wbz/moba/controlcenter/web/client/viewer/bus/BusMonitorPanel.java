@@ -24,7 +24,7 @@ import java.util.Map;
 
 /**
  * The BusMonitor shows the current data of each address for bus 0 and 1. The
- * monitor appeares when it`s connected to the bus otherwise an information will
+ * monitor appears when it`s connected to the bus otherwise an information will
  * be shown.
  *
  * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
@@ -38,8 +38,8 @@ public class BusMonitorPanel extends FlowPanel {
     private RemoteEventListener listener;
     private RemoteEventListener connectionListener;
     private List<Panel> busPanels = new ArrayList<>();
-    final Well well = new Well();
-    final Label lbl = new Label();
+    final Well wellConnectionState = new Well();
+    final Label lblConnectionState = new Label();
 
     /**
      * Constructs panels and initializes the widgets of a bus item panel.
@@ -49,11 +49,11 @@ public class BusMonitorPanel extends FlowPanel {
 
         getElement().getStyle().setOverflowY(Style.Overflow.SCROLL);
 
-        lbl.setText("Sorry, there is no connection. Please connect.");
-        lbl.addStyleName("lbl-well");
-        well.setSize(WellSize.LARGE);
-        well.add(lbl);
-        well.addStyleName("well-conn");
+        lblConnectionState.setText("Sorry, there is no connection. Please connect.");
+        lblConnectionState.addStyleName("lbl-well");
+        wellConnectionState.setSize(WellSize.LARGE);
+        wellConnectionState.add(lblConnectionState);
+        wellConnectionState.addStyleName("well-conn");
 
         setHeight("100%");
         for (int i = 0; i < 2; i++) {
@@ -106,14 +106,14 @@ public class BusMonitorPanel extends FlowPanel {
 
                     ServiceUtils.getBusService().startTrackingBus(
                             new EmptyCallback<Void>());
-                    remove(well);
+                    remove(wellConnectionState);
                     addBusPanels();
 
                 } else if (deviceInfoEvent.getEventType() == DeviceInfoEvent.TYPE.DISCONNECTED) {
                     ServiceUtils.getBusService().stopTrackingBus(
                             new EmptyCallback<Void>());
                     removeBusPanels();
-                    add(well);
+                    add(wellConnectionState);
                 }
             }
         };
@@ -122,8 +122,7 @@ public class BusMonitorPanel extends FlowPanel {
     @Override
     protected void onLoad() {
         super.onLoad();
-        EventReceiver.getInstance().addListener(DeviceInfoEvent.class,
-                connectionListener);
+        EventReceiver.getInstance().addListener(DeviceInfoEvent.class, connectionListener);
 
         ServiceUtils.getBusService().isBusConnected(
                 new AsyncCallback<Boolean>() {
@@ -135,32 +134,29 @@ public class BusMonitorPanel extends FlowPanel {
                     public void onSuccess(Boolean result) {
                         if (result) {
 
-                            remove(well);
+                            remove(wellConnectionState);
                             addBusPanels();
 
                         } else {
                             removeBusPanels();
-                            add(well);
+                            add(wellConnectionState);
                         }
                     }
                 });
 
-        ServiceUtils.getBusService()
-                .startTrackingBus(new EmptyCallback<Void>());
+        ServiceUtils.getBusService().startTrackingBus(new EmptyCallback<Void>());
         EventReceiver.getInstance().addListener(BusDataEvent.class, listener);
 
-        well.getElement().getStyle().setMarginLeft(getParent().getOffsetWidth() / 2 - 130, Style.Unit.PX);
-        well.getElement().getStyle().setMarginTop(getParent().getOffsetHeight() / 2 - 50, Style.Unit.PX);
+        wellConnectionState.getElement().getStyle().setMarginLeft(getParent().getOffsetWidth() / 2 - 130, Style.Unit.PX);
+        wellConnectionState.getElement().getStyle().setMarginTop(getParent().getOffsetHeight() / 2 - 50, Style.Unit.PX);
     }
 
     @Override
     protected void onUnload() {
         super.onUnload();
         ServiceUtils.getBusService().stopTrackingBus(new EmptyCallback<Void>());
-        EventReceiver.getInstance()
-                .removeListener(BusDataEvent.class, listener);
-        EventReceiver.getInstance().removeListener(DeviceInfoEvent.class,
-                connectionListener);
+        EventReceiver.getInstance().removeListener(BusDataEvent.class, listener);
+        EventReceiver.getInstance().removeListener(DeviceInfoEvent.class, connectionListener);
         removeBusPanels();
     }
 

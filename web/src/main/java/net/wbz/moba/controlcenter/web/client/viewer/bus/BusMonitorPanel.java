@@ -30,11 +30,13 @@ import java.util.Map;
  * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
  */
 public class BusMonitorPanel extends FlowPanel {
+
+    private static final int ADDRESSES_COUNT = 112;
+    private static final int BUS_COUNT = 2;
     /**
      * Store the {@link BusAddressItemPanel} for each address in bus.
      */
-    private final Map<Integer, Map<Integer, BusAddressItemPanel>> addressItemMapping = Maps
-            .newHashMap();
+    private final Map<Integer, Map<Integer, BusAddressItemPanel>> addressItemMapping = Maps.newHashMap();
     private RemoteEventListener listener;
     private RemoteEventListener connectionListener;
     private List<Panel> busPanels = new ArrayList<>();
@@ -56,7 +58,7 @@ public class BusMonitorPanel extends FlowPanel {
         wellConnectionState.addStyleName("well-conn");
 
         setHeight("100%");
-        for (int i = 0; i < 2; i++) {
+        for (int i = 0; i < BUS_COUNT; i++) {
             Panel panel = new org.gwtbootstrap3.client.ui.Panel();
             panel.setWidth("48%");
             panel.getElement().getStyle().setFloat(Style.Float.LEFT);
@@ -71,7 +73,7 @@ public class BusMonitorPanel extends FlowPanel {
 
             Map<Integer, BusAddressItemPanel> addressItemPanelMap = Maps
                     .newHashMap();
-            for (int j = 0; j < 112; j++) {
+            for (int j = 0; j < ADDRESSES_COUNT; j++) {
 
                 BusAddressItemPanel busAddressItemPanel = new BusAddressItemPanel(
                         i, j);
@@ -133,7 +135,6 @@ public class BusMonitorPanel extends FlowPanel {
                     @Override
                     public void onSuccess(Boolean result) {
                         if (result) {
-
                             remove(wellConnectionState);
                             addBusPanels();
 

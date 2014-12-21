@@ -129,7 +129,11 @@ public class ControlCenterApp implements EntryPoint {
         DockLayoutPanel dockLayoutPanel = new DockLayoutPanel(Style.Unit.PX);
         dockLayoutPanel.addNorth(appMenu, 50);
 
-        dockLayoutPanel.addSouth(new StatePanel(), 50);
+        StatePanel statePanel = new StatePanel();
+        dockLayoutPanel.addSouth(statePanel, 50);
+
+        // allow elements to overlap the max height of the south container (e.g. device select)
+        dockLayoutPanel.getWidgetContainerElement(statePanel).getStyle().setOverflow(Style.Overflow.VISIBLE);
 
         // load the track viewer
         contentContainerPanel = new SimplePanel();

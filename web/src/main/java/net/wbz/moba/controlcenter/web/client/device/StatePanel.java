@@ -1,10 +1,12 @@
 package net.wbz.moba.controlcenter.web.client.device;
 
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.Widget;
 import de.novanic.eventservice.client.event.Event;
 import de.novanic.eventservice.client.event.listener.RemoteEventListener;
 import net.wbz.moba.controlcenter.web.client.EventReceiver;
@@ -73,7 +75,6 @@ public class StatePanel extends org.gwtbootstrap3.client.ui.gwt.FlowPanel {
                 toggleRailVoltageState();
             }
         });
-
         EventReceiver.getInstance().addListener(RailVoltageEvent.class, new RemoteEventListener() {
             public void apply(Event anEvent) {
                 if (anEvent instanceof RailVoltageEvent) {
@@ -81,9 +82,7 @@ public class StatePanel extends org.gwtbootstrap3.client.ui.gwt.FlowPanel {
                 }
             }
         });
-
         add(toggleRailVoltage);
-        add(new Label("v0.01.alpha"));
 
         btnSendData = new Button("send");
         btnSendData.addClickHandler(new ClickHandler() {
@@ -93,6 +92,8 @@ public class StatePanel extends org.gwtbootstrap3.client.ui.gwt.FlowPanel {
             }
         });
         add(btnSendData);
+
+        add(new Label("v0.01.alpha"));
     }
 
     private void toggleRailVoltageState() {

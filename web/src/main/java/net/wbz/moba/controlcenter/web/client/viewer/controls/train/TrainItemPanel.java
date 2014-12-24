@@ -43,6 +43,8 @@ public class TrainItemPanel extends AbstractItemPanel<Train, TrainStateEvent> {
     private Label lblState;
     private Label lblStateDetails;
 
+    private int lastSendSpeedValue = -1;
+
     public TrainItemPanel(Train train) {
         super(train);
     }
@@ -105,7 +107,7 @@ public class TrainItemPanel extends AbstractItemPanel<Train, TrainStateEvent> {
             }
         });
         Row row = new Row();
-        row.add(new Column(ColumnSize.LG_1, btnEditTrain));
+        row.add(new Column(ColumnSize.MD_1, btnEditTrain));
         contentPanel.add(row);
 
         Row rowDrivingFunctions = new Row();
@@ -126,13 +128,16 @@ public class TrainItemPanel extends AbstractItemPanel<Train, TrainStateEvent> {
                     public void onValueChange(ValueChangeEvent<Double> doubleValueChangeEvent) {
                         lblSliderValue.setText(doubleValueChangeEvent.getValue().toString());
                         int level = doubleValueChangeEvent.getValue().intValue();
-                        ServiceUtils.getTrainService().updateDrivingLevel(
-                                getModel().getId(), level, new EmptyCallback<Void>());
+                        if (level != lastSendSpeedValue) {
+                            lastSendSpeedValue = level;
+                            ServiceUtils.getTrainService().updateDrivingLevel(
+                                    getModel().getId(), level, new EmptyCallback<Void>());
+                        }
                     }
                 }
         );
 
-        rowDrivingFunctions.add(new Column(ColumnSize.LG_2, btnGroupDirection, lblSliderValue, sliderDrivingLevel));
+        rowDrivingFunctions.add(new Column(ColumnSize.MD_11, btnGroupDirection, lblSliderValue, sliderDrivingLevel));
 
         contentPanel.add(rowDrivingFunctions);
 

@@ -17,14 +17,12 @@ abstract public class AbstractStraightWidget extends AbstractBlockSvgTrackWidget
         svg.appendChild(SvgTrackUtil.createRectangle(getSvgDocument(), 0f, 10f, 25f, 5f));
     }
 
-//    @Override
-//    public TrackPart getTrackPart(Widget containerWidget, int zoomLevel) {
-//        Straight straight = new Straight();
-//        straight.setDirection(getStraightDirection());
-//        straight.setGridPosition(getGridPosition(containerWidget, zoomLevel));
-//        straight.setFunctionConfigs(getStoredWidgetFunctionConfigs());
-//        return straight;
-//    }
+    @Override
+    public Straight getNewTrackPart() {
+        Straight straight = new Straight();
+        straight.setDirection(getStraightDirection());
+        return straight;
+    }
 
     abstract public Straight.DIRECTION getStraightDirection();
 

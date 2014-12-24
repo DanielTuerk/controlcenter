@@ -2,37 +2,41 @@ package net.wbz.moba.controlcenter.web.client.editor.track;
 
 import com.allen_sauer.gwt.dnd.client.PickupDragController;
 import com.google.gwt.dom.client.Style;
-import com.google.gwt.user.client.ui.*;
+import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.Widget;
 import net.wbz.moba.controlcenter.web.client.model.track.AbstractSvgTrackWidget;
+import org.gwtbootstrap3.client.ui.*;
+import org.gwtbootstrap3.client.ui.constants.ColumnSize;
+import org.gwtbootstrap3.client.ui.html.ClearFix;
+import org.gwtbootstrap3.client.ui.html.Text;
 
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- *
  * @author Daniel Tuerk
  */
-public class PalettePanel extends VerticalPanel   {
+public class PalettePanel extends org.gwtbootstrap3.client.ui.Panel {
 
     private final PickupDragController dragController;
 
     private final Map<String, FlowPanel> paletteGroupMapping = new HashMap<String, FlowPanel>();
+    private final PanelBody panelBody;
 
     public PalettePanel(PickupDragController dragController) {
         this.dragController = dragController;
 
         setWidth("200px");
         addStyleName("palette");
-        setSpacing(2);
-        setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
 
-        Label header = new Label("Widget Palette");
-        add(header);
+        PanelHeader panelHeader = new PanelHeader();
+        panelHeader.setText("Widget Palette");
+        add(panelHeader);
 
-        for(Map.Entry<String,FlowPanel> entry: paletteGroupMapping.entrySet()) {
-            add(new Label(entry.getKey()));
-            add(entry.getValue());
-        }
+        panelBody = new PanelBody();
+        add(panelBody);
+
     }
 
     private void addPaletteItem(AbstractSvgTrackWidget widget, int index) {
@@ -59,8 +63,11 @@ public class PalettePanel extends VerticalPanel   {
                 }
             };
             paletteGroupMapping.put(widget.getPaletteTitle(), paletteGroup);
-            add(new Label(widget.getPaletteTitle()));
-            add(paletteGroup);
+            org.gwtbootstrap3.client.ui.gwt.FlowPanel titleFlowPanel=new org.gwtbootstrap3.client.ui.gwt.FlowPanel();
+            titleFlowPanel.add(new Text(widget.getPaletteTitle()));
+            panelBody.add(titleFlowPanel);
+            panelBody.add(paletteGroup);
+            panelBody.add(new ClearFix());
         }
 
         PaletteWidget paletteWidget = new PaletteWidget(widget);

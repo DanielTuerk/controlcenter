@@ -12,17 +12,11 @@ import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
 import net.wbz.moba.controlcenter.web.client.device.StatePanel;
 import net.wbz.moba.controlcenter.web.client.editor.track.TrackEditorContainer;
-import net.wbz.moba.controlcenter.web.client.model.track.*;
-import net.wbz.moba.controlcenter.web.client.model.track.signal.SignalHorizontalWidget;
-import net.wbz.moba.controlcenter.web.client.model.track.signal.SignalVerticalWidget;
+import net.wbz.moba.controlcenter.web.client.model.track.ModelManager;
 import net.wbz.moba.controlcenter.web.client.viewer.bus.BusMonitorPanel;
 import net.wbz.moba.controlcenter.web.client.viewer.settings.ConfigPanel;
 import net.wbz.moba.controlcenter.web.client.viewer.track.TrackViewerContainer;
 import net.wbz.moba.controlcenter.web.shared.constrution.Construction;
-import net.wbz.moba.controlcenter.web.shared.track.model.Curve;
-import net.wbz.moba.controlcenter.web.shared.track.model.Signal;
-import net.wbz.moba.controlcenter.web.shared.track.model.Straight;
-import net.wbz.moba.controlcenter.web.shared.track.model.Switch;
 import org.gwtbootstrap3.extras.growl.client.ui.Growl;
 import org.gwtbootstrap3.extras.growl.client.ui.GrowlHelper;
 import org.gwtbootstrap3.extras.growl.client.ui.GrowlOptions;
@@ -35,7 +29,7 @@ import java.util.List;
  */
 public class ControlCenterApp implements EntryPoint {
 
-    private final AppMenu appMenu = new AppMenu();
+    private AppMenu appMenu;
 
     private TrackEditorContainer trackEditorContainer;
     private TrackViewerContainer trackViewerContainer;
@@ -49,7 +43,7 @@ public class ControlCenterApp implements EntryPoint {
     private List<Widget> containerPanels = new ArrayList<>();
 
     public ControlCenterApp() {
-       ModelManager.getInstance().init();
+        ModelManager.getInstance().init();
     }
 
     /**
@@ -146,40 +140,44 @@ public class ControlCenterApp implements EntryPoint {
     }
 
     private void initAppMenu() {
-        appMenu.setShowEditorCommand(new Command() {
+        appMenu = new AppMenu(new Command() {
             @Override
             public void execute() {
                 show(trackEditorContainer);
             }
-        });
-        appMenu.setShowViewerCommand(new Command() {
+        },
+                new Command() {
             @Override
             public void execute() {
                 show(trackViewerContainer);
             }
-        });
-        appMenu.setShowBusMonitorCommand(new Command() {
-            @Override
-            public void execute() {
-                show(busMonitorPanel);
-            }
-        });
-        appMenu.setShowConfigCommand(new Command() {
-            @Override
-            public void execute() {
-                show(configPanel);
-            }
-        });
+        },
+                new Command() {
+                    @Override
+                    public void execute() {
+                        show(busMonitorPanel);
+                    }
+                },
+                new Command() {
+                    @Override
+                    public void execute() {
+                        show(configPanel);
+                    }
+                }
+        );
     }
 
     private void show(Widget containerPanel) {
         for (Widget container : containerPanels) {
             if (contentContainerPanel.getElement().isOrHasChild(container.getElement())) {
-
                 contentContainerPanel.remove(container);
             }
         }
         contentContainerPanel.add(containerPanel);
+        appMenu.getViewerAnchorListItem().setActive(containerPanel == trackViewerContainer);
+        appMenu.getMonitorAnchorListItem().setActive(containerPanel == busMonitorPanel);
+        appMenu.getEditorAnchorListItem().setActive(containerPanel == trackEditorContainer);
+        appMenu.getConfigurationAnchorListItem().setActive(containerPanel == configPanel);
     }
 
 }

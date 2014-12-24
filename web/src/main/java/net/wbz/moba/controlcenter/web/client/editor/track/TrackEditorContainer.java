@@ -2,17 +2,22 @@ package net.wbz.moba.controlcenter.web.client.editor.track;
 
 import com.allen_sauer.gwt.dnd.client.PickupDragController;
 import com.allen_sauer.gwt.dnd.client.drop.GridConstrainedDropController;
-import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Style;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.gen2.logging.shared.Log;
-import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.*;
+import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.ScrollPanel;
+import com.google.gwt.user.client.ui.Widget;
 import net.wbz.moba.controlcenter.web.client.ServiceUtils;
 import net.wbz.moba.controlcenter.web.client.model.track.AbsoluteTrackPosition;
 import net.wbz.moba.controlcenter.web.client.model.track.AbstractSvgTrackWidget;
 import net.wbz.moba.controlcenter.web.client.model.track.ModelManager;
 import net.wbz.moba.controlcenter.web.shared.track.model.TrackPart;
+import org.gwtbootstrap3.client.ui.AnchorListItem;
+import org.gwtbootstrap3.client.ui.NavPills;
+import org.gwtbootstrap3.client.ui.constants.IconType;
 import org.gwtbootstrap3.extras.growl.client.ui.Growl;
 import org.gwtbootstrap3.extras.growl.client.ui.GrowlHelper;
 import org.gwtbootstrap3.extras.growl.client.ui.GrowlOptions;
@@ -69,14 +74,12 @@ public class TrackEditorContainer extends FlowPanel {
             palette.addPaletteItem(widget);
         }
 
-
-        HorizontalPanel titlePanel = new HorizontalPanel();
-        titlePanel.add(new Label("Track Editor"));
-
-        MenuBar menuBar = new MenuBar();
-        menuBar.addItem(new MenuItem("Save", false, new Command() {
+        NavPills menu = new NavPills();
+        AnchorListItem saveAnchorListItem = new AnchorListItem("Save");
+        saveAnchorListItem.setIcon(IconType.SAVE);
+        saveAnchorListItem.addClickHandler(new ClickHandler() {
             @Override
-            public void execute() {
+            public void onClick(ClickEvent event) {
                 List<TrackPart> trackParts = new ArrayList<TrackPart>();
                 for (int i = 0; i < getBoundaryPanel().getWidgetCount(); i++) {
                     Widget paletteWidget = getBoundaryPanel().getWidget(i);
@@ -114,26 +117,26 @@ public class TrackEditorContainer extends FlowPanel {
                             }
                         });
             }
-        }));
-        menuBar.addItem("Delete", new Scheduler.ScheduledCommand() {
+        });
+        menu.add(saveAnchorListItem);
+
+        AnchorListItem deleteAnchorListItem = new AnchorListItem("Delete");
+        deleteAnchorListItem.setIcon(IconType.TIMES);
+        deleteAnchorListItem.addClickHandler(new ClickHandler() {
+
             @Override
-            public void execute() {
+            public void onClick(ClickEvent event) {
                 for (Widget selectedWidget : dragController.getSelectedWidgets()) {
                     boundaryPanel.remove(selectedWidget);
                 }
             }
         });
-
-
-        add(menuBar);
-
+        menu.add(deleteAnchorListItem);
+        add(menu);
 
         FlowPanel editorPanel = new FlowPanel();
-
         palette.getElement().getStyle().setFloat(Style.Float.LEFT);
-
         editorPanel.add(palette);
-
 
         ScrollPanel scrollPanel = new ScrollPanel(boundaryPanel);
         editorPanel.add(scrollPanel);

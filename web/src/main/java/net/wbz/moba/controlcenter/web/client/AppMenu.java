@@ -15,14 +15,23 @@ import org.gwtbootstrap3.client.ui.constants.Pull;
  */
 public class AppMenu extends Navbar {
 
-    private Scheduler.ScheduledCommand showEditorCommand;
-    private Command showBusMonitorCommand;
+    private final Scheduler.ScheduledCommand showEditorCommand;
+    private final Scheduler.ScheduledCommand showBusMonitorCommand;
 
-    private Scheduler.ScheduledCommand showViewerCommand;
-    private Scheduler.ScheduledCommand showConfigCommand;
+    private final Scheduler.ScheduledCommand showViewerCommand;
+    private final Scheduler.ScheduledCommand showConfigCommand;
+    private AnchorListItem viewerAnchorListItem;
+    private AnchorListItem editorAnchorListItem;
+    private AnchorListItem monitorAnchorListItem;
+    private AnchorListItem configurationAnchorListItem;
 
-    @Override
-    protected void onLoad() {
+    public AppMenu(Scheduler.ScheduledCommand showEditorCommand, Command showViewerCommand,
+                   Scheduler.ScheduledCommand showBusMonitorCommand, Scheduler.ScheduledCommand showConfigCommand) {
+        this.showEditorCommand = showEditorCommand;
+        this.showBusMonitorCommand = showBusMonitorCommand;
+        this.showViewerCommand = showViewerCommand;
+        this.showConfigCommand = showConfigCommand;
+
         ensureDebugId("cwMenuBar");
 
         addStyleName("appMenu");
@@ -33,14 +42,23 @@ public class AppMenu extends Navbar {
         add(navbarHeader);
 
         NavbarNav navbarNav = new NavbarNav();
-        navbarNav.add(createLink("Viewer", showViewerCommand));
-        navbarNav.add(createLink("Editor", showEditorCommand));
-        navbarNav.add(createLink("Bus Monitor", showBusMonitorCommand));
+        viewerAnchorListItem = createLink("Viewer", showViewerCommand);
+        navbarNav.add(viewerAnchorListItem);
+        editorAnchorListItem = createLink("Editor", showEditorCommand);
+        navbarNav.add(editorAnchorListItem);
+        monitorAnchorListItem = createLink("Bus Monitor", showBusMonitorCommand);
+        navbarNav.add(monitorAnchorListItem);
         add(navbarNav);
-        NavbarNav navbarNav2 = new NavbarNav();
-        navbarNav2.setPull(Pull.RIGHT);
-        navbarNav2.add(createLink("Configuration", showConfigCommand));
-        add(navbarNav2);
+        NavbarNav rightNavbarNav = new NavbarNav();
+        rightNavbarNav.setPull(Pull.RIGHT);
+        configurationAnchorListItem = createLink("Configuration", showConfigCommand);
+        rightNavbarNav.add(configurationAnchorListItem);
+        add(rightNavbarNav);
+    }
+
+    @Override
+    protected void onLoad() {
+       super.onLoad();
     }
 
     private AnchorListItem createLink(String title, final Scheduler.ScheduledCommand command) {
@@ -55,19 +73,20 @@ public class AppMenu extends Navbar {
         return anchor;
     }
 
-    public void setShowBusMonitorCommand(Command showBusMonitorCommand) {
-        this.showBusMonitorCommand = showBusMonitorCommand;
+
+    public AnchorListItem getViewerAnchorListItem() {
+        return viewerAnchorListItem;
     }
 
-    public void setShowEditorCommand(Scheduler.ScheduledCommand showEditorCommand) {
-        this.showEditorCommand = showEditorCommand;
+    public AnchorListItem getEditorAnchorListItem() {
+        return editorAnchorListItem;
     }
 
-    public void setShowViewerCommand(Scheduler.ScheduledCommand showViewerCommand) {
-        this.showViewerCommand = showViewerCommand;
+    public AnchorListItem getMonitorAnchorListItem() {
+        return monitorAnchorListItem;
     }
 
-    public void setShowConfigCommand(Scheduler.ScheduledCommand showConfigCommand) {
-        this.showConfigCommand = showConfigCommand;
+    public AnchorListItem getConfigurationAnchorListItem() {
+        return configurationAnchorListItem;
     }
 }

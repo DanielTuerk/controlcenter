@@ -2,9 +2,9 @@ package net.wbz.moba.controlcenter.web.client;
 
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style;
-import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.ui.SimplePanel;
-import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.*;
+import com.google.gwt.user.client.ui.*;
+import net.wbz.moba.controlcenter.web.client.viewer.track.TrackViewerPanel;
 import org.gwtbootstrap3.client.ui.Heading;
 import org.gwtbootstrap3.client.ui.constants.HeadingSize;
 import org.gwtbootstrap3.client.ui.gwt.FlowPanel;
@@ -81,14 +81,29 @@ public class Popover extends FlowPanel {
         super.onLoad();
     }
 
+    private Panel getWidget(Element element) {
+        com.google.gwt.user.client.EventListener listener = DOM.getEventListener((com.google.gwt.user.client.Element) element);
+        // No listener attached to the element, so no widget exist for this
+        // element
+        if (listener == null) {
+            return null;
+        }
+        if (listener instanceof Panel) {
+            // GWT uses the widget as event listener
+            return (Panel) listener;
+        }
+        return null;
+    }
+
     /**
      * Open the popover on the left of the target widget.
      */
     public void show() {
         if (!isShowing()) {
 
+            DOM.sinkEvents(this.getElement(), Event.ONCLICK);
             trackViewerPanelElement = DOM.getElementById(parentContainerId);
-            trackViewerPanelElement.appendChild(this.getElement());
+            getWidget(trackViewerPanelElement).add(this);
 
             arrowPanel.getElement().getStyle().setTop(50, Style.Unit.PCT);
 
@@ -132,6 +147,7 @@ public class Popover extends FlowPanel {
                         - top, Style.Unit.PX);
             }
             getElement().getStyle().setTop(top, Style.Unit.PX);
+
         }
     }
 
@@ -147,7 +163,7 @@ public class Popover extends FlowPanel {
      */
     public void hide() {
         if (isShowing()) {
-            trackViewerPanelElement.removeChild(this.getElement());
+            getWidget(trackViewerPanelElement).remove(this);
             trackViewerPanelElement = null;
         }
     }

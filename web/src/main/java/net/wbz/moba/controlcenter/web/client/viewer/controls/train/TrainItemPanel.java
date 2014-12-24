@@ -83,7 +83,7 @@ public class TrainItemPanel extends AbstractItemPanel<Train, TrainStateEvent> {
             }
         } else if (event instanceof TrainDrivingLevelEvent) {
             TrainDrivingLevelEvent drivingLevelEvent = (TrainDrivingLevelEvent) event;
-            sliderDrivingLevel.setValue((double) drivingLevelEvent.getSpeed());
+//            sliderDrivingLevel.setValue((double) drivingLevelEvent.getSpeed());
             lblStateDetails.setText("speed: " + drivingLevelEvent.getSpeed());
         }
     }
@@ -137,7 +137,7 @@ public class TrainItemPanel extends AbstractItemPanel<Train, TrainStateEvent> {
                 }
         );
 
-        rowDrivingFunctions.add(new Column(ColumnSize.MD_11, btnGroupDirection, lblSliderValue, sliderDrivingLevel));
+        rowDrivingFunctions.add(new Column(ColumnSize.MD_12, btnGroupDirection, lblSliderValue, sliderDrivingLevel));
 
         contentPanel.add(rowDrivingFunctions);
 

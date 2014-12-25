@@ -80,9 +80,6 @@ public class TrackEditorServiceImpl extends RemoteServiceServlet implements Trac
 
         if (!result.isEmpty()) {
             TrackPart[] trackParts = (TrackPart[]) result.get(0).getData();
-
-            registerConsumersForTrackPartConfigs(trackParts);
-
             log.info("return track parts");
             return trackParts;
         } else {
@@ -91,6 +88,7 @@ public class TrackEditorServiceImpl extends RemoteServiceServlet implements Trac
         }
     }
 
+
     /**
      * Register the {@link net.wbz.selectrix4java.bus.BusDataConsumer}s for each address of the given
      * {@link net.wbz.moba.controlcenter.web.shared.track.model.TrackPart}s.
@@ -98,10 +96,9 @@ public class TrackEditorServiceImpl extends RemoteServiceServlet implements Trac
      * @param trackParts {@link net.wbz.moba.controlcenter.web.shared.track.model.TrackPart}s to register the
      *                   containing {@link net.wbz.moba.controlcenter.web.shared.track.model.Configuration}
      */
-    private void registerConsumersForTrackPartConfigs(TrackPart[] trackParts) {
+    public void registerConsumersByConnectedDeviceForTrackParts(TrackPart[] trackParts) {
 
         //unregister existing to create new ones from given track parts
-
         try {
             deviceManager.getConnectedDevice().getBusDataDispatcher().unregisterConsumers(busDataConsumersOfTheCurrentTrack);
         } catch (DeviceAccessException e) {

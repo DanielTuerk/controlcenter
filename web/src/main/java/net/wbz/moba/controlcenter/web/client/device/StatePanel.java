@@ -30,6 +30,7 @@ public class StatePanel extends org.gwtbootstrap3.client.ui.gwt.FlowPanel {
     private BusConnectionToggleButton busConnectionToggleButton;
     private final SendDataModal sendDataModal = new SendDataModal();
     private final Button btnSendData;
+    private final DeviceListBox deviceListBox;
 
     public StatePanel() {
         setStyleName("statePanel");
@@ -48,7 +49,7 @@ public class StatePanel extends org.gwtbootstrap3.client.ui.gwt.FlowPanel {
             }
         };
 
-        DeviceListBox deviceListBox = new DeviceListBox();
+        deviceListBox = new DeviceListBox();
         busConnectionToggleButton = new BusConnectionToggleButton(deviceListBox);
         add(busConnectionToggleButton);
         add(deviceListBox);
@@ -124,6 +125,7 @@ public class StatePanel extends org.gwtbootstrap3.client.ui.gwt.FlowPanel {
 
     private void updateDeviceConnectionState(boolean connected) {
         toggleRailVoltage.setEnabled(connected);
+        deviceListBox.setEnabled(!connected);
         btnDeviceConfig.setEnabled(!connected);
         busConnectionToggleButton.setValue(connected, false);
         btnSendData.setEnabled(connected);

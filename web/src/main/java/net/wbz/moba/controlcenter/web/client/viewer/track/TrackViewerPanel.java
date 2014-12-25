@@ -14,6 +14,7 @@ import net.wbz.moba.controlcenter.web.client.ServiceUtils;
 import net.wbz.moba.controlcenter.web.client.editor.track.AbstractTrackPanel;
 import net.wbz.moba.controlcenter.web.client.editor.track.ViewerPaletteWidget;
 import net.wbz.moba.controlcenter.web.client.model.track.*;
+import net.wbz.moba.controlcenter.web.client.util.EmptyCallback;
 import net.wbz.moba.controlcenter.web.shared.bus.DeviceInfoEvent;
 import net.wbz.moba.controlcenter.web.shared.track.model.Configuration;
 import net.wbz.moba.controlcenter.web.shared.track.model.TrackPart;
@@ -44,6 +45,8 @@ public class TrackViewerPanel extends AbstractTrackPanel {
 
     private Map<Configuration, List<AbstractSvgTrackWidget>> trackWidgetsOfConfiguration = Maps.newConcurrentMap();
     private List<AbstractSvgTrackWidget> trackWidgets = Lists.newArrayList();
+
+    private TrackPart[] loadedTrackParts;
 
     private final RemoteEventListener trackPartStateEventListener;
     private final RemoteEventListener deviceConnectionEventListener;
@@ -104,6 +107,7 @@ public class TrackViewerPanel extends AbstractTrackPanel {
         lblTrackPartConfig.setType(LabelType.INFO);
         add(lblTrackPartConfig, 0, 0);
 
+        // load the connection state to toggle the state of the widgets
         ServiceUtils.getBusService().isBusConnected(new AsyncCallback<Boolean>() {
             @Override
             public void onFailure(Throwable caught) {
@@ -120,6 +124,7 @@ public class TrackViewerPanel extends AbstractTrackPanel {
 
                     @Override
                     public void onSuccess(TrackPart[] trackParts) {
+                        loadedTrackParts=trackParts;
                         trackWidgetsOfConfiguration.clear();
 
                         int maxTop = 0;
@@ -166,10 +171,17 @@ public class TrackViewerPanel extends AbstractTrackPanel {
                             });
                             addTrackWidget(widget, trackPosition.getLeft(), trackPosition.getTop());
                         }
+                            registerWidgetsToReceiveEvents();
                     }
                 });
             }
         });
+    }
+
+    private void registerWidgetsToReceiveEvents() {
+//        ServiceUtils.getTrackViewerService().
+        ServiceUtils.getTrackEditorService().registerConsumersByConnectedDeviceForTrackParts(loadedTrackParts,
+                new EmptyCallback<Void>());
     }
 
     @Override

@@ -57,16 +57,16 @@ public class BusConnectionToggleButton extends ToggleSwitch {
         });
     }
 
-    /**
-     * Quick fix for the fire events state. Bootstrap lib also fire the value change event if the
-     * parameter is {@code false}.
-     *
-     * @param value value to set
-     * @param fireEvents do not fire events for value changed
-     */
-    @Override
-    public void setValue(Boolean value, boolean fireEvents) {
-        avoidFireEvent=!fireEvents;
-        super.setValue(value, fireEvents);
-    }
+//    /**
+//     * Quick fix for the fire events state. Bootstrap lib also fire the value change event if the
+//     * parameter is {@code false}.
+//     *
+//     * @param value value to set
+//     * @param fireEvents do not fire events for value changed
+//     */
+//    @Override
+//    public void setValue(Boolean value, boolean fireEvents) {
+//        avoidFireEvent=!fireEvents;
+//        super.setValue(value);
+//    }
 }

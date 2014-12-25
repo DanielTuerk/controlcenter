@@ -115,9 +115,12 @@ public class TrackEditorServiceImpl extends RemoteServiceServlet implements Trac
         List<Configuration> uniqueTrackPartConfigs = Lists.newArrayList();
 
         for (final TrackPart trackPart : trackParts) {
-            for (final Configuration trackPartConfiguration : trackPart.getFunctionConfigs().values())
+            for (final Configuration trackPartConfiguration : trackPart.getFunctionConfigs().values()) {
 
                 if (trackPartConfiguration != null && trackPartConfiguration.isValid()) {
+
+                    //TODO bus nr - remove quick hack!
+                    trackPartConfiguration.setBus(1);
 
                     if (!uniqueTrackPartConfigs.contains(trackPartConfiguration)) {
                         uniqueTrackPartConfigs.add(trackPartConfiguration);
@@ -127,6 +130,8 @@ public class TrackEditorServiceImpl extends RemoteServiceServlet implements Trac
                             @Override
                             public void valueChanged(int oldValue, int newValue) {
 
+                                // TODO: remove quick hack for unset bus nr of old stored widgets
+                                trackPartConfiguration.setBus(1);
 
                                 // fire event for changed bit state of the bus address
                                 if (BigInteger.valueOf(newValue).testBit(trackPartConfiguration.getBit() - 1) != BigInteger.valueOf(oldValue).testBit(trackPartConfiguration.getBit() - 1)) {
@@ -138,6 +143,7 @@ public class TrackEditorServiceImpl extends RemoteServiceServlet implements Trac
                         });
                     }
                 }
+            }
         }
         // register consumers if an device is already connected
         try {

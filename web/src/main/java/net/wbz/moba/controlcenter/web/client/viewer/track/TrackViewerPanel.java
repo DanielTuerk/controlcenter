@@ -123,7 +123,7 @@ public class TrackViewerPanel extends AbstractTrackPanel {
 
                     @Override
                     public void onSuccess(TrackPart[] trackParts) {
-                        loadedTrackParts=trackParts;
+                        loadedTrackParts = trackParts;
                         trackWidgetsOfConfiguration.clear();
 
                         int maxTop = 0;
@@ -145,12 +145,15 @@ public class TrackViewerPanel extends AbstractTrackPanel {
 
                             for (Configuration configuration : trackPart.getFunctionConfigs().values()) {
 
-                                if (!trackWidgetsOfConfiguration.containsKey(configuration)) {
-                                    trackWidgetsOfConfiguration.put(configuration, new ArrayList<AbstractSvgTrackWidget>());
-                                }
-                                // avoid same widget for equal bit state configuration
-                                if (!trackWidgetsOfConfiguration.get(configuration).contains(trackWidget)) {
-                                    trackWidgetsOfConfiguration.get(configuration).add(trackWidget);
+                                // ignore default configs of track widget to register event handler
+                                if (configuration.isValid()) {
+                                    if (!trackWidgetsOfConfiguration.containsKey(configuration)) {
+                                        trackWidgetsOfConfiguration.put(configuration, new ArrayList<AbstractSvgTrackWidget>());
+                                    }
+                                    // avoid same widget for equal bit state configuration
+                                    if (!trackWidgetsOfConfiguration.get(configuration).contains(trackWidget)) {
+                                        trackWidgetsOfConfiguration.get(configuration).add(trackWidget);
+                                    }
                                 }
                             }
 
@@ -170,7 +173,7 @@ public class TrackViewerPanel extends AbstractTrackPanel {
                             });
                             addTrackWidget(widget, trackPosition.getLeft(), trackPosition.getTop());
                         }
-                            registerWidgetsToReceiveEvents();
+                        registerWidgetsToReceiveEvents();
                     }
                 });
             }

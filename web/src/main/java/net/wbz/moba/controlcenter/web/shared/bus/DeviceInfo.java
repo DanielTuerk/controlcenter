@@ -7,7 +7,9 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  */
 public class DeviceInfo implements IsSerializable {
 
-    public enum DEVICE_TYPE {SERIAL,TEST}
+    private boolean connected;
+
+    public enum DEVICE_TYPE {SERIAL, TEST}
 
     private String key;
     private DEVICE_TYPE type;
@@ -26,5 +28,13 @@ public class DeviceInfo implements IsSerializable {
 
     public void setType(DEVICE_TYPE type) {
         this.type = type;
+    }
+
+    public void setConnected(boolean connected) {
+        this.connected = connected;
+    }
+
+    public boolean isConnected() {
+        return connected;
     }
 }

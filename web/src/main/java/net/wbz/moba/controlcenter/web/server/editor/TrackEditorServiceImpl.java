@@ -130,12 +130,16 @@ public class TrackEditorServiceImpl extends RemoteServiceServlet implements Trac
                                 // TODO: remove quick hack for unset bus nr of old stored widgets
                                 trackPartConfiguration.setBus(1);
 
+                                boolean initialState = oldValue == 0 && newValue == 0;
                                 // fire event for changed bit state of the bus address
-                                if (BigInteger.valueOf(newValue).testBit(trackPartConfiguration.getBit() - 1) != BigInteger.valueOf(oldValue).testBit(trackPartConfiguration.getBit() - 1)) {
+                                boolean bitStateChanged = BigInteger.valueOf(newValue).testBit(
+                                        trackPartConfiguration.getBit() - 1)
+                                        != BigInteger.valueOf(oldValue).testBit(trackPartConfiguration.getBit() - 1);
+
+                                if (initialState || bitStateChanged) {
                                     eventBroadcaster.fireEvent(new TrackPartStateEvent(trackPartConfiguration,
                                             BigInteger.valueOf(newValue).testBit(trackPartConfiguration.getBit() - 1)));
                                 }
-
                             }
                         });
                     }

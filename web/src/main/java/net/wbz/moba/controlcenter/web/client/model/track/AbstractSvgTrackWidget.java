@@ -170,6 +170,7 @@ abstract public class AbstractSvgTrackWidget<T extends TrackPart> extends Simple
 
     @Override
     public void onConfirmCallback() {
+        trackPart.getDefaultToggleFunctionConfig().setBus(1);
         trackPart.getDefaultToggleFunctionConfig().setAddress(Integer.parseInt(txtAddress.getText()));
         trackPart.getDefaultToggleFunctionConfig().setBit(Integer.parseInt(selectBit.getValue()));
     }

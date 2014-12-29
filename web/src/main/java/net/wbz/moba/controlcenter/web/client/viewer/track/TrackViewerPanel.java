@@ -66,7 +66,6 @@ public class TrackViewerPanel extends AbstractTrackPanel {
                 if (anEvent instanceof DeviceInfoEvent) {
                     DeviceInfoEvent event = (DeviceInfoEvent) anEvent;
                     if (event.getEventType() == DeviceInfoEvent.TYPE.CONNECTED) {
-
                         enableTrackWidgets();
                     } else if (event.getEventType() == DeviceInfoEvent.TYPE.DISCONNECTED) {
                         disableTrackWidgets();
@@ -179,7 +178,6 @@ public class TrackViewerPanel extends AbstractTrackPanel {
     }
 
     private void registerWidgetsToReceiveEvents() {
-//        ServiceUtils.getTrackViewerService().
         ServiceUtils.getTrackEditorService().registerConsumersByConnectedDeviceForTrackParts(loadedTrackParts,
                 new EmptyCallback<Void>());
     }

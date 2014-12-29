@@ -28,8 +28,6 @@ public class DeviceListBox extends Select {
                 reload();
             }
         });
-//        setVisibleItemCount(1);
-
         reload();
     }
 
@@ -73,5 +71,11 @@ public class DeviceListBox extends Select {
 
     public DeviceInfo getSelectedDevice() {
         return getDevice(getValue());
+    }
+
+    public void setConnectedDevice(DeviceInfo deviceInfo) {
+        if (deviceInfo != null) {
+            setValue(deviceInfo.getKey());
+        }
     }
 }

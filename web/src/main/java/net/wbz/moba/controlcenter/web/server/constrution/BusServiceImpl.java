@@ -145,6 +145,7 @@ public class BusServiceImpl extends RemoteServiceServlet implements BusService {
         } else {
             deviceInfo.setType(DeviceInfo.DEVICE_TYPE.TEST);
         }
+        deviceInfo.setConnected(device.isConnected());
         return deviceInfo;
     }
 

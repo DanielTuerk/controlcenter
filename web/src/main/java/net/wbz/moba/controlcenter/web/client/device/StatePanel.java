@@ -1,23 +1,24 @@
 package net.wbz.moba.controlcenter.web.client.device;
 
-import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.Widget;
 import de.novanic.eventservice.client.event.Event;
 import de.novanic.eventservice.client.event.listener.RemoteEventListener;
 import net.wbz.moba.controlcenter.web.client.EventReceiver;
 import net.wbz.moba.controlcenter.web.client.ServiceUtils;
 import net.wbz.moba.controlcenter.web.client.util.EmptyCallback;
+import net.wbz.moba.controlcenter.web.shared.bus.DeviceInfo;
 import net.wbz.moba.controlcenter.web.shared.bus.DeviceInfoEvent;
 import net.wbz.moba.controlcenter.web.shared.viewer.RailVoltageEvent;
 import org.gwtbootstrap3.client.ui.Button;
 import org.gwtbootstrap3.client.ui.Label;
 import org.gwtbootstrap3.extras.toggleswitch.client.ui.ToggleSwitch;
 import org.gwtbootstrap3.extras.toggleswitch.client.ui.base.constants.ColorType;
+
+import java.util.ArrayList;
 
 /**
  * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
@@ -41,9 +42,9 @@ public class StatePanel extends org.gwtbootstrap3.client.ui.gwt.FlowPanel {
                 if (anEvent instanceof DeviceInfoEvent) {
                     DeviceInfoEvent event = (DeviceInfoEvent) anEvent;
                     if (event.getEventType() == DeviceInfoEvent.TYPE.CONNECTED) {
-                        updateDeviceConnectionState(true);
+                        updateDeviceConnectionState(event.getDeviceInfo(),true);
                     } else if (event.getEventType() == DeviceInfoEvent.TYPE.DISCONNECTED) {
-                        updateDeviceConnectionState(false);
+                        updateDeviceConnectionState(event.getDeviceInfo(),false);
                     }
                 }
             }
@@ -111,8 +112,31 @@ public class StatePanel extends org.gwtbootstrap3.client.ui.gwt.FlowPanel {
             }
 
             @Override
-            public void onSuccess(Boolean aBoolean) {
-                updateDeviceConnectionState(aBoolean);
+            public void onSuccess(Boolean connected) {
+
+                if(connected) {
+
+                    ServiceUtils.getBusService().getDevices(new AsyncCallback<ArrayList<DeviceInfo>>() {
+                        @Override
+                        public void onFailure(Throwable caught) {
+
+                        }
+
+                        @Override
+                        public void onSuccess(ArrayList<DeviceInfo> result) {
+
+                            for (DeviceInfo deviceInfo : result) {
+                                if (deviceInfo.isConnected()) {
+                                    updateDeviceConnectionState(deviceInfo, true);
+                                    break;
+                                }
+                            }
+                        }
+                    });
+
+                }else{
+                    updateDeviceConnectionState(null, false);
+                }
             }
         });
     }
@@ -123,9 +147,10 @@ public class StatePanel extends org.gwtbootstrap3.client.ui.gwt.FlowPanel {
         EventReceiver.getInstance().removeListener(DeviceInfoEvent.class, deviceInfoEventListener);
     }
 
-    private void updateDeviceConnectionState(boolean connected) {
+    private void updateDeviceConnectionState(DeviceInfo deviceInfo, boolean connected) {
         toggleRailVoltage.setEnabled(connected);
         deviceListBox.setEnabled(!connected);
+        deviceListBox.setConnectedDevice(deviceInfo != null && deviceInfo.isConnected() ? deviceInfo : null);
         btnDeviceConfig.setEnabled(!connected);
         busConnectionToggleButton.setValue(connected, false);
         btnSendData.setEnabled(connected);

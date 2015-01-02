@@ -28,6 +28,11 @@ public class SignalFunctionReceiver {
 
     private Map<Signal.LIGHT, Boolean> lightStates = Maps.newHashMap();
 
+    /**
+     * Flag to avoid multiple events for same function by received bit changes.
+     */
+    private Signal.FUNCTION lastFiredFunction = null;
+
     public SignalFunctionReceiver(final Signal signal, EventBroadcaster eventBroadcaster) {
         this.signal = signal;
         this.eventBroadcaster = eventBroadcaster;
@@ -124,16 +129,38 @@ public class SignalFunctionReceiver {
 
     }
 
+    /**
+     * Check active state of the given light.
+     *
+     * @param light {@link net.wbz.moba.controlcenter.web.shared.track.model.Signal.LIGHT}
+     * @return {@code true} if on
+     */
     private boolean on(Signal.LIGHT light) {
         return lightStates.get(light);
     }
 
+    /**
+     * Check inactive state of the given light.
+     *
+     * @param light {@link net.wbz.moba.controlcenter.web.shared.track.model.Signal.LIGHT}
+     * @return {@code true} if off
+     */
     private boolean off(Signal.LIGHT light) {
         return !lightStates.get(light);
     }
 
-    private void fireFunction(Signal.FUNCTION function) {
-        eventBroadcaster.fireEvent(new SignalFunctionStateEvent(signal.getSignalConfiguration(), function));
+    /**
+     * Fire event for changes {@link net.wbz.moba.controlcenter.web.shared.track.model.Signal.FUNCTION}.
+     * Multiple call by same function is ignored. Synchronized method to update the state
+     * member {@see lastFiredFunction}.
+     *
+     * @param function {@link net.wbz.moba.controlcenter.web.shared.track.model.Signal.FUNCTION}
+     */
+    private synchronized void fireFunction(Signal.FUNCTION function) {
+        if (lastFiredFunction != function) {
+            eventBroadcaster.fireEvent(new SignalFunctionStateEvent(signal.getSignalConfiguration(), function));
+            lastFiredFunction = function;
+        }
     }
 
     public Collection<? extends BusDataConsumer> getConsumers() {

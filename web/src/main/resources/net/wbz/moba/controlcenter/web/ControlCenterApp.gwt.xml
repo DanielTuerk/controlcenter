@@ -18,6 +18,13 @@
     <inherits name='com.google.gwt.libideas.LibIdeas'/>
     <inherits name="com.google.gwt.gen2.logging.LoggingBase"/>
 
+    <inherits name="com.google.gwt.logging.Logging"/>
+    <set-property name="gwt.logging.logLevel" value="INFO"/>
+    <set-property name="gwt.logging.enabled" value="TRUE"/>
+    <set-property name="gwt.logging.consoleHandler" value="ENABLED"/>
+    <set-property name="gwt.logging.popupHandler" value="DISABLED" />
+    <set-property name="gwt.logging.developmentModeHandler" value="ENABLED" />
+
     <inherits name="com.google.common.collect.Collect"/>
 
     <inherits name="com.kiouri.sliderbar.SliderBarMVP" />

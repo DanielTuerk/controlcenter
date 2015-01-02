@@ -11,6 +11,7 @@ import net.wbz.moba.controlcenter.web.server.EventBroadcaster;
 import net.wbz.moba.controlcenter.web.server.constrution.ConstructionServiceImpl;
 import net.wbz.moba.controlcenter.web.shared.editor.TrackEditorService;
 import net.wbz.moba.controlcenter.web.shared.track.model.Configuration;
+import net.wbz.moba.controlcenter.web.shared.track.model.Signal;
 import net.wbz.moba.controlcenter.web.shared.track.model.TrackPart;
 import net.wbz.moba.controlcenter.web.shared.viewer.TrackPartStateEvent;
 import net.wbz.selectrix4java.bus.BusDataConsumer;
@@ -92,6 +93,8 @@ public class TrackEditorServiceImpl extends RemoteServiceServlet implements Trac
     /**
      * Register the {@link net.wbz.selectrix4java.bus.BusDataConsumer}s for each address of the given
      * {@link net.wbz.moba.controlcenter.web.shared.track.model.TrackPart}s.
+     * <p/>
+     * TODO: maybe bullshit -> reregister by second browser
      *
      * @param trackParts {@link net.wbz.moba.controlcenter.web.shared.track.model.TrackPart}s to register the
      *                   containing {@link net.wbz.moba.controlcenter.web.shared.track.model.Configuration}
@@ -112,36 +115,46 @@ public class TrackEditorServiceImpl extends RemoteServiceServlet implements Trac
         List<Configuration> uniqueTrackPartConfigs = Lists.newArrayList();
 
         for (final TrackPart trackPart : trackParts) {
-            for (final Configuration trackPartConfiguration : trackPart.getFunctionConfigs().values()) {
 
-                if (trackPartConfiguration != null && trackPartConfiguration.isValid()) {
+            if (trackPart instanceof Signal) {
 
-                    //TODO bus nr - remove quick hack!
-                    trackPartConfiguration.setBus(1);
+                final Signal signal = (Signal) trackPart;
+                busDataConsumersOfTheCurrentTrack.addAll(new SignalFunctionReceiver(signal, eventBroadcaster).getConsumers());
 
-                    if (!uniqueTrackPartConfigs.contains(trackPartConfiguration)) {
-                        uniqueTrackPartConfigs.add(trackPartConfiguration);
+            } else {
 
-                        //TODO bus nr
-                        busDataConsumersOfTheCurrentTrack.add(new BusDataConsumer(1, trackPartConfiguration.getAddress()) {
-                            @Override
-                            public void valueChanged(int oldValue, int newValue) {
 
-                                // TODO: remove quick hack for unset bus nr of old stored widgets
-                                trackPartConfiguration.setBus(1);
+                for (final Configuration trackPartConfiguration : trackPart.getFunctionConfigs().values()) {
 
-                                boolean initialState = oldValue == 0 && newValue == 0;
-                                // fire event for changed bit state of the bus address
-                                boolean bitStateChanged = BigInteger.valueOf(newValue).testBit(
-                                        trackPartConfiguration.getBit() - 1)
-                                        != BigInteger.valueOf(oldValue).testBit(trackPartConfiguration.getBit() - 1);
+                    if (trackPartConfiguration != null && trackPartConfiguration.isValid()) {
 
-                                if (initialState || bitStateChanged) {
-                                    eventBroadcaster.fireEvent(new TrackPartStateEvent(trackPartConfiguration,
-                                            BigInteger.valueOf(newValue).testBit(trackPartConfiguration.getBit() - 1)));
+                        //TODO bus nr - remove quick hack!
+                        trackPartConfiguration.setBus(1);
+
+                        if (!uniqueTrackPartConfigs.contains(trackPartConfiguration)) {
+                            uniqueTrackPartConfigs.add(trackPartConfiguration);
+
+                            //TODO bus nr
+                            busDataConsumersOfTheCurrentTrack.add(new BusDataConsumer(1, trackPartConfiguration.getAddress()) {
+                                @Override
+                                public void valueChanged(int oldValue, int newValue) {
+
+                                    // TODO: remove quick hack for unset bus nr of old stored widgets
+                                    trackPartConfiguration.setBus(1);
+
+                                    boolean initialState = oldValue == 0 && newValue == 0;
+                                    // fire event for changed bit state of the bus address
+                                    boolean bitStateChanged = BigInteger.valueOf(newValue).testBit(
+                                            trackPartConfiguration.getBit() - 1)
+                                            != BigInteger.valueOf(oldValue).testBit(trackPartConfiguration.getBit() - 1);
+
+                                    if (initialState || bitStateChanged) {
+                                        eventBroadcaster.fireEvent(new TrackPartStateEvent(trackPartConfiguration,
+                                                BigInteger.valueOf(newValue).testBit(trackPartConfiguration.getBit() - 1)));
+                                    }
                                 }
-                            }
-                        });
+                            });
+                        }
                     }
                 }
             }

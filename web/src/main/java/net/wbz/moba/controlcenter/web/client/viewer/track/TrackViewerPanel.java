@@ -14,10 +14,12 @@ import net.wbz.moba.controlcenter.web.client.ServiceUtils;
 import net.wbz.moba.controlcenter.web.client.editor.track.AbstractTrackPanel;
 import net.wbz.moba.controlcenter.web.client.editor.track.ViewerPaletteWidget;
 import net.wbz.moba.controlcenter.web.client.model.track.*;
+import net.wbz.moba.controlcenter.web.client.model.track.signal.AbstractSignalWidget;
 import net.wbz.moba.controlcenter.web.client.util.EmptyCallback;
 import net.wbz.moba.controlcenter.web.shared.bus.DeviceInfoEvent;
 import net.wbz.moba.controlcenter.web.shared.track.model.Configuration;
 import net.wbz.moba.controlcenter.web.shared.track.model.TrackPart;
+import net.wbz.moba.controlcenter.web.shared.viewer.SignalFunctionStateEvent;
 import net.wbz.moba.controlcenter.web.shared.viewer.TrackPartStateEvent;
 import org.gwtbootstrap3.client.ui.Label;
 import org.gwtbootstrap3.client.ui.constants.LabelType;
@@ -45,19 +47,39 @@ public class TrackViewerPanel extends AbstractTrackPanel {
 
     private Map<Configuration, List<AbstractSvgTrackWidget>> trackWidgetsOfConfiguration = Maps.newConcurrentMap();
     private List<AbstractSvgTrackWidget> trackWidgets = Lists.newArrayList();
+    private List<AbstractSignalWidget> signalTrackWidgets = Lists.newArrayList();
 
     private TrackPart[] loadedTrackParts;
 
     private final RemoteEventListener trackPartStateEventListener;
+    private final RemoteEventListener signalFunctionStateEventListener;
     private final RemoteEventListener deviceConnectionEventListener;
 
-
     public TrackViewerPanel() {
+        signalFunctionStateEventListener = new RemoteEventListener() {
+            public void apply(Event anEvent) {
+                if (anEvent instanceof SignalFunctionStateEvent) {
+                    for (AbstractSignalWidget signalTrackWidget : signalTrackWidgets) {
+                        SignalFunctionStateEvent signalFunctionStateEvent = (SignalFunctionStateEvent) anEvent;
+                        if (signalTrackWidget.getTrackPart().getSignalConfiguration().equals(signalFunctionStateEvent.getConfiguration())) {
+                            signalTrackWidget.showSignalFunction(signalFunctionStateEvent.getSignalFunction());
+                        }
+                    }
+                }
+            }
+        };
         trackPartStateEventListener = new RemoteEventListener() {
             public void apply(Event anEvent) {
                 if (anEvent instanceof TrackPartStateEvent) {
                     TrackPartStateEvent event = (TrackPartStateEvent) anEvent;
                     updateTrackPartState(event.getConfiguration(), event.isOn());
+                } else if (anEvent instanceof SignalFunctionStateEvent) {
+                    for (AbstractSignalWidget signalTrackWidget : signalTrackWidgets) {
+                        SignalFunctionStateEvent signalFunctionStateEvent = (SignalFunctionStateEvent) anEvent;
+                        if (signalTrackWidget.getTrackPart().getSignalConfiguration().equals(signalFunctionStateEvent.getConfiguration())) {
+                            signalTrackWidget.showSignalFunction(signalFunctionStateEvent.getSignalFunction());
+                        }
+                    }
                 }
             }
         };
@@ -97,6 +119,7 @@ public class TrackViewerPanel extends AbstractTrackPanel {
         addStyleName("boundary");
 
         EventReceiver.getInstance().addListener(TrackPartStateEvent.class, trackPartStateEventListener);
+        EventReceiver.getInstance().addListener(SignalFunctionStateEvent.class, signalFunctionStateEventListener);
         EventReceiver.getInstance().addListener(DeviceInfoEvent.class, deviceConnectionEventListener);
 
         for (int i = getWidgetCount() - 1; i >= 0; i--) {
@@ -125,6 +148,7 @@ public class TrackViewerPanel extends AbstractTrackPanel {
                     public void onSuccess(TrackPart[] trackParts) {
                         loadedTrackParts = trackParts;
                         trackWidgetsOfConfiguration.clear();
+                        signalTrackWidgets.clear();
 
                         int maxTop = 0;
                         int maxLeft = 0;
@@ -143,20 +167,23 @@ public class TrackViewerPanel extends AbstractTrackPanel {
 
                             trackWidgets.add(trackWidget);
 
-                            for (Configuration configuration : trackPart.getFunctionConfigs().values()) {
+                            if (trackWidget instanceof AbstractSignalWidget) {
+                                signalTrackWidgets.add((AbstractSignalWidget) trackWidget);
+                            } else {
+                                for (Configuration configuration : trackPart.getFunctionConfigs().values()) {
 
-                                // ignore default configs of track widget to register event handler
-                                if (configuration.isValid()) {
-                                    if (!trackWidgetsOfConfiguration.containsKey(configuration)) {
-                                        trackWidgetsOfConfiguration.put(configuration, new ArrayList<AbstractSvgTrackWidget>());
-                                    }
-                                    // avoid same widget for equal bit state configuration
-                                    if (!trackWidgetsOfConfiguration.get(configuration).contains(trackWidget)) {
-                                        trackWidgetsOfConfiguration.get(configuration).add(trackWidget);
+                                    // ignore default configs of track widget to register event handler
+                                    if (configuration.isValid()) {
+                                        if (!trackWidgetsOfConfiguration.containsKey(configuration)) {
+                                            trackWidgetsOfConfiguration.put(configuration, new ArrayList<AbstractSvgTrackWidget>());
+                                        }
+                                        // avoid same widget for equal bit state configuration
+                                        if (!trackWidgetsOfConfiguration.get(configuration).contains(trackWidget)) {
+                                            trackWidgetsOfConfiguration.get(configuration).add(trackWidget);
+                                        }
                                     }
                                 }
                             }
-
                             AbsoluteTrackPosition trackPosition = trackWidget.getTrackPosition(trackPart.getGridPosition(), getZoomLevel());
                             if (maxTop < trackPosition.getTop()) {
                                 maxTop = trackPosition.getTop();
@@ -168,7 +195,7 @@ public class TrackViewerPanel extends AbstractTrackPanel {
                             widget.addMouseOverHandler(new MouseOverHandler() {
                                 @Override
                                 public void onMouseOver(MouseOverEvent event) {
-                                    lblTrackPartConfig.setText(String.valueOf(trackPart.getDefaultToggleFunctionConfig()));
+                                    lblTrackPartConfig.setText(trackPart.getConfigurationInfo());
                                 }
                             });
                             addTrackWidget(widget, trackPosition.getLeft(), trackPosition.getTop());
@@ -189,6 +216,7 @@ public class TrackViewerPanel extends AbstractTrackPanel {
     protected void onUnload() {
         super.onUnload();
         EventReceiver.getInstance().removeListener(TrackPartStateEvent.class, trackPartStateEventListener);
+        EventReceiver.getInstance().removeListener(SignalFunctionStateEvent.class, signalFunctionStateEventListener);
         EventReceiver.getInstance().removeListener(DeviceInfoEvent.class, deviceConnectionEventListener);
     }
 

@@ -35,6 +35,11 @@ public class SignalSvgBuilder {
     private final static String WHITE = SVGConstants.CSS_WHITE_VALUE;
     private final static String GRAY = SVGConstants.CSS_GRAY_VALUE;
 
+    public enum HEIGHT_LEVEL {H1, H2, H3}
+
+    public enum WIDTH_LEVEL {W1, W2}
+
+
     private SignalSvgBuilder() {
     }
 
@@ -45,6 +50,100 @@ public class SignalSvgBuilder {
      */
     public static SignalSvgBuilder getInstance() {
         return INSTANCE;
+    }
+
+    public void updateSvgContent(Signal.TYPE signalType, Signal.LIGHT light, boolean state, OMSVGDocument doc,
+                                 OMSVGSVGElement svg) {
+
+        if(!state) return;
+
+        switch (signalType) {
+            case BLOCK:
+                switch (light) {
+                    case RED1:
+                        addLight(doc, svg, RED, WIDTH_LEVEL.W1, HEIGHT_LEVEL.H2);
+//                        addLightMiddleLeft(doc, svg, state ? RED : GRAY);
+                        break;
+                    case GREEN1:
+                        addLight(doc, svg, GREEN, WIDTH_LEVEL.W2, HEIGHT_LEVEL.H2);
+//                        addLightMiddleRight(doc, svg, state ? GREEN : GRAY);
+                        break;
+                }
+                break;
+            case EXIT:
+                switch (light) {
+                    case RED1:
+                        addLight(doc, svg, RED, WIDTH_LEVEL.W1, HEIGHT_LEVEL.H1);
+                        break;
+                    case RED2:
+                        addLight(doc, svg, RED, WIDTH_LEVEL.W2, HEIGHT_LEVEL.H1);
+                        break;
+                    case GREEN1:
+                        addLight(doc, svg, GREEN, WIDTH_LEVEL.W1, HEIGHT_LEVEL.H1);
+                        break;
+                    case YELLOW1:
+                        addLight(doc, svg, YELLOW, WIDTH_LEVEL.W1, HEIGHT_LEVEL.H3);
+                        break;
+                    case WHITE:
+                        addLight(doc, svg, WHITE, WIDTH_LEVEL.W1, HEIGHT_LEVEL.H3);
+                        addLight(doc, svg, WHITE, WIDTH_LEVEL.W2, HEIGHT_LEVEL.H2);
+                        break;
+                }
+                break;
+//            case ENTER:
+//                switch (function) {
+//                    case HP0:
+//                        addTwoLightsMiddle(doc, svg, RED, GRAY);
+//                        break;
+//                    case HP1:
+//                        addTwoLightsMiddle(doc, svg, GRAY, GREEN);
+//                        break;
+//                    case HP2:
+//                        addTwoTopAndBottom(doc, svg, GREEN, YELLOW, false);
+//                        break;
+//                    case HP0_SH1:
+//                        break;
+//                }
+//                break;
+//            case BEFORE:
+//                switch (function) {
+//                    case HP0:
+//                        addTwoTopAndBottom(doc, svg, YELLOW, YELLOW, false);
+//                        break;
+//                    case HP1:
+//                        addTwoTopAndBottom(doc, svg, GREEN, GREEN, true);
+//                        break;
+//                    case HP2:
+//                        svg.appendChild(SvgTrackUtil.createCircle(doc, 19f, 19f, 5f, GREEN));
+//                        svg.appendChild(SvgTrackUtil.createCircle(doc, 6f, 6f, 5f, YELLOW));
+//                        break;
+//                }
+//                break;
+        }
+    }
+
+    private void addLight(OMSVGDocument doc, OMSVGSVGElement svg, String color, WIDTH_LEVEL widthLevel, HEIGHT_LEVEL
+            heightLevel) {
+        float y = widthLevel == WIDTH_LEVEL.W1 ? 6f : 20f;
+        float x = 0f;
+        switch (heightLevel) {
+            case H1:
+                x = 20f;
+                break;
+            case H2:
+                x = 12.5f;
+                break;
+            case H3:
+                x = 5f;
+                break;
+//            case H4:
+//                x = 25f;
+//                break;
+//            case H5:
+//                x = 31f;
+//                break;
+        }
+        svg.appendChild(SvgTrackUtil.createCircle(doc, x, y, 4f, color));
     }
 
     /**
@@ -64,28 +163,34 @@ public class SignalSvgBuilder {
             case BLOCK:
                 switch (function) {
                     case HP0:
-                        addTwoLightsMiddle(doc, svg, RED, GRAY);
+//                        addTwoLightsMiddle(doc, svg, RED, GRAY);
+                        addLight(doc,svg,RED,WIDTH_LEVEL.W1,HEIGHT_LEVEL.H2);
+//                        addLight(doc,svg,GRAY,WIDTH_LEVEL.W2,HEIGHT_LEVEL.H2);
                         break;
                     case HP1:
-                        addTwoLightsMiddle(doc, svg, GRAY, GREEN);
+//                        addTwoLightsMiddle(doc, svg, GRAY, GREEN);
+//                        addLight(doc,svg,GRAY,WIDTH_LEVEL.W1,HEIGHT_LEVEL.H2);
+                        addLight(doc,svg,GREEN,WIDTH_LEVEL.W2,HEIGHT_LEVEL.H2);
                         break;
                 }
                 break;
             case EXIT:
                 switch (function) {
                     case HP0:
-                        addTwoLightsMiddle(doc, svg, RED, RED);
+                        addLight(doc,svg,RED,WIDTH_LEVEL.W1,HEIGHT_LEVEL.H2);
+                        addLight(doc, svg, RED, WIDTH_LEVEL.W2, HEIGHT_LEVEL.H2);
                         break;
                     case HP1:
-                        addTwoLightsMiddle(doc, svg, GREEN, GRAY);
+                        addLight(doc, svg, GREEN, WIDTH_LEVEL.W1, HEIGHT_LEVEL.H1);
                         break;
                     case HP2:
-                        addTwoTopAndBottom(doc, svg, GREEN, YELLOW, true);
+                        addLight(doc,svg,GREEN,WIDTH_LEVEL.W1,HEIGHT_LEVEL.H1);
+                        addLight(doc, svg, YELLOW, WIDTH_LEVEL.W1, HEIGHT_LEVEL.H3);
                         break;
                     case HP0_SH1:
-                        svg.appendChild(SvgTrackUtil.createCircle(doc, 19f, 6f, 5f, RED));
-                        svg.appendChild(SvgTrackUtil.createCircle(doc, 10f, 6f, 5f, WHITE));
-                        svg.appendChild(SvgTrackUtil.createCircle(doc, 14f, 19f, 5f, WHITE));
+                        addLight(doc,svg,RED,WIDTH_LEVEL.W1,HEIGHT_LEVEL.H1);
+                        addLight(doc,svg,WHITE,WIDTH_LEVEL.W2,HEIGHT_LEVEL.H2);
+                        addLight(doc,svg,WHITE,WIDTH_LEVEL.W1,HEIGHT_LEVEL.H3);
                         break;
                 }
                 break;
@@ -131,7 +236,16 @@ public class SignalSvgBuilder {
      * @param rightLightColor color of the right light
      */
     private void addTwoLightsMiddle(OMSVGDocument doc, OMSVGSVGElement svg, String leftLightColor, String rightLightColor) {
+        addLightMiddleLeft(doc, svg, leftLightColor);
+        addLightMiddleRight(doc, svg, rightLightColor);
+
+    }
+
+    private void addLightMiddleLeft(OMSVGDocument doc, OMSVGSVGElement svg, String leftLightColor) {
         svg.appendChild(SvgTrackUtil.createCircle(doc, 12.5f, 6f, 5f, leftLightColor));
+    }
+
+    private void addLightMiddleRight(OMSVGDocument doc, OMSVGSVGElement svg, String rightLightColor) {
         svg.appendChild(SvgTrackUtil.createCircle(doc, 12.5f, 19f, 5f, rightLightColor));
     }
 
@@ -156,7 +270,7 @@ public class SignalSvgBuilder {
      * @param doc {@link org.vectomatic.dom.svg.OMSVGDocument}
      * @param svg {@link org.vectomatic.dom.svg.OMSVGSVGElement}
      */
-    private void addTrackRectangle(OMSVGDocument doc, OMSVGSVGElement svg) {
+    public void addTrackRectangle(OMSVGDocument doc, OMSVGSVGElement svg) {
         svg.appendChild(SvgTrackUtil.createRectangle(doc, 0f, 10f, 25f, 5f));
     }
 

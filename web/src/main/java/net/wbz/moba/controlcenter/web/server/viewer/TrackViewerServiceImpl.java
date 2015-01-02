@@ -1,12 +1,15 @@
 package net.wbz.moba.controlcenter.web.server.viewer;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.gwt.user.client.rpc.RpcTokenException;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import net.wbz.moba.controlcenter.web.shared.bus.BusAddressBit;
 import net.wbz.moba.controlcenter.web.shared.track.model.Configuration;
+import net.wbz.moba.controlcenter.web.shared.track.model.Signal;
+import net.wbz.moba.controlcenter.web.shared.track.model.SignalConfiguration;
 import net.wbz.moba.controlcenter.web.shared.viewer.TrackViewerService;
 import net.wbz.selectrix4java.bus.BusAddress;
 import net.wbz.selectrix4java.device.Device;
@@ -16,6 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
@@ -101,6 +105,93 @@ public class TrackViewerServiceImpl extends RemoteServiceServlet implements Trac
             log.error(msg, e);
             throw new RpcTokenException(msg);
         }
+    }
+
+    private BusAddressBit convertFunctionConfig(Configuration configuration) {
+        if (configuration != null && configuration.isValid()) {
+            return new BusAddressBit(configuration.getBus(), configuration.getAddress(),
+                    configuration.getBit(), configuration.isBitState());
+        }
+        return null;
+    }
+
+    @Override
+    public void switchSignal(Signal.TYPE signalType, Signal.FUNCTION signalFunction, Map<Signal.LIGHT,Configuration> signalConfiguration) {
+        //TODO
+            Map<Signal.LIGHT, BusAddressBit> availableLightConfig = Maps.newHashMap();
+
+            for (Signal.LIGHT light : signalType.getLights()) {
+                Configuration lightFunction = signalConfiguration.get(light);
+                if (lightFunction != null && lightFunction.isValid()) {
+                    availableLightConfig.put(light, new BusAddressBit(lightFunction.getBus(), lightFunction.getAddress(),
+                            lightFunction.getBit(), !lightFunction.isBitState()));
+                }
+            }
+
+            switch (signalFunction) {
+                case HP0:
+                    switch (signalType) {
+                        case BLOCK:
+                            availableLightConfig.put(Signal.LIGHT.RED1, convertFunctionConfig(signalConfiguration.get(Signal.LIGHT.RED1)));
+                            break;
+                        case BEFORE:
+                            availableLightConfig.put(Signal.LIGHT.YELLOW1, convertFunctionConfig(signalConfiguration.get(Signal.LIGHT.YELLOW1)));
+                            availableLightConfig.put(Signal.LIGHT.YELLOW2, convertFunctionConfig(signalConfiguration.get(Signal.LIGHT.YELLOW2)));
+                            break;
+                        case EXIT:
+                            availableLightConfig.put(Signal.LIGHT.RED1, convertFunctionConfig(signalConfiguration.get(Signal.LIGHT.RED1)));
+                            availableLightConfig.put(Signal.LIGHT.RED2, convertFunctionConfig(signalConfiguration.get(Signal.LIGHT.RED2)));
+                            break;
+                        case ENTER:
+                            availableLightConfig.put(Signal.LIGHT.RED1, convertFunctionConfig(signalConfiguration.get(Signal.LIGHT.RED1)));
+                            break;
+                    }
+                    break;
+                case HP1:
+                    switch (signalType) {
+                        case BLOCK:
+                            availableLightConfig.put(Signal.LIGHT.GREEN1, convertFunctionConfig(signalConfiguration.get(Signal
+                                    .LIGHT.GREEN1)));
+                            break;
+                        case BEFORE:
+                            availableLightConfig.put(Signal.LIGHT.GREEN1, convertFunctionConfig(signalConfiguration.get(Signal.LIGHT.GREEN1)));
+                            availableLightConfig.put(Signal.LIGHT.GREEN2, convertFunctionConfig(signalConfiguration.get(Signal.LIGHT.GREEN2)));
+                            break;
+                        case EXIT:
+                            availableLightConfig.put(Signal.LIGHT.GREEN1, convertFunctionConfig(signalConfiguration.get(Signal.LIGHT.GREEN1)));
+                            break;
+                        case ENTER:
+                            availableLightConfig.put(Signal.LIGHT.GREEN1, convertFunctionConfig(signalConfiguration.get(Signal.LIGHT.GREEN1)));
+                            break;
+                    }
+                    break;
+                case HP2:
+                    switch (signalType) {
+                        case BEFORE:
+                            availableLightConfig.put(Signal.LIGHT.GREEN1, convertFunctionConfig(signalConfiguration.get(Signal.LIGHT.GREEN1)));
+                            availableLightConfig.put(Signal.LIGHT.YELLOW2, convertFunctionConfig(signalConfiguration.get(Signal.LIGHT.YELLOW2)));
+                            break;
+                        case EXIT:
+                            availableLightConfig.put(Signal.LIGHT.GREEN1, convertFunctionConfig(signalConfiguration.get(Signal.LIGHT.GREEN1)));
+                            availableLightConfig.put(Signal.LIGHT.YELLOW1, convertFunctionConfig(signalConfiguration.get(Signal.LIGHT.YELLOW1)));
+                            break;
+                        case ENTER:
+                            availableLightConfig.put(Signal.LIGHT.GREEN1, convertFunctionConfig(signalConfiguration.get(Signal.LIGHT.GREEN1)));
+                            availableLightConfig.put(Signal.LIGHT.YELLOW1, convertFunctionConfig(signalConfiguration.get(Signal.LIGHT.YELLOW1)));
+                            break;
+                    }
+                    break;
+                case HP0_SH1:
+                    switch (signalType) {
+                        case EXIT:
+                            availableLightConfig.put(Signal.LIGHT.RED1, convertFunctionConfig(signalConfiguration.get(Signal.LIGHT.RED1)));
+                            availableLightConfig.put(Signal.LIGHT.WHITE, convertFunctionConfig(signalConfiguration.get(Signal.LIGHT.WHITE)));
+                            break;
+                    }
+                    break;
+            }
+
+            sendTrackPartStates(Lists.newArrayList(availableLightConfig.values()));
     }
 
 }

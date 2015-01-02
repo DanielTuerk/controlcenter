@@ -1,5 +1,9 @@
 package net.wbz.moba.controlcenter.web.shared.track.model;
 
+import com.google.common.collect.Maps;
+
+import java.util.Map;
+
 /**
  * Widget to show and control a signal.
  * <p/>
@@ -71,5 +75,20 @@ public class Signal extends Straight {
      */
     public void setLightFunctionConfig(LIGHT light, Configuration configuration) {
         getFunctionConfigs().put(light.name(), configuration);
+    }
+
+    public Map<LIGHT, Configuration> getSignalConfiguration() {
+        Map<LIGHT, Configuration> lightConfig = Maps.newHashMap();
+        for (Map.Entry<String, Configuration> functionConfig : getFunctionConfigs().entrySet()) {
+            if(!DEFAULT_TOGGLE_FUNCTION.equals(functionConfig.getKey())) {
+                lightConfig.put(LIGHT.valueOf(functionConfig.getKey()), functionConfig.getValue());
+            }
+        }
+        return lightConfig;
+    }
+
+    @Override
+    public String getConfigurationInfo() {
+        return String.valueOf(getSignalConfiguration());
     }
 }

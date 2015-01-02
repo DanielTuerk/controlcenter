@@ -100,7 +100,7 @@ public class SignalEditDialogContent {
 
         for (Signal.LIGHT light : signalType.getLights()) {
 
-            Configuration existingLightConfig = signal.getLightFunction(light);
+            Configuration existingLightConfig = signal.getSignalConfiguration().get(light);
             if (existingLightConfig == null) {
                 existingLightConfig = new Configuration();
             }

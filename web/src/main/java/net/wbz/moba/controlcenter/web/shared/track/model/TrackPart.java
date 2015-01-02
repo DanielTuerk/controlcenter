@@ -50,21 +50,16 @@ public class TrackPart implements IsSerializable, Serializable {
         return getFunctionConfigs().get(DEFAULT_TOGGLE_FUNCTION);
     }
 
+    public String getConfigurationInfo() {
+        return String.valueOf(getDefaultToggleFunctionConfig());
+    }
+
     public GridPosition getGridPosition() {
         return gridPosition;
     }
 
     public void setGridPosition(GridPosition gridPosition) {
         this.gridPosition = gridPosition;
-    }
-
-    /**
-     * TODO remove?
-     *
-     * @param functionConfigs
-     */
-    public void setFunctionConfigs(Map<String, Configuration> functionConfigs) {
-        this.functionConfigs = functionConfigs;
     }
 
 }

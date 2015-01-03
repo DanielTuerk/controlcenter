@@ -152,7 +152,7 @@ public class StatePanel extends org.gwtbootstrap3.client.ui.gwt.FlowPanel {
         deviceListBox.setEnabled(!connected);
         deviceListBox.setConnectedDevice(deviceInfo != null && deviceInfo.isConnected() ? deviceInfo : null);
         btnDeviceConfig.setEnabled(!connected);
-        busConnectionToggleButton.setValue(connected, false);
+        busConnectionToggleButton.updateValue(connected, false);
         btnSendData.setEnabled(connected);
     }
 }

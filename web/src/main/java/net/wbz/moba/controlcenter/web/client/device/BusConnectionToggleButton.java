@@ -20,7 +20,7 @@ public class BusConnectionToggleButton extends ToggleSwitch {
     /**
      * Quick fix {@see BusConnectionToggleButton#setValue}.
      */
-    private boolean avoidFireEvent = false;
+    private boolean fireEvent = true;
 
     public BusConnectionToggleButton(final DeviceListBox deviceListBox) {
         super();
@@ -30,7 +30,7 @@ public class BusConnectionToggleButton extends ToggleSwitch {
         addValueChangeHandler(new ValueChangeHandler<Boolean>() {
             @Override
             public void onValueChange(ValueChangeEvent<Boolean> booleanValueChangeEvent) {
-                if (!avoidFireEvent) {
+                if (fireEvent) {
                     if (booleanValueChangeEvent.getValue()) {
                         ServiceUtils.getBusService().changeDevice(deviceListBox.getSelectedDevice(), new AsyncCallback<Void>() {
                             @Override
@@ -50,23 +50,22 @@ public class BusConnectionToggleButton extends ToggleSwitch {
                     }
                 } else {
                     // activate for next time
-                    avoidFireEvent=false;
+                    fireEvent = true;
                 }
 
             }
         });
     }
 
-//    /**
-//     * Quick fix for the fire events state. Bootstrap lib also fire the value change event if the
-//     * parameter is {@code false}.
-//     *
-//     * @param value value to set
-//     * @param fireEvents do not fire events for value changed
-//     */
-//    @Override
-//    public void setValue(Boolean value, boolean fireEvents) {
-//        avoidFireEvent=!fireEvents;
-//        super.setValue(value);
-//    }
+    /**
+     * Quick fix for the fire events state. Bootstrap lib also fire the value change event if the
+     * parameter is {@code false}.
+     *
+     * @param value      value to set
+     * @param fireEvents do not fire events for value changed
+     */
+    public void updateValue(Boolean value, boolean fireEvents) {
+        fireEvent = fireEvents;
+        super.setValue(value, true);
+    }
 }

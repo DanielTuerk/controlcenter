@@ -1,13 +1,12 @@
 package net.wbz.moba.controlcenter.web.client.model.track;
 
-import net.wbz.moba.controlcenter.web.client.util.SvgTrackUtil;
 import net.wbz.moba.controlcenter.web.shared.track.model.Straight;
-import org.vectomatic.dom.svg.OMSVGRectElement;
+import net.wbz.moba.controlcenter.web.shared.track.model.Uncoupler;
 
 /**
  * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
  */
-public class StraightHorizontalWidget extends AbstractStraightWidget {
+public class UncouplerHorizontalWidget extends AbstractUncouplerWidget {
 
     @Override
     public Straight.DIRECTION getStraightDirection() {
@@ -20,12 +19,12 @@ public class StraightHorizontalWidget extends AbstractStraightWidget {
     }
 
     @Override
-    public AbstractSvgTrackWidget<Straight> getClone() {
-        return new StraightHorizontalWidget();
+    public AbstractSvgTrackWidget<Uncoupler> getClone() {
+        return new UncouplerHorizontalWidget();
     }
 
     @Override
-    public boolean isRepresentationOf(Straight trackPart) {
+    public boolean isRepresentationOf(Uncoupler trackPart) {
         return trackPart.getDirection() == Straight.DIRECTION.HORIZONTAL;
     }
 

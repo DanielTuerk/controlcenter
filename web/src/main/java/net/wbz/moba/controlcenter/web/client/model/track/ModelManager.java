@@ -50,40 +50,27 @@ public class ModelManager {
         // TODO: ugly ugly ugly bullshit
 
         registerModel(new SignalHorizontalWidget());
-
         registerModel(new SignalVerticalWidget());
 
+        registerModel(new UncouplerHorizontalWidget());
+        registerModel(new UncouplerVerticalWidget());
+
         // straight after signal because signal extends straight
-
         registerModel(new StraightVerticalWidget());
-
         registerModel(new StraightHorizontalWidget());
 
-
         registerModel(new CurveTopRightWidget());
-
         registerModel(new CurveTopLeftWidget());
-
         registerModel(new CurveBottomRightWidget());
-
         registerModel(new CurveBottomLeftWidget());
 
-
         registerModel(new SwitchLeftBottomToTopWidget());
-
         registerModel(new SwitchLeftTopToBottomWidget());
-
         registerModel(new SwitchLeftRightToLeftWidget());
-
         registerModel(new SwitchLeftLeftToRightWidget());
-
-
         registerModel(new SwitchRightBottomToTopWidget());
-
         registerModel(new SwitchRightTopToBottomWidget());
-
         registerModel(new SwitchRightRightToLeftWidget());
-
         registerModel(new SwitchRightLeftToRightWidget());
     }
 }

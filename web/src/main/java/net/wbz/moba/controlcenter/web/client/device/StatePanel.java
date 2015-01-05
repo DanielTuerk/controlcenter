@@ -149,8 +149,9 @@ public class StatePanel extends org.gwtbootstrap3.client.ui.gwt.FlowPanel {
 
     private void updateDeviceConnectionState(DeviceInfo deviceInfo, boolean connected) {
         toggleRailVoltage.setEnabled(connected);
-        deviceListBox.setEnabled(!connected);
         deviceListBox.setConnectedDevice(deviceInfo != null && deviceInfo.isConnected() ? deviceInfo : null);
+        // TODO non visual feedback if disabled
+        deviceListBox.setEnabled(!connected);
         btnDeviceConfig.setEnabled(!connected);
         busConnectionToggleButton.updateValue(connected, false);
         btnSendData.setEnabled(connected);

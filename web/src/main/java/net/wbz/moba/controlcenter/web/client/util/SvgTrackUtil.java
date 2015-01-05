@@ -16,7 +16,7 @@ public class SvgTrackUtil {
     /**
      * Default color for the track part widgets.
      */
-    private final static String TRACK_COLOR = SVGConstants.CSS_BLACK_VALUE;
+    public final static String TRACK_COLOR = SVGConstants.CSS_BLACK_VALUE;
 
     /**
      * Create a rectangle.
@@ -61,6 +61,13 @@ public class SvgTrackUtil {
     public static OMSVGLineElement createLine(OMSVGDocument doc, float fromX, float fromY, float toX, float toY, int widthPx) {
         OMSVGLineElement lineElement = doc.createSVGLineElement(fromX, fromY, toX, toY);
         lineElement.getStyle().setSVGProperty(SVGConstants.CSS_STROKE_VALUE, TRACK_COLOR);
+        lineElement.getStyle().setSVGProperty(SVGConstants.CSS_STROKE_WIDTH_PROPERTY, widthPx + "px");
+        return lineElement;
+    }
+
+    public static OMSVGLineElement createLine(OMSVGDocument doc, float fromX, float fromY, float toX, float toY, int widthPx, String color) {
+        OMSVGLineElement lineElement = doc.createSVGLineElement(fromX, fromY, toX, toY);
+        lineElement.getStyle().setSVGProperty(SVGConstants.CSS_STROKE_VALUE, color);
         lineElement.getStyle().setSVGProperty(SVGConstants.CSS_STROKE_WIDTH_PROPERTY, widthPx + "px");
         return lineElement;
     }

@@ -66,35 +66,22 @@ public class BusServiceImpl extends RemoteServiceServlet implements BusService {
             }
         };
 
-        /**
-         * Consumer to receive the state change from the bus for the rail voltage.
-         * Event {@link net.wbz.moba.controlcenter.web.shared.viewer.RailVoltageEvent} is thrown by the
-         * {@link net.wbz.moba.controlcenter.web.server.EventBroadcaster} to inform the client.
-         */
-        final BusDataConsumer railVoltageConsumer = new BusDataConsumer(1, AbstractDevice.RAILVOLTAGE_ADDRESS) {
-            @Override
-            public void valueChanged(int oldValue, int newValue) {
-                if (oldValue != newValue) {
-                    boolean newState = BigInteger.valueOf(newValue).testBit(7);
-                    if (BigInteger.valueOf(oldValue).testBit(7) != newState) {
-                        eventBroadcaster.fireEvent(new RailVoltageEvent(newState));
-                    }
-                }
-            }
-        };
-
         deviceManager.addDeviceConnectionListener(new DeviceConnectionListener() {
             @Override
             public void connected(Device device) {
                 BusServiceImpl.this.eventBroadcaster.fireEvent(new DeviceInfoEvent(getDeviceInfo(device), DeviceInfoEvent.TYPE.CONNECTED));
-                device.getBusDataDispatcher().registerConsumer(railVoltageConsumer);
+                // receive actual state of rail voltage -> no consumer available for addresses > 112
+                try {
+                    eventBroadcaster.fireEvent(new RailVoltageEvent(device.getRailVoltage()));
+                } catch (DeviceAccessException e) {
+                    e.printStackTrace();
+                }
             }
 
             @Override
             public void disconnected(Device device) {
                 BusServiceImpl.this.eventBroadcaster.fireEvent(new DeviceInfoEvent(getDeviceInfo(device), DeviceInfoEvent.TYPE.DISCONNECTED));
                 device.getBusDataDispatcher().unregisterConsumer(allBusDataConsumer);
-                device.getBusDataDispatcher().unregisterConsumer(railVoltageConsumer);
             }
         });
 
@@ -152,7 +139,6 @@ public class BusServiceImpl extends RemoteServiceServlet implements BusService {
     @Override
     public boolean getRailVoltage() {
         if (isBusConnected()) {
-
             try {
                 return deviceManager.getConnectedDevice().getRailVoltage();
             } catch (Exception e) {

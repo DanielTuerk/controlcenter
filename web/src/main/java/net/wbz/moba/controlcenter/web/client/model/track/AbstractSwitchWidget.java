@@ -9,16 +9,6 @@ import net.wbz.moba.controlcenter.web.shared.track.model.TrackPart;
  */
 abstract public class AbstractSwitchWidget extends AbstractControlSvgTrackWidget<Switch> {
 
-//    @Override
-//    public TrackPart getTrackPart(Widget containerWidget, int zoomLevel) {
-//        Switch switchTrackPart = new Switch();
-//        switchTrackPart.setGridPosition(getGridPosition(containerWidget, zoomLevel));
-//        switchTrackPart.setCurrentDirection(getDirection());
-//        switchTrackPart.setCurrentPresentation(getPresentation());
-//        switchTrackPart.setFunctionConfigs(getStoredWidgetFunctionConfigs());
-//        return switchTrackPart;
-//    }
-
     abstract protected Switch.DIRECTION getDirection();
 
     @Override

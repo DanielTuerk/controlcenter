@@ -30,6 +30,11 @@ public class TrackPart implements IsSerializable, Serializable {
      */
     private Map<String, Configuration> functionConfigs;
 
+    /**
+     * Configuration to toggle the {@link net.wbz.moba.controlcenter.web.shared.track.model.TrackPart} by an event.
+     */
+    private EventConfiguration eventConfiguration;
+
     public Map<String, Configuration> getFunctionConfigs() {
         if (functionConfigs == null) {
             // create dummy for saved instance without configuration; will be changed during first call of
@@ -62,4 +67,14 @@ public class TrackPart implements IsSerializable, Serializable {
         this.gridPosition = gridPosition;
     }
 
+    public EventConfiguration getEventConfiguration() {
+        if(eventConfiguration==null) {
+            eventConfiguration=new EventConfiguration();
+        }
+        return eventConfiguration;
+    }
+
+    public void setEventConfiguration(EventConfiguration eventConfiguration) {
+        this.eventConfiguration = eventConfiguration;
+    }
 }

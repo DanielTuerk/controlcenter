@@ -5,6 +5,7 @@ import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Widget;
+import net.wbz.moba.controlcenter.web.client.util.BitStateToggleButton;
 import net.wbz.moba.controlcenter.web.shared.track.model.Configuration;
 import net.wbz.moba.controlcenter.web.shared.track.model.Signal;
 import org.gwtbootstrap3.client.ui.*;
@@ -130,20 +131,9 @@ public class SignalEditDialogContent {
             }
             functionRow.add(new Column(ColumnSize.MD_2, selectBit));
 
-            final Button btnBitState = new Button("OFF");
+            final Button btnBitState = new BitStateToggleButton();
             btnBitState.setActive(existingLightConfig.isBitState());
             idWidgets.put(getElementId(signalType, light, ID_BTN_BIT_STATE), btnBitState);
-            btnBitState.setDataToggle(Toggle.BUTTON);
-            btnBitState.addClickHandler(new ClickHandler() {
-                @Override
-                public void onClick(ClickEvent event) {
-                    if (btnBitState.isActive()) {
-                        btnBitState.setText("OFF");
-                    } else {
-                        btnBitState.setText("ON");
-                    }
-                }
-            });
             functionRow.add(new Column(ColumnSize.MD_2, btnBitState));
 
             container.add(functionRow);

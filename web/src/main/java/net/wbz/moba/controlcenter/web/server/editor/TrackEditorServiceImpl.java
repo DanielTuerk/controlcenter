@@ -14,6 +14,7 @@ import net.wbz.moba.controlcenter.web.shared.track.model.Configuration;
 import net.wbz.moba.controlcenter.web.shared.track.model.Signal;
 import net.wbz.moba.controlcenter.web.shared.track.model.TrackPart;
 import net.wbz.moba.controlcenter.web.shared.viewer.TrackPartStateEvent;
+import net.wbz.selectrix4java.bus.BusBitConsumer;
 import net.wbz.selectrix4java.bus.BusDataConsumer;
 import net.wbz.selectrix4java.device.Device;
 import net.wbz.selectrix4java.device.DeviceAccessException;
@@ -116,6 +117,8 @@ public class TrackEditorServiceImpl extends RemoteServiceServlet implements Trac
 
         for (final TrackPart trackPart : trackParts) {
 
+            registerEventConfigurationOfTrackPart(trackPart);
+
             if (trackPart instanceof Signal) {
 
                 final Signal signal = (Signal) trackPart;
@@ -136,22 +139,23 @@ public class TrackEditorServiceImpl extends RemoteServiceServlet implements Trac
 
                             //TODO bus nr
                             busDataConsumersOfTheCurrentTrack.add(new BusDataConsumer(1, trackPartConfiguration.getAddress()) {
+                                private boolean firstCall=true;
+
                                 @Override
                                 public void valueChanged(int oldValue, int newValue) {
-
                                     // TODO: remove quick hack for unset bus nr of old stored widgets
                                     trackPartConfiguration.setBus(1);
 
-                                    boolean initialState = oldValue == 0 && newValue == 0;
                                     // fire event for changed bit state of the bus address
                                     boolean bitStateChanged = BigInteger.valueOf(newValue).testBit(
                                             trackPartConfiguration.getBit() - 1)
                                             != BigInteger.valueOf(oldValue).testBit(trackPartConfiguration.getBit() - 1);
 
-                                    if (initialState || bitStateChanged) {
+                                    if (firstCall || bitStateChanged) {
                                         eventBroadcaster.fireEvent(new TrackPartStateEvent(trackPartConfiguration,
                                                 BigInteger.valueOf(newValue).testBit(trackPartConfiguration.getBit() - 1)));
                                     }
+                                    firstCall=false;
                                 }
                             });
                         }
@@ -164,6 +168,53 @@ public class TrackEditorServiceImpl extends RemoteServiceServlet implements Trac
             deviceManager.getConnectedDevice().getBusDataDispatcher().registerConsumers(busDataConsumersOfTheCurrentTrack);
         } catch (DeviceAccessException e) {
             //ignore
+        }
+    }
+
+    private void registerEventConfigurationOfTrackPart(final TrackPart trackPart) {
+        if (trackPart.getEventConfiguration().isActive()) {
+
+            final Configuration stateOnConfig = trackPart.getEventConfiguration().getStateOnConfig();
+            if (stateOnConfig.isValid()) {
+                busDataConsumersOfTheCurrentTrack.add(new BusBitConsumer(stateOnConfig.getBus(), stateOnConfig.getAddress(), stateOnConfig.getBit()) {
+                    @Override
+                    public void valueChanged(int oldValue, int newValue) {
+
+                        if ((newValue == 1 && stateOnConfig.isBitState())
+                                || (newValue == 0 && !stateOnConfig.isBitState())) {
+
+                            try {
+                                Configuration trackPartConfig = trackPart.getDefaultToggleFunctionConfig();
+                                deviceManager.getConnectedDevice().getBusAddress(trackPartConfig.getBus(),
+                                        (byte) trackPartConfig.getAddress()).setBit(trackPartConfig.getBit()).send();
+                            } catch (DeviceAccessException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                });
+            }
+
+            final Configuration stateOffConfig = trackPart.getEventConfiguration().getStateOffConfig();
+            if (stateOffConfig.isValid()) {
+                busDataConsumersOfTheCurrentTrack.add(new BusBitConsumer(stateOffConfig.getBus(), stateOffConfig.getAddress(), stateOffConfig.getBit()) {
+                    @Override
+                    public void valueChanged(int oldValue, int newValue) {
+
+                        if ((newValue == 1 && stateOffConfig.isBitState())
+                                || (newValue == 0 && !stateOffConfig.isBitState())) {
+
+                            try {
+                                Configuration trackPartConfig = trackPart.getDefaultToggleFunctionConfig();
+                                deviceManager.getConnectedDevice().getBusAddress(trackPartConfig.getBus(),
+                                        (byte) trackPartConfig.getAddress()).clearBit(trackPartConfig.getBit()).send();
+                            } catch (DeviceAccessException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                });
+            }
         }
     }
 }

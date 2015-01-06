@@ -26,4 +26,12 @@ public class TrackPartStateEvent implements Event {
     public Configuration getConfiguration() {
         return configuration;
     }
+
+    @Override
+    public String toString() {
+        return "TrackPartStateEvent{" +
+                "configuration=" + configuration +
+                ", state=" + state +
+                '}';
+    }
 }

@@ -30,4 +30,13 @@ public class BusDataEvent implements Event {
     public int getData() {
         return data;
     }
+
+    @Override
+    public String toString() {
+        return "BusDataEvent{" +
+                "bus=" + bus +
+                ", address=" + address +
+                ", data=" + data +
+                '}';
+    }
 }

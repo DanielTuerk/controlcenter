@@ -8,9 +8,13 @@ import net.wbz.moba.controlcenter.web.client.TrackUtils;
 import net.wbz.moba.controlcenter.web.client.editor.track.EditTrackWidgetHandler;
 import net.wbz.moba.controlcenter.web.shared.track.model.Configuration;
 import net.wbz.moba.controlcenter.web.shared.track.model.GridPosition;
+import net.wbz.moba.controlcenter.web.shared.track.model.Signal;
 import net.wbz.moba.controlcenter.web.shared.track.model.TrackPart;
 import org.gwtbootstrap3.client.ui.*;
+import org.gwtbootstrap3.client.ui.constants.ColumnSize;
 import org.gwtbootstrap3.client.ui.constants.FormType;
+import org.gwtbootstrap3.client.ui.gwt.FlowPanel;
+import org.gwtbootstrap3.client.ui.html.ClearFix;
 import org.gwtbootstrap3.extras.select.client.ui.Option;
 import org.gwtbootstrap3.extras.select.client.ui.Select;
 import org.vectomatic.dom.svg.OMSVGDocument;
@@ -39,6 +43,8 @@ abstract public class AbstractSvgTrackWidget<T extends TrackPart> extends Simple
     private final OMSVGDocument svgDocument = OMSVGParser.currentDocument();
     private final OMSVGSVGElement svgRootElement;
     private boolean enabled;
+    private TabContent dialogContentTabContent;
+    private NavTabs dialogContentNavTabs;
 
     public AbstractSvgTrackWidget() {
         addStyleName("widget_track");
@@ -121,8 +127,29 @@ abstract public class AbstractSvgTrackWidget<T extends TrackPart> extends Simple
         setTitle(trackPart.getDefaultToggleFunctionConfig().toString());
     }
 
+
+    protected void addDialogContentTab(String title, Widget content) {
+        TabPane tabPane = new TabPane();
+        tabPane.setActive(dialogContentTabContent.getWidgetCount() ==0);
+
+
+        TabListItem tabListItem = new TabListItem(title);
+        tabListItem.setDataTargetWidget(tabPane);
+        tabListItem.setActive(dialogContentTabContent.getWidgetCount() == 0);
+
+        tabPane.add(content);
+        dialogContentTabContent.add(tabPane);
+        dialogContentNavTabs.add(tabListItem);
+    }
+
     @Override
     public Widget getDialogContent() {
+        TabPanel tabPanel = new TabPanel();
+        dialogContentNavTabs = new NavTabs();
+        dialogContentTabContent = new TabContent();
+        tabPanel.add(dialogContentNavTabs);
+        tabPanel.add(dialogContentTabContent);
+
         Form form = new Form();
         form.setType(FormType.HORIZONTAL);
 
@@ -139,7 +166,10 @@ abstract public class AbstractSvgTrackWidget<T extends TrackPart> extends Simple
         if (trackPart.getDefaultToggleFunctionConfig().getAddress() >= 0) {
             txtAddress.setText(String.valueOf(trackPart.getDefaultToggleFunctionConfig().getAddress()));
         }
-        groupModuleAddress.add(txtAddress);
+        org.gwtbootstrap3.client.ui.gwt.FlowPanel flowPanel = new org.gwtbootstrap3.client.ui.gwt.FlowPanel();
+        flowPanel.addStyleName(ColumnSize.MD_2.getCssName());
+        flowPanel.add(txtAddress);
+        groupModuleAddress.add(flowPanel);
         fieldSet.add(groupModuleAddress);
 
         // module bit
@@ -164,7 +194,10 @@ abstract public class AbstractSvgTrackWidget<T extends TrackPart> extends Simple
         groupBit.add(selectBit);
         fieldSet.add(groupBit);
 
-        form.add(fieldSet);
+
+        addDialogContentTab("Config", fieldSet);
+        form.add(tabPanel);
+
         return form;
     }
 

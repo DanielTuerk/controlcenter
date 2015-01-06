@@ -26,7 +26,7 @@ public class EventBroadcaster {
 
     public synchronized void fireEvent(Event event) {
         if (event.getClass() != BusDataEvent.class) {
-            LOG.debug("fire Event: " + event.getClass().getSimpleName());
+            LOG.debug("fire Event: " + event.toString());
         }
         eventExecutorService.addEvent(DomainFactory.getDomain(event.getClass().getName()), event);
     }

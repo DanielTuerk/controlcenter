@@ -1,20 +1,18 @@
 package net.wbz.moba.controlcenter.web.server.editor;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import net.wbz.moba.controlcenter.web.server.EventBroadcaster;
 import net.wbz.moba.controlcenter.web.shared.track.model.Configuration;
 import net.wbz.moba.controlcenter.web.shared.track.model.Signal;
 import net.wbz.moba.controlcenter.web.shared.viewer.SignalFunctionStateEvent;
-import net.wbz.selectrix4java.bus.BusBitConsumer;
-import net.wbz.selectrix4java.bus.BusDataConsumer;
+import net.wbz.selectrix4java.bus.BusAddressBitListener;
 
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 /**
- * Register consumers to update the current signal function by bus data.
+ * Register busAddressListeners to update the current signal function by bus data.
  * Each signal function change will throw an new
  * {@link net.wbz.moba.controlcenter.web.shared.viewer.SignalFunctionStateEvent} by the
  * {@link net.wbz.moba.controlcenter.web.server.EventBroadcaster}.
@@ -24,7 +22,7 @@ import java.util.Map;
 public class SignalFunctionReceiver {
     private final Signal signal;
     private final EventBroadcaster eventBroadcaster;
-    private List<BusDataConsumer> consumers = Lists.newArrayList();
+    private Map<BusAddressIdentifier, List<BusAddressBitListener>> busAddressListeners = Maps.newConcurrentMap();
 
     private Map<Signal.LIGHT, Boolean> lightStates = Maps.newHashMap();
 
@@ -45,10 +43,16 @@ public class SignalFunctionReceiver {
             // register consumer for each light to update the state
             if (lightConfigs.getValue().isValid()) {
 
-                consumers.add(new BusBitConsumer(lightConfigs.getValue().getBus(), lightConfigs.getValue().getAddress(), lightConfigs.getValue().getBit()) {
+                BusAddressIdentifier busAddressIdentifier = new BusAddressIdentifier(lightConfigs.getValue().getBus(), lightConfigs.getValue().getAddress());
+                if (!busAddressListeners.containsKey(busAddressIdentifier)) {
+                    busAddressListeners.put(busAddressIdentifier, new ArrayList<BusAddressBitListener>());
+                }
+
+                busAddressListeners.get(busAddressIdentifier).add(new BusAddressBitListener(lightConfigs.getValue().getBit()) {
+
                     @Override
-                    public synchronized void valueChanged(int oldValue, int newValue) {
-                        lightStates.put(lightConfigs.getKey(), (newValue == 1) == lightConfigs.getValue().isBitState());
+                    public synchronized void bitChanged(boolean oldValue, boolean newValue) {
+                        lightStates.put(lightConfigs.getKey(), (newValue) == lightConfigs.getValue().isBitState());
 
                         // check for new function by active lights
                         switch (signal.getType()) {
@@ -163,7 +167,13 @@ public class SignalFunctionReceiver {
         }
     }
 
-    public Collection<? extends BusDataConsumer> getConsumers() {
-        return consumers;
+    /**
+     * Each {@link net.wbz.selectrix4java.bus.BusAddressBitListener} for all addresses of the
+     * {@link net.wbz.moba.controlcenter.web.shared.track.model.Configuration} of the signal.
+     *
+     * @return listeners for each address
+     */
+    public Map<BusAddressIdentifier, List<BusAddressBitListener>> getBusAddressListeners() {
+        return busAddressListeners;
     }
 }

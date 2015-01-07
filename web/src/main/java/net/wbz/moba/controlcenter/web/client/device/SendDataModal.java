@@ -1,7 +1,7 @@
 package net.wbz.moba.controlcenter.web.client.device;
 
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.*;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import net.wbz.moba.controlcenter.web.client.ServiceUtils;
 import org.gwtbootstrap3.client.ui.*;
@@ -28,6 +28,8 @@ public class SendDataModal extends Modal {
         Form form = new Form();
         form.setType(FormType.INLINE);
 
+
+
         FormGroup formGroupBus = new FormGroup();
         final TextBox txtBus = new TextBox();
         txtBus.setPlaceholder("bus number");
@@ -42,6 +44,7 @@ public class SendDataModal extends Modal {
 
         FormGroup formGroupData = new FormGroup();
         final TextBox txtData = new TextBox();
+
         txtData.setPlaceholder("data");
         formGroupBus.add(txtData);
         form.add(formGroupData);
@@ -49,27 +52,24 @@ public class SendDataModal extends Modal {
         modalBody.add(form);
         add(modalBody);
 
+
+        KeyPressHandler keyPressHandler = new KeyPressHandler() {
+            @Override
+            public void onKeyPress(KeyPressEvent event) {
+                if (event.getNativeEvent().getKeyCode() == KeyCodes.KEY_ENTER) {
+                    sendData(txtAddress, txtBus, txtData);
+                }
+
+            }
+        };
+        txtAddress.addKeyPressHandler(keyPressHandler);
+        txtBus.addKeyPressHandler(keyPressHandler);
+        txtData.addKeyPressHandler(keyPressHandler);
+
         ModalFooter modalFooter = new ModalFooter();
         Button btnOk = new Button("Send", new ClickHandler() {
             public void onClick(ClickEvent event) {
-                final int address = Integer.parseInt(txtAddress.getText());
-                final int busNr = Integer.parseInt(txtBus.getText());
-                final int data = Integer.parseInt(txtData.getText());
-                ServiceUtils.getBusService().sendBusData(busNr, address, data, new AsyncCallback<Void>() {
-                    @Override
-                    public void onFailure(Throwable caught) {
-                        GrowlOptions growlOptions = GrowlHelper.getNewOptions();
-                        growlOptions.setDangerType();
-                        Growl.growl("can't send data: " + caught.getMessage(), growlOptions);
-                    }
-
-                    @Override
-                    public void onSuccess(Void result) {
-                        GrowlOptions growlOptions = GrowlHelper.getNewOptions();
-                        growlOptions.setInfoType();
-                        Growl.growl("data send - bus: " + busNr + " address: " + address + " data: " + data, growlOptions);
-                    }
-                });
+                sendData(txtAddress, txtBus, txtData);
 
             }
         });
@@ -87,5 +87,26 @@ public class SendDataModal extends Modal {
         modalFooter.add(btnClose);
         add(modalFooter);
 
+    }
+
+    private void sendData(TextBox txtAddress, TextBox txtBus, TextBox txtData) {
+        final int address = Integer.parseInt(txtAddress.getText());
+        final int busNr = Integer.parseInt(txtBus.getText());
+        final int data = Integer.parseInt(txtData.getText());
+        ServiceUtils.getBusService().sendBusData(busNr, address, data, new AsyncCallback<Void>() {
+            @Override
+            public void onFailure(Throwable caught) {
+                GrowlOptions growlOptions = GrowlHelper.getNewOptions();
+                growlOptions.setDangerType();
+                Growl.growl("can't send data: " + caught.getMessage(), growlOptions);
+            }
+
+            @Override
+            public void onSuccess(Void result) {
+                GrowlOptions growlOptions = GrowlHelper.getNewOptions();
+                growlOptions.setInfoType();
+                Growl.growl("data send - bus: " + busNr + " address: " + address + " data: " + data, growlOptions);
+            }
+        });
     }
 }

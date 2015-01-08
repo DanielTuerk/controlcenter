@@ -136,8 +136,16 @@ public class TrainItemPanel extends AbstractItemPanel<Train, TrainStateEvent> {
                     }
                 }
         );
+        Button btnStop = new Button("Stop", new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                ServiceUtils.getTrainService().updateDrivingLevel(
+                        getModel().getId(), 0, new EmptyCallback<Void>());
+            }
+        });
 
-        rowDrivingFunctions.add(new Column(ColumnSize.MD_12, btnGroupDirection, lblSliderValue, sliderDrivingLevel));
+        rowDrivingFunctions.add(new Column(ColumnSize.MD_12, btnGroupDirection, lblSliderValue, sliderDrivingLevel,
+                btnStop));
 
         contentPanel.add(rowDrivingFunctions);
 

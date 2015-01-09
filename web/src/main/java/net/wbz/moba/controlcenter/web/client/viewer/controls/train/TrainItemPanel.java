@@ -83,7 +83,6 @@ public class TrainItemPanel extends AbstractItemPanel<Train, TrainStateEvent> {
             }
         } else if (event instanceof TrainDrivingLevelEvent) {
             TrainDrivingLevelEvent drivingLevelEvent = (TrainDrivingLevelEvent) event;
-//            sliderDrivingLevel.setValue((double) drivingLevelEvent.getSpeed());
             lblStateDetails.setText("speed: " + drivingLevelEvent.getSpeed());
         }
     }

@@ -19,12 +19,22 @@ public class BitStateToggleButton extends Button {
         addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                if (isActive()) {
-                    setText(STATE_OFF);
-                } else {
-                    setText(STATE_ON);
-                }
+                updateState();
             }
         });
+    }
+
+    private void updateState() {
+        if (isActive()) {
+            setText(STATE_OFF);
+        } else {
+            setText(STATE_ON);
+        }
+    }
+
+    @Override
+    public void setActive(boolean active) {
+        super.setActive(active);
+        updateState();
     }
 }

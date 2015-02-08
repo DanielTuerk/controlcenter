@@ -118,7 +118,7 @@ public class TrackEditorServiceImpl extends RemoteServiceServlet implements Trac
 
 
     /**
-     * Register the {@link net.wbz.selectrix4java.bus.BusDataConsumer}s for each address of the given
+     * Register the {@link net.wbz.selectrix4java.bus.consumption.BusDataConsumer}s for each address of the given
      * {@link net.wbz.moba.controlcenter.web.shared.track.model.TrackPart}s.
      * <p/>
      * TODO: maybe bullshit -> reregister by second browser

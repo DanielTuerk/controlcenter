@@ -12,15 +12,13 @@ import net.wbz.moba.controlcenter.db.DatabaseFactory;
 import net.wbz.moba.controlcenter.web.server.EventBroadcaster;
 import net.wbz.moba.controlcenter.web.shared.bus.*;
 import net.wbz.moba.controlcenter.web.shared.viewer.RailVoltageEvent;
-import net.wbz.selectrix4java.bus.AllBusDataConsumer;
-import net.wbz.selectrix4java.bus.BusDataConsumer;
+import net.wbz.selectrix4java.bus.consumption.AllBusDataConsumer;
 import net.wbz.selectrix4java.device.*;
 import net.wbz.selectrix4java.device.serial.SerialDevice;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
-import java.math.BigInteger;
 import java.util.ArrayList;
 
 /**

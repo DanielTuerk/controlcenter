@@ -79,6 +79,7 @@ public class MyGuiceServletConfig extends GuiceServletContextListener {
 
             @Provides
             @Singleton
+            @Named("homePath")
             public String homePath() {
                 File configPath = new File(System.getProperty("user.home") + "/.moba/");
                 if (!configPath.exists()) {

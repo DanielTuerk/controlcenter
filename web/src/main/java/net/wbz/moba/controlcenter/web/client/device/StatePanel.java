@@ -5,6 +5,7 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.HTML;
 import de.novanic.eventservice.client.event.Event;
 import de.novanic.eventservice.client.event.listener.RemoteEventListener;
 import net.wbz.moba.controlcenter.web.client.EventReceiver;
@@ -12,9 +13,12 @@ import net.wbz.moba.controlcenter.web.client.ServiceUtils;
 import net.wbz.moba.controlcenter.web.client.util.EmptyCallback;
 import net.wbz.moba.controlcenter.web.shared.bus.DeviceInfo;
 import net.wbz.moba.controlcenter.web.shared.bus.DeviceInfoEvent;
+import net.wbz.moba.controlcenter.web.shared.bus.RecordingEvent;
 import net.wbz.moba.controlcenter.web.shared.viewer.RailVoltageEvent;
 import org.gwtbootstrap3.client.ui.Button;
 import org.gwtbootstrap3.client.ui.Label;
+import org.gwtbootstrap3.client.ui.Modal;
+import org.gwtbootstrap3.client.ui.ModalBody;
 import org.gwtbootstrap3.extras.toggleswitch.client.ui.ToggleSwitch;
 import org.gwtbootstrap3.extras.toggleswitch.client.ui.base.constants.ColorType;
 
@@ -32,6 +36,8 @@ public class StatePanel extends org.gwtbootstrap3.client.ui.gwt.FlowPanel {
     private final SendDataModal sendDataModal = new SendDataModal();
     private final Button btnSendData;
     private final DeviceListBox deviceListBox;
+    private final RecordingModal recordingModal = new RecordingModal();
+    private final ToggleSwitch toggleRecording;
 
     public StatePanel() {
         setStyleName("statePanel");
@@ -95,6 +101,33 @@ public class StatePanel extends org.gwtbootstrap3.client.ui.gwt.FlowPanel {
         });
         add(btnSendData);
 
+        toggleRecording = new ToggleSwitch();
+        toggleRecording.setOffColor(ColorType.DANGER);
+        toggleRecording.setOnColor(ColorType.SUCCESS);
+        toggleRecording.setLabelText("Record");
+        toggleRecording.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
+            @Override
+            public void onValueChange(ValueChangeEvent<Boolean> booleanValueChangeEvent) {
+                if (booleanValueChangeEvent.getValue()) {
+                    ServiceUtils.getBusService().startRecording("", new EmptyCallback<Void>());
+                } else {
+                    ServiceUtils.getBusService().stopRecording(new EmptyCallback<Void>());
+                }
+            }
+        });
+        EventReceiver.getInstance().addListener(RecordingEvent.class, new RemoteEventListener() {
+            public void apply(Event anEvent) {
+                if (anEvent instanceof RecordingEvent) {
+                    RecordingEvent recordingEvent = (RecordingEvent) anEvent;
+                    if(recordingEvent.getState()== RecordingEvent.STATE.STOP) {
+                        toggleRecording.setValue(false, false);
+                        recordingModal.show(recordingEvent);
+                    }
+                }
+            }
+        });
+        add(toggleRecording);
+
         add(new Label("v0.01.alpha"));
     }
 
@@ -155,5 +188,6 @@ public class StatePanel extends org.gwtbootstrap3.client.ui.gwt.FlowPanel {
         btnDeviceConfig.setEnabled(!connected);
         busConnectionToggleButton.updateValue(connected, false);
         btnSendData.setEnabled(connected);
+        toggleRecording.setEnabled(connected);
     }
 }

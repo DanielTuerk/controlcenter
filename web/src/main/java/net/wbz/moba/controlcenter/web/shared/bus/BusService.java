@@ -58,4 +58,7 @@ public interface BusService extends RemoteService {
      * @param data data of address
      */
     public void sendBusData(int busNr, int address, int data);
+
+    public void startRecording(String fileName);
+    public void stopRecording();
 }

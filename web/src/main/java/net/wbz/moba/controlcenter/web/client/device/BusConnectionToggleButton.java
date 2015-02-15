@@ -49,7 +49,7 @@ public class BusConnectionToggleButton extends ToggleSwitch {
                         }
                     }
                 } else {
-                    // activate for next time
+                    // activate for next timestamp
                     fireEvent = true;
                 }
 

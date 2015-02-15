@@ -13,7 +13,10 @@ import net.wbz.moba.controlcenter.web.server.EventBroadcaster;
 import net.wbz.moba.controlcenter.web.shared.bus.*;
 import net.wbz.moba.controlcenter.web.shared.viewer.RailVoltageEvent;
 import net.wbz.selectrix4java.bus.consumption.AllBusDataConsumer;
-import net.wbz.selectrix4java.device.*;
+import net.wbz.selectrix4java.device.Device;
+import net.wbz.selectrix4java.device.DeviceAccessException;
+import net.wbz.selectrix4java.device.DeviceConnectionListener;
+import net.wbz.selectrix4java.device.DeviceManager;
 import net.wbz.selectrix4java.device.serial.SerialDevice;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,13 +43,17 @@ public class BusServiceImpl extends RemoteServiceServlet implements BusService {
     private final EventBroadcaster eventBroadcaster;
 
     private final AllBusDataConsumer allBusDataConsumer;
+
+    private final DeviceRecorder deviceRecorder;
+
     private boolean trackingActive = false;
 
     @Inject
     public BusServiceImpl(DeviceManager deviceManager, @Named("settings") DatabaseFactory databaseFactory,
-                          final EventBroadcaster eventBroadcaster) {
+                          final EventBroadcaster eventBroadcaster, DeviceRecorder deviceRecorder) {
         this.deviceManager = deviceManager;
         this.eventBroadcaster = eventBroadcaster;
+        this.deviceRecorder = deviceRecorder;
         settingsDatabase = databaseFactory.getOrCreateDatabase(BUS_DB_KEY);
 
         ObjectSet<DeviceInfo> storedDevices = settingsDatabase.getObjectContainer().query(DeviceInfo.class);
@@ -209,6 +216,16 @@ public class BusServiceImpl extends RemoteServiceServlet implements BusService {
                 LOGGER.error(String.format("can't send data (bus: %d, address: %d, data: %d)", busNr, address, data), e);
             }
         }
+    }
+
+    @Override
+    public void startRecording(String fileName) {
+        deviceRecorder.startRecording(activeDevice, null);
+    }
+
+    @Override
+    public void stopRecording() {
+        deviceRecorder.stopRecording();
     }
 
     @Override

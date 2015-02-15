@@ -62,6 +62,7 @@ public class TrainItemPanel extends AbstractItemPanel<Train, TrainStateEvent> {
 
     @Override
     public void updateItemData(TrainStateEvent event) {
+        //TODO: slider and buttons need update for remote tracking of other device -> BUT will crash with fast input and update delay
         if (event instanceof TrainHornStateEvent) {
             functionButtons.get(TrainFunction.FUNCTION.HORN).setActive(((TrainHornStateEvent) event).isState());
         } else if (event instanceof TrainLightStateEvent) {

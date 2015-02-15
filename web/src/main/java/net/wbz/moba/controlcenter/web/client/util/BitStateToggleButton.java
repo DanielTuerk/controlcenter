@@ -26,9 +26,9 @@ public class BitStateToggleButton extends Button {
 
     private void updateState() {
         if (isActive()) {
-            setText(STATE_OFF);
-        } else {
             setText(STATE_ON);
+        } else {
+            setText(STATE_OFF);
         }
     }
 

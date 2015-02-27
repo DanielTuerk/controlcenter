@@ -9,5 +9,5 @@ public interface ClickActionViewerWidgetHandler {
 
     public void onClick();
 
-    public void updateFunctionState(Configuration configuration, boolean state);
+
 }

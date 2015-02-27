@@ -15,10 +15,6 @@ import java.util.Map;
  */
 public class TrackPart implements IsSerializable, Serializable {
 
-    /**
-     * Default function to toggle a single bit. Used for the block track parts.
-     */
-    public static final String DEFAULT_TOGGLE_FUNCTION = "toggle";
 
     /**
      * Position of the track part in the grid system of the construction.
@@ -40,19 +36,30 @@ public class TrackPart implements IsSerializable, Serializable {
             // create dummy for saved instance without configuration; will be changed during first call of
             // {@link TrackPart#setFunctionConfigs}
             functionConfigs = new HashMap<>();
-            functionConfigs.put(DEFAULT_TOGGLE_FUNCTION, new Configuration());
+            functionConfigs.put(TrackModelConstants.DEFAULT_TOGGLE_FUNCTION, new Configuration());
+            functionConfigs.put(TrackModelConstants.DEFAULT_BLOCK_FUNCTION, new Configuration());
         }
         return functionConfigs;
     }
 
     /**
      * Return the {@link net.wbz.moba.controlcenter.web.shared.track.model.Configuration} of the default toggle
-     * function. {@link net.wbz.moba.controlcenter.web.shared.track.model.TrackPart#DEFAULT_TOGGLE_FUNCTION}
+     * function. {@link net.wbz.moba.controlcenter.web.shared.track.model.TrackModelConstants#DEFAULT_TOGGLE_FUNCTION}
      *
      * @return {@link net.wbz.moba.controlcenter.web.shared.track.model.Configuration}
      */
     public Configuration getDefaultToggleFunctionConfig() {
-        return getFunctionConfigs().get(DEFAULT_TOGGLE_FUNCTION);
+        if (!getFunctionConfigs().containsKey(TrackModelConstants.DEFAULT_TOGGLE_FUNCTION)) {
+            getFunctionConfigs().put(TrackModelConstants.DEFAULT_TOGGLE_FUNCTION, new Configuration());
+        }
+        return getFunctionConfigs().get(TrackModelConstants.DEFAULT_TOGGLE_FUNCTION);
+    }
+
+    public Configuration getDefaultBlockFunctionConfig() {
+        if (!getFunctionConfigs().containsKey(TrackModelConstants.DEFAULT_BLOCK_FUNCTION)) {
+            getFunctionConfigs().put(TrackModelConstants.DEFAULT_BLOCK_FUNCTION, new Configuration());
+        }
+        return getFunctionConfigs().get(TrackModelConstants.DEFAULT_BLOCK_FUNCTION);
     }
 
     public String getConfigurationInfo() {
@@ -68,8 +75,8 @@ public class TrackPart implements IsSerializable, Serializable {
     }
 
     public EventConfiguration getEventConfiguration() {
-        if(eventConfiguration==null) {
-            eventConfiguration=new EventConfiguration();
+        if (eventConfiguration == null) {
+            eventConfiguration = new EventConfiguration();
         }
         return eventConfiguration;
     }

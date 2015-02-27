@@ -8,15 +8,9 @@ import net.wbz.moba.controlcenter.web.client.TrackUtils;
 import net.wbz.moba.controlcenter.web.client.editor.track.EditTrackWidgetHandler;
 import net.wbz.moba.controlcenter.web.shared.track.model.Configuration;
 import net.wbz.moba.controlcenter.web.shared.track.model.GridPosition;
-import net.wbz.moba.controlcenter.web.shared.track.model.Signal;
 import net.wbz.moba.controlcenter.web.shared.track.model.TrackPart;
 import org.gwtbootstrap3.client.ui.*;
-import org.gwtbootstrap3.client.ui.constants.ColumnSize;
 import org.gwtbootstrap3.client.ui.constants.FormType;
-import org.gwtbootstrap3.client.ui.gwt.FlowPanel;
-import org.gwtbootstrap3.client.ui.html.ClearFix;
-import org.gwtbootstrap3.extras.select.client.ui.Option;
-import org.gwtbootstrap3.extras.select.client.ui.Select;
 import org.vectomatic.dom.svg.OMSVGDocument;
 import org.vectomatic.dom.svg.OMSVGSVGElement;
 import org.vectomatic.dom.svg.utils.OMSVGParser;
@@ -30,15 +24,14 @@ import java.util.Map;
 abstract public class AbstractSvgTrackWidget<T extends TrackPart> extends SimplePanel implements EditTrackWidgetHandler {
 
     public static final String CSS_WIDGET_DISABLED = "widget-disabled";
+
     /**
      * Model for the widget.
      */
     private T trackPart = null;
 
     public static final String ID_FORM_ADDRESS = "formAddress";
-    private static final String ID_FORM_BIT = "formBit";
-    private Select selectBit;
-    private TextBox txtAddress;
+
 
     private final OMSVGDocument svgDocument = OMSVGParser.currentDocument();
     private final OMSVGSVGElement svgRootElement;
@@ -106,14 +99,7 @@ abstract public class AbstractSvgTrackWidget<T extends TrackPart> extends Simple
      * @return
      */
     public Map<String, Configuration> getStoredWidgetFunctionConfigs() {
-        Map<String, Configuration> functionConfigs = new HashMap<>();
-        Configuration configuration = new Configuration();
-        configuration.setBus(1); //TODO
-        configuration.setAddress(trackPart.getDefaultToggleFunctionConfig().getAddress());
-        configuration.setBit(trackPart.getDefaultToggleFunctionConfig().getBit());
-        configuration.setBitState(true);
-        functionConfigs.put(TrackPart.DEFAULT_TOGGLE_FUNCTION, configuration);
-        return functionConfigs;
+        return new HashMap<>();
     }
 
     /**
@@ -124,13 +110,14 @@ abstract public class AbstractSvgTrackWidget<T extends TrackPart> extends Simple
     protected void initFromTrackPart(T trackPart) {
         this.trackPart = trackPart;
 
-        setTitle(trackPart.getDefaultToggleFunctionConfig().toString());
+        setTitle(trackPart.getDefaultToggleFunctionConfig().toString() + " Block: " + trackPart.getDefaultBlockFunctionConfig());
     }
 
+    abstract public void updateFunctionState(Configuration configuration, boolean state);
 
     protected void addDialogContentTab(String title, Widget content) {
         TabPane tabPane = new TabPane();
-        tabPane.setActive(dialogContentTabContent.getWidgetCount() ==0);
+        tabPane.setActive(dialogContentTabContent.getWidgetCount() == 0);
 
 
         TabListItem tabListItem = new TabListItem(title);
@@ -153,49 +140,7 @@ abstract public class AbstractSvgTrackWidget<T extends TrackPart> extends Simple
         Form form = new Form();
         form.setType(FormType.HORIZONTAL);
 
-        FieldSet fieldSet = new FieldSet();
-        // module address
-        FormGroup groupModuleAddress = new FormGroup();
-        FormLabel lblAddress = new FormLabel();
-        lblAddress.setText("Address");
-        lblAddress.setFor(ID_FORM_ADDRESS);
-        groupModuleAddress.add(lblAddress);
 
-        txtAddress = new TextBox();
-        txtAddress.setId(ID_FORM_ADDRESS);
-        if (trackPart.getDefaultToggleFunctionConfig().getAddress() >= 0) {
-            txtAddress.setText(String.valueOf(trackPart.getDefaultToggleFunctionConfig().getAddress()));
-        }
-        org.gwtbootstrap3.client.ui.gwt.FlowPanel flowPanel = new org.gwtbootstrap3.client.ui.gwt.FlowPanel();
-        flowPanel.addStyleName(ColumnSize.MD_2.getCssName());
-        flowPanel.add(txtAddress);
-        groupModuleAddress.add(flowPanel);
-        fieldSet.add(groupModuleAddress);
-
-        // module bit
-        FormGroup groupBit = new FormGroup();
-        FormLabel lblBit = new FormLabel();
-        lblBit.setFor(ID_FORM_BIT);
-        lblBit.setText("Bit");
-        groupBit.add(lblBit);
-
-        selectBit = new Select();
-        selectBit.setId(ID_FORM_BIT);
-        for (int index = 1; index < 9; index++) {
-            Option option = new Option();
-            String value = String.valueOf(index);
-            option.setValue(value);
-            option.setText(value);
-            selectBit.add(option);
-            if (index == trackPart.getDefaultToggleFunctionConfig().getBit()) {
-                selectBit.setValue(option);
-            }
-        }
-        groupBit.add(selectBit);
-        fieldSet.add(groupBit);
-
-
-        addDialogContentTab("Config", fieldSet);
         form.add(tabPanel);
 
         return form;
@@ -203,9 +148,6 @@ abstract public class AbstractSvgTrackWidget<T extends TrackPart> extends Simple
 
     @Override
     public void onConfirmCallback() {
-        trackPart.getDefaultToggleFunctionConfig().setBus(1);
-        trackPart.getDefaultToggleFunctionConfig().setAddress(Integer.parseInt(txtAddress.getText()));
-        trackPart.getDefaultToggleFunctionConfig().setBit(Integer.parseInt(selectBit.getValue()));
     }
 
     /**
@@ -305,6 +247,7 @@ abstract public class AbstractSvgTrackWidget<T extends TrackPart> extends Simple
 
     /**
      * TODO: to avoid same model of clone - palette
+     *
      * @return
      */
     abstract public T getNewTrackPart();

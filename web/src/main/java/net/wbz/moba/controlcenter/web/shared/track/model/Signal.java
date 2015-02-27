@@ -80,7 +80,9 @@ public class Signal extends Straight {
     public Map<LIGHT, Configuration> getSignalConfiguration() {
         Map<LIGHT, Configuration> lightConfig = Maps.newHashMap();
         for (Map.Entry<String, Configuration> functionConfig : getFunctionConfigs().entrySet()) {
-            if(!DEFAULT_TOGGLE_FUNCTION.equals(functionConfig.getKey())) {
+            // TODO: refactor to signal function prefix
+            if (!TrackModelConstants.DEFAULT_TOGGLE_FUNCTION.equals(functionConfig.getKey())
+                    && !TrackModelConstants.DEFAULT_BLOCK_FUNCTION.equals(functionConfig.getKey())) {
                 lightConfig.put(LIGHT.valueOf(functionConfig.getKey()), functionConfig.getValue());
             }
         }

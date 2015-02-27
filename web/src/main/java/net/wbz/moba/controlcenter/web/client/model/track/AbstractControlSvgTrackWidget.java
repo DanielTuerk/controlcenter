@@ -8,11 +8,16 @@ import net.wbz.moba.controlcenter.web.client.util.EmptyCallback;
 import net.wbz.moba.controlcenter.web.client.util.Log;
 import net.wbz.moba.controlcenter.web.shared.track.model.Configuration;
 import net.wbz.moba.controlcenter.web.shared.track.model.EventConfiguration;
+import net.wbz.moba.controlcenter.web.shared.track.model.TrackModelConstants;
 import net.wbz.moba.controlcenter.web.shared.track.model.TrackPart;
 import org.gwtbootstrap3.client.ui.*;
 import org.gwtbootstrap3.client.ui.constants.ColumnSize;
+import org.gwtbootstrap3.extras.select.client.ui.Option;
+import org.gwtbootstrap3.extras.select.client.ui.Select;
 import org.vectomatic.dom.svg.OMSVGDocument;
 import org.vectomatic.dom.svg.OMSVGSVGElement;
+
+import java.util.Map;
 
 /**
  * A {@link AbstractSvgTrackWidget} with click control
@@ -21,7 +26,7 @@ import org.vectomatic.dom.svg.OMSVGSVGElement;
  *
  * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
  */
-abstract public class AbstractControlSvgTrackWidget<T extends TrackPart> extends AbstractSvgTrackWidget<T>
+abstract public class AbstractControlSvgTrackWidget<T extends TrackPart> extends AbstractBlockSvgTrackWidget<T>
         implements ClickActionViewerWidgetHandler {
 
     /**
@@ -35,6 +40,11 @@ abstract public class AbstractControlSvgTrackWidget<T extends TrackPart> extends
     private TextBox txtEventConfigOffBit;
     private Button toggleEventConfigOffBitState;
 
+
+    private static final String ID_FORM_BIT = "formBit";
+    private Select selectBit;
+    private TextBox txtAddress;
+
     /**
      * Add the svg items to the element which represents the active state of the widget.
      *
@@ -46,7 +56,7 @@ abstract public class AbstractControlSvgTrackWidget<T extends TrackPart> extends
     @Override
     public void onClick() {
         if (isEnabled()) {
-            Configuration toggleFunctionConfig = getStoredWidgetFunctionConfigs().get(TrackPart.DEFAULT_TOGGLE_FUNCTION);
+            Configuration toggleFunctionConfig = getStoredWidgetFunctionConfigs().get(TrackModelConstants.DEFAULT_TOGGLE_FUNCTION);
             ServiceUtils.getTrackViewerService().toggleTrackPart(toggleFunctionConfig, !trackPartState, new
                     EmptyCallback<Void>());
         }
@@ -54,9 +64,10 @@ abstract public class AbstractControlSvgTrackWidget<T extends TrackPart> extends
 
     @Override
     public void updateFunctionState(Configuration configuration, boolean state) {
+        super.updateFunctionState(configuration, state);
         // update the SVG for the state of the {@link TrackPart#DEFAULT_TOGGLE_FUNCTION}
-        Configuration toggleFunctionConfig = getStoredWidgetFunctionConfigs().get(TrackPart.DEFAULT_TOGGLE_FUNCTION);
-        if (toggleFunctionConfig.equals(configuration)) {
+        Configuration toggleFunctionConfig = getStoredWidgetFunctionConfigs().get(TrackModelConstants.DEFAULT_TOGGLE_FUNCTION);
+        if (toggleFunctionConfig != null && toggleFunctionConfig.equals(configuration)) {
             trackPartState = state;
             clearSvgContent();
             if (state == toggleFunctionConfig.isBitState()) {
@@ -70,9 +81,75 @@ abstract public class AbstractControlSvgTrackWidget<T extends TrackPart> extends
     }
 
     @Override
+    public Map<String, Configuration> getStoredWidgetFunctionConfigs() {
+        Map<String, Configuration> functionConfigs = super.getStoredWidgetFunctionConfigs();
+        Configuration configuration = new Configuration();
+        configuration.setBus(1); //TODO
+        configuration.setAddress(getTrackPart().getDefaultToggleFunctionConfig().getAddress());
+        configuration.setBit(getTrackPart().getDefaultToggleFunctionConfig().getBit());
+        configuration.setBitState(true);
+        functionConfigs.put(TrackModelConstants.DEFAULT_TOGGLE_FUNCTION, configuration);
+        return functionConfigs;
+    }
+
+    private void addConfigContent() {
+        FieldSet fieldSet = new FieldSet();
+        // module address
+        FormGroup groupModuleAddress = new FormGroup();
+        FormLabel lblAddress = new FormLabel();
+        lblAddress.setText("Address");
+        lblAddress.setFor(ID_FORM_ADDRESS);
+        groupModuleAddress.add(lblAddress);
+
+        txtAddress = new TextBox();
+        txtAddress.setId(ID_FORM_ADDRESS);
+        if (getTrackPart().getDefaultToggleFunctionConfig().getAddress() >= 0) {
+            txtAddress.setText(String.valueOf(getTrackPart().getDefaultToggleFunctionConfig().getAddress()));
+        }
+        org.gwtbootstrap3.client.ui.gwt.FlowPanel flowPanel = new org.gwtbootstrap3.client.ui.gwt.FlowPanel();
+        flowPanel.addStyleName(ColumnSize.MD_2.getCssName());
+        flowPanel.add(txtAddress);
+        groupModuleAddress.add(flowPanel);
+        fieldSet.add(groupModuleAddress);
+
+        // module bit
+        FormGroup groupBit = new FormGroup();
+        FormLabel lblBit = new FormLabel();
+        lblBit.setFor(ID_FORM_BIT);
+        lblBit.setText("Bit");
+        groupBit.add(lblBit);
+
+        selectBit = new Select();
+        selectBit.setId(ID_FORM_BIT);
+        for (int index = 1; index < 9; index++) {
+            Option option = new Option();
+            String value = String.valueOf(index);
+            option.setValue(value);
+            option.setText(value);
+            selectBit.add(option);
+            if (index == getTrackPart().getDefaultToggleFunctionConfig().getBit()) {
+                selectBit.setValue(option);
+            }
+        }
+        groupBit.add(selectBit);
+        fieldSet.add(groupBit);
+
+
+        addDialogContentTab("Config", fieldSet);
+    }
+
+    @Override
     public Widget getDialogContent() {
         Widget dialogContent = super.getDialogContent();
 
+        addConfigContent();
+
+        addEventContent();
+
+        return dialogContent;
+    }
+
+    private void addEventContent() {
         FieldSet fieldSet = new FieldSet();
 
         Configuration eventConfigOn = getTrackPart().getEventConfiguration().getStateOnConfig();
@@ -90,9 +167,6 @@ abstract public class AbstractControlSvgTrackWidget<T extends TrackPart> extends
         txtEventConfigOnAddress = new TextBox();
         txtEventConfigOnAddress.setValue(String.valueOf(eventConfigOn.getAddress()));
         txtEventConfigOnAddress.setId("stateOn");
-//        if (trackPart.getDefaultToggleFunctionConfig().getAddress() >= 0) {
-//            txtAddress.setText(String.valueOf(trackPart.getDefaultToggleFunctionConfig().getAddress()));
-//        }
         flowPanel.add(new Label("address"));
         flowPanel.add(txtEventConfigOnAddress);
 
@@ -140,15 +214,14 @@ abstract public class AbstractControlSvgTrackWidget<T extends TrackPart> extends
         groupStateOff.add(flowPanelOff);
         fieldSet.add(groupStateOff);
 
-
         addDialogContentTab("Event", fieldSet);
-        return dialogContent;
     }
 
     @Override
     public void onConfirmCallback() {
         super.onConfirmCallback();
 
+        // save event config
         EventConfiguration eventConfiguration = new EventConfiguration();
         eventConfiguration.setStateOnConfig(
                 new Configuration(1, Integer.parseInt(txtEventConfigOnAddress.getValue()),
@@ -157,5 +230,11 @@ abstract public class AbstractControlSvgTrackWidget<T extends TrackPart> extends
                 new Configuration(1, Integer.parseInt(txtEventConfigOffAddress.getValue()),
                         Integer.parseInt(txtEventConfigOffBit.getValue()), toggleEventConfigOffBitState.isActive()));
         getTrackPart().setEventConfiguration(eventConfiguration);
+
+
+        // save toggle config
+        getTrackPart().getDefaultToggleFunctionConfig().setBus(1);
+        getTrackPart().getDefaultToggleFunctionConfig().setAddress(Integer.parseInt(txtAddress.getText()));
+        getTrackPart().getDefaultToggleFunctionConfig().setBit(Integer.parseInt(selectBit.getValue()));
     }
 }

@@ -74,13 +74,6 @@ public class TrackViewerPanel extends AbstractTrackPanel {
                 if (anEvent instanceof TrackPartStateEvent) {
                     TrackPartStateEvent event = (TrackPartStateEvent) anEvent;
                     updateTrackPartState(event.getConfiguration(), event.isOn());
-                } else if (anEvent instanceof SignalFunctionStateEvent) {
-                    for (AbstractSignalWidget signalTrackWidget : signalTrackWidgets) {
-                        SignalFunctionStateEvent signalFunctionStateEvent = (SignalFunctionStateEvent) anEvent;
-                        if (signalTrackWidget.getTrackPart().getSignalConfiguration().equals(signalFunctionStateEvent.getConfiguration())) {
-                            signalTrackWidget.showSignalFunction(signalFunctionStateEvent.getSignalFunction());
-                        }
-                    }
                 }
             }
         };
@@ -229,21 +222,7 @@ public class TrackViewerPanel extends AbstractTrackPanel {
     private void updateTrackPartState(Configuration configuration, boolean state) {
         if (trackWidgetsOfConfiguration.containsKey(configuration)) {
             for (AbstractSvgTrackWidget controlSvgTrackWidget : trackWidgetsOfConfiguration.get(configuration)) {
-                if (controlSvgTrackWidget instanceof BlockPart) {
-                    BlockPart blockPart = (BlockPart) controlSvgTrackWidget;
-                    if (configuration.isValid()) {
-                        if (state) {
-                            blockPart.usedBlock();
-                        } else {
-                            blockPart.freeBlock();
-                        }
-                    } else {
-                        blockPart.unknownBlock();
-                    }
-                }
-                if (controlSvgTrackWidget instanceof AbstractControlSvgTrackWidget) {
-                    ((AbstractControlSvgTrackWidget) controlSvgTrackWidget).updateFunctionState(configuration, state);
-                }
+                controlSvgTrackWidget.updateFunctionState(configuration, state);
             }
         }
     }

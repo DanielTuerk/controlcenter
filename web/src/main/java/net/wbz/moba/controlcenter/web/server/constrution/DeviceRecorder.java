@@ -26,11 +26,13 @@ public class DeviceRecorder {
 
     private IsRecordable recordable;
     private EventBroadcaster eventBroadcaster;
+    private final Path destinationFolder;
 
     @Inject
     public DeviceRecorder(@Named("homePath") String homeDir, EventBroadcaster eventBroadcaster) {
         this.homeDir = homeDir;
         this.eventBroadcaster = eventBroadcaster;
+        this.destinationFolder = Paths.get(homeDir + "/record/");
     }
 
     public void startRecording(Device device, String fileName) {
@@ -40,8 +42,6 @@ public class DeviceRecorder {
             throw new RuntimeException("device is no instance of " + IsRecordable.class.getName());
         }
         if (!recordable.isRecording()) {
-
-            Path destinationFolder = Paths.get(homeDir + "/record/");
             try {
                 eventBroadcaster.fireEvent(new RecordingEvent(RecordingEvent.STATE.START));
                 recordable.startRecording(destinationFolder);
@@ -60,5 +60,9 @@ public class DeviceRecorder {
                 LOGGER.error("can't stop recording", e);
             }
         }
+    }
+
+    public Path getDestinationFolder() {
+        return destinationFolder;
     }
 }

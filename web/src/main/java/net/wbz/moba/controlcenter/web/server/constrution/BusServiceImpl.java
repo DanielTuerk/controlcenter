@@ -13,6 +13,8 @@ import net.wbz.moba.controlcenter.web.server.EventBroadcaster;
 import net.wbz.moba.controlcenter.web.shared.bus.*;
 import net.wbz.moba.controlcenter.web.shared.viewer.RailVoltageEvent;
 import net.wbz.selectrix4java.bus.consumption.AllBusDataConsumer;
+import net.wbz.selectrix4java.data.recording.BusDataPlayer;
+import net.wbz.selectrix4java.data.recording.BusDataPlayerListener;
 import net.wbz.selectrix4java.device.Device;
 import net.wbz.selectrix4java.device.DeviceAccessException;
 import net.wbz.selectrix4java.device.DeviceConnectionListener;
@@ -22,7 +24,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
+import java.io.IOException;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
@@ -226,6 +234,50 @@ public class BusServiceImpl extends RemoteServiceServlet implements BusService {
     @Override
     public void stopRecording() {
         deviceRecorder.stopRecording();
+    }
+
+    private BusDataPlayer busDataPlayer;
+
+    @Override
+    public void startPlayer(String absoluteFilePath) {
+        busDataPlayer = new BusDataPlayer(activeDevice.getBusDataDispatcher(), activeDevice.getBusDataChannel());
+        busDataPlayer.addListener(new BusDataPlayerListener() {
+            @Override
+            public void playbackStarted() {
+                LOGGER.info("playback started");
+                eventBroadcaster.fireEvent(new PlayerEvent(PlayerEvent.STATE.START));
+            }
+
+            @Override
+            public void playbackStopped() {
+                LOGGER.info("playback stopped");
+                eventBroadcaster.fireEvent(new PlayerEvent(PlayerEvent.STATE.STOP));
+            }
+        });
+        try {
+            busDataPlayer.start(Paths.get(absoluteFilePath));
+        } catch (Exception e) {
+            LOGGER.error("can't start player", e);
+        }
+    }
+
+    @Override
+    public void stopPlayer() {
+        busDataPlayer.stop();
+    }
+
+    @Override
+    public List<String> getRecords() {
+        final List<String> recordsAbsoluteFilePath = Lists.newArrayList();
+        try {
+            DirectoryStream<Path> directoryStream = Files.newDirectoryStream(deviceRecorder.getDestinationFolder());
+            for (Path path : directoryStream) {
+                recordsAbsoluteFilePath.add(path.toString());
+            }
+        } catch (IOException e) {
+            LOGGER.error("check files of records", e);
+        }
+        return recordsAbsoluteFilePath;
     }
 
     @Override

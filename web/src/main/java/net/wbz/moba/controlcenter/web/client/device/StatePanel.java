@@ -5,7 +5,6 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.HTML;
 import de.novanic.eventservice.client.event.Event;
 import de.novanic.eventservice.client.event.listener.RemoteEventListener;
 import net.wbz.moba.controlcenter.web.client.EventReceiver;
@@ -13,12 +12,14 @@ import net.wbz.moba.controlcenter.web.client.ServiceUtils;
 import net.wbz.moba.controlcenter.web.client.util.EmptyCallback;
 import net.wbz.moba.controlcenter.web.shared.bus.DeviceInfo;
 import net.wbz.moba.controlcenter.web.shared.bus.DeviceInfoEvent;
+import net.wbz.moba.controlcenter.web.shared.bus.PlayerEvent;
 import net.wbz.moba.controlcenter.web.shared.bus.RecordingEvent;
 import net.wbz.moba.controlcenter.web.shared.viewer.RailVoltageEvent;
 import org.gwtbootstrap3.client.ui.Button;
 import org.gwtbootstrap3.client.ui.Label;
-import org.gwtbootstrap3.client.ui.Modal;
-import org.gwtbootstrap3.client.ui.ModalBody;
+import org.gwtbootstrap3.extras.growl.client.ui.Growl;
+import org.gwtbootstrap3.extras.growl.client.ui.GrowlHelper;
+import org.gwtbootstrap3.extras.growl.client.ui.GrowlOptions;
 import org.gwtbootstrap3.extras.toggleswitch.client.ui.ToggleSwitch;
 import org.gwtbootstrap3.extras.toggleswitch.client.ui.base.constants.ColorType;
 
@@ -38,6 +39,10 @@ public class StatePanel extends org.gwtbootstrap3.client.ui.gwt.FlowPanel {
     private final DeviceListBox deviceListBox;
     private final RecordingModal recordingModal = new RecordingModal();
     private final ToggleSwitch toggleRecording;
+    private final Button btnPlayerStart = new Button("Play");
+    private final Button btnPlayerStop = new Button("Stop");
+    private final PlayerModal playerModal = new PlayerModal();
+    private final RemoteEventListener busDataPlayerEventListener;
 
     public StatePanel() {
         setStyleName("statePanel");
@@ -48,10 +53,24 @@ public class StatePanel extends org.gwtbootstrap3.client.ui.gwt.FlowPanel {
                 if (anEvent instanceof DeviceInfoEvent) {
                     DeviceInfoEvent event = (DeviceInfoEvent) anEvent;
                     if (event.getEventType() == DeviceInfoEvent.TYPE.CONNECTED) {
-                        updateDeviceConnectionState(event.getDeviceInfo(),true);
+                        updateDeviceConnectionState(event.getDeviceInfo(), true);
                     } else if (event.getEventType() == DeviceInfoEvent.TYPE.DISCONNECTED) {
-                        updateDeviceConnectionState(event.getDeviceInfo(),false);
+                        updateDeviceConnectionState(event.getDeviceInfo(), false);
                     }
+                }
+            }
+        };
+
+        // add event receiver for the device connection state
+        busDataPlayerEventListener = new RemoteEventListener() {
+            public void apply(Event anEvent) {
+                if (anEvent instanceof PlayerEvent) {
+                    PlayerEvent event = (PlayerEvent) anEvent;
+                    updatePlayerState(event.getState() == PlayerEvent.STATE.START);
+
+                    GrowlOptions growlOptions = GrowlHelper.getNewOptions();
+                    growlOptions.setInfoType();
+                    Growl.growl("Player " + event.getState().name() + "!", growlOptions);
                 }
             }
         };
@@ -119,7 +138,7 @@ public class StatePanel extends org.gwtbootstrap3.client.ui.gwt.FlowPanel {
             public void apply(Event anEvent) {
                 if (anEvent instanceof RecordingEvent) {
                     RecordingEvent recordingEvent = (RecordingEvent) anEvent;
-                    if(recordingEvent.getState()== RecordingEvent.STATE.STOP) {
+                    if (recordingEvent.getState() == RecordingEvent.STATE.STOP) {
                         toggleRecording.setValue(false, false);
                         recordingModal.show(recordingEvent);
                     }
@@ -128,7 +147,30 @@ public class StatePanel extends org.gwtbootstrap3.client.ui.gwt.FlowPanel {
         });
         add(toggleRecording);
 
+        // player
+        btnPlayerStart.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                playerModal.show();
+            }
+        });
+        add(btnPlayerStart);
+
+        btnPlayerStop.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                ServiceUtils.getBusService().stopRecording(new EmptyCallback<Void>());
+            }
+        });
+        add(btnPlayerStop);
+
         add(new Label("v0.01.alpha"));
+
+    }
+
+    private void updatePlayerState(boolean playing) {
+        btnPlayerStart.setEnabled(!playing);
+        btnPlayerStop.setEnabled(playing);
     }
 
     private void toggleRailVoltageState() {
@@ -138,6 +180,7 @@ public class StatePanel extends org.gwtbootstrap3.client.ui.gwt.FlowPanel {
     @Override
     protected void onLoad() {
         EventReceiver.getInstance().addListener(DeviceInfoEvent.class, deviceInfoEventListener);
+        EventReceiver.getInstance().addListener(PlayerEvent.class, busDataPlayerEventListener);
 
         ServiceUtils.getBusService().isBusConnected(new AsyncCallback<Boolean>() {
             @Override
@@ -147,7 +190,7 @@ public class StatePanel extends org.gwtbootstrap3.client.ui.gwt.FlowPanel {
             @Override
             public void onSuccess(Boolean connected) {
 
-                if(connected) {
+                if (connected) {
 
                     ServiceUtils.getBusService().getDevices(new AsyncCallback<ArrayList<DeviceInfo>>() {
                         @Override
@@ -167,7 +210,7 @@ public class StatePanel extends org.gwtbootstrap3.client.ui.gwt.FlowPanel {
                         }
                     });
 
-                }else{
+                } else {
                     updateDeviceConnectionState(null, false);
                 }
             }
@@ -178,6 +221,7 @@ public class StatePanel extends org.gwtbootstrap3.client.ui.gwt.FlowPanel {
     protected void onUnload() {
         super.onUnload();
         EventReceiver.getInstance().removeListener(DeviceInfoEvent.class, deviceInfoEventListener);
+        EventReceiver.getInstance().removeListener(DeviceInfoEvent.class, busDataPlayerEventListener);
     }
 
     private void updateDeviceConnectionState(DeviceInfo deviceInfo, boolean connected) {
@@ -189,5 +233,12 @@ public class StatePanel extends org.gwtbootstrap3.client.ui.gwt.FlowPanel {
         busConnectionToggleButton.updateValue(connected, false);
         btnSendData.setEnabled(connected);
         toggleRecording.setEnabled(connected);
+
+        // update data player state
+        btnPlayerStart.setEnabled(connected);
+        btnPlayerStop.setEnabled(connected);
+        if (connected) {
+            updatePlayerState(false);
+        }
     }
 }

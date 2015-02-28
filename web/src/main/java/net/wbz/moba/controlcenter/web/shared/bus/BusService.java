@@ -2,8 +2,10 @@ package net.wbz.moba.controlcenter.web.shared.bus;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
+import net.wbz.selectrix4java.data.recording.RecordingException;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
@@ -61,4 +63,9 @@ public interface BusService extends RemoteService {
 
     public void startRecording(String fileName);
     public void stopRecording();
+
+    public void startPlayer(String absoluteFilePath);
+    public void stopPlayer();
+
+    public List<String> getRecords();
 }

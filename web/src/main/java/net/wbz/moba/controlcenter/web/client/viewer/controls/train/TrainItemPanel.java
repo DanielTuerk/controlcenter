@@ -10,6 +10,9 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Panel;
+import de.novanic.eventservice.client.event.Event;
+import de.novanic.eventservice.client.event.listener.RemoteEventListener;
+import net.wbz.moba.controlcenter.web.client.EventReceiver;
 import net.wbz.moba.controlcenter.web.client.ServiceUtils;
 import net.wbz.moba.controlcenter.web.client.util.EmptyCallback;
 import net.wbz.moba.controlcenter.web.client.viewer.controls.AbstractItemPanel;
@@ -18,6 +21,9 @@ import org.gwtbootstrap3.client.ui.*;
 import org.gwtbootstrap3.client.ui.constants.ColumnSize;
 import org.gwtbootstrap3.client.ui.constants.IconType;
 import org.gwtbootstrap3.client.ui.constants.Toggle;
+import org.gwtbootstrap3.extras.growl.client.ui.Growl;
+import org.gwtbootstrap3.extras.growl.client.ui.GrowlHelper;
+import org.gwtbootstrap3.extras.growl.client.ui.GrowlOptions;
 import org.gwtbootstrap3.extras.slider.client.ui.Slider;
 
 import java.util.Map;
@@ -47,17 +53,10 @@ public class TrainItemPanel extends AbstractItemPanel<Train, TrainStateEvent> {
 
     public TrainItemPanel(Train train) {
         super(train);
-    }
 
-
-    @Override
-    protected Panel createHeaderPanel() {
-        Panel headerPanel = new FlowPanel();
-        lblName.getElement().getStyle().setDisplay(Style.Display.BLOCK);
-        headerPanel.add(lblName);
-        headerPanel.add(lblState);
-        headerPanel.add(lblStateDetails);
-        return headerPanel;
+        lblName = new Label(getModel().getName());
+        lblState = new Label();
+        lblStateDetails = new Label();
     }
 
     @Override
@@ -84,17 +83,24 @@ public class TrainItemPanel extends AbstractItemPanel<Train, TrainStateEvent> {
             }
         } else if (event instanceof TrainDrivingLevelEvent) {
             TrainDrivingLevelEvent drivingLevelEvent = (TrainDrivingLevelEvent) event;
-            lblStateDetails.setText("speed: " + drivingLevelEvent.getSpeed());
+            final String text = "speed: " + drivingLevelEvent.getSpeed();
+            lblStateDetails.setText(text);
         }
+    }
+
+    @Override
+    protected Panel createHeaderPanel() {
+        Panel headerPanel = new FlowPanel();
+        lblName.getElement().getStyle().setDisplay(Style.Display.BLOCK);
+        headerPanel.add(lblName);
+        headerPanel.add(lblState);
+        headerPanel.add(lblStateDetails);
+        return headerPanel;
     }
 
     @Override
     public PanelCollapse createCollapseContentPanel() {
         contentPanel = new PanelCollapse();
-
-        lblName = new Label(getModel().getName());
-        lblState = new Label();
-        lblStateDetails = new Label();
 
         Button btnEditTrain = new Button();
         btnEditTrain.setIcon(IconType.PENCIL);
@@ -167,7 +173,6 @@ public class TrainItemPanel extends AbstractItemPanel<Train, TrainStateEvent> {
             // TODO train functions
 
         }
-
         return contentPanel;
     }
 

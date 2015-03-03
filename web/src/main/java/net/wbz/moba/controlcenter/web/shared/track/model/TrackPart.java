@@ -63,7 +63,12 @@ public class TrackPart implements IsSerializable, Serializable {
     }
 
     public String getConfigurationInfo() {
-        return String.valueOf(getDefaultToggleFunctionConfig());
+        // title with function configurations
+        StringBuilder functionsStringBuilder = new StringBuilder();
+        for(Map.Entry<String,Configuration> functionEntry : getFunctionConfigs().entrySet()) {
+            functionsStringBuilder.append(functionEntry.getKey()).append(": ").append(functionEntry.getValue()).append("; ");
+        }
+        return functionsStringBuilder.toString();
     }
 
     public GridPosition getGridPosition() {

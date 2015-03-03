@@ -145,4 +145,13 @@ public class TrainManager {
     public List<Train> getTrains() {
         return Lists.newArrayList(trains.values());
     }
+
+    public Train getTrainByAddress(int address) throws TrainException {
+        for (Train train : trains.values()) {
+            if (train.getAddress() == address) {
+                return train;
+            }
+        }
+        throw new TrainException(String.format("no train for address %d found!", address));
+    }
 }

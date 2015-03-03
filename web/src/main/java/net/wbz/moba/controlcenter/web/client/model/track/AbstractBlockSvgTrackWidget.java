@@ -1,10 +1,12 @@
 package net.wbz.moba.controlcenter.web.client.model.track;
 
+import com.google.common.collect.Maps;
 import com.google.gwt.user.client.ui.Widget;
 import net.wbz.moba.controlcenter.web.client.editor.track.EditTrackWidgetHandler;
 import net.wbz.moba.controlcenter.web.shared.track.model.Configuration;
 import net.wbz.moba.controlcenter.web.shared.track.model.TrackModelConstants;
 import net.wbz.moba.controlcenter.web.shared.track.model.TrackPart;
+import net.wbz.moba.controlcenter.web.shared.train.Train;
 import org.gwtbootstrap3.client.ui.FieldSet;
 import org.gwtbootstrap3.client.ui.FormGroup;
 import org.gwtbootstrap3.client.ui.FormLabel;
@@ -12,6 +14,9 @@ import org.gwtbootstrap3.client.ui.TextBox;
 import org.gwtbootstrap3.client.ui.constants.ColumnSize;
 import org.gwtbootstrap3.extras.select.client.ui.Option;
 import org.gwtbootstrap3.extras.select.client.ui.Select;
+import org.vectomatic.dom.svg.OMSVGElement;
+import org.vectomatic.dom.svg.OMSVGTextElement;
+import org.vectomatic.dom.svg.utils.SVGConstants;
 
 import java.util.Map;
 
@@ -24,6 +29,14 @@ abstract public class AbstractBlockSvgTrackWidget<T extends TrackPart> extends A
     private static final String ID_FORM_BIT = "formBit";
     private Select selectBit;
     private TextBox txtAddress;
+
+    /**
+     * Mapping of elements on the track part by each train.
+     * Used to add or remove an element for entering and exiting the block of a train
+     * called by the {@link net.wbz.moba.controlcenter.web.shared.bus.FeedbackBlockEvent}.
+     */
+    private Map<Train, OMSVGElement> trainElements = Maps.newConcurrentMap();
+
 
     @Override
     public void freeBlock() {
@@ -133,4 +146,26 @@ abstract public class AbstractBlockSvgTrackWidget<T extends TrackPart> extends A
         getTrackPart().getDefaultBlockFunctionConfig().setBit(Integer.parseInt(selectBit.getValue()));
     }
 
+    /**
+     * Show the information of the given {@link net.wbz.moba.controlcenter.web.shared.train.Train} on this block element.
+     *
+     * @param train {@link net.wbz.moba.controlcenter.web.shared.train.Train}
+     */
+    public void showTrainOnBlock(Train train) {
+        OMSVGTextElement foo = getSvgDocument().createSVGTextElement(1f, 24f, (short) 1, train.getName());
+        foo.getStyle().setSVGProperty(SVGConstants.CSS_FONT_SIZE_PROPERTY, "8pt");
+        trainElements.put(train, foo);
+        getSvgRootElement().appendChild(foo);
+    }
+
+    /**
+     * Remove the element for the given {@link net.wbz.moba.controlcenter.web.shared.train.Train} from this block.
+     *
+     * @param train {@link net.wbz.moba.controlcenter.web.shared.train.Train}
+     */
+    public void removeTrainOnBlock(Train train) {
+        if (trainElements.containsKey(train))
+            getSvgRootElement().removeChild(trainElements.get(train));
+        trainElements.remove(train);
+    }
 }

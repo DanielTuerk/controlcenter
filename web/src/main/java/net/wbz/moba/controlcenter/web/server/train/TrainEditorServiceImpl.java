@@ -1,6 +1,5 @@
 package net.wbz.moba.controlcenter.web.server.train;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.google.inject.Inject;
@@ -35,12 +34,22 @@ public class TrainEditorServiceImpl extends RemoteServiceServlet implements Trai
     }
 
     @Override
+    public Train getTrain(int address) {
+        try {
+            return trainManager.getTrainByAddress(address);
+        } catch (TrainException e) {
+            LOG.error("can't find train",e);
+        }
+        return null;
+    }
+
+    @Override
     public void createTrain(String name) {
         Train train = new Train(name);
         train.setId(System.nanoTime());
 
         Map<TrainFunction.FUNCTION, TrainFunction> trainFunctions = Maps.newHashMap();
-        for(TrainFunction.FUNCTION function : TrainFunction.FUNCTION.values()) {
+        for (TrainFunction.FUNCTION function : TrainFunction.FUNCTION.values()) {
             trainFunctions.put(function, new TrainFunction(function, false));
         }
         train.setFunctions(trainFunctions);
@@ -49,7 +58,6 @@ public class TrainEditorServiceImpl extends RemoteServiceServlet implements Trai
         } catch (Exception e) {
             String msg = String.format("can't create train '%s'", name);
             LOG.error(msg, e);
-            throw new RuntimeException(msg, e);
         }
     }
 

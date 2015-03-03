@@ -109,8 +109,6 @@ abstract public class AbstractSvgTrackWidget<T extends TrackPart> extends Simple
      */
     protected void initFromTrackPart(T trackPart) {
         this.trackPart = trackPart;
-
-        setTitle(trackPart.getDefaultToggleFunctionConfig().toString() + " Block: " + trackPart.getDefaultBlockFunctionConfig());
     }
 
     abstract public void updateFunctionState(Configuration configuration, boolean state);

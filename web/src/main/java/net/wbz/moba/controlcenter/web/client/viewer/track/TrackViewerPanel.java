@@ -13,12 +13,17 @@ import net.wbz.moba.controlcenter.web.client.EventReceiver;
 import net.wbz.moba.controlcenter.web.client.ServiceUtils;
 import net.wbz.moba.controlcenter.web.client.editor.track.AbstractTrackPanel;
 import net.wbz.moba.controlcenter.web.client.editor.track.ViewerPaletteWidget;
-import net.wbz.moba.controlcenter.web.client.model.track.*;
+import net.wbz.moba.controlcenter.web.client.model.track.AbsoluteTrackPosition;
+import net.wbz.moba.controlcenter.web.client.model.track.AbstractBlockSvgTrackWidget;
+import net.wbz.moba.controlcenter.web.client.model.track.AbstractSvgTrackWidget;
+import net.wbz.moba.controlcenter.web.client.model.track.ModelManager;
 import net.wbz.moba.controlcenter.web.client.model.track.signal.AbstractSignalWidget;
 import net.wbz.moba.controlcenter.web.client.util.EmptyCallback;
 import net.wbz.moba.controlcenter.web.shared.bus.DeviceInfoEvent;
+import net.wbz.moba.controlcenter.web.shared.bus.FeedbackBlockEvent;
 import net.wbz.moba.controlcenter.web.shared.track.model.Configuration;
 import net.wbz.moba.controlcenter.web.shared.track.model.TrackPart;
+import net.wbz.moba.controlcenter.web.shared.train.Train;
 import net.wbz.moba.controlcenter.web.shared.viewer.SignalFunctionStateEvent;
 import net.wbz.moba.controlcenter.web.shared.viewer.TrackPartStateEvent;
 import org.gwtbootstrap3.client.ui.Label;
@@ -27,7 +32,6 @@ import org.gwtbootstrap3.client.ui.constants.LabelType;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
 
 /**
  * Panel for the track viewer.
@@ -55,6 +59,7 @@ public class TrackViewerPanel extends AbstractTrackPanel {
     private final RemoteEventListener trackPartStateEventListener;
     private final RemoteEventListener signalFunctionStateEventListener;
     private final RemoteEventListener deviceConnectionEventListener;
+    private final RemoteEventListener feedbackBlockEventListener;
 
     public TrackViewerPanel() {
         signalFunctionStateEventListener = new RemoteEventListener() {
@@ -89,23 +94,16 @@ public class TrackViewerPanel extends AbstractTrackPanel {
                 }
             }
         };
+        feedbackBlockEventListener = new RemoteEventListener() {
+            public void apply(Event anEvent) {
+                if (anEvent instanceof FeedbackBlockEvent) {
+                    FeedbackBlockEvent event = (FeedbackBlockEvent) anEvent;
+                    updateTrainOnTrack(event.getAddress(), event.getBlock(), event.getTrain(), event.getState());
+                }
+            }
+        };
         getElement().setId(ID);
     }
-
-    private void enableTrackWidgets() {
-        updateTrackWidgetsState(true);
-    }
-
-    private void disableTrackWidgets() {
-        updateTrackWidgetsState(false);
-    }
-
-    private void updateTrackWidgetsState(boolean state) {
-        for (AbstractSvgTrackWidget trackWidget : trackWidgets) {
-            trackWidget.setEnabled(state);
-        }
-    }
-
 
     @Override
     protected void onLoad() {
@@ -115,6 +113,7 @@ public class TrackViewerPanel extends AbstractTrackPanel {
         EventReceiver.getInstance().addListener(TrackPartStateEvent.class, trackPartStateEventListener);
         EventReceiver.getInstance().addListener(SignalFunctionStateEvent.class, signalFunctionStateEventListener);
         EventReceiver.getInstance().addListener(DeviceInfoEvent.class, deviceConnectionEventListener);
+        EventReceiver.getInstance().addListener(FeedbackBlockEvent.class, feedbackBlockEventListener);
 
         for (int i = getWidgetCount() - 1; i >= 0; i--) {
             remove(i);
@@ -201,18 +200,70 @@ public class TrackViewerPanel extends AbstractTrackPanel {
         });
     }
 
-    private void registerWidgetsToReceiveEvents() {
-        ServiceUtils.getTrackEditorService().registerConsumersByConnectedDeviceForTrackParts(loadedTrackParts,
-                new EmptyCallback<Void>());
-    }
-
     @Override
     protected void onUnload() {
         super.onUnload();
         EventReceiver.getInstance().removeListener(TrackPartStateEvent.class, trackPartStateEventListener);
         EventReceiver.getInstance().removeListener(SignalFunctionStateEvent.class, signalFunctionStateEventListener);
         EventReceiver.getInstance().removeListener(DeviceInfoEvent.class, deviceConnectionEventListener);
+        EventReceiver.getInstance().removeListener(FeedbackBlockEvent.class, feedbackBlockEventListener);
     }
+
+    /**
+     * Show train label on the given block.
+     *
+     * @param address address of the block
+     * @param block   number of the block
+     * @param train   address of the train
+     * @param state   {@link net.wbz.moba.controlcenter.web.shared.bus.FeedbackBlockEvent.STATE} enter or exit the block
+     */
+    private void updateTrainOnTrack(final int address, final int block, final int train, final FeedbackBlockEvent.STATE state) {
+        ServiceUtils.getTrainEditorService().getTrain(train, new AsyncCallback<Train>() {
+            @Override
+            public void onFailure(Throwable caught) {
+            }
+
+            @Override
+            public void onSuccess(Train result) {
+                Configuration configAsIdentifier = new Configuration(1, address, block, true);
+                if (trackWidgetsOfConfiguration.containsKey(configAsIdentifier)) {
+                    for (AbstractSvgTrackWidget svgTrackWidget : trackWidgetsOfConfiguration.get(configAsIdentifier)) {
+                        if (svgTrackWidget instanceof AbstractBlockSvgTrackWidget) {
+                            switch (state) {
+                                case ENTER:
+                                    ((AbstractBlockSvgTrackWidget) svgTrackWidget).showTrainOnBlock(result);
+                                    break;
+                                case EXIT:
+                                    ((AbstractBlockSvgTrackWidget) svgTrackWidget).removeTrainOnBlock(result);
+                                    break;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    private void enableTrackWidgets() {
+        updateTrackWidgetsState(true);
+    }
+
+    private void disableTrackWidgets() {
+        updateTrackWidgetsState(false);
+    }
+
+    private void updateTrackWidgetsState(boolean state) {
+        for (AbstractSvgTrackWidget trackWidget : trackWidgets) {
+            trackWidget.setEnabled(state);
+        }
+    }
+
+
+    private void registerWidgetsToReceiveEvents() {
+        ServiceUtils.getTrackEditorService().registerConsumersByConnectedDeviceForTrackParts(loadedTrackParts,
+                new EmptyCallback<Void>());
+    }
+
 
     @Override
     public void addTrackWidget(Widget widget, int left, int top) {

@@ -10,11 +10,13 @@ import com.google.inject.Singleton;
 import net.wbz.moba.controlcenter.db.model.DataContainer;
 import net.wbz.moba.controlcenter.web.server.EventBroadcaster;
 import net.wbz.moba.controlcenter.web.server.constrution.ConstructionServiceImpl;
+import net.wbz.moba.controlcenter.web.shared.bus.FeedbackBlockEvent;
 import net.wbz.moba.controlcenter.web.shared.editor.TrackEditorService;
 import net.wbz.moba.controlcenter.web.shared.track.model.Configuration;
 import net.wbz.moba.controlcenter.web.shared.track.model.Signal;
 import net.wbz.moba.controlcenter.web.shared.track.model.TrackPart;
 import net.wbz.moba.controlcenter.web.shared.viewer.TrackPartStateEvent;
+import net.wbz.selectrix4java.block.FeedbackBlockListener;
 import net.wbz.selectrix4java.bus.BusAddressBitListener;
 import net.wbz.selectrix4java.bus.BusAddressListener;
 import net.wbz.selectrix4java.bus.BusListener;
@@ -43,6 +45,7 @@ public class TrackEditorServiceImpl extends RemoteServiceServlet implements Trac
     private final ConstructionServiceImpl constructionService;
 
     private final Map<BusAddressIdentifier, List<BusListener>> busAddressListenersOfTheCurrentTrack = Maps.newConcurrentMap();
+    private final Map<BusAddressIdentifier, FeedbackBlockListener> busAddressFeedbackBlockListenersOfTheCurrentTrack = Maps.newConcurrentMap();
     private final DeviceManager deviceManager;
     private final EventBroadcaster eventBroadcaster;
 
@@ -71,7 +74,18 @@ public class TrackEditorServiceImpl extends RemoteServiceServlet implements Trac
                         (byte) entry.getKey().getAddress()).addListeners(entry.getValue());
             }
         } catch (DeviceAccessException e) {
-            e.printStackTrace();
+            log.error("can't register listeners to active device",e);
+        }
+
+        try {
+            for (Map.Entry<BusAddressIdentifier, FeedbackBlockListener> entry : busAddressFeedbackBlockListenersOfTheCurrentTrack.entrySet()) {
+                device.getFeedbackBlockModule(
+                        entry.getKey().getAddress(),
+                        (entry.getKey().getAddress() + 2),
+                        (entry.getKey().getAddress() + 1)).addFeedbackBlockListener(entry.getValue());
+            }
+        } catch (DeviceAccessException e) {
+            log.error("can't register feedback block listeners to active device",e);
         }
     }
 
@@ -82,7 +96,7 @@ public class TrackEditorServiceImpl extends RemoteServiceServlet implements Trac
                         (byte) entry.getKey().getAddress()).removeListeners(entry.getValue());
             }
         } catch (DeviceAccessException e) {
-            e.printStackTrace();
+            log.error("can't remove listeners to active device",e);
         }
     }
 
@@ -184,6 +198,40 @@ public class TrackEditorServiceImpl extends RemoteServiceServlet implements Trac
                                 firstCall = false;
                             }
                         });
+                    }
+
+                    // configure feedback blocks
+                    if (trackPart.getDefaultBlockFunctionConfig().isValid()) {
+                        BusAddressIdentifier busAddressIdentifier = new BusAddressIdentifier(trackPartConfiguration.getBus(), trackPartConfiguration.getAddress());
+                        if (!busAddressFeedbackBlockListenersOfTheCurrentTrack.containsKey(busAddressIdentifier)) {
+                            busAddressFeedbackBlockListenersOfTheCurrentTrack.put(busAddressIdentifier, new FeedbackBlockListener() {
+
+                                @Override
+                                public void trainEnterBlock(int blockNumber, int trainAddress, boolean drivingDirection) {
+                                    eventBroadcaster.fireEvent(new FeedbackBlockEvent(FeedbackBlockEvent.STATE.ENTER,
+                                            trackPart.getDefaultBlockFunctionConfig().getBus(),
+                                            trackPart.getDefaultBlockFunctionConfig().getAddress(),
+                                            blockNumber, trainAddress, drivingDirection));
+                                }
+
+                                @Override
+                                public void trainLeaveBlock(int blockNumber, int trainAddress, boolean drivingDirection) {
+                                    eventBroadcaster.fireEvent(new FeedbackBlockEvent(FeedbackBlockEvent.STATE.EXIT,
+                                            trackPart.getDefaultBlockFunctionConfig().getBus(),
+                                            trackPart.getDefaultBlockFunctionConfig().getAddress(),
+                                            blockNumber, trainAddress, drivingDirection));
+                                }
+
+                                @Override
+                                public void blockOccupied(int blockNr) {
+                                }
+
+                                @Override
+                                public void blockFreed(int blockNr) {
+                                }
+                            });
+
+                        }
                     }
                 }
             }

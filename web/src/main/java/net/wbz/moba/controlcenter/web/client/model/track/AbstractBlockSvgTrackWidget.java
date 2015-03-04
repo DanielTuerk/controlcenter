@@ -131,9 +131,7 @@ abstract public class AbstractBlockSvgTrackWidget<T extends TrackPart> extends A
         groupBit.add(selectBit);
         fieldSet.add(groupBit);
 
-
         addDialogContentTab("Block", fieldSet);
-
         return dialogContent;
     }
 
@@ -164,8 +162,9 @@ abstract public class AbstractBlockSvgTrackWidget<T extends TrackPart> extends A
      * @param train {@link net.wbz.moba.controlcenter.web.shared.train.Train}
      */
     public void removeTrainOnBlock(Train train) {
-        if (trainElements.containsKey(train))
+        if (trainElements.containsKey(train)) {
             getSvgRootElement().removeChild(trainElements.get(train));
-        trainElements.remove(train);
+            trainElements.remove(train);
+        }
     }
 }

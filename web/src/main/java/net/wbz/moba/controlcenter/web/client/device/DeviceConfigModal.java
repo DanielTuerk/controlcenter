@@ -1,35 +1,48 @@
 package net.wbz.moba.controlcenter.web.client.device;
 
 import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
-import com.google.gwt.dom.client.Style;
+import com.google.common.collect.Maps;
+import com.google.gwt.cell.client.FieldUpdater;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.cellview.client.Column;
+import com.google.gwt.user.cellview.client.TextColumn;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.view.client.ListDataProvider;
 import de.novanic.eventservice.client.event.Event;
 import de.novanic.eventservice.client.event.listener.RemoteEventListener;
 import net.wbz.moba.controlcenter.web.client.EventReceiver;
 import net.wbz.moba.controlcenter.web.client.ServiceUtils;
-import net.wbz.moba.controlcenter.web.client.util.AlertUtil;
+import net.wbz.moba.controlcenter.web.client.util.Log;
 import net.wbz.moba.controlcenter.web.shared.bus.DeviceInfo;
 import net.wbz.moba.controlcenter.web.shared.bus.DeviceInfoEvent;
 import org.gwtbootstrap3.client.ui.*;
-import org.gwtbootstrap3.client.ui.constants.AlertType;
-import org.gwtbootstrap3.client.ui.constants.ColumnSize;
+import org.gwtbootstrap3.client.ui.constants.ButtonType;
+import org.gwtbootstrap3.client.ui.constants.IconType;
+import org.gwtbootstrap3.client.ui.gwt.ButtonCell;
+import org.gwtbootstrap3.client.ui.gwt.CellTable;
+import org.gwtbootstrap3.extras.growl.client.ui.Growl;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Map;
 
 /**
- * Created by Daniel on 10.04.2014.
+ * Modal to configure the {@link net.wbz.moba.controlcenter.web.shared.bus.DeviceInfo}s for the connections.
+ *
+ * @author Daniel Tuerk
  */
 public class DeviceConfigModal extends Modal {
 
-    private final List<Widget> rows = Lists.newArrayList();
-    private final FlowPanel statusMessagePanel;
-    private Column devicesColumn;
+    private ListDataProvider<DeviceInfo> dataProvider;
+
+    /**
+     * Hold {@link com.google.gwt.event.dom.client.ClickHandler} for the delete button of each
+     * {@link net.wbz.moba.controlcenter.web.shared.bus.DeviceInfo}.
+     * Used to call the handler from the column of the {@link org.gwtbootstrap3.client.ui.gwt.CellTable}.
+     */
+    private final Map<DeviceInfo, ClickHandler> btnDeleteActions = Maps.newConcurrentMap();
+
 
     public DeviceConfigModal() {
         super();
@@ -43,14 +56,14 @@ public class DeviceConfigModal extends Modal {
 
         setTitle("Configure Device");
 
-        statusMessagePanel = AlertUtil.createAlertContainer();
-        add(statusMessagePanel);
-
+        ModalBody modalBody = new ModalBody();
         FlowPanel contentPanel = new FlowPanel();
         contentPanel.add(getCreateDevicePanel());
         contentPanel.add(getEditDevicePanel());
-        add(contentPanel);
+        modalBody.add(contentPanel);
+        add(modalBody);
 
+        ModalFooter modalFooter = new ModalFooter();
         Button btnClose = new Button(
                 "Close", new ClickHandler() {
             @Override
@@ -59,22 +72,27 @@ public class DeviceConfigModal extends Modal {
             }
         }
         );
-        ModalFooter modalFooter = new ModalFooter();
         modalFooter.add(btnClose);
         add(modalFooter);
 
     }
 
-
     @Override
     protected void onLoad() {
+        super.onLoad();
+
+        reloadDeviceList();
     }
 
-    private FlowPanel getCreateDevicePanel() {
-        FlowPanel createDevicePanel = new FlowPanel();
-        PageHeader createDeviceHeader = new PageHeader();
-        createDeviceHeader.setText("Create");
-        createDevicePanel.add(createDeviceHeader);
+    private Panel getCreateDevicePanel() {
+        Panel createDevicePanel = new Panel();
+
+        PanelHeader panelHeader = new PanelHeader();
+        panelHeader.setText("Create Device");
+        createDevicePanel.add(panelHeader);
+
+        PanelBody panelBody = new PanelBody();
+
         Form createForm = new Form();
 //        createForm.setType(FormType.VERTICAL);
         FormLabel formLabel = new FormLabel();
@@ -83,14 +101,13 @@ public class DeviceConfigModal extends Modal {
         final TextBox txtDeviceName = new TextBox();
         createForm.add(txtDeviceName);
         Button btnCreateDevice = new Button("Create");
-//        btnCreateDevice.setText("Create");
         btnCreateDevice.addClickHandler(
                 new ClickHandler() {
                     @Override
                     public void onClick(ClickEvent event) {
                         //TODO validation feedback on dialog
                         if (!Strings.isNullOrEmpty(txtDeviceName.getText())) {
-                            DeviceInfo deviceInfo = new DeviceInfo();
+                            final DeviceInfo deviceInfo = new DeviceInfo();
                             if ("test".equals(txtDeviceName.getText())) {
                                 deviceInfo.setType(DeviceInfo.DEVICE_TYPE.TEST);
                             } else {
@@ -99,81 +116,117 @@ public class DeviceConfigModal extends Modal {
                             deviceInfo.setKey(txtDeviceName.getValue());
 
                             ServiceUtils.getBusService().createDevice(deviceInfo, new AsyncCallback<Void>() {
-                    @Override
-                    public void onFailure(Throwable caught) {
-                        DeviceConfigModal.this.hide();
-                    }
+                                @Override
+                                public void onFailure(Throwable caught) {
+                                    DeviceConfigModal.this.hide();
+                                }
 
-                    @Override
-                    public void onSuccess(Void result) {
-                        DeviceConfigModal.this.hide();
-                        reloadDeviceList();
+                                @Override
+                                public void onSuccess(Void result) {
+                                    Growl.growl("", "Device " + deviceInfo.getKey() + " created", IconType.INFO);
+                                }
+                            });
+                        }
                     }
                 });
-                }
-            }
-        });
         createForm.add(btnCreateDevice);
-        createDevicePanel.add(createForm);
+
+        panelBody.add(createForm);
+        createDevicePanel.add(panelBody);
+
         return createDevicePanel;
     }
 
-    public FlowPanel getEditDevicePanel() {
-        FlowPanel editDevicePanel = new FlowPanel();
-        editDevicePanel.getElement().getStyle().setFloat(Style.Float.LEFT);
-        PageHeader editDeviceHeader = new PageHeader();
-        editDeviceHeader.setText("Edit");
-        editDevicePanel.add(editDeviceHeader);
+    public Panel getEditDevicePanel() {
+        Panel editDevicePanel = new Panel();
 
-        Row row = new Row();
-        devicesColumn = new Column(ColumnSize.LG_3, new Label("Devices"));
-        row.add(devicesColumn);
-        editDevicePanel.add(row);
+        PanelHeader panelHeader = new PanelHeader();
+        panelHeader.setText("Edit Device");
+        editDevicePanel.add(panelHeader);
 
-        reloadDeviceList();
+        PanelBody panelBody = new PanelBody();
+
+        CellTable<DeviceInfo> cellTable = new CellTable<>();
+
+        TextColumn<DeviceInfo> columnDeviceKey = new TextColumn<DeviceInfo>() {
+            @Override
+            public String getValue(DeviceInfo contact) {
+                return contact.getKey();
+            }
+        };
+        columnDeviceKey.setSortable(true);
+
+        cellTable.addColumn(columnDeviceKey, "Key");
+        cellTable.addColumn(new TextColumn<DeviceInfo>() {
+            @Override
+            public String getValue(DeviceInfo contact) {
+                return contact.getType().name();
+            }
+        }, "Type");
+
+        Column<DeviceInfo, String> columnDeleteDevice = new Column<DeviceInfo, String>(new ButtonCell(ButtonType.DANGER, IconType.TRASH)) {
+            @Override
+            public String getValue(DeviceInfo object) {
+                return "";
+            }
+        };
+        columnDeleteDevice.setFieldUpdater(new FieldUpdater<DeviceInfo, String>() {
+            @Override
+            public void update(int index, DeviceInfo object, String value) {
+                if (btnDeleteActions.containsKey(object)) {
+                    btnDeleteActions.get(object).onClick(null);
+                } else {
+                    Log.warn("no action found for device: " + object);
+                }
+            }
+        });
+        cellTable.addColumn(columnDeleteDevice, "");
+
+        // Create a data provider.
+        dataProvider = new ListDataProvider<>();
+        // Connect the table to the data provider.
+        dataProvider.addDataDisplay(cellTable);
+
+        panelBody.add(cellTable);
+        editDevicePanel.add(panelBody);
+
         return editDevicePanel;
     }
 
     private void reloadDeviceList() {
-        for (Widget row : rows) {
-            devicesColumn.remove(row);
-        }
-        rows.clear();
-
         ServiceUtils.getBusService().getDevices(new AsyncCallback<ArrayList<DeviceInfo>>() {
             @Override
             public void onFailure(Throwable caught) {
-
             }
 
             @Override
             public void onSuccess(ArrayList<DeviceInfo> result) {
+                // reset devices to load fresh list
+                dataProvider.getList().clear();
+                btnDeleteActions.clear();
+
+                // add delete action for the device entry in the list
+                dataProvider.getList().addAll(result);
                 for (final DeviceInfo deviceInfo : result) {
-                    Row row = new Row();
-                    row.add(new Column(ColumnSize.LG_1, new Label(deviceInfo.getKey())));
-                    row.add(new Column(ColumnSize.LG_1, new Label(deviceInfo.getType().name())));
-                    Button btnDeleteDevice = new Button("delete", new ClickHandler() {
+                    btnDeleteActions.put(deviceInfo, new ClickHandler() {
                         @Override
                         public void onClick(ClickEvent event) {
                             ServiceUtils.getBusService().deleteDevice(deviceInfo, new AsyncCallback<Void>() {
                                 @Override
                                 public void onFailure(Throwable caught) {
-                                    AlertUtil.showAlert(statusMessagePanel, "Can't delete device: " + deviceInfo.getKey(), AlertType.DANGER);
+                                    Growl.growl("", "Can't delete device: " + deviceInfo.getKey(), IconType.INFO);
                                 }
 
                                 @Override
                                 public void onSuccess(Void result) {
-                                    AlertUtil.showAlert(statusMessagePanel, "Device " + deviceInfo.getKey() + " deleted", AlertType.SUCCESS);
+                                    Growl.growl("", "Device " + deviceInfo.getKey() + " deleted", IconType.INFO);
                                 }
                             });
                         }
                     });
-                    row.add(new Column(ColumnSize.LG_1, btnDeleteDevice));
-
-                    rows.add(row);
-                    devicesColumn.add(row);
                 }
             }
         });
     }
+
 }

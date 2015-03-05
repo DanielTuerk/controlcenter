@@ -37,4 +37,13 @@ public class DeviceInfo implements IsSerializable {
     public boolean isConnected() {
         return connected;
     }
+
+    @Override
+    public String toString() {
+        return "DeviceInfo{" +
+                "connected=" + connected +
+                ", key='" + key + '\'' +
+                ", type=" + type.name() +
+                '}';
+    }
 }

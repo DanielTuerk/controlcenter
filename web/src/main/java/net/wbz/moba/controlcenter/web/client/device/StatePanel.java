@@ -18,7 +18,6 @@ import net.wbz.moba.controlcenter.web.shared.viewer.RailVoltageEvent;
 import org.gwtbootstrap3.client.ui.Button;
 import org.gwtbootstrap3.client.ui.Label;
 import org.gwtbootstrap3.extras.growl.client.ui.Growl;
-import org.gwtbootstrap3.extras.growl.client.ui.GrowlHelper;
 import org.gwtbootstrap3.extras.growl.client.ui.GrowlOptions;
 import org.gwtbootstrap3.extras.toggleswitch.client.ui.ToggleSwitch;
 import org.gwtbootstrap3.extras.toggleswitch.client.ui.base.constants.ColorType;
@@ -68,9 +67,7 @@ public class StatePanel extends org.gwtbootstrap3.client.ui.gwt.FlowPanel {
                     PlayerEvent event = (PlayerEvent) anEvent;
                     updatePlayerState(event.getState() == PlayerEvent.STATE.START);
 
-                    GrowlOptions growlOptions = GrowlHelper.getNewOptions();
-                    growlOptions.setInfoType();
-                    Growl.growl("Player " + event.getState().name() + "!", growlOptions);
+                    Growl.growl("Player " + event.getState().name() + "!");
                 }
             }
         };

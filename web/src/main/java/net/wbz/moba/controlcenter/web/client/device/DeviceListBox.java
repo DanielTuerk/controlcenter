@@ -22,6 +22,8 @@ public class DeviceListBox extends Select {
     private final List<DeviceInfo> devices = Lists.newArrayList();
 
     public DeviceListBox() {
+        setWidth("180px");
+
         EventReceiver.getInstance().addListener(DeviceInfoEvent.class, new RemoteEventListener() {
             @Override
             public void apply(Event event) {

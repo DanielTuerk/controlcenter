@@ -17,9 +17,8 @@ import net.wbz.moba.controlcenter.web.client.viewer.bus.BusMonitorPanel;
 import net.wbz.moba.controlcenter.web.client.viewer.settings.ConfigPanel;
 import net.wbz.moba.controlcenter.web.client.viewer.track.TrackViewerContainer;
 import net.wbz.moba.controlcenter.web.shared.constrution.Construction;
+import org.gwtbootstrap3.client.ui.constants.IconType;
 import org.gwtbootstrap3.extras.growl.client.ui.Growl;
-import org.gwtbootstrap3.extras.growl.client.ui.GrowlHelper;
-import org.gwtbootstrap3.extras.growl.client.ui.GrowlOptions;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -82,9 +81,7 @@ public class ControlCenterApp implements EntryPoint {
                             }
                         });
                     } else {
-                        GrowlOptions growlOptions = GrowlHelper.getNewOptions();
-                        growlOptions.setWarningType();
-                        Growl.growl("can't load last used construction", growlOptions);
+                        Growl.growl("", "can't load last used construction", IconType.WARNING);
 
                         loadWelcomePage();
                     }
@@ -147,11 +144,11 @@ public class ControlCenterApp implements EntryPoint {
             }
         },
                 new Command() {
-            @Override
-            public void execute() {
-                show(trackViewerContainer);
-            }
-        },
+                    @Override
+                    public void execute() {
+                        show(trackViewerContainer);
+                    }
+                },
                 new Command() {
                     @Override
                     public void execute() {

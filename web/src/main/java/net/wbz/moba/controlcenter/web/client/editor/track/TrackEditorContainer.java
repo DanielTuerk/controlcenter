@@ -19,7 +19,6 @@ import org.gwtbootstrap3.client.ui.AnchorListItem;
 import org.gwtbootstrap3.client.ui.NavPills;
 import org.gwtbootstrap3.client.ui.constants.IconType;
 import org.gwtbootstrap3.extras.growl.client.ui.Growl;
-import org.gwtbootstrap3.extras.growl.client.ui.GrowlHelper;
 import org.gwtbootstrap3.extras.growl.client.ui.GrowlOptions;
 
 import java.util.ArrayList;
@@ -92,9 +91,7 @@ public class TrackEditorContainer extends FlowPanel {
                             } catch (Exception e) {
                                 String msg = "ignore widget (can't save): " + ((AbstractSvgTrackWidget) w)
                                         .getPaletteTitle() + " - " + e.getMessage();
-                                GrowlOptions growlOptions = GrowlHelper.getNewOptions();
-                                growlOptions.setDangerType();
-                                Growl.growl(msg, growlOptions);
+                                Growl.growl("", msg, IconType.WARNING);
                                 logger.log(Level.SEVERE, msg, e);
                                 e.printStackTrace();
                             }
@@ -106,9 +103,7 @@ public class TrackEditorContainer extends FlowPanel {
                         new AsyncCallback<Void>() {
                             @Override
                             public void onFailure(Throwable throwable) {
-                                GrowlOptions growlOptions = GrowlHelper.getNewOptions();
-                                growlOptions.setDangerType();
-                                Growl.growl("error by save track: " + throwable.getMessage(), growlOptions);
+                                Growl.growl("Editor", "error by save track: " + throwable.getMessage(), IconType.WARNING);
                             }
 
                             @Override

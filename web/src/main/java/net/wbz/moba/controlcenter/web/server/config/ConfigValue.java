@@ -1,9 +1,17 @@
 package net.wbz.moba.controlcenter.web.server.config;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+
 /**
  * @author Daniel Tuerk
  */
+@Entity
 public class ConfigValue {
+
+    @Id
+    @Column(name = "config_key")
     private String key;
     private String value;
 

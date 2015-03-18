@@ -1,0 +1,13 @@
+----------------------------------------------------------------
+Sat Mar 14 10:52:49 CET 2015:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.11.1.1 - (1616546): instance a816c00e-014c-17b3-4d95-000000be5970 
+on database directory /Users/dtuerk/.moba/test/data/derby_db with class loader sun.misc.Launcher$AppClassLoader@1e1ff563 
+Loaded from file:/Users/dtuerk/.m2/repository/org/apache/derby/derby/10.11.1.1/derby-10.11.1.1.jar
+java.vendor=Oracle Corporation
+java.runtime.version=1.7.0_25-b15
+user.dir=/Users/dtuerk/privat/mb/controlcenter/controlcenter
+os.name=Mac OS X
+os.arch=x86_64
+os.version=10.9.5
+derby.system.home=null
+Database Class Loader started - derby.database.classpath=''

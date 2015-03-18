@@ -38,12 +38,6 @@
     <dependencies>
 
         <dependency>
-            <groupId>net.wbz.moba</groupId>
-            <artifactId>controlcenter-database</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
-        <dependency>
             <groupId>net.wbz.selectrix4java</groupId>
             <artifactId>selectrix4java</artifactId>
             <version>${selectrix.version}</version>
@@ -135,6 +129,12 @@
         <!-- #####################  Server #################### -->
 
         <dependency>
+            <groupId>com.google.inject.extensions</groupId>
+            <artifactId>guice-servlet</artifactId>
+            <version>3.0</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-validator-annotation-processor</artifactId>
             <version>4.1.0.Final</version>
@@ -159,6 +159,27 @@
             <artifactId>reflections</artifactId>
             <version>0.9.5</version>
         </dependency>
+
+        <!-- JPA -->
+        <dependency>
+            <groupId>org.apache.derby</groupId>
+            <artifactId>derby</artifactId>
+            <version>10.11.1.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-entitymanager</artifactId>
+            <version>3.6.8.Final</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.inject.extensions</groupId>
+            <artifactId>guice-persist</artifactId>
+            <version>3.0</version>
+        </dependency>
+
+
 
     </dependencies>
 

@@ -1,6 +1,6 @@
 package net.wbz.moba.controlcenter.web.server.train;
 
-import com.google.common.collect.Maps;
+import com.google.common.collect.Lists;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -11,7 +11,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
@@ -38,7 +37,7 @@ public class TrainEditorServiceImpl extends RemoteServiceServlet implements Trai
         try {
             return trainManager.getTrainByAddress(address);
         } catch (TrainException e) {
-            LOG.error("can't find train",e);
+            LOG.error("can't find train", e);
         }
         return null;
     }
@@ -46,11 +45,10 @@ public class TrainEditorServiceImpl extends RemoteServiceServlet implements Trai
     @Override
     public void createTrain(String name) {
         Train train = new Train(name);
-        train.setId(System.nanoTime());
 
-        Map<TrainFunction.FUNCTION, TrainFunction> trainFunctions = Maps.newHashMap();
+        List<TrainFunction> trainFunctions = Lists.newArrayList();
         for (TrainFunction.FUNCTION function : TrainFunction.FUNCTION.values()) {
-            trainFunctions.put(function, new TrainFunction(function, false));
+            trainFunctions.add(new TrainFunction(function, false));
         }
         train.setFunctions(trainFunctions);
         try {
@@ -64,7 +62,13 @@ public class TrainEditorServiceImpl extends RemoteServiceServlet implements Trai
 
     @Override
     public void deleteTrain(long trainId) {
-        throw new RuntimeException();
+        try {
+            trainManager.deleteTrain(trainId);
+        } catch (TrainException e) {
+            String msg = String.format("can't delete train '%s'", trainId);
+            LOG.error(msg, e);
+            throw new RuntimeException(msg, e);
+        }
     }
 
     @Override

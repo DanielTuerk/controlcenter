@@ -42,14 +42,14 @@ public class WelcomePage extends HorizontalPanel {
                 final Construction construction = new Construction();
                 final String constructionName = txtCreateName.getText();
                 construction.setName(constructionName);
-                ServiceUtils.getConstrutionService().createConstruction(construction, new AsyncCallback<Void>() {
+                ServiceUtils.getConstrutionService().createConstruction(construction, new AsyncCallback<Construction>() {
                     @Override
                     public void onFailure(Throwable caught) {
                     }
 
                     @Override
-                    public void onSuccess(Void result) {
-                        ServiceUtils.getConstrutionService().setCurrentConstruction(construction, new AsyncCallback<Void>() {
+                    public void onSuccess(Construction result) {
+                        ServiceUtils.getConstrutionService().setCurrentConstruction(result, new AsyncCallback<Void>() {
                             @Override
                             public void onFailure(Throwable caught) {
                             }

@@ -1,14 +1,11 @@
 package net.wbz.moba.controlcenter.web.server.constrution;
 
-import com.db4o.ObjectSet;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import com.google.inject.name.Named;
-import net.wbz.moba.controlcenter.db.Database;
-import net.wbz.moba.controlcenter.db.DatabaseFactory;
+import com.google.inject.persist.Transactional;
 import net.wbz.moba.controlcenter.web.server.EventBroadcaster;
 import net.wbz.moba.controlcenter.web.shared.bus.*;
 import net.wbz.moba.controlcenter.web.shared.viewer.RailVoltageEvent;
@@ -24,6 +21,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
+import javax.inject.Provider;
+import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
@@ -40,11 +40,7 @@ public class BusServiceImpl extends RemoteServiceServlet implements BusService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(BusServiceImpl.class);
 
-    public static final String BUS_DB_KEY = "bus";
-
     private net.wbz.selectrix4java.device.Device activeDevice;
-
-    private final Database settingsDatabase;
 
     private final DeviceManager deviceManager;
 
@@ -56,15 +52,21 @@ public class BusServiceImpl extends RemoteServiceServlet implements BusService {
 
     private boolean trackingActive = false;
 
+    private final Provider<EntityManager> entityManager;
+
     @Inject
-    public BusServiceImpl(DeviceManager deviceManager, @Named("settings") DatabaseFactory databaseFactory,
-                          final EventBroadcaster eventBroadcaster, DeviceRecorder deviceRecorder) {
+    public BusServiceImpl(DeviceManager deviceManager,
+                          final EventBroadcaster eventBroadcaster, DeviceRecorder deviceRecorder, Provider<EntityManager> entityManager) {
         this.deviceManager = deviceManager;
         this.eventBroadcaster = eventBroadcaster;
         this.deviceRecorder = deviceRecorder;
-        settingsDatabase = databaseFactory.getOrCreateDatabase(BUS_DB_KEY);
 
-        ObjectSet<DeviceInfo> storedDevices = settingsDatabase.getObjectContainer().query(DeviceInfo.class);
+        this.entityManager = entityManager;
+        TypedQuery<DeviceInfo> query = this.entityManager.get().createQuery("SELECT x FROM DeviceInfo x", DeviceInfo.class);
+        List<DeviceInfo> storedDevices = query.getResultList();
+//        settingsDatabase = databaseFactory.getOrCreateDatabase(BUS_DB_KEY);
+//
+//        ObjectSet<DeviceInfo> storedDevices = settingsDatabase.getObjectContainer().query(DeviceInfo.class);
         for (DeviceInfo deviceInfo : storedDevices) {
             // TODO - values from config
             deviceManager.registerDevice(DeviceManager.DEVICE_TYPE.valueOf(
@@ -106,12 +108,13 @@ public class BusServiceImpl extends RemoteServiceServlet implements BusService {
     }
 
     @Override
+    @Transactional
     public void createDevice(DeviceInfo deviceInfo) {
         //TODO - device settings (e.g. serial/test)
+        entityManager.get().persist(deviceInfo);
+
         deviceManager.registerDevice(DeviceManager.DEVICE_TYPE.valueOf(
                 deviceInfo.getType().name()), deviceInfo.getKey(), SerialDevice.DEFAULT_BAUD_RATE_FCC);
-        settingsDatabase.getObjectContainer().store(deviceInfo);
-        settingsDatabase.getObjectContainer().commit();
 
         eventBroadcaster.fireEvent(new DeviceInfoEvent(deviceInfo, DeviceInfoEvent.TYPE.CREATE));
     }
@@ -119,11 +122,10 @@ public class BusServiceImpl extends RemoteServiceServlet implements BusService {
     @Override
     public void deleteDevice(DeviceInfo deviceInfo) {
         Device device = deviceManager.getDeviceById(deviceInfo.getKey());
+        entityManager.get().remove(deviceInfo);
+
         deviceManager.removeDevice(device);
-        for (Object deviceInfoInDB : settingsDatabase.getObjectContainer().queryByExample(deviceInfo)) {
-            settingsDatabase.getObjectContainer().delete(deviceInfoInDB);
-        }
-        settingsDatabase.getObjectContainer().commit();
+
         eventBroadcaster.fireEvent(new DeviceInfoEvent(deviceInfo, DeviceInfoEvent.TYPE.REMOVE));
     }
 

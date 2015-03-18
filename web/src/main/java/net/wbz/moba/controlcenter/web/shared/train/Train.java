@@ -1,30 +1,44 @@
 package net.wbz.moba.controlcenter.web.shared.train;
 
-import com.google.common.collect.Lists;
 import net.wbz.moba.controlcenter.web.shared.AbstractIdModel;
 
-import java.util.ArrayList;
+import javax.persistence.*;
 import java.util.List;
-import java.util.Map;
 
 /**
- * Created by Daniel on 08.03.14.
+ * Model for the train.
+ * Used for RPC calls and as persistence object.
+ *
+ * @author Daniel Tuerk
  */
+@Entity
 public class Train extends AbstractIdModel {
+
+    @Id
+    @GeneratedValue
+    private long id;
 
     private String name;
 
     private int address = -1;
 
+    @Access(AccessType.PROPERTY)
+    @ManyToMany(targetEntity = TrainFunction.class, mappedBy = "train", fetch = FetchType.EAGER)
+    private List<TrainFunction> functions;
+
+    @Transient
+    private int drivingLevel = 0;
+
     public enum DIRECTION {BACKWARD, FORWARD}
 
+    @Transient
     private DIRECTION drivingDirection;
 
-    private Map<TrainFunction.FUNCTION, TrainFunction> functions;
-
-    private int drivingLevel=0;
-
     public Train() {
+    }
+
+    public long getId() {
+        return id;
     }
 
     public Train(String name) {
@@ -64,14 +78,19 @@ public class Train extends AbstractIdModel {
     }
 
     public List<TrainFunction> getFunctions() {
-        return new ArrayList<>(functions.values());
+        return functions;
     }
 
     public TrainFunction getFunction(TrainFunction.FUNCTION function) {
-        return functions.get(function);
+        for (TrainFunction trainFunction : functions) {
+            if (function == trainFunction.getFunction()) {
+                return trainFunction;
+            }
+        }
+        return null;
     }
 
-    public void setFunctions(Map<TrainFunction.FUNCTION, TrainFunction> functions) {
+    public void setFunctions(List<TrainFunction> functions) {
         this.functions = functions;
     }
 }

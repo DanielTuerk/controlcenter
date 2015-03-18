@@ -63,7 +63,12 @@ public class Signal extends Straight {
      * @return {@link net.wbz.moba.controlcenter.web.shared.track.model.Configuration} or <code>null</code>
      */
     public Configuration getLightFunction(LIGHT light) {
-        return getFunctionConfigs().get(light.name());
+        for (TrackPartFunction trackPartFunction : getFunctionConfigs()) {
+            if (trackPartFunction.getFunctionKey().equalsIgnoreCase(light.name())) {
+                return trackPartFunction.getConfiguration();
+            }
+        }
+        return null;
     }
 
     /**
@@ -74,16 +79,16 @@ public class Signal extends Straight {
      * @param configuration {@link net.wbz.moba.controlcenter.web.shared.track.model.Configuration} or <code>null</code>
      */
     public void setLightFunctionConfig(LIGHT light, Configuration configuration) {
-        getFunctionConfigs().put(light.name(), configuration);
+        getFunctionConfigs().add(new TrackPartFunction(this, light.name(), configuration));
     }
 
     public Map<LIGHT, Configuration> getSignalConfiguration() {
         Map<LIGHT, Configuration> lightConfig = Maps.newHashMap();
-        for (Map.Entry<String, Configuration> functionConfig : getFunctionConfigs().entrySet()) {
+        for (TrackPartFunction functionConfig : getFunctionConfigs()) {
             // TODO: refactor to signal function prefix
-            if (!TrackModelConstants.DEFAULT_TOGGLE_FUNCTION.equals(functionConfig.getKey())
-                    && !TrackModelConstants.DEFAULT_BLOCK_FUNCTION.equals(functionConfig.getKey())) {
-                lightConfig.put(LIGHT.valueOf(functionConfig.getKey()), functionConfig.getValue());
+            if (!TrackModelConstants.DEFAULT_TOGGLE_FUNCTION.equals(functionConfig.getFunctionKey())
+                    && !TrackModelConstants.DEFAULT_BLOCK_FUNCTION.equals(functionConfig.getFunctionKey())) {
+                lightConfig.put(LIGHT.valueOf(functionConfig.getFunctionKey()), functionConfig.getConfiguration());
             }
         }
         return lightConfig;

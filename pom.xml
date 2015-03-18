@@ -12,7 +12,6 @@
     <version>0.1-SNAPSHOT</version>
 
     <modules>
-        <module>database</module>
         <module>web</module>
     </modules>
 
@@ -23,13 +22,6 @@
             <email>Daniel.Tuerk@w-b-z.com</email>
         </developer>
     </developers>
-
-    <repositories>
-        <repository>
-            <id>source.db4o</id>
-            <url>http://source.db4o.com/maven</url>
-        </repository>
-    </repositories>
 
     <build>
 
@@ -104,9 +96,10 @@
         </dependency>
 
         <dependency>
-            <groupId>com.google.inject.extensions</groupId>
-            <artifactId>guice-servlet</artifactId>
-            <version>3.0</version>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.11</version>
+            <scope>test</scope>
         </dependency>
 
     </dependencies>

@@ -1,14 +1,9 @@
 package net.wbz.moba.controlcenter.web.server.scenario;
 
-import com.db4o.ObjectContainer;
-import com.db4o.ObjectSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import com.google.inject.name.Named;
-import net.wbz.moba.controlcenter.db.DatabaseFactory;
-import net.wbz.moba.controlcenter.db.StorageException;
 import net.wbz.moba.controlcenter.web.server.constrution.ConstructionServiceImpl;
 import net.wbz.moba.controlcenter.web.shared.scenario.Scenario;
 import net.wbz.moba.controlcenter.web.shared.scenario.ScenarioCommand;
@@ -17,9 +12,9 @@ import org.reflections.Reflections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -42,12 +37,10 @@ public class ScenarioManager {
     private final Map<String, Class<? extends ScenarioCommand>> commandMapping = Maps.newHashMap();
 
     private final ConstructionServiceImpl constructionService;
-    private final DatabaseFactory databaseFactory;
 
     @Inject
-    public ScenarioManager(ConstructionServiceImpl constructionService, @Named("scenario") DatabaseFactory databaseFactory) {
+    public ScenarioManager(ConstructionServiceImpl constructionService) {
         this.constructionService = constructionService;
-        this.databaseFactory = databaseFactory;
 
         LOG.debug("Load ScenarioCommand mappings");
         Reflections reflections = new Reflections("net.wbz.moba.controlcenter.web.shared.scenario");
@@ -67,24 +60,11 @@ public class ScenarioManager {
         }
     }
 
-    private ObjectContainer getStorageObjectContainer() throws StorageException, IOException {
-        String constructionName = constructionService.getCurrentConstruction().getName();
-        if(!databaseFactory.getExistingDatabaseNames().contains(constructionName)){
-            databaseFactory.addDatabase(constructionName);
-        }
-        return databaseFactory.getStorage(constructionName).getObjectContainer();
-    }
-
     public List<Scenario> getScenarios() throws Exception {
-        scenarios.clear();
-
-        ObjectContainer database = getStorageObjectContainer();
-        ObjectSet<Scenario> result = database.query(Scenario.class);
-        while (result.hasNext()) {
-            scenarios.add(result.next());
-        }
-
-        return scenarios;
+//        scenarios.clear();
+//        scenarios.addAll(databaseFactory.query());
+//        return scenarios;
+        return new ArrayList<>();
     }
 
     public Scenario getScenarioById(long scenarioId) {
@@ -117,9 +97,7 @@ public class ScenarioManager {
     }
 
     private void storeScenario(Scenario scenario) throws Exception {
-        ObjectContainer database = getStorageObjectContainer();
-        database.store(scenario);
-        database.commit();
+//        databaseFactory.store(scenario);
     }
 
     public void deleteDatabase(long scenarioId) {

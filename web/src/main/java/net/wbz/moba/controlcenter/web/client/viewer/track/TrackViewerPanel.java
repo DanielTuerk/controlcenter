@@ -163,7 +163,7 @@ public class TrackViewerPanel extends AbstractTrackPanel {
                             if (trackWidget instanceof AbstractSignalWidget) {
                                 signalTrackWidgets.add((AbstractSignalWidget) trackWidget);
                             } else {
-                                for (Configuration configuration : trackPart.getFunctionConfigs().values()) {
+                                for (Configuration configuration : trackPart.getConfigurationsOfFunctions()) {
 
                                     // ignore default configs of track widget to register event handler
                                     if (configuration.isValid()) {

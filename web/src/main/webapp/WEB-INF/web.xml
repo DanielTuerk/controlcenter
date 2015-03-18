@@ -19,7 +19,7 @@
     </filter-mapping>
 
     <listener>
-        <listener-class>net.wbz.moba.controlcenter.web.config.MyGuiceServletConfig</listener-class>
+        <listener-class>net.wbz.moba.controlcenter.web.guice.MyGuiceServletConfig</listener-class>
     </listener>
 
     <servlet>

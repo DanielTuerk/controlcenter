@@ -1,8 +1,9 @@
 package net.wbz.moba.controlcenter.web.shared.scenario;
 
-import com.google.gwt.user.client.rpc.IsSerializable;
 import net.wbz.moba.controlcenter.web.shared.AbstractIdModel;
 
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,6 +11,18 @@ import java.util.List;
  * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
  */
 public class Scenario extends AbstractIdModel {
+
+    @Id
+    @GeneratedValue
+    private long id = -1L;
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
 
     private String name;
 

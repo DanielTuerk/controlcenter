@@ -44,9 +44,9 @@ public class Switch extends TrackPart {
         return currentDirection;
     }
 
-    public long getId() {
-        return 0L;
-    }
+//    public long getId() {
+//        return 0L;
+//    }
 
 
 }

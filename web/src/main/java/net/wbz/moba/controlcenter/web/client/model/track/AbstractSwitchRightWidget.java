@@ -24,9 +24,9 @@ abstract public class AbstractSwitchRightWidget extends AbstractSwitchWidget {
 
     @Override
     protected void addActiveStateSvgContent(OMSVGDocument doc, OMSVGSVGElement svg) {
-        svg.appendChild(SvgTrackUtil.createLine(doc, 0f, 10f, 10f, 26f, 5));
+        svg.appendChild(SvgTrackUtil.createLine(doc, 0f, 10f, 13f, 26f, 5));
         svg.appendChild(SvgTrackUtil.createLine(doc, 0f, 10f, 25f, 10f, 2));
-        svg.appendChild(SvgTrackUtil.createLine(doc, 0f, 10f, 25f, 15f, 2));
+        svg.appendChild(SvgTrackUtil.createLine(doc, 0f, 14f, 25f, 14f, 2));
     }
 
 }

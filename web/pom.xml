@@ -83,7 +83,7 @@
             <artifactId>dnd</artifactId>
             <version>3.1.2</version>
             <scope>system</scope>
-            <systemPath>${project.basedir}/lib/gwt-dnd-3.1.2.jar</systemPath>
+            <systemPath>${project.basedir}/lib/gwt-dnd-3.3.0.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>com.kiouri.sliderbar</groupId>
@@ -102,7 +102,7 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava-gwt</artifactId>
-            <version>13.0.1</version>
+            <version>15.0</version>
         </dependency>
 
         <dependency>
@@ -278,7 +278,7 @@
                                             gwt-maven-plugin
                                         </artifactId>
                                         <versionRange>
-                                            [2.6.1,)
+                                            [${gwt.version}},)
                                         </versionRange>
                                         <goals>
                                             <goal>i18n</goal>

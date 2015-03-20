@@ -1,12 +1,10 @@
 package net.wbz.moba.controlcenter.web.server.train;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.google.inject.persist.Transactional;
 import net.wbz.moba.controlcenter.web.server.EventBroadcaster;
-import net.wbz.moba.controlcenter.web.server.config.ConfigValue;
 import net.wbz.moba.controlcenter.web.shared.train.*;
 import net.wbz.selectrix4java.device.Device;
 import net.wbz.selectrix4java.device.DeviceAccessException;
@@ -17,7 +15,7 @@ import net.wbz.selectrix4java.train.TrainModule;
 
 import javax.inject.Provider;
 import javax.persistence.EntityManager;
-import javax.persistence.TypedQuery;
+import javax.persistence.Query;
 import java.util.List;
 import java.util.Map;
 
@@ -138,17 +136,17 @@ public class TrainManager {
     }
 
     public List<Train> getTrains() {
-        TypedQuery<Train> typedQuery = entityManager.get().createQuery(
-                "SELECT x FROM Train x", Train.class);
+        Query typedQuery = entityManager.get().createQuery(
+                "SELECT x FROM Train x");
         return typedQuery.getResultList();
     }
 
     public Train getTrainByAddress(int address) throws TrainException {
-        TypedQuery<Train> typedQuery = entityManager.get().createQuery(
-                "SELECT x FROM Train x where address=:address", Train.class);
-        typedQuery.setParameter("address",address);
-        Train train = typedQuery.getSingleResult();
-        if(train !=null) {
+        Query typedQuery = entityManager.get().createQuery(
+                "SELECT x FROM Train x where address=:address");
+        typedQuery.setParameter("address", address);
+        Train train = (Train) typedQuery.getSingleResult();
+        if (train != null) {
             return train;
         }
         throw new TrainException(String.format("no train for address %d found!", address));
@@ -156,11 +154,11 @@ public class TrainManager {
 
 
     public Train getTrainById(long trainId) throws TrainException {
-        TypedQuery<Train> typedQuery = entityManager.get().createQuery(
-                "SELECT x FROM Train x where id=:id", Train.class);
-        typedQuery.setParameter("id",trainId);
-        Train train = typedQuery.getSingleResult();
-        if(train !=null) {
+        Query typedQuery = entityManager.get().createQuery(
+                "SELECT x FROM Train x where id=:id");
+        typedQuery.setParameter("id", trainId);
+        Train train = (Train) typedQuery.getSingleResult();
+        if (train != null) {
             return train;
         }
         throw new TrainException(String.format("no train for id %d found!", trainId));

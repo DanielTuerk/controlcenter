@@ -1,18 +1,22 @@
 package net.wbz.moba.controlcenter.web.server.config;
 
+import net.sf.gilead.pojo.gwt.LightEntity;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import java.io.Serializable;
 
 /**
  * @author Daniel Tuerk
  */
 @Entity
-public class ConfigValue {
+public class ConfigValue extends LightEntity implements Serializable {
 
     @Id
     @Column(name = "config_key")
     private String key;
+
     private String value;
 
     public ConfigValue() {

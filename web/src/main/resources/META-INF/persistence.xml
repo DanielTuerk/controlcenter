@@ -16,13 +16,6 @@
         <class>net.wbz.moba.controlcenter.web.shared.bus.DeviceInfo</class>
 
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
-        <!--<properties>-->
-            <!--<property name="hibernate.connection.url" value="jdbc:derby:/MeinWorkspace/Derby-DB/mydb;create=true"/>-->
-            <!--<property name="hibernate.connection.driver_class" value="org.apache.derby.jdbc.EmbeddedDriver"/>-->
-            <!--<property name="hibernate.dialect" value="org.hibernate.dialect.DerbyDialect"/>-->
-            <!--<property name="hibernate.hbm2ddl.auto" value="create"/>-->
-            <!--<property name="hibernate.connection.username" value=""/>-->
-            <!--<property name="hibernate.connection.password" value=""/>-->
-        <!--</properties>-->
+        <!--<properties> from Guice -->
     </persistence-unit>
 </persistence>

@@ -9,6 +9,10 @@ import com.google.inject.persist.PersistFilter;
 import com.google.inject.persist.jpa.JpaPersistModule;
 import com.google.inject.servlet.GuiceServletContextListener;
 import com.google.inject.servlet.ServletModule;
+import net.sf.gilead.core.PersistentBeanManager;
+import net.sf.gilead.core.hibernate.jpa.HibernateJpaUtil;
+import net.sf.gilead.core.serialization.GwtProxySerialization;
+import net.sf.gilead.core.store.stateless.StatelessProxyStore;
 import net.wbz.moba.controlcenter.web.server.config.ConfigServiceImpl;
 import net.wbz.moba.controlcenter.web.server.constrution.BusServiceImpl;
 import net.wbz.moba.controlcenter.web.server.constrution.ConstructionServiceImpl;
@@ -20,6 +24,7 @@ import net.wbz.moba.controlcenter.web.server.train.TrainServiceImpl;
 import net.wbz.moba.controlcenter.web.server.viewer.TrackViewerServiceImpl;
 import net.wbz.selectrix4java.device.DeviceManager;
 
+import javax.persistence.EntityManagerFactory;
 import java.io.File;
 import java.util.Properties;
 
@@ -41,7 +46,6 @@ public class MyGuiceServletConfig extends GuiceServletContextListener {
 
                     @Override
                     protected void configureServlets() {
-
                         /*
                          * Database properties for JPA.
                          */
@@ -78,12 +82,50 @@ public class MyGuiceServletConfig extends GuiceServletContextListener {
                         serve("/Test/config").with(ConfigServiceImpl.class);
                     }
 
+                    /**
+                     * Create and return the {@link net.wbz.selectrix4java.device.DeviceManager}.
+                     *
+                     * @return {@link net.wbz.selectrix4java.device.DeviceManager}
+                     */
                     @Provides
                     @Singleton
                     public DeviceManager deviceManager() {
                         return new DeviceManager();
                     }
 
+                    /**
+                     * Create and return the {@link net.sf.gilead.core.PersistentBeanManager} for gilead to use the
+                     * configured JPA {@link javax.persistence.EntityManagerFactory} for the GWT services to
+                     * serialize the hibernate models as native gwt models.
+                     * Each service must ne inherit {@link net.sf.gilead.gwt.PersistentRemoteService} and set the
+                     * manager by calling {@link net.sf.gilead.gwt.PersistentRemoteService#setBeanManager(net.sf.gilead.core.PersistentBeanManager)}.
+                     *
+                     * @param entityManagerFactory {@link javax.persistence.EntityManagerFactory} factory from {@link com.google.inject.persist.jpa.JpaPersistModule}
+                     * @return {@link net.sf.gilead.core.PersistentBeanManager}
+                     */
+                    @Provides
+                    @Singleton
+                    public PersistentBeanManager persistentBeanManager(EntityManagerFactory entityManagerFactory) {
+                        // use JPA repository
+                        HibernateJpaUtil hibernateJpaUtil = new HibernateJpaUtil();
+                        hibernateJpaUtil.setEntityManagerFactory(entityManagerFactory);
+                        PersistentBeanManager persistentBeanManager = new PersistentBeanManager();
+                        persistentBeanManager.setPersistenceUtil(hibernateJpaUtil);
+
+                        // serialization of the hibernate entities for GWT
+                        StatelessProxyStore proxyStore = new StatelessProxyStore();
+                        proxyStore.setProxySerializer(new GwtProxySerialization());
+                        persistentBeanManager.setProxyStore(proxyStore);
+
+                        return persistentBeanManager;
+                    }
+
+                    /**
+                     * Load the home path for the application from the OS user home.
+                     * Home will be created if not existing.
+                     *
+                     * @return {@link String} absolute file path to home folder
+                     */
                     @Provides
                     @Singleton
                     @Named("homePath")

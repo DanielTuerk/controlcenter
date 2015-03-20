@@ -1,5 +1,6 @@
 package net.wbz.moba.controlcenter.web.shared.constrution;
 
+import net.sf.gilead.pojo.gwt.LightEntity;
 import net.wbz.moba.controlcenter.web.shared.track.model.TrackPart;
 import net.wbz.moba.controlcenter.web.shared.track.model.TrackPartFunction;
 
@@ -12,7 +13,7 @@ import java.util.Set;
  * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
  */
 @Entity
-public class Construction implements Serializable {
+public class Construction extends LightEntity implements Serializable {
 
     @Id
     @GeneratedValue

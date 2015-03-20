@@ -2,9 +2,10 @@ package net.wbz.moba.controlcenter.web.server.editor;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.google.inject.Singleton;
 import com.google.inject.persist.Transactional;
+import net.sf.gilead.core.PersistentBeanManager;
+import net.sf.gilead.gwt.PersistentRemoteService;
 import net.wbz.moba.controlcenter.web.server.EventBroadcaster;
 import net.wbz.moba.controlcenter.web.server.constrution.ConstructionServiceImpl;
 import net.wbz.moba.controlcenter.web.shared.bus.FeedbackBlockEvent;
@@ -28,7 +29,7 @@ import org.slf4j.LoggerFactory;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.persistence.EntityManager;
-import javax.persistence.TypedQuery;
+import javax.persistence.Query;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,7 +39,7 @@ import java.util.Map;
  * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
  */
 @Singleton
-public class TrackEditorServiceImpl extends RemoteServiceServlet implements TrackEditorService {
+public class TrackEditorServiceImpl extends PersistentRemoteService implements TrackEditorService {
 
     private static final Logger log = LoggerFactory.getLogger(TrackEditorServiceImpl.class);
 
@@ -52,11 +53,15 @@ public class TrackEditorServiceImpl extends RemoteServiceServlet implements Trac
 
     @Inject
     public TrackEditorServiceImpl(ConstructionServiceImpl constructionService, DeviceManager deviceManager,
-                                  EventBroadcaster eventBroadcaster, Provider<EntityManager> entityManager) {
+                                  EventBroadcaster eventBroadcaster, Provider<EntityManager> entityManager,
+                                  PersistentBeanManager persistentBeanManager) {
         this.constructionService = constructionService;
         this.eventBroadcaster = eventBroadcaster;
         this.deviceManager = deviceManager;
         this.entityManager = entityManager;
+
+        setBeanManager(persistentBeanManager);
+
         deviceManager.addDeviceConnectionListener(new DeviceConnectionListener() {
             @Override
             public void connected(Device device) {
@@ -117,8 +122,8 @@ public class TrackEditorServiceImpl extends RemoteServiceServlet implements Trac
     public TrackPart[] loadTrack() {
         log.info("load track parts from db");
 
-        TypedQuery<TrackPart> typedQuery = entityManager.get().createQuery(
-                "SELECT x FROM TrackPart x where x.constructionId=:constructionId", TrackPart.class);
+        Query typedQuery = entityManager.get().createQuery(
+                "SELECT x FROM TrackPart x where x.constructionId=:constructionId");
         typedQuery.setParameter("constructionId", constructionService.getCurrentConstruction().getId());
 
         List<TrackPart> result = typedQuery.getResultList();

@@ -1,8 +1,9 @@
 package net.wbz.moba.controlcenter.web.server.constrution;
 
-import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.google.inject.Inject;
 import com.google.inject.persist.Transactional;
+import net.sf.gilead.core.PersistentBeanManager;
+import net.sf.gilead.gwt.PersistentRemoteService;
 import net.wbz.moba.controlcenter.web.shared.constrution.Construction;
 import net.wbz.moba.controlcenter.web.shared.constrution.ConstructionService;
 import org.slf4j.Logger;
@@ -11,14 +12,14 @@ import org.slf4j.LoggerFactory;
 import javax.inject.Provider;
 import javax.inject.Singleton;
 import javax.persistence.EntityManager;
-import javax.persistence.TypedQuery;
+import javax.persistence.Query;
 import java.util.List;
 
 /**
  * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
  */
 @Singleton
-public class ConstructionServiceImpl extends RemoteServiceServlet implements ConstructionService {
+public class ConstructionServiceImpl extends PersistentRemoteService implements ConstructionService {
 
     private static final Logger log = LoggerFactory.getLogger(ConstructionServiceImpl.class);
 
@@ -27,8 +28,9 @@ public class ConstructionServiceImpl extends RemoteServiceServlet implements Con
     private Construction currentConstruction = null;
 
     @Inject
-    public ConstructionServiceImpl(Provider<EntityManager> entityManager) {
+    public ConstructionServiceImpl(Provider<EntityManager> entityManager, PersistentBeanManager persistentBeanManager) {
         this.entityManager = entityManager;
+        setBeanManager(persistentBeanManager);
     }
 
     @Override
@@ -46,8 +48,8 @@ public class ConstructionServiceImpl extends RemoteServiceServlet implements Con
     @Override
     public synchronized Construction[] loadConstructions() {
         log.info("load construction");
-        TypedQuery<Construction> typedQuery = entityManager.get().createQuery(
-                "SELECT x FROM Construction x", Construction.class);
+        Query typedQuery = entityManager.get().createQuery(
+                "SELECT x FROM Construction x");
         List<Construction> resultList = typedQuery.getResultList();
         return resultList.toArray(new Construction[resultList.size()]);
     }

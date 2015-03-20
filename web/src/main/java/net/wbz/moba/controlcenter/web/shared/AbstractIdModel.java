@@ -1,15 +1,12 @@
 package net.wbz.moba.controlcenter.web.shared;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
-
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import net.sf.gilead.pojo.gwt.LightEntity;
 
 /**
  * Created by Daniel on 08.03.14.
  */
-abstract public class AbstractIdModel  implements IsSerializable {
+abstract public class AbstractIdModel extends LightEntity implements IsSerializable {
 
     abstract public long getId();
 

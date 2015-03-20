@@ -2,6 +2,7 @@ package net.wbz.moba.controlcenter.web.shared.track.model;
 
 import com.google.common.collect.Sets;
 import com.google.gwt.user.client.rpc.IsSerializable;
+import net.sf.gilead.pojo.gwt.LightEntity;
 import net.wbz.moba.controlcenter.web.shared.constrution.Construction;
 
 import javax.persistence.*;
@@ -16,7 +17,7 @@ import java.util.Set;
  * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
  */
 @Entity
-public class TrackPart implements IsSerializable, Serializable {
+public class TrackPart extends LightEntity implements IsSerializable, Serializable {
 
     @Id
     @GeneratedValue

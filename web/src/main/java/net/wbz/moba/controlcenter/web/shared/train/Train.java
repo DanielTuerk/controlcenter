@@ -1,9 +1,11 @@
 package net.wbz.moba.controlcenter.web.shared.train;
 
+import com.google.gwt.user.client.rpc.IsSerializable;
 import net.wbz.moba.controlcenter.web.shared.AbstractIdModel;
 
 import javax.persistence.*;
-import java.util.List;
+import java.io.Serializable;
+import java.util.Set;
 
 /**
  * Model for the train.
@@ -12,7 +14,7 @@ import java.util.List;
  * @author Daniel Tuerk
  */
 @Entity
-public class Train extends AbstractIdModel {
+public class Train extends AbstractIdModel implements IsSerializable, Serializable {
 
     @Id
     @GeneratedValue
@@ -22,9 +24,8 @@ public class Train extends AbstractIdModel {
 
     private int address = -1;
 
-    @Access(AccessType.PROPERTY)
     @ManyToMany(targetEntity = TrainFunction.class, mappedBy = "train", fetch = FetchType.EAGER)
-    private List<TrainFunction> functions;
+    private Set<TrainFunction> functions;
 
     @Transient
     private int drivingLevel = 0;
@@ -77,7 +78,7 @@ public class Train extends AbstractIdModel {
         this.drivingDirection = drivingDirection;
     }
 
-    public List<TrainFunction> getFunctions() {
+    public Set<TrainFunction> getFunctions() {
         return functions;
     }
 
@@ -90,7 +91,7 @@ public class Train extends AbstractIdModel {
         return null;
     }
 
-    public void setFunctions(List<TrainFunction> functions) {
+    public void setFunctions(Set<TrainFunction> functions) {
         this.functions = functions;
     }
 }

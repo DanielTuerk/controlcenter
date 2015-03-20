@@ -6,6 +6,8 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.google.inject.persist.Transactional;
+import net.sf.gilead.core.PersistentBeanManager;
+import net.sf.gilead.gwt.PersistentRemoteService;
 import net.wbz.moba.controlcenter.web.server.EventBroadcaster;
 import net.wbz.moba.controlcenter.web.shared.bus.*;
 import net.wbz.moba.controlcenter.web.shared.viewer.RailVoltageEvent;
@@ -23,7 +25,7 @@ import org.slf4j.LoggerFactory;
 import javax.annotation.Nullable;
 import javax.inject.Provider;
 import javax.persistence.EntityManager;
-import javax.persistence.TypedQuery;
+import javax.persistence.Query;
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
@@ -36,7 +38,7 @@ import java.util.List;
  * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
  */
 @Singleton
-public class BusServiceImpl extends RemoteServiceServlet implements BusService {
+public class BusServiceImpl extends PersistentRemoteService implements BusService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(BusServiceImpl.class);
 
@@ -56,17 +58,19 @@ public class BusServiceImpl extends RemoteServiceServlet implements BusService {
 
     @Inject
     public BusServiceImpl(DeviceManager deviceManager,
-                          final EventBroadcaster eventBroadcaster, DeviceRecorder deviceRecorder, Provider<EntityManager> entityManager) {
+                          final EventBroadcaster eventBroadcaster, DeviceRecorder deviceRecorder,
+                          Provider<EntityManager> entityManager,PersistentBeanManager persistentBeanManager) {
         this.deviceManager = deviceManager;
         this.eventBroadcaster = eventBroadcaster;
         this.deviceRecorder = deviceRecorder;
 
         this.entityManager = entityManager;
-        TypedQuery<DeviceInfo> query = this.entityManager.get().createQuery("SELECT x FROM DeviceInfo x", DeviceInfo.class);
+
+        setBeanManager(persistentBeanManager);
+
+        Query query = this.entityManager.get().createQuery("SELECT x FROM DeviceInfo x");
         List<DeviceInfo> storedDevices = query.getResultList();
-//        settingsDatabase = databaseFactory.getOrCreateDatabase(BUS_DB_KEY);
-//
-//        ObjectSet<DeviceInfo> storedDevices = settingsDatabase.getObjectContainer().query(DeviceInfo.class);
+
         for (DeviceInfo deviceInfo : storedDevices) {
             // TODO - values from config
             deviceManager.registerDevice(DeviceManager.DEVICE_TYPE.valueOf(
@@ -122,7 +126,10 @@ public class BusServiceImpl extends RemoteServiceServlet implements BusService {
     @Override
     public void deleteDevice(DeviceInfo deviceInfo) {
         Device device = deviceManager.getDeviceById(deviceInfo.getKey());
-        entityManager.get().remove(deviceInfo);
+
+        Query query = this.entityManager.get().createQuery("SELECT x FROM DeviceInfo x where key=:key");
+        DeviceInfo persistDeviceInfo = (DeviceInfo) query.setParameter("key", deviceInfo.getKey()).getSingleResult();
+        entityManager.get().remove(persistDeviceInfo);
 
         deviceManager.removeDevice(device);
 

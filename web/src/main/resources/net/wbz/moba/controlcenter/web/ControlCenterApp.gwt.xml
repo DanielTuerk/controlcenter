@@ -35,6 +35,8 @@
     <inherits name="org.gwtbootstrap3.extras.positionedtabs.PositionedTabs"/>
     <inherits name="org.gwtbootstrap3.extras.toggleswitch.ToggleSwitch"/>
 
+    <inherits name='net.sf.gilead.Gilead4Gwt'/>
+
 
     <!-- Specify the app entry point class.                         -->
 

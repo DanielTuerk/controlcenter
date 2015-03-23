@@ -2,31 +2,26 @@ package net.wbz.moba.controlcenter.web.shared.track.model;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
+import javax.persistence.Entity;
+import javax.persistence.Table;
+
 /**
  * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
  */
+@Entity
+@Table(name = "trackpart_switch")
 public class Switch extends TrackPart {
+
+    public enum DIRECTION implements IsSerializable {RIGHT, LEFT}
+
+    public enum PRESENTATION implements IsSerializable {LEFT_TO_RIGHT, RIGHT_TO_LEFT, BOTTOM_TO_TOP, TOP_TO_BOTTOM}
 
     private DIRECTION currentDirection;
 
     private PRESENTATION currentPresentation;
 
-
     public enum STATE implements IsSerializable {STRAIGHT, BRANCH}
 
-    ;
-
-    public enum DIRECTION implements IsSerializable {RIGHT, LEFT}
-
-    ;
-
-    public enum PRESENTATION implements IsSerializable {LEFT_TO_RIGHT, RIGHT_TO_LEFT, BOTTOM_TO_TOP, TOP_TO_BOTTOM}
-
-    ;
-
-    public void turn(DIRECTION line) {
-
-    }
 
     public void setCurrentDirection(DIRECTION currentDirection) {
         this.currentDirection = currentDirection;
@@ -43,10 +38,5 @@ public class Switch extends TrackPart {
     public DIRECTION getCurrentDirection() {
         return currentDirection;
     }
-
-//    public long getId() {
-//        return 0L;
-//    }
-
 
 }

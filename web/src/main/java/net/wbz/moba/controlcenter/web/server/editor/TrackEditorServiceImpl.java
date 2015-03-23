@@ -49,7 +49,7 @@ public class TrackEditorServiceImpl extends PersistentRemoteService implements T
     private final Map<BusAddressIdentifier, FeedbackBlockListener> busAddressFeedbackBlockListenersOfTheCurrentTrack = Maps.newConcurrentMap();
     private final DeviceManager deviceManager;
     private final EventBroadcaster eventBroadcaster;
-    private final Provider<EntityManager> entityManager;
+    private final Provider<EntityManager> entityManagerProvider;
 
     @Inject
     public TrackEditorServiceImpl(ConstructionServiceImpl constructionService, DeviceManager deviceManager,
@@ -58,7 +58,7 @@ public class TrackEditorServiceImpl extends PersistentRemoteService implements T
         this.constructionService = constructionService;
         this.eventBroadcaster = eventBroadcaster;
         this.deviceManager = deviceManager;
-        this.entityManager = entityManager;
+        this.entityManagerProvider = entityManager;
 
         setBeanManager(persistentBeanManager);
 
@@ -114,7 +114,11 @@ public class TrackEditorServiceImpl extends PersistentRemoteService implements T
         Construction currentConstruction = constructionService.getCurrentConstruction();
         for (TrackPart trackPart : trackParts) {
             trackPart.setConstructionId(currentConstruction.getId());
-            entityManager.get().persist(trackPart);
+            EntityManager entityManager = this.entityManagerProvider.get();
+            if(!entityManager.contains(trackPart.getGridPosition())) {
+                entityManager.persist(trackPart.getGridPosition());
+            }
+            entityManager.persist(trackPart);
         }
     }
 
@@ -122,7 +126,7 @@ public class TrackEditorServiceImpl extends PersistentRemoteService implements T
     public TrackPart[] loadTrack() {
         log.info("load track parts from db");
 
-        Query typedQuery = entityManager.get().createQuery(
+        Query typedQuery = entityManagerProvider.get().createQuery(
                 "SELECT x FROM TrackPart x where x.constructionId=:constructionId");
         typedQuery.setParameter("constructionId", constructionService.getCurrentConstruction().getId());
 
@@ -146,6 +150,10 @@ public class TrackEditorServiceImpl extends PersistentRemoteService implements T
      *                   containing {@link net.wbz.moba.controlcenter.web.shared.track.model.Configuration}
      */
     public void registerConsumersByConnectedDeviceForTrackParts(TrackPart[] trackParts) {
+
+        if(trackParts.length == 0) {
+            return;
+        }
 
         //unregister existing to create new ones from given track parts
         try {
@@ -259,7 +267,7 @@ public class TrackEditorServiceImpl extends PersistentRemoteService implements T
     }
 
     private void registerEventConfigurationOfTrackPart(final TrackPart trackPart) {
-        if (trackPart.getEventConfiguration().isActive()) {
+        if (trackPart.hasActiveEventConfiguration()) {
 
             // add state 'ON'
             final Configuration stateOnConfig = trackPart.getEventConfiguration().getStateOnConfig();

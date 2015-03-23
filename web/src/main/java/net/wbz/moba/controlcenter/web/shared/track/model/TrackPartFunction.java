@@ -3,10 +3,7 @@ package net.wbz.moba.controlcenter.web.shared.track.model;
 import com.google.gwt.user.client.rpc.IsSerializable;
 import net.sf.gilead.pojo.gwt.LightEntity;
 
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 import java.io.Serializable;
 
 /**
@@ -17,6 +14,7 @@ public class TrackPartFunction extends LightEntity implements IsSerializable, Se
     @Id
     private String functionKey;
 
+    @OneToOne
     private Configuration configuration;
 
     @ManyToOne(fetch = FetchType.LAZY)

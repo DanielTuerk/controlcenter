@@ -37,12 +37,34 @@ import java.util.Properties;
  */
 public class MyGuiceServletConfig extends GuiceServletContextListener {
 
+    /**
+     * Key for the persistence unit to use in web app. (also db name and directory name)
+     */
     public static final String PERSISTENCE_UNIT = "derby_db";
 
     @Override
     protected Injector getInjector() {
         return Guice.createInjector(
                 new ServletModule() {
+
+                    /**
+                     * Load the home path for the application from the OS user home.
+                     * Home will be created if not existing.
+                     *
+                     * @return {@link String} absolute file path to home folder
+                     */
+                    @Provides
+                    @Singleton
+                    @Named("homePath")
+                    public String homePath() {
+                        File configPath = new File(System.getProperty("user.home") + "/.moba/");
+                        if (!configPath.exists()) {
+                            if (!configPath.mkdirs()) {
+                                throw new RuntimeException("can't create the HOME path: " + configPath.getAbsolutePath());
+                            }
+                        }
+                        return configPath.getAbsolutePath();
+                    }
 
                     @Override
                     protected void configureServlets() {
@@ -120,24 +142,6 @@ public class MyGuiceServletConfig extends GuiceServletContextListener {
                         return persistentBeanManager;
                     }
 
-                    /**
-                     * Load the home path for the application from the OS user home.
-                     * Home will be created if not existing.
-                     *
-                     * @return {@link String} absolute file path to home folder
-                     */
-                    @Provides
-                    @Singleton
-                    @Named("homePath")
-                    public String homePath() {
-                        File configPath = new File(System.getProperty("user.home") + "/.moba/");
-                        if (!configPath.exists()) {
-                            if (!configPath.mkdirs()) {
-                                throw new RuntimeException("can't create the HOME path: " + configPath.getAbsolutePath());
-                            }
-                        }
-                        return configPath.getAbsolutePath();
-                    }
                 });
     }
 }

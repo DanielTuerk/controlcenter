@@ -1,17 +1,30 @@
 package net.wbz.moba.controlcenter.web.shared.track.model;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
+import net.sf.gilead.pojo.gwt.LightEntity;
 
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
+import javax.persistence.OneToOne;
 import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * @author Daniel Tuerk
  */
-public class EventConfiguration implements IsSerializable, Serializable {
+@Entity
+public class EventConfiguration extends LightEntity implements IsSerializable, Serializable {
 
-    private Map<Boolean, Configuration> stateConfigurations = new HashMap<>();
+    @Id
+    private String event;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    private TrackPart trackPart;
+
+    @OneToOne
+    private Configuration stateOnConfig;
+    @OneToOne
+    private Configuration stateOffConfig;
 
     public void setStateOnConfig(Configuration config) {
         addStateConfig(true, config);
@@ -22,25 +35,23 @@ public class EventConfiguration implements IsSerializable, Serializable {
     }
 
     private void addStateConfig(boolean state, Configuration config) {
-        stateConfigurations.put(state, config);
+        if (state) {
+            stateOnConfig = config;
+        } else {
+            stateOffConfig = config;
+        }
     }
 
     public Configuration getStateOnConfig() {
-        return getStateConfiguration(true);
-    }
-
-    private Configuration getStateConfiguration(boolean state) {
-        if (!stateConfigurations.containsKey(state)) {
-            stateConfigurations.put(state, new Configuration());
-        }
-        return stateConfigurations.get(state);
+        return stateOnConfig;
     }
 
     public Configuration getStateOffConfig() {
-        return getStateConfiguration(false);
+        return stateOffConfig;
     }
 
     public boolean isActive() {
-        return !stateConfigurations.isEmpty();
+        return stateOnConfig != null || stateOffConfig != null;
     }
+
 }

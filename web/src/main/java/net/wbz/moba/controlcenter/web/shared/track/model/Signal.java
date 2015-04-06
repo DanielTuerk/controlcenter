@@ -84,7 +84,7 @@ public class Signal extends Straight {
      * @param configuration {@link net.wbz.moba.controlcenter.web.shared.track.model.Configuration} or <code>null</code>
      */
     public void setLightFunctionConfig(LIGHT light, Configuration configuration) {
-        getFunctionConfigs().add(new TrackPartFunction(this, light.name(), configuration));
+        getFunctionConfigs().add(new TrackPartFunction(light.name(), configuration));
     }
 
     public Map<LIGHT, Configuration> getSignalConfiguration() {

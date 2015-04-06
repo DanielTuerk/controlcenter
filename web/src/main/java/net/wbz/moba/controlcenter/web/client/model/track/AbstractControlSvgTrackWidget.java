@@ -1,5 +1,6 @@
 package net.wbz.moba.controlcenter.web.client.model.track;
 
+import com.google.common.base.Strings;
 import com.google.gwt.user.client.ui.Widget;
 import net.wbz.moba.controlcenter.web.client.ServiceUtils;
 import net.wbz.moba.controlcenter.web.client.editor.track.ClickActionViewerWidgetHandler;
@@ -144,6 +145,7 @@ abstract public class AbstractControlSvgTrackWidget<T extends TrackPart> extends
 
         addConfigContent();
 
+
         addEventContent();
 
         return dialogContent;
@@ -152,8 +154,6 @@ abstract public class AbstractControlSvgTrackWidget<T extends TrackPart> extends
     private void addEventContent() {
         FieldSet fieldSet = new FieldSet();
 
-        Configuration eventConfigOn = getTrackPart().getEventConfiguration().getStateOnConfig();
-        Configuration eventConfigOff = getTrackPart().getEventConfiguration().getStateOffConfig();
 
         // module address
         FormGroup groupStateOn = new FormGroup();
@@ -165,17 +165,14 @@ abstract public class AbstractControlSvgTrackWidget<T extends TrackPart> extends
         org.gwtbootstrap3.client.ui.gwt.FlowPanel flowPanel = new org.gwtbootstrap3.client.ui.gwt.FlowPanel();
         flowPanel.addStyleName(ColumnSize.MD_2.getCssName());
         txtEventConfigOnAddress = new TextBox();
-        txtEventConfigOnAddress.setValue(String.valueOf(eventConfigOn.getAddress()));
         txtEventConfigOnAddress.setId("stateOn");
         flowPanel.add(new Label("address"));
         flowPanel.add(txtEventConfigOnAddress);
 
         txtEventConfigOnBit = new TextBox();
-        txtEventConfigOnBit.setValue(String.valueOf(eventConfigOn.getBit()));
         flowPanel.add(new Label("bit"));
         flowPanel.add(txtEventConfigOnBit);
         toggleEventConfigOnBitState = new BitStateToggleButton();
-        toggleEventConfigOnBitState.setActive(eventConfigOn.isBitState());
         flowPanel.add(new Label("state"));
         flowPanel.add(toggleEventConfigOnBitState);
 
@@ -195,24 +192,38 @@ abstract public class AbstractControlSvgTrackWidget<T extends TrackPart> extends
         flowPanelOff.add(new Label("address"));
 
         txtEventConfigOffAddress = new TextBox();
-        txtEventConfigOffAddress.setValue(String.valueOf(eventConfigOff.getAddress()));
         txtEventConfigOffAddress.setId("stateOn");
         flowPanelOff.add(txtEventConfigOffAddress);
 
         flowPanelOff.add(new Label("bit"));
 
         txtEventConfigOffBit = new TextBox();
-        txtEventConfigOffBit.setValue(String.valueOf(eventConfigOff.getBit()));
         flowPanelOff.add(txtEventConfigOffBit);
 
         flowPanelOff.add(new Label("state"));
 
         toggleEventConfigOffBitState = new BitStateToggleButton();
-        toggleEventConfigOffBitState.setActive(eventConfigOff.isBitState());
         flowPanelOff.add(toggleEventConfigOffBitState);
 
         groupStateOff.add(flowPanelOff);
         fieldSet.add(groupStateOff);
+
+
+        EventConfiguration eventConfiguration = getTrackPart().getEventConfiguration();
+        if (eventConfiguration != null) {
+            Configuration eventConfigOn = eventConfiguration.getStateOnConfig();
+            Configuration eventConfigOff = eventConfiguration.getStateOffConfig();
+            if (eventConfigOn != null) {
+                txtEventConfigOnAddress.setValue(String.valueOf(eventConfigOn.getAddress()));
+                txtEventConfigOnBit.setValue(String.valueOf(eventConfigOn.getBit()));
+                toggleEventConfigOnBitState.setActive(eventConfigOn.isBitState());
+            }
+            if (eventConfigOff != null) {
+                txtEventConfigOffAddress.setValue(String.valueOf(eventConfigOff.getAddress()));
+                txtEventConfigOffBit.setValue(String.valueOf(eventConfigOff.getBit()));
+                toggleEventConfigOffBitState.setActive(eventConfigOff.isBitState());
+            }
+        }
 
         addDialogContentTab("Event", fieldSet);
     }
@@ -223,12 +234,18 @@ abstract public class AbstractControlSvgTrackWidget<T extends TrackPart> extends
 
         // save event config
         EventConfiguration eventConfiguration = new EventConfiguration();
-        eventConfiguration.setStateOnConfig(
-                new Configuration(1, Integer.parseInt(txtEventConfigOnAddress.getValue()),
-                        Integer.parseInt(txtEventConfigOnBit.getValue()), toggleEventConfigOnBitState.isActive()));
-        eventConfiguration.setStateOffConfig(
-                new Configuration(1, Integer.parseInt(txtEventConfigOffAddress.getValue()),
-                        Integer.parseInt(txtEventConfigOffBit.getValue()), toggleEventConfigOffBitState.isActive()));
+        if (!Strings.isNullOrEmpty(txtEventConfigOnAddress.getValue())
+                && !Strings.isNullOrEmpty(txtEventConfigOnBit.getValue())) {
+            eventConfiguration.setStateOnConfig(
+                    new Configuration(1, Integer.parseInt(txtEventConfigOnAddress.getValue()),
+                            Integer.parseInt(txtEventConfigOnBit.getValue()), toggleEventConfigOnBitState.isActive()));
+        }
+        if (!Strings.isNullOrEmpty(txtEventConfigOffAddress.getValue())
+                && !Strings.isNullOrEmpty(txtEventConfigOffBit.getValue())) {
+            eventConfiguration.setStateOffConfig(
+                    new Configuration(1, Integer.parseInt(txtEventConfigOffAddress.getValue()),
+                            Integer.parseInt(txtEventConfigOffBit.getValue()), toggleEventConfigOffBitState.isActive()));
+        }
         getTrackPart().setEventConfiguration(eventConfiguration);
 
 

@@ -5,6 +5,7 @@ import net.sf.gilead.pojo.gwt.LightEntity;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -16,7 +17,9 @@ public class TrainFunction extends LightEntity implements IsSerializable, Serial
     public enum FUNCTION implements Serializable, IsSerializable {LIGHT, HORN, F1, F2, F3, F4, F5, F6, F7, F8}
 
     @Id
-    @Column(name = "function_id")
+    @GeneratedValue
+    private long id;
+
     @Enumerated(EnumType.ORDINAL)
     private FUNCTION function;
 
@@ -24,7 +27,7 @@ public class TrainFunction extends LightEntity implements IsSerializable, Serial
     private boolean state;
 
     @ManyToMany(fetch = FetchType.LAZY)
-    private Set<Train> train;
+    private List<Train> trains;
 
     public TrainFunction() {
     }
@@ -32,6 +35,22 @@ public class TrainFunction extends LightEntity implements IsSerializable, Serial
     public TrainFunction(FUNCTION function, boolean state) {
         this.function = function;
         this.state = state;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public List<Train> getTrains() {
+        return trains;
+    }
+
+    public void setTrains(List<Train> trains) {
+        this.trains = trains;
     }
 
     public FUNCTION getFunction() {

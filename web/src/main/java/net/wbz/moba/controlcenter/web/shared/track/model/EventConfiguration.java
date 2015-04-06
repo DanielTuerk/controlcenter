@@ -3,10 +3,8 @@ package net.wbz.moba.controlcenter.web.shared.track.model;
 import com.google.gwt.user.client.rpc.IsSerializable;
 import net.sf.gilead.pojo.gwt.LightEntity;
 
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.Id;
-import javax.persistence.OneToOne;
+import javax.annotation.Generated;
+import javax.persistence.*;
 import java.io.Serializable;
 
 /**
@@ -16,10 +14,11 @@ import java.io.Serializable;
 public class EventConfiguration extends LightEntity implements IsSerializable, Serializable {
 
     @Id
-    private String event;
+    @GeneratedValue
+    private long id;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    private TrackPart trackPart;
+//    @OneToOne(fetch = FetchType.LAZY)
+//    private TrackPart trackPart;
 
     @OneToOne
     private Configuration stateOnConfig;
@@ -51,7 +50,14 @@ public class EventConfiguration extends LightEntity implements IsSerializable, S
     }
 
     public boolean isActive() {
-        return stateOnConfig != null || stateOffConfig != null;
+        return stateOnConfig != null && stateOffConfig != null;
     }
 
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
 }

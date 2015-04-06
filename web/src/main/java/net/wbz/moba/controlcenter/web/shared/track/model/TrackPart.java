@@ -6,7 +6,8 @@ import net.sf.gilead.pojo.gwt.LightEntity;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -25,9 +26,6 @@ public class TrackPart extends LightEntity implements IsSerializable, Serializab
     @GeneratedValue
     private long id;
 
-    public Long getId() {
-        return id;
-    }
 
     /**
      * Id of the corresponding construction.
@@ -43,14 +41,37 @@ public class TrackPart extends LightEntity implements IsSerializable, Serializab
     /**
      * Function mapping for function name and configuration of the function.
      */
-    @OneToMany(mappedBy = "trackPart")
-    private Set<TrackPartFunction> functions;
+    @ManyToMany(mappedBy = "trackPart", fetch = FetchType.EAGER)
+    private List<TrackPartFunction> functions;
 
     /**
      * Configuration to toggle the {@link net.wbz.moba.controlcenter.web.shared.track.model.TrackPart} by an event.
      */
     @OneToOne
     private EventConfiguration eventStateConfig;
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public List<TrackPartFunction> getFunctions() {
+        if (functions == null) {
+            functions = new ArrayList<>();
+        }
+        return functions;
+    }
+
+    public void setFunctions(List<TrackPartFunction> functions) {
+        this.functions = functions;
+    }
+
+    public void setEventStateConfig(EventConfiguration eventStateConfig) {
+        this.eventStateConfig = eventStateConfig;
+    }
 
     public long getConstructionId() {
         return constructionId;
@@ -60,18 +81,12 @@ public class TrackPart extends LightEntity implements IsSerializable, Serializab
         this.constructionId = constructionId;
     }
 
-    public Set<TrackPartFunction> getFunctionConfigs() {
-        if(functions == null) {
-            functions=new HashSet<>();
-        }
+    public List<TrackPartFunction> getFunctionConfigs() {
+        List<TrackPartFunction> functions = getFunctions();
         if (functions.isEmpty()) {
             // create dummy for saved instance without configuration; will be changed during first call of
-            // {@link TrackPart#setFunctionConfigs}
-//            functionConfigs = new HashMap<>();
-//            functionConfigs.put(TrackModelConstants.DEFAULT_TOGGLE_FUNCTION, new Configuration());
-//            functionConfigs.put(TrackModelConstants.DEFAULT_BLOCK_FUNCTION, new Configuration());
-            functions.add(new TrackPartFunction(this, TrackModelConstants.DEFAULT_TOGGLE_FUNCTION, new Configuration()));
-            functions.add(new TrackPartFunction(this, TrackModelConstants.DEFAULT_BLOCK_FUNCTION, new Configuration()));
+            functions.add(new TrackPartFunction(TrackModelConstants.DEFAULT_TOGGLE_FUNCTION, new Configuration()));
+            functions.add(new TrackPartFunction(TrackModelConstants.DEFAULT_BLOCK_FUNCTION, new Configuration()));
         }
         return functions;
     }

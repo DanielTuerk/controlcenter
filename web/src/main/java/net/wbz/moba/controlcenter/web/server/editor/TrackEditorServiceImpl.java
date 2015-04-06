@@ -11,9 +11,7 @@ import net.wbz.moba.controlcenter.web.server.constrution.ConstructionServiceImpl
 import net.wbz.moba.controlcenter.web.shared.bus.FeedbackBlockEvent;
 import net.wbz.moba.controlcenter.web.shared.constrution.Construction;
 import net.wbz.moba.controlcenter.web.shared.editor.TrackEditorService;
-import net.wbz.moba.controlcenter.web.shared.track.model.Configuration;
-import net.wbz.moba.controlcenter.web.shared.track.model.Signal;
-import net.wbz.moba.controlcenter.web.shared.track.model.TrackPart;
+import net.wbz.moba.controlcenter.web.shared.track.model.*;
 import net.wbz.moba.controlcenter.web.shared.viewer.TrackPartStateEvent;
 import net.wbz.selectrix4java.block.FeedbackBlockListener;
 import net.wbz.selectrix4java.bus.BusAddressBitListener;
@@ -23,6 +21,7 @@ import net.wbz.selectrix4java.device.Device;
 import net.wbz.selectrix4java.device.DeviceAccessException;
 import net.wbz.selectrix4java.device.DeviceConnectionListener;
 import net.wbz.selectrix4java.device.DeviceManager;
+import org.hibernate.collection.PersistentList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -111,14 +110,55 @@ public class TrackEditorServiceImpl extends PersistentRemoteService implements T
     @Override
     @Transactional
     public void saveTrack(TrackPart[] trackParts) {
+        EntityManager entityManager = this.entityManagerProvider.get();
+
         Construction currentConstruction = constructionService.getCurrentConstruction();
         for (TrackPart trackPart : trackParts) {
             trackPart.setConstructionId(currentConstruction.getId());
-            EntityManager entityManager = this.entityManagerProvider.get();
-            if(!entityManager.contains(trackPart.getGridPosition())) {
+
+            if (entityManager.find(GridPosition.class, trackPart.getGridPosition().getId()) == null) {
                 entityManager.persist(trackPart.getGridPosition());
+            } else {
+                trackPart.setGridPosition(entityManager.merge(trackPart.getGridPosition()));
             }
-            entityManager.persist(trackPart);
+
+            for (TrackPartFunction trackPartFunction : trackPart.getFunctions()) {
+
+                trackPartFunction.setTrackPart(Lists.newArrayList(trackPart));
+
+                saveOrUpdateConfiguration(entityManager, trackPartFunction.getConfiguration());
+
+                if (entityManager.find(TrackPartFunction.class, trackPartFunction.getId()) == null) {
+                    entityManager.persist(trackPartFunction);
+                } else {
+                    entityManager.merge(trackPartFunction);
+                }
+            }
+
+            EventConfiguration eventConfiguration = trackPart.getEventConfiguration();
+            if (eventConfiguration != null) {
+
+                saveOrUpdateConfiguration(entityManager, eventConfiguration.getStateOnConfig());
+                saveOrUpdateConfiguration(entityManager, eventConfiguration.getStateOffConfig());
+
+                if (entityManager.find(EventConfiguration.class, eventConfiguration.getId()) == null) {
+                    entityManager.persist(eventConfiguration);
+                } else {
+                    entityManager.merge(eventConfiguration);
+                }
+            }
+
+            entityManager.persist(entityManager.merge(trackPart));
+        }
+    }
+
+    private void saveOrUpdateConfiguration(EntityManager entityManager, Configuration configuration) {
+        if (configuration != null) {
+            if (entityManager.find(Configuration.class, configuration.getId()) == null) {
+                entityManager.persist(configuration);
+            } else {
+                entityManager.merge(configuration);
+            }
         }
     }
 
@@ -151,7 +191,7 @@ public class TrackEditorServiceImpl extends PersistentRemoteService implements T
      */
     public void registerConsumersByConnectedDeviceForTrackParts(TrackPart[] trackParts) {
 
-        if(trackParts.length == 0) {
+        if (trackParts.length == 0) {
             return;
         }
 

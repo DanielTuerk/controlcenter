@@ -24,7 +24,7 @@ public class Train extends AbstractIdModel implements IsSerializable, Serializab
 
     private int address = -1;
 
-    @ManyToMany(targetEntity = TrainFunction.class, mappedBy = "train", fetch = FetchType.EAGER)
+    @ManyToMany(mappedBy = "trains", fetch = FetchType.EAGER)
     private Set<TrainFunction> functions;
 
     @Transient

@@ -5,28 +5,54 @@ import net.sf.gilead.pojo.gwt.LightEntity;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * @author Daniel Tuerk
  */
 @Entity
 public class TrackPartFunction extends LightEntity implements IsSerializable, Serializable {
+
     @Id
+    @GeneratedValue
+    private long id;
+
     private String functionKey;
 
     @OneToOne
     private Configuration configuration;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    private TrackPart trackPart;
+    @ManyToMany(fetch = FetchType.LAZY)
+    private List<TrackPart> trackPart;
 
-    public TrackPartFunction(TrackPart trackPart, String key, Configuration configuration) {
-        this.trackPart = trackPart;
+//    public TrackPartFunction(TrackPart trackPart, String key, Configuration configuration) {
+////        this.trackPart = trackPart;
+//        this.functionKey = key;
+//        this.configuration = configuration;
+//    }
+    public TrackPartFunction(String key, Configuration configuration) {
+//        this.trackPart = trackPart;
         this.functionKey = key;
         this.configuration = configuration;
     }
 
     public TrackPartFunction() {
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public List<TrackPart> getTrackPart() {
+        return trackPart;
+    }
+
+    public void setTrackPart(List<TrackPart> trackPart) {
+        this.trackPart = trackPart;
     }
 
     public String getFunctionKey() {
@@ -45,9 +71,9 @@ public class TrackPartFunction extends LightEntity implements IsSerializable, Se
         this.configuration = configuration;
     }
 
-    public TrackPart getTrackPart() {
-        return trackPart;
-    }
+//    public TrackPart getTrackPart() {
+//        return trackPart;
+//    }
 
     @Override
     public boolean equals(Object o) {

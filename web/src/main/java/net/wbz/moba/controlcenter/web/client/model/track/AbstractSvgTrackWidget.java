@@ -173,7 +173,16 @@ abstract public class AbstractSvgTrackWidget<T extends TrackPart> extends Simple
      * @see {#getGridPosition}
      */
     public TrackPart getTrackPart(Widget containerWidget, int zoomLevel) {
+        long gridPositionIdOfExistingGridPos = -1;
+        if (trackPart.getGridPosition() != null) {
+            gridPositionIdOfExistingGridPos = trackPart.getGridPosition().getId();
+        }
+
         trackPart.setGridPosition(getGridPosition(containerWidget, zoomLevel));
+
+        if (gridPositionIdOfExistingGridPos >= 0) {
+            trackPart.getGridPosition().setId(gridPositionIdOfExistingGridPos);
+        }
         return trackPart;
     }
 

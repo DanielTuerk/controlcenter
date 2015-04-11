@@ -1,0 +1,25 @@
+#! /bin/sh
+# /etc/init.d/controlcenter
+#
+
+# Some things that run always
+touch /var/lock/controlcenter
+
+# Carry out specific functions when asked to by the system
+case "$1" in
+  start)
+    echo "Starting script controlcenter "
+    java -jar /home/pi/controlcenter-jetty-console.war
+    ;;
+  stop)
+    echo "Stopping script controlcenter"
+    echo "Could do more here"
+    ;;
+  *)
+    echo "Usage: /etc/init.d/controlcenter {start|stop}"
+    exit 1
+    ;;
+esac
+
+exit 0
+

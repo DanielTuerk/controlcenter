@@ -5,6 +5,7 @@ import net.sf.gilead.pojo.gwt.LightEntity;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -15,6 +16,7 @@ public class TrackPartFunction extends LightEntity implements IsSerializable, Se
 
     @Id
     @GeneratedValue
+    @Column(name = "TRACKPARTFUNCTION_ID")
     private long id;
 
     private String functionKey;
@@ -22,8 +24,8 @@ public class TrackPartFunction extends LightEntity implements IsSerializable, Se
     @OneToOne
     private Configuration configuration;
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    private List<TrackPart> trackPart;
+    @ManyToMany(mappedBy="functions",fetch = FetchType.LAZY)
+    private List<TrackPart> trackParts = new ArrayList<>();
 
 //    public TrackPartFunction(TrackPart trackPart, String key, Configuration configuration) {
 ////        this.trackPart = trackPart;
@@ -47,12 +49,21 @@ public class TrackPartFunction extends LightEntity implements IsSerializable, Se
         this.id = id;
     }
 
-    public List<TrackPart> getTrackPart() {
-        return trackPart;
+//    public List<TrackPart> getTrackPart() {
+//        return trackPart;
+//    }
+//
+//    public void setTrackPart(List<TrackPart> trackPart) {
+//        this.trackPart = trackPart;
+//    }
+
+
+    public List<TrackPart> getTrackParts() {
+        return trackParts;
     }
 
-    public void setTrackPart(List<TrackPart> trackPart) {
-        this.trackPart = trackPart;
+    public void setTrackParts(List<TrackPart> trackParts) {
+        this.trackParts = trackParts;
     }
 
     public String getFunctionKey() {

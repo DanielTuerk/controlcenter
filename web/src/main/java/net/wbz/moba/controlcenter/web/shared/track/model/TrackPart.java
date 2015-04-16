@@ -24,8 +24,8 @@ public class TrackPart extends LightEntity implements IsSerializable, Serializab
 
     @Id
     @GeneratedValue
+    @Column(name = "TRACKPART_ID")
     private long id;
-
 
     /**
      * Id of the corresponding construction.
@@ -41,8 +41,11 @@ public class TrackPart extends LightEntity implements IsSerializable, Serializab
     /**
      * Function mapping for function name and configuration of the function.
      */
-    @ManyToMany(mappedBy = "trackPart", fetch = FetchType.EAGER)
-    private List<TrackPartFunction> functions;
+    @ManyToMany(cascade = {CascadeType.ALL}, fetch = FetchType.EAGER)
+    @JoinTable(
+            joinColumns = {@JoinColumn(name = "TRACKPART_ID")},
+            inverseJoinColumns = {@JoinColumn(name = "TRACKPARTFUNCTION_ID")})
+    private List<TrackPartFunction> functions = new ArrayList<>();
 
     /**
      * Configuration to toggle the {@link net.wbz.moba.controlcenter.web.shared.track.model.TrackPart} by an event.

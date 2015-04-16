@@ -41,6 +41,10 @@ public class Configuration extends LightEntity implements Serializable {
     public Configuration() {
     }
 
+    public void setId(long id) {
+        this.id = id;
+    }
+
     public int getAddress() {
         return address;
     }

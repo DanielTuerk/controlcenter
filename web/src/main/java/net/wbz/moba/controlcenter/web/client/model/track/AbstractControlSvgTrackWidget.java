@@ -233,19 +233,37 @@ abstract public class AbstractControlSvgTrackWidget<T extends TrackPart> extends
         super.onConfirmCallback();
 
         // save event config
-        EventConfiguration eventConfiguration = new EventConfiguration();
+        EventConfiguration eventConfiguration;
+        if (getTrackPart().getEventConfiguration() != null) {
+            eventConfiguration = getTrackPart().getEventConfiguration();
+        } else {
+            eventConfiguration = new EventConfiguration();
+        }
+
+
+        // state ON
         if (!Strings.isNullOrEmpty(txtEventConfigOnAddress.getValue())
                 && !Strings.isNullOrEmpty(txtEventConfigOnBit.getValue())) {
-            eventConfiguration.setStateOnConfig(
-                    new Configuration(1, Integer.parseInt(txtEventConfigOnAddress.getValue()),
-                            Integer.parseInt(txtEventConfigOnBit.getValue()), toggleEventConfigOnBitState.isActive()));
+            if (eventConfiguration.getStateOnConfig() == null) {
+                eventConfiguration.setStateOnConfig(new Configuration());
+            }
+            eventConfiguration.getStateOnConfig().setBus(1);
+            eventConfiguration.getStateOnConfig().setAddress(Integer.parseInt(txtEventConfigOnAddress.getValue()));
+            eventConfiguration.getStateOnConfig().setBit(Integer.parseInt(txtEventConfigOnBit.getValue()));
+            eventConfiguration.getStateOnConfig().setBitState(toggleEventConfigOnBitState.isActive());
         }
+        // state OFF
         if (!Strings.isNullOrEmpty(txtEventConfigOffAddress.getValue())
                 && !Strings.isNullOrEmpty(txtEventConfigOffBit.getValue())) {
-            eventConfiguration.setStateOffConfig(
-                    new Configuration(1, Integer.parseInt(txtEventConfigOffAddress.getValue()),
-                            Integer.parseInt(txtEventConfigOffBit.getValue()), toggleEventConfigOffBitState.isActive()));
+            if (eventConfiguration.getStateOffConfig() == null) {
+                eventConfiguration.setStateOffConfig(new Configuration());
+            }
+            eventConfiguration.getStateOffConfig().setBus(1);
+            eventConfiguration.getStateOffConfig().setAddress(Integer.parseInt(txtEventConfigOffAddress.getValue()));
+            eventConfiguration.getStateOffConfig().setBit(Integer.parseInt(txtEventConfigOffBit.getValue()));
+            eventConfiguration.getStateOffConfig().setBitState(toggleEventConfigOffBitState.isActive());
         }
+
         getTrackPart().setEventConfiguration(eventConfiguration);
 
 

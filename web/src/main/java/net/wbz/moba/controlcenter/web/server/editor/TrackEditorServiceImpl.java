@@ -124,7 +124,7 @@ public class TrackEditorServiceImpl extends PersistentRemoteService implements T
 
             for (TrackPartFunction trackPartFunction : trackPart.getFunctions()) {
 
-                trackPartFunction.setTrackPart(Lists.newArrayList(trackPart));
+//                trackPartFunction.setTrackPart(trackPart);
 
                 saveOrUpdateConfiguration(entityManager, trackPartFunction.getConfiguration());
 
@@ -184,7 +184,7 @@ public class TrackEditorServiceImpl extends PersistentRemoteService implements T
      * Register the {@link net.wbz.selectrix4java.bus.consumption.BusDataConsumer}s for each address of the given
      * {@link net.wbz.moba.controlcenter.web.shared.track.model.TrackPart}s.
      * <p/>
-     * TODO: maybe bullshit -> reregister by second browser
+     * TODO: maybe bullshit -> re-register by second browser
      *
      * @param trackParts {@link net.wbz.moba.controlcenter.web.shared.track.model.TrackPart}s to register the
      *                   containing {@link net.wbz.moba.controlcenter.web.shared.track.model.Configuration}

@@ -21,6 +21,7 @@ public class TrainFunction extends LightEntity implements IsSerializable, Serial
     private long id;
 
     @Enumerated(EnumType.ORDINAL)
+    @Column(name = "function_name")
     private FUNCTION function;
 
     @Transient

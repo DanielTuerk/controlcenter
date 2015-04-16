@@ -1,20 +1,17 @@
 package net.wbz.moba.controlcenter.web.server.editor;
 
-import com.db4o.ObjectContainer;
-import com.db4o.ObjectSet;
-import com.db4o.query.Query;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.google.inject.Singleton;
-import net.wbz.moba.controlcenter.db.model.DataContainer;
+import com.google.inject.persist.Transactional;
+import net.sf.gilead.core.PersistentBeanManager;
+import net.sf.gilead.gwt.PersistentRemoteService;
 import net.wbz.moba.controlcenter.web.server.EventBroadcaster;
 import net.wbz.moba.controlcenter.web.server.constrution.ConstructionServiceImpl;
 import net.wbz.moba.controlcenter.web.shared.bus.FeedbackBlockEvent;
+import net.wbz.moba.controlcenter.web.shared.constrution.Construction;
 import net.wbz.moba.controlcenter.web.shared.editor.TrackEditorService;
-import net.wbz.moba.controlcenter.web.shared.track.model.Configuration;
-import net.wbz.moba.controlcenter.web.shared.track.model.Signal;
-import net.wbz.moba.controlcenter.web.shared.track.model.TrackPart;
+import net.wbz.moba.controlcenter.web.shared.track.model.*;
 import net.wbz.moba.controlcenter.web.shared.viewer.TrackPartStateEvent;
 import net.wbz.selectrix4java.block.FeedbackBlockListener;
 import net.wbz.selectrix4java.bus.BusAddressBitListener;
@@ -24,11 +21,14 @@ import net.wbz.selectrix4java.device.Device;
 import net.wbz.selectrix4java.device.DeviceAccessException;
 import net.wbz.selectrix4java.device.DeviceConnectionListener;
 import net.wbz.selectrix4java.device.DeviceManager;
-import org.joda.time.DateTime;
+import org.hibernate.collection.PersistentList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,7 +38,7 @@ import java.util.Map;
  * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
  */
 @Singleton
-public class TrackEditorServiceImpl extends RemoteServiceServlet implements TrackEditorService {
+public class TrackEditorServiceImpl extends PersistentRemoteService implements TrackEditorService {
 
     private static final Logger log = LoggerFactory.getLogger(TrackEditorServiceImpl.class);
 
@@ -48,12 +48,19 @@ public class TrackEditorServiceImpl extends RemoteServiceServlet implements Trac
     private final Map<BusAddressIdentifier, FeedbackBlockListener> busAddressFeedbackBlockListenersOfTheCurrentTrack = Maps.newConcurrentMap();
     private final DeviceManager deviceManager;
     private final EventBroadcaster eventBroadcaster;
+    private final Provider<EntityManager> entityManagerProvider;
 
     @Inject
-    public TrackEditorServiceImpl(ConstructionServiceImpl constructionService, DeviceManager deviceManager, EventBroadcaster eventBroadcaster) {
+    public TrackEditorServiceImpl(ConstructionServiceImpl constructionService, DeviceManager deviceManager,
+                                  EventBroadcaster eventBroadcaster, Provider<EntityManager> entityManager,
+                                  PersistentBeanManager persistentBeanManager) {
         this.constructionService = constructionService;
         this.eventBroadcaster = eventBroadcaster;
         this.deviceManager = deviceManager;
+        this.entityManagerProvider = entityManager;
+
+        setBeanManager(persistentBeanManager);
+
         deviceManager.addDeviceConnectionListener(new DeviceConnectionListener() {
             @Override
             public void connected(Device device) {
@@ -74,7 +81,7 @@ public class TrackEditorServiceImpl extends RemoteServiceServlet implements Trac
                         (byte) entry.getKey().getAddress()).addListeners(entry.getValue());
             }
         } catch (DeviceAccessException e) {
-            log.error("can't register listeners to active device",e);
+            log.error("can't register listeners to active device", e);
         }
 
         try {
@@ -85,7 +92,7 @@ public class TrackEditorServiceImpl extends RemoteServiceServlet implements Trac
                         (entry.getKey().getAddress() + 1)).addFeedbackBlockListener(entry.getValue());
             }
         } catch (DeviceAccessException e) {
-            log.error("can't register feedback block listeners to active device",e);
+            log.error("can't register feedback block listeners to active device", e);
         }
     }
 
@@ -96,51 +103,97 @@ public class TrackEditorServiceImpl extends RemoteServiceServlet implements Trac
                         (byte) entry.getKey().getAddress()).removeListeners(entry.getValue());
             }
         } catch (DeviceAccessException e) {
-            log.error("can't remove listeners to active device",e);
+            log.error("can't remove listeners to active device", e);
         }
     }
 
     @Override
+    @Transactional
     public void saveTrack(TrackPart[] trackParts) {
-        ObjectContainer database = constructionService.getObjectContainerOfCurrentConstruction();
-        DataContainer dataContainer = new DataContainer(DateTime.now().getMillis(), trackParts);
-        database.store(dataContainer);
-        database.commit();
+        EntityManager entityManager = this.entityManagerProvider.get();
+
+        Construction currentConstruction = constructionService.getCurrentConstruction();
+        for (TrackPart trackPart : trackParts) {
+            trackPart.setConstructionId(currentConstruction.getId());
+
+            if (entityManager.find(GridPosition.class, trackPart.getGridPosition().getId()) == null) {
+                entityManager.persist(trackPart.getGridPosition());
+            } else {
+                trackPart.setGridPosition(entityManager.merge(trackPart.getGridPosition()));
+            }
+
+            for (TrackPartFunction trackPartFunction : trackPart.getFunctions()) {
+
+//                trackPartFunction.setTrackPart(trackPart);
+
+                saveOrUpdateConfiguration(entityManager, trackPartFunction.getConfiguration());
+
+                if (entityManager.find(TrackPartFunction.class, trackPartFunction.getId()) == null) {
+                    entityManager.persist(trackPartFunction);
+                } else {
+                    entityManager.merge(trackPartFunction);
+                }
+            }
+
+            EventConfiguration eventConfiguration = trackPart.getEventConfiguration();
+            if (eventConfiguration != null) {
+
+                saveOrUpdateConfiguration(entityManager, eventConfiguration.getStateOnConfig());
+                saveOrUpdateConfiguration(entityManager, eventConfiguration.getStateOffConfig());
+
+                if (entityManager.find(EventConfiguration.class, eventConfiguration.getId()) == null) {
+                    entityManager.persist(eventConfiguration);
+                } else {
+                    entityManager.merge(eventConfiguration);
+                }
+            }
+
+            entityManager.persist(entityManager.merge(trackPart));
+        }
     }
 
+    private void saveOrUpdateConfiguration(EntityManager entityManager, Configuration configuration) {
+        if (configuration != null) {
+            if (entityManager.find(Configuration.class, configuration.getId()) == null) {
+                entityManager.persist(configuration);
+            } else {
+                entityManager.merge(configuration);
+            }
+        }
+    }
 
     @Override
     public TrackPart[] loadTrack() {
-        log.info("load db");
-        ObjectContainer database = constructionService.getObjectContainerOfCurrentConstruction();
+        log.info("load track parts from db");
 
-        log.info("query db");
-        Query query = database.query();
-        query.constrain(DataContainer.class);
-        query.descend("dateTime").orderDescending();
-        ObjectSet<DataContainer> result = query.execute();
+        Query typedQuery = entityManagerProvider.get().createQuery(
+                "SELECT x FROM TrackPart x where x.constructionId=:constructionId");
+        typedQuery.setParameter("constructionId", constructionService.getCurrentConstruction().getId());
 
-        if (!result.isEmpty()) {
-            TrackPart[] trackParts = (TrackPart[]) result.get(0).getData();
+        List<TrackPart> result = typedQuery.getResultList();
+        if (result.size() > 0) {
             log.info("return track parts");
-            return trackParts;
+            return result.toArray(new TrackPart[result.size()]);
         } else {
             log.warn("the current construction is empty");
             return new TrackPart[0];
         }
     }
 
-
     /**
      * Register the {@link net.wbz.selectrix4java.bus.consumption.BusDataConsumer}s for each address of the given
      * {@link net.wbz.moba.controlcenter.web.shared.track.model.TrackPart}s.
      * <p/>
-     * TODO: maybe bullshit -> reregister by second browser
+     * TODO: maybe bullshit -> re-register by second browser
      *
      * @param trackParts {@link net.wbz.moba.controlcenter.web.shared.track.model.TrackPart}s to register the
      *                   containing {@link net.wbz.moba.controlcenter.web.shared.track.model.Configuration}
      */
     public void registerConsumersByConnectedDeviceForTrackParts(TrackPart[] trackParts) {
+
+        if (trackParts.length == 0) {
+            return;
+        }
 
         //unregister existing to create new ones from given track parts
         try {
@@ -160,7 +213,7 @@ public class TrackEditorServiceImpl extends RemoteServiceServlet implements Trac
 
             registerEventConfigurationOfTrackPart(trackPart);
 
-            for (final Configuration trackPartConfiguration : trackPart.getFunctionConfigs().values()) {
+            for (final Configuration trackPartConfiguration : trackPart.getConfigurationsOfFunctions()) {
 
                 if (trackPartConfiguration != null && trackPartConfiguration.isValid()) {
 
@@ -254,7 +307,7 @@ public class TrackEditorServiceImpl extends RemoteServiceServlet implements Trac
     }
 
     private void registerEventConfigurationOfTrackPart(final TrackPart trackPart) {
-        if (trackPart.getEventConfiguration().isActive()) {
+        if (trackPart.hasActiveEventConfiguration()) {
 
             // add state 'ON'
             final Configuration stateOnConfig = trackPart.getEventConfiguration().getStateOnConfig();

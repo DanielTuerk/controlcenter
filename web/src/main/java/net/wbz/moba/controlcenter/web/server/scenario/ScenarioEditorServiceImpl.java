@@ -1,8 +1,9 @@
 package net.wbz.moba.controlcenter.web.server.scenario;
 
-import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import net.sf.gilead.core.PersistentBeanManager;
+import net.sf.gilead.gwt.PersistentRemoteService;
 import net.wbz.moba.controlcenter.web.shared.scenario.Scenario;
 import net.wbz.moba.controlcenter.web.shared.scenario.ScenarioCommand;
 import net.wbz.moba.controlcenter.web.shared.scenario.ScenarioEditorService;
@@ -15,14 +16,16 @@ import java.util.List;
  * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
  */
 @Singleton
-public class ScenarioEditorServiceImpl extends RemoteServiceServlet implements ScenarioEditorService {
+public class ScenarioEditorServiceImpl extends PersistentRemoteService implements ScenarioEditorService {
     private static final Logger LOG = LoggerFactory.getLogger(ScenarioEditorServiceImpl.class);
 
     private final ScenarioManager scenarioManager;
 
     @Inject
-    public ScenarioEditorServiceImpl(ScenarioManager scenarioManager) {
+    public ScenarioEditorServiceImpl(ScenarioManager scenarioManager, PersistentBeanManager persistentBeanManager) {
         this.scenarioManager = scenarioManager;
+
+        setBeanManager(persistentBeanManager);
     }
 
     @Override

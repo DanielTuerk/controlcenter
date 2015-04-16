@@ -1,17 +1,28 @@
 package net.wbz.moba.controlcenter.web.shared.bus;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
+import net.sf.gilead.pojo.gwt.LightEntity;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Transient;
 
 /**
  * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
  */
-public class DeviceInfo implements IsSerializable {
+@Entity
+public class DeviceInfo extends LightEntity implements IsSerializable {
 
+    @Transient
     private boolean connected;
 
     public enum DEVICE_TYPE {SERIAL, TEST}
 
+    @Id
+    @Column(name = "device_key")
     private String key;
+
     private DEVICE_TYPE type;
 
     public String getKey() {

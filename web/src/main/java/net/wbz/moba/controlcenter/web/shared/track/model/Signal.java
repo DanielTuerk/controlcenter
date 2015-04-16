@@ -1,7 +1,10 @@
 package net.wbz.moba.controlcenter.web.shared.track.model;
 
 import com.google.common.collect.Maps;
+import com.google.gwt.user.client.rpc.IsSerializable;
 
+import javax.persistence.Entity;
+import javax.persistence.Table;
 import java.util.Map;
 
 /**
@@ -9,6 +12,8 @@ import java.util.Map;
  * <p/>
  * s@author Daniel Tuerk (daniel.tuerk@w-b-z.com)
  */
+@Entity
+@Table(name = "trackpart_signal")
 public class Signal extends Straight {
 
     /**
@@ -28,7 +33,7 @@ public class Signal extends Straight {
     /**
      * Types of signal with corresponding mapping of the lights.
      */
-    public enum TYPE {
+    public enum TYPE implements IsSerializable{
         BLOCK(new LIGHT[]{LIGHT.RED1, LIGHT.GREEN1}),
         ENTER(new LIGHT[]{LIGHT.RED1, LIGHT.GREEN1, LIGHT.YELLOW1}),
         EXIT(new LIGHT[]{LIGHT.RED1, LIGHT.RED2, LIGHT.GREEN1, LIGHT.YELLOW1, LIGHT.WHITE}),
@@ -63,7 +68,12 @@ public class Signal extends Straight {
      * @return {@link net.wbz.moba.controlcenter.web.shared.track.model.Configuration} or <code>null</code>
      */
     public Configuration getLightFunction(LIGHT light) {
-        return getFunctionConfigs().get(light.name());
+        for (TrackPartFunction trackPartFunction : getFunctionConfigs()) {
+            if (trackPartFunction.getFunctionKey().equalsIgnoreCase(light.name())) {
+                return trackPartFunction.getConfiguration();
+            }
+        }
+        return null;
     }
 
     /**
@@ -74,16 +84,16 @@ public class Signal extends Straight {
      * @param configuration {@link net.wbz.moba.controlcenter.web.shared.track.model.Configuration} or <code>null</code>
      */
     public void setLightFunctionConfig(LIGHT light, Configuration configuration) {
-        getFunctionConfigs().put(light.name(), configuration);
+        getFunctionConfigs().add(new TrackPartFunction(light.name(), configuration));
     }
 
     public Map<LIGHT, Configuration> getSignalConfiguration() {
         Map<LIGHT, Configuration> lightConfig = Maps.newHashMap();
-        for (Map.Entry<String, Configuration> functionConfig : getFunctionConfigs().entrySet()) {
+        for (TrackPartFunction functionConfig : getFunctionConfigs()) {
             // TODO: refactor to signal function prefix
-            if (!TrackModelConstants.DEFAULT_TOGGLE_FUNCTION.equals(functionConfig.getKey())
-                    && !TrackModelConstants.DEFAULT_BLOCK_FUNCTION.equals(functionConfig.getKey())) {
-                lightConfig.put(LIGHT.valueOf(functionConfig.getKey()), functionConfig.getValue());
+            if (!TrackModelConstants.DEFAULT_TOGGLE_FUNCTION.equals(functionConfig.getFunctionKey())
+                    && !TrackModelConstants.DEFAULT_BLOCK_FUNCTION.equals(functionConfig.getFunctionKey())) {
+                lightConfig.put(LIGHT.valueOf(functionConfig.getFunctionKey()), functionConfig.getConfiguration());
             }
         }
         return lightConfig;

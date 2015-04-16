@@ -12,7 +12,6 @@
     <version>0.1-SNAPSHOT</version>
 
     <modules>
-        <module>database</module>
         <module>web</module>
     </modules>
 
@@ -23,13 +22,6 @@
             <email>Daniel.Tuerk@w-b-z.com</email>
         </developer>
     </developers>
-
-    <repositories>
-        <repository>
-            <id>source.db4o</id>
-            <url>http://source.db4o.com/maven</url>
-        </repository>
-    </repositories>
 
     <build>
 
@@ -68,6 +60,12 @@
             <scope>runtime</scope>
         </dependency>
 
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-core</artifactId>
+            <version>${logback.version}</version>
+        </dependency>
+
         <!-- Joda Time -->
         <dependency>
             <groupId>joda-time</groupId>
@@ -104,9 +102,10 @@
         </dependency>
 
         <dependency>
-            <groupId>com.google.inject.extensions</groupId>
-            <artifactId>guice-servlet</artifactId>
-            <version>3.0</version>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.11</version>
+            <scope>test</scope>
         </dependency>
 
     </dependencies>
@@ -139,7 +138,6 @@
         <org.codehaus.jackson.version>1.8.3</org.codehaus.jackson.version>
         <build.helper.maven.plugin.version>1.5</build.helper.maven.plugin.version>
 
-        <gwt.version>2.6.1</gwt.version>
     </properties>
 
 </project>

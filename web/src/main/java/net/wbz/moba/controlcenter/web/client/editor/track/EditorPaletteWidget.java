@@ -20,7 +20,11 @@ public class EditorPaletteWidget extends PaletteWidget {
 
     public EditorPaletteWidget(AbstractSvgTrackWidget widget) {
         super(widget);
-            getShim().addDoubleClickHandler(new EditWidgetDoubleClickHandler((EditTrackWidgetHandler) getWidget()));
+        /**
+         * TODO clean code
+         */
+        DoubleClickHandler cc =(DoubleClickHandler)new EditWidgetDoubleClickHandler((EditTrackWidgetHandler) getWidget());
+            getWidget().addDomHandler(cc,DoubleClickEvent.getType());
     }
 
 }

@@ -110,7 +110,8 @@ public class TrackEditorContainer extends FlowPanel {
                             public void onSuccess(Void aVoid) {
                                 Growl.growl("track saved!");
                             }
-                        });
+                        }
+                );
             }
         });
         menu.add(saveAnchorListItem);
@@ -127,6 +128,27 @@ public class TrackEditorContainer extends FlowPanel {
             }
         });
         menu.add(deleteAnchorListItem);
+
+        /**
+         * TODO clean code
+         */
+        AnchorListItem editAnchorListItem = new AnchorListItem("Edit");
+        editAnchorListItem.setIcon(IconType.PENCIL);
+        editAnchorListItem.addClickHandler(new ClickHandler() {
+
+            @Override
+            public void onClick(ClickEvent event) {
+                for (Widget selectedWidget : dragController.getSelectedWidgets()) {
+
+                    new EditWidgetDoubleClickHandler((EditTrackWidgetHandler) ((EditorPaletteWidget) selectedWidget).getWidget()).onDoubleClick(null);
+//                    boundaryPanel.remove(selectedWidget);
+                    break;
+                }
+            }
+        });
+        menu.add(editAnchorListItem);
+
+
         add(menu);
 
         FlowPanel editorPanel = new FlowPanel();

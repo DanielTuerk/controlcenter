@@ -1,31 +1,34 @@
 package net.wbz.moba.controlcenter.web.server.train;
 
-import com.google.common.collect.Maps;
-import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import net.sf.gilead.core.PersistentBeanManager;
+import net.sf.gilead.gwt.PersistentRemoteService;
 import net.wbz.moba.controlcenter.web.shared.train.Train;
 import net.wbz.moba.controlcenter.web.shared.train.TrainEditorService;
 import net.wbz.moba.controlcenter.web.shared.train.TrainFunction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 
 /**
  * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
  */
 @Singleton
-public class TrainEditorServiceImpl extends RemoteServiceServlet implements TrainEditorService {
+public class TrainEditorServiceImpl extends PersistentRemoteService implements TrainEditorService {
 
     private static final Logger LOG = LoggerFactory.getLogger(TrainEditorServiceImpl.class);
 
     private final TrainManager trainManager;
 
     @Inject
-    public TrainEditorServiceImpl(TrainManager trainManager) {
+    public TrainEditorServiceImpl(TrainManager trainManager, PersistentBeanManager persistentBeanManager) {
         this.trainManager = trainManager;
+
+        setBeanManager(persistentBeanManager);
     }
 
     @Override
@@ -38,7 +41,7 @@ public class TrainEditorServiceImpl extends RemoteServiceServlet implements Trai
         try {
             return trainManager.getTrainByAddress(address);
         } catch (TrainException e) {
-            LOG.error("can't find train",e);
+            LOG.error("can't find train", e);
         }
         return null;
     }
@@ -46,11 +49,10 @@ public class TrainEditorServiceImpl extends RemoteServiceServlet implements Trai
     @Override
     public void createTrain(String name) {
         Train train = new Train(name);
-        train.setId(System.nanoTime());
 
-        Map<TrainFunction.FUNCTION, TrainFunction> trainFunctions = Maps.newHashMap();
+        Set<TrainFunction> trainFunctions = new HashSet<>();
         for (TrainFunction.FUNCTION function : TrainFunction.FUNCTION.values()) {
-            trainFunctions.put(function, new TrainFunction(function, false));
+            trainFunctions.add(new TrainFunction(function, false));
         }
         train.setFunctions(trainFunctions);
         try {
@@ -64,7 +66,13 @@ public class TrainEditorServiceImpl extends RemoteServiceServlet implements Trai
 
     @Override
     public void deleteTrain(long trainId) {
-        throw new RuntimeException();
+        try {
+            trainManager.deleteTrain(trainId);
+        } catch (TrainException e) {
+            String msg = String.format("can't delete train '%s'", trainId);
+            LOG.error(msg, e);
+            throw new RuntimeException(msg, e);
+        }
     }
 
     @Override

@@ -9,7 +9,7 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 @RemoteServiceRelativePath("construction")
 public interface ConstructionService extends RemoteService {
 
-    public void createConstruction(Construction construction);
+    public Construction createConstruction(Construction construction);
     public Construction[] loadConstructions();
     public void setCurrentConstruction(Construction construction);
     public Construction getCurrentConstruction();

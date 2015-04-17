@@ -18,13 +18,17 @@ public class Train extends AbstractIdModel implements IsSerializable, Serializab
 
     @Id
     @GeneratedValue
+    @Column(name = "TRAIN_ID")
     private long id;
 
     private String name;
 
     private int address = -1;
 
-    @ManyToMany(mappedBy = "trains", fetch = FetchType.EAGER)
+    @ManyToMany(cascade = {CascadeType.ALL}, fetch = FetchType.EAGER)
+    @JoinTable(
+            joinColumns = {@JoinColumn(name = "TRAIN_ID")},
+            inverseJoinColumns = {@JoinColumn(name = "TRAINFUNCTION_ID")})
     private Set<TrainFunction> functions;
 
     @Transient
@@ -40,6 +44,10 @@ public class Train extends AbstractIdModel implements IsSerializable, Serializab
 
     public long getId() {
         return id;
+    }
+
+    protected void setId(long id) {
+        this.id = id;
     }
 
     public Train(String name) {

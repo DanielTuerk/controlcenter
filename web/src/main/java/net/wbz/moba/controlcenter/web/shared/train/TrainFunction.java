@@ -9,15 +9,22 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Created by Daniel on 08.03.14.
+ * Function of a {@link net.wbz.moba.controlcenter.web.shared.train.Train}. For each train the functions are created
+ * by persist the train. Afterwards the functions could be edit.
+ *
+ * @author Daniel Tuerk
  */
 @Entity
 public class TrainFunction extends LightEntity implements IsSerializable, Serializable {
 
+    /**
+     * Available functions for the train.
+     */
     public enum FUNCTION implements Serializable, IsSerializable {LIGHT, HORN, F1, F2, F3, F4, F5, F6, F7, F8}
 
     @Id
     @GeneratedValue
+    @Column(name = "TRAINFUNCTION_ID")
     private long id;
 
     @Enumerated(EnumType.ORDINAL)
@@ -27,7 +34,7 @@ public class TrainFunction extends LightEntity implements IsSerializable, Serial
     @Transient
     private boolean state;
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(mappedBy = "functions", fetch = FetchType.LAZY)
     private List<Train> trains;
 
     public TrainFunction() {

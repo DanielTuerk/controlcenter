@@ -58,7 +58,8 @@ public class TrainManager {
                                         train.setDrivingDirection(Train.DIRECTION.valueOf(driving_direction.name()));
                                         eventBroadcaster.fireEvent(new TrainDrivingDirectionEvent(train.getId(),
                                                 TrainDrivingDirectionEvent.DRIVING_DIRECTION.valueOf(
-                                                        driving_direction.name())));
+                                                        driving_direction.name())
+                                        ));
                                     }
 
                                     @Override
@@ -108,7 +109,8 @@ public class TrainManager {
                                         train.getFunction(TrainFunction.FUNCTION.HORN).setState(state);
                                         eventBroadcaster.fireEvent(new TrainHornStateEvent(train.getId(), state));
                                     }
-                                });
+                                }
+                        );
                     }
                 } catch (DeviceAccessException e) {
                     e.printStackTrace();
@@ -132,7 +134,11 @@ public class TrainManager {
 
     @Transactional
     public void storeTrain(Train train) {
-        entityManager.get().persist(train);
+        EntityManager manager = entityManager.get();
+        if (manager.find(Train.class, train.getId()) != null) {
+            train = manager.merge(train);
+        }
+        manager.persist(train);
     }
 
     public List<Train> getTrains() {

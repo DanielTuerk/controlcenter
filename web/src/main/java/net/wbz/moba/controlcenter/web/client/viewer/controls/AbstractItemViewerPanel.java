@@ -8,6 +8,7 @@ import de.novanic.eventservice.client.event.Event;
 import de.novanic.eventservice.client.event.listener.RemoteEventListener;
 import net.wbz.moba.controlcenter.web.client.EventReceiver;
 import net.wbz.moba.controlcenter.web.shared.AbstractStateEvent;
+import net.wbz.moba.controlcenter.web.shared.train.TrainDataChangedEvent;
 import org.gwtbootstrap3.client.ui.Button;
 import org.gwtbootstrap3.client.ui.InputGroup;
 import org.gwtbootstrap3.client.ui.InputGroupButton;
@@ -24,8 +25,9 @@ abstract public class AbstractItemViewerPanel<ItemPanel extends AbstractItemPane
 
     private final Map<Long, ItemPanel> itemPanelByIdMap = Maps.newHashMap();
     private final FlowPanel itemsContainerPanel = new FlowPanel();
-    private final Map<Class<EventType>,RemoteEventListener> eventListeners = new HashMap<>();
+    private final Map<Class<EventType>, RemoteEventListener> eventListeners = new HashMap<>();
 
+    private RemoteEventListener trainDataChangedEventListener;
 
     public AbstractItemViewerPanel() {
         addStyleName("contentPanel");
@@ -70,7 +72,15 @@ abstract public class AbstractItemViewerPanel<ItemPanel extends AbstractItemPane
     protected void onLoad() {
         super.onLoad();
         loadData();
-        for (Map.Entry<Class<EventType>,RemoteEventListener> eventListenerEntry : eventListeners.entrySet()) {
+        trainDataChangedEventListener = new RemoteEventListener() {
+            @Override
+            public void apply(Event event) {
+                loadData();
+            }
+        };
+        EventReceiver.getInstance().addListener(TrainDataChangedEvent.class, trainDataChangedEventListener);
+
+        for (Map.Entry<Class<EventType>, RemoteEventListener> eventListenerEntry : eventListeners.entrySet()) {
             EventReceiver.getInstance().addListener(eventListenerEntry.getKey(), eventListenerEntry.getValue());
         }
     }
@@ -81,9 +91,12 @@ abstract public class AbstractItemViewerPanel<ItemPanel extends AbstractItemPane
     }
 
     private void resetItems() {
-        for (Map.Entry<Class<EventType>,RemoteEventListener> eventListenerEntry : eventListeners.entrySet()) {
+        for (Map.Entry<Class<EventType>, RemoteEventListener> eventListenerEntry : eventListeners.entrySet()) {
             EventReceiver.getInstance().removeListener(eventListenerEntry.getKey(), eventListenerEntry.getValue());
         }
+
+        EventReceiver.getInstance().removeListener(TrainDataChangedEvent.class, trainDataChangedEventListener);
+
         itemsContainerPanel.clear();
     }
 

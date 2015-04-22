@@ -157,6 +157,7 @@ public class TrainManager {
         } catch (DeviceAccessException e) {
             e.printStackTrace();
         }
+
     }
 
     public List<Train> getTrains() {

@@ -8,10 +8,11 @@ import net.wbz.moba.controlcenter.web.client.ServiceUtils;
 import net.wbz.moba.controlcenter.web.shared.train.Train;
 import org.gwtbootstrap3.client.ui.*;
 import org.gwtbootstrap3.client.ui.constants.ButtonType;
-import org.gwtbootstrap3.client.ui.constants.ColumnSize;
 import org.gwtbootstrap3.client.ui.constants.FormType;
 import org.gwtbootstrap3.client.ui.constants.IconType;
 import org.gwtbootstrap3.client.ui.gwt.FlowPanel;
+import org.gwtbootstrap3.extras.growl.client.ui.Growl;
+import org.gwtbootstrap3.extras.growl.client.ui.GrowlType;
 
 /**
  * Modal to edit the {@link net.wbz.moba.controlcenter.web.shared.train.Train} data.
@@ -55,7 +56,7 @@ public class TrainItemEditModal extends Modal {
         lblName.addStyleName("col-lg-2");
         lblName.setText("Name");
         nameGroup.add(lblName);
-        FlowPanel namePanel =new FlowPanel();
+        FlowPanel namePanel = new FlowPanel();
         namePanel.addStyleName("col-lg-10");
         txtName = new TextBox();
         txtName.setText(train.getName());
@@ -64,17 +65,38 @@ public class TrainItemEditModal extends Modal {
         createForm.add(nameGroup);
 
         FormGroup addressGroup = new FormGroup();
-        FormLabel lblAddress= new FormLabel();
+        FormLabel lblAddress = new FormLabel();
         lblAddress.addStyleName("col-lg-2");
         lblAddress.setText("Address");
         addressGroup.add(lblAddress);
-        FlowPanel addressPanel =new FlowPanel();
+        FlowPanel addressPanel = new FlowPanel();
         addressPanel.addStyleName("col-lg-10");
         txtAddress = new TextBox();
         txtAddress.setText(String.valueOf(train.getAddress()));
         addressPanel.add(txtAddress);
         addressGroup.add(addressPanel);
         createForm.add(addressGroup);
+
+        Button btnDelete = new Button("Delete Train", new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent clickEvent) {
+                TrainItemEditModal.this.hide();
+
+                ServiceUtils.getTrainEditorService().deleteTrain(train.getId(), new AsyncCallback<Void>() {
+                    @Override
+                    public void onFailure(Throwable throwable) {
+                        Growl.growl("", "Delete Train " + train.getName() + " Error: " + throwable.getMessage(), IconType.WARNING, GrowlType.DANGER);
+                    }
+
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Growl.growl("", "Train " + train.getName() + " deleted", IconType.INFO);
+                    }
+                });
+            }
+        });
+        btnDelete.setType(ButtonType.DANGER);
+        createForm.add(btnDelete);
 
         return createForm;
     }

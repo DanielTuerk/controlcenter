@@ -4,7 +4,9 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import net.sf.gilead.core.PersistentBeanManager;
 import net.sf.gilead.gwt.PersistentRemoteService;
+import net.wbz.moba.controlcenter.web.server.EventBroadcaster;
 import net.wbz.moba.controlcenter.web.shared.train.Train;
+import net.wbz.moba.controlcenter.web.shared.train.TrainDataChangedEvent;
 import net.wbz.moba.controlcenter.web.shared.train.TrainEditorService;
 import net.wbz.moba.controlcenter.web.shared.train.TrainFunction;
 import org.slf4j.Logger;
@@ -23,10 +25,13 @@ public class TrainEditorServiceImpl extends PersistentRemoteService implements T
     private static final Logger LOG = LoggerFactory.getLogger(TrainEditorServiceImpl.class);
 
     private final TrainManager trainManager;
+    private final EventBroadcaster eventBroadcaster;
 
     @Inject
-    public TrainEditorServiceImpl(TrainManager trainManager, PersistentBeanManager persistentBeanManager) {
+    public TrainEditorServiceImpl(TrainManager trainManager, PersistentBeanManager persistentBeanManager,
+                                  final EventBroadcaster eventBroadcaster) {
         this.trainManager = trainManager;
+        this.eventBroadcaster = eventBroadcaster;
 
         setBeanManager(persistentBeanManager);
     }
@@ -68,6 +73,8 @@ public class TrainEditorServiceImpl extends PersistentRemoteService implements T
     public void deleteTrain(long trainId) {
         try {
             trainManager.deleteTrain(trainId);
+
+            eventBroadcaster.fireEvent(new TrainDataChangedEvent(trainId));
         } catch (TrainException e) {
             String msg = String.format("can't delete train '%s'", trainId);
             LOG.error(msg, e);
@@ -79,6 +86,8 @@ public class TrainEditorServiceImpl extends PersistentRemoteService implements T
     public void updateTrain(Train train) {
         try {
             trainManager.storeTrain(train);
+
+            eventBroadcaster.fireEvent(new TrainDataChangedEvent(train.getId()));
         } catch (Exception e) {
             String msg = String.format("can't update train '%s'", train.getName());
             LOG.error(msg, e);

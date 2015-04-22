@@ -61,7 +61,7 @@ public class TrainManager {
     }
 
     private void reregisterConsumer(final Train train, DeviceManager deviceManager, final EventBroadcaster eventBroadcaster) throws DeviceAccessException {
-        if (train.getAddress() >= 0) {
+        if (train.getAddress() >= 0 && deviceManager.isConnected()) {
             TrainModule trainModule = deviceManager.getConnectedDevice().getTrainModule((byte) train.getAddress());
             trainModule.removeAllTrainDataListeners();
             trainModule.addTrainDataListener(

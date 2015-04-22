@@ -7,7 +7,6 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Panel;
 import net.wbz.moba.controlcenter.web.client.ServiceUtils;
@@ -101,8 +100,7 @@ public class TrainItemPanel extends AbstractItemPanel<Train, TrainStateEvent> {
         btnEditTrain.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                DialogBox editDialog = new TrainItemEditDialog(getModel());
-                editDialog.center();
+                Modal editDialog = new TrainItemEditModal(getModel());
                 editDialog.show();
             }
         });

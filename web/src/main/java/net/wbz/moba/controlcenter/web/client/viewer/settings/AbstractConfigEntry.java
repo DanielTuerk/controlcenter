@@ -8,6 +8,8 @@ import net.wbz.moba.controlcenter.web.client.util.EmptyCallback;
 import net.wbz.moba.controlcenter.web.client.util.Log;
 
 /**
+ * TODO: text for key as name from template
+ *
  * @author Daniel Tuerk
  */
 abstract public class AbstractConfigEntry<T> {
@@ -110,6 +112,7 @@ abstract public class AbstractConfigEntry<T> {
         switch (storageType) {
             case LOCAL:
                 LocalStorage.getInstance().set(getConfigKey(), convertValueToString(value));
+                setValue(value);
                 break;
             case REMOTE:
                 ServiceUtils.getConfigService().saveValue(getConfigKey(), convertValueToString(value), new EmptyCallback<Void>());

@@ -34,8 +34,9 @@ public class ConfigPanel extends Panel {
     private HandlerRegistration resizeListenerHandle;
 
     public ConfigPanel() {
-        registerEntry(Settings.getInstance().getLastUsedConstruction());
-        registerEntry(Settings.getInstance().getShowWelcome());
+        for(AbstractConfigEntry<?> configEntry : Settings.getInstance().getEntries()) {
+            registerEntry(configEntry);
+        }
 
         addStyleName("configPanel");
 

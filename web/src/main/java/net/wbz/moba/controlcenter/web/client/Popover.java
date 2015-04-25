@@ -4,7 +4,6 @@ import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.client.*;
 import com.google.gwt.user.client.ui.*;
-import net.wbz.moba.controlcenter.web.client.viewer.track.TrackViewerPanel;
 import org.gwtbootstrap3.client.ui.Heading;
 import org.gwtbootstrap3.client.ui.constants.HeadingSize;
 import org.gwtbootstrap3.client.ui.gwt.FlowPanel;

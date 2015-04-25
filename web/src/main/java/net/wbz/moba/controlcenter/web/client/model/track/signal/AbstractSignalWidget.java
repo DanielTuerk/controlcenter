@@ -7,7 +7,7 @@ import net.wbz.moba.controlcenter.web.client.Popover;
 import net.wbz.moba.controlcenter.web.client.ServiceUtils;
 import net.wbz.moba.controlcenter.web.client.model.track.AbstractControlSvgTrackWidget;
 import net.wbz.moba.controlcenter.web.client.util.EmptyCallback;
-import net.wbz.moba.controlcenter.web.client.viewer.track.TrackViewerPanel;
+import net.wbz.moba.controlcenter.web.client.viewer.track.svg.TrackViewerPanel;
 import net.wbz.moba.controlcenter.web.shared.track.model.Signal;
 import net.wbz.moba.controlcenter.web.shared.track.model.Straight;
 import org.gwtbootstrap3.client.ui.Button;

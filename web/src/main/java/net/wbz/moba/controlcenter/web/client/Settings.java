@@ -1,14 +1,22 @@
 package net.wbz.moba.controlcenter.web.client;
 
+import com.google.common.collect.Maps;
 import net.wbz.moba.controlcenter.web.client.viewer.settings.AbstractConfigEntry;
 import net.wbz.moba.controlcenter.web.client.viewer.settings.BooleanConfigEntry;
 import net.wbz.moba.controlcenter.web.client.viewer.settings.ConstructionSelectionConfigEntry;
 import net.wbz.moba.controlcenter.web.client.viewer.settings.SelectionConfigEntry;
 
+import java.util.Collection;
+import java.util.Map;
+
 /**
  * @author Daniel Tuerk
  */
 public class Settings {
+
+    public static final String SHOW_WELCOME = "showWelcome";
+    public static final String USE_3D_VIEWER = "use3dViewer";
+    public static final String LAST_USED_CONSTRUCTION = "lastUsedConstruction";
 
     public static Settings getInstance() {
         return INSTANCE;
@@ -20,21 +28,27 @@ public class Settings {
 
     private static final Settings INSTANCE = new Settings();
 
-    private SelectionConfigEntry lastUsedConstruction;
-
-    private BooleanConfigEntry showWelcome;
+    private Map<String, AbstractConfigEntry<?>> configEntriesByKey = Maps.newConcurrentMap();
 
     private Settings() {
-        lastUsedConstruction = new ConstructionSelectionConfigEntry(AbstractConfigEntry.STORAGE.LOCAL, GROUP_CONSTRUCTION, "lastUsedConstruction");
-        showWelcome = new BooleanConfigEntry(AbstractConfigEntry.STORAGE.LOCAL, GROUP_COMMON, "showWelcome", true);
+        configEntriesByKey.put(LAST_USED_CONSTRUCTION, new ConstructionSelectionConfigEntry(AbstractConfigEntry.STORAGE.LOCAL, GROUP_CONSTRUCTION, LAST_USED_CONSTRUCTION));
+        configEntriesByKey.put(SHOW_WELCOME, new BooleanConfigEntry(AbstractConfigEntry.STORAGE.LOCAL, GROUP_COMMON, SHOW_WELCOME, true));
+        configEntriesByKey.put(USE_3D_VIEWER, new BooleanConfigEntry(AbstractConfigEntry.STORAGE.LOCAL, GROUP_COMMON, USE_3D_VIEWER, false));
+    }
+
+    public Collection<AbstractConfigEntry<?>> getEntries() {
+        return configEntriesByKey.values();
     }
 
     public BooleanConfigEntry getShowWelcome() {
-        return showWelcome;
+        return (BooleanConfigEntry) configEntriesByKey.get(SHOW_WELCOME);
     }
 
     public SelectionConfigEntry getLastUsedConstruction() {
-        return lastUsedConstruction;
+        return (SelectionConfigEntry) configEntriesByKey.get(LAST_USED_CONSTRUCTION);
     }
 
+    public BooleanConfigEntry getUse3dViewer() {
+        return (BooleanConfigEntry) configEntriesByKey.get(USE_3D_VIEWER);
+    }
 }

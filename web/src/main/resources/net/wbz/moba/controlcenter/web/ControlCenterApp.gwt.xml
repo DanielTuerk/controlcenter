@@ -27,6 +27,8 @@
 
     <inherits name="com.google.common.collect.Collect"/>
 
+    <inherits name="thothbot.parallax.core.Core"/>
+
     <inherits name="com.kiouri.sliderbar.SliderBarMVP" />
 
     <inherits name="org.vectomatic.libgwtsvg"/>
@@ -49,5 +51,15 @@
     <!-- Specify the paths for translatable code                    -->
     <source path='client'/>
     <source path='shared'/>
+
+
+
+    <!--&lt;!&ndash;   Logging &ndash;&gt;-->
+    <!--<inherits name="com.google.gwt.logging.Logging"/>-->
+    <!--<set-property name="gwt.logging.enabled" value="TRUE"/>-->
+    <!--<set-property name="gwt.logging.logLevel" value="ALL"/>-->
+
+    <!--<set-property name="gwt.logging.consoleHandler" value="DISABLED" />-->
+    <!--<set-property name="gwt.logging.popupHandler" value="DISABLED" />-->
 
 </module>

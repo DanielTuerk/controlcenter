@@ -10,7 +10,7 @@ import javax.persistence.Table;
 @Table(name = "trackpart_curve")
 public class Curve extends TrackPart {
 
-    public enum DIRECTION {BOTTOM_RIGHT, BOTTOM_LEFT, TOP_LEFT, TOP_RIGHT};
+    public enum DIRECTION {BOTTOM_RIGHT, BOTTOM_LEFT, TOP_LEFT, TOP_RIGHT}
 
     public DIRECTION direction;
 
@@ -20,5 +20,21 @@ public class Curve extends TrackPart {
 
     public void setDirection(DIRECTION direction) {
         this.direction = direction;
+    }
+
+    @Override
+    public double getRotationAngle() {
+        switch (getDirection()) {
+            case BOTTOM_LEFT:
+                return 270d;
+            case BOTTOM_RIGHT:
+                return 0d;
+            case TOP_LEFT:
+                return 180d;
+            case TOP_RIGHT:
+                return 90d;
+            default:
+                return 0d;
+        }
     }
 }

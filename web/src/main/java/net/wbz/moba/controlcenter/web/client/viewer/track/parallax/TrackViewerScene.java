@@ -1,10 +1,12 @@
 package net.wbz.moba.controlcenter.web.client.viewer.track.parallax;
 
+import net.wbz.moba.controlcenter.web.client.viewer.track.parallax.trackparts.Basic3dTrackWidget;
 import net.wbz.moba.controlcenter.web.shared.track.model.TrackPart;
 import thothbot.parallax.core.client.AnimatedScene;
 import thothbot.parallax.core.client.controls.TrackballControls;
 import thothbot.parallax.core.shared.cameras.PerspectiveCamera;
 import thothbot.parallax.core.shared.core.Geometry;
+import thothbot.parallax.core.shared.core.Object3D;
 import thothbot.parallax.core.shared.geometries.BoxGeometry;
 import thothbot.parallax.core.shared.geometries.PlaneBufferGeometry;
 import thothbot.parallax.core.shared.lights.AmbientLight;
@@ -41,7 +43,7 @@ public class TrackViewerScene extends AnimatedScene {
                 1, // near
                 10000 // far
         );
-        camera.getPosition().set(0, 0, 1000);
+        camera.getPosition().set(0, 0, 600);
 
         controls = new TrackballControls(camera, getCanvas());
         controls.setRotateSpeed(1.0);
@@ -60,6 +62,10 @@ public class TrackViewerScene extends AnimatedScene {
         rollOverMaterial.setTransparent(true);
         Mesh rollOverMesh = new Mesh(rollOverGeo, rollOverMaterial);
         getScene().add(rollOverMesh);
+
+        Object3D axes = buildAxes(1000);
+        getScene().add(axes);
+
 
         // grid
         createGrid();
@@ -80,6 +86,31 @@ public class TrackViewerScene extends AnimatedScene {
 
         getRenderer().render(getScene(), camera);
     }
+
+    private Object3D buildAxes(int length) {
+        Object3D axes = new Object3D();
+
+        axes.add(buildAxis(new Vector3(0, 0, 0), new Vector3(length, 0, 0), 0xFF0000, false)); // +X
+        axes.add(buildAxis(new Vector3(0, 0, 0), new Vector3(-length, 0, 0), 0xFF0000, true)); // -X
+        axes.add(buildAxis(new Vector3(0, 0, 0), new Vector3(0, length, 0), 0x00FF00, false)); // +Y
+        axes.add(buildAxis(new Vector3(0, 0, 0), new Vector3(0, -length, 0), 0x00FF00, true)); // -Y
+        axes.add(buildAxis(new Vector3(0, 0, 0), new Vector3(0, 0, length), 0x0000FF, false)); // +Z
+        axes.add(buildAxis(new Vector3(0, 0, 0), new Vector3(0, 0, -length), 0x0000FF, true)); // -Z
+
+        return axes;
+    }
+
+    private Object3D buildAxis(Vector3 vector3, Vector3 vector31, int i, boolean b) {
+        Geometry lineGeom = new Geometry();
+        lineGeom.getVertices().add(vector3);
+        lineGeom.getVertices().add(vector31);
+
+        LineBasicMaterial lineBasicMaterial = new LineBasicMaterial();
+        lineBasicMaterial.setColor(new Color(i));
+        lineBasicMaterial.setLinewidth(1);
+        return new Line(lineGeom, lineBasicMaterial);
+    }
+
 
     public void centerCamera() {
         camera.lookAt(new Vector3(250, 250, 0));
@@ -113,8 +144,10 @@ public class TrackViewerScene extends AnimatedScene {
     }
 
 
-    public void addTrackWidget(TrackPart widget) {
-        getScene().add(trackPartGeometryFactory.getTrackWidget(widget));
+    public Basic3dTrackWidget addTrackWidget(TrackPart widget) {
+        Basic3dTrackWidget trackWidget = trackPartGeometryFactory.getTrackWidget(widget);
+        getScene().add(trackWidget);
+        return trackWidget;
     }
 
 }

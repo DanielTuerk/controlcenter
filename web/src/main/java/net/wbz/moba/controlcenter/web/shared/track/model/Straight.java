@@ -21,4 +21,12 @@ public class Straight extends TrackPart {
     public void setDirection(DIRECTION direction) {
         this.direction = direction;
     }
+
+    @Override
+    public double getRotationAngle() {
+        if (getDirection() == Straight.DIRECTION.VERTICAL) {
+            return 90d;
+        }
+        return 0d;
+    }
 }

@@ -153,4 +153,13 @@ public class TrackPart extends LightEntity implements IsSerializable, Serializab
     public void setEventConfiguration(EventConfiguration eventConfiguration) {
         eventStateConfig = eventConfiguration;
     }
+
+    /**
+     * Rotation angle in degree of the track part.
+     *
+     * @return angle in degree
+     */
+    public double getRotationAngle() {
+        return 0;
+    }
 }

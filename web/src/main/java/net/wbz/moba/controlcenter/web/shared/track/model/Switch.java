@@ -39,4 +39,25 @@ public class Switch extends TrackPart {
         return currentDirection;
     }
 
+    /**
+     * Rotation angle in degree of the current
+     * {@link net.wbz.moba.controlcenter.web.shared.track.model.Switch.PRESENTATION} of the switch.
+     *
+     * @return angle in degree
+     */
+    @Override
+    public double getRotationAngle() {
+        switch (getCurrentPresentation()) {
+            case LEFT_TO_RIGHT:
+                return 0d;
+            case RIGHT_TO_LEFT:
+                return  180d;
+            case BOTTOM_TO_TOP:
+                return  270d;
+            case TOP_TO_BOTTOM:
+                return  90d;
+            default:
+                return 0d;
+        }
+    }
 }

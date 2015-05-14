@@ -1,5 +1,6 @@
 package net.wbz.moba.controlcenter.web.client.viewer.track.parallax;
 
+import com.google.common.collect.Maps;
 import com.google.gwt.gen2.logging.shared.Log;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Widget;
@@ -8,9 +9,16 @@ import net.wbz.moba.controlcenter.web.client.editor.track.ViewerPaletteWidget;
 import net.wbz.moba.controlcenter.web.client.model.track.AbsoluteTrackPosition;
 import net.wbz.moba.controlcenter.web.client.model.track.AbstractSvgTrackWidget;
 import net.wbz.moba.controlcenter.web.client.model.track.ModelManager;
+import net.wbz.moba.controlcenter.web.client.util.EmptyCallback;
 import net.wbz.moba.controlcenter.web.client.viewer.track.AbstractTrackViewerPanel;
+import net.wbz.moba.controlcenter.web.client.viewer.track.parallax.trackparts.Basic3dTrackWidget;
+import net.wbz.moba.controlcenter.web.shared.track.model.Configuration;
 import net.wbz.moba.controlcenter.web.shared.track.model.TrackPart;
 import thothbot.parallax.core.client.RenderingPanel;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Viewer panel for the 3D scene.
@@ -21,6 +29,9 @@ public class TrackViewer3dPanel extends AbstractTrackViewerPanel {
 
     private TrackViewerScene animatedScene;
     private RenderingPanel renderingPanel;
+
+    private Map<Configuration, List<Basic3dTrackWidget>> trackWidgetsOfConfiguration = Maps.newConcurrentMap();
+
 
     public TrackViewer3dPanel() {
         renderingPanel = new RenderingPanel();
@@ -52,16 +63,45 @@ public class TrackViewer3dPanel extends AbstractTrackViewerPanel {
 
                     @Override
                     public void onSuccess(TrackPart[] trackParts) {
+                        trackWidgetsOfConfiguration.clear();
+
                         for (TrackPart trackPart : trackParts) {
-                            AbstractSvgTrackWidget trackWidget = ModelManager.getInstance().getWidgetOf(trackPart);
-                            trackWidget.setEnabled(result);
-                            animatedScene.addTrackWidget(trackWidget.getTrackPart());
+                            Basic3dTrackWidget trackWidget = animatedScene.addTrackWidget(trackPart);
+
+
+                            for (Configuration configuration : trackPart.getConfigurationsOfFunctions()) {
+
+                                // ignore default configs of track widget to register event handler
+                                if (configuration.isValid()) {
+                                    if (!trackWidgetsOfConfiguration.containsKey(configuration)) {
+                                        trackWidgetsOfConfiguration.put(configuration, new ArrayList<Basic3dTrackWidget>());
+                                    }
+                                    // avoid same widget for equal bit state configuration
+                                    if (!trackWidgetsOfConfiguration.get(configuration).contains(trackWidget)) {
+                                        trackWidgetsOfConfiguration.get(configuration).add(trackWidget);
+                                    }
+                                }
+                            }
+
                         }
+                        ServiceUtils.getTrackEditorService().registerConsumersByConnectedDeviceForTrackParts(trackParts,
+                                new EmptyCallback<Void>());
+
                         animatedScene.centerCamera();
                     }
                 });
             }
         });
+    }
+
+
+    @Override
+    protected void updateTrackPartState(Configuration configuration, boolean state) {
+        if (trackWidgetsOfConfiguration.containsKey(configuration)) {
+            for (Basic3dTrackWidget controlSvgTrackWidget : trackWidgetsOfConfiguration.get(configuration)) {
+                controlSvgTrackWidget.updateFunctionState(configuration, state);
+            }
+        }
     }
 
     @Override

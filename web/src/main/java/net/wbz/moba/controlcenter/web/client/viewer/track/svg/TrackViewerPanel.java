@@ -7,11 +7,7 @@ import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.gen2.logging.shared.Log;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Widget;
-import de.novanic.eventservice.client.event.Event;
-import de.novanic.eventservice.client.event.listener.RemoteEventListener;
-import net.wbz.moba.controlcenter.web.client.EventReceiver;
 import net.wbz.moba.controlcenter.web.client.ServiceUtils;
-import net.wbz.moba.controlcenter.web.client.editor.track.AbstractTrackPanel;
 import net.wbz.moba.controlcenter.web.client.editor.track.ViewerPaletteWidget;
 import net.wbz.moba.controlcenter.web.client.model.track.AbsoluteTrackPosition;
 import net.wbz.moba.controlcenter.web.client.model.track.AbstractBlockSvgTrackWidget;
@@ -20,13 +16,11 @@ import net.wbz.moba.controlcenter.web.client.model.track.ModelManager;
 import net.wbz.moba.controlcenter.web.client.model.track.signal.AbstractSignalWidget;
 import net.wbz.moba.controlcenter.web.client.util.EmptyCallback;
 import net.wbz.moba.controlcenter.web.client.viewer.track.AbstractTrackViewerPanel;
-import net.wbz.moba.controlcenter.web.shared.bus.DeviceInfoEvent;
 import net.wbz.moba.controlcenter.web.shared.bus.FeedbackBlockEvent;
 import net.wbz.moba.controlcenter.web.shared.track.model.Configuration;
 import net.wbz.moba.controlcenter.web.shared.track.model.TrackPart;
 import net.wbz.moba.controlcenter.web.shared.train.Train;
 import net.wbz.moba.controlcenter.web.shared.viewer.SignalFunctionStateEvent;
-import net.wbz.moba.controlcenter.web.shared.viewer.TrackPartStateEvent;
 import org.gwtbootstrap3.client.ui.Label;
 import org.gwtbootstrap3.client.ui.constants.LabelType;
 
@@ -45,9 +39,6 @@ import java.util.Map;
  */
 public class TrackViewerPanel extends AbstractTrackViewerPanel {
 
-
-    public static final String ID = "trackViewerPanel";
-
     private Label lblTrackPartConfig = new Label();
 
     private Map<Configuration, List<AbstractSvgTrackWidget>> trackWidgetsOfConfiguration = Maps.newConcurrentMap();
@@ -56,53 +47,9 @@ public class TrackViewerPanel extends AbstractTrackViewerPanel {
 
     private TrackPart[] loadedTrackParts;
 
-    private final RemoteEventListener trackPartStateEventListener;
-    private final RemoteEventListener signalFunctionStateEventListener;
-    private final RemoteEventListener deviceConnectionEventListener;
-    private final RemoteEventListener feedbackBlockEventListener;
 
     public TrackViewerPanel() {
-        signalFunctionStateEventListener = new RemoteEventListener() {
-            public void apply(Event anEvent) {
-                if (anEvent instanceof SignalFunctionStateEvent) {
-                    for (AbstractSignalWidget signalTrackWidget : signalTrackWidgets) {
-                        SignalFunctionStateEvent signalFunctionStateEvent = (SignalFunctionStateEvent) anEvent;
-                        if (signalTrackWidget.getTrackPart().getSignalConfiguration().equals(signalFunctionStateEvent.getConfiguration())) {
-                            signalTrackWidget.showSignalFunction(signalFunctionStateEvent.getSignalFunction());
-                        }
-                    }
-                }
-            }
-        };
-        trackPartStateEventListener = new RemoteEventListener() {
-            public void apply(Event anEvent) {
-                if (anEvent instanceof TrackPartStateEvent) {
-                    TrackPartStateEvent event = (TrackPartStateEvent) anEvent;
-                    updateTrackPartState(event.getConfiguration(), event.isOn());
-                }
-            }
-        };
-        deviceConnectionEventListener = new RemoteEventListener() {
-            public void apply(Event anEvent) {
-                if (anEvent instanceof DeviceInfoEvent) {
-                    DeviceInfoEvent event = (DeviceInfoEvent) anEvent;
-                    if (event.getEventType() == DeviceInfoEvent.TYPE.CONNECTED) {
-                        enableTrackWidgets();
-                    } else if (event.getEventType() == DeviceInfoEvent.TYPE.DISCONNECTED) {
-                        disableTrackWidgets();
-                    }
-                }
-            }
-        };
-        feedbackBlockEventListener = new RemoteEventListener() {
-            public void apply(Event anEvent) {
-                if (anEvent instanceof FeedbackBlockEvent) {
-                    FeedbackBlockEvent event = (FeedbackBlockEvent) anEvent;
-                    updateTrainOnTrack(event.getAddress(), event.getBlock(), event.getTrain(), event.getState());
-                }
-            }
-        };
-        getElement().setId(ID);
+
     }
 
     @Override
@@ -110,10 +57,6 @@ public class TrackViewerPanel extends AbstractTrackViewerPanel {
         super.onLoad();
         addStyleName("boundary");
 
-        EventReceiver.getInstance().addListener(TrackPartStateEvent.class, trackPartStateEventListener);
-        EventReceiver.getInstance().addListener(SignalFunctionStateEvent.class, signalFunctionStateEventListener);
-        EventReceiver.getInstance().addListener(DeviceInfoEvent.class, deviceConnectionEventListener);
-        EventReceiver.getInstance().addListener(FeedbackBlockEvent.class, feedbackBlockEventListener);
 
         for (int i = getWidgetCount() - 1; i >= 0; i--) {
             remove(i);
@@ -203,10 +146,24 @@ public class TrackViewerPanel extends AbstractTrackViewerPanel {
     @Override
     protected void onUnload() {
         super.onUnload();
-        EventReceiver.getInstance().removeListener(TrackPartStateEvent.class, trackPartStateEventListener);
-        EventReceiver.getInstance().removeListener(SignalFunctionStateEvent.class, signalFunctionStateEventListener);
-        EventReceiver.getInstance().removeListener(DeviceInfoEvent.class, deviceConnectionEventListener);
-        EventReceiver.getInstance().removeListener(FeedbackBlockEvent.class, feedbackBlockEventListener);
+    }
+
+    @Override
+    protected void updateSignalState(SignalFunctionStateEvent signalFunctionStateEvent) {
+        for (AbstractSignalWidget signalTrackWidget : signalTrackWidgets) {
+            if (signalTrackWidget.getTrackPart().getSignalConfiguration().equals(signalFunctionStateEvent.getConfiguration())) {
+                signalTrackWidget.showSignalFunction(signalFunctionStateEvent.getSignalFunction());
+            }
+        }
+    }
+
+    @Override
+    protected void updateTrackPartState(Configuration configuration, boolean state) {
+        if (trackWidgetsOfConfiguration.containsKey(configuration)) {
+            for (AbstractSvgTrackWidget controlSvgTrackWidget : trackWidgetsOfConfiguration.get(configuration)) {
+                controlSvgTrackWidget.updateFunctionState(configuration, state);
+            }
+        }
     }
 
     /**
@@ -217,7 +174,8 @@ public class TrackViewerPanel extends AbstractTrackViewerPanel {
      * @param train   address of the train
      * @param state   {@link net.wbz.moba.controlcenter.web.shared.bus.FeedbackBlockEvent.STATE} enter or exit the block
      */
-    private void updateTrainOnTrack(final int address, final int block, final int train, final FeedbackBlockEvent.STATE state) {
+    @Override
+    protected void updateTrainOnTrack(final int address, final int block, final int train, final FeedbackBlockEvent.STATE state) {
         ServiceUtils.getTrainEditorService().getTrain(train, new AsyncCallback<Train>() {
             @Override
             public void onFailure(Throwable caught) {
@@ -244,13 +202,16 @@ public class TrackViewerPanel extends AbstractTrackViewerPanel {
         });
     }
 
-    private void enableTrackWidgets() {
+    @Override
+    protected void enableTrackWidgets() {
         updateTrackWidgetsState(true);
     }
 
-    private void disableTrackWidgets() {
+    @Override
+    protected void disableTrackWidgets() {
         updateTrackWidgetsState(false);
     }
+
 
     private void updateTrackWidgetsState(boolean state) {
         for (AbstractSvgTrackWidget trackWidget : trackWidgets) {
@@ -270,11 +231,5 @@ public class TrackViewerPanel extends AbstractTrackViewerPanel {
         add(widget, left, top);
     }
 
-    private void updateTrackPartState(Configuration configuration, boolean state) {
-        if (trackWidgetsOfConfiguration.containsKey(configuration)) {
-            for (AbstractSvgTrackWidget controlSvgTrackWidget : trackWidgetsOfConfiguration.get(configuration)) {
-                controlSvgTrackWidget.updateFunctionState(configuration, state);
-            }
-        }
-    }
+
 }

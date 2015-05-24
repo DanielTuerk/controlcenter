@@ -184,6 +184,13 @@
             <version>3.0</version>
         </dependency>
 
+        <!-- need by jetty on PI -->
+        <dependency>
+            <groupId>commons-collections</groupId>
+            <artifactId>commons-collections</artifactId>
+            <version>3.2.1</version>
+        </dependency>
+
 
         <!-- gilead to use hibernate entities as GWT models -->
         <dependency>

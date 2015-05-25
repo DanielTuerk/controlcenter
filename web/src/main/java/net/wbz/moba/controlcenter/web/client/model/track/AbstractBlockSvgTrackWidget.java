@@ -142,6 +142,7 @@ abstract public class AbstractBlockSvgTrackWidget<T extends TrackPart> extends A
         getTrackPart().getDefaultBlockFunctionConfig().setBus(1);
         getTrackPart().getDefaultBlockFunctionConfig().setAddress(Integer.parseInt(txtAddress.getText()));
         getTrackPart().getDefaultBlockFunctionConfig().setBit(Integer.parseInt(selectBit.getValue()));
+        getTrackPart().getDefaultBlockFunctionConfig().setBitState(true);
     }
 
     /**

@@ -53,6 +53,7 @@ public class Basic3dTrackWidget<T extends TrackPart> extends Mesh implements Blo
      * extending 3D widget.
      */
     private final T trackPart;
+    private final MeshLambertMaterial railwayMaterial;
 
     /**
      * Create the 3D model for the grid with the default states.
@@ -74,7 +75,7 @@ public class Basic3dTrackWidget<T extends TrackPart> extends Mesh implements Blo
         /**
          * Common track part geometry for the grid.
          */
-        MeshLambertMaterial railwayMaterial = new MeshLambertMaterial();
+        railwayMaterial = new MeshLambertMaterial();
         railwayMaterial.setColor(new Color(DEFAULT_RAILWAY_COLOR));
         railwayMaterial.setShading(Material.SHADING.SMOOTH);
 
@@ -86,11 +87,11 @@ public class Basic3dTrackWidget<T extends TrackPart> extends Mesh implements Blo
          */
         BoxGeometry railwayGeometry = new BoxGeometry(GEOM_SIZE, 1, GEOM_DEPTH + 1);
         railwayMeshLeft = new Mesh(railwayGeometry, railwayMaterial);
-        railwayMeshLeft.setPosition(new Vector3(0, 4, 0));
+        railwayMeshLeft.setPosition(new Vector3(0, 3.5, 0));
         add(railwayMeshLeft);
 
         railwayMeshRight = new Mesh(railwayGeometry, railwayMaterial);
-        railwayMeshRight.setPosition(new Vector3(0, -3, 0));
+        railwayMeshRight.setPosition(new Vector3(0, -3.5, 0));
         add(railwayMeshRight);
     }
 
@@ -145,8 +146,7 @@ public class Basic3dTrackWidget<T extends TrackPart> extends Mesh implements Blo
      * @param color hexcode of the color to be set
      */
     private void updateColorOfRailway(int color) {
-        ((MeshLambertMaterial) railwayMeshLeft.getMaterial()).setColor(new Color(color));
-        ((MeshLambertMaterial) railwayMeshRight.getMaterial()).setColor(new Color(color));
+        railwayMaterial.setColor(new Color(color));
     }
 
     public void updateFunctionState(Configuration configuration, boolean state) {

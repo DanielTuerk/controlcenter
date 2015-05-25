@@ -31,23 +31,23 @@ public class Switch3dWidget extends Basic3dTrackWidget<Switch> {
 
         if (state) {
             // switch is in curve mode
-            if (getTrackPart().getCurrentDirection() == Switch.DIRECTION.LEFT) {
-                getRailwayMeshLeft().setPosition(new Vector3(3, -3, 0));
+            if (getTrackPart().getCurrentDirection() == Switch.DIRECTION.RIGHT) {
+                getRailwayMeshLeft().setPosition(new Vector3(0, 3.5, 0));
                 getRailwayMeshLeft().rotateZ((2 * Math.PI / 360 * (45)));
 
-                getRailwayMeshRight().setPosition(new Vector3(8, -8, 0));
+                getRailwayMeshRight().setPosition(new Vector3(7.5, -7.5, 0));
                 getRailwayMeshRight().rotateZ((2 * Math.PI / 360 * (45)));
             } else {
-                getRailwayMeshLeft().setPosition(new Vector3(3, -3, 0));
+                getRailwayMeshLeft().setPosition(new Vector3(3.5, -3.5, 0));
                 getRailwayMeshLeft().rotateZ((2 * Math.PI / 360 * (-45)));
 
-                getRailwayMeshRight().setPosition(new Vector3(8, -8, 0));
+                getRailwayMeshRight().setPosition(new Vector3(7.5, -7.5, 0));
                 getRailwayMeshRight().rotateZ((2 * Math.PI / 360 * (-45)));
             }
         } else {
             // switch is straight
-            getRailwayMeshLeft().setPosition(new Vector3(0, 4, 0));
-            getRailwayMeshRight().setPosition(new Vector3(0, -3, 0));
+            getRailwayMeshLeft().setPosition(new Vector3(0, 3.5, 0));
+            getRailwayMeshRight().setPosition(new Vector3(0, -3.5, 0));
         }
     }
 }

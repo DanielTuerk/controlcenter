@@ -17,7 +17,7 @@ public class Straight3dWidget extends Basic3dTrackWidget<Straight> {
 
         setMaterial(createTrackPartTexture(TEXTURE_STRAIGHT));
 
-        getRailwayMeshLeft().setPosition(new Vector3(0, 4, 0));
-        getRailwayMeshRight().setPosition(new Vector3(0, -3, 0));
+        getRailwayMeshLeft().setPosition(new Vector3(0, 3.5, 0));
+        getRailwayMeshRight().setPosition(new Vector3(0, -3.5, 0));
     }
 }

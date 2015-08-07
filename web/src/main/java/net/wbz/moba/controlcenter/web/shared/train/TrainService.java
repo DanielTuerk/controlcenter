@@ -1,15 +1,12 @@
 package net.wbz.moba.controlcenter.web.shared.train;
 
-import com.google.gwt.user.client.rpc.RemoteService;
-import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
-
 /**
  * Service to control the trains from the {@link net.wbz.moba.controlcenter.web.server.train.TrainManager}.
  *
  * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
  */
-@RemoteServiceRelativePath("trainService")
-public interface TrainService extends RemoteService {
+
+public interface TrainService {
 
     /**
      * Change level of driving for the train id.

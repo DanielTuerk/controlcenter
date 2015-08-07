@@ -4,8 +4,6 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.inject.Singleton;
 import com.google.inject.persist.Transactional;
-import net.sf.gilead.core.PersistentBeanManager;
-import net.sf.gilead.gwt.PersistentRemoteService;
 import net.wbz.moba.controlcenter.web.server.EventBroadcaster;
 import net.wbz.moba.controlcenter.web.server.constrution.ConstructionServiceImpl;
 import net.wbz.moba.controlcenter.web.shared.bus.FeedbackBlockEvent;
@@ -21,7 +19,6 @@ import net.wbz.selectrix4java.device.Device;
 import net.wbz.selectrix4java.device.DeviceAccessException;
 import net.wbz.selectrix4java.device.DeviceConnectionListener;
 import net.wbz.selectrix4java.device.DeviceManager;
-import org.hibernate.collection.PersistentList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,6 +26,7 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
+import javax.ws.rs.Path;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,7 +36,8 @@ import java.util.Map;
  * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
  */
 @Singleton
-public class TrackEditorServiceImpl extends PersistentRemoteService implements TrackEditorService {
+@Path("trackeditor")
+public class TrackEditorServiceImpl implements TrackEditorService {
 
     private static final Logger log = LoggerFactory.getLogger(TrackEditorServiceImpl.class);
 
@@ -52,14 +51,12 @@ public class TrackEditorServiceImpl extends PersistentRemoteService implements T
 
     @Inject
     public TrackEditorServiceImpl(ConstructionServiceImpl constructionService, DeviceManager deviceManager,
-                                  EventBroadcaster eventBroadcaster, Provider<EntityManager> entityManager,
-                                  PersistentBeanManager persistentBeanManager) {
+                                  EventBroadcaster eventBroadcaster, Provider<EntityManager> entityManager) {
         this.constructionService = constructionService;
         this.eventBroadcaster = eventBroadcaster;
         this.deviceManager = deviceManager;
         this.entityManagerProvider = entityManager;
 
-        setBeanManager(persistentBeanManager);
 
         deviceManager.addDeviceConnectionListener(new DeviceConnectionListener() {
             @Override

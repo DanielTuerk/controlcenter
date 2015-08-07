@@ -1,7 +1,5 @@
 package net.wbz.moba.controlcenter.web.server.config;
 
-import net.sf.gilead.pojo.gwt.LightEntity;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -11,7 +9,7 @@ import java.io.Serializable;
  * @author Daniel Tuerk
  */
 @Entity
-public class ConfigValue extends LightEntity implements Serializable {
+public class ConfigValue implements Serializable {
 
     @Id
     @Column(name = "config_key")
@@ -28,7 +26,7 @@ public class ConfigValue extends LightEntity implements Serializable {
     }
 
     public ConfigValue(String key) {
-        this.key=key;
+        this.key = key;
     }
 
     public String getKey() {

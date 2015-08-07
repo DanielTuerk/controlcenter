@@ -1,9 +1,8 @@
 package net.wbz.moba.controlcenter.web.shared.track.model;
 
-import com.google.gwt.user.client.rpc.IsSerializable;
-
 import javax.persistence.Entity;
 import javax.persistence.Table;
+import java.io.Serializable;
 
 /**
  * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
@@ -12,15 +11,15 @@ import javax.persistence.Table;
 @Table(name = "trackpart_switch")
 public class Switch extends TrackPart {
 
-    public enum DIRECTION implements IsSerializable {RIGHT, LEFT}
+    public enum DIRECTION implements Serializable {RIGHT, LEFT}
 
-    public enum PRESENTATION implements IsSerializable {LEFT_TO_RIGHT, RIGHT_TO_LEFT, BOTTOM_TO_TOP, TOP_TO_BOTTOM}
+    public enum PRESENTATION implements Serializable {LEFT_TO_RIGHT, RIGHT_TO_LEFT, BOTTOM_TO_TOP, TOP_TO_BOTTOM}
 
     private DIRECTION currentDirection;
 
     private PRESENTATION currentPresentation;
 
-    public enum STATE implements IsSerializable {STRAIGHT, BRANCH}
+    public enum STATE implements Serializable {STRAIGHT, BRANCH}
 
 
     public void setCurrentDirection(DIRECTION currentDirection) {
@@ -51,11 +50,11 @@ public class Switch extends TrackPart {
             case LEFT_TO_RIGHT:
                 return 0d;
             case RIGHT_TO_LEFT:
-                return  180d;
+                return 180d;
             case BOTTOM_TO_TOP:
-                return  270d;
+                return 270d;
             case TOP_TO_BOTTOM:
-                return  90d;
+                return 90d;
             default:
                 return 0d;
         }

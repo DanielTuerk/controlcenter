@@ -2,8 +2,6 @@ package net.wbz.moba.controlcenter.web.server.constrution;
 
 import com.google.inject.Inject;
 import com.google.inject.persist.Transactional;
-import net.sf.gilead.core.PersistentBeanManager;
-import net.sf.gilead.gwt.PersistentRemoteService;
 import net.wbz.moba.controlcenter.web.shared.constrution.Construction;
 import net.wbz.moba.controlcenter.web.shared.constrution.ConstructionService;
 import org.slf4j.Logger;
@@ -13,13 +11,20 @@ import javax.inject.Provider;
 import javax.inject.Singleton;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 import java.util.List;
 
 /**
  * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
  */
 @Singleton
-public class ConstructionServiceImpl extends PersistentRemoteService implements ConstructionService {
+@Path("construction")
+@Produces(MediaType.APPLICATION_JSON)
+public class ConstructionServiceImpl implements ConstructionService {
 
     private static final Logger log = LoggerFactory.getLogger(ConstructionServiceImpl.class);
 
@@ -28,9 +33,8 @@ public class ConstructionServiceImpl extends PersistentRemoteService implements 
     private Construction currentConstruction = null;
 
     @Inject
-    public ConstructionServiceImpl(Provider<EntityManager> entityManager, PersistentBeanManager persistentBeanManager) {
+    public ConstructionServiceImpl(Provider<EntityManager> entityManager) {
         this.entityManager = entityManager;
-        setBeanManager(persistentBeanManager);
     }
 
     @Override
@@ -46,6 +50,7 @@ public class ConstructionServiceImpl extends PersistentRemoteService implements 
     }
 
     @Override
+    @GET
     public synchronized Construction[] loadConstructions() {
         log.info("load construction");
         Query typedQuery = entityManager.get().createQuery(
@@ -54,7 +59,11 @@ public class ConstructionServiceImpl extends PersistentRemoteService implements 
         return resultList.toArray(new Construction[resultList.size()]);
     }
 
+
+
+
     @Override
+    @POST
     public void setCurrentConstruction(Construction construction) {
         currentConstruction = construction;
     }

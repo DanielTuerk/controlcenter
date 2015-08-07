@@ -2,12 +2,9 @@ package net.wbz.moba.controlcenter.web.server.constrution;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
-import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.google.inject.persist.Transactional;
-import net.sf.gilead.core.PersistentBeanManager;
-import net.sf.gilead.gwt.PersistentRemoteService;
 import net.wbz.moba.controlcenter.web.server.EventBroadcaster;
 import net.wbz.moba.controlcenter.web.shared.bus.*;
 import net.wbz.moba.controlcenter.web.shared.viewer.RailVoltageEvent;
@@ -38,7 +35,8 @@ import java.util.List;
  * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
  */
 @Singleton
-public class BusServiceImpl extends PersistentRemoteService implements BusService {
+@javax.ws.rs.Path("bus")
+public class BusServiceImpl implements BusService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(BusServiceImpl.class);
 
@@ -59,14 +57,13 @@ public class BusServiceImpl extends PersistentRemoteService implements BusServic
     @Inject
     public BusServiceImpl(DeviceManager deviceManager,
                           final EventBroadcaster eventBroadcaster, DeviceRecorder deviceRecorder,
-                          Provider<EntityManager> entityManager,PersistentBeanManager persistentBeanManager) {
+                          Provider<EntityManager> entityManager) {
         this.deviceManager = deviceManager;
         this.eventBroadcaster = eventBroadcaster;
         this.deviceRecorder = deviceRecorder;
 
         this.entityManager = entityManager;
 
-        setBeanManager(persistentBeanManager);
 
         Query query = this.entityManager.get().createQuery("SELECT x FROM DeviceInfo x");
         List<DeviceInfo> storedDevices = query.getResultList();

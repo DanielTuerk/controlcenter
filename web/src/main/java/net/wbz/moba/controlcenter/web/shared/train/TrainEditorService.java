@@ -1,15 +1,12 @@
 package net.wbz.moba.controlcenter.web.shared.train;
 
-import com.google.gwt.user.client.rpc.RemoteService;
-import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
-
 import java.util.List;
 
 /**
  * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
  */
-@RemoteServiceRelativePath("trainEditor")
-public interface TrainEditorService extends RemoteService {
+
+public interface TrainEditorService {
 
     public List<Train> getTrains();
 

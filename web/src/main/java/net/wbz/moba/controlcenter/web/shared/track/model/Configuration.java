@@ -1,7 +1,5 @@
 package net.wbz.moba.controlcenter.web.shared.track.model;
 
-import net.sf.gilead.pojo.gwt.LightEntity;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -14,7 +12,7 @@ import java.io.Serializable;
  * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
  */
 @Entity
-public class Configuration extends LightEntity implements Serializable {
+public class Configuration implements Serializable {
 
     @Id
     @GeneratedValue
@@ -62,7 +60,7 @@ public class Configuration extends LightEntity implements Serializable {
     }
 
     public boolean isValid() {
-        return address > 0 && bit > 0 && bus >-1;
+        return address > 0 && bit > 0 && bus > -1;
     }
 
     public boolean isBitState() {

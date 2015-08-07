@@ -2,11 +2,8 @@ package net.wbz.moba.controlcenter.web.server.viewer;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.gwt.user.client.rpc.RpcTokenException;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import net.sf.gilead.core.PersistentBeanManager;
-import net.sf.gilead.gwt.PersistentRemoteService;
 import net.wbz.moba.controlcenter.web.shared.bus.BusAddressBit;
 import net.wbz.moba.controlcenter.web.shared.track.model.Configuration;
 import net.wbz.moba.controlcenter.web.shared.track.model.Signal;
@@ -25,16 +22,15 @@ import java.util.Map;
  * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
  */
 @Singleton
-public class TrackViewerServiceImpl extends PersistentRemoteService implements TrackViewerService {
+public class TrackViewerServiceImpl implements TrackViewerService {
     private static final Logger log = LoggerFactory.getLogger(TrackViewerServiceImpl.class);
 
     private final DeviceManager deviceManager;
 
     @Inject
-    public TrackViewerServiceImpl(DeviceManager deviceManager, PersistentBeanManager persistentBeanManager) {
+    public TrackViewerServiceImpl(DeviceManager deviceManager) {
         this.deviceManager = deviceManager;
 
-        setBeanManager(persistentBeanManager);
     }
 
     @Override
@@ -52,7 +48,6 @@ public class TrackViewerServiceImpl extends PersistentRemoteService implements T
                 }
             } catch (DeviceAccessException e) {
                 log.error("can't toggle track part", e);
-                throw new RpcTokenException("can't toggle track part");
             }
         }
     }
@@ -68,10 +63,10 @@ public class TrackViewerServiceImpl extends PersistentRemoteService implements T
             } catch (DeviceAccessException e) {
                 String msg = "can't load state of track part";
                 log.error(msg, e);
-                throw new RpcTokenException(msg);
+
             }
         }
-        throw new RpcTokenException("invalid configuration: " + configuration);
+        throw new RuntimeException("foo");
     }
 
     @Override
@@ -105,7 +100,6 @@ public class TrackViewerServiceImpl extends PersistentRemoteService implements T
         } catch (DeviceAccessException e) {
             String msg = "can't change data of addresses";
             log.error(msg, e);
-            throw new RpcTokenException(msg);
         }
     }
 

@@ -1,8 +1,6 @@
 package net.wbz.moba.controlcenter.web.shared.track.model;
 
 import com.google.common.collect.Sets;
-import com.google.gwt.user.client.rpc.IsSerializable;
-import net.sf.gilead.pojo.gwt.LightEntity;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -17,13 +15,13 @@ import java.util.Set;
  *
  * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
  */
-@Entity
+//@Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 @MappedSuperclass
-public class TrackPart extends LightEntity implements IsSerializable, Serializable {
+public class TrackPart implements Serializable {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.TABLE)
     @Column(name = "TRACKPART_ID")
     private long id;
 

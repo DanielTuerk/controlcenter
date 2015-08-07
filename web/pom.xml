@@ -33,21 +33,24 @@
                 <enabled>false</enabled>
             </releases>
         </repository>
-
-
         <repository>
-            <id>net.sf.gilead</id>
-            <name>gilead</name>
-            <url>https://gilead.svn.sourceforge.net/svnroot/gilead/gilead/maven-repo/</url>
-            <releases>
-                <updatePolicy>daily</updatePolicy>
-                <checksumPolicy>ignore</checksumPolicy>
-            </releases>
-            <snapshots>
-                <updatePolicy>daily</updatePolicy>
-                <checksumPolicy>ignore</checksumPolicy>
-            </snapshots>
+            <id>Java.Net</id>
+            <url>http://download.java.net/maven/2/</url>
         </repository>
+
+        <!--<repository>-->
+        <!--<id>net.sf.gilead</id>-->
+        <!--<name>gilead</name>-->
+        <!--<url>https://gilead.svn.sourceforge.net/svnroot/gilead/gilead/maven-repo/</url>-->
+        <!--<releases>-->
+        <!--<updatePolicy>daily</updatePolicy>-->
+        <!--<checksumPolicy>ignore</checksumPolicy>-->
+        <!--</releases>-->
+        <!--<snapshots>-->
+        <!--<updatePolicy>daily</updatePolicy>-->
+        <!--<checksumPolicy>ignore</checksumPolicy>-->
+        <!--</snapshots>-->
+        <!--</repository>-->
     </repositories>
 
     <dependencies>
@@ -65,92 +68,20 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- ###############   GWT  ####################### -->
 
-        <dependency>
-            <groupId>com.google.gwt</groupId>
-            <artifactId>gwt-servlet</artifactId>
-            <version>${gwt.version}</version>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.google.gwt</groupId>
-            <artifactId>gwt-user</artifactId>
-            <version>${gwt.version}</version>
-            <scope>provided</scope>
-        </dependency>
+        <!--<dependency>-->
+        <!--<groupId>com.google.guava</groupId>-->
+        <!--<artifactId>guava-gwt</artifactId>-->
+        <!--<version>15.0</version>-->
+        <!--</dependency>-->
 
-        <dependency>
-            <groupId>com.orange.links</groupId>
-            <artifactId>links</artifactId>
-            <version>3.1.2</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/lib/gwt-links-1.4.2.jar</systemPath>
-        </dependency>
-        <dependency>
-            <groupId>com.allen_sauer.gwt</groupId>
-            <artifactId>dnd</artifactId>
-            <version>3.1.2</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/lib/gwt-dnd-3.3.0.jar</systemPath>
-        </dependency>
-        <dependency>
-            <groupId>com.kiouri.sliderbar</groupId>
-            <artifactId>gwt-slider-bar</artifactId>
-            <version>1.0</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/lib/gwt-slider-bar-1.0.jar</systemPath>
-        </dependency>
-        <dependency>
-            <groupId>com.google.gwt</groupId>
-            <artifactId>incubator</artifactId>
-            <version>1</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/lib/gwt-incubator-20101117-r1766.jar</systemPath>
-        </dependency>
 
-          <dependency>
-            <groupId>thothbot.parallax</groupId>
-            <artifactId>parallax</artifactId>
-            <version>1.6</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/lib/parallax-1.6.jar</systemPath>
-        </dependency>
-
-        <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava-gwt</artifactId>
-            <version>15.0</version>
-        </dependency>
-
+        <!-- #####################  Server #################### -->
         <dependency>
             <groupId>de.novanic.gwteventservice</groupId>
             <artifactId>gwteventservice</artifactId>
             <version>1.2.1</version>
         </dependency>
-
-        <dependency>
-            <groupId>org.gwtbootstrap3</groupId>
-            <artifactId>gwtbootstrap3</artifactId>
-            <version>${gwtbootstrap3.version}</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.gwtbootstrap3</groupId>
-            <artifactId>gwtbootstrap3-extras</artifactId>
-            <version>${gwtbootstrap3.version}</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.vectomatic</groupId>
-            <artifactId>lib-gwt-svg</artifactId>
-            <version>0.5.9</version>
-        </dependency>
-
-
-        <!-- #####################  Server #################### -->
 
         <dependency>
             <groupId>org.rxtx</groupId>
@@ -173,6 +104,17 @@
         </dependency>
 
         <dependency>
+            <groupId>com.google.inject</groupId>
+            <artifactId>guice</artifactId>
+            <version>3.0</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>servlet-api</artifactId>
+            <version>2.4</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
             <groupId>com.google.inject.extensions</groupId>
             <artifactId>guice-servlet</artifactId>
             <version>3.0</version>
@@ -184,6 +126,34 @@
             <version>3.0</version>
         </dependency>
 
+        <!-- hibernate -->
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-entitymanager</artifactId>
+            <version>4.1.4.Final</version>
+        </dependency>
+        <dependency>
+            <groupId>org.hibernate.javax.persistence</groupId>
+            <artifactId>hibernate-jpa-2.0-api</artifactId>
+            <version>1.0.1.Final</version>
+        </dependency>
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-core</artifactId>
+            <version>4.1.4.Final</version>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.jersey</groupId>
+            <artifactId>jersey-server</artifactId>
+            <version>1.8</version>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.jersey</groupId>
+            <artifactId>jersey-json</artifactId>
+            <version>1.8</version>
+        </dependency>
+
+
         <!-- need by jetty on PI -->
         <dependency>
             <groupId>commons-collections</groupId>
@@ -192,22 +162,59 @@
         </dependency>
 
 
-        <!-- gilead to use hibernate entities as GWT models -->
         <dependency>
-            <groupId>net.sf.gilead</groupId>
-            <artifactId>gilead-core</artifactId>
-            <version>${gilead.version}</version>
+            <groupId>javax.servlet</groupId>
+            <artifactId>servlet-api</artifactId>
+            <version>2.5</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.sun.jersey</groupId>
+            <artifactId>jersey-server</artifactId>
+            <version>1.17.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.sun.jersey.contribs</groupId>
+            <artifactId>jersey-guice</artifactId>
+            <version>1.17.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.sun.jersey</groupId>
+            <artifactId>jersey-bundle</artifactId>
+            <version>1.17.1</version>
+        </dependency>
+
+
+        <!--&lt;!&ndash; gilead to use hibernate entities as GWT models &ndash;&gt;-->
+        <!--<dependency>-->
+        <!--<groupId>net.sf.gilead</groupId>-->
+        <!--<artifactId>gilead-core</artifactId>-->
+        <!--<version>${gilead.version}</version>-->
+        <!--</dependency>-->
+        <!--&lt;!&ndash;<dependency>&ndash;&gt;-->
+        <!--&lt;!&ndash;<groupId>net.sf.gilead</groupId>&ndash;&gt;-->
+        <!--&lt;!&ndash;<artifactId>gilead4gwt</artifactId>&ndash;&gt;-->
+        <!--&lt;!&ndash;<version>${gilead.version}</version>&ndash;&gt;-->
+        <!--&lt;!&ndash;</dependency>&ndash;&gt;-->
+        <!--<dependency>-->
+        <!--<groupId>net.sf.gilead</groupId>-->
+        <!--<artifactId>gilead-hibernate</artifactId>-->
+        <!--<version>${gilead.version}</version>-->
+        <!--</dependency>-->
+        <dependency>
+            <groupId>javax</groupId>
+            <artifactId>javaee-api</artifactId>
+            <version>7.0</version>
         </dependency>
         <dependency>
-            <groupId>net.sf.gilead</groupId>
-            <artifactId>gilead4gwt</artifactId>
-            <version>${gilead.version}</version>
+            <groupId>javax.servlet</groupId>
+            <artifactId>servlet-api</artifactId>
+            <version>2.4</version>
+            <scope>provided</scope>
         </dependency>
-        <dependency>
-            <groupId>net.sf.gilead</groupId>
-            <artifactId>gilead-hibernate</artifactId>
-            <version>${gilead.version}</version>
-        </dependency>
+
 
     </dependencies>
 
@@ -217,29 +224,6 @@
         <finalName>controlcenter</finalName>
         <plugins>
 
-            <!-- GWT Maven Plugin -->
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>gwt-maven-plugin</artifactId>
-                <version>${gwt.version}</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>compile</goal>
-                            <goal>test</goal>
-                            <goal>i18n</goal>
-                            <goal>generateAsync</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <!-- Plugin configuration. There are many available options, see gwt-maven-plugin
-             documentation at codehaus.org -->
-                <configuration>
-                    <runTarget>ControlCenterApp.html</runTarget>
-                    <hostedWebapp>${webappDirectory}</hostedWebapp>
-                    <i18nMessagesBundle>net.wbz.moba.controlcenter.web.client.Messages</i18nMessagesBundle>
-                </configuration>
-            </plugin>
 
             <!-- Copy static web files before executing gwt:run -->
             <plugin>
@@ -310,37 +294,6 @@
         </plugins>
         <pluginManagement>
             <plugins>
-                <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
-                <plugin>
-                    <groupId>org.eclipse.m2e</groupId>
-                    <artifactId>lifecycle-mapping</artifactId>
-                    <version>1.0.0</version>
-                    <configuration>
-                        <lifecycleMappingMetadata>
-                            <pluginExecutions>
-                                <pluginExecution>
-                                    <pluginExecutionFilter>
-                                        <groupId>
-                                            org.codehaus.mojo
-                                        </groupId>
-                                        <artifactId>
-                                            gwt-maven-plugin
-                                        </artifactId>
-                                        <versionRange>
-                                            [${gwt.version}},)
-                                        </versionRange>
-                                        <goals>
-                                            <goal>i18n</goal>
-                                        </goals>
-                                    </pluginExecutionFilter>
-                                    <action>
-                                        <ignore></ignore>
-                                    </action>
-                                </pluginExecution>
-                            </pluginExecutions>
-                        </lifecycleMappingMetadata>
-                    </configuration>
-                </plugin>
             </plugins>
         </pluginManagement>
     </build>

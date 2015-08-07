@@ -1,7 +1,5 @@
 package net.wbz.moba.controlcenter.web.shared.track.model;
 
-import com.google.gwt.user.client.rpc.IsSerializable;
-import net.sf.gilead.pojo.gwt.LightEntity;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -12,7 +10,7 @@ import java.util.List;
  * @author Daniel Tuerk
  */
 @Entity
-public class TrackPartFunction extends LightEntity implements IsSerializable, Serializable {
+public class TrackPartFunction implements Serializable {
 
     @Id
     @GeneratedValue
@@ -24,8 +22,8 @@ public class TrackPartFunction extends LightEntity implements IsSerializable, Se
     @OneToOne
     private Configuration configuration;
 
-    @ManyToMany(mappedBy="functions",fetch = FetchType.LAZY)
-    private List<TrackPart> trackParts = new ArrayList<>();
+//    @ManyToMany(mappedBy="functions",fetch = FetchType.LAZY)
+//    private List<TrackPart> trackParts = new ArrayList<>();
 
 //    public TrackPartFunction(TrackPart trackPart, String key, Configuration configuration) {
 ////        this.trackPart = trackPart;
@@ -58,13 +56,13 @@ public class TrackPartFunction extends LightEntity implements IsSerializable, Se
 //    }
 
 
-    public List<TrackPart> getTrackParts() {
-        return trackParts;
-    }
-
-    public void setTrackParts(List<TrackPart> trackParts) {
-        this.trackParts = trackParts;
-    }
+//    public List<TrackPart> getTrackParts() {
+//        return trackParts;
+//    }
+//
+//    public void setTrackParts(List<TrackPart> trackParts) {
+//        this.trackParts = trackParts;
+//    }
 
     public String getFunctionKey() {
         return functionKey;

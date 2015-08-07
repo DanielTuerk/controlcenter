@@ -9,22 +9,11 @@ import com.google.inject.persist.PersistFilter;
 import com.google.inject.persist.jpa.JpaPersistModule;
 import com.google.inject.servlet.GuiceServletContextListener;
 import com.google.inject.servlet.ServletModule;
-import net.sf.gilead.core.PersistentBeanManager;
-import net.sf.gilead.core.hibernate.jpa.HibernateJpaUtil;
-import net.sf.gilead.core.serialization.GwtProxySerialization;
-import net.sf.gilead.core.store.stateless.StatelessProxyStore;
-import net.wbz.moba.controlcenter.web.server.config.ConfigServiceImpl;
-import net.wbz.moba.controlcenter.web.server.constrution.BusServiceImpl;
+import com.sun.jersey.guice.JerseyServletModule;
+import com.sun.jersey.guice.spi.container.servlet.GuiceContainer;
 import net.wbz.moba.controlcenter.web.server.constrution.ConstructionServiceImpl;
-import net.wbz.moba.controlcenter.web.server.editor.TrackEditorServiceImpl;
-import net.wbz.moba.controlcenter.web.server.scenario.ScenarioEditorServiceImpl;
-import net.wbz.moba.controlcenter.web.server.scenario.ScenarioServiceImpl;
-import net.wbz.moba.controlcenter.web.server.train.TrainEditorServiceImpl;
-import net.wbz.moba.controlcenter.web.server.train.TrainServiceImpl;
-import net.wbz.moba.controlcenter.web.server.viewer.TrackViewerServiceImpl;
 import net.wbz.selectrix4java.device.DeviceManager;
 
-import javax.persistence.EntityManagerFactory;
 import java.io.File;
 import java.util.Properties;
 
@@ -40,12 +29,27 @@ public class MyGuiceServletConfig extends GuiceServletContextListener {
     /**
      * Key for the persistence unit to use in web app. (also db name and directory name)
      */
-    public static final String PERSISTENCE_UNIT = "derby_db";
+    public static final String PERSISTENCE_UNIT = "derby_db_angular";
 
     @Override
     protected Injector getInjector() {
+
+//        return Guice.createInjector(new JerseyServletModule() {
+//            @Override
+//            protected void configureServlets() {
+//                // Must configure at least one JAX-RS resource or the
+//                // server will fail to start.
+//                bind(ConstructionServiceImpl.class);
+//
+//                // Route all requests through GuiceContainer
+//                serve("/*").with(GuiceContainer.class);
+//            }
+//        });
+
+
+
         return Guice.createInjector(
-                new ServletModule() {
+                new JerseyServletModule() {
 
                     /**
                      * Load the home path for the application from the OS user home.
@@ -88,20 +92,28 @@ public class MyGuiceServletConfig extends GuiceServletContextListener {
                          * by the {@link com.google.inject.Provider}.
                           */
                         install(new JpaPersistModule(PERSISTENCE_UNIT).properties(properties));
-                        filter("/Test/*").through(PersistFilter.class);
+                        filter("/*").through(PersistFilter.class);
 
-                        /*
-                         * Register the GWT services.
-                         */
-                        serve("/Test/bus").with(BusServiceImpl.class);
-                        serve("/Test/construction").with(ConstructionServiceImpl.class);
-                        serve("/Test/trackviewer").with(TrackViewerServiceImpl.class);
-                        serve("/Test/trackeditor").with(TrackEditorServiceImpl.class);
-                        serve("/Test/scenarioservice").with(ScenarioServiceImpl.class);
-                        serve("/Test/scenarioEditor").with(ScenarioEditorServiceImpl.class);
-                        serve("/Test/trainEditor").with(TrainEditorServiceImpl.class);
-                        serve("/Test/trainService").with(TrainServiceImpl.class);
-                        serve("/Test/config").with(ConfigServiceImpl.class);
+
+                        bind(GsonMessageBodyHandler.class);
+
+                        bind(ConstructionServiceImpl.class);
+
+                        // Route all requests through GuiceContainer
+                        serve("/*").with(GuiceContainer.class);
+
+//                        /*
+//                         * Register the GWT services.
+//                         */
+//                        serve("/Test/bus").with(BusServiceImpl.class);
+//                        serve("/Test/construction").with(ConstructionServiceImpl.class);
+//                        serve("/Test/trackviewer").with(TrackViewerServiceImpl.class);
+//                        serve("/Test/trackeditor").with(TrackEditorServiceImpl.class);
+//                        serve("/Test/scenarioservice").with(ScenarioServiceImpl.class);
+//                        serve("/Test/scenarioEditor").with(ScenarioEditorServiceImpl.class);
+//                        serve("/Test/trainEditor").with(TrainEditorServiceImpl.class);
+//                        serve("/Test/trainService").with(TrainServiceImpl.class);
+//                        serve("/Test/config").with(ConfigServiceImpl.class);
                     }
 
                     /**
@@ -115,34 +127,35 @@ public class MyGuiceServletConfig extends GuiceServletContextListener {
                         return new DeviceManager();
                     }
 
-                    /**
-                     * Create and return the {@link net.sf.gilead.core.PersistentBeanManager} for gilead to use the
-                     * configured JPA {@link javax.persistence.EntityManagerFactory} for the GWT services to
-                     * serialize the hibernate models as native gwt models.
-                     * Each service must ne inherit {@link net.sf.gilead.gwt.PersistentRemoteService} and set the
-                     * manager by calling {@link net.sf.gilead.gwt.PersistentRemoteService#setBeanManager(net.sf.gilead.core.PersistentBeanManager)}.
-                     *
-                     * @param entityManagerFactory {@link javax.persistence.EntityManagerFactory} factory from {@link com.google.inject.persist.jpa.JpaPersistModule}
-                     * @return {@link net.sf.gilead.core.PersistentBeanManager}
-                     */
-                    @Provides
-                    @Singleton
-                    public PersistentBeanManager persistentBeanManager(EntityManagerFactory entityManagerFactory) {
-                        // use JPA repository
-                        HibernateJpaUtil hibernateJpaUtil = new HibernateJpaUtil();
-                        hibernateJpaUtil.setEntityManagerFactory(entityManagerFactory);
-                        PersistentBeanManager persistentBeanManager = new PersistentBeanManager();
-                        persistentBeanManager.setPersistenceUtil(hibernateJpaUtil);
-
-                        // serialization of the hibernate entities for GWT
-                        StatelessProxyStore proxyStore = new StatelessProxyStore();
-                        proxyStore.setProxySerializer(new GwtProxySerialization());
-                        persistentBeanManager.setProxyStore(proxyStore);
-
-                        return persistentBeanManager;
-                    }
-
-                });
+//                    /**
+//                     * Create and return the {@link net.sf.gilead.core.PersistentBeanManager} for gilead to use the
+//                     * configured JPA {@link javax.persistence.EntityManagerFactory} for the GWT services to
+//                     * serialize the hibernate models as native gwt models.
+//                     * Each service must ne inherit {@link net.sf.gilead.gwt.PersistentRemoteService} and set the
+//                     * manager by calling {@link net.sf.gilead.gwt.PersistentRemoteService#setBeanManager(net.sf.gilead.core.PersistentBeanManager)}.
+//                     *
+//                     * @param entityManagerFactory {@link javax.persistence.EntityManagerFactory} factory from {@link com.google.inject.persist.jpa.JpaPersistModule}
+//                     * @return {@link net.sf.gilead.core.PersistentBeanManager}
+//                     */
+//                    @Provides
+//                    @Singleton
+//                    public PersistentBeanManager persistentBeanManager(EntityManagerFactory entityManagerFactory) {
+//                        // use JPA repository
+//                        HibernateJpaUtil hibernateJpaUtil = new HibernateJpaUtil();
+//                        hibernateJpaUtil.setEntityManagerFactory(entityManagerFactory);
+//                        PersistentBeanManager persistentBeanManager = new PersistentBeanManager();
+//                        persistentBeanManager.setPersistenceUtil(hibernateJpaUtil);
+//
+////                        // serialization of the hibernate entities for GWT
+////                        StatelessProxyStore proxyStore = new StatelessProxyStore();
+////                        proxyStore.setProxySerializer(new GwtProxySerialization());
+////                        persistentBeanManager.setProxyStore(proxyStore);
+//
+//                        return persistentBeanManager;
+//                    }
+//
+                }
+        );
     }
 }
 

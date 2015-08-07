@@ -1,14 +1,14 @@
 package net.wbz.moba.controlcenter.web.shared.scenario;
 
-import com.google.gwt.user.client.rpc.IsSerializable;
 import net.wbz.moba.controlcenter.web.shared.StringUtils;
 
+import java.io.Serializable;
 import java.util.Arrays;
 
 /**
  * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
  */
-public abstract class ScenarioCommand implements IsSerializable {
+public abstract class ScenarioCommand implements Serializable {
 
     abstract public String getCommand();
 

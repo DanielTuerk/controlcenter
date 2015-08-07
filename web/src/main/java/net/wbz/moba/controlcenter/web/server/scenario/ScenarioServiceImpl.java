@@ -1,6 +1,5 @@
 package net.wbz.moba.controlcenter.web.server.scenario;
 
-import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import net.wbz.moba.controlcenter.web.server.EventBroadcaster;
@@ -19,7 +18,7 @@ import java.util.concurrent.FutureTask;
  * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
  */
 @Singleton
-public class ScenarioServiceImpl extends RemoteServiceServlet implements ScenarioService {
+public class ScenarioServiceImpl implements ScenarioService {
     private static final Logger LOG = LoggerFactory.getLogger(ScenarioServiceImpl.class);
 
     private final TrackViewerService trackViewerService;

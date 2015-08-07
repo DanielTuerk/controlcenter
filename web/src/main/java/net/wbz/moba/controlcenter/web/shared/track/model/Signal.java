@@ -1,10 +1,10 @@
 package net.wbz.moba.controlcenter.web.shared.track.model;
 
 import com.google.common.collect.Maps;
-import com.google.gwt.user.client.rpc.IsSerializable;
 
 import javax.persistence.Entity;
 import javax.persistence.Table;
+import java.io.Serializable;
 import java.util.Map;
 
 /**
@@ -33,7 +33,7 @@ public class Signal extends Straight {
     /**
      * Types of signal with corresponding mapping of the lights.
      */
-    public enum TYPE implements IsSerializable{
+    public enum TYPE implements Serializable {
         BLOCK(new LIGHT[]{LIGHT.RED1, LIGHT.GREEN1}),
         ENTER(new LIGHT[]{LIGHT.RED1, LIGHT.GREEN1, LIGHT.YELLOW1}),
         EXIT(new LIGHT[]{LIGHT.RED1, LIGHT.RED2, LIGHT.GREEN1, LIGHT.YELLOW1, LIGHT.WHITE}),

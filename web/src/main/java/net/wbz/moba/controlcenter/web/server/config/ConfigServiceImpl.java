@@ -1,11 +1,8 @@
 package net.wbz.moba.controlcenter.web.server.config;
 
-import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.google.inject.persist.Transactional;
-import net.sf.gilead.core.PersistentBeanManager;
-import net.sf.gilead.gwt.PersistentRemoteService;
 import net.wbz.moba.controlcenter.web.shared.config.ConfigNotAvailableException;
 import net.wbz.moba.controlcenter.web.shared.config.ConfigService;
 import org.slf4j.Logger;
@@ -14,20 +11,21 @@ import org.slf4j.LoggerFactory;
 import javax.inject.Provider;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
+import javax.ws.rs.Path;
 
 /**
  * @author Daniel Tuerk
  */
 @Singleton
-public class ConfigServiceImpl extends PersistentRemoteService implements ConfigService {
+@Path("config")
+public class ConfigServiceImpl implements ConfigService {
     private static final Logger log = LoggerFactory.getLogger(ConfigServiceImpl.class);
 
     private final Provider<EntityManager> entityManager;
 
     @Inject
-    public ConfigServiceImpl(Provider<EntityManager> entityManager, PersistentBeanManager persistentBeanManager) {
+    public ConfigServiceImpl(Provider<EntityManager> entityManager) {
         this.entityManager = entityManager;
-        setBeanManager(persistentBeanManager);
     }
 
     @Override

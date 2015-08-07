@@ -1,6 +1,5 @@
 package net.wbz.moba.controlcenter.web.shared.train;
 
-import com.google.gwt.user.client.rpc.IsSerializable;
 import net.wbz.moba.controlcenter.web.shared.AbstractIdModel;
 
 import javax.persistence.*;
@@ -14,7 +13,7 @@ import java.util.Set;
  * @author Daniel Tuerk
  */
 @Entity
-public class Train extends AbstractIdModel implements IsSerializable, Serializable {
+public class Train extends AbstractIdModel implements  Serializable {
 
     @Id
     @GeneratedValue

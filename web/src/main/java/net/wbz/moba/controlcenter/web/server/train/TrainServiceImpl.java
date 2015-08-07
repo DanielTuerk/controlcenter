@@ -1,7 +1,5 @@
 package net.wbz.moba.controlcenter.web.server.train;
 
-import com.google.gwt.user.client.rpc.RpcTokenException;
-import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import net.wbz.moba.controlcenter.web.shared.train.Train;
@@ -13,11 +11,14 @@ import net.wbz.selectrix4java.train.TrainModule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.ws.rs.Path;
+
 /**
  * Implementation of the {@link net.wbz.moba.controlcenter.web.shared.train.TrainService}.
  */
 @Singleton
-public class TrainServiceImpl extends RemoteServiceServlet implements TrainService {
+@Path("trainService")
+public class TrainServiceImpl implements TrainService {
 
     private static final Logger LOG = LoggerFactory.getLogger(TrainServiceImpl.class);
 
@@ -39,10 +40,10 @@ public class TrainServiceImpl extends RemoteServiceServlet implements TrainServi
             } catch (DeviceAccessException e) {
                 String msg = "can't change level of train " + id;
                 LOG.error(msg, e);
-                throw new RpcTokenException(msg);
+                throw new RuntimeException(msg);
             }
         } else {
-            throw new RpcTokenException("invalid level " + level + " (0-127)");
+            throw new RuntimeException("invalid level " + level + " (0-127)");
         }
     }
 
@@ -55,7 +56,7 @@ public class TrainServiceImpl extends RemoteServiceServlet implements TrainServi
         } catch (DeviceAccessException e) {
             String msg = "can't change level of train " + id;
             LOG.error(msg, e);
-            throw new RpcTokenException(msg);
+            throw new RuntimeException(msg);
         }
     }
 
@@ -104,7 +105,7 @@ public class TrainServiceImpl extends RemoteServiceServlet implements TrainServi
         } catch (DeviceAccessException e) {
             String msg = String.format("can't change state of function %s of train %d", function.name(), id);
             LOG.error(msg, e);
-            throw new RpcTokenException(msg);
+            throw new RuntimeException(msg);
         }
     }
 

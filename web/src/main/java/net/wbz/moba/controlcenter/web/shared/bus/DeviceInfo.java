@@ -1,8 +1,5 @@
 package net.wbz.moba.controlcenter.web.shared.bus;
 
-import com.google.gwt.user.client.rpc.IsSerializable;
-import net.sf.gilead.pojo.gwt.LightEntity;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -12,7 +9,7 @@ import javax.persistence.Transient;
  * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
  */
 @Entity
-public class DeviceInfo extends LightEntity implements IsSerializable {
+public class DeviceInfo {
 
     @Transient
     private boolean connected;

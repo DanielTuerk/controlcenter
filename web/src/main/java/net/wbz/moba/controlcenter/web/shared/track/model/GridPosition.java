@@ -1,10 +1,6 @@
 package net.wbz.moba.controlcenter.web.shared.track.model;
 
-import com.google.gwt.user.client.rpc.IsSerializable;
-import net.sf.gilead.pojo.gwt.LightEntity;
-
 import javax.persistence.*;
-import javax.sound.midi.Track;
 import java.io.Serializable;
 import java.util.List;
 
@@ -12,7 +8,7 @@ import java.util.List;
  * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
  */
 @Entity
-public class GridPosition extends LightEntity implements IsSerializable,Serializable {
+public class GridPosition implements Serializable {
 
     @Id
     @GeneratedValue
@@ -21,16 +17,16 @@ public class GridPosition extends LightEntity implements IsSerializable,Serializ
     private int x;
     private int y;
 
-    @OneToMany(fetch = FetchType.LAZY)
-    private List<TrackPart> trackPart;
+//    @OneToMany(fetch = FetchType.LAZY)
+//    private List<TrackPart> trackPart;
 
-    public GridPosition(){
+    public GridPosition() {
 
     }
 
     public GridPosition(int x, int y) {
-        this.x=x;
-        this.y=y;
+        this.x = x;
+        this.y = y;
     }
 
     public int getX() {

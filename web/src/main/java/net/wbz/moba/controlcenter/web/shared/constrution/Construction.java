@@ -1,19 +1,15 @@
 package net.wbz.moba.controlcenter.web.shared.constrution;
 
-import net.sf.gilead.pojo.gwt.LightEntity;
-import net.wbz.moba.controlcenter.web.shared.track.model.TrackPart;
-import net.wbz.moba.controlcenter.web.shared.track.model.TrackPartFunction;
-
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 import java.io.Serializable;
-import java.util.List;
-import java.util.Set;
 
 /**
  * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
  */
 @Entity
-public class Construction extends LightEntity implements Serializable {
+public class Construction implements Serializable {
 
     @Id
     @GeneratedValue

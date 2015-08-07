@@ -1,15 +1,12 @@
 package net.wbz.moba.controlcenter.web.shared.scenario;
 
-import com.google.gwt.user.client.rpc.RemoteService;
-import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
-
 import java.util.List;
 
 /**
  * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
  */
-@RemoteServiceRelativePath("scenarioEditor")
-public interface ScenarioEditorService extends RemoteService {
+
+public interface ScenarioEditorService {
 
     /**
      * @gwt.typeArgs <Scenario>

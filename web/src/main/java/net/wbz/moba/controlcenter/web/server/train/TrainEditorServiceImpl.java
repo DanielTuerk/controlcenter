@@ -2,8 +2,6 @@ package net.wbz.moba.controlcenter.web.server.train;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import net.sf.gilead.core.PersistentBeanManager;
-import net.sf.gilead.gwt.PersistentRemoteService;
 import net.wbz.moba.controlcenter.web.server.EventBroadcaster;
 import net.wbz.moba.controlcenter.web.shared.train.Train;
 import net.wbz.moba.controlcenter.web.shared.train.TrainDataChangedEvent;
@@ -12,6 +10,7 @@ import net.wbz.moba.controlcenter.web.shared.train.TrainFunction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.ws.rs.Path;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -20,7 +19,8 @@ import java.util.Set;
  * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
  */
 @Singleton
-public class TrainEditorServiceImpl extends PersistentRemoteService implements TrainEditorService {
+@Path("trainEditor")
+public class TrainEditorServiceImpl implements TrainEditorService {
 
     private static final Logger LOG = LoggerFactory.getLogger(TrainEditorServiceImpl.class);
 
@@ -28,12 +28,11 @@ public class TrainEditorServiceImpl extends PersistentRemoteService implements T
     private final EventBroadcaster eventBroadcaster;
 
     @Inject
-    public TrainEditorServiceImpl(TrainManager trainManager, PersistentBeanManager persistentBeanManager,
+    public TrainEditorServiceImpl(TrainManager trainManager,
                                   final EventBroadcaster eventBroadcaster) {
         this.trainManager = trainManager;
         this.eventBroadcaster = eventBroadcaster;
 
-        setBeanManager(persistentBeanManager);
     }
 
     @Override

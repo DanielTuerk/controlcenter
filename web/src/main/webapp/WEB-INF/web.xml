@@ -29,7 +29,7 @@
     </servlet>
     <servlet-mapping>
         <servlet-name>EventService</servlet-name>
-        <url-pattern>/Test/gwteventservice</url-pattern>
+        <url-pattern>/ControlCenterApp/gwteventservice</url-pattern>
     </servlet-mapping>
 
     <welcome-file-list>

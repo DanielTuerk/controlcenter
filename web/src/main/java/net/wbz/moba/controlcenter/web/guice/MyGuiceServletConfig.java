@@ -88,20 +88,20 @@ public class MyGuiceServletConfig extends GuiceServletContextListener {
                          * by the {@link com.google.inject.Provider}.
                           */
                         install(new JpaPersistModule(PERSISTENCE_UNIT).properties(properties));
-                        filter("/Test/*").through(PersistFilter.class);
+                        filter("/ControlCenterApp/*").through(PersistFilter.class);
 
                         /*
                          * Register the GWT services.
                          */
-                        serve("/Test/bus").with(BusServiceImpl.class);
-                        serve("/Test/construction").with(ConstructionServiceImpl.class);
-                        serve("/Test/trackviewer").with(TrackViewerServiceImpl.class);
-                        serve("/Test/trackeditor").with(TrackEditorServiceImpl.class);
-                        serve("/Test/scenarioservice").with(ScenarioServiceImpl.class);
-                        serve("/Test/scenarioEditor").with(ScenarioEditorServiceImpl.class);
-                        serve("/Test/trainEditor").with(TrainEditorServiceImpl.class);
-                        serve("/Test/trainService").with(TrainServiceImpl.class);
-                        serve("/Test/config").with(ConfigServiceImpl.class);
+                        serve("/ControlCenterApp/bus").with(BusServiceImpl.class);
+                        serve("/ControlCenterApp/construction").with(ConstructionServiceImpl.class);
+                        serve("/ControlCenterApp/trackviewer").with(TrackViewerServiceImpl.class);
+                        serve("/ControlCenterApp/trackeditor").with(TrackEditorServiceImpl.class);
+                        serve("/ControlCenterApp/scenarioservice").with(ScenarioServiceImpl.class);
+                        serve("/ControlCenterApp/scenarioEditor").with(ScenarioEditorServiceImpl.class);
+                        serve("/ControlCenterApp/trainEditor").with(TrainEditorServiceImpl.class);
+                        serve("/ControlCenterApp/trainService").with(TrainServiceImpl.class);
+                        serve("/ControlCenterApp/config").with(ConfigServiceImpl.class);
                     }
 
                     /**

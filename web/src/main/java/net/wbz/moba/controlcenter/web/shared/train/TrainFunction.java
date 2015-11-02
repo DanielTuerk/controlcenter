@@ -34,8 +34,8 @@ public class TrainFunction extends LightEntity implements IsSerializable, Serial
     @Transient
     private boolean state;
 
-    @ManyToMany(mappedBy = "functions", fetch = FetchType.LAZY)
-    private List<Train> trains;
+//    @ManyToMany(mappedBy = "functions", fetch = FetchType.LAZY)
+//    private List<Train> trains;
 
     public TrainFunction() {
     }
@@ -53,13 +53,13 @@ public class TrainFunction extends LightEntity implements IsSerializable, Serial
         this.id = id;
     }
 
-    public List<Train> getTrains() {
-        return trains;
-    }
-
-    public void setTrains(List<Train> trains) {
-        this.trains = trains;
-    }
+//    public List<Train> getTrains() {
+//        return trains;
+//    }
+//
+//    public void setTrains(List<Train> trains) {
+//        this.trains = trains;
+//    }
 
     public FUNCTION getFunction() {
         return function;

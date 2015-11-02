@@ -21,8 +21,8 @@ public class GridPosition extends LightEntity implements IsSerializable,Serializ
     private int x;
     private int y;
 
-    @OneToMany(fetch = FetchType.LAZY)
-    private List<TrackPart> trackPart;
+//    @OneToMany(fetch = FetchType.LAZY)
+//    private List<TrackPart> trackPart;
 
     public GridPosition(){
 

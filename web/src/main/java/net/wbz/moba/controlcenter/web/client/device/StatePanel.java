@@ -25,7 +25,7 @@ import org.gwtbootstrap3.extras.toggleswitch.client.ui.base.constants.ColorType;
 import java.util.ArrayList;
 
 /**
- * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
+ * @author Daniel Tuerk
  */
 public class StatePanel extends org.gwtbootstrap3.client.ui.gwt.FlowPanel {
 

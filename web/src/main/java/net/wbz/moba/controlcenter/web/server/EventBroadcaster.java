@@ -10,7 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
+ * @author Daniel Tuerk
  */
 @Singleton
 public class EventBroadcaster {

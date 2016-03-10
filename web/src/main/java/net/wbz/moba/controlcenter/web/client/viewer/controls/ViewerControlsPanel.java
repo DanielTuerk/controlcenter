@@ -8,7 +8,7 @@ import org.gwtbootstrap3.client.ui.*;
 import org.gwtbootstrap3.client.ui.constants.TabPosition;
 
 /**
- * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
+ * @author Daniel Tuerk
  */
 public class ViewerControlsPanel extends TabPanel {
 

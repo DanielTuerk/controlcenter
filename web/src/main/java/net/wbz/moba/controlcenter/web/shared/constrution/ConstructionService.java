@@ -4,7 +4,7 @@ import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
 /**
- * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
+ * @author Daniel Tuerk
  */
 @RemoteServiceRelativePath("construction")
 public interface ConstructionService extends RemoteService {

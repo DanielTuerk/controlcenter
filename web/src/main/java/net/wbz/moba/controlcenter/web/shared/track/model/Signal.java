@@ -10,7 +10,7 @@ import java.util.Map;
 /**
  * Widget to show and control a signal.
  * <p/>
- * s@author Daniel Tuerk (daniel.tuerk@w-b-z.com)
+ * s@author Daniel Tuerk
  */
 @Entity
 @Table(name = "trackpart_signal")

@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
+ * @author Daniel Tuerk
  */
 @RemoteServiceRelativePath("trackviewer")
 public interface TrackViewerService extends RemoteService {

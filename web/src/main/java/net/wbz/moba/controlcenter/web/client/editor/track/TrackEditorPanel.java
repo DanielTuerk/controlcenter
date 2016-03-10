@@ -3,7 +3,7 @@ package net.wbz.moba.controlcenter.web.client.editor.track;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
- * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
+ * @author Daniel Tuerk
  */
 public class TrackEditorPanel extends AbstractTrackPanel {
 

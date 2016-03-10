@@ -21,7 +21,7 @@ import org.vectomatic.dom.svg.utils.SVGConstants;
 import java.util.Map;
 
 /**
- * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
+ * @author Daniel Tuerk
  */
 abstract public class AbstractBlockSvgTrackWidget<T extends TrackPart> extends AbstractSvgTrackWidget<T>
         implements EditTrackWidgetHandler, BlockPart {

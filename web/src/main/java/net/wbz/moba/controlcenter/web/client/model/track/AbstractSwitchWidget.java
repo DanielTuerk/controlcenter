@@ -5,7 +5,7 @@ import net.wbz.moba.controlcenter.web.shared.track.model.Switch;
 import net.wbz.moba.controlcenter.web.shared.track.model.TrackPart;
 
 /**
- * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
+ * @author Daniel Tuerk
  */
 abstract public class AbstractSwitchWidget extends AbstractControlSvgTrackWidget<Switch> {
 

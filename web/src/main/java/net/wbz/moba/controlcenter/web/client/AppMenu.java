@@ -11,7 +11,7 @@ import org.gwtbootstrap3.client.ui.constants.Pull;
  * Menu bar on the top of the application.
  * Links are switching the active panel of the content container.
  *
- * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
+ * @author Daniel Tuerk
  */
 public class AppMenu extends Navbar {
 

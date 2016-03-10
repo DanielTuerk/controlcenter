@@ -1,15 +1,25 @@
 package net.wbz.moba.controlcenter.web.server.constrution;
 
-import com.google.common.base.Function;
-import com.google.common.collect.Lists;
-import com.google.gwt.user.server.rpc.RemoteServiceServlet;
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
-import com.google.inject.persist.Transactional;
-import net.sf.gilead.core.PersistentBeanManager;
-import net.sf.gilead.gwt.PersistentRemoteService;
+import java.io.IOException;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.annotation.Nullable;
+import javax.inject.Provider;
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
+
 import net.wbz.moba.controlcenter.web.server.EventBroadcaster;
-import net.wbz.moba.controlcenter.web.shared.bus.*;
+import net.wbz.moba.controlcenter.web.shared.bus.BusData;
+import net.wbz.moba.controlcenter.web.shared.bus.BusDataEvent;
+import net.wbz.moba.controlcenter.web.shared.bus.BusService;
+import net.wbz.moba.controlcenter.web.shared.bus.DeviceInfo;
+import net.wbz.moba.controlcenter.web.shared.bus.DeviceInfoEvent;
+import net.wbz.moba.controlcenter.web.shared.bus.PlayerEvent;
 import net.wbz.moba.controlcenter.web.shared.viewer.RailVoltageEvent;
 import net.wbz.selectrix4java.bus.consumption.AllBusDataConsumer;
 import net.wbz.selectrix4java.data.recording.BusDataPlayer;
@@ -19,54 +29,41 @@ import net.wbz.selectrix4java.device.DeviceAccessException;
 import net.wbz.selectrix4java.device.DeviceConnectionListener;
 import net.wbz.selectrix4java.device.DeviceManager;
 import net.wbz.selectrix4java.device.serial.SerialDevice;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.Nullable;
-import javax.inject.Provider;
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
-import java.io.IOException;
-import java.nio.file.DirectoryStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
+import com.google.common.base.Function;
+import com.google.common.collect.Lists;
+import com.google.gwt.user.server.rpc.RemoteServiceServlet;
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+import com.google.inject.persist.Transactional;
 
 /**
- * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
+ * @author Daniel Tuerk
  */
 @Singleton
-public class BusServiceImpl extends PersistentRemoteService implements BusService {
+public class BusServiceImpl extends RemoteServiceServlet implements BusService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(BusServiceImpl.class);
-
-    private net.wbz.selectrix4java.device.Device activeDevice;
-
     private final DeviceManager deviceManager;
-
     private final EventBroadcaster eventBroadcaster;
-
     private final AllBusDataConsumer allBusDataConsumer;
-
     private final DeviceRecorder deviceRecorder;
-
-    private boolean trackingActive = false;
-
     private final Provider<EntityManager> entityManager;
+    private net.wbz.selectrix4java.device.Device activeDevice;
+    private boolean trackingActive = false;
+    private BusDataPlayer busDataPlayer;
 
     @Inject
-    public BusServiceImpl(DeviceManager deviceManager,
-                          final EventBroadcaster eventBroadcaster, DeviceRecorder deviceRecorder,
-                          Provider<EntityManager> entityManager,PersistentBeanManager persistentBeanManager) {
+    public BusServiceImpl(DeviceManager deviceManager, final EventBroadcaster eventBroadcaster,
+            DeviceRecorder deviceRecorder, Provider<EntityManager> entityManager) {
         this.deviceManager = deviceManager;
         this.eventBroadcaster = eventBroadcaster;
         this.deviceRecorder = deviceRecorder;
 
         this.entityManager = entityManager;
-
-        setBeanManager(persistentBeanManager);
 
         Query query = this.entityManager.get().createQuery("SELECT x FROM DeviceInfo x");
         List<DeviceInfo> storedDevices = query.getResultList();
@@ -88,7 +85,8 @@ public class BusServiceImpl extends PersistentRemoteService implements BusServic
         deviceManager.addDeviceConnectionListener(new DeviceConnectionListener() {
             @Override
             public void connected(Device device) {
-                BusServiceImpl.this.eventBroadcaster.fireEvent(new DeviceInfoEvent(getDeviceInfo(device), DeviceInfoEvent.TYPE.CONNECTED));
+                BusServiceImpl.this.eventBroadcaster.fireEvent(new DeviceInfoEvent(getDeviceInfo(device),
+                        DeviceInfoEvent.TYPE.CONNECTED));
                 // receive actual state of rail voltage -> no consumer available for addresses > 112
                 try {
                     eventBroadcaster.fireEvent(new RailVoltageEvent(device.getRailVoltage()));
@@ -99,7 +97,8 @@ public class BusServiceImpl extends PersistentRemoteService implements BusServic
 
             @Override
             public void disconnected(Device device) {
-                BusServiceImpl.this.eventBroadcaster.fireEvent(new DeviceInfoEvent(getDeviceInfo(device), DeviceInfoEvent.TYPE.DISCONNECTED));
+                BusServiceImpl.this.eventBroadcaster.fireEvent(new DeviceInfoEvent(getDeviceInfo(device),
+                        DeviceInfoEvent.TYPE.DISCONNECTED));
                 device.getBusDataDispatcher().unregisterConsumer(allBusDataConsumer);
             }
         });
@@ -114,7 +113,7 @@ public class BusServiceImpl extends PersistentRemoteService implements BusServic
     @Override
     @Transactional
     public void createDevice(DeviceInfo deviceInfo) {
-        //TODO - device settings (e.g. serial/test)
+        // TODO - device settings (e.g. serial/test)
         entityManager.get().persist(deviceInfo);
 
         deviceManager.registerDevice(DeviceManager.DEVICE_TYPE.valueOf(
@@ -184,7 +183,7 @@ public class BusServiceImpl extends PersistentRemoteService implements BusServic
 
     @Override
     public BusData[] readBusData(int busNr) {
-        //TODO required?
+        // TODO required?
         byte[] busData = activeDevice.getBusDataDispatcher().getData(busNr);
         BusData[] replyData = new BusData[busData.length];
         for (int i = 0; i < busData.length; i++) {
@@ -230,7 +229,8 @@ public class BusServiceImpl extends PersistentRemoteService implements BusServic
             try {
                 activeDevice.getBusAddress(busNr, (byte) address).sendData((byte) data);
             } catch (DeviceAccessException e) {
-                LOGGER.error(String.format("can't send data (bus: %d, address: %d, data: %d)", busNr, address, data), e);
+                LOGGER.error(String.format("can't send data (bus: %d, address: %d, data: %d)", busNr, address, data),
+                        e);
             }
         }
     }
@@ -244,8 +244,6 @@ public class BusServiceImpl extends PersistentRemoteService implements BusServic
     public void stopRecording() {
         deviceRecorder.stopRecording();
     }
-
-    private BusDataPlayer busDataPlayer;
 
     @Override
     public void startPlayer(String absoluteFilePath) {

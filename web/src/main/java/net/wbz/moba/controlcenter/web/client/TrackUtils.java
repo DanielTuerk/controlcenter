@@ -3,7 +3,7 @@ package net.wbz.moba.controlcenter.web.client;
 import net.wbz.moba.controlcenter.web.client.editor.track.TrackEditorContainer;
 
 /**
- * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
+ * @author Daniel Tuerk
  */
 public class TrackUtils {
 

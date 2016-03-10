@@ -13,7 +13,7 @@ import org.gwtbootstrap3.extras.toggleswitch.client.ui.base.constants.ColorType;
  * Toggle button to connect and disconnect from the bus for the selected device in
  * the {@link net.wbz.moba.controlcenter.web.client.device.DeviceListBox}.
  *
- * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
+ * @author Daniel Tuerk
  */
 public class BusConnectionToggleButton extends ToggleSwitch {
 

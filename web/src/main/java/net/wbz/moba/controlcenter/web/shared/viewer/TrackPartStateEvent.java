@@ -4,7 +4,7 @@ import de.novanic.eventservice.client.event.Event;
 import net.wbz.moba.controlcenter.web.shared.track.model.Configuration;
 
 /**
- * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
+ * @author Daniel Tuerk
  */
 public class TrackPartStateEvent implements Event {
 

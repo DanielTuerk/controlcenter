@@ -1,12 +1,12 @@
 package net.wbz.moba.controlcenter.web.shared;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
-import net.sf.gilead.pojo.gwt.LightEntity;
+
 
 /**
  * Created by Daniel on 08.03.14.
  */
-abstract public class AbstractIdModel extends LightEntity implements IsSerializable {
+abstract public class AbstractIdModel implements IsSerializable {
 
     abstract public long getId();
 

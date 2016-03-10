@@ -1,7 +1,7 @@
 package net.wbz.moba.controlcenter.web.shared.train;
 
 /**
- * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
+ * @author Daniel Tuerk
  */
 public class TrainLightStateEvent extends TrainStateEvent {
 

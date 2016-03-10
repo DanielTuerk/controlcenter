@@ -3,7 +3,7 @@ package net.wbz.moba.controlcenter.web.shared.bus;
 import de.novanic.eventservice.client.event.Event;
 
 /**
- * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
+ * @author Daniel Tuerk
  */
 public class BusDataEvent implements Event {
     private int bus;

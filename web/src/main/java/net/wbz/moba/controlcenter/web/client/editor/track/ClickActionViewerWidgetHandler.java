@@ -3,7 +3,7 @@ package net.wbz.moba.controlcenter.web.client.editor.track;
 import net.wbz.moba.controlcenter.web.shared.track.model.Configuration;
 
 /**
- * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
+ * @author Daniel Tuerk
  */
 public interface ClickActionViewerWidgetHandler {
 

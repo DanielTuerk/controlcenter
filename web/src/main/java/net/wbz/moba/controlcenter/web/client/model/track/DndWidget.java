@@ -1,7 +1,7 @@
 package net.wbz.moba.controlcenter.web.client.model.track;
 
 /**
- * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
+ * @author Daniel Tuerk
  */
 public interface DndWidget<T> {
 

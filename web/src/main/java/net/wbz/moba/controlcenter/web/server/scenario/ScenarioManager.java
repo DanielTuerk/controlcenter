@@ -26,7 +26,7 @@ import java.util.Map;
  * corresponding construction. Access and manipulation of each {@link net.wbz.moba.controlcenter.web.shared.scenario.Scenario}
  * are from persistence.
  *
- * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
+ * @author Daniel Tuerk
  */
 @Singleton
 public class ScenarioManager {

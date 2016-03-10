@@ -3,7 +3,7 @@ package net.wbz.moba.controlcenter.web.shared.bus;
 import java.io.Serializable;
 
 /**
- * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
+ * @author Daniel Tuerk
  */
 public class BusData implements Serializable {
 

@@ -35,7 +35,7 @@ import java.util.Map;
  * Register the event listener to receive state changes of all added
  * {@link net.wbz.moba.controlcenter.web.shared.track.model.TrackPart}s.
  *
- * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
+ * @author Daniel Tuerk
  */
 public class TrackViewerPanel extends AbstractTrackViewerPanel {
 

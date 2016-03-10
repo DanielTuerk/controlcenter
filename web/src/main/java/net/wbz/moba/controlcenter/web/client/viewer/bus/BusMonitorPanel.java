@@ -27,7 +27,7 @@ import java.util.Map;
  * monitor appears when it`s connected to the bus otherwise an information will
  * be shown.
  *
- * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
+ * @author Daniel Tuerk
  */
 public class BusMonitorPanel extends FlowPanel {
 

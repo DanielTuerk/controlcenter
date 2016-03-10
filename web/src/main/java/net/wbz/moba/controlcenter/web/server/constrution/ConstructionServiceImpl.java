@@ -1,25 +1,27 @@
 package net.wbz.moba.controlcenter.web.server.constrution;
 
-import com.google.inject.Inject;
-import com.google.inject.persist.Transactional;
-import net.sf.gilead.core.PersistentBeanManager;
-import net.sf.gilead.gwt.PersistentRemoteService;
-import net.wbz.moba.controlcenter.web.shared.constrution.Construction;
-import net.wbz.moba.controlcenter.web.shared.constrution.ConstructionService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.List;
 
 import javax.inject.Provider;
 import javax.inject.Singleton;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
-import java.util.List;
+
+import net.wbz.moba.controlcenter.web.shared.constrution.Construction;
+import net.wbz.moba.controlcenter.web.shared.constrution.ConstructionService;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.gwt.user.server.rpc.RemoteServiceServlet;
+import com.google.inject.Inject;
+import com.google.inject.persist.Transactional;
 
 /**
- * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
+ * @author Daniel Tuerk
  */
 @Singleton
-public class ConstructionServiceImpl extends PersistentRemoteService implements ConstructionService {
+public class ConstructionServiceImpl extends RemoteServiceServlet implements ConstructionService {
 
     private static final Logger log = LoggerFactory.getLogger(ConstructionServiceImpl.class);
 
@@ -28,14 +30,18 @@ public class ConstructionServiceImpl extends PersistentRemoteService implements 
     private Construction currentConstruction = null;
 
     @Inject
-    public ConstructionServiceImpl(Provider<EntityManager> entityManager, PersistentBeanManager persistentBeanManager) {
+    public ConstructionServiceImpl(Provider<EntityManager> entityManager) {
         this.entityManager = entityManager;
-        setBeanManager(persistentBeanManager);
     }
 
     @Override
     public Construction getCurrentConstruction() {
         return currentConstruction;
+    }
+
+    @Override
+    public void setCurrentConstruction(Construction construction) {
+        currentConstruction = construction;
     }
 
     @Override
@@ -52,10 +58,5 @@ public class ConstructionServiceImpl extends PersistentRemoteService implements 
                 "SELECT x FROM Construction x");
         List<Construction> resultList = typedQuery.getResultList();
         return resultList.toArray(new Construction[resultList.size()]);
-    }
-
-    @Override
-    public void setCurrentConstruction(Construction construction) {
-        currentConstruction = construction;
     }
 }

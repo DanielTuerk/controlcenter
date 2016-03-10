@@ -9,7 +9,7 @@ import org.vectomatic.dom.svg.utils.SVGConstants;
 /**
  * Util to create SVG components for the {@link net.wbz.moba.controlcenter.web.shared.track.model.TrackPart}s.
  *
- * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
+ * @author Daniel Tuerk
  */
 public class SvgTrackUtil {
 

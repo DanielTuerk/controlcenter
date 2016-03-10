@@ -3,7 +3,7 @@ package net.wbz.moba.controlcenter.web.shared.train;
 import de.novanic.eventservice.client.event.Event;
 
 /**
- * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
+ * @author Daniel Tuerk
  */
 public class TrainDrivingLevelEvent extends TrainStateEvent{
     private int speed;

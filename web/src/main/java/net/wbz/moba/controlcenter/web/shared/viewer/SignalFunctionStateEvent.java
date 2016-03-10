@@ -7,7 +7,7 @@ import net.wbz.moba.controlcenter.web.shared.track.model.Signal;
 import java.util.Map;
 
 /**
- * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
+ * @author Daniel Tuerk
  */
 public class SignalFunctionStateEvent implements Event {
 

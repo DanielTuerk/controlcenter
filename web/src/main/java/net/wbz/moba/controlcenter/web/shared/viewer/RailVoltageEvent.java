@@ -6,7 +6,7 @@ import net.wbz.moba.controlcenter.web.shared.track.model.Configuration;
 /**
  * Event for the state change of the rail voltage.
  *
- * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
+ * @author Daniel Tuerk
  */
 public class RailVoltageEvent implements Event {
 

@@ -22,7 +22,7 @@ import org.gwtbootstrap3.extras.slider.client.ui.Slider;
 import java.util.Map;
 
 /**
- * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
+ * @author Daniel Tuerk
  */
 public class TrainItemPanel extends AbstractItemPanel<Train, TrainStateEvent> {
 

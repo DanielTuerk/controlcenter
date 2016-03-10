@@ -1,6 +1,6 @@
 package net.wbz.moba.controlcenter.web.shared.track.model;
 
-import net.sf.gilead.pojo.gwt.LightEntity;
+
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -11,10 +11,10 @@ import java.io.Serializable;
 /**
  * Configuration model of an function for the {@link net.wbz.moba.controlcenter.web.shared.track.model.TrackPart}.
  *
- * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
+ * @author Daniel Tuerk
  */
 @Entity
-public class Configuration extends LightEntity implements Serializable {
+public class Configuration implements Serializable {
 
     @Id
     @GeneratedValue

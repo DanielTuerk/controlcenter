@@ -1,26 +1,27 @@
 package net.wbz.moba.controlcenter.web.server.train;
 
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
-import net.sf.gilead.core.PersistentBeanManager;
-import net.sf.gilead.gwt.PersistentRemoteService;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import net.wbz.moba.controlcenter.web.server.EventBroadcaster;
 import net.wbz.moba.controlcenter.web.shared.train.Train;
 import net.wbz.moba.controlcenter.web.shared.train.TrainDataChangedEvent;
 import net.wbz.moba.controlcenter.web.shared.train.TrainEditorService;
 import net.wbz.moba.controlcenter.web.shared.train.TrainFunction;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import com.google.gwt.user.server.rpc.RemoteServiceServlet;
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 
 /**
- * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
+ * @author Daniel Tuerk
  */
 @Singleton
-public class TrainEditorServiceImpl extends PersistentRemoteService implements TrainEditorService {
+public class TrainEditorServiceImpl extends RemoteServiceServlet implements TrainEditorService {
 
     private static final Logger LOG = LoggerFactory.getLogger(TrainEditorServiceImpl.class);
 
@@ -28,12 +29,10 @@ public class TrainEditorServiceImpl extends PersistentRemoteService implements T
     private final EventBroadcaster eventBroadcaster;
 
     @Inject
-    public TrainEditorServiceImpl(TrainManager trainManager, PersistentBeanManager persistentBeanManager,
-                                  final EventBroadcaster eventBroadcaster) {
+    public TrainEditorServiceImpl(TrainManager trainManager,
+            final EventBroadcaster eventBroadcaster) {
         this.trainManager = trainManager;
         this.eventBroadcaster = eventBroadcaster;
-
-        setBeanManager(persistentBeanManager);
     }
 
     @Override
@@ -67,7 +66,6 @@ public class TrainEditorServiceImpl extends PersistentRemoteService implements T
             LOG.error(msg, e);
         }
     }
-
 
     @Override
     public void deleteTrain(long trainId) {

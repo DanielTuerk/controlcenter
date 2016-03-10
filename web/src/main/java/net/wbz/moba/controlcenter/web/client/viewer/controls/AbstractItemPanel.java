@@ -21,7 +21,7 @@ import java.util.*;
  * It contains an header panel with an collapse function to extend the details container.
  * Implementations can modify the header and show the details.
  *
- * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
+ * @author Daniel Tuerk
  */
 abstract public class AbstractItemPanel<Model extends AbstractIdModel, StateEvent extends AbstractStateEvent> extends org.gwtbootstrap3.client.ui.Panel {
 

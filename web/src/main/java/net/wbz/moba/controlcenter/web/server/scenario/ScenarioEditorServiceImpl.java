@@ -1,31 +1,30 @@
 package net.wbz.moba.controlcenter.web.server.scenario;
 
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
-import net.sf.gilead.core.PersistentBeanManager;
-import net.sf.gilead.gwt.PersistentRemoteService;
+import java.util.List;
+
 import net.wbz.moba.controlcenter.web.shared.scenario.Scenario;
 import net.wbz.moba.controlcenter.web.shared.scenario.ScenarioCommand;
 import net.wbz.moba.controlcenter.web.shared.scenario.ScenarioEditorService;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
+import com.google.gwt.user.server.rpc.RemoteServiceServlet;
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 
 /**
- * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
+ * @author Daniel Tuerk
  */
 @Singleton
-public class ScenarioEditorServiceImpl extends PersistentRemoteService implements ScenarioEditorService {
+public class ScenarioEditorServiceImpl extends RemoteServiceServlet implements ScenarioEditorService {
     private static final Logger LOG = LoggerFactory.getLogger(ScenarioEditorServiceImpl.class);
 
     private final ScenarioManager scenarioManager;
 
     @Inject
-    public ScenarioEditorServiceImpl(ScenarioManager scenarioManager, PersistentBeanManager persistentBeanManager) {
+    public ScenarioEditorServiceImpl(ScenarioManager scenarioManager) {
         this.scenarioManager = scenarioManager;
-
-        setBeanManager(persistentBeanManager);
     }
 
     @Override
@@ -33,7 +32,7 @@ public class ScenarioEditorServiceImpl extends PersistentRemoteService implement
         try {
             return scenarioManager.getScenarios();
         } catch (Exception e) {
-            throw new RuntimeException(String.format("can't load scenarios"), e);
+            throw new RuntimeException("can't load scenarios", e);
         }
     }
 

@@ -1,26 +1,37 @@
 package net.wbz.moba.controlcenter.web.shared.track.model;
 
-import com.google.common.collect.Sets;
-import com.google.gwt.user.client.rpc.IsSerializable;
-import net.sf.gilead.pojo.gwt.LightEntity;
-
-import javax.persistence.*;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
+
+import com.google.common.collect.Sets;
+import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
  * Model for a part of the track.
  * - has position in grid
  * - provide functions
  *
- * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
+ * @author Daniel Tuerk
  */
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
-@MappedSuperclass
-public class TrackPart extends LightEntity implements IsSerializable, Serializable {
+public class TrackPart implements IsSerializable, Serializable {
 
     @Id
     @GeneratedValue
@@ -41,10 +52,9 @@ public class TrackPart extends LightEntity implements IsSerializable, Serializab
     /**
      * Function mapping for function name and configuration of the function.
      */
-    @ManyToMany(cascade = {CascadeType.ALL}, fetch = FetchType.EAGER)
-    @JoinTable(
-            joinColumns = {@JoinColumn(name = "TRACKPART_ID")},
-            inverseJoinColumns = {@JoinColumn(name = "TRACKPARTFUNCTION_ID")})
+    @ManyToMany(cascade = { CascadeType.ALL }, fetch = FetchType.EAGER)
+    @JoinTable(joinColumns = { @JoinColumn(name = "TRACKPART_ID") }, inverseJoinColumns = {
+            @JoinColumn(name = "TRACKPARTFUNCTION_ID") })
     private List<TrackPartFunction> functions = new ArrayList<>();
 
     /**
@@ -129,7 +139,8 @@ public class TrackPart extends LightEntity implements IsSerializable, Serializab
         // title with function configurations
         StringBuilder functionsStringBuilder = new StringBuilder();
         for (TrackPartFunction functionEntry : getFunctionConfigs()) {
-            functionsStringBuilder.append(functionEntry.getFunctionKey()).append(": ").append(functionEntry.getConfiguration()).append("; ");
+            functionsStringBuilder.append(functionEntry.getFunctionKey()).append(": ").append(functionEntry
+                    .getConfiguration()).append("; ");
         }
         return functionsStringBuilder.toString();
     }

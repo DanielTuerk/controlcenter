@@ -4,7 +4,7 @@ import net.wbz.moba.controlcenter.web.shared.track.model.Straight;
 import net.wbz.moba.controlcenter.web.shared.track.model.Uncoupler;
 
 /**
- * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
+ * @author Daniel Tuerk
  */
 public class UncouplerVerticalWidget extends AbstractUncouplerWidget {
 

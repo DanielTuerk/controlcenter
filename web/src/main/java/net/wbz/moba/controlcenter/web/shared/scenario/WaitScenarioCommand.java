@@ -1,7 +1,7 @@
 package net.wbz.moba.controlcenter.web.shared.scenario;
 
 /**
- * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
+ * @author Daniel Tuerk
  */
 public class WaitScenarioCommand extends ScenarioCommand {
 

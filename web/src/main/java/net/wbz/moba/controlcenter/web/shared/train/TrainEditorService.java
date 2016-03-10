@@ -6,19 +6,19 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 import java.util.List;
 
 /**
- * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
+ * @author Daniel Tuerk
  */
 @RemoteServiceRelativePath("trainEditor")
 public interface TrainEditorService extends RemoteService {
 
-    public List<Train> getTrains();
+    List<Train> getTrains();
 
-    public Train getTrain(int address);
+    Train getTrain(int address);
 
-    public void createTrain(String name);
+    void createTrain(String name);
 
-    public void deleteTrain(long trainId);
+    void deleteTrain(long trainId);
 
-    public void updateTrain(Train train);
+    void updateTrain(Train train);
 
 }

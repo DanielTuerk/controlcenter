@@ -1,7 +1,7 @@
 package net.wbz.moba.controlcenter.web.shared.train;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
-import net.sf.gilead.pojo.gwt.LightEntity;
+
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -15,7 +15,7 @@ import java.util.Set;
  * @author Daniel Tuerk
  */
 @Entity
-public class TrainFunction extends LightEntity implements IsSerializable, Serializable {
+public class TrainFunction implements IsSerializable, Serializable {
 
     /**
      * Available functions for the train.

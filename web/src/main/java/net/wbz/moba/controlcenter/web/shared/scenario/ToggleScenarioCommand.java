@@ -3,7 +3,7 @@ package net.wbz.moba.controlcenter.web.shared.scenario;
 import net.wbz.moba.controlcenter.web.shared.track.model.Configuration;
 
 /**
- * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
+ * @author Daniel Tuerk
  */
 public class ToggleScenarioCommand extends ScenarioCommand {
 

@@ -6,7 +6,7 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 /**
  * Service to control the trains from the {@link net.wbz.moba.controlcenter.web.server.train.TrainManager}.
  *
- * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
+ * @author Daniel Tuerk
  */
 @RemoteServiceRelativePath("trainService")
 public interface TrainService extends RemoteService {

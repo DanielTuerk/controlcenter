@@ -1,7 +1,7 @@
 package net.wbz.moba.controlcenter.web.shared.viewer;
 
 /**
- * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
+ * @author Daniel Tuerk
  */
 public class TrackException  extends Exception{
     public TrackException(String s) {

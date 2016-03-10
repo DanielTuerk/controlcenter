@@ -27,7 +27,7 @@ import java.util.List;
 /**
  * TODO: it's broken and need to refactor
  *
- * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
+ * @author Daniel Tuerk
  */
 public class ScenarioItemPanel extends AbstractItemPanel<Scenario, ScenarioStateEvent> {
 

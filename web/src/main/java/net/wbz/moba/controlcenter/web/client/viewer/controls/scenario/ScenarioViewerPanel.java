@@ -14,7 +14,7 @@ import org.gwtbootstrap3.client.ui.TextBox;
 import java.util.List;
 
 /**
- * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
+ * @author Daniel Tuerk
  */
 public class ScenarioViewerPanel extends AbstractItemViewerPanel<ScenarioItemPanel, ScenarioStateEvent> {
 

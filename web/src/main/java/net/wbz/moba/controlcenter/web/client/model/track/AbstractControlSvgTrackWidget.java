@@ -25,7 +25,7 @@ import java.util.Map;
  * to toggle the state of the {@link net.wbz.moba.controlcenter.web.shared.track.model.TrackPart}.
  * <p/>
  *
- * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
+ * @author Daniel Tuerk
  */
 abstract public class AbstractControlSvgTrackWidget<T extends TrackPart> extends AbstractBlockSvgTrackWidget<T>
         implements ClickActionViewerWidgetHandler {

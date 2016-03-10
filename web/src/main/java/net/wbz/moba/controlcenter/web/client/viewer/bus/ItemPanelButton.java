@@ -11,7 +11,7 @@ import com.google.gwt.user.client.Timer;
  * Button  which represents a single bit for a bus address.
  * 
  * Toggle the state of the bit and show different background color on change.
- * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
+ * @author Daniel Tuerk
  *
  */
 public class ItemPanelButton extends Button {

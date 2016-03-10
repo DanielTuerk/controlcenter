@@ -16,7 +16,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.FutureTask;
 
 /**
- * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
+ * @author Daniel Tuerk
  */
 @Singleton
 public class ScenarioServiceImpl extends RemoteServiceServlet implements ScenarioService {

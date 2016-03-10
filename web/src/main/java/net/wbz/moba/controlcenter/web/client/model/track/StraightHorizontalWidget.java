@@ -5,7 +5,7 @@ import net.wbz.moba.controlcenter.web.shared.track.model.Straight;
 import org.vectomatic.dom.svg.OMSVGRectElement;
 
 /**
- * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
+ * @author Daniel Tuerk
  */
 public class StraightHorizontalWidget extends AbstractStraightWidget {
 

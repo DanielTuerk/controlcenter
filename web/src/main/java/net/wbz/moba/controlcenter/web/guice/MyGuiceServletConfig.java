@@ -1,18 +1,9 @@
 package net.wbz.moba.controlcenter.web.guice;
 
-import com.google.inject.Guice;
-import com.google.inject.Injector;
-import com.google.inject.Provides;
-import com.google.inject.Singleton;
-import com.google.inject.name.Named;
-import com.google.inject.persist.PersistFilter;
-import com.google.inject.persist.jpa.JpaPersistModule;
-import com.google.inject.servlet.GuiceServletContextListener;
-import com.google.inject.servlet.ServletModule;
-import net.sf.gilead.core.PersistentBeanManager;
-import net.sf.gilead.core.hibernate.jpa.HibernateJpaUtil;
-import net.sf.gilead.core.serialization.GwtProxySerialization;
-import net.sf.gilead.core.store.stateless.StatelessProxyStore;
+import java.io.File;
+import java.util.Properties;
+
+import com.google.common.collect.Lists;
 import net.wbz.moba.controlcenter.web.server.config.ConfigServiceImpl;
 import net.wbz.moba.controlcenter.web.server.constrution.BusServiceImpl;
 import net.wbz.moba.controlcenter.web.server.constrution.ConstructionServiceImpl;
@@ -24,23 +15,34 @@ import net.wbz.moba.controlcenter.web.server.train.TrainServiceImpl;
 import net.wbz.moba.controlcenter.web.server.viewer.TrackViewerServiceImpl;
 import net.wbz.selectrix4java.device.DeviceManager;
 
-import javax.persistence.EntityManagerFactory;
-import java.io.File;
-import java.util.Properties;
+import com.google.inject.Guice;
+import com.google.inject.Injector;
+import com.google.inject.Provides;
+import com.google.inject.Singleton;
+import com.google.inject.name.Named;
+import com.google.inject.persist.PersistFilter;
+import com.google.inject.persist.jpa.JpaPersistModule;
+import com.google.inject.servlet.GuiceServletContextListener;
+import com.google.inject.servlet.ServletModule;
+import org.dozer.DozerBeanMapper;
 
 /**
  * Configuration of the guice context.
  * Injector install the JPA module and
  * the {@link com.google.inject.servlet.ServletModule} for the GWT web context.
  *
- * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
+ * @author Daniel Tuerk
  */
 public class MyGuiceServletConfig extends GuiceServletContextListener {
 
     /**
      * Key for the persistence unit to use in web app. (also db name and directory name)
      */
-    public static final String PERSISTENCE_UNIT = "derby_db";
+    private static final String PERSISTENCE_UNIT = "derby_db";
+    /**
+     * Name of the GWT app.
+     */
+    private static final String APP_NAME = "ControlCenterApp";
 
     @Override
     protected Injector getInjector() {
@@ -60,7 +62,8 @@ public class MyGuiceServletConfig extends GuiceServletContextListener {
                         File configPath = new File(System.getProperty("user.home") + "/.moba/");
                         if (!configPath.exists()) {
                             if (!configPath.mkdirs()) {
-                                throw new RuntimeException("can't create the HOME path: " + configPath.getAbsolutePath());
+                                throw new RuntimeException("can't create the HOME path: " + configPath
+                                        .getAbsolutePath());
                             }
                         }
                         return configPath.getAbsolutePath();
@@ -76,32 +79,34 @@ public class MyGuiceServletConfig extends GuiceServletContextListener {
                         properties.put("hibernate.connection.driver_class", "org.apache.derby.jdbc.EmbeddedDriver");
                         properties.put("hibernate.dialect", "org.hibernate.dialect.DerbyDialect");
                         // auth
-                        properties.put("hibernate.connection.url", "jdbc:derby:" + homePath() + "/data/" + PERSISTENCE_UNIT + ";create=true");
+                        properties.put("hibernate.connection.url", "jdbc:derby:" + homePath() + "/data/"
+                                + PERSISTENCE_UNIT + ";create=true");
                         properties.put("hibernate.connection.username", "");
                         properties.put("hibernate.connection.password", "");
                         // common
                         properties.put("hibernate.hbm2ddl.auto", "update");
 
                         /*
-                         * Install JPA and delegate all requests by the {@link PersistFilter} to enable transaction handling
+                         * Install JPA and delegate all requests by the {@link PersistFilter} to enable transaction
+                         * handling
                          * by HTTP request. As result you have to inject the {@link javax.persistence.EntityManager}
                          * by the {@link com.google.inject.Provider}.
-                          */
+                         */
                         install(new JpaPersistModule(PERSISTENCE_UNIT).properties(properties));
-                        filter("/ControlCenterApp/*").through(PersistFilter.class);
+                        filter("/" + APP_NAME + "/*").through(PersistFilter.class);
 
                         /*
                          * Register the GWT services.
                          */
-                        serve("/ControlCenterApp/bus").with(BusServiceImpl.class);
-                        serve("/ControlCenterApp/construction").with(ConstructionServiceImpl.class);
-                        serve("/ControlCenterApp/trackviewer").with(TrackViewerServiceImpl.class);
-                        serve("/ControlCenterApp/trackeditor").with(TrackEditorServiceImpl.class);
-                        serve("/ControlCenterApp/scenarioservice").with(ScenarioServiceImpl.class);
-                        serve("/ControlCenterApp/scenarioEditor").with(ScenarioEditorServiceImpl.class);
-                        serve("/ControlCenterApp/trainEditor").with(TrainEditorServiceImpl.class);
-                        serve("/ControlCenterApp/trainService").with(TrainServiceImpl.class);
-                        serve("/ControlCenterApp/config").with(ConfigServiceImpl.class);
+                        serve("/" + APP_NAME + "/bus").with(BusServiceImpl.class);
+                        serve("/" + APP_NAME + "/construction").with(ConstructionServiceImpl.class);
+                        serve("/" + APP_NAME + "/trackviewer").with(TrackViewerServiceImpl.class);
+                        serve("/" + APP_NAME + "/trackeditor").with(TrackEditorServiceImpl.class);
+                        serve("/" + APP_NAME + "/scenarioservice").with(ScenarioServiceImpl.class);
+                        serve("/" + APP_NAME + "/scenarioEditor").with(ScenarioEditorServiceImpl.class);
+                        serve("/" + APP_NAME + "/trainEditor").with(TrainEditorServiceImpl.class);
+                        serve("/" + APP_NAME + "/trainService").with(TrainServiceImpl.class);
+                        serve("/" + APP_NAME + "/config").with(ConfigServiceImpl.class);
                     }
 
                     /**
@@ -115,35 +120,12 @@ public class MyGuiceServletConfig extends GuiceServletContextListener {
                         return new DeviceManager();
                     }
 
-                    /**
-                     * Create and return the {@link net.sf.gilead.core.PersistentBeanManager} for gilead to use the
-                     * configured JPA {@link javax.persistence.EntityManagerFactory} for the GWT services to
-                     * serialize the hibernate models as native gwt models.
-                     * Each service must ne inherit {@link net.sf.gilead.gwt.PersistentRemoteService} and set the
-                     * manager by calling {@link net.sf.gilead.gwt.PersistentRemoteService#setBeanManager(net.sf.gilead.core.PersistentBeanManager)}.
-                     *
-                     * @param entityManagerFactory {@link javax.persistence.EntityManagerFactory} factory from {@link com.google.inject.persist.jpa.JpaPersistModule}
-                     * @return {@link net.sf.gilead.core.PersistentBeanManager}
-                     */
                     @Provides
                     @Singleton
-                    public PersistentBeanManager persistentBeanManager(EntityManagerFactory entityManagerFactory) {
-                        // use JPA repository
-                        HibernateJpaUtil hibernateJpaUtil = new HibernateJpaUtil();
-                        hibernateJpaUtil.setEntityManagerFactory(entityManagerFactory);
-                        PersistentBeanManager persistentBeanManager = new PersistentBeanManager();
-                        persistentBeanManager.setPersistenceUtil(hibernateJpaUtil);
-
-                        // serialization of the hibernate entities for GWT
-                        StatelessProxyStore proxyStore = new StatelessProxyStore();
-                        proxyStore.setProxySerializer(new GwtProxySerialization());
-                        persistentBeanManager.setProxyStore(proxyStore);
-
-                        return persistentBeanManager;
+                    public DozerBeanMapper dozerBeanMapper() {
+                       return new DozerBeanMapper(Lists.newArrayList("dozerBeanMapping.xml"));
                     }
 
                 });
     }
 }
-
-

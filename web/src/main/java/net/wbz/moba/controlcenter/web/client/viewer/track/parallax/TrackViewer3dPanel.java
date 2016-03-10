@@ -23,7 +23,7 @@ import java.util.Map;
 /**
  * Viewer panel for the 3D scene.
  *
- * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
+ * @author Daniel Tuerk
  */
 public class TrackViewer3dPanel extends AbstractTrackViewerPanel {
 

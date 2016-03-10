@@ -23,7 +23,7 @@ import thothbot.parallax.core.shared.objects.Mesh;
  * Scene to display the world with an grid system.
  * The grid represents the available positions for the {@link net.wbz.moba.controlcenter.web.shared.track.model.TrackPart}s.
  *
- * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
+ * @author Daniel Tuerk
  */
 public class TrackViewerScene extends AnimatedScene {
 

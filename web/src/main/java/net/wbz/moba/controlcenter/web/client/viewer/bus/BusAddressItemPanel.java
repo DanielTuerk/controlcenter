@@ -19,7 +19,7 @@ import java.util.Map;
  * <p/>
  * Responding of incoming data by graphical behaviour.
  *
- * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
+ * @author Daniel Tuerk
  */
 public class BusAddressItemPanel extends FlowPanel {
     /**

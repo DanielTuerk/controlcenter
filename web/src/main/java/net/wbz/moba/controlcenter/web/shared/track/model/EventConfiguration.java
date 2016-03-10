@@ -1,7 +1,7 @@
 package net.wbz.moba.controlcenter.web.shared.track.model;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
-import net.sf.gilead.pojo.gwt.LightEntity;
+
 
 import javax.annotation.Generated;
 import javax.persistence.*;
@@ -11,7 +11,7 @@ import java.io.Serializable;
  * @author Daniel Tuerk
  */
 @Entity
-public class EventConfiguration extends LightEntity implements IsSerializable, Serializable {
+public class EventConfiguration implements IsSerializable, Serializable {
 
     @Id
     @GeneratedValue

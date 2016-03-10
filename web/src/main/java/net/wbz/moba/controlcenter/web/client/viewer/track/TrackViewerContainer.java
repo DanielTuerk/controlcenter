@@ -12,7 +12,7 @@ import net.wbz.moba.controlcenter.web.client.viewer.track.svg.TrackViewerPanel;
  * Container of the track viewer to show the track and the controls.
  * Type of the track is configured by config key to switch between the viewer types.
  *
- * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
+ * @author Daniel Tuerk
  */
 public class TrackViewerContainer extends DockLayoutPanel {
 

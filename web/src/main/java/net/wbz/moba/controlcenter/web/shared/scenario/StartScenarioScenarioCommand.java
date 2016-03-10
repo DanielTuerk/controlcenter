@@ -3,7 +3,7 @@ package net.wbz.moba.controlcenter.web.shared.scenario;
 /**
  * Command to start another {@link net.wbz.moba.controlcenter.web.shared.scenario.Scenario}.
  *
- * @author Daniel Tuerk (daniel.tuerk@w-b-z.com)
+ * @author Daniel Tuerk
  */
 public class StartScenarioScenarioCommand extends ScenarioCommand {
 

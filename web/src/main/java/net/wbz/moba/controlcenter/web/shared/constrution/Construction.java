@@ -1,6 +1,7 @@
 package net.wbz.moba.controlcenter.web.shared.constrution;
 
 
+import net.wbz.moba.controlcenter.web.shared.HasVersionAndId;
 import net.wbz.moba.controlcenter.web.shared.track.model.TrackPart;
 import net.wbz.moba.controlcenter.web.shared.track.model.TrackPartFunction;
 
@@ -13,7 +14,7 @@ import java.util.Set;
  * @author Daniel Tuerk
  */
 @Entity
-public class Construction implements Serializable {
+public class Construction implements HasVersionAndId {
 
     @Id
     @GeneratedValue
@@ -21,6 +22,10 @@ public class Construction implements Serializable {
 
     private String name;
 
+    @Override
+    public Integer getVersion(){return 0;};
+
+    @Override
     public long getId() {
         return id;
     }

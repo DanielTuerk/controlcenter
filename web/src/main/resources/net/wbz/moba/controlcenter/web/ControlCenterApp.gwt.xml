@@ -43,6 +43,9 @@
     <inherits name="org.gwtbootstrap3.extras.select.Select"/>
     <inherits name="org.gwtbootstrap3.extras.slider.Slider"/>
     <inherits name="org.gwtbootstrap3.extras.growl.Growl"/>
+
+    <inherits name="com.google.web.bindery.requestfactory.RequestFactory"/>
+
     <entry-point class='net.wbz.moba.controlcenter.web.client.ControlCenterApp'/>
 
     <!-- Specify the paths for translatable code                    -->

@@ -10,9 +10,8 @@ import javax.inject.Provider;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
-import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import net.wbz.moba.controlcenter.web.server.EventBroadcaster;
-import net.wbz.moba.controlcenter.web.server.constrution.ConstructionServiceImpl;
+import net.wbz.moba.controlcenter.web.server.constrution.ConstructionService;
 import net.wbz.moba.controlcenter.web.shared.bus.FeedbackBlockEvent;
 import net.wbz.moba.controlcenter.web.shared.constrution.Construction;
 import net.wbz.moba.controlcenter.web.shared.editor.TrackEditorService;
@@ -37,6 +36,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.google.inject.Singleton;
 import com.google.inject.persist.Transactional;
 
@@ -48,7 +48,7 @@ public class TrackEditorServiceImpl extends RemoteServiceServlet implements Trac
 
     private static final Logger log = LoggerFactory.getLogger(TrackEditorServiceImpl.class);
 
-    private final ConstructionServiceImpl constructionService;
+    private final ConstructionService constructionService;
 
     private final Map<BusAddressIdentifier, List<BusListener>> busAddressListenersOfTheCurrentTrack = Maps
             .newConcurrentMap();
@@ -59,8 +59,8 @@ public class TrackEditorServiceImpl extends RemoteServiceServlet implements Trac
     private final Provider<EntityManager> entityManagerProvider;
 
     @Inject
-    public TrackEditorServiceImpl(ConstructionServiceImpl constructionService, DeviceManager deviceManager,
-            EventBroadcaster eventBroadcaster, Provider<EntityManager> entityManager) {
+    public TrackEditorServiceImpl(ConstructionService constructionService, DeviceManager deviceManager,
+                                  EventBroadcaster eventBroadcaster, Provider<EntityManager> entityManager) {
         this.constructionService = constructionService;
         this.eventBroadcaster = eventBroadcaster;
         this.deviceManager = deviceManager;
@@ -120,7 +120,7 @@ public class TrackEditorServiceImpl extends RemoteServiceServlet implements Trac
     public void saveTrack(TrackPart[] trackParts) {
         EntityManager entityManager = this.entityManagerProvider.get();
 
-        Construction currentConstruction = constructionService.getCurrentConstruction();
+         Construction currentConstruction = constructionService.getCurrentConstruction();
         for (TrackPart trackPart : trackParts) {
             trackPart.setConstructionId(currentConstruction.getId());
 

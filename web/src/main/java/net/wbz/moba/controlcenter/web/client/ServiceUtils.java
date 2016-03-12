@@ -1,12 +1,11 @@
 package net.wbz.moba.controlcenter.web.client;
 
-import com.google.gwt.core.client.GWT;
+import net.wbz.moba.controlcenter.web.shared.FoobarRequestFactory;
 import net.wbz.moba.controlcenter.web.shared.bus.BusService;
 import net.wbz.moba.controlcenter.web.shared.bus.BusServiceAsync;
 import net.wbz.moba.controlcenter.web.shared.config.ConfigService;
 import net.wbz.moba.controlcenter.web.shared.config.ConfigServiceAsync;
-import net.wbz.moba.controlcenter.web.shared.constrution.ConstructionService;
-import net.wbz.moba.controlcenter.web.shared.constrution.ConstructionServiceAsync;
+import net.wbz.moba.controlcenter.web.shared.constrution.ConstructionRequest;
 import net.wbz.moba.controlcenter.web.shared.editor.TrackEditorService;
 import net.wbz.moba.controlcenter.web.shared.editor.TrackEditorServiceAsync;
 import net.wbz.moba.controlcenter.web.shared.scenario.ScenarioEditorService;
@@ -20,6 +19,10 @@ import net.wbz.moba.controlcenter.web.shared.train.TrainServiceAsync;
 import net.wbz.moba.controlcenter.web.shared.viewer.TrackViewerService;
 import net.wbz.moba.controlcenter.web.shared.viewer.TrackViewerServiceAsync;
 
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.shared.EventBus;
+import com.google.gwt.event.shared.SimpleEventBus;
+
 /**
  * @author Daniel Tuerk
  */
@@ -32,16 +35,27 @@ public class ServiceUtils {
     private static final TrackViewerServiceAsync trackViewerService = GWT.create(TrackViewerService.class);
     private static final TrackEditorServiceAsync trackEditorService = GWT.create(TrackEditorService.class);
 
-    private static final ConstructionServiceAsync construtionService = GWT.create(ConstructionService.class);
+    // private static final ConstructionServiceAsync construtionService = GWT.create(ConstructionService.class);
     private static final ScenarioServiceAsync scenarioService = GWT.create(ScenarioService.class);
 
     private static final TrainEditorServiceAsync trainEditorService = GWT.create(TrainEditorService.class);
     private static final TrainServiceAsync trainService = GWT.create(TrainService.class);
 
     private static final ConfigServiceAsync configService = GWT.create(ConfigService.class);
+    private static ServiceUtils instance;
+    private final FoobarRequestFactory requestFactory;
 
-    public static ConstructionServiceAsync getConstrutionService() {
-        return construtionService;
+    private ServiceUtils() {
+        final EventBus eventBus = new SimpleEventBus();
+        requestFactory = GWT.create(FoobarRequestFactory.class);
+        requestFactory.initialize(eventBus);
+    }
+
+    public static ServiceUtils getInstance() {
+        if (instance == null) {
+            instance = new ServiceUtils();
+        }
+        return instance;
     }
 
     public static TrackEditorServiceAsync getTrackEditorService() {
@@ -74,5 +88,9 @@ public class ServiceUtils {
 
     public static ConfigServiceAsync getConfigService() {
         return configService;
+    }
+
+    public ConstructionRequest getConstrutionService() {
+        return requestFactory.constructionRequest();
     }
 }

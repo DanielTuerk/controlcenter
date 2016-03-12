@@ -1,27 +1,29 @@
 package net.wbz.moba.controlcenter.web.client;
 
-import com.google.gwt.core.client.EntryPoint;
-import com.google.gwt.dom.client.Style;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.DockLayoutPanel;
-import com.google.gwt.user.client.ui.RootLayoutPanel;
-import com.google.gwt.user.client.ui.SimplePanel;
-import com.google.gwt.user.client.ui.Widget;
+import java.util.ArrayList;
+import java.util.List;
+
 import net.wbz.moba.controlcenter.web.client.device.StatePanel;
 import net.wbz.moba.controlcenter.web.client.editor.track.TrackEditorContainer;
 import net.wbz.moba.controlcenter.web.client.model.track.ModelManager;
 import net.wbz.moba.controlcenter.web.client.viewer.bus.BusMonitorPanel;
 import net.wbz.moba.controlcenter.web.client.viewer.settings.ConfigPanel;
 import net.wbz.moba.controlcenter.web.client.viewer.track.TrackViewerContainer;
-import net.wbz.moba.controlcenter.web.shared.constrution.Construction;
+import net.wbz.moba.controlcenter.web.shared.constrution.ConstructionProxy;
+
 import org.gwtbootstrap3.client.ui.constants.IconType;
 import org.gwtbootstrap3.extras.growl.client.ui.Growl;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.google.gwt.core.client.EntryPoint;
+import com.google.gwt.dom.client.Style;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.ui.DockLayoutPanel;
+import com.google.gwt.user.client.ui.RootLayoutPanel;
+import com.google.gwt.user.client.ui.SimplePanel;
+import com.google.gwt.user.client.ui.Widget;
+import com.google.web.bindery.requestfactory.shared.Receiver;
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
@@ -53,40 +55,34 @@ public class ControlCenterApp implements EntryPoint {
             loadWelcomePage();
         } else {
 
-            ServiceUtils.getConstrutionService().loadConstructions(new AsyncCallback<Construction[]>() {
-                @Override
-                public void onFailure(Throwable throwable) {
+            ServiceUtils.getInstance().getConstrutionService().loadConstructions().fire(
+                    new Receiver<List<ConstructionProxy>>() {
+                        @Override
+                        public void onSuccess(List<ConstructionProxy> response) {
+                            String lastUsedConstruction = Settings.getInstance().getLastUsedConstruction().getValue();
+                            ConstructionProxy constructionToLoad = null;
+                            for (ConstructionProxy construction : response) {
+                                if (construction.getName().equals(lastUsedConstruction)) {
+                                    constructionToLoad = construction;
+                                    break;
+                                }
+                            }
+                            if (constructionToLoad != null) {
+                                ServiceUtils.getInstance().getConstrutionService().setCurrentConstruction(
+                                        constructionToLoad).fire(new Receiver<Void>() {
+                                    @Override
+                                    public void onSuccess(Void response) {
+                                        loadControlCenter();
+                                    }
+                                });
+                            } else {
+                                Growl.growl("", "can't load last used construction", IconType.WARNING);
 
-                }
-
-                @Override
-                public void onSuccess(Construction[] constructions) {
-                    String lastUsedConstruction = Settings.getInstance().getLastUsedConstruction().getValue();
-                    Construction constructionToLoad = null;
-                    for (Construction construction : constructions) {
-                        if (construction.getName().equals(lastUsedConstruction)) {
-                            constructionToLoad = construction;
-                            break;
+                                loadWelcomePage();
+                            }
                         }
-                    }
-                    if (constructionToLoad != null) {
-                        ServiceUtils.getConstrutionService().setCurrentConstruction(constructionToLoad, new AsyncCallback<Void>() {
-                            @Override
-                            public void onFailure(Throwable caught) {
-                            }
+                    });
 
-                            @Override
-                            public void onSuccess(Void result) {
-                                loadControlCenter();
-                            }
-                        });
-                    } else {
-                        Growl.growl("", "can't load last used construction", IconType.WARNING);
-
-                        loadWelcomePage();
-                    }
-                }
-            });
         }
     }
 
@@ -160,8 +156,7 @@ public class ControlCenterApp implements EntryPoint {
                     public void execute() {
                         show(configPanel);
                     }
-                }
-        );
+                });
     }
 
     private void show(Widget containerPanel) {

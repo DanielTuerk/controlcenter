@@ -23,7 +23,7 @@ public class ConstructionSelectionConfigEntry extends SelectionConfigEntry {
         // at first initialize value for direct usage
         ConstructionSelectionConfigEntry.super.handleStorageRead(value);
         // load available options for the select component
-        ServiceUtils.getInstance().getConstrutionService().loadConstructions().fire(
+        ServiceUtils.getInstance().getConstructionService().loadConstructions().fire(
                 new Receiver<List<ConstructionProxy>>() {
                     @Override
                     public void onSuccess(List<ConstructionProxy> response) {

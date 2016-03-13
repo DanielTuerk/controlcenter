@@ -46,7 +46,7 @@ public class WelcomePage extends HorizontalPanel {
                 // final Construction construction = new Construction();
                 // final String constructionName = txtCreateName.getText();
                 // construction.setName(constructionName);
-                // ServiceUtils.getConstrutionService().createConstruction(construction, new
+                // ServiceUtils.getConstructionService().createConstruction(construction, new
                 // AsyncCallback<Construction>() {
                 // @Override
                 // public void onFailure(Throwable caught) {
@@ -54,7 +54,7 @@ public class WelcomePage extends HorizontalPanel {
                 //
                 // @Override
                 // public void onSuccess(Construction result) {
-                // ServiceUtils.getConstrutionService().setCurrentConstruction(result, new AsyncCallback<Void>() {
+                // ServiceUtils.getConstructionService().setCurrentConstruction(result, new AsyncCallback<Void>() {
                 // @Override
                 // public void onFailure(Throwable caught) {
                 // }
@@ -77,7 +77,7 @@ public class WelcomePage extends HorizontalPanel {
         loadPanelContent.setSpacing(10);
         loadPanelContent.add(new Label("Load Existing Construction"));
 
-        ServiceUtils.getInstance().getConstrutionService().loadConstructions().fire(
+        ServiceUtils.getInstance().getConstructionService().loadConstructions().fire(
                 new Receiver<List<ConstructionProxy>>() {
                     @Override
                     public void onSuccess(List<ConstructionProxy> response) {
@@ -85,7 +85,7 @@ public class WelcomePage extends HorizontalPanel {
                             loadPanelContent.add(new Button(construction.getName(), new ClickHandler() {
                                 @Override
                                 public void onClick(ClickEvent event) {
-                                    ServiceUtils.getInstance().getConstrutionService().setCurrentConstruction(
+                                    ServiceUtils.getInstance().getConstructionService().setCurrentConstruction(
                                             construction).fire(new Receiver<Void>() {
                                         @Override
                                         public void onSuccess(Void response) {

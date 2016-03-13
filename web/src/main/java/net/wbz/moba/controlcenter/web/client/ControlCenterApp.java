@@ -55,7 +55,7 @@ public class ControlCenterApp implements EntryPoint {
             loadWelcomePage();
         } else {
 
-            ServiceUtils.getInstance().getConstrutionService().loadConstructions().fire(
+            ServiceUtils.getInstance().getConstructionService().loadConstructions().fire(
                     new Receiver<List<ConstructionProxy>>() {
                         @Override
                         public void onSuccess(List<ConstructionProxy> response) {
@@ -68,7 +68,7 @@ public class ControlCenterApp implements EntryPoint {
                                 }
                             }
                             if (constructionToLoad != null) {
-                                ServiceUtils.getInstance().getConstrutionService().setCurrentConstruction(
+                                ServiceUtils.getInstance().getConstructionService().setCurrentConstruction(
                                         constructionToLoad).fire(new Receiver<Void>() {
                                     @Override
                                     public void onSuccess(Void response) {

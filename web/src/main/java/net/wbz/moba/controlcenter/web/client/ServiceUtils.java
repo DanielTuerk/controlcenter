@@ -84,7 +84,7 @@ public class ServiceUtils {
         return requestFactory.configRequest();
     }
 
-    public ConstructionRequest getConstrutionService() {
+    public ConstructionRequest getConstructionService() {
         // TODO rename
         return requestFactory.constructionRequest();
     }

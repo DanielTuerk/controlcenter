@@ -26,7 +26,7 @@ public class Construction implements HasVersionAndId {
     public Integer getVersion(){return 0;};
 
     @Override
-    public long getId() {
+    public Long getId() {
         return id;
     }
 

@@ -1,5 +1,31 @@
 package net.wbz.moba.controlcenter.web.client.device;
 
+import java.util.List;
+import java.util.Map;
+
+import net.wbz.moba.controlcenter.web.client.EventReceiver;
+import net.wbz.moba.controlcenter.web.client.ServiceUtils;
+import net.wbz.moba.controlcenter.web.client.util.Log;
+import net.wbz.moba.controlcenter.web.shared.bus.DeviceInfo;
+import net.wbz.moba.controlcenter.web.shared.bus.DeviceInfoEvent;
+import net.wbz.moba.controlcenter.web.shared.bus.DeviceInfoProxy;
+
+import org.gwtbootstrap3.client.ui.Button;
+import org.gwtbootstrap3.client.ui.Form;
+import org.gwtbootstrap3.client.ui.FormLabel;
+import org.gwtbootstrap3.client.ui.Modal;
+import org.gwtbootstrap3.client.ui.ModalBody;
+import org.gwtbootstrap3.client.ui.ModalFooter;
+import org.gwtbootstrap3.client.ui.Panel;
+import org.gwtbootstrap3.client.ui.PanelBody;
+import org.gwtbootstrap3.client.ui.PanelHeader;
+import org.gwtbootstrap3.client.ui.TextBox;
+import org.gwtbootstrap3.client.ui.constants.ButtonType;
+import org.gwtbootstrap3.client.ui.constants.IconType;
+import org.gwtbootstrap3.client.ui.gwt.ButtonCell;
+import org.gwtbootstrap3.client.ui.gwt.CellTable;
+import org.gwtbootstrap3.extras.growl.client.ui.Growl;
+
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.google.gwt.cell.client.FieldUpdater;
@@ -7,25 +33,13 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.TextColumn;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.view.client.ListDataProvider;
+import com.google.web.bindery.requestfactory.shared.Receiver;
+import com.google.web.bindery.requestfactory.shared.ServerFailure;
+
 import de.novanic.eventservice.client.event.Event;
 import de.novanic.eventservice.client.event.listener.RemoteEventListener;
-import net.wbz.moba.controlcenter.web.client.EventReceiver;
-import net.wbz.moba.controlcenter.web.client.ServiceUtils;
-import net.wbz.moba.controlcenter.web.client.util.Log;
-import net.wbz.moba.controlcenter.web.shared.bus.DeviceInfo;
-import net.wbz.moba.controlcenter.web.shared.bus.DeviceInfoEvent;
-import org.gwtbootstrap3.client.ui.*;
-import org.gwtbootstrap3.client.ui.constants.ButtonType;
-import org.gwtbootstrap3.client.ui.constants.IconType;
-import org.gwtbootstrap3.client.ui.gwt.ButtonCell;
-import org.gwtbootstrap3.client.ui.gwt.CellTable;
-import org.gwtbootstrap3.extras.growl.client.ui.Growl;
-
-import java.util.ArrayList;
-import java.util.Map;
 
 /**
  * Modal to configure the {@link net.wbz.moba.controlcenter.web.shared.bus.DeviceInfo}s for the connections.
@@ -34,15 +48,13 @@ import java.util.Map;
  */
 public class DeviceConfigModal extends Modal {
 
-    private ListDataProvider<DeviceInfo> dataProvider;
-
     /**
      * Hold {@link com.google.gwt.event.dom.client.ClickHandler} for the delete button of each
      * {@link net.wbz.moba.controlcenter.web.shared.bus.DeviceInfo}.
      * Used to call the handler from the column of the {@link org.gwtbootstrap3.client.ui.gwt.CellTable}.
      */
-    private final Map<DeviceInfo, ClickHandler> btnDeleteActions = Maps.newConcurrentMap();
-
+    private final Map<DeviceInfoProxy, ClickHandler> btnDeleteActions = Maps.newConcurrentMap();
+    private ListDataProvider<DeviceInfoProxy> dataProvider;
 
     public DeviceConfigModal() {
         super();
@@ -66,12 +78,11 @@ public class DeviceConfigModal extends Modal {
         ModalFooter modalFooter = new ModalFooter();
         Button btnClose = new Button(
                 "Close", new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-                DeviceConfigModal.this.hide();
-            }
-        }
-        );
+                    @Override
+                    public void onClick(ClickEvent event) {
+                        DeviceConfigModal.this.hide();
+                    }
+                });
         modalFooter.add(btnClose);
         add(modalFooter);
 
@@ -94,7 +105,7 @@ public class DeviceConfigModal extends Modal {
         PanelBody panelBody = new PanelBody();
 
         Form createForm = new Form();
-//        createForm.setType(FormType.VERTICAL);
+        // createForm.setType(FormType.VERTICAL);
         FormLabel formLabel = new FormLabel();
         formLabel.setText("Key:");
         createForm.add(formLabel);
@@ -105,9 +116,10 @@ public class DeviceConfigModal extends Modal {
                 new ClickHandler() {
                     @Override
                     public void onClick(ClickEvent event) {
-                        //TODO validation feedback on dialog
+                        // TODO validation feedback on dialog
                         if (!Strings.isNullOrEmpty(txtDeviceName.getText())) {
-                            final DeviceInfo deviceInfo = new DeviceInfo();
+                            final DeviceInfoProxy deviceInfo = ServiceUtils.getInstance().getBusService().create(
+                                    DeviceInfoProxy.class);
                             if ("test".equals(txtDeviceName.getText())) {
                                 deviceInfo.setType(DeviceInfo.DEVICE_TYPE.TEST);
                             } else {
@@ -115,14 +127,10 @@ public class DeviceConfigModal extends Modal {
                             }
                             deviceInfo.setKey(txtDeviceName.getValue());
 
-                            ServiceUtils.getBusService().createDevice(deviceInfo, new AsyncCallback<Void>() {
+                            ServiceUtils.getInstance().getBusService().createDevice(deviceInfo).fire(
+                                    new Receiver<Void>() {
                                 @Override
-                                public void onFailure(Throwable caught) {
-                                    DeviceConfigModal.this.hide();
-                                }
-
-                                @Override
-                                public void onSuccess(Void result) {
+                                public void onSuccess(Void response) {
                                     Growl.growl("", "Device " + deviceInfo.getKey() + " created", IconType.INFO);
                                 }
                             });
@@ -146,33 +154,35 @@ public class DeviceConfigModal extends Modal {
 
         PanelBody panelBody = new PanelBody();
 
-        CellTable<DeviceInfo> cellTable = new CellTable<>();
+        CellTable<DeviceInfoProxy> cellTable = new CellTable<>();
 
-        TextColumn<DeviceInfo> columnDeviceKey = new TextColumn<DeviceInfo>() {
+        TextColumn<DeviceInfoProxy> columnDeviceKey = new TextColumn<DeviceInfoProxy>() {
             @Override
-            public String getValue(DeviceInfo contact) {
+            public String getValue(DeviceInfoProxy contact) {
                 return contact.getKey();
             }
         };
         columnDeviceKey.setSortable(true);
 
         cellTable.addColumn(columnDeviceKey, "Key");
-        cellTable.addColumn(new TextColumn<DeviceInfo>() {
+        cellTable.addColumn(new TextColumn<DeviceInfoProxy>() {
             @Override
-            public String getValue(DeviceInfo contact) {
+            public String getValue(DeviceInfoProxy contact) {
                 return contact.getType().name();
             }
         }, "Type");
 
-        Column<DeviceInfo, String> columnDeleteDevice = new Column<DeviceInfo, String>(new ButtonCell(ButtonType.DANGER, IconType.TRASH)) {
+        Column<DeviceInfoProxy, String> columnDeleteDevice = new Column<DeviceInfoProxy, String>(new ButtonCell(
+                ButtonType.DANGER,
+                IconType.TRASH)) {
             @Override
-            public String getValue(DeviceInfo object) {
+            public String getValue(DeviceInfoProxy object) {
                 return "";
             }
         };
-        columnDeleteDevice.setFieldUpdater(new FieldUpdater<DeviceInfo, String>() {
+        columnDeleteDevice.setFieldUpdater(new FieldUpdater<DeviceInfoProxy, String>() {
             @Override
-            public void update(int index, DeviceInfo object, String value) {
+            public void update(int index, DeviceInfoProxy object, String value) {
                 if (btnDeleteActions.containsKey(object)) {
                     btnDeleteActions.get(object).onClick(null);
                 } else {
@@ -194,32 +204,29 @@ public class DeviceConfigModal extends Modal {
     }
 
     private void reloadDeviceList() {
-        ServiceUtils.getBusService().getDevices(new AsyncCallback<ArrayList<DeviceInfo>>() {
+        ServiceUtils.getInstance().getBusService().getDevices().fire(new Receiver<List<DeviceInfoProxy>>() {
             @Override
-            public void onFailure(Throwable caught) {
-            }
-
-            @Override
-            public void onSuccess(ArrayList<DeviceInfo> result) {
+            public void onSuccess(List<DeviceInfoProxy> response) {
                 // reset devices to load fresh list
                 dataProvider.getList().clear();
                 btnDeleteActions.clear();
 
                 // add delete action for the device entry in the list
-                dataProvider.getList().addAll(result);
-                for (final DeviceInfo deviceInfo : result) {
+                dataProvider.getList().addAll(response);
+                for (final DeviceInfoProxy deviceInfo : response) {
                     btnDeleteActions.put(deviceInfo, new ClickHandler() {
                         @Override
                         public void onClick(ClickEvent event) {
-                            ServiceUtils.getBusService().deleteDevice(deviceInfo, new AsyncCallback<Void>() {
+                            ServiceUtils.getInstance().getBusService().deleteDevice(deviceInfo).fire(
+                                    new Receiver<Void>() {
                                 @Override
-                                public void onFailure(Throwable caught) {
-                                    Growl.growl("", "Can't delete device: " + deviceInfo.getKey(), IconType.INFO);
+                                public void onSuccess(Void response) {
+                                    Growl.growl("", "Device " + deviceInfo.getKey() + " deleted", IconType.INFO);
                                 }
 
                                 @Override
-                                public void onSuccess(Void result) {
-                                    Growl.growl("", "Device " + deviceInfo.getKey() + " deleted", IconType.INFO);
+                                public void onFailure(ServerFailure error) {
+                                    Growl.growl("", "Can't delete device: " + deviceInfo.getKey(), IconType.INFO);
                                 }
                             });
                         }
@@ -227,6 +234,7 @@ public class DeviceConfigModal extends Modal {
                 }
             }
         });
+
     }
 
 }

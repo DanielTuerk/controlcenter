@@ -7,7 +7,7 @@ import com.google.web.bindery.requestfactory.shared.EntityProxy;
  */
 public interface EntityProxyWithIdAndVersion extends EntityProxy {
 
-    long getId();
+    Long getId();
 
-    int getVersion();
+    Integer getVersion();
 }

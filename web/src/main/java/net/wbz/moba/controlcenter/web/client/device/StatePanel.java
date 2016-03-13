@@ -1,38 +1,36 @@
 package net.wbz.moba.controlcenter.web.client.device;
 
+import java.util.List;
+
+import net.wbz.moba.controlcenter.web.client.EventReceiver;
+import net.wbz.moba.controlcenter.web.client.ServiceUtils;
+import net.wbz.moba.controlcenter.web.shared.bus.DeviceInfoEvent;
+import net.wbz.moba.controlcenter.web.shared.bus.DeviceInfoProxy;
+import net.wbz.moba.controlcenter.web.shared.bus.PlayerEvent;
+import net.wbz.moba.controlcenter.web.shared.bus.RecordingEvent;
+import net.wbz.moba.controlcenter.web.shared.viewer.RailVoltageEvent;
+
+import org.gwtbootstrap3.client.ui.Button;
+import org.gwtbootstrap3.client.ui.Label;
+import org.gwtbootstrap3.extras.growl.client.ui.Growl;
+import org.gwtbootstrap3.extras.toggleswitch.client.ui.ToggleSwitch;
+import org.gwtbootstrap3.extras.toggleswitch.client.ui.base.constants.ColorType;
+
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
-import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.web.bindery.requestfactory.shared.Receiver;
+
 import de.novanic.eventservice.client.event.Event;
 import de.novanic.eventservice.client.event.listener.RemoteEventListener;
-import net.wbz.moba.controlcenter.web.client.EventReceiver;
-import net.wbz.moba.controlcenter.web.client.ServiceUtils;
-import net.wbz.moba.controlcenter.web.client.util.EmptyCallback;
-import net.wbz.moba.controlcenter.web.shared.bus.DeviceInfo;
-import net.wbz.moba.controlcenter.web.shared.bus.DeviceInfoEvent;
-import net.wbz.moba.controlcenter.web.shared.bus.PlayerEvent;
-import net.wbz.moba.controlcenter.web.shared.bus.RecordingEvent;
-import net.wbz.moba.controlcenter.web.shared.viewer.RailVoltageEvent;
-import org.gwtbootstrap3.client.ui.Button;
-import org.gwtbootstrap3.client.ui.Label;
-import org.gwtbootstrap3.extras.growl.client.ui.Growl;
-import org.gwtbootstrap3.extras.growl.client.ui.GrowlOptions;
-import org.gwtbootstrap3.extras.toggleswitch.client.ui.ToggleSwitch;
-import org.gwtbootstrap3.extras.toggleswitch.client.ui.base.constants.ColorType;
-
-import java.util.ArrayList;
 
 /**
  * @author Daniel Tuerk
  */
 public class StatePanel extends org.gwtbootstrap3.client.ui.gwt.FlowPanel {
 
-    private final RemoteEventListener deviceInfoEventListener;
-    private ToggleSwitch toggleRailVoltage;
-    private Button btnDeviceConfig;
-    private BusConnectionToggleButton busConnectionToggleButton;
+//    private final RemoteEventListener deviceInfoEventListener;
     private final SendDataModal sendDataModal = new SendDataModal();
     private final Button btnSendData;
     private final DeviceListBox deviceListBox;
@@ -42,23 +40,27 @@ public class StatePanel extends org.gwtbootstrap3.client.ui.gwt.FlowPanel {
     private final Button btnPlayerStop = new Button("Stop");
     private final PlayerModal playerModal = new PlayerModal();
     private final RemoteEventListener busDataPlayerEventListener;
+    private ToggleSwitch toggleRailVoltage;
+    private Button btnDeviceConfig;
+    private BusConnectionToggleButton busConnectionToggleButton;
 
     public StatePanel() {
         setStyleName("statePanel");
 
         // add event receiver for the device connection state
-        deviceInfoEventListener = new RemoteEventListener() {
-            public void apply(Event anEvent) {
-                if (anEvent instanceof DeviceInfoEvent) {
-                    DeviceInfoEvent event = (DeviceInfoEvent) anEvent;
-                    if (event.getEventType() == DeviceInfoEvent.TYPE.CONNECTED) {
-                        updateDeviceConnectionState(event.getDeviceInfo(), true);
-                    } else if (event.getEventType() == DeviceInfoEvent.TYPE.DISCONNECTED) {
-                        updateDeviceConnectionState(event.getDeviceInfo(), false);
-                    }
-                }
-            }
-        };
+        // TODO
+        // deviceInfoEventListener = new RemoteEventListener() {
+        // public void apply(Event anEvent) {
+        // if (anEvent instanceof DeviceInfoEvent) {
+        // DeviceInfoEvent event = (DeviceInfoEvent) anEvent;
+        // if (event.getEventType() == DeviceInfoEvent.TYPE.CONNECTED) {
+        // updateDeviceConnectionState(event.getDeviceInfo(), true);
+        // } else if (event.getEventType() == DeviceInfoEvent.TYPE.DISCONNECTED) {
+        // updateDeviceConnectionState(event.getDeviceInfo(), false);
+        // }
+        // }
+        // }
+        // };
 
         // add event receiver for the device connection state
         busDataPlayerEventListener = new RemoteEventListener() {
@@ -125,9 +127,9 @@ public class StatePanel extends org.gwtbootstrap3.client.ui.gwt.FlowPanel {
             @Override
             public void onValueChange(ValueChangeEvent<Boolean> booleanValueChangeEvent) {
                 if (booleanValueChangeEvent.getValue()) {
-                    ServiceUtils.getBusService().startRecording("", new EmptyCallback<Void>());
+                    ServiceUtils.getInstance().getBusService().startRecording("").fire();
                 } else {
-                    ServiceUtils.getBusService().stopRecording(new EmptyCallback<Void>());
+                    ServiceUtils.getInstance().getBusService().stopRecording().fire();
                 }
             }
         });
@@ -156,7 +158,7 @@ public class StatePanel extends org.gwtbootstrap3.client.ui.gwt.FlowPanel {
         btnPlayerStop.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                ServiceUtils.getBusService().stopRecording(new EmptyCallback<Void>());
+                ServiceUtils.getInstance().getBusService().stopRecording().fire();
             }
         });
         add(btnPlayerStop);
@@ -171,34 +173,23 @@ public class StatePanel extends org.gwtbootstrap3.client.ui.gwt.FlowPanel {
     }
 
     private void toggleRailVoltageState() {
-        ServiceUtils.getBusService().toggleRailVoltage(new EmptyCallback<Void>());
+        ServiceUtils.getInstance().getBusService().toggleRailVoltage().fire();
     }
 
     @Override
     protected void onLoad() {
-        EventReceiver.getInstance().addListener(DeviceInfoEvent.class, deviceInfoEventListener);
+//        EventReceiver.getInstance().addListener(DeviceInfoEvent.class, deviceInfoEventListener);
         EventReceiver.getInstance().addListener(PlayerEvent.class, busDataPlayerEventListener);
 
-        ServiceUtils.getBusService().isBusConnected(new AsyncCallback<Boolean>() {
-            @Override
-            public void onFailure(Throwable throwable) {
-            }
-
+        ServiceUtils.getInstance().getBusService().isBusConnected().fire(new Receiver<Boolean>() {
             @Override
             public void onSuccess(Boolean connected) {
-
                 if (connected) {
 
-                    ServiceUtils.getBusService().getDevices(new AsyncCallback<ArrayList<DeviceInfo>>() {
+                    ServiceUtils.getInstance().getBusService().getDevices().fire(new Receiver<List<DeviceInfoProxy>>() {
                         @Override
-                        public void onFailure(Throwable caught) {
-
-                        }
-
-                        @Override
-                        public void onSuccess(ArrayList<DeviceInfo> result) {
-
-                            for (DeviceInfo deviceInfo : result) {
+                        public void onSuccess(List<DeviceInfoProxy> response) {
+                            for (DeviceInfoProxy deviceInfo : response) {
                                 if (deviceInfo.isConnected()) {
                                     updateDeviceConnectionState(deviceInfo, true);
                                     break;
@@ -217,11 +208,11 @@ public class StatePanel extends org.gwtbootstrap3.client.ui.gwt.FlowPanel {
     @Override
     protected void onUnload() {
         super.onUnload();
-        EventReceiver.getInstance().removeListener(DeviceInfoEvent.class, deviceInfoEventListener);
+//        EventReceiver.getInstance().removeListener(DeviceInfoEvent.class, deviceInfoEventListener);
         EventReceiver.getInstance().removeListener(DeviceInfoEvent.class, busDataPlayerEventListener);
     }
 
-    private void updateDeviceConnectionState(DeviceInfo deviceInfo, boolean connected) {
+    private void updateDeviceConnectionState(DeviceInfoProxy deviceInfo, boolean connected) {
         toggleRailVoltage.setEnabled(connected);
         deviceListBox.setConnectedDevice(deviceInfo != null && deviceInfo.isConnected() ? deviceInfo : null);
         // TODO non visual feedback if disabled

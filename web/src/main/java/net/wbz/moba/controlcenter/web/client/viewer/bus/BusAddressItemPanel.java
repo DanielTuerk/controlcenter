@@ -63,8 +63,8 @@ public class BusAddressItemPanel extends FlowPanel {
             itemPanelButton.addClickHandler(new ClickHandler() {
                 @Override
                 public void onClick(ClickEvent event) {
-                    ServiceUtils.getBusService().sendBusData(busNr, address,
-                            bitNr, "0".equals(itemPanelButton.getText()), new EmptyCallback<Void>());
+                    ServiceUtils.getInstance().getBusService().sendBusData(busNr, address,
+                            bitNr, "0".equals(itemPanelButton.getText())).fire();
 
                 }
             });

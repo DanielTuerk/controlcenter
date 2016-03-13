@@ -5,7 +5,6 @@ import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.Nullable;
@@ -14,9 +13,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
 import net.wbz.moba.controlcenter.web.server.EventBroadcaster;
-import net.wbz.moba.controlcenter.web.shared.bus.BusData;
 import net.wbz.moba.controlcenter.web.shared.bus.BusDataEvent;
-import net.wbz.moba.controlcenter.web.shared.bus.BusService;
 import net.wbz.moba.controlcenter.web.shared.bus.DeviceInfo;
 import net.wbz.moba.controlcenter.web.shared.bus.DeviceInfoEvent;
 import net.wbz.moba.controlcenter.web.shared.bus.PlayerEvent;
@@ -35,7 +32,6 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
-import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.google.inject.persist.Transactional;
@@ -44,9 +40,9 @@ import com.google.inject.persist.Transactional;
  * @author Daniel Tuerk
  */
 @Singleton
-public class BusServiceImpl extends RemoteServiceServlet implements BusService {
+public class BusService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(BusServiceImpl.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(BusService.class);
     private final DeviceManager deviceManager;
     private final EventBroadcaster eventBroadcaster;
     private final AllBusDataConsumer allBusDataConsumer;
@@ -57,7 +53,7 @@ public class BusServiceImpl extends RemoteServiceServlet implements BusService {
     private BusDataPlayer busDataPlayer;
 
     @Inject
-    public BusServiceImpl(DeviceManager deviceManager, final EventBroadcaster eventBroadcaster,
+    public BusService(DeviceManager deviceManager, final EventBroadcaster eventBroadcaster,
             DeviceRecorder deviceRecorder, Provider<EntityManager> entityManager) {
         this.deviceManager = deviceManager;
         this.eventBroadcaster = eventBroadcaster;
@@ -85,7 +81,7 @@ public class BusServiceImpl extends RemoteServiceServlet implements BusService {
         deviceManager.addDeviceConnectionListener(new DeviceConnectionListener() {
             @Override
             public void connected(Device device) {
-                BusServiceImpl.this.eventBroadcaster.fireEvent(new DeviceInfoEvent(getDeviceInfo(device),
+                BusService.this.eventBroadcaster.fireEvent(new DeviceInfoEvent(getDeviceInfo(device),
                         DeviceInfoEvent.TYPE.CONNECTED));
                 // receive actual state of rail voltage -> no consumer available for addresses > 112
                 try {
@@ -97,7 +93,7 @@ public class BusServiceImpl extends RemoteServiceServlet implements BusService {
 
             @Override
             public void disconnected(Device device) {
-                BusServiceImpl.this.eventBroadcaster.fireEvent(new DeviceInfoEvent(getDeviceInfo(device),
+                BusService.this.eventBroadcaster.fireEvent(new DeviceInfoEvent(getDeviceInfo(device),
                         DeviceInfoEvent.TYPE.DISCONNECTED));
                 device.getBusDataDispatcher().unregisterConsumer(allBusDataConsumer);
             }
@@ -105,12 +101,10 @@ public class BusServiceImpl extends RemoteServiceServlet implements BusService {
 
     }
 
-    @Override
     public void changeDevice(DeviceInfo deviceInfo) {
         activeDevice = deviceManager.getDeviceById(deviceInfo.getKey());
     }
 
-    @Override
     @Transactional
     public void createDevice(DeviceInfo deviceInfo) {
         // TODO - device settings (e.g. serial/test)
@@ -122,7 +116,6 @@ public class BusServiceImpl extends RemoteServiceServlet implements BusService {
         eventBroadcaster.fireEvent(new DeviceInfoEvent(deviceInfo, DeviceInfoEvent.TYPE.CREATE));
     }
 
-    @Override
     public void deleteDevice(DeviceInfo deviceInfo) {
         Device device = deviceManager.getDeviceById(deviceInfo.getKey());
 
@@ -135,8 +128,7 @@ public class BusServiceImpl extends RemoteServiceServlet implements BusService {
         eventBroadcaster.fireEvent(new DeviceInfoEvent(deviceInfo, DeviceInfoEvent.TYPE.REMOVE));
     }
 
-    @Override
-    public ArrayList<DeviceInfo> getDevices() {
+    public List<DeviceInfo> getDevices() {
         return Lists.newArrayList(Lists.transform(deviceManager.getDevices(), new Function<Device, DeviceInfo>() {
             @Override
             public DeviceInfo apply(@Nullable Device input) {
@@ -157,7 +149,6 @@ public class BusServiceImpl extends RemoteServiceServlet implements BusService {
         return deviceInfo;
     }
 
-    @Override
     public boolean getRailVoltage() {
         if (isBusConnected()) {
             try {
@@ -169,7 +160,6 @@ public class BusServiceImpl extends RemoteServiceServlet implements BusService {
         return false;
     }
 
-    @Override
     public void toggleRailVoltage() {
         if (isBusConnected()) {
             try {
@@ -181,18 +171,6 @@ public class BusServiceImpl extends RemoteServiceServlet implements BusService {
         }
     }
 
-    @Override
-    public BusData[] readBusData(int busNr) {
-        // TODO required?
-        byte[] busData = activeDevice.getBusDataDispatcher().getData(busNr);
-        BusData[] replyData = new BusData[busData.length];
-        for (int i = 0; i < busData.length; i++) {
-            replyData[i] = new BusData(i, (int) busData[i]);
-        }
-        return replyData;
-    }
-
-    @Override
     public void startTrackingBus() {
         if (activeDevice != null && !trackingActive) {
             activeDevice.getBusDataDispatcher().registerConsumer(allBusDataConsumer);
@@ -200,7 +178,6 @@ public class BusServiceImpl extends RemoteServiceServlet implements BusService {
         }
     }
 
-    @Override
     public void stopTrackingBus() {
         if (activeDevice != null && trackingActive) {
             activeDevice.getBusDataDispatcher().unregisterConsumer(allBusDataConsumer);
@@ -208,7 +185,6 @@ public class BusServiceImpl extends RemoteServiceServlet implements BusService {
         }
     }
 
-    @Override
     public void sendBusData(int busNr, int address, int bit, boolean state) {
         if (activeDevice != null) {
             try {
@@ -223,7 +199,6 @@ public class BusServiceImpl extends RemoteServiceServlet implements BusService {
         }
     }
 
-    @Override
     public void sendBusData(int busNr, int address, int data) {
         if (activeDevice != null) {
             try {
@@ -235,17 +210,14 @@ public class BusServiceImpl extends RemoteServiceServlet implements BusService {
         }
     }
 
-    @Override
     public void startRecording(String fileName) {
         deviceRecorder.startRecording(activeDevice, null);
     }
 
-    @Override
     public void stopRecording() {
         deviceRecorder.stopRecording();
     }
 
-    @Override
     public void startPlayer(String absoluteFilePath) {
         busDataPlayer = new BusDataPlayer(activeDevice.getBusDataDispatcher(), activeDevice.getBusDataChannel());
         busDataPlayer.addListener(new BusDataPlayerListener() {
@@ -268,12 +240,10 @@ public class BusServiceImpl extends RemoteServiceServlet implements BusService {
         }
     }
 
-    @Override
     public void stopPlayer() {
         busDataPlayer.stop();
     }
 
-    @Override
     public List<String> getRecords() {
         final List<String> recordsAbsoluteFilePath = Lists.newArrayList();
         try {
@@ -287,7 +257,6 @@ public class BusServiceImpl extends RemoteServiceServlet implements BusService {
         return recordsAbsoluteFilePath;
     }
 
-    @Override
     public void connectBus() {
         if (activeDevice != null) {
             try {
@@ -298,7 +267,6 @@ public class BusServiceImpl extends RemoteServiceServlet implements BusService {
         }
     }
 
-    @Override
     public void disconnectBus() {
         if (activeDevice != null) {
             try {
@@ -309,7 +277,6 @@ public class BusServiceImpl extends RemoteServiceServlet implements BusService {
         }
     }
 
-    @Override
     public boolean isBusConnected() {
         return activeDevice != null && activeDevice.isConnected();
     }

@@ -1,14 +1,10 @@
 package net.wbz.moba.controlcenter.web.client.viewer.track.parallax;
 
-import com.google.common.collect.Maps;
-import com.google.gwt.gen2.logging.shared.Log;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.Widget;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 import net.wbz.moba.controlcenter.web.client.ServiceUtils;
-import net.wbz.moba.controlcenter.web.client.editor.track.ViewerPaletteWidget;
-import net.wbz.moba.controlcenter.web.client.model.track.AbsoluteTrackPosition;
-import net.wbz.moba.controlcenter.web.client.model.track.AbstractSvgTrackWidget;
-import net.wbz.moba.controlcenter.web.client.model.track.ModelManager;
 import net.wbz.moba.controlcenter.web.client.util.EmptyCallback;
 import net.wbz.moba.controlcenter.web.client.viewer.track.AbstractTrackViewerPanel;
 import net.wbz.moba.controlcenter.web.client.viewer.track.parallax.trackparts.Basic3dTrackWidget;
@@ -16,9 +12,11 @@ import net.wbz.moba.controlcenter.web.shared.track.model.Configuration;
 import net.wbz.moba.controlcenter.web.shared.track.model.TrackPart;
 import thothbot.parallax.core.client.RenderingPanel;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import com.google.common.collect.Maps;
+import com.google.gwt.gen2.logging.shared.Log;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.Widget;
+import com.google.web.bindery.requestfactory.shared.Receiver;
 
 /**
  * Viewer panel for the 3D scene.
@@ -31,7 +29,6 @@ public class TrackViewer3dPanel extends AbstractTrackViewerPanel {
     private RenderingPanel renderingPanel;
 
     private Map<Configuration, List<Basic3dTrackWidget>> trackWidgetsOfConfiguration = Maps.newConcurrentMap();
-
 
     public TrackViewer3dPanel() {
         renderingPanel = new RenderingPanel();
@@ -48,13 +45,9 @@ public class TrackViewer3dPanel extends AbstractTrackViewerPanel {
         add(renderingPanel);
 
         // load the connection state to toggle the state of the widgets
-        ServiceUtils.getBusService().isBusConnected(new AsyncCallback<Boolean>() {
+        ServiceUtils.getInstance().getBusService().isBusConnected().fire(new Receiver<Boolean>() {
             @Override
-            public void onFailure(Throwable caught) {
-            }
-
-            @Override
-            public void onSuccess(final Boolean result) {
+            public void onSuccess(Boolean response) {
                 ServiceUtils.getTrackEditorService().loadTrack(new AsyncCallback<TrackPart[]>() {
                     @Override
                     public void onFailure(Throwable throwable) {
@@ -68,13 +61,13 @@ public class TrackViewer3dPanel extends AbstractTrackViewerPanel {
                         for (TrackPart trackPart : trackParts) {
                             Basic3dTrackWidget trackWidget = animatedScene.addTrackWidget(trackPart);
 
-
                             for (Configuration configuration : trackPart.getConfigurationsOfFunctions()) {
 
                                 // ignore default configs of track widget to register event handler
                                 if (configuration.isValid()) {
                                     if (!trackWidgetsOfConfiguration.containsKey(configuration)) {
-                                        trackWidgetsOfConfiguration.put(configuration, new ArrayList<Basic3dTrackWidget>());
+                                        trackWidgetsOfConfiguration.put(configuration,
+                                                new ArrayList<Basic3dTrackWidget>());
                                     }
                                     // avoid same widget for equal bit state configuration
                                     if (!trackWidgetsOfConfiguration.get(configuration).contains(trackWidget)) {
@@ -93,7 +86,6 @@ public class TrackViewer3dPanel extends AbstractTrackViewerPanel {
             }
         });
     }
-
 
     @Override
     protected void updateTrackPartState(Configuration configuration, boolean state) {

@@ -1,14 +1,27 @@
 package net.wbz.moba.controlcenter.web.client.device;
 
-import com.google.gwt.event.dom.client.*;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import net.wbz.moba.controlcenter.web.client.ServiceUtils;
-import org.gwtbootstrap3.client.ui.*;
+
+import org.gwtbootstrap3.client.ui.Button;
+import org.gwtbootstrap3.client.ui.Form;
+import org.gwtbootstrap3.client.ui.FormGroup;
+import org.gwtbootstrap3.client.ui.Modal;
+import org.gwtbootstrap3.client.ui.ModalBody;
+import org.gwtbootstrap3.client.ui.ModalFooter;
+import org.gwtbootstrap3.client.ui.TextBox;
 import org.gwtbootstrap3.client.ui.constants.ButtonType;
 import org.gwtbootstrap3.client.ui.constants.FormType;
 import org.gwtbootstrap3.client.ui.constants.IconType;
 import org.gwtbootstrap3.client.ui.constants.Pull;
 import org.gwtbootstrap3.extras.growl.client.ui.Growl;
+
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyPressEvent;
+import com.google.gwt.event.dom.client.KeyPressHandler;
+import com.google.web.bindery.requestfactory.shared.Receiver;
+import com.google.web.bindery.requestfactory.shared.ServerFailure;
 
 /**
  * Modal to enter and send the data for an address of a bus.
@@ -25,7 +38,6 @@ public class SendDataModal extends Modal {
 
         Form form = new Form();
         form.setType(FormType.INLINE);
-
 
         FormGroup formGroupBus = new FormGroup();
         final TextBox txtBus = new TextBox();
@@ -48,7 +60,6 @@ public class SendDataModal extends Modal {
 
         modalBody.add(form);
         add(modalBody);
-
 
         KeyPressHandler keyPressHandler = new KeyPressHandler() {
             @Override
@@ -90,15 +101,16 @@ public class SendDataModal extends Modal {
         final int address = Integer.parseInt(txtAddress.getText());
         final int busNr = Integer.parseInt(txtBus.getText());
         final int data = Integer.parseInt(txtData.getText());
-        ServiceUtils.getBusService().sendBusData(busNr, address, data, new AsyncCallback<Void>() {
+        ServiceUtils.getInstance().getBusService().sendBusData(busNr, address, data).fire(new Receiver<Void>() {
             @Override
-            public void onFailure(Throwable caught) {
-                Growl.growl("send data", "can't send data: " + caught.getMessage(), IconType.WARNING);
+            public void onFailure(ServerFailure error) {
+                Growl.growl("send data", "can't send data: " + error.getMessage(), IconType.WARNING);
             }
 
             @Override
             public void onSuccess(Void result) {
-                Growl.growl("send data", "data send - bus: " + busNr + " address: " + address + " data: " + data, IconType.INFO);
+                Growl.growl("send data", "data send - bus: " + busNr + " address: " + address + " data: " + data,
+                        IconType.INFO);
             }
         });
     }

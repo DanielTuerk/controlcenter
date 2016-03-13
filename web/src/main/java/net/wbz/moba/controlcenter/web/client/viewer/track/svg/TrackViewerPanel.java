@@ -7,6 +7,7 @@ import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.gen2.logging.shared.Log;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.web.bindery.requestfactory.shared.Receiver;
 import net.wbz.moba.controlcenter.web.client.ServiceUtils;
 import net.wbz.moba.controlcenter.web.client.editor.track.ViewerPaletteWidget;
 import net.wbz.moba.controlcenter.web.client.model.track.AbsoluteTrackPosition;
@@ -66,14 +67,9 @@ public class TrackViewerPanel extends AbstractTrackViewerPanel {
         add(lblTrackPartConfig, 0, 0);
 
         // load the connection state to toggle the state of the widgets
-        ServiceUtils.getBusService().isBusConnected(new AsyncCallback<Boolean>() {
+        ServiceUtils.getInstance().getBusService().isBusConnected().fire(new Receiver<Boolean>() {
             @Override
-            public void onFailure(Throwable caught) {
-
-            }
-
-            @Override
-            public void onSuccess(final Boolean result) {
+            public void onSuccess(final Boolean response) {
                 ServiceUtils.getTrackEditorService().loadTrack(new AsyncCallback<TrackPart[]>() {
                     @Override
                     public void onFailure(Throwable throwable) {
@@ -99,7 +95,7 @@ public class TrackViewerPanel extends AbstractTrackViewerPanel {
                             }
 
                             AbstractSvgTrackWidget trackWidget = ModelManager.getInstance().getWidgetOf(trackPart);
-                            trackWidget.setEnabled(result);
+                            trackWidget.setEnabled(response);
 
                             trackWidgets.add(trackWidget);
 

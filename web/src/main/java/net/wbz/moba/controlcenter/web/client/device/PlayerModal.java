@@ -1,10 +1,9 @@
 package net.wbz.moba.controlcenter.web.client.device;
 
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.user.client.rpc.AsyncCallback;
+import java.util.List;
+
 import net.wbz.moba.controlcenter.web.client.ServiceUtils;
-import net.wbz.moba.controlcenter.web.client.util.EmptyCallback;
+
 import org.gwtbootstrap3.client.ui.Button;
 import org.gwtbootstrap3.client.ui.Modal;
 import org.gwtbootstrap3.client.ui.ModalBody;
@@ -14,7 +13,9 @@ import org.gwtbootstrap3.client.ui.constants.Pull;
 import org.gwtbootstrap3.client.ui.constants.Spy;
 import org.gwtbootstrap3.client.ui.gwt.FlowPanel;
 
-import java.util.List;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.web.bindery.requestfactory.shared.Receiver;
 
 /**
  * Modal to select the playback file to start the playback.
@@ -55,19 +56,15 @@ public class PlayerModal extends Modal {
 
         content.clear();
 
-        ServiceUtils.getBusService().getRecords(new AsyncCallback<List<String>>() {
+        ServiceUtils.getInstance().getBusService().getRecords().fire(new Receiver<List<String>>() {
             @Override
-            public void onFailure(Throwable caught) {
-            }
-
-            @Override
-            public void onSuccess(List<String> result) {
-                for (final String name : result) {
+            public void onSuccess(List<String> response) {
+                for (final String name : response) {
                     Button btnRecord = new Button(name);
                     btnRecord.addClickHandler(new ClickHandler() {
                         @Override
                         public void onClick(ClickEvent event) {
-                            ServiceUtils.getBusService().startPlayer(name, new EmptyCallback<Void>());
+                            ServiceUtils.getInstance().getBusService().startPlayer(name).fire();
                             hide();
                         }
                     });

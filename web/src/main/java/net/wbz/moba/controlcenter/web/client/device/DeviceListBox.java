@@ -1,25 +1,27 @@
 package net.wbz.moba.controlcenter.web.client.device;
 
-import com.google.common.collect.Lists;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import de.novanic.eventservice.client.event.Event;
-import de.novanic.eventservice.client.event.listener.RemoteEventListener;
+import java.util.List;
+
 import net.wbz.moba.controlcenter.web.client.EventReceiver;
 import net.wbz.moba.controlcenter.web.client.ServiceUtils;
-import net.wbz.moba.controlcenter.web.shared.bus.DeviceInfo;
 import net.wbz.moba.controlcenter.web.shared.bus.DeviceInfoEvent;
+import net.wbz.moba.controlcenter.web.shared.bus.DeviceInfoProxy;
+
 import org.gwtbootstrap3.extras.select.client.ui.Option;
 import org.gwtbootstrap3.extras.select.client.ui.Select;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.google.common.collect.Lists;
+import com.google.web.bindery.requestfactory.shared.Receiver;
+
+import de.novanic.eventservice.client.event.Event;
+import de.novanic.eventservice.client.event.listener.RemoteEventListener;
 
 /**
  * @author Daniel Tuerk
  */
 public class DeviceListBox extends Select {
 
-    private final List<DeviceInfo> devices = Lists.newArrayList();
+    private final List<DeviceInfoProxy> devices = Lists.newArrayList();
 
     public DeviceListBox() {
         setWidth("180px");
@@ -33,8 +35,8 @@ public class DeviceListBox extends Select {
         reload();
     }
 
-    private DeviceInfo getDevice(String value) {
-        for (DeviceInfo deviceInfo : devices) {
+    private DeviceInfoProxy getDevice(String value) {
+        for (DeviceInfoProxy deviceInfo : devices) {
             if (deviceInfo.getKey().endsWith(value)) {
                 return deviceInfo;
             }
@@ -44,19 +46,14 @@ public class DeviceListBox extends Select {
 
     public void reload() {
 
-        ServiceUtils.getBusService().getDevices(new AsyncCallback<ArrayList<DeviceInfo>>() {
+        ServiceUtils.getInstance().getBusService().getDevices().fire(new Receiver<List<DeviceInfoProxy>>() {
             @Override
-            public void onFailure(Throwable caught) {
-                setValue("error:can't load: " + caught.getMessage());
-            }
-
-            @Override
-            public void onSuccess(ArrayList<DeviceInfo> result) {
+            public void onSuccess(List<DeviceInfoProxy> result) {
                 devices.clear();
                 devices.addAll(result);
 
                 DeviceListBox.this.clear();
-                for (DeviceInfo device : result) {
+                for (DeviceInfoProxy device : result) {
                     Option child = new Option();
                     child.setValue(device.getKey());
                     child.setText(device.getKey());
@@ -67,15 +64,15 @@ public class DeviceListBox extends Select {
         });
     }
 
-    public List<DeviceInfo> getDevices() {
+    public List<DeviceInfoProxy> getDevices() {
         return devices;
     }
 
-    public DeviceInfo getSelectedDevice() {
+    public DeviceInfoProxy getSelectedDevice() {
         return getDevice(getValue());
     }
 
-    public void setConnectedDevice(DeviceInfo deviceInfo) {
+    public void setConnectedDevice(DeviceInfoProxy deviceInfo) {
         if (deviceInfo != null) {
             setValue(deviceInfo.getKey());
         }

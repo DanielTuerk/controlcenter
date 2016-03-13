@@ -6,7 +6,7 @@ import java.util.Properties;
 import net.wbz.moba.controlcenter.web.guice.requestFactory.InjectedRequestFactoryModule;
 import net.wbz.moba.controlcenter.web.guice.requestFactory.InjectedRequestFactoryServlet;
 import net.wbz.moba.controlcenter.web.server.config.ConfigServiceImpl;
-import net.wbz.moba.controlcenter.web.server.constrution.BusServiceImpl;
+import net.wbz.moba.controlcenter.web.server.constrution.BusService;
 import net.wbz.moba.controlcenter.web.server.editor.TrackEditorServiceImpl;
 import net.wbz.moba.controlcenter.web.server.scenario.ScenarioEditorServiceImpl;
 import net.wbz.moba.controlcenter.web.server.scenario.ScenarioServiceImpl;
@@ -103,15 +103,15 @@ public class MyGuiceServletConfig extends GuiceServletContextListener {
                  * Register the GWT services.
                  */
 
-                serve("/" + APP_NAME + "/bus").with(BusServiceImpl.class);
+//                serve("/" + APP_NAME + "/bus").with(BusService.class);
                 // serve("/" + APP_NAME + "/construction").with(ConstructionService.class);
-                serve("/" + APP_NAME + "/trackviewer").with(TrackViewerServiceImpl.class);
-                serve("/" + APP_NAME + "/trackeditor").with(TrackEditorServiceImpl.class);
-                serve("/" + APP_NAME + "/scenarioservice").with(ScenarioServiceImpl.class);
-                serve("/" + APP_NAME + "/scenarioEditor").with(ScenarioEditorServiceImpl.class);
-                serve("/" + APP_NAME + "/trainEditor").with(TrainEditorServiceImpl.class);
-                serve("/" + APP_NAME + "/trainService").with(TrainServiceImpl.class);
-                serve("/" + APP_NAME + "/config").with(ConfigServiceImpl.class);
+//                serve("/" + APP_NAME + "/trackviewer").with(TrackViewerServiceImpl.class);
+//                serve("/" + APP_NAME + "/trackeditor").with(TrackEditorServiceImpl.class);
+//                serve("/" + APP_NAME + "/scenarioservice").with(ScenarioServiceImpl.class);
+//                serve("/" + APP_NAME + "/scenarioEditor").with(ScenarioEditorServiceImpl.class);
+//                serve("/" + APP_NAME + "/trainEditor").with(TrainEditorServiceImpl.class);
+//                serve("/" + APP_NAME + "/trainService").with(TrainServiceImpl.class);
+//                serve("/" + APP_NAME + "/config").with(ConfigServiceImpl.class);
             }
 
             /**

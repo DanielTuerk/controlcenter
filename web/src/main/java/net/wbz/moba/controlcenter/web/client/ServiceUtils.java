@@ -1,8 +1,7 @@
 package net.wbz.moba.controlcenter.web.client;
 
 import net.wbz.moba.controlcenter.web.shared.FoobarRequestFactory;
-import net.wbz.moba.controlcenter.web.shared.bus.BusService;
-import net.wbz.moba.controlcenter.web.shared.bus.BusServiceAsync;
+import net.wbz.moba.controlcenter.web.shared.bus.BusRequest;
 import net.wbz.moba.controlcenter.web.shared.config.ConfigService;
 import net.wbz.moba.controlcenter.web.shared.config.ConfigServiceAsync;
 import net.wbz.moba.controlcenter.web.shared.constrution.ConstructionRequest;
@@ -30,7 +29,7 @@ public class ServiceUtils {
 
     private static final ScenarioEditorServiceAsync scenarioEditorService = GWT.create(ScenarioEditorService.class);
 
-    private static final BusServiceAsync busService = GWT.create(BusService.class);
+//    private static final BusRequestAsync busService = GWT.create(BusRequest.class);
 
     private static final TrackViewerServiceAsync trackViewerService = GWT.create(TrackViewerService.class);
     private static final TrackEditorServiceAsync trackEditorService = GWT.create(TrackEditorService.class);
@@ -66,8 +65,8 @@ public class ServiceUtils {
         return trackViewerService;
     }
 
-    public static BusServiceAsync getBusService() {
-        return busService;
+    public BusRequest getBusService() {
+        return requestFactory.busRequest();
     }
 
     public static ScenarioEditorServiceAsync getScenarioEditorService() {
@@ -91,6 +90,7 @@ public class ServiceUtils {
     }
 
     public ConstructionRequest getConstrutionService() {
+        //TODO rename
         return requestFactory.constructionRequest();
     }
 }

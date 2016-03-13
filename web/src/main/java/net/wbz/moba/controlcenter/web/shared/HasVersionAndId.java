@@ -13,7 +13,7 @@ public interface HasVersionAndId extends Serializable {
 
     Integer getVersion();
 
-    long getId();
+    Long getId();
 
 
 

@@ -9,7 +9,10 @@ import java.util.List;
 
 /**
  * @author Daniel Tuerk
+ *
+ * @deprecated not in use
  */
+@Deprecated
 public class Scenario extends AbstractIdModel {
 
     @Id

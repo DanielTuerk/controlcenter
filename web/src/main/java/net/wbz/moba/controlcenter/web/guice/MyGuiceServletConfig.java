@@ -5,14 +5,6 @@ import java.util.Properties;
 
 import net.wbz.moba.controlcenter.web.guice.requestFactory.InjectedRequestFactoryModule;
 import net.wbz.moba.controlcenter.web.guice.requestFactory.InjectedRequestFactoryServlet;
-import net.wbz.moba.controlcenter.web.server.config.ConfigServiceImpl;
-import net.wbz.moba.controlcenter.web.server.constrution.BusService;
-import net.wbz.moba.controlcenter.web.server.editor.TrackEditorServiceImpl;
-import net.wbz.moba.controlcenter.web.server.scenario.ScenarioEditorServiceImpl;
-import net.wbz.moba.controlcenter.web.server.scenario.ScenarioServiceImpl;
-import net.wbz.moba.controlcenter.web.server.train.TrainEditorServiceImpl;
-import net.wbz.moba.controlcenter.web.server.train.TrainServiceImpl;
-import net.wbz.moba.controlcenter.web.server.viewer.TrackViewerServiceImpl;
 import net.wbz.selectrix4java.device.DeviceManager;
 
 import com.google.inject.Guice;
@@ -111,7 +103,7 @@ public class MyGuiceServletConfig extends GuiceServletContextListener {
 //                serve("/" + APP_NAME + "/scenarioEditor").with(ScenarioEditorServiceImpl.class);
 //                serve("/" + APP_NAME + "/trainEditor").with(TrainEditorServiceImpl.class);
 //                serve("/" + APP_NAME + "/trainService").with(TrainServiceImpl.class);
-//                serve("/" + APP_NAME + "/config").with(ConfigServiceImpl.class);
+//                serve("/" + APP_NAME + "/config").with(ConfigRequest.class);
             }
 
             /**

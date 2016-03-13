@@ -1,11 +1,12 @@
 package net.wbz.moba.controlcenter.web.client.viewer.settings;
 
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.Widget;
 import net.wbz.moba.controlcenter.web.client.LocalStorage;
 import net.wbz.moba.controlcenter.web.client.ServiceUtils;
-import net.wbz.moba.controlcenter.web.client.util.EmptyCallback;
 import net.wbz.moba.controlcenter.web.client.util.Log;
+import net.wbz.moba.controlcenter.web.shared.config.ConfigNotAvailableException;
+
+import com.google.gwt.user.client.ui.Widget;
+import com.google.web.bindery.requestfactory.shared.Receiver;
 
 /**
  * TODO: text for key as name from template
@@ -14,18 +15,13 @@ import net.wbz.moba.controlcenter.web.client.util.Log;
  */
 abstract public class AbstractConfigEntry<T> {
 
+    private final String group;
+    private final String name;
+    private final Widget widget;
+    private final STORAGE storageType;
     private T value = null;
     private T originalValue;
     private T defaultValue;
-
-    private final String group;
-    private final String name;
-
-    private final Widget widget;
-
-    public enum STORAGE {LOCAL, REMOTE}
-
-    private final STORAGE storageType;
 
     public AbstractConfigEntry(STORAGE storageType, String group, String name, T defaultValue) {
         this.storageType = storageType;
@@ -39,19 +35,17 @@ abstract public class AbstractConfigEntry<T> {
                 handleStorageRead(LocalStorage.getInstance().get(getConfigKey()));
                 break;
             case REMOTE:
-                ServiceUtils.getConfigService().loadValue(getConfigKey(), new AsyncCallback<String>() {
-
-                    @Override
-                    public void onFailure(Throwable throwable) {
-
-                        Log.error(throwable.getMessage());
-                    }
-
-                    @Override
-                    public void onSuccess(String value) {
-                        handleStorageRead(value);
-                    }
-                });
+                try {
+                    ServiceUtils.getInstance().getConfigService().loadValue(getConfigKey()).fire(
+                            new Receiver<String>() {
+                                @Override
+                                public void onSuccess(String response) {
+                                    handleStorageRead(response);
+                                }
+                            });
+                } catch (ConfigNotAvailableException e) {
+                    Log.error(e.getMessage());
+                }
                 break;
         }
     }
@@ -81,14 +75,14 @@ abstract public class AbstractConfigEntry<T> {
         return value != null ? value : defaultValue;
     }
 
-    public void setValueAndSave(T value) {
-        setValue(value);
-        save(value);
-    }
-
     public void setValue(T value) {
         this.value = value;
         valueChanged();
+    }
+
+    public void setValueAndSave(T value) {
+        setValue(value);
+        save(value);
     }
 
     public Widget getWidget() {
@@ -105,7 +99,7 @@ abstract public class AbstractConfigEntry<T> {
 
     public void save() {
         T inputValue = getInputValue();
-       save(inputValue);
+        save(inputValue);
     }
 
     private void save(T value) {
@@ -115,7 +109,8 @@ abstract public class AbstractConfigEntry<T> {
                 setValue(value);
                 break;
             case REMOTE:
-                ServiceUtils.getConfigService().saveValue(getConfigKey(), convertValueToString(value), new EmptyCallback<Void>());
+                ServiceUtils.getInstance().getConfigService().saveValue(getConfigKey(), convertValueToString(value))
+                        .fire();
                 break;
         }
     }
@@ -124,5 +119,9 @@ abstract public class AbstractConfigEntry<T> {
 
     public void reset() {
         setValue(originalValue);
+    }
+
+    public enum STORAGE {
+        LOCAL, REMOTE
     }
 }

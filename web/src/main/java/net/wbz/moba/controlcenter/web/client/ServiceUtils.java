@@ -2,8 +2,7 @@ package net.wbz.moba.controlcenter.web.client;
 
 import net.wbz.moba.controlcenter.web.shared.FoobarRequestFactory;
 import net.wbz.moba.controlcenter.web.shared.bus.BusRequest;
-import net.wbz.moba.controlcenter.web.shared.config.ConfigService;
-import net.wbz.moba.controlcenter.web.shared.config.ConfigServiceAsync;
+import net.wbz.moba.controlcenter.web.shared.config.ConfigRequest;
 import net.wbz.moba.controlcenter.web.shared.constrution.ConstructionRequest;
 import net.wbz.moba.controlcenter.web.shared.editor.TrackEditorService;
 import net.wbz.moba.controlcenter.web.shared.editor.TrackEditorServiceAsync;
@@ -29,18 +28,14 @@ public class ServiceUtils {
 
     private static final ScenarioEditorServiceAsync scenarioEditorService = GWT.create(ScenarioEditorService.class);
 
-//    private static final BusRequestAsync busService = GWT.create(BusRequest.class);
-
     private static final TrackViewerServiceAsync trackViewerService = GWT.create(TrackViewerService.class);
     private static final TrackEditorServiceAsync trackEditorService = GWT.create(TrackEditorService.class);
 
-    // private static final ConstructionServiceAsync construtionService = GWT.create(ConstructionService.class);
     private static final ScenarioServiceAsync scenarioService = GWT.create(ScenarioService.class);
 
     private static final TrainEditorServiceAsync trainEditorService = GWT.create(TrainEditorService.class);
     private static final TrainServiceAsync trainService = GWT.create(TrainService.class);
 
-    private static final ConfigServiceAsync configService = GWT.create(ConfigService.class);
     private static ServiceUtils instance;
     private final FoobarRequestFactory requestFactory;
 
@@ -65,10 +60,6 @@ public class ServiceUtils {
         return trackViewerService;
     }
 
-    public BusRequest getBusService() {
-        return requestFactory.busRequest();
-    }
-
     public static ScenarioEditorServiceAsync getScenarioEditorService() {
         return scenarioEditorService;
     }
@@ -85,12 +76,16 @@ public class ServiceUtils {
         return trainService;
     }
 
-    public static ConfigServiceAsync getConfigService() {
-        return configService;
+    public BusRequest getBusService() {
+        return requestFactory.busRequest();
+    }
+
+    public ConfigRequest getConfigService() {
+        return requestFactory.configRequest();
     }
 
     public ConstructionRequest getConstrutionService() {
-        //TODO rename
+        // TODO rename
         return requestFactory.constructionRequest();
     }
 }

@@ -1,18 +1,28 @@
 package net.wbz.moba.controlcenter.web.client.viewer.controls.train;
 
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.Widget;
 import net.wbz.moba.controlcenter.web.client.ServiceUtils;
-import net.wbz.moba.controlcenter.web.shared.train.Train;
-import org.gwtbootstrap3.client.ui.*;
+import net.wbz.moba.controlcenter.web.shared.train.TrainProxy;
+
+import org.gwtbootstrap3.client.ui.Button;
+import org.gwtbootstrap3.client.ui.Form;
+import org.gwtbootstrap3.client.ui.FormGroup;
+import org.gwtbootstrap3.client.ui.FormLabel;
+import org.gwtbootstrap3.client.ui.Modal;
+import org.gwtbootstrap3.client.ui.ModalBody;
+import org.gwtbootstrap3.client.ui.ModalFooter;
+import org.gwtbootstrap3.client.ui.TextBox;
 import org.gwtbootstrap3.client.ui.constants.ButtonType;
 import org.gwtbootstrap3.client.ui.constants.FormType;
 import org.gwtbootstrap3.client.ui.constants.IconType;
 import org.gwtbootstrap3.client.ui.gwt.FlowPanel;
 import org.gwtbootstrap3.extras.growl.client.ui.Growl;
 import org.gwtbootstrap3.extras.growl.client.ui.GrowlType;
+
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.ui.Widget;
+import com.google.web.bindery.requestfactory.shared.Receiver;
+import com.google.web.bindery.requestfactory.shared.ServerFailure;
 
 /**
  * Modal to edit the {@link net.wbz.moba.controlcenter.web.shared.train.Train} data.
@@ -21,11 +31,11 @@ import org.gwtbootstrap3.extras.growl.client.ui.GrowlType;
  */
 public class TrainItemEditModal extends Modal {
 
-    private final Train train;
+    private final TrainProxy train;
     private TextBox txtName;
     private TextBox txtAddress;
 
-    public TrainItemEditModal(Train train) {
+    public TrainItemEditModal(TrainProxy train) {
         this.train = train;
     }
 
@@ -82,15 +92,17 @@ public class TrainItemEditModal extends Modal {
             public void onClick(ClickEvent clickEvent) {
                 TrainItemEditModal.this.hide();
 
-                ServiceUtils.getTrainEditorService().deleteTrain(train.getId(), new AsyncCallback<Void>() {
+                ServiceUtils.getInstance().getTrainEditorService().deleteTrain(train.getId()).fire(
+                        new Receiver<Void>() {
                     @Override
-                    public void onFailure(Throwable throwable) {
-                        Growl.growl("", "Delete Train " + train.getName() + " Error: " + throwable.getMessage(), IconType.WARNING, GrowlType.DANGER);
+                    public void onSuccess(Void response) {
+                        Growl.growl("", "Train " + train.getName() + " deleted", IconType.INFO);
                     }
 
                     @Override
-                    public void onSuccess(Void aVoid) {
-                        Growl.growl("", "Train " + train.getName() + " deleted", IconType.INFO);
+                    public void onFailure(ServerFailure error) {
+                        Growl.growl("", "Delete Train " + train.getName() + " Error: " + error.getMessage(),
+                                IconType.WARNING, GrowlType.DANGER);
                     }
                 });
             }
@@ -109,14 +121,9 @@ public class TrainItemEditModal extends Modal {
             public void onClick(ClickEvent event) {
                 train.setAddress(Integer.parseInt(txtAddress.getValue()));
                 train.setName(txtName.getValue());
-                ServiceUtils.getTrainEditorService().updateTrain(train, new AsyncCallback<Void>() {
+                ServiceUtils.getInstance().getTrainEditorService().updateTrain(train).fire(new Receiver<Void>() {
                     @Override
-                    public void onFailure(Throwable caught) {
-                        //TODO
-                    }
-
-                    @Override
-                    public void onSuccess(Void result) {
+                    public void onSuccess(Void response) {
                         TrainItemEditModal.this.hide();
                     }
                 });

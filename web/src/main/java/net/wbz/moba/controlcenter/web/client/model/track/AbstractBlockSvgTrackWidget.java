@@ -7,6 +7,7 @@ import net.wbz.moba.controlcenter.web.shared.track.model.Configuration;
 import net.wbz.moba.controlcenter.web.shared.track.model.TrackModelConstants;
 import net.wbz.moba.controlcenter.web.shared.track.model.TrackPart;
 import net.wbz.moba.controlcenter.web.shared.train.Train;
+import net.wbz.moba.controlcenter.web.shared.train.TrainProxy;
 import org.gwtbootstrap3.client.ui.FieldSet;
 import org.gwtbootstrap3.client.ui.FormGroup;
 import org.gwtbootstrap3.client.ui.FormLabel;
@@ -35,7 +36,7 @@ abstract public class AbstractBlockSvgTrackWidget<T extends TrackPart> extends A
      * Used to add or remove an element for entering and exiting the block of a train
      * called by the {@link net.wbz.moba.controlcenter.web.shared.bus.FeedbackBlockEvent}.
      */
-    private Map<Train, OMSVGElement> trainElements = Maps.newConcurrentMap();
+    private Map<TrainProxy, OMSVGElement> trainElements = Maps.newConcurrentMap();
 
 
     @Override
@@ -150,7 +151,7 @@ abstract public class AbstractBlockSvgTrackWidget<T extends TrackPart> extends A
      *
      * @param train {@link net.wbz.moba.controlcenter.web.shared.train.Train}
      */
-    public void showTrainOnBlock(Train train) {
+    public void showTrainOnBlock(TrainProxy train) {
         OMSVGTextElement foo = getSvgDocument().createSVGTextElement(1f, 24f, (short) 1, train.getName());
         foo.getStyle().setSVGProperty(SVGConstants.CSS_FONT_SIZE_PROPERTY, "8pt");
         trainElements.put(train, foo);
@@ -162,7 +163,7 @@ abstract public class AbstractBlockSvgTrackWidget<T extends TrackPart> extends A
      *
      * @param train {@link net.wbz.moba.controlcenter.web.shared.train.Train}
      */
-    public void removeTrainOnBlock(Train train) {
+    public void removeTrainOnBlock(TrainProxy train) {
         if (trainElements.containsKey(train)) {
             getSvgRootElement().removeChild(trainElements.get(train));
             trainElements.remove(train);

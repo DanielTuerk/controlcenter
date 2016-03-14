@@ -21,6 +21,7 @@ import net.wbz.moba.controlcenter.web.shared.bus.FeedbackBlockEvent;
 import net.wbz.moba.controlcenter.web.shared.track.model.Configuration;
 import net.wbz.moba.controlcenter.web.shared.track.model.TrackPart;
 import net.wbz.moba.controlcenter.web.shared.train.Train;
+import net.wbz.moba.controlcenter.web.shared.train.TrainProxy;
 import net.wbz.moba.controlcenter.web.shared.viewer.SignalFunctionStateEvent;
 import org.gwtbootstrap3.client.ui.Label;
 import org.gwtbootstrap3.client.ui.constants.LabelType;
@@ -172,13 +173,9 @@ public class TrackViewerPanel extends AbstractTrackViewerPanel {
      */
     @Override
     protected void updateTrainOnTrack(final int address, final int block, final int train, final FeedbackBlockEvent.STATE state) {
-        ServiceUtils.getTrainEditorService().getTrain(train, new AsyncCallback<Train>() {
+        ServiceUtils.getInstance().getTrainEditorService().getTrain(train).fire(new Receiver<TrainProxy>() {
             @Override
-            public void onFailure(Throwable caught) {
-            }
-
-            @Override
-            public void onSuccess(Train result) {
+            public void onSuccess(TrainProxy result) {
                 Configuration configAsIdentifier = new Configuration(1, address, block, true);
                 if (trackWidgetsOfConfiguration.containsKey(configAsIdentifier)) {
                     for (AbstractSvgTrackWidget svgTrackWidget : trackWidgetsOfConfiguration.get(configAsIdentifier)) {

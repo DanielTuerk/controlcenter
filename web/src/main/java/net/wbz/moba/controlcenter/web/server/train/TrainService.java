@@ -1,12 +1,11 @@
 package net.wbz.moba.controlcenter.web.server.train;
 
 import com.google.gwt.user.client.rpc.RpcTokenException;
-import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import net.wbz.moba.controlcenter.web.shared.train.Train;
 import net.wbz.moba.controlcenter.web.shared.train.TrainFunction;
-import net.wbz.moba.controlcenter.web.shared.train.TrainService;
+import net.wbz.moba.controlcenter.web.shared.train.TrainRequest;
 import net.wbz.selectrix4java.device.DeviceAccessException;
 import net.wbz.selectrix4java.device.DeviceManager;
 import net.wbz.selectrix4java.train.TrainModule;
@@ -14,23 +13,22 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Implementation of the {@link net.wbz.moba.controlcenter.web.shared.train.TrainService}.
+ * Implementation of the {@link TrainRequest}.
  */
 @Singleton
-public class TrainServiceImpl extends RemoteServiceServlet implements TrainService {
+public class TrainService {
 
-    private static final Logger LOG = LoggerFactory.getLogger(TrainServiceImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(TrainService.class);
 
     private final TrainManager trainManager;
     private final DeviceManager deviceManager;
 
     @Inject
-    public TrainServiceImpl(TrainManager trainManager, DeviceManager deviceManager) {
+    public TrainService(TrainManager trainManager, DeviceManager deviceManager) {
         this.trainManager = trainManager;
         this.deviceManager = deviceManager;
     }
 
-    @Override
     public void updateDrivingLevel(long id, int level) {
         if (level >= 0 && level <= 31) {
             int address = trainManager.getTrain(id).getAddress();
@@ -46,7 +44,6 @@ public class TrainServiceImpl extends RemoteServiceServlet implements TrainServi
         }
     }
 
-    @Override
     public void toggleDrivingDirection(long id, Train.DIRECTION direction) {
         int address = trainManager.getTrain(id).getAddress();
         try {
@@ -59,7 +56,6 @@ public class TrainServiceImpl extends RemoteServiceServlet implements TrainServi
         }
     }
 
-    @Override
     public void setFunctionState(long id, TrainFunction.FUNCTION function, boolean state) {
         int address = trainManager.getTrain(id).getAddress();
         try {

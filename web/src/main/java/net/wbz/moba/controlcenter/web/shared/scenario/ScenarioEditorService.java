@@ -14,15 +14,15 @@ public interface ScenarioEditorService extends RemoteService {
     /**
      * @gwt.typeArgs <Scenario>
      */
-    public List<Scenario> getScenarios();
-
-    public void createScenario(String name);
-
-    public void deleteScenario(long scenarioId);
-
-    public void updateScenarioRunMode(long scenarioId, Scenario.MODE mode);
-
-
-    public Scenario updateScenarioCommands(long scenarioId, String[] commands);
+//    public List<Scenario> getScenarios();
+//
+//    public void createScenario(String name);
+//
+//    public void deleteScenario(long scenarioId);
+//
+//    public void updateScenarioRunMode(long scenarioId, Scenario.MODE mode);
+//
+//
+//    public Scenario updateScenarioCommands(long scenarioId, String[] commands);
 
 }

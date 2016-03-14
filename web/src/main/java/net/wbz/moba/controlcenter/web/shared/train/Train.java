@@ -1,7 +1,9 @@
 package net.wbz.moba.controlcenter.web.shared.train;
 
+import com.google.common.collect.Sets;
 import com.google.gwt.user.client.rpc.IsSerializable;
 import net.wbz.moba.controlcenter.web.shared.AbstractIdModel;
+import net.wbz.moba.controlcenter.web.shared.HasVersionAndId;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -14,7 +16,7 @@ import java.util.Set;
  * @author Daniel Tuerk
  */
 @Entity
-public class Train extends AbstractIdModel implements IsSerializable, Serializable {
+public class Train implements IsSerializable, Serializable,HasVersionAndId {
 
     @Id
     @GeneratedValue
@@ -42,7 +44,12 @@ public class Train extends AbstractIdModel implements IsSerializable, Serializab
     public Train() {
     }
 
-    public long getId() {
+    @Override
+    public Integer getVersion() {
+        return 0;
+    }
+
+    public Long getId() {
         return id;
     }
 
@@ -87,7 +94,7 @@ public class Train extends AbstractIdModel implements IsSerializable, Serializab
     }
 
     public Set<TrainFunction> getFunctions() {
-        return functions;
+        return functions!=null?functions: Sets.<TrainFunction>newHashSet();
     }
 
     public TrainFunction getFunction(TrainFunction.FUNCTION function) {

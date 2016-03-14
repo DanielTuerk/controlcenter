@@ -32,37 +32,37 @@ public class ScenarioViewerPanel extends AbstractItemViewerPanel<ScenarioItemPan
         return new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                ServiceUtils.getScenarioEditorService().createScenario(textBox.getText(), new AsyncCallback<Void>() {
-                    @Override
-                    public void onFailure(Throwable caught) {
-                        Log.severe("", "", caught);     //TODO
-                    }
-
-                    @Override
-                    public void onSuccess(Void result) {
-                        textBox.setText("");
-                        loadData();
-                    }
-                });
+//                ServiceUtils.getScenarioEditorService().createScenario(textBox.getText(), new AsyncCallback<Void>() {
+//                    @Override
+//                    public void onFailure(Throwable caught) {
+//                        Log.severe("", "", caught);     //TODO
+//                    }
+//
+//                    @Override
+//                    public void onSuccess(Void result) {
+//                        textBox.setText("");
+//                        loadData();
+//                    }
+//                });
             }
         };
     }
 
     @Override
     protected void loadItems() {
-        ServiceUtils.getScenarioEditorService().getScenarios(new AsyncCallback<List<Scenario>>() {
-            @Override
-            public void onFailure(Throwable caught) {
-                Log.severe("", "", caught);     //TODO
-            }
-
-            @Override
-            public void onSuccess(List<Scenario> result) {
-                for (Scenario scenario : result) {
-                    ScenarioItemPanel scenarioItemPanel = new ScenarioItemPanel(scenario);
-                    addItemPanel(scenarioItemPanel);
-                }
-            }
-        });
+//        ServiceUtils.getScenarioEditorService().getScenarios(new AsyncCallback<List<Scenario>>() {
+//            @Override
+//            public void onFailure(Throwable caught) {
+//                Log.severe("", "", caught);     //TODO
+//            }
+//
+//            @Override
+//            public void onSuccess(List<Scenario> result) {
+//                for (Scenario scenario : result) {
+//                    ScenarioItemPanel scenarioItemPanel = new ScenarioItemPanel(scenario);
+//                    addItemPanel(scenarioItemPanel);
+//                }
+//            }
+//        });
     }
 }

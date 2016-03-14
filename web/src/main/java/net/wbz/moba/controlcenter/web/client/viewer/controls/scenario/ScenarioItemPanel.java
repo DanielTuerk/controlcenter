@@ -131,25 +131,25 @@ public class ScenarioItemPanel extends AbstractItemPanel<Scenario, ScenarioState
         btnToggleRepeatMode = new ToggleSwitch();
         btnToggleRepeatMode.setLabelText("repeat");
         btnToggleRepeatMode.setValue(getModel().getMode() == Scenario.MODE.REPEAT);
-        btnToggleRepeatMode.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
-            @Override
-            public void onValueChange(ValueChangeEvent<Boolean> event) {
-                ServiceUtils.getScenarioEditorService().updateScenarioRunMode(getModel().getId(),
-                        event.getValue() ? Scenario.MODE.REPEAT : Scenario.MODE.SINGLE,
-                        new AsyncCallback<Void>() {
-                            @Override
-                            public void onFailure(Throwable caught) {
-                                //TODO
-                            }
-
-                            @Override
-                            public void onSuccess(Void result) {
-                                //TODO
-                            }
-                        }
-                );
-            }
-        });
+//        btnToggleRepeatMode.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
+//            @Override
+//            public void onValueChange(ValueChangeEvent<Boolean> event) {
+//                ServiceUtils.getScenarioEditorService().updateScenarioRunMode(getModel().getId(),
+//                        event.getValue() ? Scenario.MODE.REPEAT : Scenario.MODE.SINGLE,
+//                        new AsyncCallback<Void>() {
+//                            @Override
+//                            public void onFailure(Throwable caught) {
+//                                //TODO
+//                            }
+//
+//                            @Override
+//                            public void onSuccess(Void result) {
+//                                //TODO
+//                            }
+//                        }
+//                );
+//            }
+//        });
         btnControlGroupPanel.add(btnToggleRepeatMode);
         add(btnControlGroupPanel);
 
@@ -187,20 +187,20 @@ public class ScenarioItemPanel extends AbstractItemPanel<Scenario, ScenarioState
             @Override
             public void onClick(ClickEvent event) {
                 String[] commands = txtCommandList.getText().split("\n");
-                ServiceUtils.getScenarioEditorService().updateScenarioCommands(getModel().getId(), commands,
-                        new AsyncCallback<Scenario>() {
-                            @Override
-                            public void onFailure(Throwable caught) {
-                                //TODO
-                            }
-
-                            @Override
-                            public void onSuccess(Scenario result) {
-                                setModel(result);
-                                showCommandList(result.getCommands());
-                            }
-                        }
-                );
+//                ServiceUtils.getScenarioEditorService().updateScenarioCommands(getModel().getId(), commands,
+//                        new AsyncCallback<Scenario>() {
+//                            @Override
+//                            public void onFailure(Throwable caught) {
+//                                //TODO
+//                            }
+//
+//                            @Override
+//                            public void onSuccess(Scenario result) {
+//                                setModel(result);
+//                                showCommandList(result.getCommands());
+//                            }
+//                        }
+//                );
             }
         });
         commandListEditPanel.add(btnSave);

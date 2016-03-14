@@ -1,6 +1,7 @@
 package net.wbz.moba.controlcenter.web.shared.train;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
+import net.wbz.moba.controlcenter.web.shared.HasVersionAndId;
 
 
 import javax.persistence.*;
@@ -15,7 +16,7 @@ import java.util.Set;
  * @author Daniel Tuerk
  */
 @Entity
-public class TrainFunction implements IsSerializable, Serializable {
+public class TrainFunction implements IsSerializable, Serializable,HasVersionAndId {
 
     /**
      * Available functions for the train.
@@ -45,7 +46,12 @@ public class TrainFunction implements IsSerializable, Serializable {
         this.state = state;
     }
 
-    public long getId() {
+    @Override
+    public Integer getVersion() {
+        return 0;
+    }
+
+    public Long getId() {
         return id;
     }
 

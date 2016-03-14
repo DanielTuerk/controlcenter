@@ -1,19 +1,16 @@
 package net.wbz.moba.controlcenter.web.client.viewer.controls;
 
-import com.google.gwt.dom.client.Style;
-import com.google.gwt.user.client.ui.Panel;
-import de.novanic.eventservice.client.event.Event;
-import de.novanic.eventservice.client.event.listener.RemoteEventListener;
-import net.wbz.moba.controlcenter.web.client.EventReceiver;
-import net.wbz.moba.controlcenter.web.shared.AbstractIdModel;
 import net.wbz.moba.controlcenter.web.shared.AbstractStateEvent;
+import net.wbz.moba.controlcenter.web.shared.EntityProxyWithIdAndVersion;
+
 import org.gwtbootstrap3.client.ui.Button;
 import org.gwtbootstrap3.client.ui.PanelBody;
 import org.gwtbootstrap3.client.ui.PanelCollapse;
 import org.gwtbootstrap3.client.ui.PanelHeader;
 import org.gwtbootstrap3.client.ui.constants.Toggle;
 
-import java.util.*;
+import com.google.gwt.dom.client.Style;
+import com.google.gwt.user.client.ui.Panel;
 
 /**
  * Abstract container panel for the specified {@link net.wbz.moba.controlcenter.web.shared.AbstractIdModel}.
@@ -23,7 +20,8 @@ import java.util.*;
  *
  * @author Daniel Tuerk
  */
-abstract public class AbstractItemPanel<Model extends AbstractIdModel, StateEvent extends AbstractStateEvent> extends org.gwtbootstrap3.client.ui.Panel {
+abstract public class AbstractItemPanel<Model extends EntityProxyWithIdAndVersion, StateEvent extends AbstractStateEvent>
+        extends org.gwtbootstrap3.client.ui.Panel {
 
     private Model model;
 
@@ -33,7 +31,6 @@ abstract public class AbstractItemPanel<Model extends AbstractIdModel, StateEven
     private PanelBody panelBody;
     private PanelHeader panelHeader;
 
-
     public AbstractItemPanel(Model model) {
         this.model = model;
     }
@@ -41,7 +38,7 @@ abstract public class AbstractItemPanel<Model extends AbstractIdModel, StateEven
     public void init() {
         collapseContentPanel = createCollapseContentPanel();
 
-        //header
+        // header
         panelHeader = new PanelHeader();
         headerPanelContent = createHeaderPanel();
         headerPanelContent.addStyleName("abstractItemPanelHeaderContent");
@@ -55,7 +52,6 @@ abstract public class AbstractItemPanel<Model extends AbstractIdModel, StateEven
         btnCollapse.setDataTarget("#" + collapseContainerId);
         btnCollapse.setDataToggle(Toggle.COLLAPSE);
 
-
         // details
         panelBody = new PanelBody();
         panelBody.getElement().getStyle().setPadding(0, Style.Unit.PX);
@@ -63,16 +59,6 @@ abstract public class AbstractItemPanel<Model extends AbstractIdModel, StateEven
         collapseContentPanel.setId(collapseContainerId);
         panelBody.add(collapseContentPanel);
 
-    }
-
-
-    /**
-     * TODO Change to update model, or create a new item panel (scenario)
-     *
-     * @param model
-     */
-    public void setModel(Model model) {
-        this.model = model;
     }
 
     abstract protected Panel createHeaderPanel();
@@ -95,6 +81,15 @@ abstract public class AbstractItemPanel<Model extends AbstractIdModel, StateEven
 
     public Model getModel() {
         return model;
+    }
+
+    /**
+     * TODO Change to update model, or create a new item panel (scenario)
+     *
+     * @param model
+     */
+    public void setModel(Model model) {
+        this.model = model;
     }
 
     public abstract PanelCollapse createCollapseContentPanel();

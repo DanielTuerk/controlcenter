@@ -7,13 +7,11 @@ import java.util.Set;
 import net.wbz.moba.controlcenter.web.server.EventBroadcaster;
 import net.wbz.moba.controlcenter.web.shared.train.Train;
 import net.wbz.moba.controlcenter.web.shared.train.TrainDataChangedEvent;
-import net.wbz.moba.controlcenter.web.shared.train.TrainEditorService;
 import net.wbz.moba.controlcenter.web.shared.train.TrainFunction;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
@@ -21,26 +19,24 @@ import com.google.inject.Singleton;
  * @author Daniel Tuerk
  */
 @Singleton
-public class TrainEditorServiceImpl extends RemoteServiceServlet implements TrainEditorService {
+public class TrainEditorService {
 
-    private static final Logger LOG = LoggerFactory.getLogger(TrainEditorServiceImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(TrainEditorService.class);
 
     private final TrainManager trainManager;
     private final EventBroadcaster eventBroadcaster;
 
     @Inject
-    public TrainEditorServiceImpl(TrainManager trainManager,
-            final EventBroadcaster eventBroadcaster) {
+    public TrainEditorService(TrainManager trainManager,
+                              final EventBroadcaster eventBroadcaster) {
         this.trainManager = trainManager;
         this.eventBroadcaster = eventBroadcaster;
     }
 
-    @Override
     public List<Train> getTrains() {
         return trainManager.getTrains();
     }
 
-    @Override
     public Train getTrain(int address) {
         try {
             return trainManager.getTrainByAddress(address);
@@ -50,7 +46,6 @@ public class TrainEditorServiceImpl extends RemoteServiceServlet implements Trai
         return null;
     }
 
-    @Override
     public void createTrain(String name) {
         Train train = new Train(name);
 
@@ -67,7 +62,6 @@ public class TrainEditorServiceImpl extends RemoteServiceServlet implements Trai
         }
     }
 
-    @Override
     public void deleteTrain(long trainId) {
         try {
             trainManager.deleteTrain(trainId);
@@ -80,7 +74,6 @@ public class TrainEditorServiceImpl extends RemoteServiceServlet implements Trai
         }
     }
 
-    @Override
     public void updateTrain(Train train) {
         try {
             trainManager.storeTrain(train);

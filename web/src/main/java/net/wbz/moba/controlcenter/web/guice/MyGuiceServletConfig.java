@@ -5,6 +5,10 @@ import java.util.Properties;
 
 import net.wbz.moba.controlcenter.web.guice.requestFactory.InjectedRequestFactoryModule;
 import net.wbz.moba.controlcenter.web.guice.requestFactory.InjectedRequestFactoryServlet;
+import net.wbz.moba.controlcenter.web.server.editor.TrackEditorServiceImpl;
+import net.wbz.moba.controlcenter.web.server.scenario.ScenarioEditorServiceImpl;
+import net.wbz.moba.controlcenter.web.server.scenario.ScenarioServiceImpl;
+import net.wbz.moba.controlcenter.web.server.viewer.TrackViewerServiceImpl;
 import net.wbz.selectrix4java.device.DeviceManager;
 
 import com.google.inject.Guice;
@@ -97,12 +101,12 @@ public class MyGuiceServletConfig extends GuiceServletContextListener {
 
 //                serve("/" + APP_NAME + "/bus").with(BusService.class);
                 // serve("/" + APP_NAME + "/construction").with(ConstructionService.class);
-//                serve("/" + APP_NAME + "/trackviewer").with(TrackViewerServiceImpl.class);
-//                serve("/" + APP_NAME + "/trackeditor").with(TrackEditorServiceImpl.class);
-//                serve("/" + APP_NAME + "/scenarioservice").with(ScenarioServiceImpl.class);
-//                serve("/" + APP_NAME + "/scenarioEditor").with(ScenarioEditorServiceImpl.class);
-//                serve("/" + APP_NAME + "/trainEditor").with(TrainEditorServiceImpl.class);
-//                serve("/" + APP_NAME + "/trainService").with(TrainServiceImpl.class);
+                serve("/" + APP_NAME + "/trackviewer").with(TrackViewerServiceImpl.class);
+                serve("/" + APP_NAME + "/trackeditor").with(TrackEditorServiceImpl.class);
+                serve("/" + APP_NAME + "/scenarioservice").with(ScenarioServiceImpl.class);
+                serve("/" + APP_NAME + "/scenarioEditor").with(ScenarioEditorServiceImpl.class);
+//                serve("/" + APP_NAME + "/trainEditor").with(TrainEditorService.class);
+//                serve("/" + APP_NAME + "/trainService").with(TrainRequest.class);
 //                serve("/" + APP_NAME + "/config").with(ConfigRequest.class);
             }
 

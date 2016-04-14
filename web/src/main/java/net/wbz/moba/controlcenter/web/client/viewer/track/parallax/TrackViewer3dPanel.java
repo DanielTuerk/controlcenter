@@ -5,16 +5,14 @@ import java.util.List;
 import java.util.Map;
 
 import net.wbz.moba.controlcenter.web.client.ServiceUtils;
-import net.wbz.moba.controlcenter.web.client.util.EmptyCallback;
 import net.wbz.moba.controlcenter.web.client.viewer.track.AbstractTrackViewerPanel;
 import net.wbz.moba.controlcenter.web.client.viewer.track.parallax.trackparts.Basic3dTrackWidget;
 import net.wbz.moba.controlcenter.web.shared.track.model.Configuration;
-import net.wbz.moba.controlcenter.web.shared.track.model.TrackPart;
+import net.wbz.moba.controlcenter.web.shared.track.model.ConfigurationProxy;
+import net.wbz.moba.controlcenter.web.shared.track.model.TrackPartProxy;
 import thothbot.parallax.core.client.RenderingPanel;
 
 import com.google.common.collect.Maps;
-import com.google.gwt.gen2.logging.shared.Log;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.web.bindery.requestfactory.shared.Receiver;
 
@@ -28,7 +26,7 @@ public class TrackViewer3dPanel extends AbstractTrackViewerPanel {
     private TrackViewerScene animatedScene;
     private RenderingPanel renderingPanel;
 
-    private Map<Configuration, List<Basic3dTrackWidget>> trackWidgetsOfConfiguration = Maps.newConcurrentMap();
+    private Map<ConfigurationProxy, List<Basic3dTrackWidget>> trackWidgetsOfConfiguration = Maps.newConcurrentMap();
 
     public TrackViewer3dPanel() {
         renderingPanel = new RenderingPanel();
@@ -48,20 +46,16 @@ public class TrackViewer3dPanel extends AbstractTrackViewerPanel {
         ServiceUtils.getInstance().getBusService().isBusConnected().fire(new Receiver<Boolean>() {
             @Override
             public void onSuccess(Boolean response) {
-                ServiceUtils.getTrackEditorService().loadTrack(new AsyncCallback<TrackPart[]>() {
+                ServiceUtils.getInstance().getTrackEditorService().loadTrack().fire(
+                        new Receiver<List<TrackPartProxy>>() {
                     @Override
-                    public void onFailure(Throwable throwable) {
-                        Log.severe(throwable.getLocalizedMessage());
-                    }
-
-                    @Override
-                    public void onSuccess(TrackPart[] trackParts) {
+                    public void onSuccess(List<TrackPartProxy> trackParts) {
                         trackWidgetsOfConfiguration.clear();
 
-                        for (TrackPart trackPart : trackParts) {
+                        for (TrackPartProxy trackPart : trackParts) {
                             Basic3dTrackWidget trackWidget = animatedScene.addTrackWidget(trackPart);
 
-                            for (Configuration configuration : trackPart.getConfigurationsOfFunctions()) {
+                            for (ConfigurationProxy configuration : trackPart.getConfigurationsOfFunctions()) {
 
                                 // ignore default configs of track widget to register event handler
                                 if (configuration.isValid()) {
@@ -77,8 +71,8 @@ public class TrackViewer3dPanel extends AbstractTrackViewerPanel {
                             }
 
                         }
-                        ServiceUtils.getTrackEditorService().registerConsumersByConnectedDeviceForTrackParts(trackParts,
-                                new EmptyCallback<Void>());
+                        ServiceUtils.getInstance().getTrackEditorService()
+                                .registerConsumersByConnectedDeviceForTrackParts(trackParts).fire();
 
                         animatedScene.centerCamera();
                     }

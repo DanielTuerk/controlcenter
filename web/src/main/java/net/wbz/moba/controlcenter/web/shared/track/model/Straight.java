@@ -1,6 +1,7 @@
 package net.wbz.moba.controlcenter.web.shared.track.model;
 
 import javax.persistence.Entity;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 /**
@@ -12,7 +13,13 @@ public class Straight extends TrackPart {
 
     public enum DIRECTION {HORIZONTAL, VERTICAL};
 
-    public DIRECTION direction;
+    private DIRECTION direction;
+
+    @OneToOne
+    private TrackPart trackPart;
+
+    public Straight() {
+    }
 
     public DIRECTION getDirection() {
         return direction;

@@ -5,22 +5,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
+import javax.persistence.*;
 
 import com.google.common.collect.Sets;
 import com.google.gwt.user.client.rpc.IsSerializable;
+import com.google.inject.Key;
+import net.wbz.moba.controlcenter.web.shared.HasVersionAndId;
+import net.wbz.moba.controlcenter.web.shared.constrution.Construction;
 
 /**
  * Model for a part of the track.
@@ -31,17 +22,18 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  */
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
-public class TrackPart implements IsSerializable, Serializable {
+public class TrackPart implements HasVersionAndId {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "TRACKPART_ID")
     private long id;
 
     /**
-     * Id of the corresponding construction.
+     * The corresponding construction.
      */
-    private long constructionId;
+    @ManyToOne
+    private Construction construction;
 
     /**
      * Position of the track part in the grid system of the construction.
@@ -63,7 +55,15 @@ public class TrackPart implements IsSerializable, Serializable {
     @OneToOne
     private EventConfiguration eventStateConfig;
 
-    public long getId() {
+    public TrackPart() {
+    }
+
+    @Override
+    public Integer getVersion() {
+        return 0;
+    }
+
+    public Long getId() {
         return id;
     }
 
@@ -86,12 +86,16 @@ public class TrackPart implements IsSerializable, Serializable {
         this.eventStateConfig = eventStateConfig;
     }
 
-    public long getConstructionId() {
-        return constructionId;
+    public Construction getConstruction() {
+        return construction;
     }
 
-    public void setConstructionId(long constructionId) {
-        this.constructionId = constructionId;
+    public void setConstruction(Construction construction) {
+        this.construction = construction;
+    }
+
+    public EventConfiguration getEventStateConfig() {
+        return eventStateConfig;
     }
 
     public List<TrackPartFunction> getFunctionConfigs() {

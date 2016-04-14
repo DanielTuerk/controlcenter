@@ -52,6 +52,9 @@ public class Signal extends Straight {
 
     private TYPE type;
 
+    public Signal() {
+    }
+
     public TYPE getType() {
         return type;
     }

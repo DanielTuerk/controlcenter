@@ -1,6 +1,7 @@
 package net.wbz.moba.controlcenter.web.shared.track.model;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
+import net.wbz.moba.controlcenter.web.shared.HasVersionAndId;
 
 
 import javax.annotation.Generated;
@@ -11,7 +12,7 @@ import java.io.Serializable;
  * @author Daniel Tuerk
  */
 @Entity
-public class EventConfiguration implements IsSerializable, Serializable {
+public class EventConfiguration implements HasVersionAndId {
 
     @Id
     @GeneratedValue
@@ -53,7 +54,12 @@ public class EventConfiguration implements IsSerializable, Serializable {
         return stateOnConfig != null && stateOffConfig != null;
     }
 
-    public long getId() {
+    @Override
+    public Integer getVersion() {
+        return 0;
+    }
+
+    public Long getId() {
         return id;
     }
 

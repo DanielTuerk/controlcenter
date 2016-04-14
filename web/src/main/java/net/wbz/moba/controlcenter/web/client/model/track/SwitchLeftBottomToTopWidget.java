@@ -1,8 +1,8 @@
 package net.wbz.moba.controlcenter.web.client.model.track;
 
+import net.wbz.moba.controlcenter.web.client.ServiceUtils;
 import net.wbz.moba.controlcenter.web.shared.track.model.Switch;
-import org.vectomatic.dom.svg.OMSVGDocument;
-import org.vectomatic.dom.svg.OMSVGSVGElement;
+import net.wbz.moba.controlcenter.web.shared.track.model.SwitchProxy;
 
 /**
  * @author Daniel Tuerk
@@ -19,13 +19,13 @@ public class SwitchLeftBottomToTopWidget extends AbstractSwitchLeftWidget {
     }
 
     @Override
-    public AbstractSvgTrackWidget<Switch> getClone() {
+    public AbstractSvgTrackWidget<SwitchProxy> getClone() {
         return new SwitchLeftBottomToTopWidget();
     }
 
     @Override
-    public Switch getNewTrackPart() {
-        Switch switchBottomTop = new Switch();
+    public SwitchProxy getNewTrackPart() {
+        SwitchProxy switchBottomTop = ServiceUtils.getInstance().getTrackEditorService().create(SwitchProxy.class);
         switchBottomTop.setCurrentDirection(Switch.DIRECTION.LEFT);
         switchBottomTop.setCurrentPresentation(Switch.PRESENTATION.BOTTOM_TO_TOP);
         return switchBottomTop;

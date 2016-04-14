@@ -1,26 +1,14 @@
 package net.wbz.moba.controlcenter.web.server.editor;
 
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-import javax.inject.Inject;
-import javax.inject.Provider;
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
-
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.inject.Singleton;
+import com.google.inject.persist.Transactional;
 import net.wbz.moba.controlcenter.web.server.EventBroadcaster;
 import net.wbz.moba.controlcenter.web.server.constrution.ConstructionService;
 import net.wbz.moba.controlcenter.web.shared.bus.FeedbackBlockEvent;
 import net.wbz.moba.controlcenter.web.shared.constrution.Construction;
-import net.wbz.moba.controlcenter.web.shared.editor.TrackEditorService;
-import net.wbz.moba.controlcenter.web.shared.track.model.Configuration;
-import net.wbz.moba.controlcenter.web.shared.track.model.EventConfiguration;
-import net.wbz.moba.controlcenter.web.shared.track.model.GridPosition;
-import net.wbz.moba.controlcenter.web.shared.track.model.Signal;
-import net.wbz.moba.controlcenter.web.shared.track.model.TrackPart;
-import net.wbz.moba.controlcenter.web.shared.track.model.TrackPartFunction;
+import net.wbz.moba.controlcenter.web.shared.track.model.*;
 import net.wbz.moba.controlcenter.web.shared.viewer.TrackPartStateEvent;
 import net.wbz.selectrix4java.block.FeedbackBlockListener;
 import net.wbz.selectrix4java.bus.BusAddressBitListener;
@@ -30,23 +18,25 @@ import net.wbz.selectrix4java.device.Device;
 import net.wbz.selectrix4java.device.DeviceAccessException;
 import net.wbz.selectrix4java.device.DeviceConnectionListener;
 import net.wbz.selectrix4java.device.DeviceManager;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.gwt.user.server.rpc.RemoteServiceServlet;
-import com.google.inject.Singleton;
-import com.google.inject.persist.Transactional;
+import javax.inject.Inject;
+import javax.inject.Provider;
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author Daniel Tuerk
  */
 @Singleton
-public class TrackEditorServiceImpl extends RemoteServiceServlet implements TrackEditorService {
+public class TrackEditorService {
 
-    private static final Logger log = LoggerFactory.getLogger(TrackEditorServiceImpl.class);
+    private static final Logger log = LoggerFactory.getLogger(TrackEditorService.class);
 
     private final ConstructionService constructionService;
 
@@ -59,8 +49,8 @@ public class TrackEditorServiceImpl extends RemoteServiceServlet implements Trac
     private final Provider<EntityManager> entityManagerProvider;
 
     @Inject
-    public TrackEditorServiceImpl(ConstructionService constructionService, DeviceManager deviceManager,
-                                  EventBroadcaster eventBroadcaster, Provider<EntityManager> entityManager) {
+    public TrackEditorService(ConstructionService constructionService, DeviceManager deviceManager,
+                              EventBroadcaster eventBroadcaster, Provider<EntityManager> entityManager) {
         this.constructionService = constructionService;
         this.eventBroadcaster = eventBroadcaster;
         this.deviceManager = deviceManager;
@@ -78,6 +68,7 @@ public class TrackEditorServiceImpl extends RemoteServiceServlet implements Trac
             }
         });
     }
+
 
     private void addBusAddressListeners(Device device) {
         try {
@@ -115,14 +106,14 @@ public class TrackEditorServiceImpl extends RemoteServiceServlet implements Trac
         }
     }
 
-    @Override
     @Transactional
-    public void saveTrack(TrackPart[] trackParts) {
+    public void saveTrack(List<TrackPart> trackParts) {
         EntityManager entityManager = this.entityManagerProvider.get();
 
-         Construction currentConstruction = constructionService.getCurrentConstruction();
+        Construction currentConstruction = constructionService.getCurrentConstruction();
         for (TrackPart trackPart : trackParts) {
-            trackPart.setConstructionId(currentConstruction.getId());
+            //TODO
+            trackPart.setConstruction(currentConstruction);
 
             if (entityManager.find(GridPosition.class, trackPart.getGridPosition().getId()) == null) {
                 entityManager.persist(trackPart.getGridPosition());
@@ -170,21 +161,20 @@ public class TrackEditorServiceImpl extends RemoteServiceServlet implements Trac
         }
     }
 
-    @Override
-    public TrackPart[] loadTrack() {
+    public List<TrackPart> loadTrack() {
         log.info("load track parts from db");
 
         Query typedQuery = entityManagerProvider.get().createQuery(
-                "SELECT x FROM TrackPart x where x.constructionId=:constructionId");
-        typedQuery.setParameter("constructionId", constructionService.getCurrentConstruction().getId());
+                "SELECT x FROM TrackPart x where x.construction=:construction");
+        typedQuery.setParameter("construction", constructionService.getCurrentConstruction());
 
         List<TrackPart> result = typedQuery.getResultList();
         if (result.size() > 0) {
             log.info("return track parts");
-            return result.toArray(new TrackPart[result.size()]);
+            return result;
         } else {
             log.warn("the current construction is empty");
-            return new TrackPart[0];
+            return Lists.newArrayList();
         }
     }
 
@@ -195,11 +185,11 @@ public class TrackEditorServiceImpl extends RemoteServiceServlet implements Trac
      * TODO: maybe bullshit -> re-register by second browser
      *
      * @param trackParts {@link net.wbz.moba.controlcenter.web.shared.track.model.TrackPart}s to register the
-     *            containing {@link net.wbz.moba.controlcenter.web.shared.track.model.Configuration}
+     *                   containing {@link net.wbz.moba.controlcenter.web.shared.track.model.Configuration}
      */
-    public void registerConsumersByConnectedDeviceForTrackParts(TrackPart[] trackParts) {
+    public void registerConsumersByConnectedDeviceForTrackParts(List<TrackPart> trackParts) {
 
-        if (trackParts.length == 0) {
+        if (trackParts.size() == 0) {
             return;
         }
 
@@ -250,7 +240,7 @@ public class TrackEditorServiceImpl extends RemoteServiceServlet implements Trac
                                 // fire event for changed bit state of the bus address
                                 boolean bitStateChanged = BigInteger.valueOf(newValue).testBit(
                                         trackPartConfiguration.getBit() - 1) != BigInteger.valueOf(oldValue).testBit(
-                                                trackPartConfiguration.getBit() - 1);
+                                        trackPartConfiguration.getBit() - 1);
 
                                 if (firstCall || bitStateChanged) {
                                     eventBroadcaster.fireEvent(new TrackPartStateEvent(trackPartConfiguration,
@@ -271,7 +261,7 @@ public class TrackEditorServiceImpl extends RemoteServiceServlet implements Trac
 
                                         @Override
                                         public void trainEnterBlock(int blockNumber, int trainAddress,
-                                                boolean drivingDirection) {
+                                                                    boolean drivingDirection) {
                                             eventBroadcaster.fireEvent(new FeedbackBlockEvent(
                                                     FeedbackBlockEvent.STATE.ENTER,
                                                     trackPart.getDefaultBlockFunctionConfig().getBus(),
@@ -281,7 +271,7 @@ public class TrackEditorServiceImpl extends RemoteServiceServlet implements Trac
 
                                         @Override
                                         public void trainLeaveBlock(int blockNumber, int trainAddress,
-                                                boolean drivingDirection) {
+                                                                    boolean drivingDirection) {
                                             eventBroadcaster.fireEvent(new FeedbackBlockEvent(
                                                     FeedbackBlockEvent.STATE.EXIT,
                                                     trackPart.getDefaultBlockFunctionConfig().getBus(),
@@ -366,5 +356,6 @@ public class TrackEditorServiceImpl extends RemoteServiceServlet implements Trac
             }
         }
     }
+
 
 }

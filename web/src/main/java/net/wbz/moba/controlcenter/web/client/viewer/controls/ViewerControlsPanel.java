@@ -1,8 +1,6 @@
 package net.wbz.moba.controlcenter.web.client.viewer.controls;
 
 import com.google.gwt.dom.client.Style;
-import com.google.gwt.user.client.ui.SimplePanel;
-import net.wbz.moba.controlcenter.web.client.viewer.controls.scenario.ScenarioViewerPanel;
 import net.wbz.moba.controlcenter.web.client.viewer.controls.train.TrainViewerPanel;
 import org.gwtbootstrap3.client.ui.*;
 import org.gwtbootstrap3.client.ui.constants.TabPosition;
@@ -44,7 +42,6 @@ public class ViewerControlsPanel extends TabPanel {
 
         TabPane scenarioTab = new TabPane();
         scenarioTab.setId(TAB_ID_SCENARIO);
-        scenarioTab.add(new ScenarioViewerPanel());
         tabContent.add(scenarioTab);
 
         add(tabContent);

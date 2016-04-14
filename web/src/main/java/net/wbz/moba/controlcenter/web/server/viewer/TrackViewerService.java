@@ -6,7 +6,7 @@ import java.util.Map;
 import net.wbz.moba.controlcenter.web.shared.bus.BusAddressBit;
 import net.wbz.moba.controlcenter.web.shared.track.model.Configuration;
 import net.wbz.moba.controlcenter.web.shared.track.model.Signal;
-import net.wbz.moba.controlcenter.web.shared.viewer.TrackViewerService;
+import net.wbz.moba.controlcenter.web.shared.viewer.TrackViewerRequest;
 import net.wbz.selectrix4java.bus.BusAddress;
 import net.wbz.selectrix4java.device.Device;
 import net.wbz.selectrix4java.device.DeviceAccessException;
@@ -26,17 +26,16 @@ import com.google.inject.Singleton;
  * @author Daniel Tuerk
  */
 @Singleton
-public class TrackViewerServiceImpl extends RemoteServiceServlet implements TrackViewerService {
-    private static final Logger log = LoggerFactory.getLogger(TrackViewerServiceImpl.class);
+public class TrackViewerService  {
+    private static final Logger log = LoggerFactory.getLogger(TrackViewerService.class);
 
     private final DeviceManager deviceManager;
 
     @Inject
-    public TrackViewerServiceImpl(DeviceManager deviceManager) {
+    public TrackViewerService(DeviceManager deviceManager) {
         this.deviceManager = deviceManager;
     }
 
-    @Override
     public void toggleTrackPart(Configuration configuration, boolean state) {
         if (configuration.isValid()) {
             try {
@@ -57,7 +56,6 @@ public class TrackViewerServiceImpl extends RemoteServiceServlet implements Trac
         }
     }
 
-    @Override
     public boolean getTrackPartState(Configuration configuration) {
         if (configuration.isValid()) {
             try {
@@ -74,7 +72,6 @@ public class TrackViewerServiceImpl extends RemoteServiceServlet implements Trac
         throw new RpcTokenException("invalid configuration: " + configuration);
     }
 
-    @Override
     public void sendTrackPartStates(List<BusAddressBit> busAddressBits) {
         try {
             Device connectedDevice = deviceManager.getConnectedDevice();
@@ -117,7 +114,6 @@ public class TrackViewerServiceImpl extends RemoteServiceServlet implements Trac
         return null;
     }
 
-    @Override
     public void switchSignal(Signal.TYPE signalType, Signal.FUNCTION signalFunction,
             Map<Signal.LIGHT, Configuration> signalConfiguration) {
         // TODO

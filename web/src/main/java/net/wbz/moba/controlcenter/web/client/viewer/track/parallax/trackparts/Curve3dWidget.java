@@ -1,6 +1,7 @@
 package net.wbz.moba.controlcenter.web.client.viewer.track.parallax.trackparts;
 
 import net.wbz.moba.controlcenter.web.shared.track.model.Curve;
+import net.wbz.moba.controlcenter.web.shared.track.model.CurveProxy;
 import thothbot.parallax.core.shared.geometries.BoxGeometry;
 import thothbot.parallax.core.shared.materials.MeshLambertMaterial;
 import thothbot.parallax.core.shared.math.Color;
@@ -11,11 +12,11 @@ import thothbot.parallax.core.shared.math.Vector3;
  *
  * @author Daniel Tuerk
  */
-public class Curve3dWidget extends Basic3dTrackWidget<Curve> {
+public class Curve3dWidget extends Basic3dTrackWidget<CurveProxy> {
 
     private static final String TEXTURE_CURVE = "img/viewer3d/curve.png";
 
-    public Curve3dWidget(Curve trackPart) {
+    public Curve3dWidget(CurveProxy trackPart) {
         super(trackPart);
 
         setMaterial(createTrackPartTexture(TEXTURE_CURVE));

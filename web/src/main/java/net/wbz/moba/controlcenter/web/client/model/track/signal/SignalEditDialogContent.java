@@ -1,16 +1,24 @@
 package net.wbz.moba.controlcenter.web.client.model.track.signal;
 
-import com.google.common.collect.Maps;
-import com.google.gwt.dom.client.Style;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.user.client.ui.Widget;
+import java.util.Map;
+
 import net.wbz.moba.controlcenter.web.client.util.BitStateToggleButton;
-import net.wbz.moba.controlcenter.web.shared.track.model.Configuration;
+import net.wbz.moba.controlcenter.web.shared.track.model.ConfigurationProxy;
 import net.wbz.moba.controlcenter.web.shared.track.model.Signal;
-import org.gwtbootstrap3.client.ui.*;
+import net.wbz.moba.controlcenter.web.shared.track.model.SignalProxy;
+
+import org.gwtbootstrap3.client.ui.Button;
+import org.gwtbootstrap3.client.ui.Column;
+import org.gwtbootstrap3.client.ui.Container;
+import org.gwtbootstrap3.client.ui.NavTabs;
+import org.gwtbootstrap3.client.ui.Row;
+import org.gwtbootstrap3.client.ui.TabContent;
+import org.gwtbootstrap3.client.ui.TabListItem;
+import org.gwtbootstrap3.client.ui.TabPane;
+import org.gwtbootstrap3.client.ui.TabPanel;
+import org.gwtbootstrap3.client.ui.TextBox;
+import org.gwtbootstrap3.client.ui.Well;
 import org.gwtbootstrap3.client.ui.constants.ColumnSize;
-import org.gwtbootstrap3.client.ui.constants.Toggle;
 import org.gwtbootstrap3.client.ui.constants.WellSize;
 import org.gwtbootstrap3.client.ui.gwt.FlowPanel;
 import org.gwtbootstrap3.client.ui.html.ClearFix;
@@ -21,7 +29,9 @@ import org.vectomatic.dom.svg.OMSVGDocument;
 import org.vectomatic.dom.svg.OMSVGSVGElement;
 import org.vectomatic.dom.svg.utils.OMSVGParser;
 
-import java.util.Map;
+import com.google.common.collect.Maps;
+import com.google.gwt.dom.client.Style;
+import com.google.gwt.user.client.ui.Widget;
 
 /**
  * @author Daniel Tuerk
@@ -31,12 +41,12 @@ public class SignalEditDialogContent {
     private static final String ID_TXT_ADDRESS = "txtAddress";
     private static final String ID_SELECT_BIT = "selectBit";
     private static final String ID_BTN_BIT_STATE = "btnBitState";
-    private final Signal signal;
+    private final SignalProxy signal;
 
     private Map<Signal.TYPE, TabListItem> signalTypesTabs = Maps.newHashMap();
     private Map<String, Widget> idWidgets = Maps.newHashMap();
 
-    public SignalEditDialogContent(Signal signal) {
+    public SignalEditDialogContent(SignalProxy signal) {
         this.signal = signal;
     }
 
@@ -101,10 +111,10 @@ public class SignalEditDialogContent {
 
         for (Signal.LIGHT light : signalType.getLights()) {
 
-            Configuration existingLightConfig = signal.getSignalConfiguration().get(light);
-            if (existingLightConfig == null) {
-                existingLightConfig = new Configuration();
-            }
+            ConfigurationProxy existingLightConfig = signal.getSignalConfiguration().get(light);
+            // if (existingLightConfig == null) {
+            // existingLightConfig = new Configuration();
+            // }
 
             Row functionRow = new Row();
 
@@ -159,9 +169,10 @@ public class SignalEditDialogContent {
             Select selectBit = (Select) idWidgets.get(getElementId(signal.getType(), light, ID_SELECT_BIT));
             Button btnBitState = (Button) idWidgets.get(getElementId(signal.getType(), light, ID_BTN_BIT_STATE));
 
-            signal.setLightFunctionConfig(light, new Configuration(1, Integer.parseInt
-                    (txtAddress.getText().trim()), Integer.parseInt(selectBit.getValue()),
-                    btnBitState.isActive()));
+            // TODO
+            // signal.setLightFunctionConfig(light, new Configuration(1, Integer.parseInt
+            // (txtAddress.getText().trim()), Integer.parseInt(selectBit.getValue()),
+            // btnBitState.isActive()));
         }
 
     }

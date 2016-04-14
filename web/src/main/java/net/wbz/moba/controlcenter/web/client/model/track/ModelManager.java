@@ -3,6 +3,7 @@ package net.wbz.moba.controlcenter.web.client.model.track;
 import net.wbz.moba.controlcenter.web.client.model.track.signal.SignalHorizontalWidget;
 import net.wbz.moba.controlcenter.web.client.model.track.signal.SignalVerticalWidget;
 import net.wbz.moba.controlcenter.web.shared.track.model.TrackPart;
+import net.wbz.moba.controlcenter.web.shared.track.model.TrackPartProxy;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +34,7 @@ public class ModelManager {
         return widgets;
     }
 
-    public AbstractSvgTrackWidget getWidgetOf(TrackPart trackPart) {
+    public AbstractSvgTrackWidget getWidgetOf(TrackPartProxy trackPart) {
         for (AbstractSvgTrackWidget widget : widgets) {
             try {
                 if (widget.isRepresentationOf(trackPart)) {

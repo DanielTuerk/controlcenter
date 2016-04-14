@@ -27,20 +27,20 @@ public class TrackPartGeometryFactory {
      * @param trackPart {@link net.wbz.moba.controlcenter.web.shared.track.model.TrackPart}
      * @return {@link net.wbz.moba.controlcenter.web.client.viewer.track.parallax.trackparts.Basic3dTrackWidget}
      */
-    public Basic3dTrackWidget<?> getTrackWidget(TrackPart trackPart) {
+    public Basic3dTrackWidget<?> getTrackWidget(TrackPartProxy trackPart) {
         int x = (trackPart.getGridPosition().getX() + 1) * Basic3dTrackWidget.GEOM_SIZE - (Basic3dTrackWidget.GEOM_SIZE / 2);
         int y = (trackPart.getGridPosition().getY() + 1) * Basic3dTrackWidget.GEOM_SIZE - (Basic3dTrackWidget.GEOM_SIZE / 2);
         Vector3 vector3 = new Vector3(x, -y, 0d);
 
         Basic3dTrackWidget mesh;
-        if (trackPart instanceof Signal) {
-            mesh = new Signal3dWidget((Signal) trackPart);
-        } else if (trackPart instanceof Straight) {
-            mesh = new Straight3dWidget((Straight) trackPart);
-        } else if (trackPart instanceof Curve) {
-            mesh = new Curve3dWidget((Curve) trackPart);
-        } else if (trackPart instanceof Switch) {
-            mesh = new Switch3dWidget((Switch) trackPart);
+        if (trackPart instanceof SignalProxy) {
+            mesh = new Signal3dWidget((SignalProxy) trackPart);
+        } else if (trackPart instanceof StraightProxy) {
+            mesh = new Straight3dWidget((StraightProxy) trackPart);
+        } else if (trackPart instanceof CurveProxy) {
+            mesh = new Curve3dWidget((CurveProxy) trackPart);
+        } else if (trackPart instanceof SwitchProxy) {
+            mesh = new Switch3dWidget((SwitchProxy) trackPart);
         } else {
             mesh = new Basic3dTrackWidget<>(trackPart);
         }

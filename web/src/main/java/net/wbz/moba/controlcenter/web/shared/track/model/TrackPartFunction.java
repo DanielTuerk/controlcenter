@@ -1,6 +1,7 @@
 package net.wbz.moba.controlcenter.web.shared.track.model;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
+import net.wbz.moba.controlcenter.web.shared.HasVersionAndId;
 
 
 import javax.persistence.*;
@@ -12,7 +13,7 @@ import java.util.List;
  * @author Daniel Tuerk
  */
 @Entity
-public class TrackPartFunction implements IsSerializable, Serializable {
+public class TrackPartFunction implements HasVersionAndId {
 
     @Id
     @GeneratedValue
@@ -41,7 +42,12 @@ public class TrackPartFunction implements IsSerializable, Serializable {
     public TrackPartFunction() {
     }
 
-    public long getId() {
+    @Override
+    public Integer getVersion() {
+        return 0;
+    }
+
+    public Long getId() {
         return id;
     }
 

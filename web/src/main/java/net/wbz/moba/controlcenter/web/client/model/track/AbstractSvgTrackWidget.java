@@ -4,11 +4,15 @@ import com.google.common.base.Strings;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
+import net.wbz.moba.controlcenter.web.client.ServiceUtils;
 import net.wbz.moba.controlcenter.web.client.TrackUtils;
 import net.wbz.moba.controlcenter.web.client.editor.track.EditTrackWidgetHandler;
 import net.wbz.moba.controlcenter.web.shared.track.model.Configuration;
+import net.wbz.moba.controlcenter.web.shared.track.model.ConfigurationProxy;
 import net.wbz.moba.controlcenter.web.shared.track.model.GridPosition;
+import net.wbz.moba.controlcenter.web.shared.track.model.GridPositionProxy;
 import net.wbz.moba.controlcenter.web.shared.track.model.TrackPart;
+import net.wbz.moba.controlcenter.web.shared.track.model.TrackPartProxy;
 import org.gwtbootstrap3.client.ui.*;
 import org.gwtbootstrap3.client.ui.constants.FormType;
 import org.vectomatic.dom.svg.OMSVGDocument;
@@ -21,7 +25,7 @@ import java.util.Map;
 /**
  * @author Daniel Tuerk
  */
-abstract public class AbstractSvgTrackWidget<T extends TrackPart> extends SimplePanel implements EditTrackWidgetHandler {
+abstract public class AbstractSvgTrackWidget<T extends TrackPartProxy> extends SimplePanel implements EditTrackWidgetHandler {
 
     public static final String CSS_WIDGET_DISABLED = "widget-disabled";
 
@@ -98,7 +102,7 @@ abstract public class AbstractSvgTrackWidget<T extends TrackPart> extends Simple
      *
      * @return
      */
-    public Map<String, Configuration> getStoredWidgetFunctionConfigs() {
+    public Map<String, ConfigurationProxy> getStoredWidgetFunctionConfigs() {
         return new HashMap<>();
     }
 
@@ -172,7 +176,7 @@ abstract public class AbstractSvgTrackWidget<T extends TrackPart> extends Simple
      * @return {@link net.wbz.moba.controlcenter.web.shared.track.model.TrackPart}
      * @see {#getGridPosition}
      */
-    public TrackPart getTrackPart(Widget containerWidget, int zoomLevel) {
+    public TrackPartProxy getTrackPart(Widget containerWidget, int zoomLevel) {
         long gridPositionIdOfExistingGridPos = -1;
         if (trackPart.getGridPosition() != null) {
             gridPositionIdOfExistingGridPos = trackPart.getGridPosition().getId();
@@ -220,7 +224,7 @@ abstract public class AbstractSvgTrackWidget<T extends TrackPart> extends Simple
      */
     protected abstract AbstractSvgTrackWidget<T> getClone();
 
-    public AbsoluteTrackPosition getTrackPosition(GridPosition gridPosition, int zoomLevel) {
+    public AbsoluteTrackPosition getTrackPosition(GridPositionProxy gridPosition, int zoomLevel) {
         return new AbsoluteTrackPosition(TrackUtils.getLeftPositionFromX(gridPosition.getX(), zoomLevel),
                 TrackUtils.getTopPositionFromY(gridPosition.getY(), zoomLevel));
     }
@@ -233,10 +237,12 @@ abstract public class AbstractSvgTrackWidget<T extends TrackPart> extends Simple
      * @param zoomLevel       level of zoom
      * @return {@link net.wbz.moba.controlcenter.web.shared.track.model.GridPosition}
      */
-    public GridPosition getGridPosition(Widget containerWidget, int zoomLevel) {
-        return new GridPosition(
-                TrackUtils.getXFromLeftPosition(getAbsoluteLeft() - containerWidget.getAbsoluteLeft(), zoomLevel),
-                TrackUtils.getYFromTopPosition(getAbsoluteTop() - containerWidget.getAbsoluteTop(), zoomLevel));
+    public GridPositionProxy getGridPosition(Widget containerWidget, int zoomLevel) {
+        //TODO
+        return null;
+//        return new GridPosition(
+//                TrackUtils.getXFromLeftPosition(getAbsoluteLeft() - containerWidget.getAbsoluteLeft(), zoomLevel),
+//                TrackUtils.getYFromTopPosition(getAbsoluteTop() - containerWidget.getAbsoluteTop(), zoomLevel));
     }
 
     public void setEnabled(boolean enabled) {

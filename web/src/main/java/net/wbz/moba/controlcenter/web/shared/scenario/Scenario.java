@@ -3,6 +3,7 @@ package net.wbz.moba.controlcenter.web.shared.scenario;
 import com.google.web.bindery.requestfactory.shared.EntityProxyId;
 import net.wbz.moba.controlcenter.web.shared.AbstractIdModel;
 import net.wbz.moba.controlcenter.web.shared.EntityProxyWithIdAndVersion;
+import net.wbz.moba.controlcenter.web.shared.HasVersionAndId;
 
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -15,7 +16,7 @@ import java.util.List;
  * @deprecated not in use
  */
 @Deprecated
-public class Scenario implements EntityProxyWithIdAndVersion {
+public class Scenario implements HasVersionAndId {
 
     @Id
     @GeneratedValue
@@ -27,7 +28,7 @@ public class Scenario implements EntityProxyWithIdAndVersion {
 
     @Override
     public Integer getVersion() {
-        return null;
+        return 0;
     }
 
     public void setId(long id) {
@@ -40,11 +41,6 @@ public class Scenario implements EntityProxyWithIdAndVersion {
      * @gwt.typeArgs <ScenarioCommand>
      */
     private List<ScenarioCommand> commands = new ArrayList<ScenarioCommand>();
-
-    @Override
-    public EntityProxyId<?> stableId() {
-        return null;
-    }
 
     public enum RUN_STATE {RUNNING, IDLE, PAUSED}
 

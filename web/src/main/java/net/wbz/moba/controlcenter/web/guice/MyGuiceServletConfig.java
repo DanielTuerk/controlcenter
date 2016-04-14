@@ -1,16 +1,5 @@
 package net.wbz.moba.controlcenter.web.guice;
 
-import java.io.File;
-import java.util.Properties;
-
-import net.wbz.moba.controlcenter.web.guice.requestFactory.InjectedRequestFactoryModule;
-import net.wbz.moba.controlcenter.web.guice.requestFactory.InjectedRequestFactoryServlet;
-import net.wbz.moba.controlcenter.web.server.editor.TrackEditorServiceImpl;
-import net.wbz.moba.controlcenter.web.server.scenario.ScenarioEditorServiceImpl;
-import net.wbz.moba.controlcenter.web.server.scenario.ScenarioServiceImpl;
-import net.wbz.moba.controlcenter.web.server.viewer.TrackViewerServiceImpl;
-import net.wbz.selectrix4java.device.DeviceManager;
-
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Provides;
@@ -20,6 +9,14 @@ import com.google.inject.persist.PersistFilter;
 import com.google.inject.persist.jpa.JpaPersistModule;
 import com.google.inject.servlet.GuiceServletContextListener;
 import com.google.inject.servlet.ServletModule;
+import net.wbz.moba.controlcenter.web.guice.requestFactory.InjectedRequestFactoryModule;
+import net.wbz.moba.controlcenter.web.guice.requestFactory.InjectedRequestFactoryServlet;
+import net.wbz.moba.controlcenter.web.server.scenario.ScenarioEditorServiceImpl;
+import net.wbz.moba.controlcenter.web.server.scenario.ScenarioServiceImpl;
+import net.wbz.selectrix4java.device.DeviceManager;
+
+import java.io.File;
+import java.util.Properties;
 
 /**
  * Configuration of the guice context.
@@ -81,9 +78,9 @@ public class MyGuiceServletConfig extends GuiceServletContextListener {
 
                 /*
                  * Install JPA and delegate all requests by the {@link PersistFilter} to enable transaction
-                 * handling
-                 * by HTTP request. As result you have to inject the {@link javax.persistence.EntityManager}
-                 * by the {@link com.google.inject.Provider}.
+                 * handling by HTTP request.
+                 * As result you have to inject the {@link javax.persistence.EntityManager} by the
+                 * {@link com.google.inject.Provider}.
                  */
                 install(new JpaPersistModule(PERSISTENCE_UNIT).properties(properties));
                 filter("/" + APP_NAME + "/*").through(PersistFilter.class);
@@ -101,8 +98,8 @@ public class MyGuiceServletConfig extends GuiceServletContextListener {
 
 //                serve("/" + APP_NAME + "/bus").with(BusService.class);
                 // serve("/" + APP_NAME + "/construction").with(ConstructionService.class);
-                serve("/" + APP_NAME + "/trackviewer").with(TrackViewerServiceImpl.class);
-                serve("/" + APP_NAME + "/trackeditor").with(TrackEditorServiceImpl.class);
+//                serve("/" + APP_NAME + "/trackviewer").with(TrackViewerService.class);
+//                serve("/" + APP_NAME + "/trackeditor").with(TrackEditorService.class);
                 serve("/" + APP_NAME + "/scenarioservice").with(ScenarioServiceImpl.class);
                 serve("/" + APP_NAME + "/scenarioEditor").with(ScenarioEditorServiceImpl.class);
 //                serve("/" + APP_NAME + "/trainEditor").with(TrainEditorService.class);

@@ -2,6 +2,7 @@ package net.wbz.moba.controlcenter.web.client.viewer.track.parallax;
 
 import net.wbz.moba.controlcenter.web.client.viewer.track.parallax.trackparts.Basic3dTrackWidget;
 import net.wbz.moba.controlcenter.web.shared.track.model.TrackPart;
+import net.wbz.moba.controlcenter.web.shared.track.model.TrackPartProxy;
 import thothbot.parallax.core.client.AnimatedScene;
 import thothbot.parallax.core.client.controls.TrackballControls;
 import thothbot.parallax.core.shared.cameras.PerspectiveCamera;
@@ -144,7 +145,7 @@ public class TrackViewerScene extends AnimatedScene {
     }
 
 
-    public Basic3dTrackWidget addTrackWidget(TrackPart widget) {
+    public Basic3dTrackWidget addTrackWidget(TrackPartProxy widget) {
         Basic3dTrackWidget trackWidget = trackPartGeometryFactory.getTrackWidget(widget);
         getScene().add(trackWidget);
         return trackWidget;

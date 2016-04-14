@@ -2,6 +2,7 @@ package net.wbz.moba.controlcenter.web.client.viewer.track.parallax.trackparts;
 
 import net.wbz.moba.controlcenter.web.shared.track.model.Configuration;
 import net.wbz.moba.controlcenter.web.shared.track.model.Switch;
+import net.wbz.moba.controlcenter.web.shared.track.model.SwitchProxy;
 import thothbot.parallax.core.shared.math.Vector3;
 
 /**
@@ -9,12 +10,12 @@ import thothbot.parallax.core.shared.math.Vector3;
  *
  * @author Daniel Tuerk
  */
-public class Switch3dWidget extends Basic3dTrackWidget<Switch> {
+public class Switch3dWidget extends Basic3dTrackWidget<SwitchProxy> {
 
     private static final String TEXTURE_SWITCH_LEFT = "img/viewer3d/switch_left.png";
     private static final String TEXTURE_SWITCH_RIGHT = "img/viewer3d/switch_right.png";
 
-    public Switch3dWidget(Switch trackPart) {
+    public Switch3dWidget(SwitchProxy trackPart) {
         super(trackPart);
 
         String texture;

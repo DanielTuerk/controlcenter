@@ -1,6 +1,7 @@
 package net.wbz.moba.controlcenter.web.shared.track.model;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
+import net.wbz.moba.controlcenter.web.shared.HasVersionAndId;
 
 
 import javax.persistence.*;
@@ -12,7 +13,7 @@ import java.util.List;
  * @author Daniel Tuerk
  */
 @Entity
-public class GridPosition implements IsSerializable,Serializable {
+public class GridPosition implements HasVersionAndId {
 
     @Id
     @GeneratedValue
@@ -49,7 +50,12 @@ public class GridPosition implements IsSerializable,Serializable {
         this.y = y;
     }
 
-    public long getId() {
+    @Override
+    public Integer getVersion() {
+        return 0;
+    }
+
+    public Long getId() {
         return id;
     }
 

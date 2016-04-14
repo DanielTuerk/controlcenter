@@ -1,6 +1,7 @@
 package net.wbz.moba.controlcenter.web.server.scenario;
 
 import net.wbz.moba.controlcenter.web.server.EventBroadcaster;
+import net.wbz.moba.controlcenter.web.server.viewer.TrackViewerService;
 import net.wbz.moba.controlcenter.web.shared.scenario.*;
 import net.wbz.moba.controlcenter.web.shared.track.model.Configuration;
 import net.wbz.moba.controlcenter.web.shared.viewer.*;
@@ -15,14 +16,14 @@ import java.util.concurrent.Callable;
 public class ScenarioRunCallable implements Callable<Boolean> {
     private static final Logger LOG = LoggerFactory.getLogger(ScenarioRunCallable.class);
 
-    private final TrackViewerService trackViewerService;
+    private final TrackViewerService trackViewerRequest;
     private final EventBroadcaster eventBroadcaster;
 
     private final Scenario scenario;
 
-    public ScenarioRunCallable(Scenario scenario, TrackViewerService trackViewerService, EventBroadcaster eventBroadcaster) {
+    public ScenarioRunCallable(Scenario scenario, TrackViewerService trackViewerRequest, EventBroadcaster eventBroadcaster) {
         this.scenario = scenario;
-        this.trackViewerService=trackViewerService;
+        this.trackViewerRequest = trackViewerRequest;
         this.eventBroadcaster=eventBroadcaster;
     }
 
@@ -47,8 +48,8 @@ public class ScenarioRunCallable implements Callable<Boolean> {
                 } else if (command instanceof ToggleScenarioCommand) {
                     ToggleScenarioCommand toggleCommand = (ToggleScenarioCommand) command;
                     Configuration trackPartConfiguration = toggleCommand.getConfiguration();
-                    if (trackViewerService.getTrackPartState(trackPartConfiguration) != toggleCommand.isState()) {
-                        trackViewerService.toggleTrackPart(trackPartConfiguration, toggleCommand.isState());
+                    if (trackViewerRequest.getTrackPartState(trackPartConfiguration) != toggleCommand.isState()) {
+                        trackViewerRequest.toggleTrackPart(trackPartConfiguration, toggleCommand.isState());
                     }
                 } else {
                     LOG.error(String.format("invalid scenario command %s", scenario.getClass().getName()));

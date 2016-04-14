@@ -9,6 +9,7 @@ import net.wbz.moba.controlcenter.web.client.model.track.AbstractControlSvgTrack
 import net.wbz.moba.controlcenter.web.client.util.EmptyCallback;
 import net.wbz.moba.controlcenter.web.client.viewer.track.svg.TrackViewerPanel;
 import net.wbz.moba.controlcenter.web.shared.track.model.Signal;
+import net.wbz.moba.controlcenter.web.shared.track.model.SignalProxy;
 import net.wbz.moba.controlcenter.web.shared.track.model.Straight;
 import org.gwtbootstrap3.client.ui.Button;
 import org.vectomatic.dom.svg.OMSVGDocument;
@@ -20,7 +21,7 @@ import org.vectomatic.dom.svg.OMSVGSVGElement;
  *
  * @author Daniel Tuerk
  */
-abstract public class AbstractSignalWidget extends AbstractControlSvgTrackWidget<Signal> {
+abstract public class AbstractSignalWidget extends AbstractControlSvgTrackWidget<SignalProxy> {
 
     /**
      * Type of the signal. Default is BLOCK.
@@ -49,7 +50,7 @@ abstract public class AbstractSignalWidget extends AbstractControlSvgTrackWidget
     }
 
     @Override
-    protected void initFromTrackPart(Signal trackPart) {
+    protected void initFromTrackPart(SignalProxy trackPart) {
         super.initFromTrackPart(trackPart);
         if (trackPart.getType() != null) {
             signalType = trackPart.getType();
@@ -105,9 +106,9 @@ abstract public class AbstractSignalWidget extends AbstractControlSvgTrackWidget
     }
 
     private void switchSignalFunction(Signal.FUNCTION function) {
-        Signal signal = getTrackPart();
+        SignalProxy signal = getTrackPart();
 
-        ServiceUtils.getTrackViewerService().switchSignal(signalType, function, signal.getSignalConfiguration(), new EmptyCallback<Void>());
+        ServiceUtils.getInstance().getTrackViewerService().switchSignal(signalType, function, signal.getSignalConfiguration()).fire();
 
     }
 

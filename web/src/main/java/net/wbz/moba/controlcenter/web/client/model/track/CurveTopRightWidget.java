@@ -1,6 +1,7 @@
 package net.wbz.moba.controlcenter.web.client.model.track;
 
 import net.wbz.moba.controlcenter.web.shared.track.model.Curve;
+import net.wbz.moba.controlcenter.web.shared.track.model.CurveProxy;
 import org.vectomatic.dom.svg.OMSVGDocument;
 import org.vectomatic.dom.svg.OMSVGSVGElement;
 
@@ -9,15 +10,17 @@ import org.vectomatic.dom.svg.OMSVGSVGElement;
  */
 public class CurveTopRightWidget extends AbstractCurveWidget {
     @Override
-    public AbstractSvgTrackWidget<Curve> getClone() {
+    public AbstractSvgTrackWidget<CurveProxy> getClone() {
         return new CurveTopRightWidget();
     }
 
     @Override
-    public Curve getNewTrackPart() {
-        Curve curveTopR = new Curve();
-        curveTopR.setDirection(Curve.DIRECTION.TOP_RIGHT);
-        return curveTopR;
+    public CurveProxy getNewTrackPart() {
+        //TODO
+        return null;
+//        Curve curveTopR = new Curve();
+//        curveTopR.setDirection(Curve.DIRECTION.TOP_RIGHT);
+//        return curveTopR;
     }
 
     @Override

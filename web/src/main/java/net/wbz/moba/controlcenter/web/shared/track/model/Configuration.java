@@ -2,6 +2,8 @@ package net.wbz.moba.controlcenter.web.shared.track.model;
 
 
 
+import net.wbz.moba.controlcenter.web.shared.HasVersionAndId;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -14,7 +16,7 @@ import java.io.Serializable;
  * @author Daniel Tuerk
  */
 @Entity
-public class Configuration implements Serializable {
+public class Configuration implements HasVersionAndId {
 
     @Id
     @GeneratedValue
@@ -113,7 +115,12 @@ public class Configuration implements Serializable {
         return result;
     }
 
-    public long getId() {
+    @Override
+    public Integer getVersion() {
+        return 0;
+    }
+
+    public Long getId() {
         return id;
     }
 

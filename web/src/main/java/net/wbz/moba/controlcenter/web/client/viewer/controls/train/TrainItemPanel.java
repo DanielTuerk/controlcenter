@@ -44,7 +44,7 @@ public class TrainItemPanel extends AbstractItemPanel<TrainProxy, TrainStateEven
     /**
      * Maximum decimal value of the driving level. (Bit 1-5 is on)
      */
-    public static final int DRIVING_LEVEL_MAX_VALUE = 31;
+    public static final double DRIVING_LEVEL_MAX_VALUE = 31d;
     private PanelCollapse contentPanel;
 
     private Slider sliderDrivingLevel;
@@ -135,7 +135,7 @@ public class TrainItemPanel extends AbstractItemPanel<TrainProxy, TrainStateEven
         final Label lblSliderValue = new Label("0");
         lblSliderValue.getElement().getStyle().setMarginRight(15, Style.Unit.PX);
         lblSliderValue.getElement().getStyle().setMarginLeft(10, Style.Unit.PX);
-        sliderDrivingLevel = new Slider(0, DRIVING_LEVEL_MAX_VALUE, 0);
+        sliderDrivingLevel = new Slider(0d, DRIVING_LEVEL_MAX_VALUE, 0d);
         sliderDrivingLevel.addValueChangeHandler(
                 new ValueChangeHandler<Double>() {
                     @Override

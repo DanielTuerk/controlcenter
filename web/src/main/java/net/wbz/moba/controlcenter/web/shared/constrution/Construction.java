@@ -2,13 +2,10 @@ package net.wbz.moba.controlcenter.web.shared.constrution;
 
 
 import net.wbz.moba.controlcenter.web.shared.HasVersionAndId;
-import net.wbz.moba.controlcenter.web.shared.track.model.TrackPart;
-import net.wbz.moba.controlcenter.web.shared.track.model.TrackPartFunction;
 
-import javax.persistence.*;
-import java.io.Serializable;
-import java.util.List;
-import java.util.Set;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 
 /**
  * @author Daniel Tuerk
@@ -23,7 +20,9 @@ public class Construction implements HasVersionAndId {
     private String name;
 
     @Override
-    public Integer getVersion(){return 0;};
+    public Integer getVersion() {
+        return 0;
+    }
 
     @Override
     public Long getId() {
@@ -41,4 +40,5 @@ public class Construction implements HasVersionAndId {
     public void setName(String name) {
         this.name = name;
     }
+
 }

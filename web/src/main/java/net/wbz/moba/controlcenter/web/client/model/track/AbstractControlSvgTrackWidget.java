@@ -135,7 +135,7 @@ abstract public class AbstractControlSvgTrackWidget<T extends TrackPartProxy> ex
             option.setText(value);
             selectBit.add(option);
             if (index == getTrackPart().getDefaultToggleFunctionConfig().getBit()) {
-                selectBit.setValue(option);
+                selectBit.setValue(value);
             }
         }
         groupBit.add(selectBit);

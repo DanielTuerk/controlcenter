@@ -13,7 +13,7 @@ import org.gwtbootstrap3.client.ui.constants.ButtonType;
 import org.gwtbootstrap3.client.ui.constants.FormType;
 import org.gwtbootstrap3.client.ui.constants.IconType;
 import org.gwtbootstrap3.client.ui.constants.Pull;
-import org.gwtbootstrap3.extras.growl.client.ui.Growl;
+import org.gwtbootstrap3.extras.notify.client.ui.Notify;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -104,12 +104,12 @@ public class SendDataModal extends Modal {
         ServiceUtils.getInstance().getBusService().sendBusData(busNr, address, data).fire(new Receiver<Void>() {
             @Override
             public void onFailure(ServerFailure error) {
-                Growl.growl("send data", "can't send data: " + error.getMessage(), IconType.WARNING);
+                Notify.notify("send data", "can't send data: " + error.getMessage(), IconType.WARNING);
             }
 
             @Override
             public void onSuccess(Void result) {
-                Growl.growl("send data", "data send - bus: " + busNr + " address: " + address + " data: " + data,
+                Notify.notify("send data", "data send - bus: " + busNr + " address: " + address + " data: " + data,
                         IconType.INFO);
             }
         });

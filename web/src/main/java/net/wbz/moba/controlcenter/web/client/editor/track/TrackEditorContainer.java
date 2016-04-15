@@ -15,7 +15,7 @@ import net.wbz.moba.controlcenter.web.shared.track.model.TrackPartProxy;
 import org.gwtbootstrap3.client.ui.AnchorListItem;
 import org.gwtbootstrap3.client.ui.NavPills;
 import org.gwtbootstrap3.client.ui.constants.IconType;
-import org.gwtbootstrap3.extras.growl.client.ui.Growl;
+import org.gwtbootstrap3.extras.notify.client.ui.Notify;
 
 import com.allen_sauer.gwt.dnd.client.PickupDragController;
 import com.allen_sauer.gwt.dnd.client.drop.GridConstrainedDropController;
@@ -82,7 +82,7 @@ public class TrackEditorContainer extends FlowPanel {
                             } catch (Exception e) {
                                 String msg = "ignore widget (can't save): " + ((AbstractSvgTrackWidget) w)
                                         .getPaletteTitle() + " - " + e.getMessage();
-                                Growl.growl("", msg, IconType.WARNING);
+                                Notify.notify("", msg, IconType.WARNING);
                                 logger.log(Level.SEVERE, msg, e);
                                 e.printStackTrace();
                             }
@@ -96,12 +96,12 @@ public class TrackEditorContainer extends FlowPanel {
 
                 ServiceUtils.getInstance().getTrackEditorService().saveTrack(trackParts).fire(new Receiver<Void>() {
                     public void onFailure(Throwable throwable) {
-                        Growl.growl("Editor", "error by save track: " + throwable.getMessage(), IconType.WARNING);
+                        Notify.notify("Editor", "error by save track: " + throwable.getMessage(), IconType.WARNING);
                     }
 
                     @Override
                     public void onSuccess(Void response) {
-                        Growl.growl("track saved!");
+                        Notify.notify("track saved!");
                     }
                 });
             }

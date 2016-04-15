@@ -2,10 +2,10 @@ package net.wbz.moba.controlcenter.web.shared.train;
 
 import com.google.common.collect.Sets;
 import com.google.gwt.user.client.rpc.IsSerializable;
-import net.wbz.moba.controlcenter.web.shared.AbstractIdModel;
 import net.wbz.moba.controlcenter.web.shared.HasVersionAndId;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Set;
 
@@ -16,7 +16,7 @@ import java.util.Set;
  * @author Daniel Tuerk
  */
 @Entity
-public class Train implements IsSerializable, Serializable,HasVersionAndId {
+public class Train implements IsSerializable, Serializable, HasVersionAndId {
 
     @Id
     @GeneratedValue
@@ -27,21 +27,21 @@ public class Train implements IsSerializable, Serializable,HasVersionAndId {
 
     private int address = -1;
 
+    @NotNull
     @ManyToMany(cascade = {CascadeType.ALL}, fetch = FetchType.EAGER)
-    @JoinTable(
-            joinColumns = {@JoinColumn(name = "TRAIN_ID")},
-            inverseJoinColumns = {@JoinColumn(name = "TRAINFUNCTION_ID")})
+    @JoinTable(joinColumns = {@JoinColumn(name = "TRAIN_ID")}, inverseJoinColumns = {@JoinColumn(name = "TRAINFUNCTION_ID")})
     private Set<TrainFunction> functions;
 
     @Transient
     private int drivingLevel = 0;
-
-    public enum DIRECTION {BACKWARD, FORWARD}
-
     @Transient
     private DIRECTION drivingDirection;
 
     public Train() {
+    }
+
+    public Train(String name) {
+        this.name = name;
     }
 
     @Override
@@ -55,10 +55,6 @@ public class Train implements IsSerializable, Serializable,HasVersionAndId {
 
     protected void setId(long id) {
         this.id = id;
-    }
-
-    public Train(String name) {
-        this.name = name;
     }
 
     public int getAddress() {
@@ -94,7 +90,11 @@ public class Train implements IsSerializable, Serializable,HasVersionAndId {
     }
 
     public Set<TrainFunction> getFunctions() {
-        return functions!=null?functions: Sets.<TrainFunction>newHashSet();
+        return functions != null ? functions : Sets.<TrainFunction>newHashSet();
+    }
+
+    public void setFunctions(Set<TrainFunction> functions) {
+        this.functions = functions;
     }
 
     public TrainFunction getFunction(TrainFunction.FUNCTION function) {
@@ -106,7 +106,5 @@ public class Train implements IsSerializable, Serializable,HasVersionAndId {
         return null;
     }
 
-    public void setFunctions(Set<TrainFunction> functions) {
-        this.functions = functions;
-    }
+    public enum DIRECTION {BACKWARD, FORWARD}
 }

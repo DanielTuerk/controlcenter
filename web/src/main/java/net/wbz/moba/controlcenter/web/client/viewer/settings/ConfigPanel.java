@@ -13,7 +13,7 @@ import net.wbz.moba.controlcenter.web.client.Settings;
 import org.gwtbootstrap3.client.ui.*;
 import org.gwtbootstrap3.client.ui.constants.ButtonType;
 import org.gwtbootstrap3.client.ui.constants.Pull;
-import org.gwtbootstrap3.extras.growl.client.ui.Growl;
+import org.gwtbootstrap3.extras.notify.client.ui.Notify;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -118,7 +118,7 @@ public class ConfigPanel extends Panel {
                         configEntry.save();
                     }
                 }
-                Growl.growl("Settings saved!");
+                Notify.notify("Settings saved!");
             }
         });
         configFooter.add(btnSave);

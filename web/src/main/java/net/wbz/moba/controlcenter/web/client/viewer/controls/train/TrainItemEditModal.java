@@ -1,28 +1,19 @@
 package net.wbz.moba.controlcenter.web.client.viewer.controls.train;
 
-import net.wbz.moba.controlcenter.web.client.ServiceUtils;
-import net.wbz.moba.controlcenter.web.shared.train.TrainProxy;
-
-import org.gwtbootstrap3.client.ui.Button;
-import org.gwtbootstrap3.client.ui.Form;
-import org.gwtbootstrap3.client.ui.FormGroup;
-import org.gwtbootstrap3.client.ui.FormLabel;
-import org.gwtbootstrap3.client.ui.Modal;
-import org.gwtbootstrap3.client.ui.ModalBody;
-import org.gwtbootstrap3.client.ui.ModalFooter;
-import org.gwtbootstrap3.client.ui.TextBox;
-import org.gwtbootstrap3.client.ui.constants.ButtonType;
-import org.gwtbootstrap3.client.ui.constants.FormType;
-import org.gwtbootstrap3.client.ui.constants.IconType;
-import org.gwtbootstrap3.client.ui.gwt.FlowPanel;
-import org.gwtbootstrap3.extras.growl.client.ui.Growl;
-import org.gwtbootstrap3.extras.growl.client.ui.GrowlType;
-
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.web.bindery.requestfactory.shared.Receiver;
 import com.google.web.bindery.requestfactory.shared.ServerFailure;
+import net.wbz.moba.controlcenter.web.client.ServiceUtils;
+import net.wbz.moba.controlcenter.web.shared.train.TrainProxy;
+import org.gwtbootstrap3.client.ui.*;
+import org.gwtbootstrap3.client.ui.constants.ButtonType;
+import org.gwtbootstrap3.client.ui.constants.FormType;
+import org.gwtbootstrap3.client.ui.constants.IconType;
+import org.gwtbootstrap3.client.ui.gwt.FlowPanel;
+import org.gwtbootstrap3.extras.notify.client.constants.NotifyType;
+import org.gwtbootstrap3.extras.notify.client.ui.Notify;
 
 /**
  * Modal to edit the {@link net.wbz.moba.controlcenter.web.shared.train.Train} data.
@@ -94,17 +85,17 @@ public class TrainItemEditModal extends Modal {
 
                 ServiceUtils.getInstance().getTrainEditorService().deleteTrain(train.getId()).fire(
                         new Receiver<Void>() {
-                    @Override
-                    public void onSuccess(Void response) {
-                        Growl.growl("", "Train " + train.getName() + " deleted", IconType.INFO);
-                    }
+                            @Override
+                            public void onSuccess(Void response) {
+                                Notify.notify("", "Train " + train.getName() + " deleted", IconType.INFO);
+                            }
 
-                    @Override
-                    public void onFailure(ServerFailure error) {
-                        Growl.growl("", "Delete Train " + train.getName() + " Error: " + error.getMessage(),
-                                IconType.WARNING, GrowlType.DANGER);
-                    }
-                });
+                            @Override
+                            public void onFailure(ServerFailure error) {
+                                Notify.notify("", "Delete Train " + train.getName() + " Error: " + error.getMessage(),
+                                        IconType.WARNING, NotifyType.DANGER);
+                            }
+                        });
             }
         });
         btnDelete.setType(ButtonType.DANGER);

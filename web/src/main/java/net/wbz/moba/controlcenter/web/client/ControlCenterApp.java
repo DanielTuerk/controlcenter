@@ -12,7 +12,6 @@ import net.wbz.moba.controlcenter.web.client.viewer.track.TrackViewerContainer;
 import net.wbz.moba.controlcenter.web.shared.constrution.ConstructionProxy;
 
 import org.gwtbootstrap3.client.ui.constants.IconType;
-import org.gwtbootstrap3.extras.growl.client.ui.Growl;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.dom.client.Style;
@@ -24,6 +23,7 @@ import com.google.gwt.user.client.ui.RootLayoutPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.web.bindery.requestfactory.shared.Receiver;
+import org.gwtbootstrap3.extras.notify.client.ui.Notify;
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
@@ -76,7 +76,7 @@ public class ControlCenterApp implements EntryPoint {
                                     }
                                 });
                             } else {
-                                Growl.growl("", "can't load last used construction", IconType.WARNING);
+                                Notify.notify("", "can't load last used construction", IconType.WARNING);
 
                                 loadWelcomePage();
                             }

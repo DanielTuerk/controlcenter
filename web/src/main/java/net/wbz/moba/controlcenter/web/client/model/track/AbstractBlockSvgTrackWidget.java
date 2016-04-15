@@ -6,9 +6,7 @@ import net.wbz.moba.controlcenter.web.client.editor.track.EditTrackWidgetHandler
 import net.wbz.moba.controlcenter.web.shared.track.model.Configuration;
 import net.wbz.moba.controlcenter.web.shared.track.model.ConfigurationProxy;
 import net.wbz.moba.controlcenter.web.shared.track.model.TrackModelConstants;
-import net.wbz.moba.controlcenter.web.shared.track.model.TrackPart;
 import net.wbz.moba.controlcenter.web.shared.track.model.TrackPartProxy;
-import net.wbz.moba.controlcenter.web.shared.train.Train;
 import net.wbz.moba.controlcenter.web.shared.train.TrainProxy;
 import org.gwtbootstrap3.client.ui.FieldSet;
 import org.gwtbootstrap3.client.ui.FormGroup;
@@ -129,7 +127,7 @@ abstract public class AbstractBlockSvgTrackWidget<T extends TrackPartProxy> exte
             option.setText(value);
             selectBit.add(option);
             if (index == getTrackPart().getDefaultBlockFunctionConfig().getBit()) {
-                selectBit.setValue(option);
+                selectBit.setValue(value);
             }
         }
         groupBit.add(selectBit);

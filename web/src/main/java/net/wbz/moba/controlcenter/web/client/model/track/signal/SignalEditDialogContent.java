@@ -133,10 +133,11 @@ public class SignalEditDialogContent {
             selectBit.setWidth("auto");
             for (int i = 1; i <= 8; i++) {
                 Option bitOption = new Option();
-                bitOption.setText(String.valueOf(i));
+                String value = String.valueOf(i);
+                bitOption.setText(value);
                 selectBit.add(bitOption);
                 if (i == existingLightConfig.getBit()) {
-                    selectBit.setValue(bitOption);
+                    selectBit.setValue(value);
                 }
             }
             functionRow.add(new Column(ColumnSize.MD_2, selectBit));

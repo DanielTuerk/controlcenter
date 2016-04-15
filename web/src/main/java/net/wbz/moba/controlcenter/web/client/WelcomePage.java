@@ -2,8 +2,11 @@ package net.wbz.moba.controlcenter.web.client;
 
 import java.util.List;
 
+import com.google.web.bindery.requestfactory.shared.Request;
+import net.wbz.moba.controlcenter.web.shared.constrution.Construction;
 import net.wbz.moba.controlcenter.web.shared.constrution.ConstructionProxy;
 
+import net.wbz.moba.controlcenter.web.shared.constrution.ConstructionRequest;
 import org.gwtbootstrap3.client.ui.Button;
 import org.gwtbootstrap3.client.ui.Label;
 import org.gwtbootstrap3.client.ui.TextBox;
@@ -43,9 +46,35 @@ public class WelcomePage extends HorizontalPanel {
             @Override
             public void onClick(ClickEvent event) {
                 // TODO
-                // final Construction construction = new Construction();
-                // final String constructionName = txtCreateName.getText();
-                // construction.setName(constructionName);
+                ConstructionRequest constructionService = ServiceUtils.getInstance().getConstructionService();
+                final ConstructionProxy construction = constructionService.create(ConstructionProxy.class);
+                 final String constructionName = txtCreateName.getText();
+                 construction.setName(constructionName);
+                constructionService.createConstruction(construction).fire(new Receiver<Void>() {
+                    @Override
+                    public void onSuccess(Void response) {
+                        ServiceUtils.getInstance().getConstructionService().setCurrentConstruction(construction).fire(new Receiver<Void>() {
+                            @Override
+                            public void onSuccess(Void response) {
+                                Settings.getInstance().getLastUsedConstruction().setValueAndSave(construction.getName());
+                                 createConstructionClickHandler.onClick(null);
+                            }
+                        });
+                            // @Override
+                            // public void onFailure(Throwable caught) {
+                            // }
+                            //
+                            // @Override
+                            // public void onSuccess(Void result) {
+                            // Settings.getInstance().getLastUsedConstruction().setValueAndSave(construction.getName());
+                            // createConstructionClickHandler.onClick(null);
+                            // }
+                            // });
+                            // }
+                            // });
+                    }
+                });
+
                 // ServiceUtils.getConstructionService().createConstruction(construction, new
                 // AsyncCallback<Construction>() {
                 // @Override

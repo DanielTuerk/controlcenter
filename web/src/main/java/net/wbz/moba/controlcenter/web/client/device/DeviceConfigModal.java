@@ -24,7 +24,7 @@ import org.gwtbootstrap3.client.ui.constants.ButtonType;
 import org.gwtbootstrap3.client.ui.constants.IconType;
 import org.gwtbootstrap3.client.ui.gwt.ButtonCell;
 import org.gwtbootstrap3.client.ui.gwt.CellTable;
-import org.gwtbootstrap3.extras.growl.client.ui.Growl;
+import org.gwtbootstrap3.extras.notify.client.ui.Notify;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
@@ -131,7 +131,7 @@ public class DeviceConfigModal extends Modal {
                                     new Receiver<Void>() {
                                 @Override
                                 public void onSuccess(Void response) {
-                                    Growl.growl("", "Device " + deviceInfo.getKey() + " created", IconType.INFO);
+                                    Notify.notify("", "Device " + deviceInfo.getKey() + " created", IconType.INFO);
                                 }
                             });
                         }
@@ -221,12 +221,12 @@ public class DeviceConfigModal extends Modal {
                                     new Receiver<Void>() {
                                 @Override
                                 public void onSuccess(Void response) {
-                                    Growl.growl("", "Device " + deviceInfo.getKey() + " deleted", IconType.INFO);
+                                    Notify.notify("", "Device " + deviceInfo.getKey() + " deleted", IconType.INFO);
                                 }
 
                                 @Override
                                 public void onFailure(ServerFailure error) {
-                                    Growl.growl("", "Can't delete device: " + deviceInfo.getKey(), IconType.INFO);
+                                    Notify.notify("", "Can't delete device: " + deviceInfo.getKey(), IconType.INFO);
                                 }
                             });
                         }

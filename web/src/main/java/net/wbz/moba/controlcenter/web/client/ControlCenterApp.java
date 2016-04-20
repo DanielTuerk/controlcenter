@@ -15,8 +15,6 @@ import org.gwtbootstrap3.client.ui.constants.IconType;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.dom.client.Style;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.ui.DockLayoutPanel;
 import com.google.gwt.user.client.ui.RootLayoutPanel;
@@ -39,7 +37,7 @@ public class ControlCenterApp implements EntryPoint {
 
     private SimplePanel contentContainerPanel;
 
-    private WelcomePage welcomePageContainer;
+    private WelcomeContainer welcomeContainerContainer;
 
     private List<Widget> containerPanels = new ArrayList<>();
 
@@ -87,19 +85,18 @@ public class ControlCenterApp implements EntryPoint {
     }
 
     private void loadWelcomePage() {
-        ClickHandler clickHandler = new ClickHandler() {
+        welcomeContainerContainer = new WelcomeContainer() {
             @Override
-            public void onClick(ClickEvent event) {
+            void onCurrentConstructionLoaded() {
                 loadControlCenter();
             }
         };
-        welcomePageContainer = new WelcomePage(clickHandler, clickHandler);
-        RootLayoutPanel.get().add(welcomePageContainer);
+        RootLayoutPanel.get().add(welcomeContainerContainer);
     }
 
     private void loadControlCenter() {
-        if (RootLayoutPanel.get().getWidgetIndex(welcomePageContainer) >= 0) {
-            RootLayoutPanel.get().remove(welcomePageContainer);
+        if (RootLayoutPanel.get().getWidgetIndex(welcomeContainerContainer) >= 0) {
+            RootLayoutPanel.get().remove(welcomeContainerContainer);
         }
 
         trackViewerContainer = new TrackViewerContainer();

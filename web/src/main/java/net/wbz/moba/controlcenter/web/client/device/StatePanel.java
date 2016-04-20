@@ -3,7 +3,7 @@ package net.wbz.moba.controlcenter.web.client.device;
 import java.util.List;
 
 import net.wbz.moba.controlcenter.web.client.EventReceiver;
-import net.wbz.moba.controlcenter.web.client.ServiceUtils;
+import net.wbz.moba.controlcenter.web.client.RequestUtils;
 import net.wbz.moba.controlcenter.web.shared.bus.DeviceInfoEvent;
 import net.wbz.moba.controlcenter.web.shared.bus.DeviceInfoProxy;
 import net.wbz.moba.controlcenter.web.shared.bus.PlayerEvent;
@@ -127,9 +127,9 @@ public class StatePanel extends org.gwtbootstrap3.client.ui.gwt.FlowPanel {
             @Override
             public void onValueChange(ValueChangeEvent<Boolean> booleanValueChangeEvent) {
                 if (booleanValueChangeEvent.getValue()) {
-                    ServiceUtils.getInstance().getBusService().startRecording("").fire();
+                    RequestUtils.getInstance().getBusRequest().startRecording("").fire();
                 } else {
-                    ServiceUtils.getInstance().getBusService().stopRecording().fire();
+                    RequestUtils.getInstance().getBusRequest().stopRecording().fire();
                 }
             }
         });
@@ -158,7 +158,7 @@ public class StatePanel extends org.gwtbootstrap3.client.ui.gwt.FlowPanel {
         btnPlayerStop.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                ServiceUtils.getInstance().getBusService().stopRecording().fire();
+                RequestUtils.getInstance().getBusRequest().stopRecording().fire();
             }
         });
         add(btnPlayerStop);
@@ -173,7 +173,7 @@ public class StatePanel extends org.gwtbootstrap3.client.ui.gwt.FlowPanel {
     }
 
     private void toggleRailVoltageState() {
-        ServiceUtils.getInstance().getBusService().toggleRailVoltage().fire();
+        RequestUtils.getInstance().getBusRequest().toggleRailVoltage().fire();
     }
 
     @Override
@@ -181,12 +181,12 @@ public class StatePanel extends org.gwtbootstrap3.client.ui.gwt.FlowPanel {
 //        EventReceiver.getInstance().addListener(DeviceInfoEvent.class, deviceInfoEventListener);
         EventReceiver.getInstance().addListener(PlayerEvent.class, busDataPlayerEventListener);
 
-        ServiceUtils.getInstance().getBusService().isBusConnected().fire(new Receiver<Boolean>() {
+        RequestUtils.getInstance().getBusRequest().isBusConnected().fire(new Receiver<Boolean>() {
             @Override
             public void onSuccess(Boolean connected) {
                 if (connected) {
 
-                    ServiceUtils.getInstance().getBusService().getDevices().fire(new Receiver<List<DeviceInfoProxy>>() {
+                    RequestUtils.getInstance().getBusRequest().getDevices().fire(new Receiver<List<DeviceInfoProxy>>() {
                         @Override
                         public void onSuccess(List<DeviceInfoProxy> response) {
                             for (DeviceInfoProxy deviceInfo : response) {

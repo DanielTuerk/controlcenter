@@ -5,7 +5,7 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.web.bindery.requestfactory.shared.Receiver;
 import com.google.web.bindery.requestfactory.shared.ServerFailure;
-import net.wbz.moba.controlcenter.web.client.ServiceUtils;
+import net.wbz.moba.controlcenter.web.client.RequestUtils;
 import net.wbz.moba.controlcenter.web.shared.train.TrainProxy;
 import org.gwtbootstrap3.client.ui.*;
 import org.gwtbootstrap3.client.ui.constants.ButtonType;
@@ -83,7 +83,7 @@ public class TrainItemEditModal extends Modal {
             public void onClick(ClickEvent clickEvent) {
                 TrainItemEditModal.this.hide();
 
-                ServiceUtils.getInstance().getTrainEditorService().deleteTrain(train.getId()).fire(
+                RequestUtils.getInstance().getTrainEditorRequest().deleteTrain(train.getId()).fire(
                         new Receiver<Void>() {
                             @Override
                             public void onSuccess(Void response) {
@@ -112,7 +112,7 @@ public class TrainItemEditModal extends Modal {
             public void onClick(ClickEvent event) {
                 train.setAddress(Integer.parseInt(txtAddress.getValue()));
                 train.setName(txtName.getValue());
-                ServiceUtils.getInstance().getTrainEditorService().updateTrain(train).fire(new Receiver<Void>() {
+                RequestUtils.getInstance().getTrainEditorRequest().updateTrain(train).fire(new Receiver<Void>() {
                     @Override
                     public void onSuccess(Void response) {
                         TrainItemEditModal.this.hide();

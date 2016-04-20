@@ -47,7 +47,7 @@ abstract class WelcomeContainer extends Composite {
 
     @Override
     protected void onLoad() {
-        ServiceUtils.getInstance().getConstructionService().loadConstructions().fire(
+        RequestUtils.getInstance().getConstructionRequest().loadConstructions().fire(
                 new Receiver<List<ConstructionProxy>>() {
                     @Override
                     public void onSuccess(List<ConstructionProxy> response) {
@@ -69,7 +69,7 @@ abstract class WelcomeContainer extends Composite {
 
     @UiHandler("btnCreateConstruction")
     void clickCreateConstruction(ClickEvent event) {
-        ConstructionRequest constructionService = ServiceUtils.getInstance().getConstructionService();
+        ConstructionRequest constructionService = RequestUtils.getInstance().getConstructionRequest();
         final ConstructionProxy construction = constructionService.create(ConstructionProxy.class);
         final String constructionName = txtCreateName.getText();
         construction.setName(constructionName);
@@ -87,7 +87,7 @@ abstract class WelcomeContainer extends Composite {
      * @param construction {@link ConstructionProxy} to set
      */
     private void updateCurrentConstruction(final ConstructionProxy construction) {
-        ServiceUtils.getInstance().getConstructionService().setCurrentConstruction(
+        RequestUtils.getInstance().getConstructionRequest().setCurrentConstruction(
                 construction).fire(new Receiver<Void>() {
             @Override
             public void onSuccess(Void response) {

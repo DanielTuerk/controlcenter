@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import net.wbz.moba.controlcenter.web.client.EventReceiver;
-import net.wbz.moba.controlcenter.web.client.ServiceUtils;
+import net.wbz.moba.controlcenter.web.client.RequestUtils;
 import net.wbz.moba.controlcenter.web.shared.bus.BusDataEvent;
 import net.wbz.moba.controlcenter.web.shared.bus.DeviceInfoEvent;
 
@@ -108,12 +108,12 @@ public class BusMonitorPanel extends FlowPanel {
 
                 if (deviceInfoEvent.getEventType() == DeviceInfoEvent.TYPE.CONNECTED) {
 
-                    ServiceUtils.getInstance().getBusService().startTrackingBus().fire();
+                    RequestUtils.getInstance().getBusRequest().startTrackingBus().fire();
                     remove(wellConnectionState);
                     addBusPanels();
 
                 } else if (deviceInfoEvent.getEventType() == DeviceInfoEvent.TYPE.DISCONNECTED) {
-                    ServiceUtils.getInstance().getBusService().stopTrackingBus().fire();
+                    RequestUtils.getInstance().getBusRequest().stopTrackingBus().fire();
                     removeBusPanels();
                     add(wellConnectionState);
                 }
@@ -126,7 +126,7 @@ public class BusMonitorPanel extends FlowPanel {
         super.onLoad();
         EventReceiver.getInstance().addListener(DeviceInfoEvent.class, connectionListener);
 
-        ServiceUtils.getInstance().getBusService().isBusConnected().fire(new Receiver<Boolean>() {
+        RequestUtils.getInstance().getBusRequest().isBusConnected().fire(new Receiver<Boolean>() {
             @Override
             public void onSuccess(Boolean response) {
                 if (response) {
@@ -140,7 +140,7 @@ public class BusMonitorPanel extends FlowPanel {
             }
         });
 
-        ServiceUtils.getInstance().getBusService().startTrackingBus().fire();
+        RequestUtils.getInstance().getBusRequest().startTrackingBus().fire();
         EventReceiver.getInstance().addListener(BusDataEvent.class, listener);
 
         wellConnectionState.getElement().getStyle().setMarginLeft(getParent().getOffsetWidth() / 2 - 130,
@@ -151,7 +151,7 @@ public class BusMonitorPanel extends FlowPanel {
     @Override
     protected void onUnload() {
         super.onUnload();
-        ServiceUtils.getInstance().getBusService().stopTrackingBus().fire();
+        RequestUtils.getInstance().getBusRequest().stopTrackingBus().fire();
         EventReceiver.getInstance().removeListener(BusDataEvent.class, listener);
         EventReceiver.getInstance().removeListener(DeviceInfoEvent.class, connectionListener);
         removeBusPanels();

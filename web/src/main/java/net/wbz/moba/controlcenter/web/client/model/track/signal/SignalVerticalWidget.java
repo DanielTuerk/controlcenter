@@ -1,6 +1,6 @@
 package net.wbz.moba.controlcenter.web.client.model.track.signal;
 
-import net.wbz.moba.controlcenter.web.client.ServiceUtils;
+import net.wbz.moba.controlcenter.web.client.RequestUtils;
 import net.wbz.moba.controlcenter.web.client.model.track.AbstractSvgTrackWidget;
 import net.wbz.moba.controlcenter.web.shared.track.model.Signal;
 import net.wbz.moba.controlcenter.web.shared.track.model.SignalProxy;
@@ -28,7 +28,7 @@ public class SignalVerticalWidget extends AbstractSignalWidget {
 
     @Override
     public SignalProxy getNewTrackPart() {
-        SignalProxy verticalSignal = ServiceUtils.getInstance().getTrackEditorService().create(SignalProxy.class);
+        SignalProxy verticalSignal = RequestUtils.getInstance().getTrackEditorRequest().create(SignalProxy.class);
         verticalSignal.setDirection(Straight.DIRECTION.VERTICAL);
         verticalSignal.setType(Signal.TYPE.BLOCK);
         return verticalSignal;

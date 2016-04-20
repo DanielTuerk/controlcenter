@@ -4,8 +4,7 @@ import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.FlowPanel;
-import net.wbz.moba.controlcenter.web.client.ServiceUtils;
-import net.wbz.moba.controlcenter.web.client.util.EmptyCallback;
+import net.wbz.moba.controlcenter.web.client.RequestUtils;
 import org.gwtbootstrap3.client.ui.Label;
 
 import java.math.BigInteger;
@@ -63,7 +62,7 @@ public class BusAddressItemPanel extends FlowPanel {
             itemPanelButton.addClickHandler(new ClickHandler() {
                 @Override
                 public void onClick(ClickEvent event) {
-                    ServiceUtils.getInstance().getBusService().sendBusData(busNr, address,
+                    RequestUtils.getInstance().getBusRequest().sendBusData(busNr, address,
                             bitNr, "0".equals(itemPanelButton.getText())).fire();
 
                 }

@@ -1,7 +1,7 @@
 package net.wbz.moba.controlcenter.web.client.viewer.settings;
 
 import net.wbz.moba.controlcenter.web.client.LocalStorage;
-import net.wbz.moba.controlcenter.web.client.ServiceUtils;
+import net.wbz.moba.controlcenter.web.client.RequestUtils;
 import net.wbz.moba.controlcenter.web.client.util.Log;
 import net.wbz.moba.controlcenter.web.shared.config.ConfigNotAvailableException;
 
@@ -36,7 +36,7 @@ abstract public class AbstractConfigEntry<T> {
                 break;
             case REMOTE:
                 try {
-                    ServiceUtils.getInstance().getConfigService().loadValue(getConfigKey()).fire(
+                    RequestUtils.getInstance().getConfigRequest().loadValue(getConfigKey()).fire(
                             new Receiver<String>() {
                                 @Override
                                 public void onSuccess(String response) {
@@ -109,7 +109,7 @@ abstract public class AbstractConfigEntry<T> {
                 setValue(value);
                 break;
             case REMOTE:
-                ServiceUtils.getInstance().getConfigService().saveValue(getConfigKey(), convertValueToString(value))
+                RequestUtils.getInstance().getConfigRequest().saveValue(getConfigKey(), convertValueToString(value))
                         .fire();
                 break;
         }

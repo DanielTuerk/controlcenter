@@ -1,7 +1,6 @@
 package net.wbz.moba.controlcenter.web.client.model.track;
 
-import net.wbz.moba.controlcenter.web.client.ServiceUtils;
-import net.wbz.moba.controlcenter.web.shared.track.model.StraightProxy;
+import net.wbz.moba.controlcenter.web.client.RequestUtils;
 import net.wbz.moba.controlcenter.web.shared.track.model.Switch;
 import net.wbz.moba.controlcenter.web.shared.track.model.SwitchProxy;
 
@@ -26,7 +25,7 @@ public class SwitchRightRightToLeftWidget extends AbstractSwitchRightWidget {
 
     @Override
     public SwitchProxy getNewTrackPart() {
-        SwitchProxy switchRRightL = ServiceUtils.getInstance().getTrackEditorService().create(SwitchProxy.class);
+        SwitchProxy switchRRightL = RequestUtils.getInstance().getTrackEditorRequest().create(SwitchProxy.class);
         switchRRightL.setCurrentDirection(Switch.DIRECTION.RIGHT);
         switchRRightL.setCurrentPresentation(Switch.PRESENTATION.RIGHT_TO_LEFT);
         return switchRRightL;

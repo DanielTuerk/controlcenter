@@ -1,12 +1,10 @@
 package net.wbz.moba.controlcenter.web.client.model.track;
 
 import com.google.gwt.user.client.ui.Widget;
-import net.wbz.moba.controlcenter.web.client.ServiceUtils;
+import net.wbz.moba.controlcenter.web.client.RequestUtils;
 import net.wbz.moba.controlcenter.web.client.util.SvgTrackUtil;
 import net.wbz.moba.controlcenter.web.shared.track.model.Curve;
 import net.wbz.moba.controlcenter.web.shared.track.model.CurveProxy;
-import net.wbz.moba.controlcenter.web.shared.track.model.StraightProxy;
-import net.wbz.moba.controlcenter.web.shared.track.model.TrackPart;
 import net.wbz.moba.controlcenter.web.shared.track.model.TrackPartProxy;
 import org.vectomatic.dom.svg.OMSVGDocument;
 import org.vectomatic.dom.svg.OMSVGSVGElement;
@@ -23,7 +21,7 @@ abstract public class AbstractCurveWidget extends AbstractBlockSvgTrackWidget<Cu
 
     @Override
     public TrackPartProxy getTrackPart(Widget containerWidget, int zoomLevel) {
-        CurveProxy curve = ServiceUtils.getInstance().getTrackEditorService().create(CurveProxy.class);
+        CurveProxy curve = RequestUtils.getInstance().getTrackEditorRequest().create(CurveProxy.class);
         curve.setDirection(getCurveDirection());
         curve.setGridPosition(getGridPosition(containerWidget, zoomLevel));
 //        curve.setFunctionConfigs(getStoredWidgetFunctionConfigs());

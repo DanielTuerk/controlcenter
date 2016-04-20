@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import net.wbz.moba.controlcenter.web.client.ServiceUtils;
+import net.wbz.moba.controlcenter.web.client.RequestUtils;
 import net.wbz.moba.controlcenter.web.client.viewer.track.AbstractTrackViewerPanel;
 import net.wbz.moba.controlcenter.web.client.viewer.track.parallax.trackparts.Basic3dTrackWidget;
 import net.wbz.moba.controlcenter.web.shared.track.model.Configuration;
@@ -43,10 +43,10 @@ public class TrackViewer3dPanel extends AbstractTrackViewerPanel {
         add(renderingPanel);
 
         // load the connection state to toggle the state of the widgets
-        ServiceUtils.getInstance().getBusService().isBusConnected().fire(new Receiver<Boolean>() {
+        RequestUtils.getInstance().getBusRequest().isBusConnected().fire(new Receiver<Boolean>() {
             @Override
             public void onSuccess(Boolean response) {
-                ServiceUtils.getInstance().getTrackEditorService().loadTrack().fire(
+                RequestUtils.getInstance().getTrackEditorRequest().loadTrack().fire(
                         new Receiver<List<TrackPartProxy>>() {
                     @Override
                     public void onSuccess(List<TrackPartProxy> trackParts) {
@@ -71,7 +71,7 @@ public class TrackViewer3dPanel extends AbstractTrackViewerPanel {
                             }
 
                         }
-                        ServiceUtils.getInstance().getTrackEditorService()
+                        RequestUtils.getInstance().getTrackEditorRequest()
                                 .registerConsumersByConnectedDeviceForTrackParts(trackParts).fire();
 
                         animatedScene.centerCamera();

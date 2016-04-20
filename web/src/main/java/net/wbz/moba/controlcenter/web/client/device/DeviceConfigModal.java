@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import net.wbz.moba.controlcenter.web.client.EventReceiver;
-import net.wbz.moba.controlcenter.web.client.ServiceUtils;
+import net.wbz.moba.controlcenter.web.client.RequestUtils;
 import net.wbz.moba.controlcenter.web.client.util.Log;
 import net.wbz.moba.controlcenter.web.shared.bus.DeviceInfo;
 import net.wbz.moba.controlcenter.web.shared.bus.DeviceInfoEvent;
@@ -118,7 +118,7 @@ public class DeviceConfigModal extends Modal {
                     public void onClick(ClickEvent event) {
                         // TODO validation feedback on dialog
                         if (!Strings.isNullOrEmpty(txtDeviceName.getText())) {
-                            final DeviceInfoProxy deviceInfo = ServiceUtils.getInstance().getBusService().create(
+                            final DeviceInfoProxy deviceInfo = RequestUtils.getInstance().getBusRequest().create(
                                     DeviceInfoProxy.class);
                             if ("test".equals(txtDeviceName.getText())) {
                                 deviceInfo.setType(DeviceInfo.DEVICE_TYPE.TEST);
@@ -127,7 +127,7 @@ public class DeviceConfigModal extends Modal {
                             }
                             deviceInfo.setKey(txtDeviceName.getValue());
 
-                            ServiceUtils.getInstance().getBusService().createDevice(deviceInfo).fire(
+                            RequestUtils.getInstance().getBusRequest().createDevice(deviceInfo).fire(
                                     new Receiver<Void>() {
                                 @Override
                                 public void onSuccess(Void response) {
@@ -204,7 +204,7 @@ public class DeviceConfigModal extends Modal {
     }
 
     private void reloadDeviceList() {
-        ServiceUtils.getInstance().getBusService().getDevices().fire(new Receiver<List<DeviceInfoProxy>>() {
+        RequestUtils.getInstance().getBusRequest().getDevices().fire(new Receiver<List<DeviceInfoProxy>>() {
             @Override
             public void onSuccess(List<DeviceInfoProxy> response) {
                 // reset devices to load fresh list
@@ -217,7 +217,7 @@ public class DeviceConfigModal extends Modal {
                     btnDeleteActions.put(deviceInfo, new ClickHandler() {
                         @Override
                         public void onClick(ClickEvent event) {
-                            ServiceUtils.getInstance().getBusService().deleteDevice(deviceInfo).fire(
+                            RequestUtils.getInstance().getBusRequest().deleteDevice(deviceInfo).fire(
                                     new Receiver<Void>() {
                                 @Override
                                 public void onSuccess(Void response) {

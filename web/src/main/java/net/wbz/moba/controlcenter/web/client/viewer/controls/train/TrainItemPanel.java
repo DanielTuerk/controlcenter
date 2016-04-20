@@ -2,7 +2,7 @@ package net.wbz.moba.controlcenter.web.client.viewer.controls.train;
 
 import java.util.Map;
 
-import net.wbz.moba.controlcenter.web.client.ServiceUtils;
+import net.wbz.moba.controlcenter.web.client.RequestUtils;
 import net.wbz.moba.controlcenter.web.client.viewer.controls.AbstractItemPanel;
 import net.wbz.moba.controlcenter.web.shared.train.Train;
 import net.wbz.moba.controlcenter.web.shared.train.TrainDrivingDirectionEvent;
@@ -144,7 +144,7 @@ public class TrainItemPanel extends AbstractItemPanel<TrainProxy, TrainStateEven
                         int level = doubleValueChangeEvent.getValue().intValue();
                         if (level != lastSendSpeedValue) {
                             lastSendSpeedValue = level;
-                            ServiceUtils.getInstance().getTrainService().updateDrivingLevel(
+                            RequestUtils.getInstance().getTrainRequest().updateDrivingLevel(
                                     getModel().getId(), level).fire();
                         }
                     }
@@ -152,7 +152,7 @@ public class TrainItemPanel extends AbstractItemPanel<TrainProxy, TrainStateEven
         Button btnStop = new Button("Stop", new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                ServiceUtils.getInstance().getTrainService().updateDrivingLevel(
+                RequestUtils.getInstance().getTrainRequest().updateDrivingLevel(
                         getModel().getId(), 0).fire();
             }
         });
@@ -193,7 +193,7 @@ public class TrainItemPanel extends AbstractItemPanel<TrainProxy, TrainStateEven
             btnToggleFunction.addClickHandler(new ClickHandler() {
                 @Override
                 public void onClick(ClickEvent clickEvent) {
-                    ServiceUtils.getInstance().getTrainService().setFunctionState(getModel().getId(),
+                    RequestUtils.getInstance().getTrainRequest().setFunctionState(getModel().getId(),
                             functionEntry.getFunction(), !btnToggleFunction
                                     .isActive()).fire();
                 }
@@ -219,7 +219,7 @@ public class TrainItemPanel extends AbstractItemPanel<TrainProxy, TrainStateEven
         btnDirection.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                ServiceUtils.getInstance().getTrainService().toggleDrivingDirection(getModel().getId(), direction)
+                RequestUtils.getInstance().getTrainRequest().toggleDrivingDirection(getModel().getId(), direction)
                         .fire();
             }
         });

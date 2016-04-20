@@ -2,7 +2,7 @@ package net.wbz.moba.controlcenter.web.client.device;
 
 import java.util.List;
 
-import net.wbz.moba.controlcenter.web.client.ServiceUtils;
+import net.wbz.moba.controlcenter.web.client.RequestUtils;
 
 import org.gwtbootstrap3.client.ui.Button;
 import org.gwtbootstrap3.client.ui.Modal;
@@ -56,7 +56,7 @@ public class PlayerModal extends Modal {
 
         content.clear();
 
-        ServiceUtils.getInstance().getBusService().getRecords().fire(new Receiver<List<String>>() {
+        RequestUtils.getInstance().getBusRequest().getRecords().fire(new Receiver<List<String>>() {
             @Override
             public void onSuccess(List<String> response) {
                 for (final String name : response) {
@@ -64,7 +64,7 @@ public class PlayerModal extends Modal {
                     btnRecord.addClickHandler(new ClickHandler() {
                         @Override
                         public void onClick(ClickEvent event) {
-                            ServiceUtils.getInstance().getBusService().startPlayer(name).fire();
+                            RequestUtils.getInstance().getBusRequest().startPlayer(name).fire();
                             hide();
                         }
                     });

@@ -3,7 +3,7 @@ package net.wbz.moba.controlcenter.web.client.device;
 import java.util.List;
 
 import net.wbz.moba.controlcenter.web.client.EventReceiver;
-import net.wbz.moba.controlcenter.web.client.ServiceUtils;
+import net.wbz.moba.controlcenter.web.client.RequestUtils;
 import net.wbz.moba.controlcenter.web.shared.bus.DeviceInfoEvent;
 import net.wbz.moba.controlcenter.web.shared.bus.DeviceInfoProxy;
 
@@ -46,7 +46,7 @@ public class DeviceListBox extends Select {
 
     public void reload() {
 
-        ServiceUtils.getInstance().getBusService().getDevices().fire(new Receiver<List<DeviceInfoProxy>>() {
+        RequestUtils.getInstance().getBusRequest().getDevices().fire(new Receiver<List<DeviceInfoProxy>>() {
             @Override
             public void onSuccess(List<DeviceInfoProxy> result) {
                 devices.clear();

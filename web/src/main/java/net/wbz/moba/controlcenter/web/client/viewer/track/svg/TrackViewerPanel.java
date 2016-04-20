@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import net.wbz.moba.controlcenter.web.client.ServiceUtils;
+import net.wbz.moba.controlcenter.web.client.RequestUtils;
 import net.wbz.moba.controlcenter.web.client.editor.track.ViewerPaletteWidget;
 import net.wbz.moba.controlcenter.web.client.model.track.AbsoluteTrackPosition;
 import net.wbz.moba.controlcenter.web.client.model.track.AbstractBlockSvgTrackWidget;
@@ -65,10 +65,10 @@ public class TrackViewerPanel extends AbstractTrackViewerPanel {
         add(lblTrackPartConfig, 0, 0);
 
         // load the connection state to toggle the state of the widgets
-        ServiceUtils.getInstance().getBusService().isBusConnected().fire(new Receiver<Boolean>() {
+        RequestUtils.getInstance().getBusRequest().isBusConnected().fire(new Receiver<Boolean>() {
             @Override
             public void onSuccess(final Boolean response) {
-                ServiceUtils.getInstance().getTrackEditorService().loadTrack().fire(
+                RequestUtils.getInstance().getTrackEditorRequest().loadTrack().fire(
                         new Receiver<List<TrackPartProxy>>() {
                     @Override
                     public void onSuccess(List<TrackPartProxy> trackParts) {
@@ -170,7 +170,7 @@ public class TrackViewerPanel extends AbstractTrackViewerPanel {
     @Override
     protected void updateTrainOnTrack(final int address, final int block, final int train,
             final FeedbackBlockEvent.STATE state) {
-        ServiceUtils.getInstance().getTrainEditorService().getTrain(train).fire(new Receiver<TrainProxy>() {
+        RequestUtils.getInstance().getTrainEditorRequest().getTrain(train).fire(new Receiver<TrainProxy>() {
             @Override
             public void onSuccess(TrainProxy result) {
                 Configuration configAsIdentifier = new Configuration(1, address, block, true);
@@ -209,7 +209,7 @@ public class TrackViewerPanel extends AbstractTrackViewerPanel {
     }
 
     private void registerWidgetsToReceiveEvents() {
-        ServiceUtils.getInstance().getTrackEditorService().registerConsumersByConnectedDeviceForTrackParts(
+        RequestUtils.getInstance().getTrackEditorRequest().registerConsumersByConnectedDeviceForTrackParts(
                 loadedTrackParts).fire();
     }
 

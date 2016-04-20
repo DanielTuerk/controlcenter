@@ -2,7 +2,7 @@ package net.wbz.moba.controlcenter.web.client.viewer.settings;
 
 import java.util.List;
 
-import net.wbz.moba.controlcenter.web.client.ServiceUtils;
+import net.wbz.moba.controlcenter.web.client.RequestUtils;
 import net.wbz.moba.controlcenter.web.shared.constrution.ConstructionProxy;
 
 import com.google.web.bindery.requestfactory.shared.Receiver;
@@ -23,7 +23,7 @@ public class ConstructionSelectionConfigEntry extends SelectionConfigEntry {
         // at first initialize value for direct usage
         ConstructionSelectionConfigEntry.super.handleStorageRead(value);
         // load available options for the select component
-        ServiceUtils.getInstance().getConstructionService().loadConstructions().fire(
+        RequestUtils.getInstance().getConstructionRequest().loadConstructions().fire(
                 new Receiver<List<ConstructionProxy>>() {
                     @Override
                     public void onSuccess(List<ConstructionProxy> response) {

@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import net.wbz.moba.controlcenter.web.client.ServiceUtils;
+import net.wbz.moba.controlcenter.web.client.RequestUtils;
 import net.wbz.moba.controlcenter.web.client.model.track.AbsoluteTrackPosition;
 import net.wbz.moba.controlcenter.web.client.model.track.AbstractSvgTrackWidget;
 import net.wbz.moba.controlcenter.web.client.model.track.ModelManager;
@@ -92,9 +92,9 @@ public class TrackEditorContainer extends FlowPanel {
 
                 for (TrackPartProxy trackPart : trackParts) {
                 }
-                ServiceUtils.getInstance().getTrackEditorService();
+                RequestUtils.getInstance().getTrackEditorRequest();
 
-                ServiceUtils.getInstance().getTrackEditorService().saveTrack(trackParts).fire(new Receiver<Void>() {
+                RequestUtils.getInstance().getTrackEditorRequest().saveTrack(trackParts).fire(new Receiver<Void>() {
                     public void onFailure(Throwable throwable) {
                         Notify.notify("Editor", "error by save track: " + throwable.getMessage(), IconType.WARNING);
                     }
@@ -167,7 +167,7 @@ public class TrackEditorContainer extends FlowPanel {
             boundaryPanel.remove(i);
         }
 
-        ServiceUtils.getInstance().getTrackEditorService().loadTrack().fire(new Receiver<List<TrackPartProxy>>() {
+        RequestUtils.getInstance().getTrackEditorRequest().loadTrack().fire(new Receiver<List<TrackPartProxy>>() {
             @Override
             public void onSuccess(List<TrackPartProxy> trackParts) {
                 Log.info("load track success " + new Date().toString());

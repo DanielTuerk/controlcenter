@@ -1,6 +1,6 @@
 package net.wbz.moba.controlcenter.web.client.device;
 
-import net.wbz.moba.controlcenter.web.client.ServiceUtils;
+import net.wbz.moba.controlcenter.web.client.RequestUtils;
 
 import org.gwtbootstrap3.extras.toggleswitch.client.ui.ToggleSwitch;
 import org.gwtbootstrap3.extras.toggleswitch.client.ui.base.constants.ColorType;
@@ -32,16 +32,16 @@ public class BusConnectionToggleButton extends ToggleSwitch {
             public void onValueChange(ValueChangeEvent<Boolean> booleanValueChangeEvent) {
                 if (fireEvent) {
                     if (booleanValueChangeEvent.getValue()) {
-                        ServiceUtils.getInstance().getBusService().changeDevice(deviceListBox.getSelectedDevice())
+                        RequestUtils.getInstance().getBusRequest().changeDevice(deviceListBox.getSelectedDevice())
                                 .fire(new Receiver<Void>() {
                             @Override
                             public void onSuccess(Void response) {
-                                ServiceUtils.getInstance().getBusService().connectBus().fire();
+                                RequestUtils.getInstance().getBusRequest().connectBus().fire();
                             }
                         });
                     } else {
                         {
-                            ServiceUtils.getInstance().getBusService().disconnectBus().fire();
+                            RequestUtils.getInstance().getBusRequest().disconnectBus().fire();
                         }
                     }
                 } else {

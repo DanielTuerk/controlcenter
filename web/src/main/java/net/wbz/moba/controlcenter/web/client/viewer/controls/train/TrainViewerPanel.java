@@ -3,7 +3,7 @@ package net.wbz.moba.controlcenter.web.client.viewer.controls.train;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.wbz.moba.controlcenter.web.client.ServiceUtils;
+import net.wbz.moba.controlcenter.web.client.RequestUtils;
 import net.wbz.moba.controlcenter.web.client.viewer.controls.AbstractItemViewerPanel;
 import net.wbz.moba.controlcenter.web.shared.train.TrainDrivingDirectionEvent;
 import net.wbz.moba.controlcenter.web.shared.train.TrainDrivingLevelEvent;
@@ -41,7 +41,7 @@ public class TrainViewerPanel extends AbstractItemViewerPanel<TrainItemPanel, Tr
         return new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                ServiceUtils.getInstance().getTrainEditorService().createTrain(name.getText()).fire(
+                RequestUtils.getInstance().getTrainEditorRequest().createTrain(name.getText()).fire(
                         new Receiver<Void>() {
                     @Override
                     public void onSuccess(Void response) {
@@ -55,7 +55,7 @@ public class TrainViewerPanel extends AbstractItemViewerPanel<TrainItemPanel, Tr
 
     @Override
     protected void loadItems() {
-        ServiceUtils.getInstance().getTrainEditorService().getTrains().fire(new Receiver<List<TrainProxy>>() {
+        RequestUtils.getInstance().getTrainEditorRequest().getTrains().fire(new Receiver<List<TrainProxy>>() {
             @Override
             public void onSuccess(List<TrainProxy> response) {
                 for (TrainProxy train : response) {

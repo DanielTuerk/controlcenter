@@ -1,6 +1,6 @@
 package net.wbz.moba.controlcenter.web.client.device;
 
-import net.wbz.moba.controlcenter.web.client.ServiceUtils;
+import net.wbz.moba.controlcenter.web.client.RequestUtils;
 
 import org.gwtbootstrap3.client.ui.Button;
 import org.gwtbootstrap3.client.ui.Form;
@@ -101,7 +101,7 @@ public class SendDataModal extends Modal {
         final int address = Integer.parseInt(txtAddress.getText());
         final int busNr = Integer.parseInt(txtBus.getText());
         final int data = Integer.parseInt(txtData.getText());
-        ServiceUtils.getInstance().getBusService().sendBusData(busNr, address, data).fire(new Receiver<Void>() {
+        RequestUtils.getInstance().getBusRequest().sendBusData(busNr, address, data).fire(new Receiver<Void>() {
             @Override
             public void onFailure(ServerFailure error) {
                 Notify.notify("send data", "can't send data: " + error.getMessage(), IconType.WARNING);

@@ -1,10 +1,8 @@
 package net.wbz.moba.controlcenter.web.client.model.track;
 
-import net.wbz.moba.controlcenter.web.client.ServiceUtils;
+import net.wbz.moba.controlcenter.web.client.RequestUtils;
 import net.wbz.moba.controlcenter.web.client.util.SvgTrackUtil;
 import net.wbz.moba.controlcenter.web.shared.track.model.Straight;
-import net.wbz.moba.controlcenter.web.shared.track.model.StraightProxy;
-import net.wbz.moba.controlcenter.web.shared.track.model.Uncoupler;
 import net.wbz.moba.controlcenter.web.shared.track.model.UncouplerProxy;
 import org.vectomatic.dom.svg.OMSVGDocument;
 import org.vectomatic.dom.svg.OMSVGSVGElement;
@@ -29,7 +27,7 @@ abstract public class AbstractUncouplerWidget extends AbstractControlSvgTrackWid
 
     @Override
     public UncouplerProxy getNewTrackPart() {
-        UncouplerProxy uncoupler = ServiceUtils.getInstance().getTrackEditorService().create(UncouplerProxy.class);
+        UncouplerProxy uncoupler = RequestUtils.getInstance().getTrackEditorRequest().create(UncouplerProxy.class);
         uncoupler.setDirection(getStraightDirection());
         return uncoupler;
     }

@@ -4,9 +4,8 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Widget;
 import net.wbz.moba.controlcenter.web.client.Popover;
-import net.wbz.moba.controlcenter.web.client.ServiceUtils;
+import net.wbz.moba.controlcenter.web.client.RequestUtils;
 import net.wbz.moba.controlcenter.web.client.model.track.AbstractControlSvgTrackWidget;
-import net.wbz.moba.controlcenter.web.client.util.EmptyCallback;
 import net.wbz.moba.controlcenter.web.client.viewer.track.svg.TrackViewerPanel;
 import net.wbz.moba.controlcenter.web.shared.track.model.Signal;
 import net.wbz.moba.controlcenter.web.shared.track.model.SignalProxy;
@@ -108,7 +107,7 @@ abstract public class AbstractSignalWidget extends AbstractControlSvgTrackWidget
     private void switchSignalFunction(Signal.FUNCTION function) {
         SignalProxy signal = getTrackPart();
 
-        ServiceUtils.getInstance().getTrackViewerService().switchSignal(signalType, function, signal.getSignalConfiguration()).fire();
+        RequestUtils.getInstance().getTrackViewerRequest().switchSignal(signalType, function, signal.getSignalConfiguration()).fire();
 
     }
 

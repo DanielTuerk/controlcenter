@@ -2,7 +2,7 @@ package net.wbz.moba.controlcenter.web.client.model.track;
 
 import java.util.Map;
 
-import net.wbz.moba.controlcenter.web.client.ServiceUtils;
+import net.wbz.moba.controlcenter.web.client.RequestUtils;
 import net.wbz.moba.controlcenter.web.client.editor.track.ClickActionViewerWidgetHandler;
 import net.wbz.moba.controlcenter.web.client.util.BitStateToggleButton;
 import net.wbz.moba.controlcenter.web.client.util.Log;
@@ -63,7 +63,7 @@ abstract public class AbstractControlSvgTrackWidget<T extends TrackPartProxy> ex
         if (isEnabled()) {
             ConfigurationProxy toggleFunctionConfig = getStoredWidgetFunctionConfigs().get(
                     TrackModelConstants.DEFAULT_TOGGLE_FUNCTION);
-            ServiceUtils.getInstance().getTrackViewerService().toggleTrackPart(toggleFunctionConfig, !trackPartState)
+            RequestUtils.getInstance().getTrackViewerRequest().toggleTrackPart(toggleFunctionConfig, !trackPartState)
                     .fire();
         }
     }

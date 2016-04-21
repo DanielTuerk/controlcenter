@@ -1,11 +1,13 @@
 package net.wbz.moba.controlcenter.web.client;
 
-import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.user.client.Command;
-import org.gwtbootstrap3.client.ui.*;
-import org.gwtbootstrap3.client.ui.constants.Pull;
+import com.google.gwt.uibinder.client.UiBinder;
+import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.Widget;
+import org.gwtbootstrap3.client.ui.AnchorListItem;
 
 /**
  * Menu bar on the top of the application.
@@ -13,80 +15,55 @@ import org.gwtbootstrap3.client.ui.constants.Pull;
  *
  * @author Daniel Tuerk
  */
-public class AppMenu extends Navbar {
+abstract class AppMenu extends Composite {
 
-    private final Scheduler.ScheduledCommand showEditorCommand;
-    private final Scheduler.ScheduledCommand showBusMonitorCommand;
-
-    private final Scheduler.ScheduledCommand showViewerCommand;
-    private final Scheduler.ScheduledCommand showConfigCommand;
-    private AnchorListItem viewerAnchorListItem;
-    private AnchorListItem editorAnchorListItem;
-    private AnchorListItem monitorAnchorListItem;
-    private AnchorListItem configurationAnchorListItem;
-
-    public AppMenu(Scheduler.ScheduledCommand showEditorCommand, Command showViewerCommand,
-                   Scheduler.ScheduledCommand showBusMonitorCommand, Scheduler.ScheduledCommand showConfigCommand) {
-        this.showEditorCommand = showEditorCommand;
-        this.showBusMonitorCommand = showBusMonitorCommand;
-        this.showViewerCommand = showViewerCommand;
-        this.showConfigCommand = showConfigCommand;
-
-        ensureDebugId("cwMenuBar");
-
-        addStyleName("appMenu");
-        NavbarHeader navbarHeader = new NavbarHeader();
-        NavbarBrand brand = new NavbarBrand();
-        brand.setText("Control Center");
-        navbarHeader.add(brand);
-        add(navbarHeader);
-
-        NavbarNav navbarNav = new NavbarNav();
-        viewerAnchorListItem = createLink("Viewer", showViewerCommand);
-        navbarNav.add(viewerAnchorListItem);
-        editorAnchorListItem = createLink("Editor", showEditorCommand);
-        navbarNav.add(editorAnchorListItem);
-        monitorAnchorListItem = createLink("Bus Monitor", showBusMonitorCommand);
-        navbarNav.add(monitorAnchorListItem);
-        add(navbarNav);
-        NavbarNav rightNavbarNav = new NavbarNav();
-        rightNavbarNav.setPull(Pull.RIGHT);
-        configurationAnchorListItem = createLink("Configuration", showConfigCommand);
-        rightNavbarNav.add(configurationAnchorListItem);
-        add(rightNavbarNav);
+    interface LoginUiBinder extends UiBinder<Widget, AppMenu> {
     }
 
-    @Override
-    protected void onLoad() {
-       super.onLoad();
+    private static LoginUiBinder uiBinder = GWT.create(LoginUiBinder.class);
+    @UiField
+    AnchorListItem linkViewer;
+    @UiField
+    AnchorListItem linkEditor;
+    @UiField
+    AnchorListItem linkBusMonitor;
+    @UiField
+    AnchorListItem linkConfiguration;
+
+    public AppMenu() {
+        initWidget(uiBinder.createAndBindUi(this));
     }
 
-    private AnchorListItem createLink(String title, final Scheduler.ScheduledCommand command) {
-        AnchorListItem anchor = new AnchorListItem();
-        anchor.setText(title);
-        anchor.addClickHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-                command.execute();
-            }
-        });
-        return anchor;
+    @UiHandler("linkViewer")
+    void clickLinkViewer(ClickEvent event) {
+        showViewer();
+        linkViewer.setActive(true);
     }
 
-
-    public AnchorListItem getViewerAnchorListItem() {
-        return viewerAnchorListItem;
+    @UiHandler("linkEditor")
+    void clickLinkEditor(ClickEvent event) {
+        showEditor();
+        linkEditor.setActive(true);
     }
 
-    public AnchorListItem getEditorAnchorListItem() {
-        return editorAnchorListItem;
+    @UiHandler("linkBusMonitor")
+    void clickLinkBusMonitor(ClickEvent event) {
+        showBusMonitor();
+        linkBusMonitor.setActive(true);
     }
 
-    public AnchorListItem getMonitorAnchorListItem() {
-        return monitorAnchorListItem;
+    @UiHandler("linkConfiguration")
+    void clickLinkConfiguration(ClickEvent event) {
+        showConfiguration();
+        linkConfiguration.setActive(true);
     }
 
-    public AnchorListItem getConfigurationAnchorListItem() {
-        return configurationAnchorListItem;
-    }
+    abstract void showViewer();
+
+    abstract void showEditor();
+
+    abstract void showBusMonitor();
+
+    abstract void showConfiguration();
+
 }

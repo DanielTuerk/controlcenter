@@ -1,9 +1,8 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:b="urn:import:org.gwtbootstrap3.client.ui">
-    <!--<ui:with type="com.tutorialspoint.client.LoginResources" field="res">-->
-    <!--</ui:with>-->
 
     <b:Container fluid="false">
+        <b:PageHeader>Welcome</b:PageHeader>
         <b:Row>
             <b:Column size="SM_5">
 
@@ -41,35 +40,4 @@
             </b:Column>
         </b:Row>
     </b:Container>
-
-
-    <!--<b:Container>-->
-    <!--<b:PageHeader>Yay buttons!</b:PageHeader>-->
-
-    <!--<b:Button>Some button</b:Button>-->
-    <!--<b:Button type="DANGER" size="LARGE">Dangerous button</b:Button>-->
-    <!--</b:Container>-->
-
-    <!--<g:HTMLPanel>-->
-    <!--<div align="center">-->
-    <!--<g:VerticalPanel res:styleName="style.background">-->
-    <!--<g:Label text="Login" res:styleName="style.blackText" />-->
-    <!--<g:TextBox ui:field="loginBox" res:styleName="style.box" />-->
-    <!--<g:Label text="Password" res:styleName="style.blackText" />-->
-    <!--<g:PasswordTextBox ui:field="passwordBox"-->
-    <!--res:styleName="style.box" />-->
-    <!--<g:HorizontalPanel verticalAlignment="middle">-->
-    <!--<g:Button ui:field="buttonSubmit" text="Submit"-->
-    <!--res:styleName="style.loginButton" />-->
-    <!--<g:CheckBox ui:field="myCheckBox" />-->
-    <!--<g:Label ui:field="myLabel" text="Remember me"-->
-    <!--res:styleName="style.blackText" />-->
-    <!--</g:HorizontalPanel>-->
-    <!--<g:Label ui:field="completionLabel1"-->
-    <!--res:styleName="style.blackText" />-->
-    <!--<g:Label ui:field="completionLabel2"-->
-    <!--res:styleName="style.blackText" />-->
-    <!--</g:VerticalPanel>-->
-    <!--</div>-->
-    <!--</g:HTMLPanel>-->
 </ui:UiBinder>

@@ -1,8 +1,12 @@
 package net.wbz.moba.controlcenter.web.client;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import com.google.gwt.core.client.EntryPoint;
+import com.google.gwt.dom.client.Style;
+import com.google.gwt.user.client.ui.DockLayoutPanel;
+import com.google.gwt.user.client.ui.RootLayoutPanel;
+import com.google.gwt.user.client.ui.SimplePanel;
+import com.google.gwt.user.client.ui.Widget;
+import com.google.web.bindery.requestfactory.shared.Receiver;
 import net.wbz.moba.controlcenter.web.client.device.StatePanel;
 import net.wbz.moba.controlcenter.web.client.editor.track.TrackEditorContainer;
 import net.wbz.moba.controlcenter.web.client.model.track.ModelManager;
@@ -10,18 +14,11 @@ import net.wbz.moba.controlcenter.web.client.viewer.bus.BusMonitorPanel;
 import net.wbz.moba.controlcenter.web.client.viewer.settings.ConfigPanel;
 import net.wbz.moba.controlcenter.web.client.viewer.track.TrackViewerContainer;
 import net.wbz.moba.controlcenter.web.shared.constrution.ConstructionProxy;
-
 import org.gwtbootstrap3.client.ui.constants.IconType;
-
-import com.google.gwt.core.client.EntryPoint;
-import com.google.gwt.dom.client.Style;
-import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.ui.DockLayoutPanel;
-import com.google.gwt.user.client.ui.RootLayoutPanel;
-import com.google.gwt.user.client.ui.SimplePanel;
-import com.google.gwt.user.client.ui.Widget;
-import com.google.web.bindery.requestfactory.shared.Receiver;
 import org.gwtbootstrap3.extras.notify.client.ui.Notify;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
@@ -130,30 +127,28 @@ public class ControlCenterApp implements EntryPoint {
     }
 
     private void initAppMenu() {
-        appMenu = new AppMenu(new Command() {
+        appMenu = new AppMenu() {
+
             @Override
-            public void execute() {
+            void showViewer() {
+                show(trackViewerContainer);
+            }
+
+            @Override
+            void showEditor() {
                 show(trackEditorContainer);
             }
-        },
-                new Command() {
-                    @Override
-                    public void execute() {
-                        show(trackViewerContainer);
-                    }
-                },
-                new Command() {
-                    @Override
-                    public void execute() {
-                        show(busMonitorPanel);
-                    }
-                },
-                new Command() {
-                    @Override
-                    public void execute() {
-                        show(configPanel);
-                    }
-                });
+
+            @Override
+            void showBusMonitor() {
+                show(busMonitorPanel);
+            }
+
+            @Override
+            void showConfiguration() {
+                show(configPanel);
+            }
+        };
     }
 
     private void show(Widget containerPanel) {
@@ -163,10 +158,6 @@ public class ControlCenterApp implements EntryPoint {
             }
         }
         contentContainerPanel.add(containerPanel);
-        appMenu.getViewerAnchorListItem().setActive(containerPanel == trackViewerContainer);
-        appMenu.getMonitorAnchorListItem().setActive(containerPanel == busMonitorPanel);
-        appMenu.getEditorAnchorListItem().setActive(containerPanel == trackEditorContainer);
-        appMenu.getConfigurationAnchorListItem().setActive(containerPanel == configPanel);
     }
 
 }

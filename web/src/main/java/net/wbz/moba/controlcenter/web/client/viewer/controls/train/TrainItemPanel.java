@@ -149,7 +149,7 @@ public class TrainItemPanel extends AbstractItemPanel<TrainProxy, TrainStateEven
                         }
                     }
                 });
-        Button btnStop = new Button("Stop", new ClickHandler() {
+        final Button btnStop = new Button("Stop", new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
                 RequestUtils.getInstance().getTrainRequest().updateDrivingLevel(

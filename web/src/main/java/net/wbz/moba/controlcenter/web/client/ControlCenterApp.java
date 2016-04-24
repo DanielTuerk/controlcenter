@@ -25,8 +25,6 @@ import java.util.List;
  */
 public class ControlCenterApp implements EntryPoint {
 
-    private AppMenu appMenu;
-
     private TrackEditorContainer trackEditorContainer;
     private TrackViewerContainer trackViewerContainer;
     private BusMonitorPanel busMonitorPanel;
@@ -105,7 +103,7 @@ public class ControlCenterApp implements EntryPoint {
         configPanel = new ConfigPanel();
         containerPanels.add(configPanel);
 
-        initAppMenu();
+        final AppMenu appMenu = createAppMenu();
 
         DockLayoutPanel dockLayoutPanel = new DockLayoutPanel(Style.Unit.PX);
         dockLayoutPanel.addNorth(appMenu, 50);
@@ -126,8 +124,8 @@ public class ControlCenterApp implements EntryPoint {
         RootLayoutPanel.get().add(dockLayoutPanel);
     }
 
-    private void initAppMenu() {
-        appMenu = new AppMenu() {
+    private AppMenu createAppMenu() {
+        return new AppMenu() {
 
             @Override
             void showViewer() {

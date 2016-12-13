@@ -1,25 +1,20 @@
 package net.wbz.moba.controlcenter.web.client;
 
-import com.google.common.collect.Maps;
 import de.novanic.eventservice.client.event.Event;
 import de.novanic.eventservice.client.event.RemoteEventService;
 import de.novanic.eventservice.client.event.RemoteEventServiceFactory;
 import de.novanic.eventservice.client.event.domain.DomainFactory;
 import de.novanic.eventservice.client.event.listener.RemoteEventListener;
 
-import java.util.List;
-import java.util.Map;
-
 /**
- * TODO
+ * Util to register {@link RemoteEventListener} to receiving {@link Event}s from server.
+ * Running a single {@link RemoteEventService}.
  *
  * @author Daniel Tuerk
  */
 public class EventReceiver {
 
-    private final Map<Class<? extends Event>, List<EventListener<? extends Event>>> listeners = Maps.newHashMap();
-//    private final RemoteEventService theRemoteEventService;
-
+    private final RemoteEventService theRemoteEventService;
     private final static EventReceiver instance = new EventReceiver();
 
     public static EventReceiver getInstance() {
@@ -27,13 +22,14 @@ public class EventReceiver {
     }
 
     private EventReceiver() {
-        //theRemoteEventService = RemoteEventServiceFactory.getInstance().getRemoteEventService();
+        theRemoteEventService = RemoteEventServiceFactory.getInstance().getRemoteEventService();
     }
 
     public void addListener(Class<? extends Event> eventClazz, RemoteEventListener listener) {
-//        theRemoteEventService.addListener(DomainFactory.getDomain(eventClazz.getName()), listener);
+        theRemoteEventService.addListener(DomainFactory.getDomain(eventClazz.getName()), listener);
     }
-    public void removeListener(Class<? extends Event> eventClazz, RemoteEventListener listener ){
-//        theRemoteEventService.removeListener(DomainFactory.getDomain(eventClazz.getName()), listener);
+
+    public void removeListener(Class<? extends Event> eventClazz, RemoteEventListener listener) {
+        theRemoteEventService.removeListener(DomainFactory.getDomain(eventClazz.getName()), listener);
     }
 }

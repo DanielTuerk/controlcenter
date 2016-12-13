@@ -1,7 +1,7 @@
 package net.wbz.moba.controlcenter.web.shared.constrution;
 
 
-import net.wbz.moba.controlcenter.web.shared.HasVersionAndId;
+import net.wbz.moba.controlcenter.web.shared.Identity;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -11,7 +11,7 @@ import javax.persistence.Id;
  * @author Daniel Tuerk
  */
 @Entity
-public class Construction implements HasVersionAndId {
+public class Construction implements Identity {
 
     @Id
     @GeneratedValue

@@ -1,13 +1,13 @@
 package net.wbz.moba.controlcenter.web.shared.bus;
 
-import java.util.List;
-
-import net.wbz.moba.controlcenter.web.guice.requestFactory.InjectingServiceLocator;
-import net.wbz.moba.controlcenter.web.server.constrution.BusService;
-
 import com.google.web.bindery.requestfactory.shared.Request;
 import com.google.web.bindery.requestfactory.shared.RequestContext;
 import com.google.web.bindery.requestfactory.shared.Service;
+import net.wbz.moba.controlcenter.web.guice.requestFactory.InjectingServiceLocator;
+import net.wbz.moba.controlcenter.web.server.constrution.BusService;
+
+import java.util.Collection;
+import java.util.List;
 
 /**
  * @author Daniel Tuerk
@@ -49,19 +49,19 @@ public interface BusRequest extends RequestContext {
     /**
      * Simple access to the selectrix bus. Set value for the bit of the current connected device.
      *
-     * @param busNr number of bus
+     * @param busNr   number of bus
      * @param address address of bit
-     * @param bit bit number (1-8)
-     * @param state {@link java.lang.Boolean} new state for the bit
+     * @param bit     bit number (1-8)
+     * @param state   {@link java.lang.Boolean} new state for the bit
      */
     Request<Void> sendBusData(int busNr, int address, int bit, boolean state);
 
     /**
      * Send value for the given address of the bus number to the current connected device.
      *
-     * @param busNr number of bus
+     * @param busNr   number of bus
      * @param address address
-     * @param data data of address
+     * @param data    data of address
      */
     Request<Void> sendBusData(int busNr, int address, int data);
 

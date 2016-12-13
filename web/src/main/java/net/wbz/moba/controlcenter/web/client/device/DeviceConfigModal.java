@@ -1,11 +1,13 @@
 package net.wbz.moba.controlcenter.web.client.device;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
 import net.wbz.moba.controlcenter.web.client.EventReceiver;
 import net.wbz.moba.controlcenter.web.client.RequestUtils;
 import net.wbz.moba.controlcenter.web.client.util.Log;
+import net.wbz.moba.controlcenter.web.shared.bus.BusRequest;
 import net.wbz.moba.controlcenter.web.shared.bus.DeviceInfo;
 import net.wbz.moba.controlcenter.web.shared.bus.DeviceInfoEvent;
 import net.wbz.moba.controlcenter.web.shared.bus.DeviceInfoProxy;
@@ -118,7 +120,8 @@ public class DeviceConfigModal extends Modal {
                     public void onClick(ClickEvent event) {
                         // TODO validation feedback on dialog
                         if (!Strings.isNullOrEmpty(txtDeviceName.getText())) {
-                            final DeviceInfoProxy deviceInfo = RequestUtils.getInstance().getBusRequest().create(
+                            BusRequest busRequest = RequestUtils.getInstance().getBusRequest();
+                            final DeviceInfoProxy deviceInfo = busRequest.create(
                                     DeviceInfoProxy.class);
                             if ("test".equals(txtDeviceName.getText())) {
                                 deviceInfo.setType(DeviceInfo.DEVICE_TYPE.TEST);
@@ -127,11 +130,14 @@ public class DeviceConfigModal extends Modal {
                             }
                             deviceInfo.setKey(txtDeviceName.getValue());
 
-                            RequestUtils.getInstance().getBusRequest().createDevice(deviceInfo).fire(
+//                            busRequest.createDevice()fire(
+
+                            busRequest.createDevice(deviceInfo).fire(
                                     new Receiver<Void>() {
                                 @Override
                                 public void onSuccess(Void response) {
                                     Notify.notify("", "Device " + deviceInfo.getKey() + " created", IconType.INFO);
+                                    DeviceConfigModal.this.hide();
                                 }
                             });
                         }
@@ -204,9 +210,9 @@ public class DeviceConfigModal extends Modal {
     }
 
     private void reloadDeviceList() {
-        RequestUtils.getInstance().getBusRequest().getDevices().fire(new Receiver<List<DeviceInfoProxy>>() {
+        RequestUtils.getInstance().getBusRequest().getDevices().fire(new Receiver<Collection<DeviceInfoProxy>>() {
             @Override
-            public void onSuccess(List<DeviceInfoProxy> response) {
+            public void onSuccess(Collection<DeviceInfoProxy> response) {
                 // reset devices to load fresh list
                 dataProvider.getList().clear();
                 btnDeleteActions.clear();

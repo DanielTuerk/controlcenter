@@ -3,6 +3,7 @@ package net.wbz.moba.controlcenter.web.server.viewer;
 import java.util.List;
 import java.util.Map;
 
+import com.google.inject.persist.Transactional;
 import net.wbz.moba.controlcenter.web.shared.bus.BusAddressBit;
 import net.wbz.moba.controlcenter.web.shared.track.model.Configuration;
 import net.wbz.moba.controlcenter.web.shared.track.model.Signal;
@@ -35,7 +36,7 @@ public class TrackViewerService  {
     public TrackViewerService(DeviceManager deviceManager) {
         this.deviceManager = deviceManager;
     }
-
+    @Transactional
     public void toggleTrackPart(Configuration configuration, boolean state) {
         if (configuration.isValid()) {
             try {
@@ -55,7 +56,7 @@ public class TrackViewerService  {
             }
         }
     }
-
+    @Transactional
     public boolean getTrackPartState(Configuration configuration) {
         if (configuration.isValid()) {
             try {
@@ -71,7 +72,7 @@ public class TrackViewerService  {
         }
         throw new RpcTokenException("invalid configuration: " + configuration);
     }
-
+    @Transactional
     public void sendTrackPartStates(List<BusAddressBit> busAddressBits) {
         try {
             Device connectedDevice = deviceManager.getConnectedDevice();
@@ -105,7 +106,7 @@ public class TrackViewerService  {
             throw new RpcTokenException(msg);
         }
     }
-
+    @Transactional
     private BusAddressBit convertFunctionConfig(Configuration configuration) {
         if (configuration != null && configuration.isValid()) {
             return new BusAddressBit(configuration.getBus(), configuration.getAddress(),
@@ -113,7 +114,7 @@ public class TrackViewerService  {
         }
         return null;
     }
-
+    @Transactional
     public void switchSignal(Signal.TYPE signalType, Signal.FUNCTION signalFunction,
             Map<Signal.LIGHT, Configuration> signalConfiguration) {
         // TODO

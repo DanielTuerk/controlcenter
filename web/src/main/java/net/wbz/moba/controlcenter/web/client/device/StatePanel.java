@@ -1,7 +1,12 @@
 package net.wbz.moba.controlcenter.web.client.device;
 
-import java.util.List;
-
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
+import com.google.web.bindery.requestfactory.shared.Receiver;
+import de.novanic.eventservice.client.event.Event;
+import de.novanic.eventservice.client.event.listener.RemoteEventListener;
 import net.wbz.moba.controlcenter.web.client.EventReceiver;
 import net.wbz.moba.controlcenter.web.client.RequestUtils;
 import net.wbz.moba.controlcenter.web.shared.bus.DeviceInfoEvent;
@@ -9,28 +14,20 @@ import net.wbz.moba.controlcenter.web.shared.bus.DeviceInfoProxy;
 import net.wbz.moba.controlcenter.web.shared.bus.PlayerEvent;
 import net.wbz.moba.controlcenter.web.shared.bus.RecordingEvent;
 import net.wbz.moba.controlcenter.web.shared.viewer.RailVoltageEvent;
-
 import org.gwtbootstrap3.client.ui.Button;
 import org.gwtbootstrap3.client.ui.Label;
 import org.gwtbootstrap3.extras.notify.client.ui.Notify;
 import org.gwtbootstrap3.extras.toggleswitch.client.ui.ToggleSwitch;
 import org.gwtbootstrap3.extras.toggleswitch.client.ui.base.constants.ColorType;
 
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.logical.shared.ValueChangeEvent;
-import com.google.gwt.event.logical.shared.ValueChangeHandler;
-import com.google.web.bindery.requestfactory.shared.Receiver;
-
-import de.novanic.eventservice.client.event.Event;
-import de.novanic.eventservice.client.event.listener.RemoteEventListener;
+import java.util.Collection;
 
 /**
  * @author Daniel Tuerk
  */
 public class StatePanel extends org.gwtbootstrap3.client.ui.gwt.FlowPanel {
 
-//    private final RemoteEventListener deviceInfoEventListener;
+    private final RemoteEventListener deviceInfoEventListener;
     private final SendDataModal sendDataModal = new SendDataModal();
     private final Button btnSendData;
     private final DeviceListBox deviceListBox;
@@ -49,18 +46,18 @@ public class StatePanel extends org.gwtbootstrap3.client.ui.gwt.FlowPanel {
 
         // add event receiver for the device connection state
         // TODO
-        // deviceInfoEventListener = new RemoteEventListener() {
-        // public void apply(Event anEvent) {
-        // if (anEvent instanceof DeviceInfoEvent) {
-        // DeviceInfoEvent event = (DeviceInfoEvent) anEvent;
-        // if (event.getEventType() == DeviceInfoEvent.TYPE.CONNECTED) {
-        // updateDeviceConnectionState(event.getDeviceInfo(), true);
-        // } else if (event.getEventType() == DeviceInfoEvent.TYPE.DISCONNECTED) {
-        // updateDeviceConnectionState(event.getDeviceInfo(), false);
-        // }
-        // }
-        // }
-        // };
+        deviceInfoEventListener = new RemoteEventListener() {
+            public void apply(Event anEvent) {
+                if (anEvent instanceof DeviceInfoEvent) {
+                    DeviceInfoEvent event = (DeviceInfoEvent) anEvent;
+                    if (event.getEventType() == DeviceInfoEvent.TYPE.CONNECTED) {
+//                        updateDeviceConnectionState(event.getDeviceInfo(), true);
+                    } else if (event.getEventType() == DeviceInfoEvent.TYPE.DISCONNECTED) {
+//                        updateDeviceConnectionState(event.getDeviceInfo(), false);
+                    }
+                }
+            }
+        };
 
         // add event receiver for the device connection state
         busDataPlayerEventListener = new RemoteEventListener() {
@@ -186,9 +183,9 @@ public class StatePanel extends org.gwtbootstrap3.client.ui.gwt.FlowPanel {
             public void onSuccess(Boolean connected) {
                 if (connected) {
 
-                    RequestUtils.getInstance().getBusRequest().getDevices().fire(new Receiver<List<DeviceInfoProxy>>() {
+                    RequestUtils.getInstance().getBusRequest().getDevices().fire(new Receiver<Collection<DeviceInfoProxy>>() {
                         @Override
-                        public void onSuccess(List<DeviceInfoProxy> response) {
+                        public void onSuccess(Collection<DeviceInfoProxy> response) {
                             for (DeviceInfoProxy deviceInfo : response) {
                                 if (deviceInfo.isConnected()) {
                                     updateDeviceConnectionState(deviceInfo, true);

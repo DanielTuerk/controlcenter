@@ -7,6 +7,8 @@ import com.google.web.bindery.requestfactory.shared.Service;
 import net.wbz.moba.controlcenter.web.guice.requestFactory.InjectingServiceLocator;
 import net.wbz.moba.controlcenter.web.server.editor.TrackEditorService;
 import net.wbz.moba.controlcenter.web.shared.track.model.*;
+import net.wbz.moba.controlcenter.web.shared.train.TrainFunctionProxy;
+import net.wbz.moba.controlcenter.web.shared.train.TrainProxy;
 
 import java.util.List;
 

@@ -1,6 +1,7 @@
 package net.wbz.moba.controlcenter.web.client.model.track;
 
 import net.wbz.moba.controlcenter.web.client.RequestUtils;
+import net.wbz.moba.controlcenter.web.shared.editor.TrackEditorRequest;
 import net.wbz.moba.controlcenter.web.shared.track.model.Switch;
 import net.wbz.moba.controlcenter.web.shared.track.model.SwitchProxy;
 
@@ -24,7 +25,7 @@ public class SwitchRightBottomToTopWidget extends AbstractSwitchRightWidget {
     }
 
     @Override
-    public SwitchProxy getNewTrackPart() {
+    public SwitchProxy getNewTrackPart(TrackEditorRequest trackEditorRequest) {
         SwitchProxy switchRBottomT = RequestUtils.getInstance().getTrackEditorRequest().create(SwitchProxy.class);
         switchRBottomT.setCurrentDirection(Switch.DIRECTION.RIGHT);
         switchRBottomT.setCurrentPresentation(Switch.PRESENTATION.BOTTOM_TO_TOP);

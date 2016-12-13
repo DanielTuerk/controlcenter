@@ -42,6 +42,7 @@ public class ConstructionService {
         entityManager.get().persist(construction);
     }
 
+    @Transactional
     public synchronized List<Construction> loadConstructions() {
         log.info("load construction");
         Query typedQuery = entityManager.get().createQuery(

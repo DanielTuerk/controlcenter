@@ -1,19 +1,15 @@
 package net.wbz.moba.controlcenter.web.shared.track.model;
 
-import com.google.gwt.user.client.rpc.IsSerializable;
-import net.wbz.moba.controlcenter.web.shared.HasVersionAndId;
+import net.wbz.moba.controlcenter.web.shared.Identity;
 
 
 import javax.persistence.*;
-import javax.sound.midi.Track;
-import java.io.Serializable;
-import java.util.List;
 
 /**
  * @author Daniel Tuerk
  */
 @Entity
-public class GridPosition implements HasVersionAndId {
+public class GridPosition implements Identity {
 
     @Id
     @GeneratedValue

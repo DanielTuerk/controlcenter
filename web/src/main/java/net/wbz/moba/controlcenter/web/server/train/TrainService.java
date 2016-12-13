@@ -3,6 +3,7 @@ package net.wbz.moba.controlcenter.web.server.train;
 import com.google.gwt.user.client.rpc.RpcTokenException;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import com.google.inject.persist.Transactional;
 import net.wbz.moba.controlcenter.web.shared.train.Train;
 import net.wbz.moba.controlcenter.web.shared.train.TrainFunction;
 import net.wbz.moba.controlcenter.web.shared.train.TrainRequest;
@@ -28,7 +29,7 @@ public class TrainService {
         this.trainManager = trainManager;
         this.deviceManager = deviceManager;
     }
-
+    @Transactional
     public void updateDrivingLevel(long id, int level) {
         if (level >= 0 && level <= 31) {
             int address = trainManager.getTrain(id).getAddress();
@@ -43,7 +44,7 @@ public class TrainService {
             throw new RpcTokenException("invalid level " + level + " (0-127)");
         }
     }
-
+    @Transactional
     public void toggleDrivingDirection(long id, Train.DIRECTION direction) {
         int address = trainManager.getTrain(id).getAddress();
         try {
@@ -55,7 +56,7 @@ public class TrainService {
             throw new RpcTokenException(msg);
         }
     }
-
+    @Transactional
     public void setFunctionState(long id, TrainFunction.FUNCTION function, boolean state) {
         int address = trainManager.getTrain(id).getAddress();
         try {

@@ -6,6 +6,7 @@ import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
 import net.wbz.moba.controlcenter.web.client.TrackUtils;
 import net.wbz.moba.controlcenter.web.client.editor.track.EditTrackWidgetHandler;
+import net.wbz.moba.controlcenter.web.shared.editor.TrackEditorRequest;
 import net.wbz.moba.controlcenter.web.shared.track.model.Configuration;
 import net.wbz.moba.controlcenter.web.shared.track.model.ConfigurationProxy;
 import net.wbz.moba.controlcenter.web.shared.track.model.GridPositionProxy;
@@ -259,6 +260,7 @@ abstract public class AbstractSvgTrackWidget<T extends TrackPartProxy> extends S
      * TODO: to avoid same model of clone - palette
      *
      * @return
+     * @param trackEditorRequest
      */
-    abstract public T getNewTrackPart();
+    abstract public T getNewTrackPart(TrackEditorRequest trackEditorRequest);
 }

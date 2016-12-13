@@ -1,9 +1,6 @@
 package net.wbz.moba.controlcenter.web.shared.scenario;
 
-import com.google.web.bindery.requestfactory.shared.EntityProxyId;
-import net.wbz.moba.controlcenter.web.shared.AbstractIdModel;
-import net.wbz.moba.controlcenter.web.shared.EntityProxyWithIdAndVersion;
-import net.wbz.moba.controlcenter.web.shared.HasVersionAndId;
+import net.wbz.moba.controlcenter.web.shared.Identity;
 
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -16,7 +13,7 @@ import java.util.List;
  * @deprecated not in use
  */
 @Deprecated
-public class Scenario implements HasVersionAndId {
+public class Scenario implements Identity {
 
     @Id
     @GeneratedValue

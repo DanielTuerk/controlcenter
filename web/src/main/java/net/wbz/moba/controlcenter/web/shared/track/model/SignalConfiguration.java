@@ -1,7 +1,6 @@
 package net.wbz.moba.controlcenter.web.shared.track.model;
 
-import com.google.gwt.user.client.rpc.IsSerializable;
-import net.wbz.moba.controlcenter.web.shared.HasVersionAndId;
+import net.wbz.moba.controlcenter.web.shared.Identity;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -9,7 +8,7 @@ import java.util.Map;
 /**
  * @author Daniel Tuerk
  */
-public class SignalConfiguration implements HasVersionAndId {
+public class SignalConfiguration implements Identity {
     Map<Signal.LIGHT, Configuration> lightsConfiguration;
 
     public Map<Signal.LIGHT, Configuration> getLightsConfiguration() {

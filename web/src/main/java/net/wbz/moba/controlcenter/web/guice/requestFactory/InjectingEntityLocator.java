@@ -3,15 +3,16 @@ package net.wbz.moba.controlcenter.web.guice.requestFactory;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.Provider;
+import com.google.inject.persist.Transactional;
 import com.google.web.bindery.requestfactory.shared.Locator;
-import net.wbz.moba.controlcenter.web.shared.HasVersionAndId;
+import net.wbz.moba.controlcenter.web.shared.Identity;
 
 import javax.persistence.EntityManager;
 
 /**
  * @author Daniel Tuerk
  */
-public class InjectingEntityLocator<T extends HasVersionAndId> extends Locator<T, Long> {
+public class InjectingEntityLocator<T extends Identity> extends Locator<T, Long> {
     @Inject
     Provider<EntityManager> data;
 
@@ -24,6 +25,7 @@ public class InjectingEntityLocator<T extends HasVersionAndId> extends Locator<T
     }
 
     @Override
+    @Transactional
     public T find(Class<? extends T> clazz, Long id) {
         return data.get().find(clazz, id);
     }

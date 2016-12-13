@@ -1,5 +1,6 @@
 package net.wbz.moba.controlcenter.web.client.device;
 
+import java.util.Collection;
 import java.util.List;
 
 import net.wbz.moba.controlcenter.web.client.EventReceiver;
@@ -46,9 +47,9 @@ public class DeviceListBox extends Select {
 
     public void reload() {
 
-        RequestUtils.getInstance().getBusRequest().getDevices().fire(new Receiver<List<DeviceInfoProxy>>() {
+        RequestUtils.getInstance().getBusRequest().getDevices().fire(new Receiver<Collection<DeviceInfoProxy>>() {
             @Override
-            public void onSuccess(List<DeviceInfoProxy> result) {
+            public void onSuccess(Collection<DeviceInfoProxy> result) {
                 devices.clear();
                 devices.addAll(result);
 

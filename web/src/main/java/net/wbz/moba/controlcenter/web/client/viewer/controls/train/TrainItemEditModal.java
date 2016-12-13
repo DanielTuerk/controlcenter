@@ -7,6 +7,7 @@ import com.google.web.bindery.requestfactory.shared.Receiver;
 import com.google.web.bindery.requestfactory.shared.ServerFailure;
 import net.wbz.moba.controlcenter.web.client.RequestUtils;
 import net.wbz.moba.controlcenter.web.shared.train.TrainProxy;
+import net.wbz.moba.controlcenter.web.shared.train.TrainRequest;
 import org.gwtbootstrap3.client.ui.*;
 import org.gwtbootstrap3.client.ui.constants.ButtonType;
 import org.gwtbootstrap3.client.ui.constants.FormType;
@@ -110,6 +111,10 @@ public class TrainItemEditModal extends Modal {
         Button btnSave = new Button("Save", IconType.SAVE, new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
+
+//                TrainRequest trainRequest = RequestUtils.getInstance().getTrainRequest();
+//                trainRequest.append(train);
+
                 train.setAddress(Integer.parseInt(txtAddress.getValue()));
                 train.setName(txtName.getValue());
                 RequestUtils.getInstance().getTrainEditorRequest().updateTrain(train).fire(new Receiver<Void>() {

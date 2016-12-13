@@ -1,13 +1,11 @@
 package net.wbz.moba.controlcenter.web.shared.train;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
-import net.wbz.moba.controlcenter.web.shared.HasVersionAndId;
+import net.wbz.moba.controlcenter.web.shared.Identity;
 
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.List;
-import java.util.Set;
 
 /**
  * Function of a {@link net.wbz.moba.controlcenter.web.shared.train.Train}. For each train the functions are created
@@ -16,7 +14,7 @@ import java.util.Set;
  * @author Daniel Tuerk
  */
 @Entity
-public class TrainFunction implements IsSerializable, Serializable,HasVersionAndId {
+public class TrainFunction implements IsSerializable, Serializable,Identity {
 
     /**
      * Available functions for the train.

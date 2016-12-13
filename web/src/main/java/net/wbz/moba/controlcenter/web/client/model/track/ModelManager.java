@@ -1,8 +1,9 @@
 package net.wbz.moba.controlcenter.web.client.model.track;
 
+import net.wbz.moba.controlcenter.web.client.RequestUtils;
 import net.wbz.moba.controlcenter.web.client.model.track.signal.SignalHorizontalWidget;
 import net.wbz.moba.controlcenter.web.client.model.track.signal.SignalVerticalWidget;
-import net.wbz.moba.controlcenter.web.shared.track.model.TrackPart;
+import net.wbz.moba.controlcenter.web.shared.editor.TrackEditorRequest;
 import net.wbz.moba.controlcenter.web.shared.track.model.TrackPartProxy;
 
 import java.util.ArrayList;
@@ -14,9 +15,11 @@ import java.util.List;
 public class ModelManager {
 
     private final static ModelManager instance = new ModelManager();
+    private final TrackEditorRequest trackEditorRequest;
 
     private ModelManager() {
 
+        trackEditorRequest = RequestUtils.getInstance().getTrackEditorRequest();
     }
 
     public static ModelManager getInstance() {
@@ -26,7 +29,7 @@ public class ModelManager {
     private final List<AbstractSvgTrackWidget> widgets = new ArrayList<AbstractSvgTrackWidget>();
 
     public void registerModel(AbstractSvgTrackWidget widgetClass) {
-        widgetClass.initFromTrackPart(widgetClass.getNewTrackPart());
+        widgetClass.initFromTrackPart(widgetClass.getNewTrackPart(trackEditorRequest));
         widgets.add(widgetClass);
     }
 

@@ -92,8 +92,6 @@ public class TrackEditorContainer extends FlowPanel {
 
                 for (TrackPartProxy trackPart : trackParts) {
                 }
-                RequestUtils.getInstance().getTrackEditorRequest();
-
                 RequestUtils.getInstance().getTrackEditorRequest().saveTrack(trackParts).fire(new Receiver<Void>() {
                     public void onFailure(Throwable throwable) {
                         Notify.notify("Editor", "error by save track: " + throwable.getMessage(), IconType.WARNING);

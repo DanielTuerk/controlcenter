@@ -1,21 +1,23 @@
 package net.wbz.moba.controlcenter.web.shared.bus;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Transient;
+import net.wbz.moba.controlcenter.web.shared.Identity;
 
-import net.wbz.moba.controlcenter.web.shared.HasVersionAndId;
+import javax.persistence.*;
 
 /**
  * @author Daniel Tuerk
  */
 @Entity
-public class DeviceInfo implements HasVersionAndId {
+public class DeviceInfo implements Identity {
 
     @Transient
     private boolean connected;
+
     @Id
+    @GeneratedValue
+    @Column(name = "device_id")
+    private long id;
+
     @Column(name = "device_key")
     private String key;
     private DEVICE_TYPE type;
@@ -23,12 +25,11 @@ public class DeviceInfo implements HasVersionAndId {
     @Override
     public Integer getVersion() {
         return 0;
-    };
+    }
 
     @Override
     public Long getId() {
-        // TODO
-        return (long) key.hashCode();
+        return id;
     }
 
     public String getKey() {
@@ -55,12 +56,14 @@ public class DeviceInfo implements HasVersionAndId {
         this.connected = connected;
     }
 
+
     @Override
     public String toString() {
         return "DeviceInfo{" +
                 "connected=" + connected +
+                ", id=" + id +
                 ", key='" + key + '\'' +
-                ", type=" + type.name() +
+                ", type=" + type +
                 '}';
     }
 

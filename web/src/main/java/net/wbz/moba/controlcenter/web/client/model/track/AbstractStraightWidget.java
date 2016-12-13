@@ -1,7 +1,7 @@
 package net.wbz.moba.controlcenter.web.client.model.track;
 
-import net.wbz.moba.controlcenter.web.client.RequestUtils;
 import net.wbz.moba.controlcenter.web.client.util.SvgTrackUtil;
+import net.wbz.moba.controlcenter.web.shared.editor.TrackEditorRequest;
 import net.wbz.moba.controlcenter.web.shared.track.model.Straight;
 import net.wbz.moba.controlcenter.web.shared.track.model.StraightProxy;
 import org.vectomatic.dom.svg.OMSVGDocument;
@@ -18,8 +18,8 @@ abstract public class AbstractStraightWidget extends AbstractBlockSvgTrackWidget
     }
 
     @Override
-    public StraightProxy getNewTrackPart() {
-        StraightProxy straight = RequestUtils.getInstance().getTrackEditorRequest().create(StraightProxy.class);
+    public StraightProxy getNewTrackPart(TrackEditorRequest trackEditorRequest) {
+        StraightProxy straight = trackEditorRequest.create(StraightProxy.class);
 //        EmployeeProxy newEmployee = request.create(EmployeeProxy.class);
 //        Straight straight = new Straight();
         straight.setDirection(getStraightDirection());

@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.google.inject.persist.Transactional;
 import net.wbz.moba.controlcenter.web.server.EventBroadcaster;
 import net.wbz.moba.controlcenter.web.shared.train.Train;
 import net.wbz.moba.controlcenter.web.shared.train.TrainDataChangedEvent;
@@ -32,11 +33,11 @@ public class TrainEditorService {
         this.trainManager = trainManager;
         this.eventBroadcaster = eventBroadcaster;
     }
-
+    @Transactional
     public List<Train> getTrains() {
         return trainManager.getTrains();
     }
-
+    @Transactional
     public Train getTrain(int address) {
         try {
             return trainManager.getTrainByAddress(address);
@@ -45,7 +46,7 @@ public class TrainEditorService {
         }
         return null;
     }
-
+    @Transactional
     public void createTrain(String name) {
         Train train = new Train(name);
 
@@ -61,7 +62,7 @@ public class TrainEditorService {
             LOG.error(msg, e);
         }
     }
-
+    @Transactional
     public void deleteTrain(long trainId) {
         try {
             trainManager.deleteTrain(trainId);
@@ -73,7 +74,7 @@ public class TrainEditorService {
             throw new RuntimeException(msg, e);
         }
     }
-
+    @Transactional
     public void updateTrain(Train train) {
         try {
             trainManager.storeTrain(train);

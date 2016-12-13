@@ -160,7 +160,7 @@ public class TrackEditorService {
             }
         }
     }
-
+    @Transactional
     public List<TrackPart> loadTrack() {
         log.info("load track parts from db");
 
@@ -186,7 +186,7 @@ public class TrackEditorService {
      *
      * @param trackParts {@link net.wbz.moba.controlcenter.web.shared.track.model.TrackPart}s to register the
      *                   containing {@link net.wbz.moba.controlcenter.web.shared.track.model.Configuration}
-     */
+     */ @Transactional
     public void registerConsumersByConnectedDeviceForTrackParts(List<TrackPart> trackParts) {
 
         if (trackParts.size() == 0) {

@@ -2,13 +2,12 @@ package net.wbz.moba.controlcenter.web.shared.track.model;
 
 
 
-import net.wbz.moba.controlcenter.web.shared.HasVersionAndId;
+import net.wbz.moba.controlcenter.web.shared.Identity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import java.io.Serializable;
 
 /**
  * Configuration model of an function for the {@link net.wbz.moba.controlcenter.web.shared.track.model.TrackPart}.
@@ -16,7 +15,7 @@ import java.io.Serializable;
  * @author Daniel Tuerk
  */
 @Entity
-public class Configuration implements HasVersionAndId {
+public class Configuration implements Identity {
 
     @Id
     @GeneratedValue

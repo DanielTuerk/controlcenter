@@ -15,9 +15,6 @@ public class Straight extends TrackPart {
 
     private DIRECTION direction;
 
-    @OneToOne
-    private TrackPart trackPart;
-
     public Straight() {
     }
 

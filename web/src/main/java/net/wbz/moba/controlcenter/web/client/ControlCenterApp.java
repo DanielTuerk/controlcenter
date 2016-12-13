@@ -37,46 +37,49 @@ public class ControlCenterApp implements EntryPoint {
     private List<Widget> containerPanels = new ArrayList<>();
 
     public ControlCenterApp() {
-        ModelManager.getInstance().init();
+//        ModelManager.getInstance().init();
     }
 
     /**
      * This is the entry point method.
      */
     public void onModuleLoad() {
-        if (Settings.getInstance().getShowWelcome().getValue()) {
+
+        ModelManager.getInstance().init();
+
             loadWelcomePage();
-        } else {
-
-            RequestUtils.getInstance().getConstructionRequest().loadConstructions().fire(
-                    new Receiver<List<ConstructionProxy>>() {
-                        @Override
-                        public void onSuccess(List<ConstructionProxy> response) {
-                            String lastUsedConstruction = Settings.getInstance().getLastUsedConstruction().getValue();
-                            ConstructionProxy constructionToLoad = null;
-                            for (ConstructionProxy construction : response) {
-                                if (construction.getName().equals(lastUsedConstruction)) {
-                                    constructionToLoad = construction;
-                                    break;
-                                }
-                            }
-                            if (constructionToLoad != null) {
-                                RequestUtils.getInstance().getConstructionRequest().setCurrentConstruction(
-                                        constructionToLoad).fire(new Receiver<Void>() {
-                                    @Override
-                                    public void onSuccess(Void response) {
-                                        loadControlCenter();
-                                    }
-                                });
-                            } else {
-                                Notify.notify("", "can't load last used construction", IconType.WARNING);
-
-                                loadWelcomePage();
-                            }
-                        }
-                    });
-
-        }
+//        if (Settings.getInstance().getShowWelcome().getValue()) {
+//        } else {
+//
+//            RequestUtils.getInstance().getConstructionRequest().loadConstructions().fire(
+//                    new Receiver<List<ConstructionProxy>>() {
+//                        @Override
+//                        public void onSuccess(List<ConstructionProxy> response) {
+//                            String lastUsedConstruction = Settings.getInstance().getLastUsedConstruction().getValue();
+//                            ConstructionProxy constructionToLoad = null;
+//                            for (ConstructionProxy construction : response) {
+//                                if (construction.getName().equals(lastUsedConstruction)) {
+//                                    constructionToLoad = construction;
+//                                    break;
+//                                }
+//                            }
+//                            if (constructionToLoad != null) {
+//                                RequestUtils.getInstance().getConstructionRequest().setCurrentConstruction(
+//                                        constructionToLoad).fire(new Receiver<Void>() {
+//                                    @Override
+//                                    public void onSuccess(Void response) {
+//                                        loadControlCenter();
+//                                    }
+//                                });
+//                            } else {
+//                                Notify.notify("", "can't load last used construction", IconType.WARNING);
+//
+//                                loadWelcomePage();
+//                            }
+//                        }
+//                    });
+//
+//        }
     }
 
     private void loadWelcomePage() {

@@ -1,6 +1,7 @@
 package net.wbz.moba.controlcenter.web.server;
 
 import com.google.inject.Singleton;
+import com.google.inject.persist.Transactional;
 import de.novanic.eventservice.client.event.Event;
 import de.novanic.eventservice.client.event.domain.DomainFactory;
 import de.novanic.eventservice.service.EventExecutorService;
@@ -24,6 +25,7 @@ public class EventBroadcaster {
         eventExecutorService = theSF.getEventExecutorService("event");
     }
 
+    @Transactional
     public synchronized void fireEvent(Event event) {
         if (event.getClass() != BusDataEvent.class) {
             LOG.debug("fire Event: " + event.toString());

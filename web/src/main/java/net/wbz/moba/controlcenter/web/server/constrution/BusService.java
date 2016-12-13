@@ -1,17 +1,10 @@
 package net.wbz.moba.controlcenter.web.server.constrution;
 
-import java.io.IOException;
-import java.nio.file.DirectoryStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.List;
-
-import javax.annotation.Nullable;
-import javax.inject.Provider;
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
-
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+import com.google.inject.persist.Transactional;
 import net.wbz.moba.controlcenter.web.server.EventBroadcaster;
 import net.wbz.moba.controlcenter.web.shared.bus.BusDataEvent;
 import net.wbz.moba.controlcenter.web.shared.bus.DeviceInfo;
@@ -26,15 +19,20 @@ import net.wbz.selectrix4java.device.DeviceAccessException;
 import net.wbz.selectrix4java.device.DeviceConnectionListener;
 import net.wbz.selectrix4java.device.DeviceManager;
 import net.wbz.selectrix4java.device.serial.SerialDevice;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Function;
-import com.google.common.collect.Lists;
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
-import com.google.inject.persist.Transactional;
+import javax.inject.Provider;
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
+import java.io.IOException;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author Daniel Tuerk
@@ -51,24 +49,15 @@ public class BusService {
     private net.wbz.selectrix4java.device.Device activeDevice;
     private boolean trackingActive = false;
     private BusDataPlayer busDataPlayer;
+    private final Map<DeviceInfo, Device> storedDevices = Maps.newHashMap();
 
     @Inject
     public BusService(DeviceManager deviceManager, final EventBroadcaster eventBroadcaster,
-            DeviceRecorder deviceRecorder, Provider<EntityManager> entityManager) {
+                      DeviceRecorder deviceRecorder, Provider<EntityManager> entityManager) {
         this.deviceManager = deviceManager;
         this.eventBroadcaster = eventBroadcaster;
         this.deviceRecorder = deviceRecorder;
-
         this.entityManager = entityManager;
-
-        Query query = this.entityManager.get().createQuery("SELECT x FROM DeviceInfo x");
-        List<DeviceInfo> storedDevices = query.getResultList();
-
-        for (DeviceInfo deviceInfo : storedDevices) {
-            // TODO - values from config
-            deviceManager.registerDevice(DeviceManager.DEVICE_TYPE.valueOf(
-                    deviceInfo.getType().name()), deviceInfo.getKey(), SerialDevice.DEFAULT_BAUD_RATE_FCC);
-        }
 
         allBusDataConsumer = new AllBusDataConsumer() {
 
@@ -77,6 +66,18 @@ public class BusService {
                 eventBroadcaster.fireEvent(new BusDataEvent(bus, address, newValue));
             }
         };
+
+        init();
+    }
+
+    @SuppressWarnings("unchecked")
+    private void init() {
+        Query query = this.entityManager.get().createQuery("SELECT x FROM DeviceInfo x");
+        for (DeviceInfo deviceInfo : (List<DeviceInfo>) query.getResultList()) {
+            // TODO - values from config
+            registerDevice(deviceInfo);
+        }
+
 
         deviceManager.addDeviceConnectionListener(new DeviceConnectionListener() {
             @Override
@@ -98,7 +99,11 @@ public class BusService {
                 device.getBusDataDispatcher().unregisterConsumer(allBusDataConsumer);
             }
         });
+    }
 
+    private void registerDevice(DeviceInfo deviceInfo) {
+        storedDevices.put(deviceInfo, deviceManager.registerDevice(DeviceManager.DEVICE_TYPE.valueOf(
+                deviceInfo.getType().name()), deviceInfo.getKey(), SerialDevice.DEFAULT_BAUD_RATE_FCC));
     }
 
     public void changeDevice(DeviceInfo deviceInfo) {
@@ -110,43 +115,53 @@ public class BusService {
         // TODO - device settings (e.g. serial/test)
         entityManager.get().persist(deviceInfo);
 
-        deviceManager.registerDevice(DeviceManager.DEVICE_TYPE.valueOf(
-                deviceInfo.getType().name()), deviceInfo.getKey(), SerialDevice.DEFAULT_BAUD_RATE_FCC);
+        registerDevice(deviceInfo);
 
         eventBroadcaster.fireEvent(new DeviceInfoEvent(deviceInfo, DeviceInfoEvent.TYPE.CREATE));
     }
 
+    @Transactional
     public void deleteDevice(DeviceInfo deviceInfo) {
         Device device = deviceManager.getDeviceById(deviceInfo.getKey());
 
-        Query query = this.entityManager.get().createQuery("SELECT x FROM DeviceInfo x where key=:key");
-        DeviceInfo persistDeviceInfo = (DeviceInfo) query.setParameter("key", deviceInfo.getKey()).getSingleResult();
-        entityManager.get().remove(persistDeviceInfo);
+        this.entityManager.get().remove(deviceInfo);
+//        query.setParameter("id", deviceInfo.getId()).executeUpdate();
+//        entityManager.get().remove(deviceInfo);
 
         deviceManager.removeDevice(device);
 
+        storedDevices.remove(deviceInfo);
         eventBroadcaster.fireEvent(new DeviceInfoEvent(deviceInfo, DeviceInfoEvent.TYPE.REMOVE));
     }
 
     public List<DeviceInfo> getDevices() {
-        return Lists.newArrayList(Lists.transform(deviceManager.getDevices(), new Function<Device, DeviceInfo>() {
-            @Override
-            public DeviceInfo apply(@Nullable Device input) {
-                return getDeviceInfo(input);
-            }
-        }));
+        return Lists.newArrayList(storedDevices.keySet());
+//        return Lists.newArrayList(Lists.transform(deviceManager.getDevices(), new Function<Device, DeviceInfo>() {
+//            @Override
+//            public DeviceInfo apply(@Nullable Device input) {
+//                return getDeviceInfo(input);
+//            }
+//        }));
     }
 
-    private DeviceInfo getDeviceInfo(Device device) {
-        DeviceInfo deviceInfo = new DeviceInfo();
-        deviceInfo.setKey(deviceManager.getDeviceId(device));
-        if (device instanceof SerialDevice) {
-            deviceInfo.setType(DeviceInfo.DEVICE_TYPE.SERIAL);
-        } else {
-            deviceInfo.setType(DeviceInfo.DEVICE_TYPE.TEST);
+    private DeviceInfo getDeviceInfo(final Device device) {
+        for (Map.Entry<DeviceInfo, Device> deviceInfoDeviceEntry : storedDevices.entrySet()) {
+
+            if (deviceInfoDeviceEntry.getValue() == device) {
+                return deviceInfoDeviceEntry.getKey();
+            }
         }
-        deviceInfo.setConnected(device.isConnected());
-        return deviceInfo;
+        throw new RuntimeException("no stored device found for device:" + device);
+
+//        DeviceInfo deviceInfo = new DeviceInfo();
+//        deviceInfo.setKey(deviceManager.getDeviceId(device));
+//        if (device instanceof SerialDevice) {
+//            deviceInfo.setType(DeviceInfo.DEVICE_TYPE.SERIAL);
+//        } else {
+//            deviceInfo.setType(DeviceInfo.DEVICE_TYPE.TEST);
+//        }
+//        deviceInfo.setConnected(device.isConnected());
+//        return deviceInfo;
     }
 
     public boolean getRailVoltage() {

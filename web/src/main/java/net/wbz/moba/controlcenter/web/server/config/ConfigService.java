@@ -27,6 +27,7 @@ public class ConfigService {
         this.entityManager = entityManager;
     }
 
+    @Transactional
     public String loadValue(String configKey) throws ConfigNotAvailableException {
         Query typedQuery = entityManager.get().createQuery(
                 "SELECT x FROM ConfigValue x where key=" + configKey);

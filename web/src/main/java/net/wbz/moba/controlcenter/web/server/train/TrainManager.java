@@ -150,6 +150,8 @@ public class TrainManager {
         if (manager.find(Train.class, train.getId()) != null) {
             train = manager.merge(train);
         }
+        // TODO update or create train functions
+
         manager.persist(train);
 
         try {
@@ -163,7 +165,8 @@ public class TrainManager {
     public List<Train> getTrains() {
         Query typedQuery = entityManager.get().createQuery(
                 "SELECT x FROM Train x");
-        return typedQuery.getResultList();
+        List resultList = typedQuery.getResultList();
+        return resultList;
     }
 
     public Train getTrainByAddress(int address) throws TrainException {

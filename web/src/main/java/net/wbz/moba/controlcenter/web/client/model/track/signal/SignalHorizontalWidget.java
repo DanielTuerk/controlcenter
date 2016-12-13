@@ -2,6 +2,7 @@ package net.wbz.moba.controlcenter.web.client.model.track.signal;
 
 import net.wbz.moba.controlcenter.web.client.RequestUtils;
 import net.wbz.moba.controlcenter.web.client.model.track.AbstractSvgTrackWidget;
+import net.wbz.moba.controlcenter.web.shared.editor.TrackEditorRequest;
 import net.wbz.moba.controlcenter.web.shared.track.model.SignalProxy;
 import net.wbz.moba.controlcenter.web.shared.track.model.Straight;
 
@@ -26,7 +27,7 @@ public class SignalHorizontalWidget extends AbstractSignalWidget {
     }
 
     @Override
-    public SignalProxy getNewTrackPart() {
+    public SignalProxy getNewTrackPart(TrackEditorRequest trackEditorRequest) {
         SignalProxy horizontalSignal = RequestUtils.getInstance().getTrackEditorRequest().create(SignalProxy.class);
         horizontalSignal.setDirection(Straight.DIRECTION.HORIZONTAL);
         return horizontalSignal;

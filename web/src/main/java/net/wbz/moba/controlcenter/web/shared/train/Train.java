@@ -2,7 +2,7 @@ package net.wbz.moba.controlcenter.web.shared.train;
 
 import com.google.common.collect.Sets;
 import com.google.gwt.user.client.rpc.IsSerializable;
-import net.wbz.moba.controlcenter.web.shared.HasVersionAndId;
+import net.wbz.moba.controlcenter.web.shared.Identity;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -16,7 +16,7 @@ import java.util.Set;
  * @author Daniel Tuerk
  */
 @Entity
-public class Train implements IsSerializable, Serializable, HasVersionAndId {
+public class Train implements IsSerializable, Serializable, Identity {
 
     @Id
     @GeneratedValue

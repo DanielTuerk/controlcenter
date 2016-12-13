@@ -1,6 +1,5 @@
 package net.wbz.moba.controlcenter.web.shared.track.model;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -8,9 +7,7 @@ import java.util.Set;
 import javax.persistence.*;
 
 import com.google.common.collect.Sets;
-import com.google.gwt.user.client.rpc.IsSerializable;
-import com.google.inject.Key;
-import net.wbz.moba.controlcenter.web.shared.HasVersionAndId;
+import net.wbz.moba.controlcenter.web.shared.Identity;
 import net.wbz.moba.controlcenter.web.shared.constrution.Construction;
 
 /**
@@ -22,7 +19,7 @@ import net.wbz.moba.controlcenter.web.shared.constrution.Construction;
  */
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
-public class TrackPart implements HasVersionAndId {
+public class TrackPart implements Identity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -31,6 +28,7 @@ public class TrackPart implements HasVersionAndId {
 
     /**
      * The corresponding construction.
+     * TODO remove - only access by construction?
      */
     @ManyToOne
     private Construction construction;
@@ -47,7 +45,7 @@ public class TrackPart implements HasVersionAndId {
     @ManyToMany(cascade = { CascadeType.ALL }, fetch = FetchType.EAGER)
     @JoinTable(joinColumns = { @JoinColumn(name = "TRACKPART_ID") }, inverseJoinColumns = {
             @JoinColumn(name = "TRACKPARTFUNCTION_ID") })
-    private List<TrackPartFunction> functions = new ArrayList<>();
+    private List<TrackPartFunction> functions;
 
     /**
      * Configuration to toggle the {@link net.wbz.moba.controlcenter.web.shared.track.model.TrackPart} by an event.
@@ -56,11 +54,6 @@ public class TrackPart implements HasVersionAndId {
     private EventConfiguration eventStateConfig;
 
     public TrackPart() {
-    }
-
-    @Override
-    public Integer getVersion() {
-        return 0;
     }
 
     public Long getId() {

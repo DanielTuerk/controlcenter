@@ -4,6 +4,7 @@ import com.allen_sauer.gwt.dnd.client.HasDragHandle;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.FocusPanel;
 import com.google.gwt.user.client.ui.Widget;
+import net.wbz.moba.controlcenter.web.client.RequestUtils;
 import net.wbz.moba.controlcenter.web.client.model.track.AbstractSvgTrackWidget;
 
 /**
@@ -38,7 +39,7 @@ public class PaletteWidget extends AbsolutePanel implements HasDragHandle {
     }
 
     public PaletteWidget cloneWidget() {
-        Widget clone = widget.getClone(widget.getNewTrackPart());
+        Widget clone = widget.getClone(widget.getNewTrackPart(RequestUtils.getInstance().getTrackEditorRequest()));
 
         // Copy a few obvious common widget properties
         clone.setStyleName(widget.getStyleName());

@@ -1,9 +1,8 @@
 package net.wbz.moba.controlcenter.web.client.model.track;
 
+import net.wbz.moba.controlcenter.web.shared.editor.TrackEditorRequest;
 import net.wbz.moba.controlcenter.web.shared.track.model.Curve;
 import net.wbz.moba.controlcenter.web.shared.track.model.CurveProxy;
-import org.vectomatic.dom.svg.OMSVGDocument;
-import org.vectomatic.dom.svg.OMSVGSVGElement;
 
 /**
  * @author Daniel Tuerk
@@ -15,7 +14,7 @@ public class CurveTopRightWidget extends AbstractCurveWidget {
     }
 
     @Override
-    public CurveProxy getNewTrackPart() {
+    public CurveProxy getNewTrackPart(TrackEditorRequest trackEditorRequest) {
         //TODO
         return null;
 //        Curve curveTopR = new Curve();

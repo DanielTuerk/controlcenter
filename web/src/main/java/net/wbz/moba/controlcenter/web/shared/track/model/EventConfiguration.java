@@ -1,18 +1,15 @@
 package net.wbz.moba.controlcenter.web.shared.track.model;
 
-import com.google.gwt.user.client.rpc.IsSerializable;
-import net.wbz.moba.controlcenter.web.shared.HasVersionAndId;
+import net.wbz.moba.controlcenter.web.shared.Identity;
 
 
-import javax.annotation.Generated;
 import javax.persistence.*;
-import java.io.Serializable;
 
 /**
  * @author Daniel Tuerk
  */
 @Entity
-public class EventConfiguration implements HasVersionAndId {
+public class EventConfiguration implements Identity {
 
     @Id
     @GeneratedValue

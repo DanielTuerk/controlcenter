@@ -1,20 +1,20 @@
 package net.wbz.moba.controlcenter.web.guice;
 
-import com.google.inject.Guice;
-import com.google.inject.Injector;
-import com.google.inject.Provides;
-import com.google.inject.Singleton;
+import com.google.inject.*;
 import com.google.inject.name.Named;
+import com.google.inject.name.Names;
 import com.google.inject.persist.PersistFilter;
 import com.google.inject.persist.jpa.JpaPersistModule;
 import com.google.inject.servlet.GuiceServletContextListener;
 import com.google.inject.servlet.ServletModule;
+import com.google.inject.servlet.SessionScoped;
 import net.wbz.moba.controlcenter.web.guice.requestFactory.InjectedRequestFactoryModule;
 import net.wbz.moba.controlcenter.web.guice.requestFactory.InjectedRequestFactoryServlet;
 import net.wbz.moba.controlcenter.web.server.scenario.ScenarioEditorServiceImpl;
 import net.wbz.moba.controlcenter.web.server.scenario.ScenarioServiceImpl;
 import net.wbz.selectrix4java.device.DeviceManager;
 
+import javax.persistence.EntityManager;
 import java.io.File;
 import java.util.Properties;
 
@@ -117,6 +117,7 @@ public class MyGuiceServletConfig extends GuiceServletContextListener {
             public DeviceManager deviceManager() {
                 return new DeviceManager();
             }
+
 
         });
     }

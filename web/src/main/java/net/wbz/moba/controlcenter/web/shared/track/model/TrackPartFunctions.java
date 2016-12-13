@@ -1,19 +1,17 @@
 package net.wbz.moba.controlcenter.web.shared.track.model;
 
-import com.google.gwt.user.client.rpc.IsSerializable;
-import net.wbz.moba.controlcenter.web.shared.HasVersionAndId;
+import net.wbz.moba.controlcenter.web.shared.Identity;
 
 
 import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import java.io.Serializable;
 import java.util.List;
 
 /**
  * Created by zui on 16.04.2015.
  */
-public class TrackPartFunctions  implements HasVersionAndId {
+public class TrackPartFunctions  implements Identity {
 
     @OneToMany(mappedBy = "trackPartFunction", fetch = FetchType.EAGER)
     private List<TrackPartFunction> functions;

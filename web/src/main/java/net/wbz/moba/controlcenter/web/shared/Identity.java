@@ -9,12 +9,8 @@ import java.io.Serializable;
 /**
  * @author Daniel Tuerk
  */
-public interface HasVersionAndId extends Serializable {
-
-    Integer getVersion();
+public interface Identity extends Serializable {
 
     Long getId();
-
-
 
 }

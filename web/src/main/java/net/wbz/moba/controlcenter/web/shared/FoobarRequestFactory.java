@@ -1,13 +1,13 @@
 package net.wbz.moba.controlcenter.web.shared;
 
 import com.google.web.bindery.requestfactory.shared.RequestFactory;
-import net.wbz.moba.controlcenter.web.shared.bus.BusRequest;
-import net.wbz.moba.controlcenter.web.shared.config.ConfigRequest;
-import net.wbz.moba.controlcenter.web.shared.constrution.ConstructionRequest;
-import net.wbz.moba.controlcenter.web.shared.editor.TrackEditorRequest;
-import net.wbz.moba.controlcenter.web.shared.train.TrainEditorRequest;
-import net.wbz.moba.controlcenter.web.shared.train.TrainRequest;
-import net.wbz.moba.controlcenter.web.shared.viewer.TrackViewerRequest;
+import net.wbz.moba.controlcenter.web.shared.bus.BusService;
+import net.wbz.moba.controlcenter.web.shared.config.ConfigService;
+import net.wbz.moba.controlcenter.web.shared.constrution.ConstructionService;
+import net.wbz.moba.controlcenter.web.shared.editor.TrackEditorService;
+import net.wbz.moba.controlcenter.web.shared.train.TrainEditorService;
+import net.wbz.moba.controlcenter.web.shared.train.TrainService;
+import net.wbz.moba.controlcenter.web.shared.viewer.TrackViewerService;
 
 /**
  * TODO
@@ -16,11 +16,11 @@ import net.wbz.moba.controlcenter.web.shared.viewer.TrackViewerRequest;
  */
 public interface FoobarRequestFactory extends RequestFactory {
 
-    ConstructionRequest constructionRequest();
-    BusRequest busRequest();
-    ConfigRequest configRequest();
-    TrainRequest trainRequest();
-    TrainEditorRequest trainEditorRequest();
-    TrackViewerRequest trackViewerRequest();
-    TrackEditorRequest trackEditorRequest();
+    ConstructionService constructionRequest();
+    BusService busRequest();
+    ConfigService configRequest();
+    TrainService trainRequest();
+    TrainEditorService trainEditorRequest();
+    TrackViewerService trackViewerRequest();
+    TrackEditorService trackEditorRequest();
 }

@@ -1,8 +1,8 @@
 package net.wbz.moba.controlcenter.web.client.viewer.track.parallax;
 
 import net.wbz.moba.controlcenter.web.client.viewer.track.parallax.trackparts.Basic3dTrackWidget;
-import net.wbz.moba.controlcenter.web.shared.track.model.TrackPart;
-import net.wbz.moba.controlcenter.web.shared.track.model.TrackPartProxy;
+import net.wbz.moba.controlcenter.web.server.persist.construction.track.TrackPartEntity;
+import net.wbz.moba.controlcenter.web.server.persist.construction.track.TrackPartProxy;
 import thothbot.parallax.core.client.AnimatedScene;
 import thothbot.parallax.core.client.controls.TrackballControls;
 import thothbot.parallax.core.shared.cameras.PerspectiveCamera;
@@ -22,7 +22,7 @@ import thothbot.parallax.core.shared.objects.Mesh;
 
 /**
  * Scene to display the world with an grid system.
- * The grid represents the available positions for the {@link net.wbz.moba.controlcenter.web.shared.track.model.TrackPart}s.
+ * The grid represents the available positions for the {@link TrackPartEntity}s.
  *
  * @author Daniel Tuerk
  */

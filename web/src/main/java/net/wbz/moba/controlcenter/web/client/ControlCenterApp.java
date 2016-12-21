@@ -13,7 +13,7 @@ import net.wbz.moba.controlcenter.web.client.model.track.ModelManager;
 import net.wbz.moba.controlcenter.web.client.viewer.bus.BusMonitorPanel;
 import net.wbz.moba.controlcenter.web.client.viewer.settings.ConfigPanel;
 import net.wbz.moba.controlcenter.web.client.viewer.track.TrackViewerContainer;
-import net.wbz.moba.controlcenter.web.shared.constrution.ConstructionProxy;
+import net.wbz.moba.controlcenter.web.shared.constrution.Construction;
 import org.gwtbootstrap3.client.ui.constants.IconType;
 import org.gwtbootstrap3.extras.notify.client.ui.Notify;
 
@@ -51,13 +51,13 @@ public class ControlCenterApp implements EntryPoint {
 //        if (Settings.getInstance().getShowWelcome().getValue()) {
 //        } else {
 //
-//            RequestUtils.getInstance().getConstructionRequest().loadConstructions().fire(
-//                    new Receiver<List<ConstructionProxy>>() {
+//            RequestUtils.getInstance().getConstructionRequest().listAll().fire(
+//                    new Receiver<List<Construction>>() {
 //                        @Override
-//                        public void onSuccess(List<ConstructionProxy> response) {
+//                        public void onSuccess(List<Construction> response) {
 //                            String lastUsedConstruction = Settings.getInstance().getLastUsedConstruction().getValue();
-//                            ConstructionProxy constructionToLoad = null;
-//                            for (ConstructionProxy construction : response) {
+//                            Construction constructionToLoad = null;
+//                            for (Construction construction : response) {
 //                                if (construction.getName().equals(lastUsedConstruction)) {
 //                                    constructionToLoad = construction;
 //                                    break;

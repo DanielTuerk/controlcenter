@@ -1,11 +1,11 @@
 package net.wbz.moba.controlcenter.web.client.viewer.track.parallax.trackparts;
 
-import net.wbz.moba.controlcenter.web.shared.track.model.Straight;
+import net.wbz.moba.controlcenter.web.server.persist.construction.track.StraightEntity;
 import net.wbz.moba.controlcenter.web.shared.track.model.StraightProxy;
 import thothbot.parallax.core.shared.math.Vector3;
 
 /**
- * Widget for representation of the {@link net.wbz.moba.controlcenter.web.shared.track.model.Straight} trackpart.
+ * Widget for representation of the {@link StraightEntity} trackpart.
  *
  * @author Daniel Tuerk
  */

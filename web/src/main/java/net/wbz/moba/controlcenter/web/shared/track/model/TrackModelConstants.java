@@ -1,8 +1,10 @@
 package net.wbz.moba.controlcenter.web.shared.track.model;
 
+import net.wbz.moba.controlcenter.web.server.persist.construction.track.TrackPartEntity;
+
 /**
  * Class to hold all constants to avoid null pointer by old serialized
- * {@link net.wbz.moba.controlcenter.web.shared.track.model.TrackPart}s which didn't contain newer constants.
+ * {@link TrackPartEntity}s which didn't contain newer constants.
  *
  * @author Daniel Tuerk
  */

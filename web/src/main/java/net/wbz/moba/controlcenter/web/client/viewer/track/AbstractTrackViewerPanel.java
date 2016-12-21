@@ -6,7 +6,7 @@ import net.wbz.moba.controlcenter.web.client.EventReceiver;
 import net.wbz.moba.controlcenter.web.client.editor.track.AbstractTrackPanel;
 import net.wbz.moba.controlcenter.web.shared.bus.DeviceInfoEvent;
 import net.wbz.moba.controlcenter.web.shared.bus.FeedbackBlockEvent;
-import net.wbz.moba.controlcenter.web.shared.track.model.Configuration;
+import net.wbz.moba.controlcenter.web.server.persist.construction.track.TrackPartConfigurationEntity;
 import net.wbz.moba.controlcenter.web.shared.viewer.SignalFunctionStateEvent;
 import net.wbz.moba.controlcenter.web.shared.viewer.TrackPartStateEvent;
 
@@ -86,7 +86,7 @@ abstract public class AbstractTrackViewerPanel extends AbstractTrackPanel {
         EventReceiver.getInstance().removeListener(FeedbackBlockEvent.class, feedbackBlockEventListener);
     }
 
-    protected void updateTrackPartState(Configuration configuration, boolean state) {
+    protected void updateTrackPartState(TrackPartConfigurationEntity configuration, boolean state) {
 
     }
 

@@ -4,7 +4,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import net.wbz.moba.controlcenter.web.server.constrution.ConstructionService;
+import net.wbz.moba.controlcenter.web.server.web.constrution.ConstructionServiceImpl;
 import net.wbz.moba.controlcenter.web.shared.scenario.Scenario;
 import net.wbz.moba.controlcenter.web.shared.scenario.ScenarioCommand;
 import org.apache.commons.lang.NotImplementedException;
@@ -36,10 +36,10 @@ public class ScenarioManager {
 
     private final Map<String, Class<? extends ScenarioCommand>> commandMapping = Maps.newHashMap();
 
-    private final ConstructionService constructionService;
+    private final ConstructionServiceImpl constructionService;
 
     @Inject
-    public ScenarioManager(ConstructionService constructionService) {
+    public ScenarioManager(ConstructionServiceImpl constructionService) {
         this.constructionService = constructionService;
 
         LOG.debug("Load ScenarioCommand mappings");

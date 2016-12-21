@@ -9,8 +9,8 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.web.bindery.requestfactory.shared.Receiver;
-import net.wbz.moba.controlcenter.web.shared.constrution.ConstructionProxy;
-import net.wbz.moba.controlcenter.web.shared.constrution.ConstructionRequest;
+import net.wbz.moba.controlcenter.web.shared.constrution.Construction;
+import net.wbz.moba.controlcenter.web.shared.constrution.ConstructionService;
 import org.gwtbootstrap3.client.ui.Button;
 import org.gwtbootstrap3.client.ui.LinkedGroup;
 import org.gwtbootstrap3.client.ui.TextBox;
@@ -18,7 +18,7 @@ import org.gwtbootstrap3.client.ui.TextBox;
 import java.util.List;
 
 /**
- * Container for the welcome landing page to load an existing {@link ConstructionProxy} or create a new one.
+ * Container for the welcome landing page to load an existing {@link Construction} or create a new one.
  *
  * @author Daniel Tuerk
  */
@@ -41,17 +41,17 @@ abstract class WelcomeContainer extends Composite {
     }
 
     /**
-     * Callback to perform an action after the welcome page loaded a {@link ConstructionProxy}.
+     * Callback to perform an action after the welcome page loaded a {@link Construction}.
      */
     abstract void onCurrentConstructionLoaded();
 
     @Override
     protected void onLoad() {
         RequestUtils.getInstance().getConstructionRequest().loadConstructions().fire(
-                new Receiver<List<ConstructionProxy>>() {
+                new Receiver<List<Construction>>() {
                     @Override
-                    public void onSuccess(List<ConstructionProxy> response) {
-                        for (final ConstructionProxy construction : response) {
+                    public void onSuccess(List<Construction> response) {
+                        for (final Construction construction : response) {
                             Button btnConstructionEntry = new Button();
                             btnConstructionEntry.setText(construction.getName());
                             btnConstructionEntry.addClickHandler(new ClickHandler() {
@@ -69,8 +69,8 @@ abstract class WelcomeContainer extends Composite {
 
     @UiHandler("btnCreateConstruction")
     void clickCreateConstruction(ClickEvent event) {
-        ConstructionRequest constructionService = RequestUtils.getInstance().getConstructionRequest();
-        final ConstructionProxy construction = constructionService.create(ConstructionProxy.class);
+        ConstructionService constructionService = RequestUtils.getInstance().getConstructionRequest();
+        final Construction construction = constructionService.create(Construction.class);
         final String constructionName = txtCreateName.getText();
         construction.setName(constructionName);
         constructionService.createConstruction(construction).fire(new Receiver<Void>() {
@@ -84,9 +84,9 @@ abstract class WelcomeContainer extends Composite {
     /**
      * Set the current construction and store it in the local settings.
      *
-     * @param construction {@link ConstructionProxy} to set
+     * @param construction {@link Construction} to set
      */
-    private void updateCurrentConstruction(final ConstructionProxy construction) {
+    private void updateCurrentConstruction(final Construction construction) {
         RequestUtils.getInstance().getConstructionRequest().setCurrentConstruction(
                 construction).fire(new Receiver<Void>() {
             @Override

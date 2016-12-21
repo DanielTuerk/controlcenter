@@ -12,6 +12,7 @@ import net.wbz.moba.controlcenter.web.guice.requestFactory.InjectedRequestFactor
 import net.wbz.moba.controlcenter.web.guice.requestFactory.InjectedRequestFactoryServlet;
 import net.wbz.moba.controlcenter.web.server.scenario.ScenarioEditorServiceImpl;
 import net.wbz.moba.controlcenter.web.server.scenario.ScenarioServiceImpl;
+import net.wbz.moba.controlcenter.web.server.web.constrution.ConstructionServiceImpl;
 import net.wbz.selectrix4java.device.DeviceManager;
 
 import javax.persistence.EntityManager;
@@ -19,7 +20,7 @@ import java.io.File;
 import java.util.Properties;
 
 /**
- * Configuration of the guice context.
+ * TrackPartConfigurationEntity of the guice context.
  * Injector install the JPA module and
  * the {@link com.google.inject.servlet.ServletModule} for the GWT web context.
  *
@@ -96,15 +97,15 @@ public class MyGuiceServletConfig extends GuiceServletContextListener {
                  * Register the GWT services.
                  */
 
-//                serve("/" + APP_NAME + "/bus").with(BusService.class);
-                // serve("/" + APP_NAME + "/construction").with(ConstructionService.class);
-//                serve("/" + APP_NAME + "/trackviewer").with(TrackViewerService.class);
-//                serve("/" + APP_NAME + "/trackeditor").with(TrackEditorService.class);
+                serve("/" + APP_NAME + "/bus").with(BusServiceImpl.class);
+                 serve("/" + APP_NAME + "/construction").with(ConstructionServiceImpl.class);
+//                serve("/" + APP_NAME + "/trackviewer").with(TrackViewerServiceImpl.class);
+//                serve("/" + APP_NAME + "/trackeditor").with(TrackEditorServiceImpl.class);
                 serve("/" + APP_NAME + "/scenarioservice").with(ScenarioServiceImpl.class);
                 serve("/" + APP_NAME + "/scenarioEditor").with(ScenarioEditorServiceImpl.class);
-//                serve("/" + APP_NAME + "/trainEditor").with(TrainEditorService.class);
-//                serve("/" + APP_NAME + "/trainService").with(TrainRequest.class);
-//                serve("/" + APP_NAME + "/config").with(ConfigRequest.class);
+//                serve("/" + APP_NAME + "/trainEditor").with(TrainEditorServiceImpl.class);
+//                serve("/" + APP_NAME + "/trainService").with(TrainService.class);
+//                serve("/" + APP_NAME + "/config").with(ConfigService.class);
             }
 
             /**
@@ -117,8 +118,6 @@ public class MyGuiceServletConfig extends GuiceServletContextListener {
             public DeviceManager deviceManager() {
                 return new DeviceManager();
             }
-
-
         });
     }
 }

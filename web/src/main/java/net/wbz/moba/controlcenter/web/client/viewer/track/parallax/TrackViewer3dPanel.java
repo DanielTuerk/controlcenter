@@ -7,9 +7,9 @@ import java.util.Map;
 import net.wbz.moba.controlcenter.web.client.RequestUtils;
 import net.wbz.moba.controlcenter.web.client.viewer.track.AbstractTrackViewerPanel;
 import net.wbz.moba.controlcenter.web.client.viewer.track.parallax.trackparts.Basic3dTrackWidget;
-import net.wbz.moba.controlcenter.web.shared.track.model.Configuration;
+import net.wbz.moba.controlcenter.web.server.persist.construction.track.TrackPartConfigurationEntity;
 import net.wbz.moba.controlcenter.web.shared.track.model.ConfigurationProxy;
-import net.wbz.moba.controlcenter.web.shared.track.model.TrackPartProxy;
+import net.wbz.moba.controlcenter.web.server.persist.construction.track.TrackPartProxy;
 import thothbot.parallax.core.client.RenderingPanel;
 
 import com.google.common.collect.Maps;
@@ -82,7 +82,7 @@ public class TrackViewer3dPanel extends AbstractTrackViewerPanel {
     }
 
     @Override
-    protected void updateTrackPartState(Configuration configuration, boolean state) {
+    protected void updateTrackPartState(TrackPartConfigurationEntity configuration, boolean state) {
         if (trackWidgetsOfConfiguration.containsKey(configuration)) {
             for (Basic3dTrackWidget controlSvgTrackWidget : trackWidgetsOfConfiguration.get(configuration)) {
                 controlSvgTrackWidget.updateFunctionState(configuration, state);

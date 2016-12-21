@@ -1,14 +1,12 @@
 package net.wbz.moba.controlcenter.web.client.viewer.track.parallax.trackparts;
 
-import net.wbz.moba.controlcenter.web.shared.track.model.Curve;
+import net.wbz.moba.controlcenter.web.server.persist.construction.track.Curve;
 import net.wbz.moba.controlcenter.web.shared.track.model.CurveProxy;
 import thothbot.parallax.core.shared.geometries.BoxGeometry;
-import thothbot.parallax.core.shared.materials.MeshLambertMaterial;
-import thothbot.parallax.core.shared.math.Color;
 import thothbot.parallax.core.shared.math.Vector3;
 
 /**
- * Widget for representation of the {@link net.wbz.moba.controlcenter.web.shared.track.model.Curve} trackpart.
+ * Widget for representation of the {@link Curve} trackpart.
  *
  * @author Daniel Tuerk
  */

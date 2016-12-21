@@ -11,7 +11,7 @@
     </configuration>
 
     <mapping>
-        <class-a>net.wbz.moba.controlcenter.web.shared.train.Train</class-a>
+        <class-a>net.wbz.moba.controlcenter.web.server.persist.train.TrainEntity</class-a>
         <class-b>net.wbz.moba.controlcenter.web.shared.train.TrainDto</class-b>
         <!--<field>-->
             <!--<A>yourSourceFieldName</A>-->

@@ -5,8 +5,8 @@ import java.util.List;
 
 import net.wbz.moba.controlcenter.web.client.EventReceiver;
 import net.wbz.moba.controlcenter.web.client.RequestUtils;
+import net.wbz.moba.controlcenter.web.shared.bus.DeviceInfo;
 import net.wbz.moba.controlcenter.web.shared.bus.DeviceInfoEvent;
-import net.wbz.moba.controlcenter.web.shared.bus.DeviceInfoProxy;
 
 import org.gwtbootstrap3.extras.select.client.ui.Option;
 import org.gwtbootstrap3.extras.select.client.ui.Select;
@@ -22,7 +22,7 @@ import de.novanic.eventservice.client.event.listener.RemoteEventListener;
  */
 public class DeviceListBox extends Select {
 
-    private final List<DeviceInfoProxy> devices = Lists.newArrayList();
+    private final List<DeviceInfo> devices = Lists.newArrayList();
 
     public DeviceListBox() {
         setWidth("180px");
@@ -36,8 +36,8 @@ public class DeviceListBox extends Select {
         reload();
     }
 
-    private DeviceInfoProxy getDevice(String value) {
-        for (DeviceInfoProxy deviceInfo : devices) {
+    private DeviceInfo getDevice(String value) {
+        for (DeviceInfo deviceInfo : devices) {
             if (deviceInfo.getKey().endsWith(value)) {
                 return deviceInfo;
             }
@@ -47,14 +47,14 @@ public class DeviceListBox extends Select {
 
     public void reload() {
 
-        RequestUtils.getInstance().getBusRequest().getDevices().fire(new Receiver<Collection<DeviceInfoProxy>>() {
+        RequestUtils.getInstance().getBusRequest().getDevices().fire(new Receiver<Collection<DeviceInfo>>() {
             @Override
-            public void onSuccess(Collection<DeviceInfoProxy> result) {
+            public void onSuccess(Collection<DeviceInfo> result) {
                 devices.clear();
                 devices.addAll(result);
 
                 DeviceListBox.this.clear();
-                for (DeviceInfoProxy device : result) {
+                for (DeviceInfo device : result) {
                     Option child = new Option();
                     child.setValue(device.getKey());
                     child.setText(device.getKey());
@@ -65,15 +65,15 @@ public class DeviceListBox extends Select {
         });
     }
 
-    public List<DeviceInfoProxy> getDevices() {
+    public List<DeviceInfo> getDevices() {
         return devices;
     }
 
-    public DeviceInfoProxy getSelectedDevice() {
+    public DeviceInfo getSelectedDevice() {
         return getDevice(getValue());
     }
 
-    public void setConnectedDevice(DeviceInfoProxy deviceInfo) {
+    public void setConnectedDevice(DeviceInfo deviceInfo) {
         if (deviceInfo != null) {
             setValue(deviceInfo.getKey());
         }

@@ -4,12 +4,12 @@ import com.google.common.collect.Maps;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.logical.shared.ValueChangeEvent;
-import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Panel;
 import net.wbz.moba.controlcenter.web.client.RequestUtils;
 import net.wbz.moba.controlcenter.web.client.viewer.controls.AbstractItemPanel;
+import net.wbz.moba.controlcenter.web.server.persist.train.TrainEntity;
+import net.wbz.moba.controlcenter.web.server.persist.train.TrainFunctionEntity;
 import net.wbz.moba.controlcenter.web.shared.train.*;
 import org.gwtbootstrap3.client.ui.*;
 import org.gwtbootstrap3.client.ui.constants.ColumnSize;
@@ -34,7 +34,7 @@ public class TrainItemPanel extends AbstractItemPanel<TrainProxy, TrainStateEven
 
     private Button btnDirectionForward;
     private Button btnDirectionBackward;
-    private Map<TrainFunction.FUNCTION, Button> functionButtons = Maps.newConcurrentMap();
+    private Map<TrainFunctionEntity.FUNCTION, Button> functionButtons = Maps.newConcurrentMap();
 
     private Label lblName;
     private Label lblState;
@@ -55,9 +55,9 @@ assert getModel() !=null;
         // TODO: slider and buttons need update for remote tracking of other device -> BUT will crash with fast input
         // and update delay
         if (event instanceof TrainHornStateEvent) {
-            functionButtons.get(TrainFunction.FUNCTION.HORN).setActive(((TrainHornStateEvent) event).isState());
+            functionButtons.get(TrainFunctionEntity.FUNCTION.HORN).setActive(((TrainHornStateEvent) event).isState());
         } else if (event instanceof TrainLightStateEvent) {
-            functionButtons.get(TrainFunction.FUNCTION.LIGHT).setActive(((TrainLightStateEvent) event).isState());
+            functionButtons.get(TrainFunctionEntity.FUNCTION.LIGHT).setActive(((TrainLightStateEvent) event).isState());
         } else if (event instanceof TrainFunctionStateEvent) {
             TrainFunctionStateEvent functionStateEvent = (TrainFunctionStateEvent) event;
             functionButtons.get(functionStateEvent.getFunction()).setActive(functionStateEvent.isActive());
@@ -110,9 +110,9 @@ assert getModel() !=null;
         Row rowDrivingFunctions = new Row();
 
         ButtonGroup btnGroupDirection = new ButtonGroup();
-        btnDirectionForward = createDirectionButton(Train.DIRECTION.FORWARD);
+        btnDirectionForward = createDirectionButton(TrainEntity.DIRECTION.FORWARD);
         btnGroupDirection.add(btnDirectionForward);
-        btnDirectionBackward = createDirectionButton(Train.DIRECTION.BACKWARD);
+        btnDirectionBackward = createDirectionButton(TrainEntity.DIRECTION.BACKWARD);
         btnGroupDirection.add(btnDirectionBackward);
 
         final Label lblSliderValue = new Label("0");
@@ -157,9 +157,9 @@ assert getModel() !=null;
 //        if(getModel().getFunctions()!=null ) {
 //            // TODO ... if null
 //        for (TrainFunctionProxy trainFunction : getModel().getFunctions()) {
-//            if (trainFunction.getFunction() == TrainFunction.FUNCTION.HORN) {
+//            if (trainFunction.getFunction() == TrainFunctionEntity.FUNCTION.HORN) {
 //                updateItemData(new TrainHornStateEvent(getModel().getId(), trainFunction.isState()));
-//            } else if (trainFunction.getFunction() == TrainFunction.FUNCTION.LIGHT) {
+//            } else if (trainFunction.getFunction() == TrainFunctionEntity.FUNCTION.LIGHT) {
 //                updateItemData(new TrainLightStateEvent(getModel().getId(), trainFunction.isState()));
 //            }
 //        }
@@ -191,7 +191,7 @@ assert getModel() !=null;
         }
     }
 
-    private Button createDirectionButton(final Train.DIRECTION direction) {
+    private Button createDirectionButton(final TrainEntity.DIRECTION direction) {
         Button btnDirection;
         switch (direction) {
             case BACKWARD:

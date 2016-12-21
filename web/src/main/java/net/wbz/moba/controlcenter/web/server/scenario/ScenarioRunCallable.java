@@ -1,10 +1,9 @@
 package net.wbz.moba.controlcenter.web.server.scenario;
 
 import net.wbz.moba.controlcenter.web.server.EventBroadcaster;
-import net.wbz.moba.controlcenter.web.server.viewer.TrackViewerService;
+import net.wbz.moba.controlcenter.web.server.web.viewer.TrackViewerServiceImpl;
 import net.wbz.moba.controlcenter.web.shared.scenario.*;
-import net.wbz.moba.controlcenter.web.shared.track.model.Configuration;
-import net.wbz.moba.controlcenter.web.shared.viewer.*;
+import net.wbz.moba.controlcenter.web.server.persist.construction.track.TrackPartConfigurationEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,12 +15,12 @@ import java.util.concurrent.Callable;
 public class ScenarioRunCallable implements Callable<Boolean> {
     private static final Logger LOG = LoggerFactory.getLogger(ScenarioRunCallable.class);
 
-    private final TrackViewerService trackViewerRequest;
+    private final TrackViewerServiceImpl trackViewerRequest;
     private final EventBroadcaster eventBroadcaster;
 
     private final Scenario scenario;
 
-    public ScenarioRunCallable(Scenario scenario, TrackViewerService trackViewerRequest, EventBroadcaster eventBroadcaster) {
+    public ScenarioRunCallable(Scenario scenario, TrackViewerServiceImpl trackViewerRequest, EventBroadcaster eventBroadcaster) {
         this.scenario = scenario;
         this.trackViewerRequest = trackViewerRequest;
         this.eventBroadcaster=eventBroadcaster;
@@ -47,7 +46,7 @@ public class ScenarioRunCallable implements Callable<Boolean> {
                     Thread.sleep((long) ((WaitScenarioCommand) command).getSeconds() * 1000L);
                 } else if (command instanceof ToggleScenarioCommand) {
                     ToggleScenarioCommand toggleCommand = (ToggleScenarioCommand) command;
-                    Configuration trackPartConfiguration = toggleCommand.getConfiguration();
+                    TrackPartConfigurationEntity trackPartConfiguration = toggleCommand.getConfiguration();
                     if (trackViewerRequest.getTrackPartState(trackPartConfiguration) != toggleCommand.isState()) {
                         trackViewerRequest.toggleTrackPart(trackPartConfiguration, toggleCommand.isState());
                     }

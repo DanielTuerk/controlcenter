@@ -1,12 +1,13 @@
 package net.wbz.moba.controlcenter.web.client.viewer.track.parallax.trackparts;
 
-import net.wbz.moba.controlcenter.web.shared.track.model.Configuration;
-import net.wbz.moba.controlcenter.web.shared.track.model.Switch;
+import net.wbz.moba.controlcenter.web.server.persist.construction.track.Curve;
+import net.wbz.moba.controlcenter.web.server.persist.construction.track.TrackPartConfigurationEntity;
+import net.wbz.moba.controlcenter.web.server.persist.construction.track.SwitchEntity;
 import net.wbz.moba.controlcenter.web.shared.track.model.SwitchProxy;
 import thothbot.parallax.core.shared.math.Vector3;
 
 /**
- * Widget for representation of the {@link net.wbz.moba.controlcenter.web.shared.track.model.Curve} trackpart.
+ * Widget for representation of the {@link Curve} trackpart.
  *
  * @author Daniel Tuerk
  */
@@ -19,7 +20,7 @@ public class Switch3dWidget extends Basic3dTrackWidget<SwitchProxy> {
         super(trackPart);
 
         String texture;
-        if (trackPart.getCurrentDirection() == Switch.DIRECTION.LEFT) {
+        if (trackPart.getCurrentDirection() == SwitchEntity.DIRECTION.LEFT) {
             texture = TEXTURE_SWITCH_LEFT;
         } else {
             texture = TEXTURE_SWITCH_RIGHT;
@@ -27,12 +28,12 @@ public class Switch3dWidget extends Basic3dTrackWidget<SwitchProxy> {
         setMaterial(createTrackPartTexture(texture));
     }
 
-    public void updateFunctionState(Configuration configuration, boolean state) {
+    public void updateFunctionState(TrackPartConfigurationEntity configuration, boolean state) {
         super.updateFunctionState(configuration, state);
 
         if (state) {
             // switch is in curve mode
-            if (getTrackPart().getCurrentDirection() == Switch.DIRECTION.RIGHT) {
+            if (getTrackPart().getCurrentDirection() == SwitchEntity.DIRECTION.RIGHT) {
                 getRailwayMeshLeft().setPosition(new Vector3(0, 3.5, 0));
                 getRailwayMeshLeft().rotateZ((2 * Math.PI / 360 * (45)));
 

@@ -1,36 +1,23 @@
 package net.wbz.moba.controlcenter.web.shared.bus;
 
-import net.wbz.moba.controlcenter.web.shared.Identity;
+import net.wbz.moba.controlcenter.web.guice.requestFactory.InjectingEntityLocator;
+import net.wbz.moba.controlcenter.web.server.persist.device.DeviceInfoEntity;
+import net.wbz.moba.controlcenter.web.shared.EntityProxyWithIdAndVersion;
 
-import javax.persistence.*;
+import com.google.web.bindery.requestfactory.shared.ProxyFor;
+import net.wbz.moba.controlcenter.web.shared.track.model.AbstractDto;
 
 /**
  * @author Daniel Tuerk
  */
-@Entity
-public class DeviceInfo implements Identity {
+public class DeviceInfo extends AbstractDto {
 
-    @Transient
-    private boolean connected;
-
-    @Id
-    @GeneratedValue
-    @Column(name = "device_id")
-    private long id;
-
-    @Column(name = "device_key")
+    public enum DEVICE_TYPE {
+        SERIAL, TEST
+    }
     private String key;
     private DEVICE_TYPE type;
-
-    @Override
-    public Integer getVersion() {
-        return 0;
-    }
-
-    @Override
-    public Long getId() {
-        return id;
-    }
+    private boolean connected;
 
     public String getKey() {
         return key;
@@ -57,17 +44,4 @@ public class DeviceInfo implements Identity {
     }
 
 
-    @Override
-    public String toString() {
-        return "DeviceInfo{" +
-                "connected=" + connected +
-                ", id=" + id +
-                ", key='" + key + '\'' +
-                ", type=" + type +
-                '}';
-    }
-
-    public enum DEVICE_TYPE {
-        SERIAL, TEST
-    }
 }

@@ -21,7 +21,7 @@ public class ViewerControlsPanel extends TabPanel {
 
         navTabs = new NavTabs();
 
-        TabListItem navTrainTab = new TabListItem("Train");
+        TabListItem navTrainTab = new TabListItem("TrainEntity");
         navTrainTab.setDataTarget("#"+TAB_ID_TRAIN);
         navTabs.add(navTrainTab);
 

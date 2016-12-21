@@ -10,7 +10,7 @@ import net.wbz.moba.controlcenter.web.client.RequestUtils;
 import net.wbz.moba.controlcenter.web.client.model.track.AbsoluteTrackPosition;
 import net.wbz.moba.controlcenter.web.client.model.track.AbstractSvgTrackWidget;
 import net.wbz.moba.controlcenter.web.client.model.track.ModelManager;
-import net.wbz.moba.controlcenter.web.shared.track.model.TrackPartProxy;
+import net.wbz.moba.controlcenter.web.server.persist.construction.track.TrackPartProxy;
 
 import org.gwtbootstrap3.client.ui.AnchorListItem;
 import org.gwtbootstrap3.client.ui.NavPills;

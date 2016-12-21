@@ -4,10 +4,9 @@ import com.google.common.collect.Maps;
 import com.google.gwt.user.client.ui.Widget;
 import net.wbz.moba.controlcenter.web.client.editor.track.EditTrackWidgetHandler;
 import net.wbz.moba.controlcenter.web.shared.track.model.Configuration;
-import net.wbz.moba.controlcenter.web.shared.track.model.ConfigurationProxy;
 import net.wbz.moba.controlcenter.web.shared.track.model.TrackModelConstants;
-import net.wbz.moba.controlcenter.web.shared.track.model.TrackPartProxy;
-import net.wbz.moba.controlcenter.web.shared.train.TrainProxy;
+import net.wbz.moba.controlcenter.web.shared.track.model.TrackPart;
+import net.wbz.moba.controlcenter.web.shared.train.Train;
 import org.gwtbootstrap3.client.ui.FieldSet;
 import org.gwtbootstrap3.client.ui.FormGroup;
 import org.gwtbootstrap3.client.ui.FormLabel;
@@ -24,7 +23,7 @@ import java.util.Map;
 /**
  * @author Daniel Tuerk
  */
-abstract public class AbstractBlockSvgTrackWidget<T extends TrackPartProxy> extends AbstractSvgTrackWidget<T>
+abstract public class AbstractBlockSvgTrackWidget<T extends TrackPart> extends AbstractSvgTrackWidget<T>
         implements EditTrackWidgetHandler, BlockPart {
 
     private static final String ID_FORM_BIT = "formBit";
@@ -36,7 +35,7 @@ abstract public class AbstractBlockSvgTrackWidget<T extends TrackPartProxy> exte
      * Used to add or remove an element for entering and exiting the block of a train
      * called by the {@link net.wbz.moba.controlcenter.web.shared.bus.FeedbackBlockEvent}.
      */
-    private Map<TrainProxy, OMSVGElement> trainElements = Maps.newConcurrentMap();
+    private Map<Train, OMSVGElement> trainElements = Maps.newConcurrentMap();
 
 
     @Override
@@ -61,16 +60,15 @@ abstract public class AbstractBlockSvgTrackWidget<T extends TrackPartProxy> exte
     }
 
     @Override
-    public Map<String, ConfigurationProxy> getStoredWidgetFunctionConfigs() {
-        Map<String, ConfigurationProxy> functionConfigs = super.getStoredWidgetFunctionConfigs();
+    public Map<String, Configuration> getStoredWidgetFunctionConfigs() {
+        Map<String, Configuration> functionConfigs = super.getStoredWidgetFunctionConfigs();
         if (getTrackPart().getDefaultBlockFunctionConfig() != null) {
             Configuration configuration = new Configuration();
             configuration.setBus(1); //TODO
             configuration.setAddress(getTrackPart().getDefaultBlockFunctionConfig().getAddress());
             configuration.setBit(getTrackPart().getDefaultBlockFunctionConfig().getBit());
             configuration.setBitState(true);
-            //TODO
-//            functionConfigs.put(TrackModelConstants.DEFAULT_BLOCK_FUNCTION, configuration);
+            functionConfigs.put(TrackModelConstants.DEFAULT_BLOCK_FUNCTION, configuration);
         }
         return functionConfigs;
     }
@@ -78,7 +76,7 @@ abstract public class AbstractBlockSvgTrackWidget<T extends TrackPartProxy> exte
     @Override
     public void updateFunctionState(Configuration configuration, boolean state) {
         // update the SVG for the state of the {@link TrackPart#DEFAULT_TOGGLE_FUNCTION}
-        ConfigurationProxy blockFunctionConfig = getStoredWidgetFunctionConfigs().get(TrackModelConstants.DEFAULT_BLOCK_FUNCTION);
+        Configuration blockFunctionConfig = getStoredWidgetFunctionConfigs().get(TrackModelConstants.DEFAULT_BLOCK_FUNCTION);
         if (blockFunctionConfig != null && blockFunctionConfig.equals(configuration)) {
             if (state == blockFunctionConfig.isBitState()) {
                 usedBlock();
@@ -127,7 +125,7 @@ abstract public class AbstractBlockSvgTrackWidget<T extends TrackPartProxy> exte
             option.setText(value);
             selectBit.add(option);
             if (index == getTrackPart().getDefaultBlockFunctionConfig().getBit()) {
-                selectBit.setValue(value);
+                selectBit.setValue(option);
             }
         }
         groupBit.add(selectBit);
@@ -152,7 +150,7 @@ abstract public class AbstractBlockSvgTrackWidget<T extends TrackPartProxy> exte
      *
      * @param train {@link net.wbz.moba.controlcenter.web.shared.train.Train}
      */
-    public void showTrainOnBlock(TrainProxy train) {
+    public void showTrainOnBlock(Train train) {
         OMSVGTextElement foo = getSvgDocument().createSVGTextElement(1f, 24f, (short) 1, train.getName());
         foo.getStyle().setSVGProperty(SVGConstants.CSS_FONT_SIZE_PROPERTY, "8pt");
         trainElements.put(train, foo);
@@ -164,7 +162,7 @@ abstract public class AbstractBlockSvgTrackWidget<T extends TrackPartProxy> exte
      *
      * @param train {@link net.wbz.moba.controlcenter.web.shared.train.Train}
      */
-    public void removeTrainOnBlock(TrainProxy train) {
+    public void removeTrainOnBlock(Train train) {
         if (trainElements.containsKey(train)) {
             getSvgRootElement().removeChild(trainElements.get(train));
             trainElements.remove(train);

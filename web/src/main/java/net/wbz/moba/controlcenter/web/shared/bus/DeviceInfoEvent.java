@@ -1,6 +1,7 @@
 package net.wbz.moba.controlcenter.web.shared.bus;
 
 import de.novanic.eventservice.client.event.Event;
+import net.wbz.moba.controlcenter.web.server.persist.device.DeviceInfoEntity;
 
 /**
  * @author Daniel Tuerk

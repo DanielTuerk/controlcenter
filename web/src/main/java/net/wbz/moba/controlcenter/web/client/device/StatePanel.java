@@ -9,8 +9,8 @@ import de.novanic.eventservice.client.event.Event;
 import de.novanic.eventservice.client.event.listener.RemoteEventListener;
 import net.wbz.moba.controlcenter.web.client.EventReceiver;
 import net.wbz.moba.controlcenter.web.client.RequestUtils;
+import net.wbz.moba.controlcenter.web.shared.bus.DeviceInfo;
 import net.wbz.moba.controlcenter.web.shared.bus.DeviceInfoEvent;
-import net.wbz.moba.controlcenter.web.shared.bus.DeviceInfoProxy;
 import net.wbz.moba.controlcenter.web.shared.bus.PlayerEvent;
 import net.wbz.moba.controlcenter.web.shared.bus.RecordingEvent;
 import net.wbz.moba.controlcenter.web.shared.viewer.RailVoltageEvent;
@@ -183,10 +183,10 @@ public class StatePanel extends org.gwtbootstrap3.client.ui.gwt.FlowPanel {
             public void onSuccess(Boolean connected) {
                 if (connected) {
 
-                    RequestUtils.getInstance().getBusRequest().getDevices().fire(new Receiver<Collection<DeviceInfoProxy>>() {
+                    RequestUtils.getInstance().getBusRequest().getDevices().fire(new Receiver<Collection<DeviceInfo>>() {
                         @Override
-                        public void onSuccess(Collection<DeviceInfoProxy> response) {
-                            for (DeviceInfoProxy deviceInfo : response) {
+                        public void onSuccess(Collection<DeviceInfo> response) {
+                            for (DeviceInfo deviceInfo : response) {
                                 if (deviceInfo.isConnected()) {
                                     updateDeviceConnectionState(deviceInfo, true);
                                     break;
@@ -209,7 +209,7 @@ public class StatePanel extends org.gwtbootstrap3.client.ui.gwt.FlowPanel {
         EventReceiver.getInstance().removeListener(DeviceInfoEvent.class, busDataPlayerEventListener);
     }
 
-    private void updateDeviceConnectionState(DeviceInfoProxy deviceInfo, boolean connected) {
+    private void updateDeviceConnectionState(DeviceInfo deviceInfo, boolean connected) {
         toggleRailVoltage.setEnabled(connected);
         deviceListBox.setConnectedDevice(deviceInfo != null && deviceInfo.isConnected() ? deviceInfo : null);
         // TODO non visual feedback if disabled

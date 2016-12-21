@@ -4,10 +4,9 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import net.wbz.moba.controlcenter.web.server.EventBroadcaster;
-import net.wbz.moba.controlcenter.web.server.viewer.TrackViewerService;
+import net.wbz.moba.controlcenter.web.server.web.viewer.TrackViewerServiceImpl;
 import net.wbz.moba.controlcenter.web.shared.scenario.Scenario;
 import net.wbz.moba.controlcenter.web.shared.scenario.ScenarioService;
-import net.wbz.moba.controlcenter.web.shared.viewer.TrackViewerRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,14 +21,14 @@ import java.util.concurrent.FutureTask;
 public class ScenarioServiceImpl extends RemoteServiceServlet implements ScenarioService {
     private static final Logger LOG = LoggerFactory.getLogger(ScenarioServiceImpl.class);
 
-    private final TrackViewerService trackViewerRequest;
+    private final TrackViewerServiceImpl trackViewerRequest;
     private final Executor executor = Executors.newSingleThreadExecutor();
 
     private final ScenarioManager scenarioManager;
     private final EventBroadcaster eventBroadcaster;
 
     @Inject
-    public ScenarioServiceImpl(TrackViewerService trackViewerService, ScenarioManager scenarioManager, EventBroadcaster eventBroadcaster) {
+    public ScenarioServiceImpl(TrackViewerServiceImpl trackViewerService, ScenarioManager scenarioManager, EventBroadcaster eventBroadcaster) {
         this.trackViewerRequest = trackViewerService;
         this.scenarioManager = scenarioManager;
 

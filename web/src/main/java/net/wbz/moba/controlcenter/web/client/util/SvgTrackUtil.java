@@ -1,5 +1,6 @@
 package net.wbz.moba.controlcenter.web.client.util;
 
+import net.wbz.moba.controlcenter.web.server.persist.construction.track.TrackPartEntity;
 import org.vectomatic.dom.svg.OMSVGCircleElement;
 import org.vectomatic.dom.svg.OMSVGDocument;
 import org.vectomatic.dom.svg.OMSVGLineElement;
@@ -7,7 +8,7 @@ import org.vectomatic.dom.svg.OMSVGRectElement;
 import org.vectomatic.dom.svg.utils.SVGConstants;
 
 /**
- * Util to create SVG components for the {@link net.wbz.moba.controlcenter.web.shared.track.model.TrackPart}s.
+ * Util to create SVG components for the {@link TrackPartEntity}s.
  *
  * @author Daniel Tuerk
  */

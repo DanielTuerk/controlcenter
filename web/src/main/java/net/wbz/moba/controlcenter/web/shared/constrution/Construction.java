@@ -1,37 +1,16 @@
 package net.wbz.moba.controlcenter.web.shared.constrution;
 
 
-import net.wbz.moba.controlcenter.web.shared.Identity;
+import net.wbz.moba.controlcenter.web.shared.track.model.AbstractDto;
 
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
 
 /**
  * @author Daniel Tuerk
  */
-@Entity
-public class Construction implements Identity {
-
-    @Id
-    @GeneratedValue
-    private long id;
+public class Construction extends AbstractDto {
 
     private String name;
-
-    @Override
-    public Integer getVersion() {
-        return 0;
-    }
-
-    @Override
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
 
     public String getName() {
         return name;

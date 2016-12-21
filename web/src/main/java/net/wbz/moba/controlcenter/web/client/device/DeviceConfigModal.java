@@ -1,16 +1,15 @@
 package net.wbz.moba.controlcenter.web.client.device;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 
 import net.wbz.moba.controlcenter.web.client.EventReceiver;
 import net.wbz.moba.controlcenter.web.client.RequestUtils;
 import net.wbz.moba.controlcenter.web.client.util.Log;
-import net.wbz.moba.controlcenter.web.shared.bus.BusRequest;
+import net.wbz.moba.controlcenter.web.shared.bus.BusService;
+import net.wbz.moba.controlcenter.web.server.persist.device.DeviceInfoEntity;
 import net.wbz.moba.controlcenter.web.shared.bus.DeviceInfo;
 import net.wbz.moba.controlcenter.web.shared.bus.DeviceInfoEvent;
-import net.wbz.moba.controlcenter.web.shared.bus.DeviceInfoProxy;
 
 import org.gwtbootstrap3.client.ui.Button;
 import org.gwtbootstrap3.client.ui.Form;
@@ -44,7 +43,7 @@ import de.novanic.eventservice.client.event.Event;
 import de.novanic.eventservice.client.event.listener.RemoteEventListener;
 
 /**
- * Modal to configure the {@link net.wbz.moba.controlcenter.web.shared.bus.DeviceInfo}s for the connections.
+ * Modal to configure the {@link DeviceInfoEntity}s for the connections.
  *
  * @author Daniel Tuerk
  */
@@ -52,11 +51,11 @@ public class DeviceConfigModal extends Modal {
 
     /**
      * Hold {@link com.google.gwt.event.dom.client.ClickHandler} for the delete button of each
-     * {@link net.wbz.moba.controlcenter.web.shared.bus.DeviceInfo}.
+     * {@link DeviceInfoEntity}.
      * Used to call the handler from the column of the {@link org.gwtbootstrap3.client.ui.gwt.CellTable}.
      */
-    private final Map<DeviceInfoProxy, ClickHandler> btnDeleteActions = Maps.newConcurrentMap();
-    private ListDataProvider<DeviceInfoProxy> dataProvider;
+    private final Map<DeviceInfo, ClickHandler> btnDeleteActions = Maps.newConcurrentMap();
+    private ListDataProvider<DeviceInfo> dataProvider;
 
     public DeviceConfigModal() {
         super();
@@ -120,13 +119,13 @@ public class DeviceConfigModal extends Modal {
                     public void onClick(ClickEvent event) {
                         // TODO validation feedback on dialog
                         if (!Strings.isNullOrEmpty(txtDeviceName.getText())) {
-                            BusRequest busRequest = RequestUtils.getInstance().getBusRequest();
-                            final DeviceInfoProxy deviceInfo = busRequest.create(
-                                    DeviceInfoProxy.class);
+                            BusService busRequest = RequestUtils.getInstance().getBusRequest();
+                            final DeviceInfo deviceInfo = busRequest.create(
+                                    DeviceInfo.class);
                             if ("test".equals(txtDeviceName.getText())) {
-                                deviceInfo.setType(DeviceInfo.DEVICE_TYPE.TEST);
+                                deviceInfo.setType(DeviceInfoEntity.DEVICE_TYPE.TEST);
                             } else {
-                                deviceInfo.setType(DeviceInfo.DEVICE_TYPE.SERIAL);
+                                deviceInfo.setType(DeviceInfoEntity.DEVICE_TYPE.SERIAL);
                             }
                             deviceInfo.setKey(txtDeviceName.getValue());
 
@@ -160,35 +159,35 @@ public class DeviceConfigModal extends Modal {
 
         PanelBody panelBody = new PanelBody();
 
-        CellTable<DeviceInfoProxy> cellTable = new CellTable<>();
+        CellTable<DeviceInfo> cellTable = new CellTable<>();
 
-        TextColumn<DeviceInfoProxy> columnDeviceKey = new TextColumn<DeviceInfoProxy>() {
+        TextColumn<DeviceInfo> columnDeviceKey = new TextColumn<DeviceInfo>() {
             @Override
-            public String getValue(DeviceInfoProxy contact) {
+            public String getValue(DeviceInfo contact) {
                 return contact.getKey();
             }
         };
         columnDeviceKey.setSortable(true);
 
         cellTable.addColumn(columnDeviceKey, "Key");
-        cellTable.addColumn(new TextColumn<DeviceInfoProxy>() {
+        cellTable.addColumn(new TextColumn<DeviceInfo>() {
             @Override
-            public String getValue(DeviceInfoProxy contact) {
+            public String getValue(DeviceInfo contact) {
                 return contact.getType().name();
             }
         }, "Type");
 
-        Column<DeviceInfoProxy, String> columnDeleteDevice = new Column<DeviceInfoProxy, String>(new ButtonCell(
+        Column<DeviceInfo, String> columnDeleteDevice = new Column<DeviceInfo, String>(new ButtonCell(
                 ButtonType.DANGER,
                 IconType.TRASH)) {
             @Override
-            public String getValue(DeviceInfoProxy object) {
+            public String getValue(DeviceInfo object) {
                 return "";
             }
         };
-        columnDeleteDevice.setFieldUpdater(new FieldUpdater<DeviceInfoProxy, String>() {
+        columnDeleteDevice.setFieldUpdater(new FieldUpdater<DeviceInfo, String>() {
             @Override
-            public void update(int index, DeviceInfoProxy object, String value) {
+            public void update(int index, DeviceInfo object, String value) {
                 if (btnDeleteActions.containsKey(object)) {
                     btnDeleteActions.get(object).onClick(null);
                 } else {
@@ -210,16 +209,16 @@ public class DeviceConfigModal extends Modal {
     }
 
     private void reloadDeviceList() {
-        RequestUtils.getInstance().getBusRequest().getDevices().fire(new Receiver<Collection<DeviceInfoProxy>>() {
+        RequestUtils.getInstance().getBusRequest().getDevices().fire(new Receiver<Collection<DeviceInfo>>() {
             @Override
-            public void onSuccess(Collection<DeviceInfoProxy> response) {
+            public void onSuccess(Collection<DeviceInfo> response) {
                 // reset devices to load fresh list
                 dataProvider.getList().clear();
                 btnDeleteActions.clear();
 
                 // add delete action for the device entry in the list
                 dataProvider.getList().addAll(response);
-                for (final DeviceInfoProxy deviceInfo : response) {
+                for (final DeviceInfo deviceInfo : response) {
                     btnDeleteActions.put(deviceInfo, new ClickHandler() {
                         @Override
                         public void onClick(ClickEvent event) {

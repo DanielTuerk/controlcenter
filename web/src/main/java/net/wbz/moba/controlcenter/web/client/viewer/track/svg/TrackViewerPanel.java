@@ -12,10 +12,11 @@ import net.wbz.moba.controlcenter.web.client.model.track.AbstractSvgTrackWidget;
 import net.wbz.moba.controlcenter.web.client.model.track.ModelManager;
 import net.wbz.moba.controlcenter.web.client.model.track.signal.AbstractSignalWidget;
 import net.wbz.moba.controlcenter.web.client.viewer.track.AbstractTrackViewerPanel;
+import net.wbz.moba.controlcenter.web.server.persist.construction.track.TrackPartEntity;
 import net.wbz.moba.controlcenter.web.shared.bus.FeedbackBlockEvent;
-import net.wbz.moba.controlcenter.web.shared.track.model.Configuration;
+import net.wbz.moba.controlcenter.web.server.persist.construction.track.TrackPartConfigurationEntity;
 import net.wbz.moba.controlcenter.web.shared.track.model.ConfigurationProxy;
-import net.wbz.moba.controlcenter.web.shared.track.model.TrackPartProxy;
+import net.wbz.moba.controlcenter.web.server.persist.construction.track.TrackPartProxy;
 import net.wbz.moba.controlcenter.web.shared.train.TrainProxy;
 import net.wbz.moba.controlcenter.web.shared.viewer.SignalFunctionStateEvent;
 
@@ -32,9 +33,9 @@ import com.google.web.bindery.requestfactory.shared.Receiver;
 /**
  * Panel for the track viewer.
  * <p/>
- * Loading the track and add all {@link net.wbz.moba.controlcenter.web.shared.track.model.TrackPart}s to the panel.
+ * Loading the track and add all {@link TrackPartEntity}s to the panel.
  * Register the event listener to receive state changes of all added
- * {@link net.wbz.moba.controlcenter.web.shared.track.model.TrackPart}s.
+ * {@link TrackPartEntity}s.
  *
  * @author Daniel Tuerk
  */
@@ -151,7 +152,7 @@ public class TrackViewerPanel extends AbstractTrackViewerPanel {
     }
 
     @Override
-    protected void updateTrackPartState(Configuration configuration, boolean state) {
+    protected void updateTrackPartState(TrackPartConfigurationEntity configuration, boolean state) {
         if (trackWidgetsOfConfiguration.containsKey(configuration)) {
             for (AbstractSvgTrackWidget controlSvgTrackWidget : trackWidgetsOfConfiguration.get(configuration)) {
                 controlSvgTrackWidget.updateFunctionState(configuration, state);
@@ -173,7 +174,7 @@ public class TrackViewerPanel extends AbstractTrackViewerPanel {
         RequestUtils.getInstance().getTrainEditorRequest().getTrain(train).fire(new Receiver<TrainProxy>() {
             @Override
             public void onSuccess(TrainProxy result) {
-                Configuration configAsIdentifier = new Configuration(1, address, block, true);
+                TrackPartConfigurationEntity configAsIdentifier = new TrackPartConfigurationEntity(1, address, block, true);
                 if (trackWidgetsOfConfiguration.containsKey(configAsIdentifier)) {
                     for (AbstractSvgTrackWidget svgTrackWidget : trackWidgetsOfConfiguration.get(configAsIdentifier)) {
                         if (svgTrackWidget instanceof AbstractBlockSvgTrackWidget) {

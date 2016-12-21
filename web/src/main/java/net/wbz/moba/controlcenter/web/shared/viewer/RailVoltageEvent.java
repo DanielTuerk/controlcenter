@@ -1,7 +1,6 @@
 package net.wbz.moba.controlcenter.web.shared.viewer;
 
 import de.novanic.eventservice.client.event.Event;
-import net.wbz.moba.controlcenter.web.shared.track.model.Configuration;
 
 /**
  * Event for the state change of the rail voltage.

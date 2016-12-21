@@ -9,24 +9,24 @@
 
         <!-- common models -->
         <class>net.wbz.moba.controlcenter.web.shared.constrution.Construction</class>
-        <class>net.wbz.moba.controlcenter.web.server.config.ConfigValue</class>
-        <class>net.wbz.moba.controlcenter.web.shared.train.Train</class>
-        <class>net.wbz.moba.controlcenter.web.shared.train.TrainFunction</class>
-        <class>net.wbz.moba.controlcenter.web.shared.bus.DeviceInfo</class>
+        <class>net.wbz.moba.controlcenter.web.server.persist.config.ConfigValue</class>
+        <class>net.wbz.moba.controlcenter.web.server.persist.train.TrainEntity</class>
+        <class>net.wbz.moba.controlcenter.web.server.persist.train.TrainFunctionEntity</class>
+        <class>net.wbz.moba.controlcenter.web.server.persist.device.DeviceInfoEntity</class>
 
         <!-- track configuration models -->
-        <class>net.wbz.moba.controlcenter.web.shared.track.model.TrackPart</class>
-        <class>net.wbz.moba.controlcenter.web.shared.track.model.TrackPartFunction</class>
-        <class>net.wbz.moba.controlcenter.web.shared.track.model.GridPosition</class>
-        <class>net.wbz.moba.controlcenter.web.shared.track.model.EventConfiguration</class>
-        <class>net.wbz.moba.controlcenter.web.shared.track.model.Configuration</class>
+        <class>net.wbz.moba.controlcenter.web.server.persist.construction.track.TrackPartEntity</class>
+        <class>net.wbz.moba.controlcenter.web.server.persist.construction.track.TrackPartFunctionEntity</class>
+        <class>net.wbz.moba.controlcenter.web.server.persist.construction.track.GridPositionEntity</class>
+        <class>net.wbz.moba.controlcenter.web.server.persist.construction.track.EventConfigurationEntity</class>
+        <class>net.wbz.moba.controlcenter.web.server.persist.construction.track.TrackPartConfigurationEntity</class>
 
         <!-- track part models -->
-        <class>net.wbz.moba.controlcenter.web.shared.track.model.Curve</class>
-        <class>net.wbz.moba.controlcenter.web.shared.track.model.Signal</class>
-        <class>net.wbz.moba.controlcenter.web.shared.track.model.Straight</class>
-        <class>net.wbz.moba.controlcenter.web.shared.track.model.Switch</class>
-        <class>net.wbz.moba.controlcenter.web.shared.track.model.Uncoupler</class>
+        <class>net.wbz.moba.controlcenter.web.server.persist.construction.track.Curve</class>
+        <class>net.wbz.moba.controlcenter.web.server.persist.construction.track.SignalEntity</class>
+        <class>net.wbz.moba.controlcenter.web.server.persist.construction.track.StraightEntity</class>
+        <class>net.wbz.moba.controlcenter.web.server.persist.construction.track.SwitchEntity</class>
+        <class>net.wbz.moba.controlcenter.web.server.persist.construction.track.UncouplerEntity</class>
 
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
         <!--<properties> from Guice -->

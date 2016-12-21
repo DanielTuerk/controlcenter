@@ -1,9 +1,10 @@
 package net.wbz.moba.controlcenter.web.client.viewer.track.parallax.trackparts;
 
 import net.wbz.moba.controlcenter.web.client.model.track.BlockPart;
-import net.wbz.moba.controlcenter.web.shared.track.model.Configuration;
+import net.wbz.moba.controlcenter.web.server.persist.construction.track.TrackPartEntity;
+import net.wbz.moba.controlcenter.web.server.persist.construction.track.TrackPartConfigurationEntity;
 import net.wbz.moba.controlcenter.web.shared.track.model.ConfigurationProxy;
-import net.wbz.moba.controlcenter.web.shared.track.model.TrackPartProxy;
+import net.wbz.moba.controlcenter.web.server.persist.construction.track.TrackPartProxy;
 import thothbot.parallax.core.client.textures.Texture;
 import thothbot.parallax.core.shared.geometries.BoxGeometry;
 import thothbot.parallax.core.shared.materials.Material;
@@ -14,7 +15,7 @@ import thothbot.parallax.core.shared.math.Vector3;
 import thothbot.parallax.core.shared.objects.Mesh;
 
 /**
- * Basic widget for the 3D representation of a {@link net.wbz.moba.controlcenter.web.shared.track.model.TrackPart}.
+ * Basic widget for the 3D representation of a {@link TrackPartEntity}.
  * <p/>
  * Mesh to show a box in the grid system with an material texture. The railway are two mesh for the left and right side.
  * As implementation of {@link net.wbz.moba.controlcenter.web.client.model.track.BlockPart} the railway meshes are
@@ -50,7 +51,7 @@ public class Basic3dTrackWidget<T extends TrackPartProxy> extends Mesh implement
     private final Mesh railwayMeshRight;
 
     /**
-     * Type of {@link net.wbz.moba.controlcenter.web.shared.track.model.TrackPart} which will be presented of the
+     * Type of {@link TrackPartEntity} which will be presented of the
      * extending 3D widget.
      */
     private final T trackPart;
@@ -59,7 +60,7 @@ public class Basic3dTrackWidget<T extends TrackPartProxy> extends Mesh implement
     /**
      * Create the 3D model for the grid with the default states.
      *
-     * @param trackPart {@link net.wbz.moba.controlcenter.web.shared.track.model.TrackPart}
+     * @param trackPart {@link TrackPartEntity}
      */
     public Basic3dTrackWidget(T trackPart) {
         this.trackPart = trackPart;
@@ -149,7 +150,7 @@ public class Basic3dTrackWidget<T extends TrackPartProxy> extends Mesh implement
         railwayMaterial.setColor(new Color(color));
     }
 
-    public void updateFunctionState(Configuration configuration, boolean state) {
+    public void updateFunctionState(TrackPartConfigurationEntity configuration, boolean state) {
         ConfigurationProxy blockFunctionConfig = trackPart.getDefaultBlockFunctionConfig();
         if (blockFunctionConfig != null && blockFunctionConfig.equals(configuration)) {
             if (state == blockFunctionConfig.isBitState()) {

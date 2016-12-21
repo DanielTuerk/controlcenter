@@ -1,16 +1,15 @@
 package net.wbz.moba.controlcenter.web.client.viewer.track.parallax;
 
 import net.wbz.moba.controlcenter.web.client.viewer.track.parallax.trackparts.*;
+import net.wbz.moba.controlcenter.web.server.persist.construction.track.TrackPartEntity;
+import net.wbz.moba.controlcenter.web.server.persist.construction.track.TrackPartProxy;
 import net.wbz.moba.controlcenter.web.shared.track.model.*;
-import thothbot.parallax.core.client.textures.Texture;
-import thothbot.parallax.core.shared.materials.Material;
-import thothbot.parallax.core.shared.materials.MeshLambertMaterial;
 import thothbot.parallax.core.shared.math.Vector3;
 
 /**
  * Factory to create the
  * {@link net.wbz.moba.controlcenter.web.client.viewer.track.parallax.trackparts.Basic3dTrackWidget} implementation for
- * the type of {@link net.wbz.moba.controlcenter.web.shared.track.model.TrackPart}.
+ * the type of {@link TrackPartEntity}.
  *
  * @author Daniel Tuerk
  */
@@ -22,9 +21,9 @@ public class TrackPartGeometryFactory {
     /**
      * Create and return the
      * {@link net.wbz.moba.controlcenter.web.client.viewer.track.parallax.trackparts.Basic3dTrackWidget} implementation
-     * for the given {@link net.wbz.moba.controlcenter.web.shared.track.model.TrackPart} model.
+     * for the given {@link TrackPartEntity} model.
      *
-     * @param trackPart {@link net.wbz.moba.controlcenter.web.shared.track.model.TrackPart}
+     * @param trackPart {@link TrackPartEntity}
      * @return {@link net.wbz.moba.controlcenter.web.client.viewer.track.parallax.trackparts.Basic3dTrackWidget}
      */
     public Basic3dTrackWidget<?> getTrackWidget(TrackPartProxy trackPart) {

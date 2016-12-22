@@ -2,7 +2,7 @@ package net.wbz.moba.controlcenter.web.client.model.track;
 
 import net.wbz.moba.controlcenter.web.client.util.SvgTrackUtil;
 import net.wbz.moba.controlcenter.web.shared.track.model.Straight;
-import net.wbz.moba.controlcenter.web.shared.track.model.StraightProxy;
+import net.wbz.moba.controlcenter.web.shared.track.model.Straight;
 import org.vectomatic.dom.svg.OMSVGRectElement;
 
 /**
@@ -21,12 +21,12 @@ public class StraightHorizontalWidget extends AbstractStraightWidget {
     }
 
     @Override
-    public AbstractSvgTrackWidget<StraightProxy> getClone() {
+    public AbstractSvgTrackWidget<Straight> getClone() {
         return new StraightHorizontalWidget();
     }
 
     @Override
-    public boolean isRepresentationOf(StraightProxy trackPart) {
+    public boolean isRepresentationOf(Straight trackPart) {
         return trackPart.getDirection() == Straight.DIRECTION.HORIZONTAL;
     }
 

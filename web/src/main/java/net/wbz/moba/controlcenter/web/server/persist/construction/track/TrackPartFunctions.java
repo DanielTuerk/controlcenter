@@ -35,10 +35,6 @@ public class TrackPartFunctions  implements Identity {
         this.trackPart = trackPart;
     }
 
-    @Override
-    public Integer getVersion() {
-        return 0;
-    }
 
     @Override
     public Long getId() {

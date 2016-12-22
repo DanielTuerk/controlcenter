@@ -105,11 +105,12 @@ public class BusServiceImpl extends RemoteServiceServlet implements BusService {
                 deviceInfo.getType().name()), deviceInfo.getKey(), SerialDevice.DEFAULT_BAUD_RATE_FCC));
     }
 
-    public void changeDevice(DeviceInfoEntity deviceInfo) {
+    @Override
+    public void changeDevice(DeviceInfo deviceInfo) {
         activeDevice = deviceManager.getDeviceById(deviceInfo.getKey());
     }
 
-    @Transactional
+    @Override
     public void createDevice(DeviceInfo deviceInfo) {
         // TODO - device settings (e.g. serial/test)
         DeviceInfoEntity entity = new DeviceInfoEntity();
@@ -122,7 +123,7 @@ public class BusServiceImpl extends RemoteServiceServlet implements BusService {
         eventBroadcaster.fireEvent(new DeviceInfoEvent(deviceInfo, DeviceInfoEvent.TYPE.CREATE));
     }
 
-    @Transactional
+    @Override
     public void deleteDevice(DeviceInfo deviceInfo) {
         Device device = deviceManager.getDeviceById(deviceInfo.getKey());
 

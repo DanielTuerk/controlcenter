@@ -6,7 +6,6 @@ import com.google.inject.persist.Transactional;
 import net.wbz.moba.controlcenter.web.server.EventBroadcaster;
 import net.wbz.moba.controlcenter.web.server.persist.train.TrainDao;
 import net.wbz.moba.controlcenter.web.server.persist.train.TrainEntity;
-import net.wbz.moba.controlcenter.web.server.persist.train.TrainFunctionEntity;
 import net.wbz.moba.controlcenter.web.server.web.DtoMapper;
 import net.wbz.moba.controlcenter.web.shared.train.*;
 import net.wbz.selectrix4java.device.Device;
@@ -85,31 +84,31 @@ public class TrainManager {
 
                         @Override
                         public void functionStateChanged(byte functionAddress, int functionBit, boolean active) {
-                            TrainFunctionEntity.FUNCTION trainFunction;
+                            TrainFunction.FUNCTION trainFunction;
                             switch (functionBit) {
                                 case 1:
-                                    trainFunction = TrainFunctionEntity.FUNCTION.F1;
+                                    trainFunction = TrainFunction.FUNCTION.F1;
                                     break;
                                 case 2:
-                                    trainFunction = TrainFunctionEntity.FUNCTION.F2;
+                                    trainFunction = TrainFunction.FUNCTION.F2;
                                     break;
                                 case 3:
-                                    trainFunction = TrainFunctionEntity.FUNCTION.F3;
+                                    trainFunction = TrainFunction.FUNCTION.F3;
                                     break;
                                 case 4:
-                                    trainFunction = TrainFunctionEntity.FUNCTION.F4;
+                                    trainFunction = TrainFunction.FUNCTION.F4;
                                     break;
                                 case 5:
-                                    trainFunction = TrainFunctionEntity.FUNCTION.F5;
+                                    trainFunction = TrainFunction.FUNCTION.F5;
                                     break;
                                 case 6:
-                                    trainFunction = TrainFunctionEntity.FUNCTION.F6;
+                                    trainFunction = TrainFunction.FUNCTION.F6;
                                     break;
                                 case 7:
-                                    trainFunction = TrainFunctionEntity.FUNCTION.F7;
+                                    trainFunction = TrainFunction.FUNCTION.F7;
                                     break;
                                 case 8:
-                                    trainFunction = TrainFunctionEntity.FUNCTION.F8;
+                                    trainFunction = TrainFunction.FUNCTION.F8;
                                     break;
                                 default:
                                     throw new RuntimeException("no function available for bit: " + functionBit);
@@ -124,13 +123,13 @@ public class TrainManager {
 
                         @Override
                         public void lightStateChanged(boolean state) {
-//                            train.getFunction(TrainFunctionEntity.FUNCTION.LIGHT).setState(state);
+//                            train.getFunction(TrainFunction.FUNCTION.LIGHT).setState(state);
                             eventBroadcaster.fireEvent(new TrainLightStateEvent(train.getId(), state));
                         }
 
                         @Override
                         public void hornStateChanged(boolean state) {
-//                            train.getFunction(TrainFunctionEntity.FUNCTION.HORN).setState(state);
+//                            train.getFunction(TrainFunction.FUNCTION.HORN).setState(state);
                             eventBroadcaster.fireEvent(new TrainHornStateEvent(train.getId(), state));
                         }
                     }
@@ -159,10 +158,11 @@ public class TrainManager {
             e.printStackTrace();
         }
     }
+
     @Transactional
     public void updateTrain(Train train) {
 
-        TrainEntity entity = updateEntitryFromDto(dao.getById(train.getId()),train);
+        TrainEntity entity = updateEntitryFromDto(dao.getById(train.getId()), train);
         dao.update(entity);
 
         // TODO update or create train functions

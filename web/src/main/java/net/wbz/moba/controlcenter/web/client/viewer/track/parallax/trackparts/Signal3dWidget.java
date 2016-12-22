@@ -1,7 +1,7 @@
 package net.wbz.moba.controlcenter.web.client.viewer.track.parallax.trackparts;
 
 import net.wbz.moba.controlcenter.web.server.persist.construction.track.SignalEntity;
-import net.wbz.moba.controlcenter.web.shared.track.model.SignalProxy;
+import net.wbz.moba.controlcenter.web.shared.track.model.Signal;
 import thothbot.parallax.core.shared.geometries.BoxGeometry;
 import thothbot.parallax.core.shared.materials.Material;
 import thothbot.parallax.core.shared.materials.MeshLambertMaterial;
@@ -15,7 +15,7 @@ import thothbot.parallax.core.shared.objects.Mesh;
  */
 public class Signal3dWidget extends Straight3dWidget {
 
-    public Signal3dWidget(SignalProxy trackPart) {
+    public Signal3dWidget(Signal trackPart) {
         super(trackPart);
 
         MeshLambertMaterial signalMaterial = new MeshLambertMaterial();

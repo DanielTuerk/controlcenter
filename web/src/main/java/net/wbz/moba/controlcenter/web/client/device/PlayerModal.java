@@ -1,9 +1,9 @@
 package net.wbz.moba.controlcenter.web.client.device;
 
-import java.util.List;
-
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import net.wbz.moba.controlcenter.web.client.RequestUtils;
-
 import org.gwtbootstrap3.client.ui.Button;
 import org.gwtbootstrap3.client.ui.Modal;
 import org.gwtbootstrap3.client.ui.ModalBody;
@@ -13,9 +13,7 @@ import org.gwtbootstrap3.client.ui.constants.Pull;
 import org.gwtbootstrap3.client.ui.constants.Spy;
 import org.gwtbootstrap3.client.ui.gwt.FlowPanel;
 
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.web.bindery.requestfactory.shared.Receiver;
+import java.util.List;
 
 /**
  * Modal to select the playback file to start the playback.
@@ -56,7 +54,12 @@ public class PlayerModal extends Modal {
 
         content.clear();
 
-        RequestUtils.getInstance().getBusRequest().getRecords().fire(new Receiver<List<String>>() {
+        RequestUtils.getInstance().getBusRequest().getRecords(new AsyncCallback<List<String>>() {
+            @Override
+            public void onFailure(Throwable caught) {
+
+            }
+
             @Override
             public void onSuccess(List<String> response) {
                 for (final String name : response) {
@@ -64,7 +67,7 @@ public class PlayerModal extends Modal {
                     btnRecord.addClickHandler(new ClickHandler() {
                         @Override
                         public void onClick(ClickEvent event) {
-                            RequestUtils.getInstance().getBusRequest().startPlayer(name).fire();
+                            RequestUtils.getInstance().getBusRequest().startPlayer(name, RequestUtils.VOID_ASYNC_CALLBACK);
                             hide();
                         }
                     });

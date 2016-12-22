@@ -2,12 +2,15 @@ package net.wbz.moba.controlcenter.web.server.persist.construction.track;
 
 import com.google.common.collect.Maps;
 import com.google.gwt.user.client.rpc.IsSerializable;
+import com.googlecode.jmapper.annotations.JMap;
 import net.wbz.moba.controlcenter.web.shared.track.model.TrackModelConstants;
 
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import java.util.Map;
-
+import net.wbz.moba.controlcenter.web.shared.track.model.Signal.LIGHT;
+import net.wbz.moba.controlcenter.web.shared.track.model.Signal.TYPE;
+import net.wbz.moba.controlcenter.web.shared.track.model.Signal.FUNCTION;
 /**
  * Widget to show and control a signal.
  * <p/>
@@ -17,40 +20,41 @@ import java.util.Map;
 @Table(name = "trackpart_signal")
 public class SignalEntity extends StraightEntity {
 
-    /**
-     * Available lights of the different signal types.
-     */
-    public enum LIGHT {
-        RED1, RED2, GREEN1, GREEN2, YELLOW1, YELLOW2, WHITE
-    }
+//    /**
+//     * Available lights of the different signal types.
+//     */
+//    public enum LIGHT {
+//        RED1, RED2, GREEN1, GREEN2, YELLOW1, YELLOW2, WHITE
+//    }
 
-    /**
-     * Available functions for the signal types.
-     */
-    public enum FUNCTION {
-        HP0, HP1, HP2, HP0_SH1
-    }
+//    /**
+//     * Available functions for the signal types.
+//     */
+//    public enum FUNCTION {
+//        HP0, HP1, HP2, HP0_SH1
+//    }
+//
+//    /**
+//     * Types of signal with corresponding mapping of the lights.
+//     */
+//    public enum TYPE implements IsSerializable{
+//        BLOCK(new LIGHT[]{LIGHT.RED1, LIGHT.GREEN1}),
+//        ENTER(new LIGHT[]{LIGHT.RED1, LIGHT.GREEN1, LIGHT.YELLOW1}),
+//        EXIT(new LIGHT[]{LIGHT.RED1, LIGHT.RED2, LIGHT.GREEN1, LIGHT.YELLOW1, LIGHT.WHITE}),
+//        BEFORE(new LIGHT[]{LIGHT.GREEN1, LIGHT.GREEN2, LIGHT.YELLOW1, LIGHT.YELLOW2});
+//
+//        private LIGHT[] lights;
+//
+//        TYPE(LIGHT[] lights) {
+//            this.lights = lights;
+//        }
+//
+//        public LIGHT[] getLights() {
+//            return lights;
+//        }
+//    }
 
-    /**
-     * Types of signal with corresponding mapping of the lights.
-     */
-    public enum TYPE implements IsSerializable{
-        BLOCK(new LIGHT[]{LIGHT.RED1, LIGHT.GREEN1}),
-        ENTER(new LIGHT[]{LIGHT.RED1, LIGHT.GREEN1, LIGHT.YELLOW1}),
-        EXIT(new LIGHT[]{LIGHT.RED1, LIGHT.RED2, LIGHT.GREEN1, LIGHT.YELLOW1, LIGHT.WHITE}),
-        BEFORE(new LIGHT[]{LIGHT.GREEN1, LIGHT.GREEN2, LIGHT.YELLOW1, LIGHT.YELLOW2});
-
-        private LIGHT[] lights;
-
-        TYPE(LIGHT[] lights) {
-            this.lights = lights;
-        }
-
-        public LIGHT[] getLights() {
-            return lights;
-        }
-    }
-
+    @JMap
     private TYPE type;
 
     public SignalEntity() {

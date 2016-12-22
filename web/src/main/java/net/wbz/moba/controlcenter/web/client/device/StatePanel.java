@@ -4,6 +4,7 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.web.bindery.requestfactory.shared.Receiver;
 import de.novanic.eventservice.client.event.Event;
 import de.novanic.eventservice.client.event.listener.RemoteEventListener;
@@ -21,6 +22,7 @@ import org.gwtbootstrap3.extras.toggleswitch.client.ui.ToggleSwitch;
 import org.gwtbootstrap3.extras.toggleswitch.client.ui.base.constants.ColorType;
 
 import java.util.Collection;
+import java.util.List;
 
 /**
  * @author Daniel Tuerk
@@ -124,9 +126,9 @@ public class StatePanel extends org.gwtbootstrap3.client.ui.gwt.FlowPanel {
             @Override
             public void onValueChange(ValueChangeEvent<Boolean> booleanValueChangeEvent) {
                 if (booleanValueChangeEvent.getValue()) {
-                    RequestUtils.getInstance().getBusRequest().startRecording("").fire();
+                    RequestUtils.getInstance().getBusRequest().startRecording("", RequestUtils.VOID_ASYNC_CALLBACK);
                 } else {
-                    RequestUtils.getInstance().getBusRequest().stopRecording().fire();
+                    RequestUtils.getInstance().getBusRequest().stopRecording(RequestUtils.VOID_ASYNC_CALLBACK);
                 }
             }
         });
@@ -155,7 +157,7 @@ public class StatePanel extends org.gwtbootstrap3.client.ui.gwt.FlowPanel {
         btnPlayerStop.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                RequestUtils.getInstance().getBusRequest().stopRecording().fire();
+                RequestUtils.getInstance().getBusRequest().stopRecording(RequestUtils.VOID_ASYNC_CALLBACK);
             }
         });
         add(btnPlayerStop);
@@ -170,7 +172,7 @@ public class StatePanel extends org.gwtbootstrap3.client.ui.gwt.FlowPanel {
     }
 
     private void toggleRailVoltageState() {
-        RequestUtils.getInstance().getBusRequest().toggleRailVoltage().fire();
+        RequestUtils.getInstance().getBusRequest().toggleRailVoltage(RequestUtils.VOID_ASYNC_CALLBACK);
     }
 
     @Override
@@ -178,15 +180,24 @@ public class StatePanel extends org.gwtbootstrap3.client.ui.gwt.FlowPanel {
 //        EventReceiver.getInstance().addListener(DeviceInfoEvent.class, deviceInfoEventListener);
         EventReceiver.getInstance().addListener(PlayerEvent.class, busDataPlayerEventListener);
 
-        RequestUtils.getInstance().getBusRequest().isBusConnected().fire(new Receiver<Boolean>() {
+        RequestUtils.getInstance().getBusRequest().isBusConnected(new AsyncCallback<Boolean>() {
+            @Override
+            public void onFailure(Throwable caught) {
+
+            }
+
             @Override
             public void onSuccess(Boolean connected) {
                 if (connected) {
-
-                    RequestUtils.getInstance().getBusRequest().getDevices().fire(new Receiver<Collection<DeviceInfo>>() {
+                    RequestUtils.getInstance().getBusRequest().getDevices(new AsyncCallback<List<DeviceInfo>>() {
                         @Override
-                        public void onSuccess(Collection<DeviceInfo> response) {
-                            for (DeviceInfo deviceInfo : response) {
+                        public void onFailure(Throwable caught) {
+
+                        }
+
+                        @Override
+                        public void onSuccess(List<DeviceInfo> result) {
+                            for (DeviceInfo deviceInfo : result) {
                                 if (deviceInfo.isConnected()) {
                                     updateDeviceConnectionState(deviceInfo, true);
                                     break;

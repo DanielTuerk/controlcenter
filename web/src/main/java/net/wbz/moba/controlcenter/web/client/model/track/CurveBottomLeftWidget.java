@@ -1,8 +1,6 @@
 package net.wbz.moba.controlcenter.web.client.model.track;
 
-import net.wbz.moba.controlcenter.web.shared.editor.TrackEditorRequest;
 import net.wbz.moba.controlcenter.web.shared.track.model.Curve;
-import net.wbz.moba.controlcenter.web.shared.track.model.CurveProxy;
 
 /**
  * @author Daniel Tuerk
@@ -16,17 +14,16 @@ public class CurveBottomLeftWidget extends AbstractCurveWidget {
     }
 
     @Override
-    public AbstractSvgTrackWidget<CurveProxy> getClone() {
+    public AbstractSvgTrackWidget<Curve> getClone() {
         return new CurveBottomLeftWidget();
     }
 
     @Override
-    public CurveProxy getNewTrackPart(TrackEditorRequest trackEditorRequest) {
+    public Curve getNewTrackPart() {
         //TODO
-        return null;
-//        Curve curveBottomL = new Curve();
-//        curveBottomL.setDirection(Curve.DIRECTION.BOTTOM_LEFT);
-//        return curveBottomL;
+        Curve curveBottomL = new Curve();
+        curveBottomL.setDirection(Curve.DIRECTION.BOTTOM_LEFT);
+        return curveBottomL;
     }
 
     @Override

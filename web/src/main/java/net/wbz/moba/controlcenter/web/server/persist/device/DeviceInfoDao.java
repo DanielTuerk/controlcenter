@@ -1,5 +1,7 @@
 package net.wbz.moba.controlcenter.web.server.persist.device;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import com.google.inject.persist.Transactional;
 import net.wbz.moba.controlcenter.web.server.persist.AbstractDao;
 import org.slf4j.Logger;
@@ -13,9 +15,11 @@ import java.util.List;
 /**
  * @author Daniel Tuerk
  */
+@Singleton
 public class DeviceInfoDao extends AbstractDao<DeviceInfoEntity> {
     private static final Logger LOG = LoggerFactory.getLogger(DeviceInfoDao.class);
 
+    @Inject
     public DeviceInfoDao(Provider<EntityManager> entityManager) {
         super(entityManager);
     }

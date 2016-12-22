@@ -2,12 +2,12 @@ package net.wbz.moba.controlcenter.web.client.viewer.controls.train;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.web.bindery.requestfactory.shared.Receiver;
-import com.google.web.bindery.requestfactory.shared.ServerFailure;
 import net.wbz.moba.controlcenter.web.client.RequestUtils;
 import net.wbz.moba.controlcenter.web.server.persist.train.TrainEntity;
-import net.wbz.moba.controlcenter.web.shared.train.TrainProxy;
+import net.wbz.moba.controlcenter.web.shared.train.Train;
 import org.gwtbootstrap3.client.ui.*;
 import org.gwtbootstrap3.client.ui.constants.ButtonType;
 import org.gwtbootstrap3.client.ui.constants.FormType;
@@ -23,11 +23,11 @@ import org.gwtbootstrap3.extras.notify.client.ui.Notify;
  */
 public class TrainItemEditModal extends Modal {
 
-    private final TrainProxy train;
+    private final Train train;
     private TextBox txtName;
     private TextBox txtAddress;
 
-    public TrainItemEditModal(TrainProxy train) {
+    public TrainItemEditModal(Train train) {
         this.train = train;
     }
 
@@ -84,19 +84,20 @@ public class TrainItemEditModal extends Modal {
             public void onClick(ClickEvent clickEvent) {
                 TrainItemEditModal.this.hide();
 
-                RequestUtils.getInstance().getTrainEditorRequest().deleteTrain(train.getId()).fire(
-                        new Receiver<Void>() {
-                            @Override
-                            public void onSuccess(Void response) {
-                                Notify.notify("", "TrainEntity " + train.getName() + " deleted", IconType.INFO);
-                            }
+                RequestUtils.getInstance().getTrainEditorRequest().deleteTrain(train.getId(), new AsyncCallback<Void>() {
+                    @Override
+                    public void onFailure(Throwable caught) {
+                        Notify.notify("", "Delete TrainEntity " + train.getName() + " Error: " + caught.getMessage(),
+                                IconType.WARNING, NotifyType.DANGER);
 
-                            @Override
-                            public void onFailure(ServerFailure error) {
-                                Notify.notify("", "Delete TrainEntity " + train.getName() + " Error: " + error.getMessage(),
-                                        IconType.WARNING, NotifyType.DANGER);
-                            }
-                        });
+                    }
+
+                    @Override
+                    public void onSuccess(Void result) {
+
+                        Notify.notify("", "TrainEntity " + train.getName() + " deleted", IconType.INFO);
+                    }
+                });
             }
         });
         btnDelete.setType(ButtonType.DANGER);
@@ -117,9 +118,14 @@ public class TrainItemEditModal extends Modal {
 
                 train.setAddress(Integer.parseInt(txtAddress.getValue()));
                 train.setName(txtName.getValue());
-                RequestUtils.getInstance().getTrainEditorRequest().updateTrain(train).fire(new Receiver<Void>() {
+                RequestUtils.getInstance().getTrainEditorRequest().updateTrain(train, new AsyncCallback<Void>() {
                     @Override
-                    public void onSuccess(Void response) {
+                    public void onFailure(Throwable caught) {
+
+                    }
+
+                    @Override
+                    public void onSuccess(Void result) {
                         TrainItemEditModal.this.hide();
                     }
                 });

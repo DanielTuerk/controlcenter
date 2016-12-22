@@ -10,11 +10,13 @@ import javax.persistence.Transient;
 /**
  * @author Daniel Tuerk
  */
-@Entity(name = "deviceInfo")
+@Entity(name = "DeviceInfo")
 public class DeviceInfoEntity extends AbstractEntity {
+
     public enum DEVICE_TYPE {
         SERIAL, TEST
     }
+
 
     @Transient
     @JMap

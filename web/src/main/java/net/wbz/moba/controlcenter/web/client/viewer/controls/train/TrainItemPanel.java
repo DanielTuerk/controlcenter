@@ -9,7 +9,6 @@ import com.google.gwt.user.client.ui.Panel;
 import net.wbz.moba.controlcenter.web.client.RequestUtils;
 import net.wbz.moba.controlcenter.web.client.viewer.controls.AbstractItemPanel;
 import net.wbz.moba.controlcenter.web.server.persist.train.TrainEntity;
-import net.wbz.moba.controlcenter.web.server.persist.train.TrainFunctionEntity;
 import net.wbz.moba.controlcenter.web.shared.train.*;
 import org.gwtbootstrap3.client.ui.*;
 import org.gwtbootstrap3.client.ui.constants.ColumnSize;
@@ -22,7 +21,7 @@ import java.util.Map;
 /**
  * @author Daniel Tuerk
  */
-public class TrainItemPanel extends AbstractItemPanel<TrainProxy, TrainStateEvent> {
+public class TrainItemPanel extends AbstractItemPanel<Train, TrainStateEvent> {
 
     /**
      * Maximum decimal value of the driving level. (Bit 1-5 is on)
@@ -34,7 +33,7 @@ public class TrainItemPanel extends AbstractItemPanel<TrainProxy, TrainStateEven
 
     private Button btnDirectionForward;
     private Button btnDirectionBackward;
-    private Map<TrainFunctionEntity.FUNCTION, Button> functionButtons = Maps.newConcurrentMap();
+    private Map<TrainFunction.FUNCTION, Button> functionButtons = Maps.newConcurrentMap();
 
     private Label lblName;
     private Label lblState;
@@ -42,9 +41,9 @@ public class TrainItemPanel extends AbstractItemPanel<TrainProxy, TrainStateEven
 
     private int lastSendSpeedValue = -1;
 
-    public TrainItemPanel(TrainProxy train) {
+    public TrainItemPanel(Train train) {
         super(train);
-assert getModel() !=null;
+        assert getModel() != null;
         lblName = new Label(getModel().getName());
         lblState = new Label();
         lblStateDetails = new Label();
@@ -55,9 +54,9 @@ assert getModel() !=null;
         // TODO: slider and buttons need update for remote tracking of other device -> BUT will crash with fast input
         // and update delay
         if (event instanceof TrainHornStateEvent) {
-            functionButtons.get(TrainFunctionEntity.FUNCTION.HORN).setActive(((TrainHornStateEvent) event).isState());
+            functionButtons.get(TrainFunction.FUNCTION.HORN).setActive(((TrainHornStateEvent) event).isState());
         } else if (event instanceof TrainLightStateEvent) {
-            functionButtons.get(TrainFunctionEntity.FUNCTION.LIGHT).setActive(((TrainLightStateEvent) event).isState());
+            functionButtons.get(TrainFunction.FUNCTION.LIGHT).setActive(((TrainLightStateEvent) event).isState());
         } else if (event instanceof TrainFunctionStateEvent) {
             TrainFunctionStateEvent functionStateEvent = (TrainFunctionStateEvent) event;
             functionButtons.get(functionStateEvent.getFunction()).setActive(functionStateEvent.isActive());
@@ -110,9 +109,9 @@ assert getModel() !=null;
         Row rowDrivingFunctions = new Row();
 
         ButtonGroup btnGroupDirection = new ButtonGroup();
-        btnDirectionForward = createDirectionButton(TrainEntity.DIRECTION.FORWARD);
+        btnDirectionForward = createDirectionButton(true);
         btnGroupDirection.add(btnDirectionForward);
-        btnDirectionBackward = createDirectionButton(TrainEntity.DIRECTION.BACKWARD);
+        btnDirectionBackward = createDirectionButton(false);
         btnGroupDirection.add(btnDirectionBackward);
 
         final Label lblSliderValue = new Label("0");
@@ -128,7 +127,7 @@ assert getModel() !=null;
 //                        if (level != lastSendSpeedValue) {
 //                            lastSendSpeedValue = level;
 //                            RequestUtils.getInstance().getTrainRequest().updateDrivingLevel(
-//                                    getModel().getId(), level).fire();
+//                                    getModel().getId(), level);
 //                        }
 //                    }
 //                });
@@ -136,7 +135,7 @@ assert getModel() !=null;
             @Override
             public void onClick(ClickEvent event) {
                 RequestUtils.getInstance().getTrainRequest().updateDrivingLevel(
-                        getModel().getId(), 0).fire();
+                        getModel().getId(), 0, RequestUtils.VOID_ASYNC_CALLBACK);
             }
         });
 
@@ -156,10 +155,10 @@ assert getModel() !=null;
 //
 //        if(getModel().getFunctions()!=null ) {
 //            // TODO ... if null
-//        for (TrainFunctionProxy trainFunction : getModel().getFunctions()) {
-//            if (trainFunction.getFunction() == TrainFunctionEntity.FUNCTION.HORN) {
+//        for (TrainFunction trainFunction : getModel().getFunctions()) {
+//            if (trainFunction.getFunction() == TrainFunction.FUNCTION.HORN) {
 //                updateItemData(new TrainHornStateEvent(getModel().getId(), trainFunction.isState()));
-//            } else if (trainFunction.getFunction() == TrainFunctionEntity.FUNCTION.LIGHT) {
+//            } else if (trainFunction.getFunction() == TrainFunction.FUNCTION.LIGHT) {
 //                updateItemData(new TrainLightStateEvent(getModel().getId(), trainFunction.isState()));
 //            }
 //        }
@@ -170,11 +169,10 @@ assert getModel() !=null;
     }
 
     private void initFunctions() {
-
         Column functionsColumn = new Column(ColumnSize.LG_1.getCssName());
         contentPanel.add(functionsColumn);
         if (getModel().getFunctions() != null) {
-            for (final TrainFunctionProxy functionEntry : getModel().getFunctions()) {
+            for (final TrainFunction functionEntry : getModel().getFunctions()) {
                 final Button btnToggleFunction = new Button(functionEntry.getFunction().name());
                 btnToggleFunction.setDataToggle(Toggle.BUTTON);
                 btnToggleFunction.addClickHandler(new ClickHandler() {
@@ -182,7 +180,7 @@ assert getModel() !=null;
                     public void onClick(ClickEvent clickEvent) {
                         RequestUtils.getInstance().getTrainRequest().setFunctionState(getModel().getId(),
                                 functionEntry.getFunction(), !btnToggleFunction
-                                        .isActive()).fire();
+                                        .isActive(), RequestUtils.VOID_ASYNC_CALLBACK);
                     }
                 });
                 functionButtons.put(functionEntry.getFunction(), btnToggleFunction);
@@ -191,24 +189,17 @@ assert getModel() !=null;
         }
     }
 
-    private Button createDirectionButton(final TrainEntity.DIRECTION direction) {
+    private Button createDirectionButton(final boolean forward) {
         Button btnDirection;
-        switch (direction) {
-            case BACKWARD:
-                btnDirection = new Button(">>");
-                break;
-            case FORWARD:
-                btnDirection = new Button("<<");
-                break;
-            default:
-                throw new RuntimeException("unknown direction to create the direction button (" + direction.name()
-                        + ")");
+        if (forward) {
+            btnDirection = new Button(">>");
+        } else {
+            btnDirection = new Button("<<");
         }
         btnDirection.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                RequestUtils.getInstance().getTrainRequest().toggleDrivingDirection(getModel().getId(), direction)
-                        .fire();
+                RequestUtils.getInstance().getTrainRequest().toggleDrivingDirection(getModel().getId(), forward, RequestUtils.VOID_ASYNC_CALLBACK);
             }
         });
         return btnDirection;

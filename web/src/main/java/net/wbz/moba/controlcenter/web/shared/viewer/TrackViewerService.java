@@ -2,9 +2,10 @@ package net.wbz.moba.controlcenter.web.shared.viewer;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
-import net.wbz.moba.controlcenter.web.server.persist.construction.track.SignalEntity;
 import net.wbz.moba.controlcenter.web.server.persist.construction.track.SignalConfiguration;
-import net.wbz.moba.controlcenter.web.shared.track.model.ConfigurationProxy;
+import net.wbz.moba.controlcenter.web.server.persist.construction.track.SignalEntity;
+import net.wbz.moba.controlcenter.web.shared.track.model.Signal;
+import net.wbz.moba.controlcenter.web.shared.track.model.TrackPartConfiguration;
 
 import java.util.Map;
 
@@ -14,9 +15,9 @@ import java.util.Map;
 @RemoteServiceRelativePath("trackviewer")
 public interface TrackViewerService extends RemoteService {
 
-    void toggleTrackPart(ConfigurationProxy configuration, boolean state);
+    void toggleTrackPart(TrackPartConfiguration configuration, boolean state);
 
-    boolean getTrackPartState(ConfigurationProxy configuration);
+    boolean getTrackPartState(TrackPartConfiguration configuration);
 
 //    void sendTrackPartStates(List<BusAddressBit> busAddressBits);
 
@@ -28,5 +29,5 @@ public interface TrackViewerService extends RemoteService {
      * @param signalFunction      {@link SignalEntity.FUNCTION}
      * @param signalConfiguration {@link SignalConfiguration}
      */
-    void switchSignal(SignalEntity.TYPE signalType, SignalEntity.FUNCTION signalFunction, Map<SignalEntity.LIGHT, ConfigurationProxy> signalConfiguration);
+    void switchSignal(Signal.TYPE signalType, Signal.FUNCTION signalFunction, Map<Signal.LIGHT, TrackPartConfiguration> signalConfiguration);
 }

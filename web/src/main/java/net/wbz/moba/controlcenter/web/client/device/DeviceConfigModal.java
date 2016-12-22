@@ -1,32 +1,5 @@
 package net.wbz.moba.controlcenter.web.client.device;
 
-import java.util.Collection;
-import java.util.Map;
-
-import net.wbz.moba.controlcenter.web.client.EventReceiver;
-import net.wbz.moba.controlcenter.web.client.RequestUtils;
-import net.wbz.moba.controlcenter.web.client.util.Log;
-import net.wbz.moba.controlcenter.web.shared.bus.BusService;
-import net.wbz.moba.controlcenter.web.server.persist.device.DeviceInfoEntity;
-import net.wbz.moba.controlcenter.web.shared.bus.DeviceInfo;
-import net.wbz.moba.controlcenter.web.shared.bus.DeviceInfoEvent;
-
-import org.gwtbootstrap3.client.ui.Button;
-import org.gwtbootstrap3.client.ui.Form;
-import org.gwtbootstrap3.client.ui.FormLabel;
-import org.gwtbootstrap3.client.ui.Modal;
-import org.gwtbootstrap3.client.ui.ModalBody;
-import org.gwtbootstrap3.client.ui.ModalFooter;
-import org.gwtbootstrap3.client.ui.Panel;
-import org.gwtbootstrap3.client.ui.PanelBody;
-import org.gwtbootstrap3.client.ui.PanelHeader;
-import org.gwtbootstrap3.client.ui.TextBox;
-import org.gwtbootstrap3.client.ui.constants.ButtonType;
-import org.gwtbootstrap3.client.ui.constants.IconType;
-import org.gwtbootstrap3.client.ui.gwt.ButtonCell;
-import org.gwtbootstrap3.client.ui.gwt.CellTable;
-import org.gwtbootstrap3.extras.notify.client.ui.Notify;
-
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.google.gwt.cell.client.FieldUpdater;
@@ -34,13 +7,27 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.TextColumn;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.view.client.ListDataProvider;
-import com.google.web.bindery.requestfactory.shared.Receiver;
-import com.google.web.bindery.requestfactory.shared.ServerFailure;
-
 import de.novanic.eventservice.client.event.Event;
 import de.novanic.eventservice.client.event.listener.RemoteEventListener;
+import net.wbz.moba.controlcenter.web.client.EventReceiver;
+import net.wbz.moba.controlcenter.web.client.RequestUtils;
+import net.wbz.moba.controlcenter.web.client.util.Log;
+import net.wbz.moba.controlcenter.web.server.persist.device.DeviceInfoEntity;
+import net.wbz.moba.controlcenter.web.shared.bus.BusServiceAsync;
+import net.wbz.moba.controlcenter.web.shared.bus.DeviceInfo;
+import net.wbz.moba.controlcenter.web.shared.bus.DeviceInfoEvent;
+import org.gwtbootstrap3.client.ui.*;
+import org.gwtbootstrap3.client.ui.constants.ButtonType;
+import org.gwtbootstrap3.client.ui.constants.IconType;
+import org.gwtbootstrap3.client.ui.gwt.ButtonCell;
+import org.gwtbootstrap3.client.ui.gwt.CellTable;
+import org.gwtbootstrap3.extras.notify.client.ui.Notify;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * Modal to configure the {@link DeviceInfoEntity}s for the connections.
@@ -79,11 +66,11 @@ public class DeviceConfigModal extends Modal {
         ModalFooter modalFooter = new ModalFooter();
         Button btnClose = new Button(
                 "Close", new ClickHandler() {
-                    @Override
-                    public void onClick(ClickEvent event) {
-                        DeviceConfigModal.this.hide();
-                    }
-                });
+            @Override
+            public void onClick(ClickEvent event) {
+                DeviceConfigModal.this.hide();
+            }
+        });
         modalFooter.add(btnClose);
         add(modalFooter);
 
@@ -119,22 +106,25 @@ public class DeviceConfigModal extends Modal {
                     public void onClick(ClickEvent event) {
                         // TODO validation feedback on dialog
                         if (!Strings.isNullOrEmpty(txtDeviceName.getText())) {
-                            BusService busRequest = RequestUtils.getInstance().getBusRequest();
-                            final DeviceInfo deviceInfo = busRequest.create(
-                                    DeviceInfo.class);
+                            BusServiceAsync busRequest = RequestUtils.getInstance().getBusRequest();
+                            final DeviceInfo deviceInfo = new DeviceInfo();
                             if ("test".equals(txtDeviceName.getText())) {
-                                deviceInfo.setType(DeviceInfoEntity.DEVICE_TYPE.TEST);
+                                deviceInfo.setType(DeviceInfo.DEVICE_TYPE.TEST);
                             } else {
-                                deviceInfo.setType(DeviceInfoEntity.DEVICE_TYPE.SERIAL);
+                                deviceInfo.setType(DeviceInfo.DEVICE_TYPE.SERIAL);
                             }
                             deviceInfo.setKey(txtDeviceName.getValue());
 
 //                            busRequest.createDevice()fire(
 
-                            busRequest.createDevice(deviceInfo).fire(
-                                    new Receiver<Void>() {
+                            busRequest.createDevice(deviceInfo, new AsyncCallback<Void>() {
                                 @Override
-                                public void onSuccess(Void response) {
+                                public void onFailure(Throwable caught) {
+                                    Notify.notify("", "Device " + deviceInfo.getKey() + " error", IconType.INBOX);
+                                }
+
+                                @Override
+                                public void onSuccess(Void result) {
                                     Notify.notify("", "Device " + deviceInfo.getKey() + " created", IconType.INFO);
                                     DeviceConfigModal.this.hide();
                                 }
@@ -209,9 +199,14 @@ public class DeviceConfigModal extends Modal {
     }
 
     private void reloadDeviceList() {
-        RequestUtils.getInstance().getBusRequest().getDevices().fire(new Receiver<Collection<DeviceInfo>>() {
+        RequestUtils.getInstance().getBusRequest().getDevices(new AsyncCallback<List<DeviceInfo>>() {
             @Override
-            public void onSuccess(Collection<DeviceInfo> response) {
+            public void onFailure(Throwable caught) {
+
+            }
+
+            @Override
+            public void onSuccess(List<DeviceInfo> response) {
                 // reset devices to load fresh list
                 dataProvider.getList().clear();
                 btnDeleteActions.clear();
@@ -222,16 +217,17 @@ public class DeviceConfigModal extends Modal {
                     btnDeleteActions.put(deviceInfo, new ClickHandler() {
                         @Override
                         public void onClick(ClickEvent event) {
-                            RequestUtils.getInstance().getBusRequest().deleteDevice(deviceInfo).fire(
-                                    new Receiver<Void>() {
+                            RequestUtils.getInstance().getBusRequest().deleteDevice(deviceInfo, new AsyncCallback<Void>() {
                                 @Override
-                                public void onSuccess(Void response) {
-                                    Notify.notify("", "Device " + deviceInfo.getKey() + " deleted", IconType.INFO);
+                                public void onFailure(Throwable caught) {
+
+                                    Notify.notify("", "Can't delete device: " + deviceInfo.getKey(), IconType.INFO);
                                 }
 
                                 @Override
-                                public void onFailure(ServerFailure error) {
-                                    Notify.notify("", "Can't delete device: " + deviceInfo.getKey(), IconType.INFO);
+                                public void onSuccess(Void result) {
+                                    Notify.notify("", "Device " + deviceInfo.getKey() + " deleted", IconType.INFO);
+
                                 }
                             });
                         }

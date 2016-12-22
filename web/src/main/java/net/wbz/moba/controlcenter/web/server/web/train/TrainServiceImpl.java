@@ -7,6 +7,7 @@ import com.google.inject.Singleton;
 import com.google.inject.persist.Transactional;
 import net.wbz.moba.controlcenter.web.server.persist.train.TrainEntity;
 import net.wbz.moba.controlcenter.web.server.persist.train.TrainFunctionEntity;
+import net.wbz.moba.controlcenter.web.shared.train.TrainFunction;
 import net.wbz.moba.controlcenter.web.shared.train.TrainService;
 import net.wbz.selectrix4java.device.DeviceAccessException;
 import net.wbz.selectrix4java.device.DeviceManager;
@@ -30,6 +31,7 @@ public class TrainServiceImpl extends RemoteServiceServlet implements TrainServi
         this.trainManager = trainManager;
         this.deviceManager = deviceManager;
     }
+    @Override
     public void updateDrivingLevel(long id, int level) {
         if (level >= 0 && level <= 31) {
             int address = trainManager.getTrain(id).getAddress();
@@ -44,18 +46,20 @@ public class TrainServiceImpl extends RemoteServiceServlet implements TrainServi
             throw new RpcTokenException("invalid level " + level + " (0-127)");
         }
     }
-    public void toggleDrivingDirection(long id, TrainEntity.DIRECTION direction) {
+    @Override
+    public void toggleDrivingDirection(long id, boolean forward) {
         int address = trainManager.getTrain(id).getAddress();
         try {
             deviceManager.getConnectedDevice().getTrainModule((byte) address).setDirection(
-                    direction == TrainEntity.DIRECTION.FORWARD ? TrainModule.DRIVING_DIRECTION.FORWARD : TrainModule.DRIVING_DIRECTION.BACKWARD);
+                    forward ? TrainModule.DRIVING_DIRECTION.FORWARD : TrainModule.DRIVING_DIRECTION.BACKWARD);
         } catch (DeviceAccessException e) {
             String msg = "can't change level of train " + id;
             LOG.error(msg, e);
             throw new RpcTokenException(msg);
         }
     }
-    public void setFunctionState(long id, TrainFunctionEntity.FUNCTION function, boolean state) {
+    @Override
+    public void setFunctionState(long id, TrainFunction.FUNCTION function, boolean state) {
         int address = trainManager.getTrain(id).getAddress();
         try {
             switch (function) {

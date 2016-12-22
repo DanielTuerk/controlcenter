@@ -42,18 +42,18 @@ public class ScenarioRunCallable implements Callable<Boolean> {
                     break;
                 }
 
-                if (command instanceof WaitScenarioCommand) {
-                    Thread.sleep((long) ((WaitScenarioCommand) command).getSeconds() * 1000L);
-                } else if (command instanceof ToggleScenarioCommand) {
-                    ToggleScenarioCommand toggleCommand = (ToggleScenarioCommand) command;
-                    TrackPartConfigurationEntity trackPartConfiguration = toggleCommand.getConfiguration();
-                    if (trackViewerRequest.getTrackPartState(trackPartConfiguration) != toggleCommand.isState()) {
-                        trackViewerRequest.toggleTrackPart(trackPartConfiguration, toggleCommand.isState());
-                    }
-                } else {
-                    LOG.error(String.format("invalid scenario command %s", scenario.getClass().getName()));
-                    return false;
-                }
+//                if (command instanceof WaitScenarioCommand) {
+//                    Thread.sleep((long) ((WaitScenarioCommand) command).getSeconds() * 1000L);
+//                } else if (command instanceof ToggleScenarioCommand) {
+//                    ToggleScenarioCommand toggleCommand = (ToggleScenarioCommand) command;
+//                    TrackPartConfigurationEntity trackPartConfiguration = toggleCommand.getConfiguration();
+//                    if (trackViewerRequest.getTrackPartState(trackPartConfiguration) != toggleCommand.isState()) {
+//                        trackViewerRequest.toggleTrackPart(trackPartConfiguration, toggleCommand.isState());
+//                    }
+//                } else {
+//                    LOG.error(String.format("invalid scenario command %s", scenario.getClass().getName()));
+//                    return false;
+//                }
             }
 
         } catch (Exception e) {

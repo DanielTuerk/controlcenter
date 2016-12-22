@@ -6,10 +6,10 @@ import net.wbz.moba.controlcenter.web.server.persist.train.TrainFunctionEntity;
  * @author Daniel Tuerk
  */
 public class TrainFunctionStateEvent extends TrainStateEvent {
-    private TrainFunctionEntity.FUNCTION function;
+    private TrainFunction.FUNCTION function;
     private boolean active;
 
-    public TrainFunctionStateEvent(long itemId, TrainFunctionEntity.FUNCTION function, boolean active) {
+    public TrainFunctionStateEvent(long itemId, TrainFunction.FUNCTION function, boolean active) {
         super(itemId);
         this.function = function;
         this.active = active;
@@ -18,7 +18,7 @@ public class TrainFunctionStateEvent extends TrainStateEvent {
     public TrainFunctionStateEvent() {
     }
 
-    public TrainFunctionEntity.FUNCTION getFunction() {
+    public TrainFunction.FUNCTION getFunction() {
         return function;
     }
 

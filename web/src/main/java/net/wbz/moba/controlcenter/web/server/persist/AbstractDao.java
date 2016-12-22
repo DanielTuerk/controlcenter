@@ -18,7 +18,6 @@ import java.util.List;
 public abstract class AbstractDao<T extends Identity> {
     private final Provider<EntityManager> entityManager;
 
-    @Inject
     public AbstractDao(Provider<EntityManager> entityManager) {
         this.entityManager = entityManager;
     }

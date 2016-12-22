@@ -3,6 +3,7 @@ package net.wbz.moba.controlcenter.web.server.persist.train;
 import com.google.common.collect.Sets;
 import com.googlecode.jmapper.annotations.JMap;
 import net.wbz.moba.controlcenter.web.server.persist.AbstractEntity;
+import net.wbz.moba.controlcenter.web.shared.train.TrainFunction;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -17,6 +18,7 @@ import java.util.Set;
 @Entity(name = "train")
 public class TrainEntity extends AbstractEntity {
 
+
     @JMap
     private Integer address;
 
@@ -25,7 +27,7 @@ public class TrainEntity extends AbstractEntity {
 
     @NotNull
     @ManyToMany(cascade = {CascadeType.ALL}, fetch = FetchType.EAGER)
-    @JoinTable(joinColumns = {@JoinColumn(name = "TRAIN_ID")}, inverseJoinColumns = {@JoinColumn(name = "TRAINFUNCTION_ID")})
+//    @JoinTable(joinColumns = {@JoinColumn(name = "ID")}, inverseJoinColumns = {@JoinColumn(name = "TRAINFUNCTION_ID")})
     private Set<TrainFunctionEntity> functions;
 
 //    @Transient
@@ -81,7 +83,7 @@ public class TrainEntity extends AbstractEntity {
         this.functions = functions;
     }
 
-    public TrainFunctionEntity getFunction(TrainFunctionEntity.FUNCTION function) {
+    public TrainFunctionEntity getFunction(TrainFunction.FUNCTION function) {
         for (TrainFunctionEntity trainFunction : functions) {
             if (function == trainFunction.getFunction()) {
                 return trainFunction;
@@ -90,5 +92,4 @@ public class TrainEntity extends AbstractEntity {
         return null;
     }
 
-    public enum DIRECTION {BACKWARD, FORWARD}
 }

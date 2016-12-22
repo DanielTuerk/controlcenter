@@ -1,13 +1,11 @@
 package net.wbz.moba.controlcenter.web.client.device;
 
-import net.wbz.moba.controlcenter.web.client.RequestUtils;
-
-import org.gwtbootstrap3.extras.toggleswitch.client.ui.ToggleSwitch;
-import org.gwtbootstrap3.extras.toggleswitch.client.ui.base.constants.ColorType;
-
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
-import com.google.web.bindery.requestfactory.shared.Receiver;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import net.wbz.moba.controlcenter.web.client.RequestUtils;
+import org.gwtbootstrap3.extras.toggleswitch.client.ui.ToggleSwitch;
+import org.gwtbootstrap3.extras.toggleswitch.client.ui.base.constants.ColorType;
 
 /**
  * Toggle button to connect and disconnect from the bus for the selected device in
@@ -32,16 +30,22 @@ public class BusConnectionToggleButton extends ToggleSwitch {
             public void onValueChange(ValueChangeEvent<Boolean> booleanValueChangeEvent) {
                 if (fireEvent) {
                     if (booleanValueChangeEvent.getValue()) {
-                        RequestUtils.getInstance().getBusRequest().changeDevice(deviceListBox.getSelectedDevice())
-                                .fire(new Receiver<Void>() {
-                            @Override
-                            public void onSuccess(Void response) {
-                                RequestUtils.getInstance().getBusRequest().connectBus().fire();
-                            }
-                        });
+                        RequestUtils.getInstance().getBusRequest().changeDevice(deviceListBox.getSelectedDevice(),
+                                new AsyncCallback<Void>() {
+                                    @Override
+                                    public void onFailure(Throwable caught) {
+
+                                    }
+
+                                    @Override
+                                    public void onSuccess(Void result) {
+                                        RequestUtils.getInstance().getBusRequest().connectBus(RequestUtils.VOID_ASYNC_CALLBACK);
+
+                                    }
+                                });
                     } else {
                         {
-                            RequestUtils.getInstance().getBusRequest().disconnectBus().fire();
+                            RequestUtils.getInstance().getBusRequest().disconnectBus(RequestUtils.VOID_ASYNC_CALLBACK);
                         }
                     }
                 } else {
@@ -57,7 +61,7 @@ public class BusConnectionToggleButton extends ToggleSwitch {
      * Quick fix for the fire events state. Bootstrap lib also fire the value change event if the
      * parameter is {@code false}.
      *
-     * @param value value to set
+     * @param value      value to set
      * @param fireEvents do not fire events for value changed
      */
     public void updateValue(Boolean value, boolean fireEvents) {

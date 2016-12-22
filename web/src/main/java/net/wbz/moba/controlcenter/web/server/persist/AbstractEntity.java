@@ -3,18 +3,18 @@ package net.wbz.moba.controlcenter.web.server.persist;
 import com.googlecode.jmapper.annotations.JMap;
 import net.wbz.moba.controlcenter.web.shared.Identity;
 
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 /**
  * @author Daniel Tuerk
  */
-public class AbstractEntity implements Identity {
+@MappedSuperclass
+public abstract class AbstractEntity implements Identity {
 
     @Id
     @GeneratedValue
     @JMap
-    private long id;
+    private Long id;
 
     @Override
     public Long getId() {
@@ -24,5 +24,4 @@ public class AbstractEntity implements Identity {
     public void setId(long id) {
         this.id = id;
     }
-
 }

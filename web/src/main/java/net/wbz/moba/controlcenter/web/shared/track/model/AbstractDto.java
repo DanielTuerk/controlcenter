@@ -1,5 +1,6 @@
 package net.wbz.moba.controlcenter.web.shared.track.model;
 
+import com.googlecode.jmapper.annotations.JMap;
 import net.wbz.moba.controlcenter.web.shared.Identity;
 
 import java.io.Serializable;
@@ -9,8 +10,8 @@ import java.io.Serializable;
  */
 public abstract class AbstractDto implements Serializable, Identity {
 
-
-    private final Long id;
+@JMap
+    private Long id;
 
     public AbstractDto() {
         this(null);
@@ -25,4 +26,11 @@ public abstract class AbstractDto implements Serializable, Identity {
         return id;
     }
 
+    /**
+     * TODO wirklich zulassen? kommt von der Entity und wirdn nur bei der GridPosition aktuell genutzt, selbst da kann es vielleicht weg
+     * @param id
+     */
+    public void setId(Long id) {
+        this.id = id;
+    }
 }

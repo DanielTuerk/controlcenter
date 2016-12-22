@@ -1,12 +1,9 @@
 package net.wbz.moba.controlcenter.web.client.viewer.settings;
 
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.Widget;
 import net.wbz.moba.controlcenter.web.client.LocalStorage;
 import net.wbz.moba.controlcenter.web.client.RequestUtils;
-import net.wbz.moba.controlcenter.web.client.util.Log;
-import net.wbz.moba.controlcenter.web.shared.config.ConfigNotAvailableException;
-
-import com.google.gwt.user.client.ui.Widget;
-import com.google.web.bindery.requestfactory.shared.Receiver;
 
 /**
  * TODO: text for key as name from template
@@ -35,17 +32,21 @@ abstract public class AbstractConfigEntry<T> {
                 handleStorageRead(LocalStorage.getInstance().get(getConfigKey()));
                 break;
             case REMOTE:
-                try {
-                    RequestUtils.getInstance().getConfigRequest().loadValue(getConfigKey()).fire(
-                            new Receiver<String>() {
-                                @Override
-                                public void onSuccess(String response) {
-                                    handleStorageRead(response);
-                                }
-                            });
-                } catch (ConfigNotAvailableException e) {
-                    Log.error(e.getMessage());
-                }
+//                try {
+                RequestUtils.getInstance().getConfigRequest().loadValue(getConfigKey(), new AsyncCallback<String>() {
+                    @Override
+                    public void onFailure(Throwable caught) {
+
+                    }
+
+                    @Override
+                    public void onSuccess(String result) {
+                        handleStorageRead(result);
+                    }
+                });
+//                } catch (ConfigNotAvailableException e) {
+//                    Log.error(e.getMessage());
+//                }
                 break;
         }
     }
@@ -109,8 +110,7 @@ abstract public class AbstractConfigEntry<T> {
                 setValue(value);
                 break;
             case REMOTE:
-                RequestUtils.getInstance().getConfigRequest().saveValue(getConfigKey(), convertValueToString(value))
-                        .fire();
+                RequestUtils.getInstance().getConfigRequest().saveValue(getConfigKey(), convertValueToString(value), RequestUtils.VOID_ASYNC_CALLBACK);
                 break;
         }
     }

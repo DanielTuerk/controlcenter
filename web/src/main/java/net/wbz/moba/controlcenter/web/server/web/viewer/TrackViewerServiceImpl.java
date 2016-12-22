@@ -1,33 +1,30 @@
 package net.wbz.moba.controlcenter.web.server.web.viewer;
 
-import java.util.List;
-import java.util.Map;
-
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.gwt.user.client.rpc.RpcTokenException;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
-import com.google.inject.persist.Transactional;
-import net.wbz.moba.controlcenter.web.server.persist.construction.track.SignalEntity;
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import net.wbz.moba.controlcenter.web.shared.bus.BusAddressBit;
-import net.wbz.moba.controlcenter.web.server.persist.construction.track.TrackPartConfigurationEntity;
+import net.wbz.moba.controlcenter.web.shared.track.model.Signal;
+import net.wbz.moba.controlcenter.web.shared.track.model.TrackPartConfiguration;
 import net.wbz.moba.controlcenter.web.shared.viewer.TrackViewerService;
 import net.wbz.selectrix4java.bus.BusAddress;
 import net.wbz.selectrix4java.device.Device;
 import net.wbz.selectrix4java.device.DeviceAccessException;
 import net.wbz.selectrix4java.device.DeviceManager;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.gwt.user.client.rpc.RpcTokenException;
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author Daniel Tuerk
  */
 @Singleton
-public class TrackViewerServiceImpl  extends RemoteServiceServlet implements TrackViewerService {
+public class TrackViewerServiceImpl extends RemoteServiceServlet implements TrackViewerService {
     private static final Logger log = LoggerFactory.getLogger(TrackViewerServiceImpl.class);
 
     private final DeviceManager deviceManager;
@@ -36,8 +33,9 @@ public class TrackViewerServiceImpl  extends RemoteServiceServlet implements Tra
     public TrackViewerServiceImpl(DeviceManager deviceManager) {
         this.deviceManager = deviceManager;
     }
-    @Transactional
-    public void toggleTrackPart(TrackPartConfigurationEntity configuration, boolean state) {
+
+    @Override
+    public void toggleTrackPart(TrackPartConfiguration configuration, boolean state) {
         if (configuration.isValid()) {
             try {
                 if (deviceManager.getConnectedDevice() != null) {
@@ -56,8 +54,9 @@ public class TrackViewerServiceImpl  extends RemoteServiceServlet implements Tra
             }
         }
     }
-    @Transactional
-    public boolean getTrackPartState(TrackPartConfigurationEntity configuration) {
+
+    @Override
+    public boolean getTrackPartState(TrackPartConfiguration configuration) {
         if (configuration.isValid()) {
             try {
                 if (deviceManager.getConnectedDevice() != null) {
@@ -72,8 +71,8 @@ public class TrackViewerServiceImpl  extends RemoteServiceServlet implements Tra
         }
         throw new RpcTokenException("invalid configuration: " + configuration);
     }
-    @Transactional
-    public void sendTrackPartStates(List<BusAddressBit> busAddressBits) {
+
+    private void sendTrackPartStates(List<BusAddressBit> busAddressBits) {
         try {
             Device connectedDevice = deviceManager.getConnectedDevice();
 
@@ -106,22 +105,23 @@ public class TrackViewerServiceImpl  extends RemoteServiceServlet implements Tra
             throw new RpcTokenException(msg);
         }
     }
-    @Transactional
-    private BusAddressBit convertFunctionConfig(TrackPartConfigurationEntity configuration) {
+
+    private BusAddressBit convertFunctionConfig(TrackPartConfiguration configuration) {
         if (configuration != null && configuration.isValid()) {
             return new BusAddressBit(configuration.getBus(), configuration.getAddress(),
                     configuration.getBit(), configuration.isBitState());
         }
         return null;
     }
-    @Transactional
-    public void switchSignal(SignalEntity.TYPE signalType, SignalEntity.FUNCTION signalFunction,
-                             Map<SignalEntity.LIGHT, TrackPartConfigurationEntity> signalConfiguration) {
-        // TODO
-        Map<SignalEntity.LIGHT, BusAddressBit> availableLightConfig = Maps.newHashMap();
 
-        for (SignalEntity.LIGHT light : signalType.getLights()) {
-            TrackPartConfigurationEntity lightFunction = signalConfiguration.get(light);
+    @Override
+    public void switchSignal(Signal.TYPE signalType, Signal.FUNCTION signalFunction,
+                             Map<Signal.LIGHT, TrackPartConfiguration> signalConfiguration) {
+        // TODO
+        Map<Signal.LIGHT, BusAddressBit> availableLightConfig = Maps.newHashMap();
+
+        for (Signal.LIGHT light : signalType.getLights()) {
+            TrackPartConfiguration lightFunction = signalConfiguration.get(light);
             if (lightFunction != null && lightFunction.isValid()) {
                 availableLightConfig.put(light, new BusAddressBit(lightFunction.getBus(), lightFunction.getAddress(),
                         lightFunction.getBit(), !lightFunction.isBitState()));
@@ -132,78 +132,78 @@ public class TrackViewerServiceImpl  extends RemoteServiceServlet implements Tra
             case HP0:
                 switch (signalType) {
                     case BLOCK:
-                        availableLightConfig.put(SignalEntity.LIGHT.RED1, convertFunctionConfig(signalConfiguration.get(
-                                SignalEntity.LIGHT.RED1)));
+                        availableLightConfig.put(Signal.LIGHT.RED1, convertFunctionConfig(signalConfiguration.get(
+                                Signal.LIGHT.RED1)));
                         break;
                     case BEFORE:
-                        availableLightConfig.put(SignalEntity.LIGHT.YELLOW1, convertFunctionConfig(signalConfiguration.get(
-                                SignalEntity.LIGHT.YELLOW1)));
-                        availableLightConfig.put(SignalEntity.LIGHT.YELLOW2, convertFunctionConfig(signalConfiguration.get(
-                                SignalEntity.LIGHT.YELLOW2)));
+                        availableLightConfig.put(Signal.LIGHT.YELLOW1, convertFunctionConfig(signalConfiguration.get(
+                                Signal.LIGHT.YELLOW1)));
+                        availableLightConfig.put(Signal.LIGHT.YELLOW2, convertFunctionConfig(signalConfiguration.get(
+                                Signal.LIGHT.YELLOW2)));
                         break;
                     case EXIT:
-                        availableLightConfig.put(SignalEntity.LIGHT.RED1, convertFunctionConfig(signalConfiguration.get(
-                                SignalEntity.LIGHT.RED1)));
-                        availableLightConfig.put(SignalEntity.LIGHT.RED2, convertFunctionConfig(signalConfiguration.get(
-                                SignalEntity.LIGHT.RED2)));
+                        availableLightConfig.put(Signal.LIGHT.RED1, convertFunctionConfig(signalConfiguration.get(
+                                Signal.LIGHT.RED1)));
+                        availableLightConfig.put(Signal.LIGHT.RED2, convertFunctionConfig(signalConfiguration.get(
+                                Signal.LIGHT.RED2)));
                         break;
                     case ENTER:
-                        availableLightConfig.put(SignalEntity.LIGHT.RED1, convertFunctionConfig(signalConfiguration.get(
-                                SignalEntity.LIGHT.RED1)));
+                        availableLightConfig.put(Signal.LIGHT.RED1, convertFunctionConfig(signalConfiguration.get(
+                                Signal.LIGHT.RED1)));
                         break;
                 }
                 break;
             case HP1:
                 switch (signalType) {
                     case BLOCK:
-                        availableLightConfig.put(SignalEntity.LIGHT.GREEN1, convertFunctionConfig(signalConfiguration.get(
-                                SignalEntity.LIGHT.GREEN1)));
+                        availableLightConfig.put(Signal.LIGHT.GREEN1, convertFunctionConfig(signalConfiguration.get(
+                                Signal.LIGHT.GREEN1)));
                         break;
                     case BEFORE:
-                        availableLightConfig.put(SignalEntity.LIGHT.GREEN1, convertFunctionConfig(signalConfiguration.get(
-                                SignalEntity.LIGHT.GREEN1)));
-                        availableLightConfig.put(SignalEntity.LIGHT.GREEN2, convertFunctionConfig(signalConfiguration.get(
-                                SignalEntity.LIGHT.GREEN2)));
+                        availableLightConfig.put(Signal.LIGHT.GREEN1, convertFunctionConfig(signalConfiguration.get(
+                                Signal.LIGHT.GREEN1)));
+                        availableLightConfig.put(Signal.LIGHT.GREEN2, convertFunctionConfig(signalConfiguration.get(
+                                Signal.LIGHT.GREEN2)));
                         break;
                     case EXIT:
-                        availableLightConfig.put(SignalEntity.LIGHT.GREEN1, convertFunctionConfig(signalConfiguration.get(
-                                SignalEntity.LIGHT.GREEN1)));
+                        availableLightConfig.put(Signal.LIGHT.GREEN1, convertFunctionConfig(signalConfiguration.get(
+                                Signal.LIGHT.GREEN1)));
                         break;
                     case ENTER:
-                        availableLightConfig.put(SignalEntity.LIGHT.GREEN1, convertFunctionConfig(signalConfiguration.get(
-                                SignalEntity.LIGHT.GREEN1)));
+                        availableLightConfig.put(Signal.LIGHT.GREEN1, convertFunctionConfig(signalConfiguration.get(
+                                Signal.LIGHT.GREEN1)));
                         break;
                 }
                 break;
             case HP2:
                 switch (signalType) {
                     case BEFORE:
-                        availableLightConfig.put(SignalEntity.LIGHT.GREEN1, convertFunctionConfig(signalConfiguration.get(
-                                SignalEntity.LIGHT.GREEN1)));
-                        availableLightConfig.put(SignalEntity.LIGHT.YELLOW2, convertFunctionConfig(signalConfiguration.get(
-                                SignalEntity.LIGHT.YELLOW2)));
+                        availableLightConfig.put(Signal.LIGHT.GREEN1, convertFunctionConfig(signalConfiguration.get(
+                                Signal.LIGHT.GREEN1)));
+                        availableLightConfig.put(Signal.LIGHT.YELLOW2, convertFunctionConfig(signalConfiguration.get(
+                                Signal.LIGHT.YELLOW2)));
                         break;
                     case EXIT:
-                        availableLightConfig.put(SignalEntity.LIGHT.GREEN1, convertFunctionConfig(signalConfiguration.get(
-                                SignalEntity.LIGHT.GREEN1)));
-                        availableLightConfig.put(SignalEntity.LIGHT.YELLOW1, convertFunctionConfig(signalConfiguration.get(
-                                SignalEntity.LIGHT.YELLOW1)));
+                        availableLightConfig.put(Signal.LIGHT.GREEN1, convertFunctionConfig(signalConfiguration.get(
+                                Signal.LIGHT.GREEN1)));
+                        availableLightConfig.put(Signal.LIGHT.YELLOW1, convertFunctionConfig(signalConfiguration.get(
+                                Signal.LIGHT.YELLOW1)));
                         break;
                     case ENTER:
-                        availableLightConfig.put(SignalEntity.LIGHT.GREEN1, convertFunctionConfig(signalConfiguration.get(
-                                SignalEntity.LIGHT.GREEN1)));
-                        availableLightConfig.put(SignalEntity.LIGHT.YELLOW1, convertFunctionConfig(signalConfiguration.get(
-                                SignalEntity.LIGHT.YELLOW1)));
+                        availableLightConfig.put(Signal.LIGHT.GREEN1, convertFunctionConfig(signalConfiguration.get(
+                                Signal.LIGHT.GREEN1)));
+                        availableLightConfig.put(Signal.LIGHT.YELLOW1, convertFunctionConfig(signalConfiguration.get(
+                                Signal.LIGHT.YELLOW1)));
                         break;
                 }
                 break;
             case HP0_SH1:
                 switch (signalType) {
                     case EXIT:
-                        availableLightConfig.put(SignalEntity.LIGHT.RED1, convertFunctionConfig(signalConfiguration.get(
-                                SignalEntity.LIGHT.RED1)));
-                        availableLightConfig.put(SignalEntity.LIGHT.WHITE, convertFunctionConfig(signalConfiguration.get(
-                                SignalEntity.LIGHT.WHITE)));
+                        availableLightConfig.put(Signal.LIGHT.RED1, convertFunctionConfig(signalConfiguration.get(
+                                Signal.LIGHT.RED1)));
+                        availableLightConfig.put(Signal.LIGHT.WHITE, convertFunctionConfig(signalConfiguration.get(
+                                Signal.LIGHT.WHITE)));
                         break;
                 }
                 break;

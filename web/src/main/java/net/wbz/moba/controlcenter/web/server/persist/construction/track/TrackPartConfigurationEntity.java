@@ -1,12 +1,13 @@
 package net.wbz.moba.controlcenter.web.server.persist.construction.track;
 
 
-
 import com.googlecode.jmapper.annotations.JMap;
 import net.wbz.moba.controlcenter.web.server.persist.AbstractEntity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 
 /**
  * TrackPartConfigurationEntity model of an function for the {@link TrackPartEntity}.
@@ -14,12 +15,8 @@ import javax.persistence.Entity;
  * @author Daniel Tuerk
  */
 @Entity
-public class TrackPartConfigurationEntity extends AbstractEntity{
+public class TrackPartConfigurationEntity extends AbstractEntity {
 
-//    @Id
-//    @GeneratedValue
-//    private long id;
-//
     @JMap
     @Column(name = "config_bus")
     private int bus;
@@ -62,7 +59,7 @@ public class TrackPartConfigurationEntity extends AbstractEntity{
     }
 
     public boolean isValid() {
-        return address > 0 && bit > 0 && bus >-1;
+        return address > 0 && bit > 0 && bus > -1;
     }
 
     public boolean isBitState() {

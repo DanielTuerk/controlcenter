@@ -6,11 +6,10 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.web.bindery.requestfactory.shared.Receiver;
 import net.wbz.moba.controlcenter.web.shared.constrution.Construction;
-import net.wbz.moba.controlcenter.web.shared.constrution.ConstructionService;
 import org.gwtbootstrap3.client.ui.Button;
 import org.gwtbootstrap3.client.ui.LinkedGroup;
 import org.gwtbootstrap3.client.ui.TextBox;
@@ -47,11 +46,16 @@ abstract class WelcomeContainer extends Composite {
 
     @Override
     protected void onLoad() {
-        RequestUtils.getInstance().getConstructionRequest().loadConstructions().fire(
-                new Receiver<List<Construction>>() {
+        RequestUtils.getInstance().getConstructionRequest().loadConstructions(
+                new AsyncCallback<List<Construction>>() {
                     @Override
-                    public void onSuccess(List<Construction> response) {
-                        for (final Construction construction : response) {
+                    public void onFailure(Throwable caught) {
+
+                    }
+
+                    @Override
+                    public void onSuccess(List<Construction> result) {
+                        for (final Construction construction : result) {
                             Button btnConstructionEntry = new Button();
                             btnConstructionEntry.setText(construction.getName());
                             btnConstructionEntry.addClickHandler(new ClickHandler() {
@@ -69,13 +73,17 @@ abstract class WelcomeContainer extends Composite {
 
     @UiHandler("btnCreateConstruction")
     void clickCreateConstruction(ClickEvent event) {
-        ConstructionService constructionService = RequestUtils.getInstance().getConstructionRequest();
-        final Construction construction = constructionService.create(Construction.class);
+        final Construction construction = new Construction();
         final String constructionName = txtCreateName.getText();
         construction.setName(constructionName);
-        constructionService.createConstruction(construction).fire(new Receiver<Void>() {
+        RequestUtils.getInstance().getConstructionRequest().createConstruction(construction, new AsyncCallback<Void>() {
             @Override
-            public void onSuccess(Void response) {
+            public void onFailure(Throwable caught) {
+
+            }
+
+            @Override
+            public void onSuccess(Void result) {
                 updateCurrentConstruction(construction);
             }
         });
@@ -88,13 +96,17 @@ abstract class WelcomeContainer extends Composite {
      */
     private void updateCurrentConstruction(final Construction construction) {
         RequestUtils.getInstance().getConstructionRequest().setCurrentConstruction(
-                construction).fire(new Receiver<Void>() {
-            @Override
-            public void onSuccess(Void response) {
-                Settings.getInstance().getLastUsedConstruction().setValueAndSave(
-                        construction.getName());
-                onCurrentConstructionLoaded();
-            }
-        });
+                construction, new AsyncCallback<Void>() {
+                    @Override
+                    public void onFailure(Throwable caught) {
+
+                    }
+
+                    @Override
+                    public void onSuccess(Void result) {
+                        Settings.getInstance().getLastUsedConstruction().setValueAndSave(construction.getName());
+                        onCurrentConstructionLoaded();
+                    }
+                });
     }
 }

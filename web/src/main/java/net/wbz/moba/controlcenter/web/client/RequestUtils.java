@@ -1,9 +1,9 @@
 package net.wbz.moba.controlcenter.web.client;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.event.shared.SimpleEventBus;
-import net.wbz.moba.controlcenter.web.shared.FoobarRequestFactory;
 import net.wbz.moba.controlcenter.web.shared.bus.BusService;
 import net.wbz.moba.controlcenter.web.shared.bus.BusServiceAsync;
 import net.wbz.moba.controlcenter.web.shared.config.ConfigService;
@@ -27,7 +27,6 @@ import net.wbz.moba.controlcenter.web.shared.viewer.TrackViewerServiceAsync;
 public class RequestUtils {
 
     private final static RequestUtils INSTANCE = new RequestUtils();
-    private final FoobarRequestFactory requestFactory;
 
     private TrackEditorServiceAsync trackEditorRequest = GWT.create(TrackEditorService.class);
     private TrackViewerServiceAsync trackViewerRequest = GWT.create(TrackViewerService.class);
@@ -41,9 +40,9 @@ public class RequestUtils {
      * Initialize event bus for request factory.
      */
     private RequestUtils() {
-        final EventBus eventBus = new SimpleEventBus();
-        requestFactory = GWT.create(FoobarRequestFactory.class);
-        requestFactory.initialize(eventBus);
+//        final EventBus eventBus = new SimpleEventBus();
+//        requestFactory = GWT.create(FoobarRequestFactory.class);
+//        requestFactory.initialize(eventBus);
     }
 
     public static RequestUtils getInstance() {
@@ -106,4 +105,17 @@ public class RequestUtils {
         return constructionRequest;
 //        return requestFactory.constructionRequest();
     }
+
+
+    public static final AsyncCallback<Void> VOID_ASYNC_CALLBACK = new AsyncCallback<Void>() {
+        @Override
+        public void onFailure(Throwable caught) {
+
+        }
+
+        @Override
+        public void onSuccess(Void result) {
+
+        }
+    };
 }

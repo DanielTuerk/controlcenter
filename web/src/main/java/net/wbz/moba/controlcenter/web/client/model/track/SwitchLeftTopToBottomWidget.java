@@ -1,9 +1,6 @@
 package net.wbz.moba.controlcenter.web.client.model.track;
 
-import net.wbz.moba.controlcenter.web.client.RequestUtils;
-import net.wbz.moba.controlcenter.web.shared.editor.TrackEditorRequest;
 import net.wbz.moba.controlcenter.web.shared.track.model.Switch;
-import net.wbz.moba.controlcenter.web.shared.track.model.SwitchProxy;
 
 /**
  * @author Daniel Tuerk
@@ -20,13 +17,13 @@ public class SwitchLeftTopToBottomWidget extends AbstractSwitchLeftWidget {
     }
 
     @Override
-    public AbstractSvgTrackWidget<SwitchProxy> getClone() {
+    public AbstractSvgTrackWidget<Switch> getClone() {
         return new SwitchLeftTopToBottomWidget();
     }
 
     @Override
-    public SwitchProxy getNewTrackPart(TrackEditorRequest trackEditorRequest) {
-        SwitchProxy switchTopBottom = RequestUtils.getInstance().getTrackEditorRequest().create(SwitchProxy.class);
+    public Switch getNewTrackPart() {
+        Switch switchTopBottom = new Switch();
         switchTopBottom.setCurrentDirection(Switch.DIRECTION.LEFT);
         switchTopBottom.setCurrentPresentation(Switch.PRESENTATION.TOP_TO_BOTTOM);
         return switchTopBottom;

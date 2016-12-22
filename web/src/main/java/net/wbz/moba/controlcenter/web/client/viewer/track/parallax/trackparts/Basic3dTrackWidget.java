@@ -2,9 +2,8 @@ package net.wbz.moba.controlcenter.web.client.viewer.track.parallax.trackparts;
 
 import net.wbz.moba.controlcenter.web.client.model.track.BlockPart;
 import net.wbz.moba.controlcenter.web.server.persist.construction.track.TrackPartEntity;
-import net.wbz.moba.controlcenter.web.server.persist.construction.track.TrackPartConfigurationEntity;
-import net.wbz.moba.controlcenter.web.shared.track.model.ConfigurationProxy;
-import net.wbz.moba.controlcenter.web.server.persist.construction.track.TrackPartProxy;
+import net.wbz.moba.controlcenter.web.shared.track.model.TrackPart;
+import net.wbz.moba.controlcenter.web.shared.track.model.TrackPartConfiguration;
 import thothbot.parallax.core.client.textures.Texture;
 import thothbot.parallax.core.shared.geometries.BoxGeometry;
 import thothbot.parallax.core.shared.materials.Material;
@@ -23,7 +22,7 @@ import thothbot.parallax.core.shared.objects.Mesh;
  *
  * @author Daniel Tuerk
  */
-public class Basic3dTrackWidget<T extends TrackPartProxy> extends Mesh implements BlockPart {
+public class Basic3dTrackWidget<T extends TrackPart> extends Mesh implements BlockPart {
 
     /**
      * Size in as box in the grid.
@@ -150,8 +149,8 @@ public class Basic3dTrackWidget<T extends TrackPartProxy> extends Mesh implement
         railwayMaterial.setColor(new Color(color));
     }
 
-    public void updateFunctionState(TrackPartConfigurationEntity configuration, boolean state) {
-        ConfigurationProxy blockFunctionConfig = trackPart.getDefaultBlockFunctionConfig();
+    public void updateFunctionState(TrackPartConfiguration configuration, boolean state) {
+        TrackPartConfiguration blockFunctionConfig = trackPart.getDefaultBlockFunctionConfig();
         if (blockFunctionConfig != null && blockFunctionConfig.equals(configuration)) {
             if (state == blockFunctionConfig.isBitState()) {
                 usedBlock();

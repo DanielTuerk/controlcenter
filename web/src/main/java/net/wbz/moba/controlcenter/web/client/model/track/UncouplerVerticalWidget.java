@@ -2,7 +2,7 @@ package net.wbz.moba.controlcenter.web.client.model.track;
 
 import net.wbz.moba.controlcenter.web.shared.track.model.Straight;
 import net.wbz.moba.controlcenter.web.shared.track.model.Uncoupler;
-import net.wbz.moba.controlcenter.web.shared.track.model.UncouplerProxy;
+import net.wbz.moba.controlcenter.web.shared.track.model.Uncoupler;
 
 /**
  * @author Daniel Tuerk
@@ -10,12 +10,12 @@ import net.wbz.moba.controlcenter.web.shared.track.model.UncouplerProxy;
 public class UncouplerVerticalWidget extends AbstractUncouplerWidget {
 
     @Override
-    public AbstractSvgTrackWidget<UncouplerProxy> getClone() {
+    public AbstractSvgTrackWidget<Uncoupler> getClone() {
         return new UncouplerVerticalWidget();
     }
 
     @Override
-    public boolean isRepresentationOf(UncouplerProxy trackPart) {
+    public boolean isRepresentationOf(Uncoupler trackPart) {
         return trackPart.getDirection() == Straight.DIRECTION.VERTICAL;
     }
 

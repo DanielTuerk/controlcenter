@@ -1,23 +1,15 @@
 package net.wbz.moba.controlcenter.web.client.viewer.controls.train;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import net.wbz.moba.controlcenter.web.client.RequestUtils;
-import net.wbz.moba.controlcenter.web.client.viewer.controls.AbstractItemViewerPanel;
-import net.wbz.moba.controlcenter.web.shared.train.TrainDrivingDirectionEvent;
-import net.wbz.moba.controlcenter.web.shared.train.TrainDrivingLevelEvent;
-import net.wbz.moba.controlcenter.web.shared.train.TrainFunctionStateEvent;
-import net.wbz.moba.controlcenter.web.shared.train.TrainHornStateEvent;
-import net.wbz.moba.controlcenter.web.shared.train.TrainLightStateEvent;
-import net.wbz.moba.controlcenter.web.shared.train.TrainProxy;
-import net.wbz.moba.controlcenter.web.shared.train.TrainStateEvent;
-
-import org.gwtbootstrap3.client.ui.TextBox;
-
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.web.bindery.requestfactory.shared.Receiver;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import net.wbz.moba.controlcenter.web.client.RequestUtils;
+import net.wbz.moba.controlcenter.web.client.viewer.controls.AbstractItemViewerPanel;
+import net.wbz.moba.controlcenter.web.shared.train.*;
+import org.gwtbootstrap3.client.ui.TextBox;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * TODO: reload trains for configuration changes
@@ -41,10 +33,16 @@ public class TrainViewerPanel extends AbstractItemViewerPanel<TrainItemPanel, Tr
         return new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                RequestUtils.getInstance().getTrainEditorRequest().createTrain(name.getText()).fire(
-                        new Receiver<Void>() {
+                Train train = new Train();
+                train.setName(name.getText());
+                RequestUtils.getInstance().getTrainEditorRequest().createTrain(train, new AsyncCallback<Void>() {
                     @Override
-                    public void onSuccess(Void response) {
+                    public void onFailure(Throwable caught) {
+
+                    }
+
+                    @Override
+                    public void onSuccess(Void result) {
                         name.setText("");
                         loadData();
                     }
@@ -55,10 +53,15 @@ public class TrainViewerPanel extends AbstractItemViewerPanel<TrainItemPanel, Tr
 
     @Override
     protected void loadItems() {
-        RequestUtils.getInstance().getTrainEditorRequest().getTrains().fire(new Receiver<List<TrainProxy>>() {
+        RequestUtils.getInstance().getTrainEditorRequest().getTrains(new AsyncCallback<List<Train>>() {
             @Override
-            public void onSuccess(List<TrainProxy> response) {
-                for (TrainProxy train : response) {
+            public void onFailure(Throwable caught) {
+
+            }
+
+            @Override
+            public void onSuccess(List<Train> result) {
+                for (Train train : result) {
                     addItemPanel(new TrainItemPanel(train));
                 }
             }

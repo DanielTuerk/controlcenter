@@ -1,23 +1,12 @@
 package net.wbz.moba.controlcenter.web.client.model.track.signal;
 
-import java.util.Map;
-
+import com.google.common.collect.Maps;
+import com.google.gwt.dom.client.Style;
+import com.google.gwt.user.client.ui.Widget;
 import net.wbz.moba.controlcenter.web.client.util.BitStateToggleButton;
-import net.wbz.moba.controlcenter.web.shared.track.model.ConfigurationProxy;
 import net.wbz.moba.controlcenter.web.shared.track.model.Signal;
-import net.wbz.moba.controlcenter.web.shared.track.model.SignalProxy;
-
-import org.gwtbootstrap3.client.ui.Button;
-import org.gwtbootstrap3.client.ui.Column;
-import org.gwtbootstrap3.client.ui.Container;
-import org.gwtbootstrap3.client.ui.NavTabs;
-import org.gwtbootstrap3.client.ui.Row;
-import org.gwtbootstrap3.client.ui.TabContent;
-import org.gwtbootstrap3.client.ui.TabListItem;
-import org.gwtbootstrap3.client.ui.TabPane;
-import org.gwtbootstrap3.client.ui.TabPanel;
-import org.gwtbootstrap3.client.ui.TextBox;
-import org.gwtbootstrap3.client.ui.Well;
+import net.wbz.moba.controlcenter.web.shared.track.model.TrackPartConfiguration;
+import org.gwtbootstrap3.client.ui.*;
 import org.gwtbootstrap3.client.ui.constants.ColumnSize;
 import org.gwtbootstrap3.client.ui.constants.WellSize;
 import org.gwtbootstrap3.client.ui.gwt.FlowPanel;
@@ -29,9 +18,7 @@ import org.vectomatic.dom.svg.OMSVGDocument;
 import org.vectomatic.dom.svg.OMSVGSVGElement;
 import org.vectomatic.dom.svg.utils.OMSVGParser;
 
-import com.google.common.collect.Maps;
-import com.google.gwt.dom.client.Style;
-import com.google.gwt.user.client.ui.Widget;
+import java.util.Map;
 
 /**
  * @author Daniel Tuerk
@@ -41,12 +28,12 @@ public class SignalEditDialogContent {
     private static final String ID_TXT_ADDRESS = "txtAddress";
     private static final String ID_SELECT_BIT = "selectBit";
     private static final String ID_BTN_BIT_STATE = "btnBitState";
-    private final SignalProxy signal;
+    private final Signal signal;
 
     private Map<Signal.TYPE, TabListItem> signalTypesTabs = Maps.newHashMap();
     private Map<String, Widget> idWidgets = Maps.newHashMap();
 
-    public SignalEditDialogContent(SignalProxy signal) {
+    public SignalEditDialogContent(Signal signal) {
         this.signal = signal;
     }
 
@@ -111,7 +98,7 @@ public class SignalEditDialogContent {
 
         for (Signal.LIGHT light : signalType.getLights()) {
 
-            ConfigurationProxy existingLightConfig = signal.getSignalConfiguration().get(light);
+            TrackPartConfiguration existingLightConfig = signal.getSignalConfiguration().get(light);
             // if (existingLightConfig == null) {
             // existingLightConfig = new Configuration();
             // }

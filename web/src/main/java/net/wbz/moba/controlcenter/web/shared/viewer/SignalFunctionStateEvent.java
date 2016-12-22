@@ -1,8 +1,9 @@
 package net.wbz.moba.controlcenter.web.shared.viewer;
 
 import de.novanic.eventservice.client.event.Event;
-import net.wbz.moba.controlcenter.web.server.persist.construction.track.SignalEntity;
 import net.wbz.moba.controlcenter.web.server.persist.construction.track.TrackPartConfigurationEntity;
+import net.wbz.moba.controlcenter.web.shared.track.model.Signal;
+import net.wbz.moba.controlcenter.web.shared.track.model.TrackPartConfiguration;
 
 import java.util.Map;
 
@@ -11,30 +12,30 @@ import java.util.Map;
  */
 public class SignalFunctionStateEvent implements Event {
 
-    private Map<SignalEntity.LIGHT, TrackPartConfigurationEntity> configuration;
-    private SignalEntity.FUNCTION signalFunction;
+    private Map<Signal.LIGHT, TrackPartConfiguration> configuration;
+    private Signal.FUNCTION signalFunction;
 
     public SignalFunctionStateEvent() {
     }
 
-    public SignalFunctionStateEvent(Map<SignalEntity.LIGHT, TrackPartConfigurationEntity> configuration, SignalEntity.FUNCTION signalFunction) {
+    public SignalFunctionStateEvent(Map<Signal.LIGHT, TrackPartConfiguration> configuration, Signal.FUNCTION signalFunction) {
         this.configuration = configuration;
         this.signalFunction = signalFunction;
     }
 
-    public Map<SignalEntity.LIGHT, TrackPartConfigurationEntity> getConfiguration() {
+    public Map<Signal.LIGHT, TrackPartConfiguration> getConfiguration() {
         return configuration;
     }
 
-    public void setConfiguration(Map<SignalEntity.LIGHT, TrackPartConfigurationEntity> configuration) {
+    public void setConfiguration(Map<Signal.LIGHT, TrackPartConfiguration> configuration) {
         this.configuration = configuration;
     }
 
-    public SignalEntity.FUNCTION getSignalFunction() {
+    public Signal.FUNCTION getSignalFunction() {
         return signalFunction;
     }
 
-    public void setSignalFunction(SignalEntity.FUNCTION signalFunction) {
+    public void setSignalFunction(Signal.FUNCTION signalFunction) {
         this.signalFunction = signalFunction;
     }
 }

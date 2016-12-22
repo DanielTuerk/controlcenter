@@ -2,8 +2,7 @@ package net.wbz.moba.controlcenter.web.server.persist.construction.track;
 
 import net.wbz.moba.controlcenter.web.server.persist.AbstractEntity;
 
-import javax.persistence.Entity;
-import javax.persistence.OneToOne;
+import javax.persistence.*;
 
 /**
  * @author Daniel Tuerk
@@ -11,10 +10,6 @@ import javax.persistence.OneToOne;
 @Entity
 public class TrackPartFunctionEntity extends AbstractEntity {
 
-//    @Id
-//    @GeneratedValue
-//    @Column(name = "TRACKPARTFUNCTION_ID")
-//    private long id;
 
     private String functionKey;
 
@@ -91,4 +86,5 @@ public class TrackPartFunctionEntity extends AbstractEntity {
     public int hashCode() {
         return functionKey != null ? functionKey.hashCode() : 0;
     }
+
 }

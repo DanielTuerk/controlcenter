@@ -2,7 +2,6 @@ package net.wbz.moba.controlcenter.web.server.persist.construction.track;
 
 import com.google.common.collect.Sets;
 import net.wbz.moba.controlcenter.web.server.persist.AbstractEntity;
-import net.wbz.moba.controlcenter.web.server.persist.construction.ConstructionEntity;
 import net.wbz.moba.controlcenter.web.shared.track.model.TrackModelConstants;
 
 import javax.persistence.*;
@@ -21,23 +20,19 @@ import java.util.Set;
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public class TrackPartEntity extends AbstractEntity {
 
-//    @Id
-//    @GeneratedValue(strategy = GenerationType.AUTO)
-//    @Column(name = "TRACKPART_ID")
-//    private long id;
 
-    /**
-     * The corresponding construction.
-     * TODO remove - only access by construction?
-     */
-    @ManyToOne
-    private ConstructionEntity construction;
-
+//    /**
+//     * The corresponding construction.
+//     * TODO remove - only access by construction?
+//     */
+//    @ManyToOne
+//    private ConstructionEntity construction;
+//
     /**
      * Position of the track part in the grid system of the construction.
      */
     @ManyToOne
-    private GridPositionEntity gridPositionEntity;
+    private GridPositionEntity gridPosition;
 
     /**
      * Function mapping for function name and configuration of the function.
@@ -71,14 +66,14 @@ public class TrackPartEntity extends AbstractEntity {
         this.eventStateConfig = eventStateConfig;
     }
 
-    public ConstructionEntity getConstruction() {
-        return construction;
-    }
-
-    public void setConstruction(ConstructionEntity construction) {
-        this.construction = construction;
-    }
-
+    //    public ConstructionEntity getConstruction() {
+//        return construction;
+//    }
+//
+//    public void setConstruction(ConstructionEntity construction) {
+//        this.construction = construction;
+//    }
+//
     public EventConfigurationEntity getEventStateConfig() {
         return eventStateConfig;
     }
@@ -134,12 +129,12 @@ public class TrackPartEntity extends AbstractEntity {
         return functionsStringBuilder.toString();
     }
 
-    public GridPositionEntity getGridPositionEntity() {
-        return gridPositionEntity;
+    public GridPositionEntity getGridPosition() {
+        return gridPosition;
     }
 
-    public void setGridPositionEntity(GridPositionEntity gridPositionEntity) {
-        this.gridPositionEntity = gridPositionEntity;
+    public void setGridPosition(GridPositionEntity gridPositionEntity) {
+        this.gridPosition = gridPositionEntity;
     }
 
     public boolean hasActiveEventConfiguration() {
@@ -154,12 +149,5 @@ public class TrackPartEntity extends AbstractEntity {
         eventStateConfig = eventConfigurationEntity;
     }
 
-    /**
-     * Rotation angle in degree of the track part.
-     *
-     * @return angle in degree
-     */
-    public double getRotationAngle() {
-        return 0;
-    }
+
 }

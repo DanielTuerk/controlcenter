@@ -3,6 +3,8 @@ package net.wbz.moba.controlcenter.web.server.persist.construction.track;
 import net.wbz.moba.controlcenter.web.server.persist.AbstractEntity;
 
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 import javax.persistence.OneToOne;
 
 /**
@@ -11,12 +13,6 @@ import javax.persistence.OneToOne;
 @Entity
 public class EventConfigurationEntity extends AbstractEntity {
 
-//    @Id
-//    @GeneratedValue
-//    private long id;
-
-//    @OneToOne(fetch = FetchType.LAZY)
-//    private TrackPartEntity trackPart;
 
     @OneToOne
     private TrackPartConfigurationEntity stateOnConfig;

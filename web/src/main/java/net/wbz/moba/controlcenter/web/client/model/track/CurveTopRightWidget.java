@@ -1,25 +1,21 @@
 package net.wbz.moba.controlcenter.web.client.model.track;
 
-import net.wbz.moba.controlcenter.web.shared.editor.TrackEditorRequest;
 import net.wbz.moba.controlcenter.web.shared.track.model.Curve;
-import net.wbz.moba.controlcenter.web.shared.track.model.CurveProxy;
 
 /**
  * @author Daniel Tuerk
  */
 public class CurveTopRightWidget extends AbstractCurveWidget {
     @Override
-    public AbstractSvgTrackWidget<CurveProxy> getClone() {
+    public AbstractSvgTrackWidget<Curve> getClone() {
         return new CurveTopRightWidget();
     }
 
     @Override
-    public CurveProxy getNewTrackPart(TrackEditorRequest trackEditorRequest) {
-        //TODO
-        return null;
-//        Curve curveTopR = new Curve();
-//        curveTopR.setDirection(Curve.DIRECTION.TOP_RIGHT);
-//        return curveTopR;
+    public Curve getNewTrackPart() {
+        Curve curveTopR = new Curve();
+        curveTopR.setDirection(Curve.DIRECTION.TOP_RIGHT);
+        return curveTopR;
     }
 
     @Override

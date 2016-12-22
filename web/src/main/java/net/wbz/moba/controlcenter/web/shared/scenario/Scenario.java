@@ -23,11 +23,6 @@ public class Scenario implements Identity {
         return id;
     }
 
-    @Override
-    public Integer getVersion() {
-        return 0;
-    }
-
     public void setId(long id) {
         this.id = id;
     }

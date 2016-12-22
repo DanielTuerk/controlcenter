@@ -4,14 +4,16 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.google.inject.Singleton;
-import com.google.inject.persist.Transactional;
 import net.wbz.moba.controlcenter.web.server.EventBroadcaster;
-import net.wbz.moba.controlcenter.web.server.persist.construction.track.*;
+import net.wbz.moba.controlcenter.web.server.persist.construction.track.SignalEntity;
+import net.wbz.moba.controlcenter.web.server.persist.construction.track.TrackPartConfigurationEntity;
+import net.wbz.moba.controlcenter.web.server.persist.construction.track.TrackPartDao;
+import net.wbz.moba.controlcenter.web.server.persist.construction.track.TrackPartEntity;
+import net.wbz.moba.controlcenter.web.server.web.DtoMapper;
 import net.wbz.moba.controlcenter.web.server.web.constrution.ConstructionServiceImpl;
 import net.wbz.moba.controlcenter.web.shared.bus.FeedbackBlockEvent;
-import net.wbz.moba.controlcenter.web.shared.constrution.Construction;
 import net.wbz.moba.controlcenter.web.shared.editor.TrackEditorService;
-import net.wbz.moba.controlcenter.web.shared.viewer.TrackPartStateEvent;
+import net.wbz.moba.controlcenter.web.shared.track.model.TrackPart;
 import net.wbz.selectrix4java.block.FeedbackBlockListener;
 import net.wbz.selectrix4java.bus.BusAddressBitListener;
 import net.wbz.selectrix4java.bus.BusAddressListener;
@@ -27,7 +29,6 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -36,7 +37,7 @@ import java.util.Map;
  * @author Daniel Tuerk
  */
 @Singleton
-public class TrackEditorServiceImpl  extends RemoteServiceServlet implements TrackEditorService {
+public class TrackEditorServiceImpl extends RemoteServiceServlet implements TrackEditorService {
 
     private static final Logger log = LoggerFactory.getLogger(TrackEditorServiceImpl.class);
 
@@ -49,14 +50,17 @@ public class TrackEditorServiceImpl  extends RemoteServiceServlet implements Tra
     private final DeviceManager deviceManager;
     private final EventBroadcaster eventBroadcaster;
     private final Provider<EntityManager> entityManagerProvider;
+    private final DtoMapper<TrackPart, TrackPartEntity> dtoMapper = new DtoMapper<>();
+    private final TrackPartDao dao;
 
     @Inject
     public TrackEditorServiceImpl(ConstructionServiceImpl constructionService, DeviceManager deviceManager,
-                                  EventBroadcaster eventBroadcaster, Provider<EntityManager> entityManager) {
+                                  EventBroadcaster eventBroadcaster, Provider<EntityManager> entityManager, TrackPartDao dao) {
         this.constructionService = constructionService;
         this.eventBroadcaster = eventBroadcaster;
         this.deviceManager = deviceManager;
         this.entityManagerProvider = entityManager;
+        this.dao = dao;
 
         deviceManager.addDeviceConnectionListener(new DeviceConnectionListener() {
             @Override
@@ -108,49 +112,49 @@ public class TrackEditorServiceImpl  extends RemoteServiceServlet implements Tra
         }
     }
 
-    @Transactional
-    public void saveTrack(List<TrackPartEntity> trackParts) {
+    @Override
+    public void saveTrack(List<TrackPart> trackParts) {
         EntityManager entityManager = this.entityManagerProvider.get();
 
-        Construction currentConstruction = constructionService.getCurrentConstruction();
-        for (TrackPartEntity trackPart : trackParts) {
-            //TODO
-            trackPart.setConstruction(currentConstruction);
-
-            if (entityManager.find(GridPositionEntity.class, trackPart.getGridPositionEntity().getId()) == null) {
-                entityManager.persist(trackPart.getGridPositionEntity());
-            } else {
-                trackPart.setGridPositionEntity(entityManager.merge(trackPart.getGridPositionEntity()));
-            }
-
-            for (TrackPartFunctionEntity trackPartFunction : trackPart.getFunctions()) {
-
-                // trackPartFunction.setTrackPart(trackPart);
-
-                saveOrUpdateConfiguration(entityManager, trackPartFunction.getConfiguration());
-
-                if (entityManager.find(TrackPartFunctionEntity.class, trackPartFunction.getId()) == null) {
-                    entityManager.persist(trackPartFunction);
-                } else {
-                    entityManager.merge(trackPartFunction);
-                }
-            }
-
-            EventConfigurationEntity eventConfigurationEntity = trackPart.getEventConfiguration();
-            if (eventConfigurationEntity != null) {
-
-                saveOrUpdateConfiguration(entityManager, eventConfigurationEntity.getStateOnConfig());
-                saveOrUpdateConfiguration(entityManager, eventConfigurationEntity.getStateOffConfig());
-
-                if (entityManager.find(EventConfigurationEntity.class, eventConfigurationEntity.getId()) == null) {
-                    entityManager.persist(eventConfigurationEntity);
-                } else {
-                    entityManager.merge(eventConfigurationEntity);
-                }
-            }
-
-            entityManager.persist(entityManager.merge(trackPart));
-        }
+//        Construction currentConstruction = constructionService.getCurrentConstruction();
+//        for (TrackPart trackPart : trackParts) {
+//            //TODO
+//            trackPart.setConstruction(currentConstruction);
+//
+//            if (entityManager.find(GridPositionEntity.class, trackPart.getGridPosition().getId()) == null) {
+//                entityManager.persist(trackPart.getGridPosition());
+//            } else {
+//                trackPart.setGridPosition(entityManager.merge(trackPart.getGridPosition()));
+//            }
+//
+//            for (TrackPartFunctionEntity trackPartFunction : trackPart.getFunctions()) {
+//
+//                // trackPartFunction.setTrackPart(trackPart);
+//
+//                saveOrUpdateConfiguration(entityManager, trackPartFunction.getConfiguration());
+//
+//                if (entityManager.find(TrackPartFunctionEntity.class, trackPartFunction.getId()) == null) {
+//                    entityManager.persist(trackPartFunction);
+//                } else {
+//                    entityManager.merge(trackPartFunction);
+//                }
+//            }
+//
+//            EventConfiguration eventConfigurationEntity = trackPart.getEventConfiguration();
+//            if (eventConfigurationEntity != null) {
+//
+//                saveOrUpdateConfiguration(entityManager, eventConfigurationEntity.getStateOnConfig());
+//                saveOrUpdateConfiguration(entityManager, eventConfigurationEntity.getStateOffConfig());
+//
+//                if (entityManager.find(EventConfigurationEntity.class, eventConfigurationEntity.getId()) == null) {
+//                    entityManager.persist(eventConfigurationEntity);
+//                } else {
+//                    entityManager.merge(eventConfigurationEntity);
+//                }
+//            }
+//
+//            entityManager.persist(entityManager.merge(trackPart));
+//        }
     }
 
     private void saveOrUpdateConfiguration(EntityManager entityManager, TrackPartConfigurationEntity configuration) {
@@ -162,8 +166,9 @@ public class TrackEditorServiceImpl  extends RemoteServiceServlet implements Tra
             }
         }
     }
-    @Transactional
-    public List<TrackPartEntity> loadTrack() {
+
+    @Override
+    public List<TrackPart> loadTrack() {
         log.info("load track parts from db");
 
         Query typedQuery = entityManagerProvider.get().createQuery(
@@ -173,7 +178,8 @@ public class TrackEditorServiceImpl  extends RemoteServiceServlet implements Tra
         List<TrackPartEntity> result = typedQuery.getResultList();
         if (result.size() > 0) {
             log.info("return track parts");
-            return result;
+
+            return dtoMapper.transform(result);
         } else {
             log.warn("the current construction is empty");
             return Lists.newArrayList();
@@ -188,8 +194,9 @@ public class TrackEditorServiceImpl  extends RemoteServiceServlet implements Tra
      *
      * @param trackParts {@link TrackPartEntity}s to register the
      *                   containing {@link TrackPartConfigurationEntity}
-     */ @Transactional
-    public void registerConsumersByConnectedDeviceForTrackParts(List<TrackPartEntity> trackParts) {
+     */
+    @Override
+    public void registerConsumersByConnectedDeviceForTrackParts(List<TrackPart> trackParts) {
 
         if (trackParts.size() == 0) {
             return;
@@ -209,26 +216,30 @@ public class TrackEditorServiceImpl  extends RemoteServiceServlet implements Tra
         // TODO: required anymore?
         List<TrackPartConfigurationEntity> uniqueTrackPartConfigs = Lists.newArrayList();
 
-        for (final TrackPartEntity trackPart : trackParts) {
+        for (final TrackPart trackPart : trackParts) {
 
-            registerEventConfigurationOfTrackPart(trackPart);
+            TrackPartEntity trackPartEntity = dao.getById(trackPart.getId());
 
-            for (final TrackPartConfigurationEntity trackPartConfiguration : trackPart.getConfigurationsOfFunctions()) {
+            registerEventConfigurationOfTrackPart(trackPartEntity);
+
+            for (final TrackPartConfigurationEntity trackPartConfiguration : trackPartEntity.getConfigurationsOfFunctions()) {
 
                 if (trackPartConfiguration != null && trackPartConfiguration.isValid()) {
 
                     // TODO bus nr - remove quick hack!
                     trackPartConfiguration.setBus(1);
 
-                    if (trackPart instanceof SignalEntity) {
+                    if (trackPartEntity instanceof SignalEntity) {
                         // add bit listeners for the configured addresses of the signal
-                        for (Map.Entry<BusAddressIdentifier, List<BusAddressBitListener>> entry : new SignalFunctionReceiver(
-                                (SignalEntity) trackPart, eventBroadcaster).getBusAddressListeners().entrySet()) {
-                            if (!busAddressListenersOfTheCurrentTrack.containsKey(entry.getKey())) {
-                                busAddressListenersOfTheCurrentTrack.put(entry.getKey(), new ArrayList<BusListener>());
-                            }
-                            busAddressListenersOfTheCurrentTrack.get(entry.getKey()).addAll(entry.getValue());
-                        }
+
+                        // TODO
+//                        for (Map.Entry<BusAddressIdentifier, List<BusAddressBitListener>> entry : new SignalFunctionReceiver(
+//                                (SignalEntity) trackPart, eventBroadcaster).getBusAddressListeners().entrySet()) {
+//                            if (!busAddressListenersOfTheCurrentTrack.containsKey(entry.getKey())) {
+//                                busAddressListenersOfTheCurrentTrack.put(entry.getKey(), new ArrayList<BusListener>());
+//                            }
+//                            busAddressListenersOfTheCurrentTrack.get(entry.getKey()).addAll(entry.getValue());
+//                        }
                     } else {
                         // add address listener for the default toggle function of the track part
                         addBusListener(trackPartConfiguration, new BusAddressListener() {
@@ -237,17 +248,19 @@ public class TrackEditorServiceImpl  extends RemoteServiceServlet implements Tra
                             @Override
                             public void dataChanged(byte oldValue, byte newValue) {
                                 // TODO: remove quick hack for unset bus nr of old stored widgets
-                                trackPartConfiguration.setBus(1);
 
-                                // fire event for changed bit state of the bus address
-                                boolean bitStateChanged = BigInteger.valueOf(newValue).testBit(
-                                        trackPartConfiguration.getBit() - 1) != BigInteger.valueOf(oldValue).testBit(
-                                        trackPartConfiguration.getBit() - 1);
-
-                                if (firstCall || bitStateChanged) {
-                                    eventBroadcaster.fireEvent(new TrackPartStateEvent(trackPartConfiguration,
-                                            BigInteger.valueOf(newValue).testBit(trackPartConfiguration.getBit() - 1)));
-                                }
+                                // TODO
+//                                trackPartConfiguration.setBus(1);
+//
+//                                // fire event for changed bit state of the bus address
+//                                boolean bitStateChanged = BigInteger.valueOf(newValue).testBit(
+//                                        trackPartConfiguration.getBit() - 1) != BigInteger.valueOf(oldValue).testBit(
+//                                        trackPartConfiguration.getBit() - 1);
+//
+//                                if (firstCall || bitStateChanged) {
+//                                    eventBroadcaster.fireEvent(new TrackPartStateEvent(trackPartConfiguration,
+//                                            BigInteger.valueOf(newValue).testBit(trackPartConfiguration.getBit() - 1)));
+//                                }
                                 firstCall = false;
                             }
                         });

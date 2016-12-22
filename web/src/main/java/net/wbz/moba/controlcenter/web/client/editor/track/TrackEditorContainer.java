@@ -1,32 +1,30 @@
 package net.wbz.moba.controlcenter.web.client.editor.track;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import net.wbz.moba.controlcenter.web.client.RequestUtils;
-import net.wbz.moba.controlcenter.web.client.model.track.AbsoluteTrackPosition;
-import net.wbz.moba.controlcenter.web.client.model.track.AbstractSvgTrackWidget;
-import net.wbz.moba.controlcenter.web.client.model.track.ModelManager;
-import net.wbz.moba.controlcenter.web.server.persist.construction.track.TrackPartProxy;
-
-import org.gwtbootstrap3.client.ui.AnchorListItem;
-import org.gwtbootstrap3.client.ui.NavPills;
-import org.gwtbootstrap3.client.ui.constants.IconType;
-import org.gwtbootstrap3.extras.notify.client.ui.Notify;
-
 import com.allen_sauer.gwt.dnd.client.PickupDragController;
 import com.allen_sauer.gwt.dnd.client.drop.GridConstrainedDropController;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.gen2.logging.shared.Log;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.web.bindery.requestfactory.shared.Receiver;
+import net.wbz.moba.controlcenter.web.client.RequestUtils;
+import net.wbz.moba.controlcenter.web.client.model.track.AbsoluteTrackPosition;
+import net.wbz.moba.controlcenter.web.client.model.track.AbstractSvgTrackWidget;
+import net.wbz.moba.controlcenter.web.client.model.track.ModelManager;
+import net.wbz.moba.controlcenter.web.shared.track.model.TrackPart;
+import org.gwtbootstrap3.client.ui.AnchorListItem;
+import org.gwtbootstrap3.client.ui.NavPills;
+import org.gwtbootstrap3.client.ui.constants.IconType;
+import org.gwtbootstrap3.extras.notify.client.ui.Notify;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * @author Daniel Tuerk
@@ -70,7 +68,7 @@ public class TrackEditorContainer extends FlowPanel {
         saveAnchorListItem.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                List<TrackPartProxy> trackParts = new ArrayList<>();
+                List<TrackPart> trackParts = new ArrayList<>();
                 for (int i = 0; i < getBoundaryPanel().getWidgetCount(); i++) {
                     Widget paletteWidget = getBoundaryPanel().getWidget(i);
                     if (paletteWidget instanceof PaletteWidget) {
@@ -90,15 +88,17 @@ public class TrackEditorContainer extends FlowPanel {
                     }
                 }
 
-                for (TrackPartProxy trackPart : trackParts) {
+                for (TrackPart trackPart : trackParts) {
                 }
-                RequestUtils.getInstance().getTrackEditorRequest().saveTrack(trackParts).fire(new Receiver<Void>() {
-                    public void onFailure(Throwable throwable) {
-                        Notify.notify("Editor", "error by save track: " + throwable.getMessage(), IconType.WARNING);
+                RequestUtils.getInstance().getTrackEditorRequest().saveTrack(trackParts, new AsyncCallback<Void>() {
+                    @Override
+                    public void onFailure(Throwable caught) {
+                        Notify.notify("Editor", "error by save track: " + caught.getMessage(), IconType.WARNING);
+
                     }
 
                     @Override
-                    public void onSuccess(Void response) {
+                    public void onSuccess(Void result) {
                         Notify.notify("track saved!");
                     }
                 });
@@ -165,11 +165,16 @@ public class TrackEditorContainer extends FlowPanel {
             boundaryPanel.remove(i);
         }
 
-        RequestUtils.getInstance().getTrackEditorRequest().loadTrack().fire(new Receiver<List<TrackPartProxy>>() {
+        RequestUtils.getInstance().getTrackEditorRequest().loadTrack(new AsyncCallback<List<TrackPart>>() {
             @Override
-            public void onSuccess(List<TrackPartProxy> trackParts) {
+            public void onFailure(Throwable caught) {
+
+            }
+
+            @Override
+            public void onSuccess(List<TrackPart> trackParts) {
                 Log.info("load track success " + new Date().toString());
-                for (TrackPartProxy trackPart : trackParts) {
+                for (TrackPart trackPart : trackParts) {
                     AbstractSvgTrackWidget trackWidget = ModelManager.getInstance().getWidgetOf(trackPart);
                     trackWidget.setEnabled(true);
                     AbsoluteTrackPosition trackPosition = trackWidget.getTrackPosition(trackPart.getGridPosition(),

@@ -5,6 +5,7 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import net.wbz.moba.controlcenter.web.server.EventBroadcaster;
 import net.wbz.moba.controlcenter.web.server.persist.train.TrainDao;
+import net.wbz.moba.controlcenter.web.shared.train.Train;
 import net.wbz.moba.controlcenter.web.shared.train.TrainDataChangedEvent;
 import net.wbz.moba.controlcenter.web.shared.train.TrainEditorService;
 import org.slf4j.Logger;
@@ -52,7 +53,7 @@ public class TrainEditorServiceImpl extends RemoteServiceServlet implements Trai
             trainManager.createTrain(train);
         } catch (Exception e) {
             String msg = String.format("can't create train '%s'", train.getName());
-            LOG.error(msg, e);  
+            LOG.error(msg, e);
         }
     }
 

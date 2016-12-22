@@ -9,8 +9,8 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 @RemoteServiceRelativePath("scenarioservice")
 public interface ScenarioService extends RemoteService {
 
-    public void start(long scenarioId);
-    public void stop(long scenarioId);
-    public void pause(long scenarioId);
+    void start(long scenarioId);
+    void stop(long scenarioId);
+    void pause(long scenarioId);
 
 }

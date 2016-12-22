@@ -1,9 +1,11 @@
 package net.wbz.moba.controlcenter.web.client.viewer.track.svg;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.gwt.event.dom.client.MouseOverEvent;
+import com.google.gwt.event.dom.client.MouseOverHandler;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.Widget;
 import net.wbz.moba.controlcenter.web.client.RequestUtils;
 import net.wbz.moba.controlcenter.web.client.editor.track.ViewerPaletteWidget;
 import net.wbz.moba.controlcenter.web.client.model.track.AbsoluteTrackPosition;
@@ -14,21 +16,16 @@ import net.wbz.moba.controlcenter.web.client.model.track.signal.AbstractSignalWi
 import net.wbz.moba.controlcenter.web.client.viewer.track.AbstractTrackViewerPanel;
 import net.wbz.moba.controlcenter.web.server.persist.construction.track.TrackPartEntity;
 import net.wbz.moba.controlcenter.web.shared.bus.FeedbackBlockEvent;
-import net.wbz.moba.controlcenter.web.server.persist.construction.track.TrackPartConfigurationEntity;
-import net.wbz.moba.controlcenter.web.shared.track.model.ConfigurationProxy;
-import net.wbz.moba.controlcenter.web.server.persist.construction.track.TrackPartProxy;
-import net.wbz.moba.controlcenter.web.shared.train.TrainProxy;
+import net.wbz.moba.controlcenter.web.shared.track.model.TrackPart;
+import net.wbz.moba.controlcenter.web.shared.track.model.TrackPartConfiguration;
+import net.wbz.moba.controlcenter.web.shared.train.Train;
 import net.wbz.moba.controlcenter.web.shared.viewer.SignalFunctionStateEvent;
-
 import org.gwtbootstrap3.client.ui.Label;
 import org.gwtbootstrap3.client.ui.constants.LabelType;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.gwt.event.dom.client.MouseOverEvent;
-import com.google.gwt.event.dom.client.MouseOverHandler;
-import com.google.gwt.user.client.ui.Widget;
-import com.google.web.bindery.requestfactory.shared.Receiver;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Panel for the track viewer.
@@ -43,11 +40,11 @@ public class TrackViewerPanel extends AbstractTrackViewerPanel {
 
     private Label lblTrackPartConfig = new Label();
 
-    private Map<ConfigurationProxy, List<AbstractSvgTrackWidget>> trackWidgetsOfConfiguration = Maps.newConcurrentMap();
+    private Map<TrackPartConfiguration, List<AbstractSvgTrackWidget>> trackWidgetsOfConfiguration = Maps.newConcurrentMap();
     private List<AbstractSvgTrackWidget> trackWidgets = Lists.newArrayList();
     private List<AbstractSignalWidget> signalTrackWidgets = Lists.newArrayList();
 
-    private List<TrackPartProxy> loadedTrackParts;
+    private List<TrackPart> loadedTrackParts;
 
     public TrackViewerPanel() {
 
@@ -66,13 +63,23 @@ public class TrackViewerPanel extends AbstractTrackViewerPanel {
         add(lblTrackPartConfig, 0, 0);
 
         // load the connection state to toggle the state of the widgets
-        RequestUtils.getInstance().getBusRequest().isBusConnected().fire(new Receiver<Boolean>() {
+        RequestUtils.getInstance().getBusRequest().isBusConnected(new AsyncCallback<Boolean>() {
+            @Override
+            public void onFailure(Throwable caught) {
+
+            }
+
             @Override
             public void onSuccess(final Boolean response) {
-                RequestUtils.getInstance().getTrackEditorRequest().loadTrack().fire(
-                        new Receiver<List<TrackPartProxy>>() {
+
+                RequestUtils.getInstance().getTrackEditorRequest().loadTrack(new AsyncCallback<List<TrackPart>>() {
                     @Override
-                    public void onSuccess(List<TrackPartProxy> trackParts) {
+                    public void onFailure(Throwable caught) {
+
+                    }
+
+                    @Override
+                    public void onSuccess(List<TrackPart> trackParts) {
                         loadedTrackParts = trackParts;
                         trackWidgetsOfConfiguration.clear();
                         signalTrackWidgets.clear();
@@ -81,7 +88,7 @@ public class TrackViewerPanel extends AbstractTrackViewerPanel {
                         int maxLeft = 0;
                         int percentage = PERCENTAGE_START_TRACK;
                         for (int i = 0; i < trackParts.size(); i++) {
-                            final TrackPartProxy trackPart = trackParts.get(i);
+                            final TrackPart trackPart = trackParts.get(i);
                             if (i + 1 % 6 == 0) {
                                 percentage += 10;
                                 if (percentage > PERCENTAGE_MAX) {
@@ -97,7 +104,7 @@ public class TrackViewerPanel extends AbstractTrackViewerPanel {
                             if (trackWidget instanceof AbstractSignalWidget) {
                                 signalTrackWidgets.add((AbstractSignalWidget) trackWidget);
                             } else {
-                                for (ConfigurationProxy configuration : trackPart.getConfigurationsOfFunctions()) {
+                                for (TrackPartConfiguration configuration : trackPart.getConfigurationsOfFunctions()) {
 
                                     // ignore default configs of track widget to register event handler
                                     if (configuration.isValid()) {
@@ -152,7 +159,7 @@ public class TrackViewerPanel extends AbstractTrackViewerPanel {
     }
 
     @Override
-    protected void updateTrackPartState(TrackPartConfigurationEntity configuration, boolean state) {
+    protected void updateTrackPartState(TrackPartConfiguration configuration, boolean state) {
         if (trackWidgetsOfConfiguration.containsKey(configuration)) {
             for (AbstractSvgTrackWidget controlSvgTrackWidget : trackWidgetsOfConfiguration.get(configuration)) {
                 controlSvgTrackWidget.updateFunctionState(configuration, state);
@@ -164,17 +171,22 @@ public class TrackViewerPanel extends AbstractTrackViewerPanel {
      * Show train label on the given block.
      *
      * @param address address of the block
-     * @param block number of the block
-     * @param train address of the train
-     * @param state {@link net.wbz.moba.controlcenter.web.shared.bus.FeedbackBlockEvent.STATE} enter or exit the block
+     * @param block   number of the block
+     * @param train   address of the train
+     * @param state   {@link net.wbz.moba.controlcenter.web.shared.bus.FeedbackBlockEvent.STATE} enter or exit the block
      */
     @Override
     protected void updateTrainOnTrack(final int address, final int block, final int train,
-            final FeedbackBlockEvent.STATE state) {
-        RequestUtils.getInstance().getTrainEditorRequest().getTrain(train).fire(new Receiver<TrainProxy>() {
+                                      final FeedbackBlockEvent.STATE state) {
+        RequestUtils.getInstance().getTrainEditorRequest().getTrain(train, new AsyncCallback<Train>() {
             @Override
-            public void onSuccess(TrainProxy result) {
-                TrackPartConfigurationEntity configAsIdentifier = new TrackPartConfigurationEntity(1, address, block, true);
+            public void onFailure(Throwable caught) {
+
+            }
+
+            @Override
+            public void onSuccess(Train result) {
+                TrackPartConfiguration configAsIdentifier = new TrackPartConfiguration(1, address, block, true);
                 if (trackWidgetsOfConfiguration.containsKey(configAsIdentifier)) {
                     for (AbstractSvgTrackWidget svgTrackWidget : trackWidgetsOfConfiguration.get(configAsIdentifier)) {
                         if (svgTrackWidget instanceof AbstractBlockSvgTrackWidget) {
@@ -211,7 +223,7 @@ public class TrackViewerPanel extends AbstractTrackViewerPanel {
 
     private void registerWidgetsToReceiveEvents() {
         RequestUtils.getInstance().getTrackEditorRequest().registerConsumersByConnectedDeviceForTrackParts(
-                loadedTrackParts).fire();
+                loadedTrackParts, RequestUtils.VOID_ASYNC_CALLBACK);
     }
 
     @Override

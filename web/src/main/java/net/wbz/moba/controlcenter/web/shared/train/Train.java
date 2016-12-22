@@ -1,4 +1,4 @@
-package net.wbz.moba.controlcenter.web.server.web.train;
+package net.wbz.moba.controlcenter.web.shared.train;
 
 import net.wbz.moba.controlcenter.web.shared.track.model.AbstractDto;
 
@@ -49,5 +49,10 @@ public class Train extends AbstractDto{
 
     public void setForward(boolean forward) {
         this.forward = forward;
+    }
+
+    public TrainFunction[] getFunctions() {
+        //TODO
+        return new TrainFunction[0];
     }
 }

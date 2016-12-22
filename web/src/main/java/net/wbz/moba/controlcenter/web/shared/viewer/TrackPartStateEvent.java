@@ -1,20 +1,20 @@
 package net.wbz.moba.controlcenter.web.shared.viewer;
 
 import de.novanic.eventservice.client.event.Event;
-import net.wbz.moba.controlcenter.web.server.persist.construction.track.TrackPartConfigurationEntity;
+import net.wbz.moba.controlcenter.web.shared.track.model.TrackPartConfiguration;
 
 /**
  * @author Daniel Tuerk
  */
 public class TrackPartStateEvent implements Event {
 
-    private TrackPartConfigurationEntity configuration;
+    private TrackPartConfiguration configuration;
     private boolean state;
 
     public TrackPartStateEvent() {
     }
 
-    public TrackPartStateEvent(TrackPartConfigurationEntity configuration, boolean state) {
+    public TrackPartStateEvent(TrackPartConfiguration configuration, boolean state) {
         this.configuration = configuration;
         this.state = state;
     }
@@ -23,7 +23,7 @@ public class TrackPartStateEvent implements Event {
         return state;
     }
 
-    public TrackPartConfigurationEntity getConfiguration() {
+    public TrackPartConfiguration getConfiguration() {
         return configuration;
     }
 

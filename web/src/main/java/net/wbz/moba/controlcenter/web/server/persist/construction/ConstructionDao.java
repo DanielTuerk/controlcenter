@@ -1,5 +1,7 @@
 package net.wbz.moba.controlcenter.web.server.persist.construction;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import com.google.inject.persist.Transactional;
 import net.wbz.moba.controlcenter.web.server.persist.AbstractDao;
 import net.wbz.moba.controlcenter.web.server.persist.device.DeviceInfoEntity;
@@ -14,9 +16,11 @@ import java.util.List;
 /**
  * @author Daniel Tuerk
  */
+@Singleton
 public class ConstructionDao extends AbstractDao<ConstructionEntity> {
     private static final Logger LOG = LoggerFactory.getLogger(ConstructionDao.class);
 
+    @Inject
     public ConstructionDao(Provider<EntityManager> entityManager) {
         super(entityManager);
     }

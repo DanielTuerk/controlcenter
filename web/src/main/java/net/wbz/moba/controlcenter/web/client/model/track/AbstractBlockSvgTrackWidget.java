@@ -3,10 +3,10 @@ package net.wbz.moba.controlcenter.web.client.model.track;
 import com.google.common.collect.Maps;
 import com.google.gwt.user.client.ui.Widget;
 import net.wbz.moba.controlcenter.web.client.editor.track.EditTrackWidgetHandler;
-import net.wbz.moba.controlcenter.web.shared.track.model.Configuration;
+import net.wbz.moba.controlcenter.web.shared.train.Train;
+import net.wbz.moba.controlcenter.web.shared.track.model.TrackPartConfiguration;
 import net.wbz.moba.controlcenter.web.shared.track.model.TrackModelConstants;
 import net.wbz.moba.controlcenter.web.shared.track.model.TrackPart;
-import net.wbz.moba.controlcenter.web.shared.train.Train;
 import org.gwtbootstrap3.client.ui.FieldSet;
 import org.gwtbootstrap3.client.ui.FormGroup;
 import org.gwtbootstrap3.client.ui.FormLabel;
@@ -60,10 +60,10 @@ abstract public class AbstractBlockSvgTrackWidget<T extends TrackPart> extends A
     }
 
     @Override
-    public Map<String, Configuration> getStoredWidgetFunctionConfigs() {
-        Map<String, Configuration> functionConfigs = super.getStoredWidgetFunctionConfigs();
+    public Map<String, TrackPartConfiguration> getStoredWidgetFunctionConfigs() {
+        Map<String, TrackPartConfiguration> functionConfigs = super.getStoredWidgetFunctionConfigs();
         if (getTrackPart().getDefaultBlockFunctionConfig() != null) {
-            Configuration configuration = new Configuration();
+            TrackPartConfiguration configuration = new TrackPartConfiguration();
             configuration.setBus(1); //TODO
             configuration.setAddress(getTrackPart().getDefaultBlockFunctionConfig().getAddress());
             configuration.setBit(getTrackPart().getDefaultBlockFunctionConfig().getBit());
@@ -74,9 +74,9 @@ abstract public class AbstractBlockSvgTrackWidget<T extends TrackPart> extends A
     }
 
     @Override
-    public void updateFunctionState(Configuration configuration, boolean state) {
+    public void updateFunctionState(TrackPartConfiguration configuration, boolean state) {
         // update the SVG for the state of the {@link TrackPart#DEFAULT_TOGGLE_FUNCTION}
-        Configuration blockFunctionConfig = getStoredWidgetFunctionConfigs().get(TrackModelConstants.DEFAULT_BLOCK_FUNCTION);
+        TrackPartConfiguration blockFunctionConfig = getStoredWidgetFunctionConfigs().get(TrackModelConstants.DEFAULT_BLOCK_FUNCTION);
         if (blockFunctionConfig != null && blockFunctionConfig.equals(configuration)) {
             if (state == blockFunctionConfig.isBitState()) {
                 usedBlock();
@@ -125,7 +125,7 @@ abstract public class AbstractBlockSvgTrackWidget<T extends TrackPart> extends A
             option.setText(value);
             selectBit.add(option);
             if (index == getTrackPart().getDefaultBlockFunctionConfig().getBit()) {
-                selectBit.setValue(option);
+                selectBit.setValue(String.valueOf(index));
             }
         }
         groupBit.add(selectBit);

@@ -1,16 +1,14 @@
 package net.wbz.moba.controlcenter.web.client.viewer.controls;
 
+import com.google.gwt.dom.client.Style;
+import com.google.gwt.user.client.ui.Panel;
 import net.wbz.moba.controlcenter.web.shared.AbstractStateEvent;
-import net.wbz.moba.controlcenter.web.shared.EntityProxyWithIdAndVersion;
-
+import net.wbz.moba.controlcenter.web.shared.track.model.AbstractDto;
 import org.gwtbootstrap3.client.ui.Button;
 import org.gwtbootstrap3.client.ui.PanelBody;
 import org.gwtbootstrap3.client.ui.PanelCollapse;
 import org.gwtbootstrap3.client.ui.PanelHeader;
 import org.gwtbootstrap3.client.ui.constants.Toggle;
-
-import com.google.gwt.dom.client.Style;
-import com.google.gwt.user.client.ui.Panel;
 
 /**
  * Abstract container panel for the specified {@link net.wbz.moba.controlcenter.web.shared.AbstractIdModel}.
@@ -20,7 +18,7 @@ import com.google.gwt.user.client.ui.Panel;
  *
  * @author Daniel Tuerk
  */
-abstract public class AbstractItemPanel<Model extends EntityProxyWithIdAndVersion, StateEvent extends AbstractStateEvent>
+abstract public class AbstractItemPanel<Model extends AbstractDto, StateEvent extends AbstractStateEvent>
         extends org.gwtbootstrap3.client.ui.Panel {
 
     private Model model;

@@ -1,28 +1,25 @@
 package net.wbz.moba.controlcenter.web.client.viewer.bus;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
+import com.google.common.collect.Maps;
+import com.google.gwt.dom.client.Style;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.Label;
+import de.novanic.eventservice.client.event.Event;
+import de.novanic.eventservice.client.event.listener.RemoteEventListener;
 import net.wbz.moba.controlcenter.web.client.EventReceiver;
 import net.wbz.moba.controlcenter.web.client.RequestUtils;
 import net.wbz.moba.controlcenter.web.shared.bus.BusDataEvent;
 import net.wbz.moba.controlcenter.web.shared.bus.DeviceInfoEvent;
-
 import org.gwtbootstrap3.client.ui.Panel;
 import org.gwtbootstrap3.client.ui.PanelBody;
 import org.gwtbootstrap3.client.ui.PanelHeader;
 import org.gwtbootstrap3.client.ui.Well;
 import org.gwtbootstrap3.client.ui.constants.WellSize;
 
-import com.google.common.collect.Maps;
-import com.google.gwt.dom.client.Style;
-import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.Label;
-import com.google.web.bindery.requestfactory.shared.Receiver;
-
-import de.novanic.eventservice.client.event.Event;
-import de.novanic.eventservice.client.event.listener.RemoteEventListener;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * The BusMonitor shows the current data of each address for bus 0 and 1. The
@@ -108,12 +105,12 @@ public class BusMonitorPanel extends FlowPanel {
 
                 if (deviceInfoEvent.getEventType() == DeviceInfoEvent.TYPE.CONNECTED) {
 
-                    RequestUtils.getInstance().getBusRequest().startTrackingBus().fire();
+                    RequestUtils.getInstance().getBusRequest().startTrackingBus(RequestUtils.VOID_ASYNC_CALLBACK);
                     remove(wellConnectionState);
                     addBusPanels();
 
                 } else if (deviceInfoEvent.getEventType() == DeviceInfoEvent.TYPE.DISCONNECTED) {
-                    RequestUtils.getInstance().getBusRequest().stopTrackingBus().fire();
+                    RequestUtils.getInstance().getBusRequest().stopTrackingBus(RequestUtils.VOID_ASYNC_CALLBACK);
                     removeBusPanels();
                     add(wellConnectionState);
                 }
@@ -126,10 +123,15 @@ public class BusMonitorPanel extends FlowPanel {
         super.onLoad();
         EventReceiver.getInstance().addListener(DeviceInfoEvent.class, connectionListener);
 
-        RequestUtils.getInstance().getBusRequest().isBusConnected().fire(new Receiver<Boolean>() {
+        RequestUtils.getInstance().getBusRequest().isBusConnected(new AsyncCallback<Boolean>() {
             @Override
-            public void onSuccess(Boolean response) {
-                if (response) {
+            public void onFailure(Throwable caught) {
+
+            }
+
+            @Override
+            public void onSuccess(Boolean result) {
+                if (result) {
                     remove(wellConnectionState);
                     addBusPanels();
 
@@ -140,7 +142,7 @@ public class BusMonitorPanel extends FlowPanel {
             }
         });
 
-        RequestUtils.getInstance().getBusRequest().startTrackingBus().fire();
+        RequestUtils.getInstance().getBusRequest().startTrackingBus(RequestUtils.VOID_ASYNC_CALLBACK);
         EventReceiver.getInstance().addListener(BusDataEvent.class, listener);
 
         wellConnectionState.getElement().getStyle().setMarginLeft(getParent().getOffsetWidth() / 2 - 130,
@@ -151,7 +153,7 @@ public class BusMonitorPanel extends FlowPanel {
     @Override
     protected void onUnload() {
         super.onUnload();
-        RequestUtils.getInstance().getBusRequest().stopTrackingBus().fire();
+        RequestUtils.getInstance().getBusRequest().stopTrackingBus(RequestUtils.VOID_ASYNC_CALLBACK);
         EventReceiver.getInstance().removeListener(BusDataEvent.class, listener);
         EventReceiver.getInstance().removeListener(DeviceInfoEvent.class, connectionListener);
         removeBusPanels();

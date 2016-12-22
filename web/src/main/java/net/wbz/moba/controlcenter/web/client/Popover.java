@@ -81,7 +81,7 @@ public class Popover extends FlowPanel {
     }
 
     private Panel getWidget(Element element) {
-        com.google.gwt.user.client.EventListener listener = DOM.getEventListener((com.google.gwt.user.client.Element) element);
+        com.google.gwt.user.client.EventListener listener = DOM.getEventListener(element);
         // No listener attached to the element, so no widget exist for this
         // element
         if (listener == null) {

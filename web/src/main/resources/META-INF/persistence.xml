@@ -22,7 +22,7 @@
         <class>net.wbz.moba.controlcenter.web.server.persist.construction.track.TrackPartConfigurationEntity</class>
 
         <!-- track part models -->
-        <class>net.wbz.moba.controlcenter.web.server.persist.construction.track.Curve</class>
+        <class>net.wbz.moba.controlcenter.web.server.persist.construction.track.CurveEntity</class>
         <class>net.wbz.moba.controlcenter.web.server.persist.construction.track.SignalEntity</class>
         <class>net.wbz.moba.controlcenter.web.server.persist.construction.track.StraightEntity</class>
         <class>net.wbz.moba.controlcenter.web.server.persist.construction.track.SwitchEntity</class>

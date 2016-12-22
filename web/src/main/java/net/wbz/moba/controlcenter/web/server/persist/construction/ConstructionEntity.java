@@ -3,20 +3,25 @@ package net.wbz.moba.controlcenter.web.server.persist.construction;
 
 import com.googlecode.jmapper.annotations.JMap;
 import net.wbz.moba.controlcenter.web.server.persist.AbstractEntity;
-import net.wbz.moba.controlcenter.web.shared.Identity;
+import net.wbz.moba.controlcenter.web.server.persist.construction.track.TrackPartEntity;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
+import java.util.List;
 
 /**
  * @author Daniel Tuerk
  */
-@Entity(name="Construction")
+@Entity
 public class ConstructionEntity extends AbstractEntity {
 
     @JMap
     private String name;
+
+    @OneToMany
+    private List<TrackPartEntity> trackPartEntities;
+
+    public ConstructionEntity() {
+    }
 
     public String getName() {
         return name;

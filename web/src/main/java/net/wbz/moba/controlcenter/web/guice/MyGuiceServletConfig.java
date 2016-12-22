@@ -1,21 +1,25 @@
 package net.wbz.moba.controlcenter.web.guice;
 
-import com.google.inject.*;
+import com.google.inject.Guice;
+import com.google.inject.Injector;
+import com.google.inject.Provides;
+import com.google.inject.Singleton;
 import com.google.inject.name.Named;
-import com.google.inject.name.Names;
 import com.google.inject.persist.PersistFilter;
 import com.google.inject.persist.jpa.JpaPersistModule;
 import com.google.inject.servlet.GuiceServletContextListener;
 import com.google.inject.servlet.ServletModule;
-import com.google.inject.servlet.SessionScoped;
-import net.wbz.moba.controlcenter.web.guice.requestFactory.InjectedRequestFactoryModule;
-import net.wbz.moba.controlcenter.web.guice.requestFactory.InjectedRequestFactoryServlet;
 import net.wbz.moba.controlcenter.web.server.scenario.ScenarioEditorServiceImpl;
 import net.wbz.moba.controlcenter.web.server.scenario.ScenarioServiceImpl;
+import net.wbz.moba.controlcenter.web.server.web.config.ConfigServiceImpl;
+import net.wbz.moba.controlcenter.web.server.web.constrution.BusServiceImpl;
 import net.wbz.moba.controlcenter.web.server.web.constrution.ConstructionServiceImpl;
+import net.wbz.moba.controlcenter.web.server.web.editor.TrackEditorServiceImpl;
+import net.wbz.moba.controlcenter.web.server.web.train.TrainEditorServiceImpl;
+import net.wbz.moba.controlcenter.web.server.web.train.TrainServiceImpl;
+import net.wbz.moba.controlcenter.web.server.web.viewer.TrackViewerServiceImpl;
 import net.wbz.selectrix4java.device.DeviceManager;
 
-import javax.persistence.EntityManager;
 import java.io.File;
 import java.util.Properties;
 
@@ -90,22 +94,22 @@ public class MyGuiceServletConfig extends GuiceServletContextListener {
                  * Install the injection for the GWT request factory.
                  * Use the @Service implementation instances provided by the Guice DI.
                  */
-                install(new InjectedRequestFactoryModule());
-                serve("/gwtRequest").with(InjectedRequestFactoryServlet.class);
+//                install(new InjectedRequestFactoryModule());
+//                serve("/gwtRequest").with(InjectedRequestFactoryServlet.class);
 
                 /*
                  * Register the GWT services.
                  */
 
                 serve("/" + APP_NAME + "/bus").with(BusServiceImpl.class);
-                 serve("/" + APP_NAME + "/construction").with(ConstructionServiceImpl.class);
-//                serve("/" + APP_NAME + "/trackviewer").with(TrackViewerServiceImpl.class);
-//                serve("/" + APP_NAME + "/trackeditor").with(TrackEditorServiceImpl.class);
+                serve("/" + APP_NAME + "/construction").with(ConstructionServiceImpl.class);
+                serve("/" + APP_NAME + "/trackviewer").with(TrackViewerServiceImpl.class);
+                serve("/" + APP_NAME + "/trackeditor").with(TrackEditorServiceImpl.class);
                 serve("/" + APP_NAME + "/scenarioservice").with(ScenarioServiceImpl.class);
                 serve("/" + APP_NAME + "/scenarioEditor").with(ScenarioEditorServiceImpl.class);
-//                serve("/" + APP_NAME + "/trainEditor").with(TrainEditorServiceImpl.class);
-//                serve("/" + APP_NAME + "/trainService").with(TrainService.class);
-//                serve("/" + APP_NAME + "/config").with(ConfigService.class);
+                serve("/" + APP_NAME + "/trainEditor").with(TrainEditorServiceImpl.class);
+                serve("/" + APP_NAME + "/trainService").with(TrainServiceImpl.class);
+                serve("/" + APP_NAME + "/config").with(ConfigServiceImpl.class);
             }
 
             /**

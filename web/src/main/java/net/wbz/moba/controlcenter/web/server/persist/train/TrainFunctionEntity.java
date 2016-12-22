@@ -4,6 +4,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 import com.googlecode.jmapper.annotations.JMap;
 import net.wbz.moba.controlcenter.web.server.persist.AbstractEntity;
 import net.wbz.moba.controlcenter.web.shared.Identity;
+import net.wbz.moba.controlcenter.web.shared.train.TrainFunction;
 
 
 import javax.persistence.*;
@@ -18,15 +19,11 @@ import java.io.Serializable;
 @Entity(name = "train_function")
 public class TrainFunctionEntity extends AbstractEntity {
 
-    /**
-     * Available functions for the train.
-     */
-    public enum FUNCTION implements Serializable, IsSerializable {LIGHT, HORN, F1, F2, F3, F4, F5, F6, F7, F8}
 
-    @JMap
+     @JMap
     @Enumerated(EnumType.ORDINAL)
     @Column(name = "function_name")
-    private FUNCTION function;
+    private TrainFunction.FUNCTION function;
 
     @Transient
     private boolean state;
@@ -37,7 +34,7 @@ public class TrainFunctionEntity extends AbstractEntity {
     public TrainFunctionEntity() {
     }
 
-    public TrainFunctionEntity(FUNCTION function, boolean state) {
+    public TrainFunctionEntity(TrainFunction.FUNCTION function, boolean state) {
         this.function = function;
         this.state = state;
     }
@@ -50,11 +47,11 @@ public class TrainFunctionEntity extends AbstractEntity {
 //        this.trains = trains;
 //    }
 
-    public FUNCTION getFunction() {
+    public TrainFunction.FUNCTION getFunction() {
         return function;
     }
 
-    public void setFunction(FUNCTION function) {
+    public void setFunction(TrainFunction.FUNCTION function) {
         this.function = function;
     }
 
@@ -65,4 +62,5 @@ public class TrainFunctionEntity extends AbstractEntity {
     public void setState(boolean state) {
         this.state = state;
     }
+
 }

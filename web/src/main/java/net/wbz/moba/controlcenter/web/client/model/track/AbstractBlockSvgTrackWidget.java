@@ -1,12 +1,12 @@
 package net.wbz.moba.controlcenter.web.client.model.track;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.google.gwt.user.client.ui.Widget;
 import net.wbz.moba.controlcenter.web.client.editor.track.EditTrackWidgetHandler;
+import net.wbz.moba.controlcenter.web.shared.track.model.AbstractTrackPart;
+import net.wbz.moba.controlcenter.web.shared.track.model.BusDataConfiguration;
 import net.wbz.moba.controlcenter.web.shared.train.Train;
-import net.wbz.moba.controlcenter.web.shared.track.model.TrackPartConfiguration;
-import net.wbz.moba.controlcenter.web.shared.track.model.TrackModelConstants;
-import net.wbz.moba.controlcenter.web.shared.track.model.TrackPart;
 import org.gwtbootstrap3.client.ui.FieldSet;
 import org.gwtbootstrap3.client.ui.FormGroup;
 import org.gwtbootstrap3.client.ui.FormLabel;
@@ -23,10 +23,11 @@ import java.util.Map;
 /**
  * @author Daniel Tuerk
  */
-abstract public class AbstractBlockSvgTrackWidget<T extends TrackPart> extends AbstractSvgTrackWidget<T>
+abstract public class AbstractBlockSvgTrackWidget<T extends AbstractTrackPart> extends AbstractSvgTrackWidget<T>
         implements EditTrackWidgetHandler, BlockPart {
 
-    private static final String ID_FORM_BIT = "formBit";
+    private static final String ID_FORM_ADDRESS = "formAddress_block";
+    private static final String ID_FORM_BIT = "formBit_block";
     private Select selectBit;
     private TextBox txtAddress;
 
@@ -59,24 +60,24 @@ abstract public class AbstractBlockSvgTrackWidget<T extends TrackPart> extends A
         removeStyleName("freeBlock");
     }
 
-    @Override
-    public Map<String, TrackPartConfiguration> getStoredWidgetFunctionConfigs() {
-        Map<String, TrackPartConfiguration> functionConfigs = super.getStoredWidgetFunctionConfigs();
-        if (getTrackPart().getDefaultBlockFunctionConfig() != null) {
-            TrackPartConfiguration configuration = new TrackPartConfiguration();
-            configuration.setBus(1); //TODO
-            configuration.setAddress(getTrackPart().getDefaultBlockFunctionConfig().getAddress());
-            configuration.setBit(getTrackPart().getDefaultBlockFunctionConfig().getBit());
-            configuration.setBitState(true);
-            functionConfigs.put(TrackModelConstants.DEFAULT_BLOCK_FUNCTION, configuration);
-        }
-        return functionConfigs;
-    }
+//    @Override
+//    public Map<String, BusDataConfiguration> getStoredWidgetFunctionConfigs() {
+//        Map<String, BusDataConfiguration> functionConfigs = super.getStoredWidgetFunctionConfigs();
+//        if (getTrackPart().getDefaultBlockFunctionConfig() != null) {
+//            BusDataConfiguration configuration = new BusDataConfiguration();
+//            configuration.setBus(1); //TODO
+//            configuration.setAddress(getTrackPart().getDefaultBlockFunctionConfig().getAddress());
+//            configuration.setBit(getTrackPart().getDefaultBlockFunctionConfig().getBit());
+//            configuration.setBitState(true);
+//            functionConfigs.put(TrackModelConstants.DEFAULT_BLOCK_FUNCTION, configuration);
+//        }
+//        return functionConfigs;
+//    }
 
     @Override
-    public void updateFunctionState(TrackPartConfiguration configuration, boolean state) {
-        // update the SVG for the state of the {@link TrackPart#DEFAULT_TOGGLE_FUNCTION}
-        TrackPartConfiguration blockFunctionConfig = getStoredWidgetFunctionConfigs().get(TrackModelConstants.DEFAULT_BLOCK_FUNCTION);
+    public void updateFunctionState(BusDataConfiguration configuration, boolean state) {
+        // update the SVG for the state of the block
+        BusDataConfiguration blockFunctionConfig = getTrackPart().getBlockFunction();
         if (blockFunctionConfig != null && blockFunctionConfig.equals(configuration)) {
             if (state == blockFunctionConfig.isBitState()) {
                 usedBlock();
@@ -100,8 +101,8 @@ abstract public class AbstractBlockSvgTrackWidget<T extends TrackPart> extends A
 
         txtAddress = new TextBox();
         txtAddress.setId(ID_FORM_ADDRESS);
-        if (getTrackPart().getDefaultToggleFunctionConfig().getAddress() >= 0) {
-            txtAddress.setText(String.valueOf(getTrackPart().getDefaultBlockFunctionConfig().getAddress()));
+        if (getTrackPart().getBlockFunction() != null) {
+            txtAddress.setText(String.valueOf(getTrackPart().getBlockFunction().getAddress()));
         }
         org.gwtbootstrap3.client.ui.gwt.FlowPanel flowPanel = new org.gwtbootstrap3.client.ui.gwt.FlowPanel();
         flowPanel.addStyleName(ColumnSize.MD_2.getCssName());
@@ -124,8 +125,10 @@ abstract public class AbstractBlockSvgTrackWidget<T extends TrackPart> extends A
             option.setValue(value);
             option.setText(value);
             selectBit.add(option);
-            if (index == getTrackPart().getDefaultBlockFunctionConfig().getBit()) {
-                selectBit.setValue(String.valueOf(index));
+            if (getTrackPart().getBlockFunction() != null) {
+                if (index == getTrackPart().getBlockFunction().getBit()) {
+                    selectBit.setValue(String.valueOf(index));
+                }
             }
         }
         groupBit.add(selectBit);
@@ -139,10 +142,17 @@ abstract public class AbstractBlockSvgTrackWidget<T extends TrackPart> extends A
     public void onConfirmCallback() {
         super.onConfirmCallback();
         // save block config
-        getTrackPart().getDefaultBlockFunctionConfig().setBus(1);
-        getTrackPart().getDefaultBlockFunctionConfig().setAddress(Integer.parseInt(txtAddress.getText()));
-        getTrackPart().getDefaultBlockFunctionConfig().setBit(Integer.parseInt(selectBit.getValue()));
-        getTrackPart().getDefaultBlockFunctionConfig().setBitState(true);
+        if (Strings.isNullOrEmpty(txtAddress.getText())) {
+            getTrackPart().setBlockFunction(null);
+        } else {
+            if (getTrackPart().getBlockFunction() == null) {
+                getTrackPart().setBlockFunction(new BusDataConfiguration());
+            }
+            getTrackPart().getBlockFunction().setBus(1);
+            getTrackPart().getBlockFunction().setAddress(Integer.parseInt(txtAddress.getText()));
+            getTrackPart().getBlockFunction().setBit(Integer.parseInt(selectBit.getValue()));
+            getTrackPart().getBlockFunction().setBitState(true);
+        }
     }
 
     /**
@@ -167,5 +177,12 @@ abstract public class AbstractBlockSvgTrackWidget<T extends TrackPart> extends A
             getSvgRootElement().removeChild(trainElements.get(train));
             trainElements.remove(train);
         }
+    }
+
+
+    @Override
+    public String getConfigurationInfo() {
+        return super.getConfigurationInfo() +
+                "block: " + getTrackPart().getBlockFunction() + "; ";
     }
 }

@@ -16,12 +16,15 @@ public abstract class AbstractEntity implements Identity {
     @JMap
     private Long id;
 
+    public AbstractEntity() {
+    }
+
     @Override
     public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 }

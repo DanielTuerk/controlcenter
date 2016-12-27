@@ -27,13 +27,13 @@ public class TrackViewerContainer extends DockLayoutPanel {
 
         addEast(new ViewerControlsPanel(), 400);
 
-//        Widget trackViewer;
-//        if(Settings.getInstance().getUse3dViewer().getValue()) {
-//            trackViewer=new TrackViewer3dPanel();
-//        } else {
-//            trackViewer = new TrackViewerPanel();
-//        }
-//        add(trackViewer);
+        Widget trackViewer;
+        if(Settings.getInstance().getUse3dViewer().getValue()) {
+            trackViewer=new TrackViewer3dPanel();
+        } else {
+            trackViewer = new TrackViewerPanel();
+        }
+        add(trackViewer);
     }
 
     @Override

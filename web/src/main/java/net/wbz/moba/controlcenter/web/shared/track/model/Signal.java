@@ -2,15 +2,13 @@ package net.wbz.moba.controlcenter.web.shared.track.model;
 
 import com.google.common.collect.Maps;
 import com.google.gwt.user.client.rpc.IsSerializable;
-import net.wbz.moba.controlcenter.web.server.persist.construction.track.TrackPartConfigurationEntity;
-import net.wbz.moba.controlcenter.web.server.persist.construction.track.TrackPartFunctionEntity;
 
 import java.util.Map;
 
 /**
  * @author Daniel Tuerk
  */
-public class Signal extends Straight {
+public class Signal extends Straight implements HasToggleFunction {
 
     private TYPE type;
 
@@ -21,10 +19,29 @@ public class Signal extends Straight {
     public void setType(TYPE type) {
         this.type = type;
     }
-    public Map<LIGHT, TrackPartConfiguration> getSignalConfiguration() {
+    public Map<LIGHT, BusDataConfiguration> getSignalConfiguration() {
         //TODO
-        Map<LIGHT, TrackPartConfiguration> lightConfig = Maps.newHashMap();
+        Map<LIGHT, BusDataConfiguration> lightConfig = Maps.newHashMap();
         return lightConfig;
+    }
+
+    @Override
+    public BusDataConfiguration getToggleFunction() {
+        return null;
+    }
+
+    @Override
+    public void setToggleFunction(BusDataConfiguration toggleFunction) {
+    }
+
+    @Override
+    public EventConfiguration getEventConfiguration() {
+        return null;
+    }
+
+    @Override
+    public void setEventConfiguration(EventConfiguration eventConfiguration) {
+
     }
 
     /**

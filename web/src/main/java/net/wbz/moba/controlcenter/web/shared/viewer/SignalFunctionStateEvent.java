@@ -1,9 +1,8 @@
 package net.wbz.moba.controlcenter.web.shared.viewer;
 
 import de.novanic.eventservice.client.event.Event;
-import net.wbz.moba.controlcenter.web.server.persist.construction.track.TrackPartConfigurationEntity;
+import net.wbz.moba.controlcenter.web.shared.track.model.BusDataConfiguration;
 import net.wbz.moba.controlcenter.web.shared.track.model.Signal;
-import net.wbz.moba.controlcenter.web.shared.track.model.TrackPartConfiguration;
 
 import java.util.Map;
 
@@ -12,22 +11,22 @@ import java.util.Map;
  */
 public class SignalFunctionStateEvent implements Event {
 
-    private Map<Signal.LIGHT, TrackPartConfiguration> configuration;
+    private Map<Signal.LIGHT, BusDataConfiguration> configuration;
     private Signal.FUNCTION signalFunction;
 
     public SignalFunctionStateEvent() {
     }
 
-    public SignalFunctionStateEvent(Map<Signal.LIGHT, TrackPartConfiguration> configuration, Signal.FUNCTION signalFunction) {
+    public SignalFunctionStateEvent(Map<Signal.LIGHT, BusDataConfiguration> configuration, Signal.FUNCTION signalFunction) {
         this.configuration = configuration;
         this.signalFunction = signalFunction;
     }
 
-    public Map<Signal.LIGHT, TrackPartConfiguration> getConfiguration() {
+    public Map<Signal.LIGHT, BusDataConfiguration> getConfiguration() {
         return configuration;
     }
 
-    public void setConfiguration(Map<Signal.LIGHT, TrackPartConfiguration> configuration) {
+    public void setConfiguration(Map<Signal.LIGHT, BusDataConfiguration> configuration) {
         this.configuration = configuration;
     }
 

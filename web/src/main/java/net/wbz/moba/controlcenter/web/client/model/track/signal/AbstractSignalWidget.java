@@ -4,6 +4,7 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Widget;
 import net.wbz.moba.controlcenter.web.client.Popover;
+import net.wbz.moba.controlcenter.web.client.RequestUtils;
 import net.wbz.moba.controlcenter.web.client.model.track.AbstractControlSvgTrackWidget;
 import net.wbz.moba.controlcenter.web.client.viewer.track.svg.TrackViewerPanel;
 import net.wbz.moba.controlcenter.web.shared.track.model.Signal;
@@ -38,10 +39,10 @@ abstract public class AbstractSignalWidget extends AbstractControlSvgTrackWidget
 
     @Override
     public Signal getNewTrackPart() {
-        Signal verticalSignal = new Signal();
-        verticalSignal.setDirection(getStraightDirection());
-        verticalSignal.setType(Signal.TYPE.BLOCK);
-        return verticalSignal;
+        Signal signal = new Signal();
+        signal.setDirection(getStraightDirection());
+        signal.setType(Signal.TYPE.BLOCK);
+        return signal;
     }
 
 
@@ -113,10 +114,8 @@ abstract public class AbstractSignalWidget extends AbstractControlSvgTrackWidget
 
     private void switchSignalFunction(Signal.FUNCTION function) {
         Signal signal = getTrackPart();
-
-        //TODO
-//        RequestUtils.getInstance().getTrackViewerRequest().switchSignal(signalType, function, signal.getSignalConfiguration());
-
+        RequestUtils.getInstance().getTrackViewerRequest().switchSignal(signalType, function,
+                signal.getSignalConfiguration(), RequestUtils.VOID_ASYNC_CALLBACK);
     }
 
     @Override

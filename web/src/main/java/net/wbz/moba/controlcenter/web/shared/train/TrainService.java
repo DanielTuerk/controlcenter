@@ -3,7 +3,6 @@ package net.wbz.moba.controlcenter.web.shared.train;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 import net.wbz.moba.controlcenter.web.server.persist.train.TrainEntity;
-import net.wbz.moba.controlcenter.web.server.persist.train.TrainFunctionEntity;
 import net.wbz.moba.controlcenter.web.server.web.train.TrainManager;
 
 /**

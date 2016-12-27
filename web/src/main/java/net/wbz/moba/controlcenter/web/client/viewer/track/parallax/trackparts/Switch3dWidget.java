@@ -1,8 +1,8 @@
 package net.wbz.moba.controlcenter.web.client.viewer.track.parallax.trackparts;
 
 import net.wbz.moba.controlcenter.web.server.persist.construction.track.CurveEntity;
+import net.wbz.moba.controlcenter.web.shared.track.model.BusDataConfiguration;
 import net.wbz.moba.controlcenter.web.shared.track.model.Switch;
-import net.wbz.moba.controlcenter.web.shared.track.model.TrackPartConfiguration;
 import thothbot.parallax.core.shared.math.Vector3;
 
 /**
@@ -27,7 +27,7 @@ public class Switch3dWidget extends Basic3dTrackWidget<Switch> {
         setMaterial(createTrackPartTexture(texture));
     }
 
-    public void updateFunctionState(TrackPartConfiguration configuration, boolean state) {
+    public void updateFunctionState(BusDataConfiguration configuration, boolean state) {
         super.updateFunctionState(configuration, state);
 
         if (state) {

@@ -6,22 +6,19 @@ import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
 import net.wbz.moba.controlcenter.web.client.TrackUtils;
 import net.wbz.moba.controlcenter.web.client.editor.track.EditTrackWidgetHandler;
+import net.wbz.moba.controlcenter.web.shared.track.model.AbstractTrackPart;
+import net.wbz.moba.controlcenter.web.shared.track.model.BusDataConfiguration;
 import net.wbz.moba.controlcenter.web.shared.track.model.GridPosition;
-import net.wbz.moba.controlcenter.web.shared.track.model.TrackPart;
-import net.wbz.moba.controlcenter.web.shared.track.model.TrackPartConfiguration;
 import org.gwtbootstrap3.client.ui.*;
 import org.gwtbootstrap3.client.ui.constants.FormType;
 import org.vectomatic.dom.svg.OMSVGDocument;
 import org.vectomatic.dom.svg.OMSVGSVGElement;
 import org.vectomatic.dom.svg.utils.OMSVGParser;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * @author Daniel Tuerk
  */
-abstract public class AbstractSvgTrackWidget<T extends TrackPart> extends SimplePanel implements EditTrackWidgetHandler {
+abstract public class AbstractSvgTrackWidget<T extends AbstractTrackPart> extends SimplePanel implements EditTrackWidgetHandler {
 
     public static final String CSS_WIDGET_DISABLED = "widget-disabled";
 
@@ -29,9 +26,6 @@ abstract public class AbstractSvgTrackWidget<T extends TrackPart> extends Simple
      * Model for the widget.
      */
     private T trackPart = null;
-
-    public static final String ID_FORM_ADDRESS = "formAddress";
-
 
     private final OMSVGDocument svgDocument = OMSVGParser.currentDocument();
     private final OMSVGSVGElement svgRootElement;
@@ -93,14 +87,14 @@ abstract public class AbstractSvgTrackWidget<T extends TrackPart> extends Simple
         return svgRootElement;
     }
 
-    /**
-     * TODO: refactor to config handler
-     *
-     * @return
-     */
-    public Map<String, TrackPartConfiguration> getStoredWidgetFunctionConfigs() {
-        return new HashMap<>();
-    }
+//    /**
+//     * TODO: refactor to config handler
+//     *
+//     * @return
+//     */
+//    public Map<String, BusDataConfiguration> getStoredWidgetFunctionConfigs() {
+//        return new HashMap<>();
+//    }
 
     /**
      * TODO: refactor to config handler
@@ -111,7 +105,7 @@ abstract public class AbstractSvgTrackWidget<T extends TrackPart> extends Simple
         this.trackPart = trackPart;
     }
 
-    abstract public void updateFunctionState(TrackPartConfiguration configuration, boolean state);
+    abstract public void updateFunctionState(BusDataConfiguration configuration, boolean state);
 
     protected void addDialogContentTab(String title, Widget content) {
         TabPane tabPane = new TabPane();
@@ -149,9 +143,9 @@ abstract public class AbstractSvgTrackWidget<T extends TrackPart> extends Simple
     }
 
     /**
-     * Check responsibility for the given {@link net.wbz.moba.controlcenter.web.shared.track.model.TrackPart}.
+     * Check responsibility for the given {@link AbstractTrackPart}.
      *
-     * @param trackPart {@link net.wbz.moba.controlcenter.web.shared.track.model.TrackPart}
+     * @param trackPart {@link AbstractTrackPart}
      * @return {@link net.wbz.moba.controlcenter.web.client.model.track.AbstractSvgTrackWidget}
      */
     abstract public boolean isRepresentationOf(T trackPart);
@@ -164,25 +158,27 @@ abstract public class AbstractSvgTrackWidget<T extends TrackPart> extends Simple
     abstract public String getTrackWidgetStyleName();
 
     /**
-     * Return the {@link net.wbz.moba.controlcenter.web.shared.track.model.TrackPart} of the widget with actual grid
+     * Return the {@link AbstractTrackPart} of the widget with actual grid
      * position.
      *
      * @param containerWidget {@link com.google.gwt.user.client.ui.Widget} parent container
      * @param zoomLevel       level of zoom
-     * @return {@link net.wbz.moba.controlcenter.web.shared.track.model.TrackPart}
+     * @return {@link AbstractTrackPart}
      * @see {#getGridPosition}
      */
-    public TrackPart getTrackPart(Widget containerWidget, int zoomLevel) {
-        long gridPositionIdOfExistingGridPos = -1;
-        if (trackPart.getGridPosition() != null) {
-            gridPositionIdOfExistingGridPos = trackPart.getGridPosition().getId();
+    public AbstractTrackPart getTrackPart(Widget containerWidget, int zoomLevel) {
+//        long gridPositionIdOfExistingGridPos = -1;
+        if (trackPart.getGridPosition() == null) {
+            trackPart.setGridPosition(new GridPosition());
         }
 
-        trackPart.setGridPosition(getGridPosition(containerWidget, zoomLevel));
+        GridPosition gridPositionFromPanel = getGridPosition(containerWidget, zoomLevel);
+        trackPart.getGridPosition().setX(gridPositionFromPanel.getX());
+        trackPart.getGridPosition().setY(gridPositionFromPanel.getY());
 
-        if (gridPositionIdOfExistingGridPos >= 0) {
-            trackPart.getGridPosition().setId(gridPositionIdOfExistingGridPos);
-        }
+//        if (gridPositionIdOfExistingGridPos >= 0) {
+//            trackPart.getGridPosition().setId(gridPositionIdOfExistingGridPos);
+//        }
         return trackPart;
     }
 
@@ -202,9 +198,9 @@ abstract public class AbstractSvgTrackWidget<T extends TrackPart> extends Simple
     abstract public String getPaletteTitle();
 
     /**
-     * Create new instance for the given {@link net.wbz.moba.controlcenter.web.shared.track.model.TrackPart}.
+     * Create new instance for the given {@link AbstractTrackPart}.
      *
-     * @param trackPart {@link net.wbz.moba.controlcenter.web.shared.track.model.TrackPart}
+     * @param trackPart {@link AbstractTrackPart}
      * @return {@link net.wbz.moba.controlcenter.web.client.model.track.AbstractSvgTrackWidget}
      */
     public AbstractSvgTrackWidget<T> getClone(T trackPart) {
@@ -258,4 +254,8 @@ abstract public class AbstractSvgTrackWidget<T extends TrackPart> extends Simple
      * @return
      */
     abstract public T getNewTrackPart();
+
+    public String getConfigurationInfo() {
+        return "";
+    }
 }

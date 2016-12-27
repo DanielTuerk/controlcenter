@@ -1,10 +1,12 @@
 package net.wbz.moba.controlcenter.web.shared.track.model;
 
-import net.wbz.moba.controlcenter.web.server.persist.construction.track.TrackPartEntity;
+import net.wbz.moba.controlcenter.web.server.persist.construction.track.AbstractTrackPartEntity;
 
 /**
+ * TODO: remove? use constants in DTOs
+ *
  * Class to hold all constants to avoid null pointer by old serialized
- * {@link TrackPartEntity}s which didn't contain newer constants.
+ * {@link AbstractTrackPartEntity}s which didn't contain newer constants.
  *
  * @author Daniel Tuerk
  */

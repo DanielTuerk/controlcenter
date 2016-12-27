@@ -1,6 +1,7 @@
 package net.wbz.moba.controlcenter.web.shared.train;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
+import com.googlecode.jmapper.annotations.JMap;
 import net.wbz.moba.controlcenter.web.shared.track.model.AbstractDto;
 
 import java.io.Serializable;
@@ -14,7 +15,10 @@ public class TrainFunction extends AbstractDto {
      */
     public enum FUNCTION implements Serializable, IsSerializable {LIGHT, HORN, F1, F2, F3, F4, F5, F6, F7, F8}
 
+    @JMap
     private TrainFunction.FUNCTION function;
+    @JMap
+    private String alias;
 
     private boolean state;
 
@@ -32,5 +36,13 @@ public class TrainFunction extends AbstractDto {
 
     public void setState(boolean state) {
         this.state = state;
+    }
+
+    public String getAlias() {
+        return alias;
+    }
+
+    public void setAlias(String alias) {
+        this.alias = alias;
     }
 }

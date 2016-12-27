@@ -17,7 +17,7 @@ public class TrackPartFunctions  implements Identity {
     private List<TrackPartFunctionEntity> functions;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private TrackPartEntity trackPart;
+    private AbstractTrackPartEntity trackPart;
 
     public List<TrackPartFunctionEntity> getFunctions() {
         return functions;
@@ -27,11 +27,11 @@ public class TrackPartFunctions  implements Identity {
         this.functions = functions;
     }
 
-    public TrackPartEntity getTrackPart() {
+    public AbstractTrackPartEntity getTrackPart() {
         return trackPart;
     }
 
-    public void setTrackPart(TrackPartEntity trackPart) {
+    public void setTrackPart(AbstractTrackPartEntity trackPart) {
         this.trackPart = trackPart;
     }
 

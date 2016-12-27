@@ -1,12 +1,15 @@
 package net.wbz.moba.controlcenter.web.shared.track.model;
 
+import com.googlecode.jmapper.annotations.JMap;
+
 /**
  * @author Daniel Tuerk
  */
-public class Curve extends TrackPart{
+public class Curve extends AbstractTrackPart {
     public enum DIRECTION {BOTTOM_RIGHT, BOTTOM_LEFT, TOP_LEFT, TOP_RIGHT}
 
-    public DIRECTION direction;
+    @JMap
+    private DIRECTION direction;
 
     public DIRECTION getDirection() {
         return direction;

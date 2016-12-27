@@ -44,9 +44,7 @@ public class BusConnectionToggleButton extends ToggleSwitch {
                                     }
                                 });
                     } else {
-                        {
-                            RequestUtils.getInstance().getBusRequest().disconnectBus(RequestUtils.VOID_ASYNC_CALLBACK);
-                        }
+                        RequestUtils.getInstance().getBusRequest().disconnectBus(RequestUtils.VOID_ASYNC_CALLBACK);
                     }
                 } else {
                     // activate for next timestamp

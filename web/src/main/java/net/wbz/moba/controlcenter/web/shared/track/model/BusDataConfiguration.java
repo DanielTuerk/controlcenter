@@ -1,26 +1,31 @@
 package net.wbz.moba.controlcenter.web.shared.track.model;
 
+import com.googlecode.jmapper.annotations.JMap;
+
 /**
  * @author Daniel Tuerk
  */
-public class TrackPartConfiguration extends AbstractDto {
-
+public class BusDataConfiguration extends AbstractDto {
+    @JMap
     private int bus;
 
+    @JMap
     private int address;
 
+    @JMap
     private int bit;
 
+    @JMap
     private boolean bitState;
 
-    public TrackPartConfiguration(int bus, int address, int bit, boolean bitState) {
-        this.bus=bus;
-        this.address=address;
-        this.bit=bit;
-        this.bitState=bitState;
+    public BusDataConfiguration(int bus, int address, int bit, boolean bitState) {
+        this.bus = bus;
+        this.address = address;
+        this.bit = bit;
+        this.bitState = bitState;
     }
 
-    public TrackPartConfiguration() {
+    public BusDataConfiguration() {
     }
 
     public int getBus() {
@@ -56,6 +61,16 @@ public class TrackPartConfiguration extends AbstractDto {
     }
 
     public boolean isValid() {
-        return address > 0 && bit > 0 && bus >-1;
+        return address > 0 && bit > 0 && bus > -1;
+    }
+
+    @Override
+    public String toString() {
+        return "BusDataConfiguration{" +
+                "bus=" + bus +
+                ", address=" + address +
+                ", bit=" + bit +
+                ", bitState=" + bitState +
+                '}';
     }
 }

@@ -1,28 +1,38 @@
 package net.wbz.moba.controlcenter.web.shared.track.model;
 
-import net.wbz.moba.controlcenter.web.server.persist.construction.track.TrackPartConfigurationEntity;
+import com.googlecode.jmapper.annotations.JMap;
 
 /**
  * @author Daniel Tuerk
  */
 public class EventConfiguration extends AbstractDto {
 
-    private TrackPartConfiguration stateOnConfig;
-    private TrackPartConfiguration stateOffConfig;
+    @JMap
+    private BusDataConfiguration stateOnConfig;
+    @JMap
+    private BusDataConfiguration stateOffConfig;
 
-    public TrackPartConfiguration getStateOnConfig() {
+    public BusDataConfiguration getStateOnConfig() {
         return stateOnConfig;
     }
 
-    public void setStateOnConfig(TrackPartConfiguration stateOnConfig) {
+    public void setStateOnConfig(BusDataConfiguration stateOnConfig) {
         this.stateOnConfig = stateOnConfig;
     }
 
-    public TrackPartConfiguration getStateOffConfig() {
+    public BusDataConfiguration getStateOffConfig() {
         return stateOffConfig;
     }
 
-    public void setStateOffConfig(TrackPartConfiguration stateOffConfig) {
+    public void setStateOffConfig(BusDataConfiguration stateOffConfig) {
         this.stateOffConfig = stateOffConfig;
+    }
+
+    @Override
+    public String toString() {
+        return "EventConfiguration{" +
+                "stateOnConfig=" + stateOnConfig +
+                ", stateOffConfig=" + stateOffConfig +
+                '}';
     }
 }

@@ -9,6 +9,7 @@ import net.wbz.moba.controlcenter.web.shared.train.*;
 import org.gwtbootstrap3.client.ui.TextBox;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -53,14 +54,14 @@ public class TrainViewerPanel extends AbstractItemViewerPanel<TrainItemPanel, Tr
 
     @Override
     protected void loadItems() {
-        RequestUtils.getInstance().getTrainEditorRequest().getTrains(new AsyncCallback<List<Train>>() {
+        RequestUtils.getInstance().getTrainEditorRequest().getTrains(new AsyncCallback<Collection<Train>>() {
             @Override
             public void onFailure(Throwable caught) {
 
             }
 
             @Override
-            public void onSuccess(List<Train> result) {
+            public void onSuccess(Collection<Train> result) {
                 for (Train train : result) {
                     addItemPanel(new TrainItemPanel(train));
                 }

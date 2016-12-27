@@ -53,6 +53,8 @@
     <!--<set-property name="gwt.logging.popupHandler" value="DISABLED" />-->
     <set-property name="gwt.logging.developmentModeHandler" value="ENABLED" />
 
+    <!-- Google Guave -->
+    <inherits name="com.google.common.base.Base" />
     <inherits name="com.google.common.collect.Collect"/>
 
     <inherits name="thothbot.parallax.core.Core"/>

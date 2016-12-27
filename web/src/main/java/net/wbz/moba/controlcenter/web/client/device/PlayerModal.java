@@ -13,7 +13,7 @@ import org.gwtbootstrap3.client.ui.constants.Pull;
 import org.gwtbootstrap3.client.ui.constants.Spy;
 import org.gwtbootstrap3.client.ui.gwt.FlowPanel;
 
-import java.util.List;
+import java.util.Collection;
 
 /**
  * Modal to select the playback file to start the playback.
@@ -54,14 +54,14 @@ public class PlayerModal extends Modal {
 
         content.clear();
 
-        RequestUtils.getInstance().getBusRequest().getRecords(new AsyncCallback<List<String>>() {
+        RequestUtils.getInstance().getBusRequest().getRecords(new AsyncCallback<Collection<String>>() {
             @Override
             public void onFailure(Throwable caught) {
 
             }
 
             @Override
-            public void onSuccess(List<String> response) {
+            public void onSuccess(Collection<String> response) {
                 for (final String name : response) {
                     Button btnRecord = new Button(name);
                     btnRecord.addClickHandler(new ClickHandler() {

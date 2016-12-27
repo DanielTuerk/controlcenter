@@ -6,7 +6,7 @@ import com.google.inject.persist.Transactional;
 import net.wbz.moba.controlcenter.web.server.EventBroadcaster;
 import net.wbz.moba.controlcenter.web.server.persist.train.TrainDao;
 import net.wbz.moba.controlcenter.web.server.persist.train.TrainEntity;
-import net.wbz.moba.controlcenter.web.server.web.DtoMapper;
+import net.wbz.moba.controlcenter.web.server.web.DataMapper;
 import net.wbz.moba.controlcenter.web.shared.train.*;
 import net.wbz.selectrix4java.device.Device;
 import net.wbz.selectrix4java.device.DeviceAccessException;
@@ -15,7 +15,7 @@ import net.wbz.selectrix4java.device.DeviceManager;
 import net.wbz.selectrix4java.train.TrainDataListener;
 import net.wbz.selectrix4java.train.TrainModule;
 
-import java.util.List;
+import java.util.Collection;
 
 
 /**
@@ -32,7 +32,7 @@ public class TrainManager {
     private final TrainDao dao;
     private final EventBroadcaster eventBroadcaster;
     private final DeviceManager deviceManager;
-    private final DtoMapper<Train, TrainEntity> dtoMapper = new DtoMapper<>();
+    private final DataMapper<Train, TrainEntity> dataMapper = new DataMapper<>(Train.class, TrainEntity.class);
 
     @Inject
     public TrainManager(final EventBroadcaster eventBroadcaster,
@@ -46,7 +46,7 @@ public class TrainManager {
             public void connected(Device device) {
                 try {
                     for (final TrainEntity trainEntity : TrainManager.this.dao.getTrains()) {
-                        reregisterConsumer(dtoMapper.transform(trainEntity), deviceManager, eventBroadcaster);
+                        reregisterConsumer(dataMapper.transformSource(trainEntity), deviceManager, eventBroadcaster);
                     }
                 } catch (DeviceAccessException e) {
                     e.printStackTrace();
@@ -62,8 +62,8 @@ public class TrainManager {
     }
 
     private void reregisterConsumer(final Train train, DeviceManager deviceManager, final EventBroadcaster eventBroadcaster) throws DeviceAccessException {
-        if (train.getAddress() >= 0 && deviceManager.isConnected()) {
-            TrainModule trainModule = deviceManager.getConnectedDevice().getTrainModule((byte) train.getAddress());
+        if (train.getAddressByte() >= 0 && deviceManager.isConnected()) {
+            TrainModule trainModule = deviceManager.getConnectedDevice().getTrainModule(train.getAddressByte());
             trainModule.removeAllTrainDataListeners();
             trainModule.addTrainDataListener(
                     new TrainDataListener() {
@@ -138,7 +138,7 @@ public class TrainManager {
     }
 
     public Train getTrain(long id) {
-        return dtoMapper.transform(dao.getById(id));
+        return dataMapper.transformSource(dao.findById(id));
 //        if (train != null) {
 //            return train;
 //        }
@@ -162,7 +162,7 @@ public class TrainManager {
     @Transactional
     public void updateTrain(Train train) {
 
-        TrainEntity entity = updateEntitryFromDto(dao.getById(train.getId()), train);
+        TrainEntity entity = updateEntitryFromDto(dao.findById(train.getId()), train);
         dao.update(entity);
 
         // TODO update or create train functions
@@ -182,13 +182,13 @@ public class TrainManager {
         return entity;
     }
 
-    public List<Train> getTrains() {
-        return dtoMapper.transform(dao.getTrains());
+    public Collection<Train> getTrains() {
+        return dataMapper.transformSource(dao.getTrains());
     }
 
     public Train getTrain(int address) {
         try {
-            return dtoMapper.transform(dao.getTrainByAddress(address));
+            return dataMapper.transformSource(dao.getTrainByAddress(address));
         } catch (TrainException e) {
 //            LOG.error("can't find train", e);
         }
@@ -197,6 +197,6 @@ public class TrainManager {
 
     @Transactional
     public void deleteTrain(long trainId) {
-        dao.delete(dao.getById(trainId));
+        dao.delete(dao.findById(trainId));
     }
 }

@@ -10,20 +10,20 @@ import java.util.Map;
  * @author Daniel Tuerk
  */
 public class SignalConfiguration implements Identity {
-    Map<Signal.LIGHT, TrackPartConfigurationEntity> lightsConfiguration;
+    Map<Signal.LIGHT, BusDataConfigurationEntity> lightsConfiguration;
 
-    public Map<Signal.LIGHT, TrackPartConfigurationEntity> getLightsConfiguration() {
+    public Map<Signal.LIGHT, BusDataConfigurationEntity> getLightsConfiguration() {
         if (lightsConfiguration == null) {
             lightsConfiguration = new HashMap<>();
         }
         return lightsConfiguration;
     }
 
-    public void setLightsConfiguration(Map<Signal.LIGHT, TrackPartConfigurationEntity> lightsConfiguration) {
+    public void setLightsConfiguration(Map<Signal.LIGHT, BusDataConfigurationEntity> lightsConfiguration) {
         this.lightsConfiguration = lightsConfiguration;
     }
 
-    public TrackPartConfigurationEntity get(Signal.LIGHT light) {
+    public BusDataConfigurationEntity get(Signal.LIGHT light) {
         return getLightsConfiguration().get(light);
     }
 

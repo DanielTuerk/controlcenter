@@ -1,14 +1,10 @@
 package net.wbz.moba.controlcenter.web.server.persist;
 
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
-import com.google.inject.persist.Transactional;
 import net.wbz.moba.controlcenter.web.shared.Identity;
+import org.hibernate.Session;
 
 import javax.inject.Provider;
 import javax.persistence.EntityManager;
-import javax.persistence.Query;
-import java.util.List;
 
 /**
  * Abstract DAO for CRUD operations to the defined {@link Identity}.
@@ -17,34 +13,50 @@ import java.util.List;
  */
 public abstract class AbstractDao<T extends Identity> {
     private final Provider<EntityManager> entityManager;
+    private Class<T> entityClazz;
 
-    public AbstractDao(Provider<EntityManager> entityManager) {
+    /**
+     * Create DAO for the given entity class.
+     *
+     * @param entityManager {@link Provider<EntityManager>}
+     * @param entityClazz   class of entity
+     */
+    public AbstractDao(Provider<EntityManager> entityManager, Class<T> entityClazz) {
         this.entityManager = entityManager;
+        this.entityClazz = entityClazz;
     }
 
-    public abstract T getById(Long id);
-
-    @Transactional
     public void create(T entity) {
-        entityManager.get().merge(entity);
+        getEntityManager().persist(entity);
     }
 
-    @Transactional
     public void update(T entity) {
-        entityManager.get().persist(entity);
+        getEntityManager().merge(entity);
     }
 
-    @Transactional
     public void delete(T entity) {
-        entityManager.get().remove(entity);
+        getEntityManager().remove(entity);
     }
 
-    @SuppressWarnings("unchecked")
-    protected  List<T> safeList(Query typedQuery) {
-        return typedQuery.getResultList();
+    /**
+     * Find entity for the given id.
+     *
+     * @param id id of entity
+     * @return {@link T} of id or {@code null} if not existing
+     */
+    public T findById(Long id) {
+        return getEntityManager().find(entityClazz, id);
     }
 
     protected EntityManager getEntityManager() {
         return entityManager.get();
+    }
+
+    protected Session getSession() {
+        return getEntityManager().unwrap(Session.class);
+    }
+
+    public void flush() {
+        getEntityManager().flush();
     }
 }

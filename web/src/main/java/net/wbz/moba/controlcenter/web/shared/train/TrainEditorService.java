@@ -2,16 +2,18 @@ package net.wbz.moba.controlcenter.web.shared.train;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
+import net.wbz.moba.controlcenter.web.guice.MyGuiceServletConfig;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
  * @author Daniel Tuerk
  */
-@RemoteServiceRelativePath("traineditor")
+@RemoteServiceRelativePath(MyGuiceServletConfig.SERVICE_TRAIN_EDITOR)
 public interface TrainEditorService extends RemoteService {
 
-    List<Train> getTrains();
+    Collection<Train> getTrains();
 
     Train getTrain(int address);
 

@@ -5,7 +5,6 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.web.bindery.requestfactory.shared.Receiver;
 import de.novanic.eventservice.client.event.Event;
 import de.novanic.eventservice.client.event.listener.RemoteEventListener;
 import net.wbz.moba.controlcenter.web.client.EventReceiver;
@@ -22,7 +21,6 @@ import org.gwtbootstrap3.extras.toggleswitch.client.ui.ToggleSwitch;
 import org.gwtbootstrap3.extras.toggleswitch.client.ui.base.constants.ColorType;
 
 import java.util.Collection;
-import java.util.List;
 
 /**
  * @author Daniel Tuerk
@@ -189,14 +187,14 @@ public class StatePanel extends org.gwtbootstrap3.client.ui.gwt.FlowPanel {
             @Override
             public void onSuccess(Boolean connected) {
                 if (connected) {
-                    RequestUtils.getInstance().getBusRequest().getDevices(new AsyncCallback<List<DeviceInfo>>() {
+                    RequestUtils.getInstance().getBusRequest().getDevices(new AsyncCallback<Collection<DeviceInfo>>() {
                         @Override
                         public void onFailure(Throwable caught) {
 
                         }
 
                         @Override
-                        public void onSuccess(List<DeviceInfo> result) {
+                        public void onSuccess(Collection<DeviceInfo> result) {
                             for (DeviceInfo deviceInfo : result) {
                                 if (deviceInfo.isConnected()) {
                                     updateDeviceConnectionState(deviceInfo, true);

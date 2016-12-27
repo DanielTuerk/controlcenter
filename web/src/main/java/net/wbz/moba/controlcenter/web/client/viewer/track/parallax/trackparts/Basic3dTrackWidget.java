@@ -1,9 +1,9 @@
 package net.wbz.moba.controlcenter.web.client.viewer.track.parallax.trackparts;
 
 import net.wbz.moba.controlcenter.web.client.model.track.BlockPart;
-import net.wbz.moba.controlcenter.web.server.persist.construction.track.TrackPartEntity;
-import net.wbz.moba.controlcenter.web.shared.track.model.TrackPart;
-import net.wbz.moba.controlcenter.web.shared.track.model.TrackPartConfiguration;
+import net.wbz.moba.controlcenter.web.server.persist.construction.track.AbstractTrackPartEntity;
+import net.wbz.moba.controlcenter.web.shared.track.model.AbstractTrackPart;
+import net.wbz.moba.controlcenter.web.shared.track.model.BusDataConfiguration;
 import thothbot.parallax.core.client.textures.Texture;
 import thothbot.parallax.core.shared.geometries.BoxGeometry;
 import thothbot.parallax.core.shared.materials.Material;
@@ -14,7 +14,7 @@ import thothbot.parallax.core.shared.math.Vector3;
 import thothbot.parallax.core.shared.objects.Mesh;
 
 /**
- * Basic widget for the 3D representation of a {@link TrackPartEntity}.
+ * Basic widget for the 3D representation of a {@link AbstractTrackPartEntity}.
  * <p/>
  * Mesh to show a box in the grid system with an material texture. The railway are two mesh for the left and right side.
  * As implementation of {@link net.wbz.moba.controlcenter.web.client.model.track.BlockPart} the railway meshes are
@@ -22,7 +22,7 @@ import thothbot.parallax.core.shared.objects.Mesh;
  *
  * @author Daniel Tuerk
  */
-public class Basic3dTrackWidget<T extends TrackPart> extends Mesh implements BlockPart {
+public class Basic3dTrackWidget<T extends AbstractTrackPart> extends Mesh implements BlockPart {
 
     /**
      * Size in as box in the grid.
@@ -50,7 +50,7 @@ public class Basic3dTrackWidget<T extends TrackPart> extends Mesh implements Blo
     private final Mesh railwayMeshRight;
 
     /**
-     * Type of {@link TrackPartEntity} which will be presented of the
+     * Type of {@link AbstractTrackPartEntity} which will be presented of the
      * extending 3D widget.
      */
     private final T trackPart;
@@ -59,7 +59,7 @@ public class Basic3dTrackWidget<T extends TrackPart> extends Mesh implements Blo
     /**
      * Create the 3D model for the grid with the default states.
      *
-     * @param trackPart {@link TrackPartEntity}
+     * @param trackPart {@link AbstractTrackPartEntity}
      */
     public Basic3dTrackWidget(T trackPart) {
         this.trackPart = trackPart;
@@ -149,8 +149,8 @@ public class Basic3dTrackWidget<T extends TrackPart> extends Mesh implements Blo
         railwayMaterial.setColor(new Color(color));
     }
 
-    public void updateFunctionState(TrackPartConfiguration configuration, boolean state) {
-        TrackPartConfiguration blockFunctionConfig = trackPart.getDefaultBlockFunctionConfig();
+    public void updateFunctionState(BusDataConfiguration configuration, boolean state) {
+        BusDataConfiguration blockFunctionConfig = trackPart.getBlockFunction();
         if (blockFunctionConfig != null && blockFunctionConfig.equals(configuration)) {
             if (state == blockFunctionConfig.isBitState()) {
                 usedBlock();

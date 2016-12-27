@@ -14,25 +14,26 @@ import net.wbz.moba.controlcenter.web.client.model.track.AbstractSvgTrackWidget;
 import net.wbz.moba.controlcenter.web.client.model.track.ModelManager;
 import net.wbz.moba.controlcenter.web.client.model.track.signal.AbstractSignalWidget;
 import net.wbz.moba.controlcenter.web.client.viewer.track.AbstractTrackViewerPanel;
-import net.wbz.moba.controlcenter.web.server.persist.construction.track.TrackPartEntity;
+import net.wbz.moba.controlcenter.web.server.persist.construction.track.AbstractTrackPartEntity;
 import net.wbz.moba.controlcenter.web.shared.bus.FeedbackBlockEvent;
-import net.wbz.moba.controlcenter.web.shared.track.model.TrackPart;
-import net.wbz.moba.controlcenter.web.shared.track.model.TrackPartConfiguration;
+import net.wbz.moba.controlcenter.web.shared.track.model.AbstractTrackPart;
+import net.wbz.moba.controlcenter.web.shared.track.model.BusDataConfiguration;
 import net.wbz.moba.controlcenter.web.shared.train.Train;
 import net.wbz.moba.controlcenter.web.shared.viewer.SignalFunctionStateEvent;
 import org.gwtbootstrap3.client.ui.Label;
 import org.gwtbootstrap3.client.ui.constants.LabelType;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
 /**
  * Panel for the track viewer.
  * <p/>
- * Loading the track and add all {@link TrackPartEntity}s to the panel.
+ * Loading the track and add all {@link AbstractTrackPartEntity}s to the panel.
  * Register the event listener to receive state changes of all added
- * {@link TrackPartEntity}s.
+ * {@link AbstractTrackPartEntity}s.
  *
  * @author Daniel Tuerk
  */
@@ -40,11 +41,11 @@ public class TrackViewerPanel extends AbstractTrackViewerPanel {
 
     private Label lblTrackPartConfig = new Label();
 
-    private Map<TrackPartConfiguration, List<AbstractSvgTrackWidget>> trackWidgetsOfConfiguration = Maps.newConcurrentMap();
+    private Map<BusDataConfiguration, List<AbstractSvgTrackWidget>> trackWidgetsOfConfiguration = Maps.newConcurrentMap();
     private List<AbstractSvgTrackWidget> trackWidgets = Lists.newArrayList();
     private List<AbstractSignalWidget> signalTrackWidgets = Lists.newArrayList();
 
-    private List<TrackPart> loadedTrackParts;
+    private List<AbstractTrackPart> loadedTrackParts;
 
     public TrackViewerPanel() {
 
@@ -72,15 +73,15 @@ public class TrackViewerPanel extends AbstractTrackViewerPanel {
             @Override
             public void onSuccess(final Boolean response) {
 
-                RequestUtils.getInstance().getTrackEditorRequest().loadTrack(new AsyncCallback<List<TrackPart>>() {
+                RequestUtils.getInstance().getTrackEditorRequest().loadTrack(new AsyncCallback<Collection<AbstractTrackPart>>() {
                     @Override
                     public void onFailure(Throwable caught) {
 
                     }
 
                     @Override
-                    public void onSuccess(List<TrackPart> trackParts) {
-                        loadedTrackParts = trackParts;
+                    public void onSuccess(Collection<AbstractTrackPart> trackParts) {
+                        loadedTrackParts = Lists.newArrayList(trackParts);
                         trackWidgetsOfConfiguration.clear();
                         signalTrackWidgets.clear();
 
@@ -88,7 +89,7 @@ public class TrackViewerPanel extends AbstractTrackViewerPanel {
                         int maxLeft = 0;
                         int percentage = PERCENTAGE_START_TRACK;
                         for (int i = 0; i < trackParts.size(); i++) {
-                            final TrackPart trackPart = trackParts.get(i);
+                            final AbstractTrackPart trackPart = loadedTrackParts.get(i);
                             if (i + 1 % 6 == 0) {
                                 percentage += 10;
                                 if (percentage > PERCENTAGE_MAX) {
@@ -96,7 +97,7 @@ public class TrackViewerPanel extends AbstractTrackViewerPanel {
                                 }
                             }
 
-                            AbstractSvgTrackWidget trackWidget = ModelManager.getInstance().getWidgetOf(trackPart);
+                            final AbstractSvgTrackWidget trackWidget = ModelManager.getInstance().getWidgetOf(trackPart);
                             trackWidget.setEnabled(response);
 
                             trackWidgets.add(trackWidget);
@@ -104,7 +105,7 @@ public class TrackViewerPanel extends AbstractTrackViewerPanel {
                             if (trackWidget instanceof AbstractSignalWidget) {
                                 signalTrackWidgets.add((AbstractSignalWidget) trackWidget);
                             } else {
-                                for (TrackPartConfiguration configuration : trackPart.getConfigurationsOfFunctions()) {
+                                for (BusDataConfiguration configuration : trackPart.getConfigurationsOfFunctions()) {
 
                                     // ignore default configs of track widget to register event handler
                                     if (configuration.isValid()) {
@@ -131,7 +132,7 @@ public class TrackViewerPanel extends AbstractTrackViewerPanel {
                             widget.addMouseOverHandler(new MouseOverHandler() {
                                 @Override
                                 public void onMouseOver(MouseOverEvent event) {
-                                    lblTrackPartConfig.setText(trackPart.getConfigurationInfo());
+                                    lblTrackPartConfig.setText(trackWidget.getConfigurationInfo());
                                 }
                             });
                             addTrackWidget(widget, trackPosition.getLeft(), trackPosition.getTop());
@@ -159,7 +160,7 @@ public class TrackViewerPanel extends AbstractTrackViewerPanel {
     }
 
     @Override
-    protected void updateTrackPartState(TrackPartConfiguration configuration, boolean state) {
+    protected void updateTrackPartState(BusDataConfiguration configuration, boolean state) {
         if (trackWidgetsOfConfiguration.containsKey(configuration)) {
             for (AbstractSvgTrackWidget controlSvgTrackWidget : trackWidgetsOfConfiguration.get(configuration)) {
                 controlSvgTrackWidget.updateFunctionState(configuration, state);
@@ -186,7 +187,7 @@ public class TrackViewerPanel extends AbstractTrackViewerPanel {
 
             @Override
             public void onSuccess(Train result) {
-                TrackPartConfiguration configAsIdentifier = new TrackPartConfiguration(1, address, block, true);
+                BusDataConfiguration configAsIdentifier = new BusDataConfiguration(1, address, block, true);
                 if (trackWidgetsOfConfiguration.containsKey(configAsIdentifier)) {
                     for (AbstractSvgTrackWidget svgTrackWidget : trackWidgetsOfConfiguration.get(configAsIdentifier)) {
                         if (svgTrackWidget instanceof AbstractBlockSvgTrackWidget) {

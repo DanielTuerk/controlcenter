@@ -1,14 +1,14 @@
 package net.wbz.moba.controlcenter.web.client.viewer.track.parallax;
 
 import net.wbz.moba.controlcenter.web.client.viewer.track.parallax.trackparts.*;
-import net.wbz.moba.controlcenter.web.server.persist.construction.track.TrackPartEntity;
+import net.wbz.moba.controlcenter.web.server.persist.construction.track.AbstractTrackPartEntity;
 import net.wbz.moba.controlcenter.web.shared.track.model.*;
 import thothbot.parallax.core.shared.math.Vector3;
 
 /**
  * Factory to create the
  * {@link net.wbz.moba.controlcenter.web.client.viewer.track.parallax.trackparts.Basic3dTrackWidget} implementation for
- * the type of {@link TrackPartEntity}.
+ * the type of {@link AbstractTrackPartEntity}.
  *
  * @author Daniel Tuerk
  */
@@ -20,12 +20,12 @@ public class TrackPartGeometryFactory {
     /**
      * Create and return the
      * {@link net.wbz.moba.controlcenter.web.client.viewer.track.parallax.trackparts.Basic3dTrackWidget} implementation
-     * for the given {@link TrackPartEntity} model.
+     * for the given {@link AbstractTrackPartEntity} model.
      *
-     * @param trackPart {@link TrackPartEntity}
+     * @param trackPart {@link AbstractTrackPartEntity}
      * @return {@link net.wbz.moba.controlcenter.web.client.viewer.track.parallax.trackparts.Basic3dTrackWidget}
      */
-    public Basic3dTrackWidget<?> getTrackWidget(TrackPart trackPart) {
+    public Basic3dTrackWidget<?> getTrackWidget(AbstractTrackPart trackPart) {
         int x = (trackPart.getGridPosition().getX() + 1) * Basic3dTrackWidget.GEOM_SIZE - (Basic3dTrackWidget.GEOM_SIZE / 2);
         int y = (trackPart.getGridPosition().getY() + 1) * Basic3dTrackWidget.GEOM_SIZE - (Basic3dTrackWidget.GEOM_SIZE / 2);
         Vector3 vector3 = new Vector3(x, -y, 0d);

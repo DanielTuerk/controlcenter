@@ -26,7 +26,7 @@ import org.gwtbootstrap3.client.ui.gwt.ButtonCell;
 import org.gwtbootstrap3.client.ui.gwt.CellTable;
 import org.gwtbootstrap3.extras.notify.client.ui.Notify;
 
-import java.util.List;
+import java.util.Collection;
 import java.util.Map;
 
 /**
@@ -199,14 +199,14 @@ public class DeviceConfigModal extends Modal {
     }
 
     private void reloadDeviceList() {
-        RequestUtils.getInstance().getBusRequest().getDevices(new AsyncCallback<List<DeviceInfo>>() {
+        RequestUtils.getInstance().getBusRequest().getDevices(new AsyncCallback<Collection<DeviceInfo>>() {
             @Override
             public void onFailure(Throwable caught) {
 
             }
 
             @Override
-            public void onSuccess(List<DeviceInfo> response) {
+            public void onSuccess(Collection<DeviceInfo> response) {
                 // reset devices to load fresh list
                 dataProvider.getList().clear();
                 btnDeleteActions.clear();

@@ -2,13 +2,14 @@ package net.wbz.moba.controlcenter.web.shared.bus;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
+import net.wbz.moba.controlcenter.web.guice.MyGuiceServletConfig;
 
-import java.util.List;
+import java.util.Collection;
 
 /**
  * @author Daniel Tuerk
  */
-@RemoteServiceRelativePath("bus")
+@RemoteServiceRelativePath(MyGuiceServletConfig.SERVICE_BUS)
 public interface BusService extends RemoteService {
 
     void connectBus();
@@ -23,7 +24,7 @@ public interface BusService extends RemoteService {
 
     void deleteDevice(DeviceInfo deviceInfo);
 
-    List<DeviceInfo> getDevices();
+    Collection<DeviceInfo> getDevices();
 
     boolean getRailVoltage();
 
@@ -69,5 +70,5 @@ public interface BusService extends RemoteService {
 
     void stopPlayer();
 
-    List<String> getRecords();
+    Collection<String> getRecords();
 }

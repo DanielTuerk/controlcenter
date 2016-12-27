@@ -1,16 +1,18 @@
 package net.wbz.moba.controlcenter.web.client.viewer.track.parallax;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Widget;
 import net.wbz.moba.controlcenter.web.client.RequestUtils;
 import net.wbz.moba.controlcenter.web.client.viewer.track.AbstractTrackViewerPanel;
 import net.wbz.moba.controlcenter.web.client.viewer.track.parallax.trackparts.Basic3dTrackWidget;
-import net.wbz.moba.controlcenter.web.shared.track.model.TrackPart;
-import net.wbz.moba.controlcenter.web.shared.track.model.TrackPartConfiguration;
+import net.wbz.moba.controlcenter.web.shared.track.model.AbstractTrackPart;
+import net.wbz.moba.controlcenter.web.shared.track.model.BusDataConfiguration;
 import thothbot.parallax.core.client.RenderingPanel;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -24,7 +26,7 @@ public class TrackViewer3dPanel extends AbstractTrackViewerPanel {
     private TrackViewerScene animatedScene;
     private RenderingPanel renderingPanel;
 
-    private Map<TrackPartConfiguration, List<Basic3dTrackWidget>> trackWidgetsOfConfiguration = Maps.newConcurrentMap();
+    private Map<BusDataConfiguration, List<Basic3dTrackWidget>> trackWidgetsOfConfiguration = Maps.newConcurrentMap();
 
     public TrackViewer3dPanel() {
         renderingPanel = new RenderingPanel();
@@ -49,20 +51,20 @@ public class TrackViewer3dPanel extends AbstractTrackViewerPanel {
 
             @Override
             public void onSuccess(Boolean response) {
-                RequestUtils.getInstance().getTrackEditorRequest().loadTrack(new AsyncCallback<List<TrackPart>>() {
+                RequestUtils.getInstance().getTrackEditorRequest().loadTrack(new AsyncCallback<Collection<AbstractTrackPart>>() {
                     @Override
                     public void onFailure(Throwable caught) {
 
                     }
 
                     @Override
-                    public void onSuccess(List<TrackPart> trackParts) {
+                    public void onSuccess(Collection<AbstractTrackPart> trackParts) {
                         trackWidgetsOfConfiguration.clear();
 
-                        for (TrackPart trackPart : trackParts) {
+                        for (AbstractTrackPart trackPart : trackParts) {
                             Basic3dTrackWidget trackWidget = animatedScene.addTrackWidget(trackPart);
 
-                            for (TrackPartConfiguration configuration : trackPart.getConfigurationsOfFunctions()) {
+                            for (BusDataConfiguration configuration : trackPart.getConfigurationsOfFunctions()) {
 
                                 // ignore default configs of track widget to register event handler
                                 if (configuration.isValid()) {
@@ -79,7 +81,7 @@ public class TrackViewer3dPanel extends AbstractTrackViewerPanel {
 
                         }
                         RequestUtils.getInstance().getTrackEditorRequest()
-                                .registerConsumersByConnectedDeviceForTrackParts(trackParts, RequestUtils.VOID_ASYNC_CALLBACK);
+                                .registerConsumersByConnectedDeviceForTrackParts(Lists.newArrayList(trackParts), RequestUtils.VOID_ASYNC_CALLBACK);
 
                         animatedScene.centerCamera();
                     }
@@ -89,7 +91,7 @@ public class TrackViewer3dPanel extends AbstractTrackViewerPanel {
     }
 
     @Override
-    protected void updateTrackPartState(TrackPartConfiguration configuration, boolean state) {
+    protected void updateTrackPartState(BusDataConfiguration configuration, boolean state) {
         if (trackWidgetsOfConfiguration.containsKey(configuration)) {
             for (Basic3dTrackWidget controlSvgTrackWidget : trackWidgetsOfConfiguration.get(configuration)) {
                 controlSvgTrackWidget.updateFunctionState(configuration, state);

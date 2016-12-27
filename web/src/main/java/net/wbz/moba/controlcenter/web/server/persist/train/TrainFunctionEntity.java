@@ -1,14 +1,10 @@
 package net.wbz.moba.controlcenter.web.server.persist.train;
 
-import com.google.gwt.user.client.rpc.IsSerializable;
 import com.googlecode.jmapper.annotations.JMap;
 import net.wbz.moba.controlcenter.web.server.persist.AbstractEntity;
-import net.wbz.moba.controlcenter.web.shared.Identity;
 import net.wbz.moba.controlcenter.web.shared.train.TrainFunction;
 
-
 import javax.persistence.*;
-import java.io.Serializable;
 
 /**
  * Function of a {@link TrainEntity}. For each train the functions are created
@@ -20,13 +16,24 @@ import java.io.Serializable;
 public class TrainFunctionEntity extends AbstractEntity {
 
 
-     @JMap
+    /**
+     * The mapped function key for the train.
+     */
+    @JMap
     @Enumerated(EnumType.ORDINAL)
     @Column(name = "function_name")
     private TrainFunction.FUNCTION function;
 
-    @Transient
-    private boolean state;
+    @JMap
+    @Column(name = "function_alias")
+    private String alias;
+
+    /**
+     * TODO address, bit
+     */
+
+//    @Transient
+//    private boolean state;
 
 //    @ManyToMany(mappedBy = "functions", fetch = FetchType.LAZY)
 //    private List<TrainEntity> trains;
@@ -34,10 +41,10 @@ public class TrainFunctionEntity extends AbstractEntity {
     public TrainFunctionEntity() {
     }
 
-    public TrainFunctionEntity(TrainFunction.FUNCTION function, boolean state) {
-        this.function = function;
-        this.state = state;
-    }
+//    public TrainFunctionEntity(TrainFunction.FUNCTION function, boolean state) {
+//        this.function = function;
+//        this.state = state;
+//    }
 
 //    public List<TrainEntity> getTrains() {
 //        return trains;
@@ -55,12 +62,19 @@ public class TrainFunctionEntity extends AbstractEntity {
         this.function = function;
     }
 
-    public boolean isState() {
-        return state;
+//    public boolean isState() {
+//        return state;
+//    }
+//
+//    public void setState(boolean state) {
+//        this.state = state;
+//    }
+
+    public String getAlias() {
+        return alias;
     }
 
-    public void setState(boolean state) {
-        this.state = state;
+    public void setAlias(String alias) {
+        this.alias = alias;
     }
-
 }

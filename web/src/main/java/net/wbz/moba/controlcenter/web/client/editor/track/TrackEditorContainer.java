@@ -14,13 +14,14 @@ import net.wbz.moba.controlcenter.web.client.RequestUtils;
 import net.wbz.moba.controlcenter.web.client.model.track.AbsoluteTrackPosition;
 import net.wbz.moba.controlcenter.web.client.model.track.AbstractSvgTrackWidget;
 import net.wbz.moba.controlcenter.web.client.model.track.ModelManager;
-import net.wbz.moba.controlcenter.web.shared.track.model.TrackPart;
+import net.wbz.moba.controlcenter.web.shared.track.model.AbstractTrackPart;
 import org.gwtbootstrap3.client.ui.AnchorListItem;
 import org.gwtbootstrap3.client.ui.NavPills;
 import org.gwtbootstrap3.client.ui.constants.IconType;
 import org.gwtbootstrap3.extras.notify.client.ui.Notify;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
@@ -68,7 +69,7 @@ public class TrackEditorContainer extends FlowPanel {
         saveAnchorListItem.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                List<TrackPart> trackParts = new ArrayList<>();
+                List<AbstractTrackPart> trackParts = new ArrayList<>();
                 for (int i = 0; i < getBoundaryPanel().getWidgetCount(); i++) {
                     Widget paletteWidget = getBoundaryPanel().getWidget(i);
                     if (paletteWidget instanceof PaletteWidget) {
@@ -88,7 +89,7 @@ public class TrackEditorContainer extends FlowPanel {
                     }
                 }
 
-                for (TrackPart trackPart : trackParts) {
+                for (AbstractTrackPart trackPart : trackParts) {
                 }
                 RequestUtils.getInstance().getTrackEditorRequest().saveTrack(trackParts, new AsyncCallback<Void>() {
                     @Override
@@ -130,7 +131,7 @@ public class TrackEditorContainer extends FlowPanel {
             public void onClick(ClickEvent event) {
                 for (Widget selectedWidget : dragController.getSelectedWidgets()) {
 
-                    new EditWidgetDoubleClickHandler((EditTrackWidgetHandler) ((EditorPaletteWidget) selectedWidget)
+                    new EditWidgetDoubleClickHandler(((EditorPaletteWidget) selectedWidget)
                             .getWidget()).onDoubleClick(null);
                     // boundaryPanel.remove(selectedWidget);
                     break;
@@ -165,16 +166,16 @@ public class TrackEditorContainer extends FlowPanel {
             boundaryPanel.remove(i);
         }
 
-        RequestUtils.getInstance().getTrackEditorRequest().loadTrack(new AsyncCallback<List<TrackPart>>() {
+        RequestUtils.getInstance().getTrackEditorRequest().loadTrack(new AsyncCallback<Collection<AbstractTrackPart>>() {
             @Override
             public void onFailure(Throwable caught) {
 
             }
 
             @Override
-            public void onSuccess(List<TrackPart> trackParts) {
+            public void onSuccess(Collection<AbstractTrackPart> trackParts) {
                 Log.info("load track success " + new Date().toString());
-                for (TrackPart trackPart : trackParts) {
+                for (AbstractTrackPart trackPart : trackParts) {
                     AbstractSvgTrackWidget trackWidget = ModelManager.getInstance().getWidgetOf(trackPart);
                     trackWidget.setEnabled(true);
                     AbsoluteTrackPosition trackPosition = trackWidget.getTrackPosition(trackPart.getGridPosition(),

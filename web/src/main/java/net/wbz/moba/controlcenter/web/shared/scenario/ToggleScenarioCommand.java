@@ -1,16 +1,16 @@
 package net.wbz.moba.controlcenter.web.shared.scenario;
 
-import net.wbz.moba.controlcenter.web.server.persist.construction.track.TrackPartConfigurationEntity;
+import net.wbz.moba.controlcenter.web.server.persist.construction.track.BusDataConfigurationEntity;
 
 /**
  * @author Daniel Tuerk
  */
 public class ToggleScenarioCommand extends ScenarioCommand {
 
-    private TrackPartConfigurationEntity configuration;
+    private BusDataConfigurationEntity configuration;
     private boolean state;
 
-    public ToggleScenarioCommand(TrackPartConfigurationEntity configuration, boolean state) {
+    public ToggleScenarioCommand(BusDataConfigurationEntity configuration, boolean state) {
         this.configuration = configuration;
         this.state = state;
     }
@@ -18,11 +18,11 @@ public class ToggleScenarioCommand extends ScenarioCommand {
     public ToggleScenarioCommand() {
     }
 
-    public TrackPartConfigurationEntity getConfiguration() {
+    public BusDataConfigurationEntity getConfiguration() {
         return configuration;
     }
 
-    public void setConfiguration(TrackPartConfigurationEntity configuration) {
+    public void setConfiguration(BusDataConfigurationEntity configuration) {
         this.configuration = configuration;
     }
 
@@ -41,7 +41,7 @@ public class ToggleScenarioCommand extends ScenarioCommand {
 
     @Override
     public void parseParameters(String... text) {
-        configuration = new TrackPartConfigurationEntity();
+        configuration = new BusDataConfigurationEntity();
         configuration.setAddress(Integer.parseInt(text[0]));
         configuration.setBit(Integer.parseInt(text[1]));
         state = Boolean.parseBoolean(text[2]);

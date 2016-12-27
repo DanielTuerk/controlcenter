@@ -14,6 +14,8 @@ import org.gwtbootstrap3.client.ui.Button;
 import org.gwtbootstrap3.client.ui.LinkedGroup;
 import org.gwtbootstrap3.client.ui.TextBox;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -46,15 +48,20 @@ abstract class WelcomeContainer extends Composite {
 
     @Override
     protected void onLoad() {
+        loadConstructions();
+    }
+
+    private void loadConstructions() {
+        listGroupConstructions.clear();
         RequestUtils.getInstance().getConstructionRequest().loadConstructions(
-                new AsyncCallback<List<Construction>>() {
+                new AsyncCallback<Collection<Construction>>() {
                     @Override
                     public void onFailure(Throwable caught) {
 
                     }
 
                     @Override
-                    public void onSuccess(List<Construction> result) {
+                    public void onSuccess(Collection<Construction> result) {
                         for (final Construction construction : result) {
                             Button btnConstructionEntry = new Button();
                             btnConstructionEntry.setText(construction.getName());
@@ -84,7 +91,9 @@ abstract class WelcomeContainer extends Composite {
 
             @Override
             public void onSuccess(Void result) {
-                updateCurrentConstruction(construction);
+                txtCreateName.clear();
+                loadConstructions();
+//                updateCurrentConstruction(construction);
             }
         });
     }

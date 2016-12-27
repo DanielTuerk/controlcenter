@@ -5,21 +5,21 @@
     http://java.sun.com/xml/ns/persistence/persistence_1_0.xsd" version="1.0">
 
     <persistence-unit name="derby_db" transaction-type="RESOURCE_LOCAL">
-        <provider>org.hibernate.ejb.HibernatePersistence</provider>
+        <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
 
         <!-- common models -->
-        <class>net.wbz.moba.controlcenter.web.shared.constrution.Construction</class>
-        <class>net.wbz.moba.controlcenter.web.server.persist.config.ConfigValue</class>
+        <class>net.wbz.moba.controlcenter.web.server.persist.construction.ConstructionEntity</class>
+        <class>net.wbz.moba.controlcenter.web.server.persist.config.ConfigValueEntity</class>
         <class>net.wbz.moba.controlcenter.web.server.persist.train.TrainEntity</class>
         <class>net.wbz.moba.controlcenter.web.server.persist.train.TrainFunctionEntity</class>
         <class>net.wbz.moba.controlcenter.web.server.persist.device.DeviceInfoEntity</class>
 
         <!-- track configuration models -->
-        <class>net.wbz.moba.controlcenter.web.server.persist.construction.track.TrackPartEntity</class>
+        <class>net.wbz.moba.controlcenter.web.server.persist.construction.track.AbstractTrackPartEntity</class>
         <class>net.wbz.moba.controlcenter.web.server.persist.construction.track.TrackPartFunctionEntity</class>
         <class>net.wbz.moba.controlcenter.web.server.persist.construction.track.GridPositionEntity</class>
         <class>net.wbz.moba.controlcenter.web.server.persist.construction.track.EventConfigurationEntity</class>
-        <class>net.wbz.moba.controlcenter.web.server.persist.construction.track.TrackPartConfigurationEntity</class>
+        <class>net.wbz.moba.controlcenter.web.server.persist.construction.track.BusDataConfigurationEntity</class>
 
         <!-- track part models -->
         <class>net.wbz.moba.controlcenter.web.server.persist.construction.track.CurveEntity</class>

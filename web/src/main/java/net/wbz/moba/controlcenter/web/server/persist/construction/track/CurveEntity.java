@@ -1,7 +1,10 @@
 package net.wbz.moba.controlcenter.web.server.persist.construction.track;
 
+import com.googlecode.jmapper.annotations.JMap;
+import net.wbz.moba.controlcenter.web.shared.track.model.AbstractTrackPart;
 import net.wbz.moba.controlcenter.web.shared.track.model.Curve;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
@@ -10,11 +13,11 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "trackpart_curve")
-public class CurveEntity extends TrackPartEntity {
+public class CurveEntity extends AbstractTrackPartEntity {
 
-//    public enum DIRECTION {BOTTOM_RIGHT, BOTTOM_LEFT, TOP_LEFT, TOP_RIGHT}
-
-    public Curve.DIRECTION direction;
+    @JMap
+    @Column
+    private Curve.DIRECTION direction;
 
     public Curve.DIRECTION getDirection() {
         return direction;
@@ -24,5 +27,8 @@ public class CurveEntity extends TrackPartEntity {
         this.direction = direction;
     }
 
-
+    @Override
+    public Class<? extends AbstractTrackPart> getDefaultDtoClass() {
+        return Curve.class;
+    }
 }

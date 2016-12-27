@@ -1,8 +1,8 @@
 package net.wbz.moba.controlcenter.web.client.viewer.track.parallax;
 
 import net.wbz.moba.controlcenter.web.client.viewer.track.parallax.trackparts.Basic3dTrackWidget;
-import net.wbz.moba.controlcenter.web.server.persist.construction.track.TrackPartEntity;
-import net.wbz.moba.controlcenter.web.shared.track.model.TrackPart;
+import net.wbz.moba.controlcenter.web.server.persist.construction.track.AbstractTrackPartEntity;
+import net.wbz.moba.controlcenter.web.shared.track.model.AbstractTrackPart;
 import thothbot.parallax.core.client.AnimatedScene;
 import thothbot.parallax.core.client.controls.TrackballControls;
 import thothbot.parallax.core.shared.cameras.PerspectiveCamera;
@@ -22,7 +22,7 @@ import thothbot.parallax.core.shared.objects.Mesh;
 
 /**
  * Scene to display the world with an grid system.
- * The grid represents the available positions for the {@link TrackPartEntity}s.
+ * The grid represents the available positions for the {@link AbstractTrackPartEntity}s.
  *
  * @author Daniel Tuerk
  */
@@ -145,7 +145,7 @@ public class TrackViewerScene extends AnimatedScene {
     }
 
 
-    public Basic3dTrackWidget addTrackWidget(TrackPart widget) {
+    public Basic3dTrackWidget addTrackWidget(AbstractTrackPart widget) {
         Basic3dTrackWidget trackWidget = trackPartGeometryFactory.getTrackWidget(widget);
         getScene().add(trackWidget);
         return trackWidget;

@@ -25,8 +25,7 @@ public class TrainEntity extends AbstractEntity {
     @JMap
     private String name;
 
-    @NotNull
-    @ManyToMany(cascade = {CascadeType.ALL}, fetch = FetchType.EAGER)
+    @OneToMany(cascade = {CascadeType.ALL}, fetch = FetchType.LAZY)
 //    @JoinTable(joinColumns = {@JoinColumn(name = "ID")}, inverseJoinColumns = {@JoinColumn(name = "TRAINFUNCTION_ID")})
     private Set<TrainFunctionEntity> functions;
 
@@ -43,11 +42,11 @@ public class TrainEntity extends AbstractEntity {
         this.name = name;
     }
 
-    public int getAddress() {
+    public Integer getAddress() {
         return address;
     }
 
-    public void setAddress(int address) {
+    public void setAddress(Integer address) {
         this.address = address;
     }
 

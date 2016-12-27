@@ -6,16 +6,14 @@ import net.wbz.moba.controlcenter.web.server.persist.AbstractEntity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
 
 /**
- * TrackPartConfigurationEntity model of an function for the {@link TrackPartEntity}.
+ * BusDataConfigurationEntity model of an function for the {@link AbstractTrackPartEntity}.
  *
  * @author Daniel Tuerk
  */
-@Entity
-public class TrackPartConfigurationEntity extends AbstractEntity {
+@Entity(name = "busdata_config")
+public class BusDataConfigurationEntity extends AbstractEntity {
 
     @JMap
     @Column(name = "config_bus")
@@ -29,16 +27,18 @@ public class TrackPartConfigurationEntity extends AbstractEntity {
     @Column(name = "config_bit")
     private int bit;
 
+    @JMap
+    @Column(name = "config_bit_state")
     private boolean bitState;
 
-    public TrackPartConfigurationEntity(int bus, int address, int bit, boolean bitState) {
+    public BusDataConfigurationEntity(int bus, int address, int bit, boolean bitState) {
         this.bus = bus;
         this.address = address;
         this.bit = bit;
         this.bitState = bitState;
     }
 
-    public TrackPartConfigurationEntity() {
+    public BusDataConfigurationEntity() {
     }
 
 
@@ -80,7 +80,7 @@ public class TrackPartConfigurationEntity extends AbstractEntity {
 
     @Override
     public String toString() {
-        return "TrackPartConfigurationEntity{" +
+        return "BusDataConfigurationEntity{" +
                 "bus=" + bus +
                 ", address=" + address +
                 ", bit=" + bit +
@@ -93,7 +93,7 @@ public class TrackPartConfigurationEntity extends AbstractEntity {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        TrackPartConfigurationEntity that = (TrackPartConfigurationEntity) o;
+        BusDataConfigurationEntity that = (BusDataConfigurationEntity) o;
 
         if (address != that.address) return false;
         if (bit != that.bit) return false;

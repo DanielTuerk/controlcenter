@@ -1,13 +1,16 @@
 package net.wbz.moba.controlcenter.web.shared.train;
 
+import com.googlecode.jmapper.annotations.JMap;
 import net.wbz.moba.controlcenter.web.shared.track.model.AbstractDto;
 
 /**
  * @author Daniel Tuerk
  */
-public class Train extends AbstractDto{
+public class Train extends AbstractDto {
 
+    @JMap
     private Integer address;
+    @JMap
     private String name;
 
     private int drivingLevel = 0;
@@ -15,12 +18,12 @@ public class Train extends AbstractDto{
     private boolean forward;
 
 
-    public int getAddress() {
+    public Integer getAddress() {
         return address;
     }
 
-    public void setAddress(int address) {
-        this.address = address;
+    public byte getAddressByte() {
+        return address != null ? address.byteValue() : (byte) -1;
     }
 
     public int getDrivingLevel() {

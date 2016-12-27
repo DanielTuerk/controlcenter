@@ -5,11 +5,10 @@ import com.google.common.collect.Maps;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import com.google.inject.persist.Transactional;
 import net.wbz.moba.controlcenter.web.server.EventBroadcaster;
 import net.wbz.moba.controlcenter.web.server.persist.device.DeviceInfoDao;
 import net.wbz.moba.controlcenter.web.server.persist.device.DeviceInfoEntity;
-import net.wbz.moba.controlcenter.web.server.web.DtoMapper;
+import net.wbz.moba.controlcenter.web.server.web.DataMapper;
 import net.wbz.moba.controlcenter.web.shared.bus.*;
 import net.wbz.moba.controlcenter.web.shared.viewer.RailVoltageEvent;
 import net.wbz.selectrix4java.bus.consumption.AllBusDataConsumer;
@@ -49,7 +48,7 @@ public class BusServiceImpl extends RemoteServiceServlet implements BusService {
     private BusDataPlayer busDataPlayer;
     private final Map<DeviceInfo, Device> storedDevices = Maps.newHashMap();
     private final DeviceInfoDao deviceInfoDao;
-    private final DtoMapper<DeviceInfo, DeviceInfoEntity> dtoMapper;
+    private final DataMapper<DeviceInfo, DeviceInfoEntity> dtoMapper;
 
     @Inject
     public BusServiceImpl(DeviceManager deviceManager, final EventBroadcaster eventBroadcaster,
@@ -59,7 +58,7 @@ public class BusServiceImpl extends RemoteServiceServlet implements BusService {
         this.deviceRecorder = deviceRecorder;
         this.deviceInfoDao = deviceInfoDao;
 
-        this.dtoMapper = new DtoMapper<>();
+        this.dtoMapper = new DataMapper<>(DeviceInfo.class, DeviceInfoEntity.class);
 
         this.allBusDataConsumer = new AllBusDataConsumer() {
             @Override
@@ -101,7 +100,7 @@ public class BusServiceImpl extends RemoteServiceServlet implements BusService {
     }
 
     private void registerDevice(DeviceInfoEntity deviceInfo) {
-        storedDevices.put(dtoMapper.transform(deviceInfo), deviceManager.registerDevice(DeviceManager.DEVICE_TYPE.valueOf(
+        storedDevices.put(dtoMapper.transformSource(deviceInfo), deviceManager.registerDevice(DeviceManager.DEVICE_TYPE.valueOf(
                 deviceInfo.getType().name()), deviceInfo.getKey(), SerialDevice.DEFAULT_BAUD_RATE_FCC));
     }
 
@@ -127,7 +126,7 @@ public class BusServiceImpl extends RemoteServiceServlet implements BusService {
     public void deleteDevice(DeviceInfo deviceInfo) {
         Device device = deviceManager.getDeviceById(deviceInfo.getKey());
 
-        deviceInfoDao.delete(deviceInfoDao.getById(deviceInfo.getId()));
+        deviceInfoDao.delete(deviceInfoDao.findById(deviceInfo.getId()));
 
         deviceManager.removeDevice(device);
 
@@ -137,7 +136,7 @@ public class BusServiceImpl extends RemoteServiceServlet implements BusService {
 
     public List<DeviceInfo> getDevices() {
         return Lists.newArrayList(storedDevices.keySet());
-//        return Lists.newArrayList(Lists.transform(deviceManager.getDevices(), new Function<Device, DeviceInfoEntity>() {
+//        return Lists.newArrayList(Lists.transformSource(deviceManager.getDevices(), new Function<Device, DeviceInfoEntity>() {
 //            @Override
 //            public DeviceInfoEntity apply(@Nullable Device input) {
 //                return getDeviceInfo(input);

@@ -4,16 +4,19 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.google.inject.Singleton;
+import com.google.inject.persist.Transactional;
 import net.wbz.moba.controlcenter.web.server.EventBroadcaster;
-import net.wbz.moba.controlcenter.web.server.persist.construction.track.SignalEntity;
-import net.wbz.moba.controlcenter.web.server.persist.construction.track.TrackPartConfigurationEntity;
-import net.wbz.moba.controlcenter.web.server.persist.construction.track.TrackPartDao;
-import net.wbz.moba.controlcenter.web.server.persist.construction.track.TrackPartEntity;
-import net.wbz.moba.controlcenter.web.server.web.DtoMapper;
+import net.wbz.moba.controlcenter.web.server.persist.construction.ConstructionDao;
+import net.wbz.moba.controlcenter.web.server.persist.construction.ConstructionEntity;
+import net.wbz.moba.controlcenter.web.server.persist.construction.track.*;
+import net.wbz.moba.controlcenter.web.server.web.DataMapper;
+import net.wbz.moba.controlcenter.web.server.web.TrackPartDataMapper;
 import net.wbz.moba.controlcenter.web.server.web.constrution.ConstructionServiceImpl;
 import net.wbz.moba.controlcenter.web.shared.bus.FeedbackBlockEvent;
 import net.wbz.moba.controlcenter.web.shared.editor.TrackEditorService;
-import net.wbz.moba.controlcenter.web.shared.track.model.TrackPart;
+import net.wbz.moba.controlcenter.web.shared.track.model.AbstractTrackPart;
+import net.wbz.moba.controlcenter.web.shared.track.model.BusDataConfiguration;
+import net.wbz.moba.controlcenter.web.shared.viewer.TrackPartStateEvent;
 import net.wbz.selectrix4java.block.FeedbackBlockListener;
 import net.wbz.selectrix4java.bus.BusAddressBitListener;
 import net.wbz.selectrix4java.bus.BusAddressListener;
@@ -26,10 +29,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
-import javax.inject.Provider;
 import javax.persistence.EntityManager;
-import javax.persistence.Query;
+import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -49,18 +52,21 @@ public class TrackEditorServiceImpl extends RemoteServiceServlet implements Trac
             Maps.newConcurrentMap();
     private final DeviceManager deviceManager;
     private final EventBroadcaster eventBroadcaster;
-    private final Provider<EntityManager> entityManagerProvider;
-    private final DtoMapper<TrackPart, TrackPartEntity> dtoMapper = new DtoMapper<>();
+    private final DataMapper<? extends AbstractTrackPart, ? extends AbstractTrackPartEntity> dataMapper = new DataMapper<>(AbstractTrackPart.class, AbstractTrackPartEntity.class);
     private final TrackPartDao dao;
+    private final ConstructionDao constructionDao;
+    private final TrackPartDataMapper trackPartDataMapper;
+    private final DataMapper<BusDataConfiguration, BusDataConfigurationEntity> busDataMapper = new DataMapper<>(BusDataConfiguration.class, BusDataConfigurationEntity.class);
 
     @Inject
     public TrackEditorServiceImpl(ConstructionServiceImpl constructionService, DeviceManager deviceManager,
-                                  EventBroadcaster eventBroadcaster, Provider<EntityManager> entityManager, TrackPartDao dao) {
+                                  EventBroadcaster eventBroadcaster, TrackPartDao dao, ConstructionDao constructionDao, TrackPartDataMapper trackPartDataMapper) {
         this.constructionService = constructionService;
         this.eventBroadcaster = eventBroadcaster;
         this.deviceManager = deviceManager;
-        this.entityManagerProvider = entityManager;
         this.dao = dao;
+        this.constructionDao = constructionDao;
+        this.trackPartDataMapper = trackPartDataMapper;
 
         deviceManager.addDeviceConnectionListener(new DeviceConnectionListener() {
             @Override
@@ -113,53 +119,40 @@ public class TrackEditorServiceImpl extends RemoteServiceServlet implements Trac
     }
 
     @Override
-    public void saveTrack(List<TrackPart> trackParts) {
-        EntityManager entityManager = this.entityManagerProvider.get();
+    @Transactional
+    public void saveTrack(Collection<AbstractTrackPart> trackParts) {
+        ConstructionEntity constructionEntity = constructionDao.findById(constructionService.getCurrentConstruction().getId());
 
-//        Construction currentConstruction = constructionService.getCurrentConstruction();
-//        for (TrackPart trackPart : trackParts) {
-//            //TODO
-//            trackPart.setConstruction(currentConstruction);
-//
-//            if (entityManager.find(GridPositionEntity.class, trackPart.getGridPosition().getId()) == null) {
-//                entityManager.persist(trackPart.getGridPosition());
-//            } else {
-//                trackPart.setGridPosition(entityManager.merge(trackPart.getGridPosition()));
-//            }
-//
-//            for (TrackPartFunctionEntity trackPartFunction : trackPart.getFunctions()) {
-//
-//                // trackPartFunction.setTrackPart(trackPart);
-//
-//                saveOrUpdateConfiguration(entityManager, trackPartFunction.getConfiguration());
-//
-//                if (entityManager.find(TrackPartFunctionEntity.class, trackPartFunction.getId()) == null) {
-//                    entityManager.persist(trackPartFunction);
-//                } else {
-//                    entityManager.merge(trackPartFunction);
-//                }
-//            }
-//
-//            EventConfiguration eventConfigurationEntity = trackPart.getEventConfiguration();
-//            if (eventConfigurationEntity != null) {
-//
-//                saveOrUpdateConfiguration(entityManager, eventConfigurationEntity.getStateOnConfig());
-//                saveOrUpdateConfiguration(entityManager, eventConfigurationEntity.getStateOffConfig());
-//
-//                if (entityManager.find(EventConfigurationEntity.class, eventConfigurationEntity.getId()) == null) {
-//                    entityManager.persist(eventConfigurationEntity);
-//                } else {
-//                    entityManager.merge(eventConfigurationEntity);
-//                }
-//            }
-//
-//            entityManager.persist(entityManager.merge(trackPart));
-//        }
+        // load all existing to detect deleted track parts
+        List<AbstractTrackPartEntity> existingTrackParts = Lists.newArrayList(dao.findByConstructionId(constructionEntity.getId()));
+
+        for (AbstractTrackPart trackPart : trackParts) {
+            AbstractTrackPartEntity entity = trackPartDataMapper.transformTrackPart(trackPart);
+            entity.setConstruction(constructionEntity);
+            if (entity.getId() == null) {
+                dao.create(entity);
+            } else {
+                dao.update(entity);
+            }
+        }
+        // delete track part which was not updated
+        for (AbstractTrackPartEntity abstractTrackPartEntity : existingTrackParts) {
+            boolean found = false;
+            for (AbstractTrackPart trackPart : trackParts) {
+                if (abstractTrackPartEntity.getId().equals(trackPart.getId())) {
+                    found = true;
+                }
+            }
+            if (!found) {
+                dao.delete(abstractTrackPartEntity);
+            }
+        }
+
     }
 
-    private void saveOrUpdateConfiguration(EntityManager entityManager, TrackPartConfigurationEntity configuration) {
+    private void saveOrUpdateConfiguration(EntityManager entityManager, BusDataConfigurationEntity configuration) {
         if (configuration != null) {
-            if (entityManager.find(TrackPartConfigurationEntity.class, configuration.getId()) == null) {
+            if (entityManager.find(BusDataConfigurationEntity.class, configuration.getId()) == null) {
                 entityManager.persist(configuration);
             } else {
                 entityManager.merge(configuration);
@@ -168,18 +161,12 @@ public class TrackEditorServiceImpl extends RemoteServiceServlet implements Trac
     }
 
     @Override
-    public List<TrackPart> loadTrack() {
+    public Collection<AbstractTrackPart> loadTrack() {
         log.info("load track parts from db");
-
-        Query typedQuery = entityManagerProvider.get().createQuery(
-                "SELECT x FROM TrackPartEntity x where x.construction=:construction");
-        typedQuery.setParameter("construction", constructionService.getCurrentConstruction());
-
-        List<TrackPartEntity> result = typedQuery.getResultList();
-        if (result.size() > 0) {
+        List<AbstractTrackPartEntity> result = dao.findByConstructionId(constructionService.getCurrentConstruction().getId());
+        if (!result.isEmpty()) {
             log.info("return track parts");
-
-            return dtoMapper.transform(result);
+            return trackPartDataMapper.transformTrackPartEntities(result);
         } else {
             log.warn("the current construction is empty");
             return Lists.newArrayList();
@@ -188,15 +175,15 @@ public class TrackEditorServiceImpl extends RemoteServiceServlet implements Trac
 
     /**
      * Register the {@link net.wbz.selectrix4java.bus.consumption.BusAddressDataConsumer}s for each address of the given
-     * {@link TrackPartEntity}s.
+     * {@link AbstractTrackPartEntity}s.
      * <p/>
      * TODO: maybe bullshit -> re-register by second browser
      *
-     * @param trackParts {@link TrackPartEntity}s to register the
-     *                   containing {@link TrackPartConfigurationEntity}
+     * @param trackParts {@link AbstractTrackPartEntity}s to register the
+     *                   containing {@link BusDataConfigurationEntity}
      */
     @Override
-    public void registerConsumersByConnectedDeviceForTrackParts(List<TrackPart> trackParts) {
+    public void registerConsumersByConnectedDeviceForTrackParts(Collection<AbstractTrackPart> trackParts) {
 
         if (trackParts.size() == 0) {
             return;
@@ -214,15 +201,15 @@ public class TrackEditorServiceImpl extends RemoteServiceServlet implements Trac
         log.info("create consumers of track parts");
 
         // TODO: required anymore?
-        List<TrackPartConfigurationEntity> uniqueTrackPartConfigs = Lists.newArrayList();
+        List<BusDataConfigurationEntity> uniqueTrackPartConfigs = Lists.newArrayList();
 
-        for (final TrackPart trackPart : trackParts) {
+        for (final AbstractTrackPart trackPart : trackParts) {
 
-            TrackPartEntity trackPartEntity = dao.getById(trackPart.getId());
+            AbstractTrackPartEntity trackPartEntity = dao.findById(trackPart.getId());
 
             registerEventConfigurationOfTrackPart(trackPartEntity);
 
-            for (final TrackPartConfigurationEntity trackPartConfiguration : trackPartEntity.getConfigurationsOfFunctions()) {
+            for (final BusDataConfigurationEntity trackPartConfiguration : trackPartEntity.getConfigurationsOfFunctions()) {
 
                 if (trackPartConfiguration != null && trackPartConfiguration.isValid()) {
 
@@ -250,24 +237,26 @@ public class TrackEditorServiceImpl extends RemoteServiceServlet implements Trac
                                 // TODO: remove quick hack for unset bus nr of old stored widgets
 
                                 // TODO
-//                                trackPartConfiguration.setBus(1);
-//
-//                                // fire event for changed bit state of the bus address
-//                                boolean bitStateChanged = BigInteger.valueOf(newValue).testBit(
-//                                        trackPartConfiguration.getBit() - 1) != BigInteger.valueOf(oldValue).testBit(
-//                                        trackPartConfiguration.getBit() - 1);
-//
-//                                if (firstCall || bitStateChanged) {
-//                                    eventBroadcaster.fireEvent(new TrackPartStateEvent(trackPartConfiguration,
-//                                            BigInteger.valueOf(newValue).testBit(trackPartConfiguration.getBit() - 1)));
-//                                }
+                                trackPartConfiguration.setBus(1);
+
+                                // fire event for changed bit state of the bus address
+                                boolean bitStateChanged = BigInteger.valueOf(newValue).testBit(
+                                        trackPartConfiguration.getBit() - 1) != BigInteger.valueOf(oldValue).testBit(
+                                        trackPartConfiguration.getBit() - 1);
+
+                                BusDataConfiguration busDataConfiguration = busDataMapper.transformSource(trackPartConfiguration);
+
+                                if (firstCall || bitStateChanged) {
+                                    eventBroadcaster.fireEvent(new TrackPartStateEvent(busDataConfiguration,
+                                            BigInteger.valueOf(newValue).testBit(trackPartConfiguration.getBit() - 1)));
+                                }
                                 firstCall = false;
                             }
                         });
                     }
 
                     // configure feedback blocks
-                    if (trackPart.getDefaultBlockFunctionConfig().isValid()) {
+                    if (trackPart.getBlockFunction() != null && trackPart.getBlockFunction().isValid()) {
                         BusAddressIdentifier busAddressIdentifier = new BusAddressIdentifier(trackPartConfiguration
                                 .getBus(), trackPartConfiguration.getAddress());
                         if (!busAddressFeedbackBlockListenersOfTheCurrentTrack.containsKey(busAddressIdentifier)) {
@@ -279,8 +268,8 @@ public class TrackEditorServiceImpl extends RemoteServiceServlet implements Trac
                                                                     boolean drivingDirection) {
                                             eventBroadcaster.fireEvent(new FeedbackBlockEvent(
                                                     FeedbackBlockEvent.STATE.ENTER,
-                                                    trackPart.getDefaultBlockFunctionConfig().getBus(),
-                                                    trackPart.getDefaultBlockFunctionConfig().getAddress(),
+                                                    trackPart.getBlockFunction().getBus(),
+                                                    trackPart.getBlockFunction().getAddress(),
                                                     blockNumber, trainAddress, drivingDirection));
                                         }
 
@@ -289,8 +278,8 @@ public class TrackEditorServiceImpl extends RemoteServiceServlet implements Trac
                                                                     boolean drivingDirection) {
                                             eventBroadcaster.fireEvent(new FeedbackBlockEvent(
                                                     FeedbackBlockEvent.STATE.EXIT,
-                                                    trackPart.getDefaultBlockFunctionConfig().getBus(),
-                                                    trackPart.getDefaultBlockFunctionConfig().getAddress(),
+                                                    trackPart.getBlockFunction().getBus(),
+                                                    trackPart.getBlockFunction().getAddress(),
                                                     blockNumber, trainAddress, drivingDirection));
                                         }
 
@@ -302,7 +291,6 @@ public class TrackEditorServiceImpl extends RemoteServiceServlet implements Trac
                                         public void blockFreed(int blockNr) {
                                         }
                                     });
-
                         }
                     }
                 }
@@ -317,7 +305,7 @@ public class TrackEditorServiceImpl extends RemoteServiceServlet implements Trac
         }
     }
 
-    private void addBusListener(TrackPartConfigurationEntity trackPartConfiguration, BusListener listener) {
+    private void addBusListener(BusDataConfigurationEntity trackPartConfiguration, BusListener listener) {
         BusAddressIdentifier busAddressIdentifier = new BusAddressIdentifier(trackPartConfiguration.getBus(),
                 trackPartConfiguration.getAddress());
         if (!busAddressListenersOfTheCurrentTrack.containsKey(busAddressIdentifier)) {
@@ -326,48 +314,53 @@ public class TrackEditorServiceImpl extends RemoteServiceServlet implements Trac
         busAddressListenersOfTheCurrentTrack.get(busAddressIdentifier).add(listener);
     }
 
-    private void registerEventConfigurationOfTrackPart(final TrackPartEntity trackPart) {
-        if (trackPart.hasActiveEventConfiguration()) {
+    private void registerEventConfigurationOfTrackPart(final AbstractTrackPartEntity trackPart) {
+        if (trackPart instanceof HasToggleFunctionEntity) {
+            HasToggleFunctionEntity toggleFunctionEntity = (HasToggleFunctionEntity) trackPart;
 
-            // add state 'ON'
-            final TrackPartConfigurationEntity stateOnConfig = trackPart.getEventConfiguration().getStateOnConfig();
-            if (stateOnConfig.isValid()) {
-                addBusListener(stateOnConfig, new BusAddressBitListener(stateOnConfig.getBit()) {
-                    @Override
-                    public void bitChanged(boolean oldValue, boolean newValue) {
-                        if ((newValue && stateOnConfig.isBitState())
-                                || (!newValue && !stateOnConfig.isBitState())) {
-                            try {
-                                TrackPartConfigurationEntity trackPartConfig = trackPart.getDefaultToggleFunctionConfig();
-                                deviceManager.getConnectedDevice().getBusAddress(trackPartConfig.getBus(),
-                                        (byte) trackPartConfig.getAddress()).setBit(trackPartConfig.getBit()).send();
-                            } catch (DeviceAccessException e) {
-                                e.printStackTrace();
+            if (toggleFunctionEntity.getEventConfiguration() != null && toggleFunctionEntity.getEventConfiguration().isActive()) {
+
+                EventConfigurationEntity eventConfiguration = toggleFunctionEntity.getEventConfiguration();
+                // add state 'ON'
+                final BusDataConfigurationEntity stateOnConfig = eventConfiguration.getStateOnConfig();
+                if (stateOnConfig.isValid()) {
+                    addBusListener(stateOnConfig, new BusAddressBitListener(stateOnConfig.getBit()) {
+                        @Override
+                        public void bitChanged(boolean oldValue, boolean newValue) {
+                            if ((newValue && stateOnConfig.isBitState())
+                                    || (!newValue && !stateOnConfig.isBitState())) {
+                                try {
+                                    BusDataConfigurationEntity trackPartConfig = trackPart.getDefaultToggleFunctionConfig();
+                                    deviceManager.getConnectedDevice().getBusAddress(trackPartConfig.getBus(),
+                                            (byte) trackPartConfig.getAddress()).setBit(trackPartConfig.getBit()).send();
+                                } catch (DeviceAccessException e) {
+                                    e.printStackTrace();
+                                }
                             }
                         }
-                    }
-                });
-            }
+                    });
+                }
 
-            // add state 'OFF'
-            final TrackPartConfigurationEntity stateOffConfig = trackPart.getEventConfiguration().getStateOffConfig();
-            if (stateOffConfig.isValid()) {
-                addBusListener(stateOffConfig, new BusAddressBitListener(stateOffConfig.getBit()) {
-                    @Override
-                    public void bitChanged(boolean oldValue, boolean newValue) {
-                        if ((newValue && stateOffConfig.isBitState())
-                                || (!newValue && !stateOffConfig.isBitState())) {
+                // add state 'OFF'
+                final BusDataConfigurationEntity stateOffConfig = eventConfiguration.getStateOffConfig();
+                if (stateOffConfig.isValid()) {
+                    addBusListener(stateOffConfig, new BusAddressBitListener(stateOffConfig.getBit()) {
+                        @Override
+                        public void bitChanged(boolean oldValue, boolean newValue) {
+                            if ((newValue && stateOffConfig.isBitState())
+                                    || (!newValue && !stateOffConfig.isBitState())) {
 
-                            try {
-                                TrackPartConfigurationEntity trackPartConfig = trackPart.getDefaultToggleFunctionConfig();
-                                deviceManager.getConnectedDevice().getBusAddress(trackPartConfig.getBus(),
-                                        (byte) trackPartConfig.getAddress()).clearBit(trackPartConfig.getBit()).send();
-                            } catch (DeviceAccessException e) {
-                                e.printStackTrace();
+                                try {
+                                    BusDataConfigurationEntity trackPartConfig = trackPart.getDefaultToggleFunctionConfig();
+                                    deviceManager.getConnectedDevice().getBusAddress(trackPartConfig.getBus(),
+                                            (byte) trackPartConfig.getAddress()).clearBit(trackPartConfig.getBit()).send();
+                                } catch (DeviceAccessException e) {
+                                    e.printStackTrace();
+                                }
                             }
                         }
-                    }
-                });
+                    });
+                }
             }
         }
     }

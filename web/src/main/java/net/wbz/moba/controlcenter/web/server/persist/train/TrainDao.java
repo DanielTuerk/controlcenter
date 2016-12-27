@@ -18,18 +18,18 @@ import java.util.List;
 public class TrainDao extends AbstractDao<TrainEntity> {
     @Inject
     public TrainDao(Provider<EntityManager> entityManager) {
-        super(entityManager);
+        super(entityManager, TrainEntity.class);
     }
 
-    @Override
-    public TrainEntity getById(Long id) {
-        return (TrainEntity) getEntityManager().createQuery("select x  FROM train WHERE id = :id")
-                .setParameter("id", id).getSingleResult();
-    }
+//    @Override
+//    public TrainEntity getById(Long id) {
+//        return (TrainEntity) getEntityManager().createQuery("select x  FROM train x WHERE x.id = :id")
+//                .setParameter("id", id).getSingleResult();
+//    }
 
 
     public List<TrainEntity> getTrains() {
-        return safeList(getEntityManager().createQuery("SELECT x FROM train x"));
+        return getEntityManager().createQuery("SELECT x FROM train x",TrainEntity.class).getResultList();
     }
 
     public TrainEntity getTrainByAddress(int address) throws TrainException {

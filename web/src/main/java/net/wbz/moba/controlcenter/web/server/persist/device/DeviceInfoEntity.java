@@ -10,7 +10,7 @@ import javax.persistence.Transient;
 /**
  * @author Daniel Tuerk
  */
-@Entity(name = "DeviceInfo")
+@Entity(name = "device_info")
 public class DeviceInfoEntity extends AbstractEntity {
 
     public enum DEVICE_TYPE {
@@ -19,7 +19,6 @@ public class DeviceInfoEntity extends AbstractEntity {
 
 
     @Transient
-    @JMap
     private boolean connected;
 
     @Column(name = "device_key")

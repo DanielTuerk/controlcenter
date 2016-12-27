@@ -1,30 +1,35 @@
 package net.wbz.moba.controlcenter.web.server.persist.construction.track;
 
+import com.googlecode.jmapper.annotations.JMap;
 import net.wbz.moba.controlcenter.web.server.persist.AbstractEntity;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.ManyToOne;
 
 /**
  * @author Daniel Tuerk
  */
-@Entity
+@Entity(name = "trackpart_function")
 public class TrackPartFunctionEntity extends AbstractEntity {
 
-
+    @JMap
+    @Column
     private String functionKey;
 
-    @OneToOne
-    private TrackPartConfigurationEntity configuration;
+    @JMap
+    @ManyToOne
+    private BusDataConfigurationEntity configuration;
 
 //    @ManyToMany(mappedBy="functions",fetch = FetchType.LAZY)
-//    private List<TrackPartEntity> trackParts = new ArrayList<>();
+//    private List<AbstractTrackPartEntity> trackParts = new ArrayList<>();
 
-    //    public TrackPartFunctionEntity(TrackPartEntity trackPart, String key, TrackPartConfigurationEntity configuration) {
+    //    public TrackPartFunctionEntity(AbstractTrackPartEntity trackPart, String key, BusDataConfigurationEntity configuration) {
 ////        this.trackPart = trackPart;
 //        this.functionKey = key;
 //        this.configuration = configuration;
 //    }
-    public TrackPartFunctionEntity(String key, TrackPartConfigurationEntity configuration) {
+    public TrackPartFunctionEntity(String key, BusDataConfigurationEntity configuration) {
 //        this.trackPart = trackPart;
         this.functionKey = key;
         this.configuration = configuration;
@@ -33,20 +38,20 @@ public class TrackPartFunctionEntity extends AbstractEntity {
     public TrackPartFunctionEntity() {
     }
 
-//    public List<TrackPartEntity> getTrackPart() {
+//    public List<AbstractTrackPartEntity> getTrackPart() {
 //        return trackPart;
 //    }
 //
-//    public void setTrackPart(List<TrackPartEntity> trackPart) {
+//    public void setTrackPart(List<AbstractTrackPartEntity> trackPart) {
 //        this.trackPart = trackPart;
 //    }
 
 
-//    public List<TrackPartEntity> getTrackParts() {
+//    public List<AbstractTrackPartEntity> getTrackParts() {
 //        return trackParts;
 //    }
 //
-//    public void setTrackParts(List<TrackPartEntity> trackParts) {
+//    public void setTrackParts(List<AbstractTrackPartEntity> trackParts) {
 //        this.trackParts = trackParts;
 //    }
 
@@ -58,15 +63,15 @@ public class TrackPartFunctionEntity extends AbstractEntity {
         this.functionKey = functionKey;
     }
 
-    public TrackPartConfigurationEntity getConfiguration() {
+    public BusDataConfigurationEntity getConfiguration() {
         return configuration;
     }
 
-    public void setConfiguration(TrackPartConfigurationEntity configuration) {
+    public void setConfiguration(BusDataConfigurationEntity configuration) {
         this.configuration = configuration;
     }
 
-//    public TrackPartEntity getTrackPart() {
+//    public AbstractTrackPartEntity getTrackPart() {
 //        return trackPart;
 //    }
 

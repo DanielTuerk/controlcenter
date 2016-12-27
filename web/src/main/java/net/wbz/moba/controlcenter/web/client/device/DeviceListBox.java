@@ -11,6 +11,7 @@ import net.wbz.moba.controlcenter.web.shared.bus.DeviceInfoEvent;
 import org.gwtbootstrap3.extras.select.client.ui.Option;
 import org.gwtbootstrap3.extras.select.client.ui.Select;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -43,14 +44,14 @@ public class DeviceListBox extends Select {
 
     public void reload() {
 
-        RequestUtils.getInstance().getBusRequest().getDevices(new AsyncCallback<List<DeviceInfo>>() {
+        RequestUtils.getInstance().getBusRequest().getDevices(new AsyncCallback<Collection<DeviceInfo>>() {
             @Override
             public void onFailure(Throwable caught) {
 
             }
 
             @Override
-            public void onSuccess(List<DeviceInfo> result) {
+            public void onSuccess(Collection<DeviceInfo> result) {
                 devices.clear();
                 devices.addAll(result);
 

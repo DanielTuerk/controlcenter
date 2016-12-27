@@ -1,45 +1,38 @@
 package net.wbz.moba.controlcenter.web.server.persist.construction.track;
 
+import com.googlecode.jmapper.annotations.JMap;
 import net.wbz.moba.controlcenter.web.server.persist.AbstractEntity;
 
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.OneToOne;
+import javax.persistence.ManyToOne;
 
 /**
  * @author Daniel Tuerk
  */
-@Entity
+@Entity(name = "event_config")
 public class EventConfigurationEntity extends AbstractEntity {
 
+    @JMap
+    @ManyToOne
+    private BusDataConfigurationEntity stateOnConfig;
 
-    @OneToOne
-    private TrackPartConfigurationEntity stateOnConfig;
-    @OneToOne
-    private TrackPartConfigurationEntity stateOffConfig;
+    @JMap
+    @ManyToOne
+    private BusDataConfigurationEntity stateOffConfig;
 
-    public void setStateOnConfig(TrackPartConfigurationEntity config) {
-        addStateConfig(true, config);
+    public void setStateOnConfig(BusDataConfigurationEntity config) {
+        stateOnConfig = config;
     }
 
-    public void setStateOffConfig(TrackPartConfigurationEntity config) {
-        addStateConfig(false, config);
+    public void setStateOffConfig(BusDataConfigurationEntity config) {
+        stateOffConfig = config;
     }
 
-    private void addStateConfig(boolean state, TrackPartConfigurationEntity config) {
-        if (state) {
-            stateOnConfig = config;
-        } else {
-            stateOffConfig = config;
-        }
-    }
-
-    public TrackPartConfigurationEntity getStateOnConfig() {
+    public BusDataConfigurationEntity getStateOnConfig() {
         return stateOnConfig;
     }
 
-    public TrackPartConfigurationEntity getStateOffConfig() {
+    public BusDataConfigurationEntity getStateOffConfig() {
         return stateOffConfig;
     }
 

@@ -3,7 +3,6 @@ package net.wbz.moba.controlcenter.web.server.scenario;
 import net.wbz.moba.controlcenter.web.server.EventBroadcaster;
 import net.wbz.moba.controlcenter.web.server.web.viewer.TrackViewerServiceImpl;
 import net.wbz.moba.controlcenter.web.shared.scenario.*;
-import net.wbz.moba.controlcenter.web.server.persist.construction.track.TrackPartConfigurationEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,7 +45,7 @@ public class ScenarioRunCallable implements Callable<Boolean> {
 //                    Thread.sleep((long) ((WaitScenarioCommand) command).getSeconds() * 1000L);
 //                } else if (command instanceof ToggleScenarioCommand) {
 //                    ToggleScenarioCommand toggleCommand = (ToggleScenarioCommand) command;
-//                    TrackPartConfigurationEntity trackPartConfiguration = toggleCommand.getConfiguration();
+//                    BusDataConfigurationEntity trackPartConfiguration = toggleCommand.getConfiguration();
 //                    if (trackViewerRequest.getTrackPartState(trackPartConfiguration) != toggleCommand.isState()) {
 //                        trackViewerRequest.toggleTrackPart(trackPartConfiguration, toggleCommand.isState());
 //                    }

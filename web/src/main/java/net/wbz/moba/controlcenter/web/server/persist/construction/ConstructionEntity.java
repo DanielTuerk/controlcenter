@@ -3,7 +3,7 @@ package net.wbz.moba.controlcenter.web.server.persist.construction;
 
 import com.googlecode.jmapper.annotations.JMap;
 import net.wbz.moba.controlcenter.web.server.persist.AbstractEntity;
-import net.wbz.moba.controlcenter.web.server.persist.construction.track.TrackPartEntity;
+import net.wbz.moba.controlcenter.web.server.persist.construction.track.AbstractTrackPartEntity;
 
 import javax.persistence.*;
 import java.util.List;
@@ -11,17 +11,14 @@ import java.util.List;
 /**
  * @author Daniel Tuerk
  */
-@Entity
+@Entity(name = "construction")
 public class ConstructionEntity extends AbstractEntity {
 
     @JMap
     private String name;
 
-    @OneToMany
-    private List<TrackPartEntity> trackPartEntities;
-
-    public ConstructionEntity() {
-    }
+    @OneToMany(fetch = FetchType.LAZY)
+    private List<AbstractTrackPartEntity> trackPartEntities;
 
     public String getName() {
         return name;
@@ -31,5 +28,11 @@ public class ConstructionEntity extends AbstractEntity {
         this.name = name;
     }
 
+    public List<AbstractTrackPartEntity> getTrackPartEntities() {
+        return trackPartEntities;
+    }
 
+    public void setTrackPartEntities(List<AbstractTrackPartEntity> trackPartEntities) {
+        this.trackPartEntities = trackPartEntities;
+    }
 }

@@ -2,9 +2,9 @@ package net.wbz.moba.controlcenter.web.server.web.editor;
 
 import com.google.common.collect.Maps;
 import net.wbz.moba.controlcenter.web.server.EventBroadcaster;
-import net.wbz.moba.controlcenter.web.server.persist.construction.track.TrackPartConfigurationEntity;
+import net.wbz.moba.controlcenter.web.server.persist.construction.track.BusDataConfigurationEntity;
 import net.wbz.moba.controlcenter.web.shared.track.model.Signal;
-import net.wbz.moba.controlcenter.web.shared.track.model.TrackPartConfiguration;
+import net.wbz.moba.controlcenter.web.shared.track.model.BusDataConfiguration;
 import net.wbz.moba.controlcenter.web.shared.viewer.SignalFunctionStateEvent;
 import net.wbz.selectrix4java.bus.BusAddressBitListener;
 
@@ -37,7 +37,7 @@ public class SignalFunctionReceiver {
         this.eventBroadcaster = eventBroadcaster;
 
 
-        for (final Map.Entry<Signal.LIGHT, TrackPartConfiguration> lightConfigs : signal.getSignalConfiguration().entrySet()) {
+        for (final Map.Entry<Signal.LIGHT, BusDataConfiguration> lightConfigs : signal.getSignalConfiguration().entrySet()) {
             // initial state 'off' for each light
             lightStates.put(lightConfigs.getKey(), false);
 
@@ -170,7 +170,7 @@ public class SignalFunctionReceiver {
 
     /**
      * Each {@link net.wbz.selectrix4java.bus.BusAddressBitListener} for all addresses of the
-     * {@link TrackPartConfigurationEntity} of the signal.
+     * {@link BusDataConfigurationEntity} of the signal.
      *
      * @return listeners for each address
      */

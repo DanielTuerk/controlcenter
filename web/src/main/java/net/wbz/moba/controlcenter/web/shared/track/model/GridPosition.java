@@ -1,11 +1,15 @@
 package net.wbz.moba.controlcenter.web.shared.track.model;
 
+import com.googlecode.jmapper.annotations.JMap;
+
 /**
  * @author Daniel Tuerk
  */
 public class GridPosition extends AbstractDto {
 
+    @JMap
     private int x;
+    @JMap
     private int y;
 
     public GridPosition(int x, int y) {

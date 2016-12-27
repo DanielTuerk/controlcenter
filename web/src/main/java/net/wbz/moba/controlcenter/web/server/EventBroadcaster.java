@@ -1,7 +1,6 @@
 package net.wbz.moba.controlcenter.web.server;
 
 import com.google.inject.Singleton;
-import com.google.inject.persist.Transactional;
 import de.novanic.eventservice.client.event.Event;
 import de.novanic.eventservice.client.event.domain.DomainFactory;
 import de.novanic.eventservice.service.EventExecutorService;
@@ -11,6 +10,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * Broadcaster for the events to throw by the {@link EventExecutorService}.
+ *
  * @author Daniel Tuerk
  */
 @Singleton
@@ -20,12 +21,19 @@ public class EventBroadcaster {
 
     private final EventExecutorService eventExecutorService;
 
+    /**
+     * Create broadcaster with singleton {@link EventExecutorService}.
+     */
     public EventBroadcaster() {
         EventExecutorServiceFactory theSF = EventExecutorServiceFactory.getInstance();
         eventExecutorService = theSF.getEventExecutorService("event");
     }
 
-    @Transactional
+    /***
+     * Fire the given event to client.
+     *
+     * @param event {@link Event}
+     */
     public synchronized void fireEvent(Event event) {
         if (event.getClass() != BusDataEvent.class) {
             LOG.debug("fire Event: " + event.toString());

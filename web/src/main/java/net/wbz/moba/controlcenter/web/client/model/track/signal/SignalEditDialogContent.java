@@ -5,7 +5,7 @@ import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.client.ui.Widget;
 import net.wbz.moba.controlcenter.web.client.util.BitStateToggleButton;
 import net.wbz.moba.controlcenter.web.shared.track.model.Signal;
-import net.wbz.moba.controlcenter.web.shared.track.model.TrackPartConfiguration;
+import net.wbz.moba.controlcenter.web.shared.track.model.BusDataConfiguration;
 import org.gwtbootstrap3.client.ui.*;
 import org.gwtbootstrap3.client.ui.constants.ColumnSize;
 import org.gwtbootstrap3.client.ui.constants.WellSize;
@@ -98,7 +98,7 @@ public class SignalEditDialogContent {
 
         for (Signal.LIGHT light : signalType.getLights()) {
 
-            TrackPartConfiguration existingLightConfig = signal.getSignalConfiguration().get(light);
+            BusDataConfiguration existingLightConfig = signal.getSignalConfiguration().get(light);
             // if (existingLightConfig == null) {
             // existingLightConfig = new Configuration();
             // }

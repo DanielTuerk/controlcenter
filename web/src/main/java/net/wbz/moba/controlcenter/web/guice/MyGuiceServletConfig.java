@@ -24,7 +24,7 @@ import java.io.File;
 import java.util.Properties;
 
 /**
- * TrackPartConfigurationEntity of the guice context.
+ * BusDataConfigurationEntity of the guice context.
  * Injector install the JPA module and
  * the {@link com.google.inject.servlet.ServletModule} for the GWT web context.
  *
@@ -40,6 +40,16 @@ public class MyGuiceServletConfig extends GuiceServletContextListener {
      * Name of the GWT app.
      */
     private static final String APP_NAME = "ControlCenterApp";
+
+    public static final String SERVICE_BUS = "bus";
+    public static final String SERVICE_CONFIG = "config";
+    public static final String SERVICE_CONSTRUCTION = "construction";
+    public static final String SERVICE_SCENARIO = "scenario";
+    public static final String SERVICE_SCENARIO_EDITOR = "scenarioEditor";
+    public static final String SERVICE_TRACK = "track";
+    public static final String SERVICE_TRACK_EDITOR = "trackEditor";
+    public static final String SERVICE_TRAIN = "train";
+    public static final String SERVICE_TRAIN_EDITOR = "trainEditor";
 
     @Override
     protected Injector getInjector() {
@@ -101,15 +111,15 @@ public class MyGuiceServletConfig extends GuiceServletContextListener {
                  * Register the GWT services.
                  */
 
-                serve("/" + APP_NAME + "/bus").with(BusServiceImpl.class);
-                serve("/" + APP_NAME + "/construction").with(ConstructionServiceImpl.class);
-                serve("/" + APP_NAME + "/trackviewer").with(TrackViewerServiceImpl.class);
-                serve("/" + APP_NAME + "/trackeditor").with(TrackEditorServiceImpl.class);
-                serve("/" + APP_NAME + "/scenarioservice").with(ScenarioServiceImpl.class);
-                serve("/" + APP_NAME + "/scenarioEditor").with(ScenarioEditorServiceImpl.class);
-                serve("/" + APP_NAME + "/trainEditor").with(TrainEditorServiceImpl.class);
-                serve("/" + APP_NAME + "/trainService").with(TrainServiceImpl.class);
-                serve("/" + APP_NAME + "/config").with(ConfigServiceImpl.class);
+                serve("/" + APP_NAME + "/" + SERVICE_BUS).with(BusServiceImpl.class);
+                serve("/" + APP_NAME + "/" + SERVICE_CONFIG).with(ConfigServiceImpl.class);
+                serve("/" + APP_NAME + "/" + SERVICE_CONSTRUCTION).with(ConstructionServiceImpl.class);
+                serve("/" + APP_NAME + "/" + SERVICE_TRACK).with(TrackViewerServiceImpl.class);
+                serve("/" + APP_NAME + "/" + SERVICE_TRACK_EDITOR).with(TrackEditorServiceImpl.class);
+                serve("/" + APP_NAME + "/" + SERVICE_TRAIN).with(TrainServiceImpl.class);
+                serve("/" + APP_NAME + "/" + SERVICE_TRAIN_EDITOR).with(TrainEditorServiceImpl.class);
+                serve("/" + APP_NAME + "/" + SERVICE_SCENARIO).with(ScenarioServiceImpl.class);
+                serve("/" + APP_NAME + "/" + SERVICE_SCENARIO_EDITOR).with(ScenarioEditorServiceImpl.class);
             }
 
             /**

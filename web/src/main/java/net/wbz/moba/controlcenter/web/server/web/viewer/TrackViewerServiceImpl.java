@@ -7,8 +7,8 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import net.wbz.moba.controlcenter.web.shared.bus.BusAddressBit;
+import net.wbz.moba.controlcenter.web.shared.track.model.BusDataConfiguration;
 import net.wbz.moba.controlcenter.web.shared.track.model.Signal;
-import net.wbz.moba.controlcenter.web.shared.track.model.TrackPartConfiguration;
 import net.wbz.moba.controlcenter.web.shared.viewer.TrackViewerService;
 import net.wbz.selectrix4java.bus.BusAddress;
 import net.wbz.selectrix4java.device.Device;
@@ -35,7 +35,7 @@ public class TrackViewerServiceImpl extends RemoteServiceServlet implements Trac
     }
 
     @Override
-    public void toggleTrackPart(TrackPartConfiguration configuration, boolean state) {
+    public void toggleTrackPart(BusDataConfiguration configuration, boolean state) {
         if (configuration.isValid()) {
             try {
                 if (deviceManager.getConnectedDevice() != null) {
@@ -56,7 +56,7 @@ public class TrackViewerServiceImpl extends RemoteServiceServlet implements Trac
     }
 
     @Override
-    public boolean getTrackPartState(TrackPartConfiguration configuration) {
+    public boolean getTrackPartState(BusDataConfiguration configuration) {
         if (configuration.isValid()) {
             try {
                 if (deviceManager.getConnectedDevice() != null) {
@@ -106,7 +106,7 @@ public class TrackViewerServiceImpl extends RemoteServiceServlet implements Trac
         }
     }
 
-    private BusAddressBit convertFunctionConfig(TrackPartConfiguration configuration) {
+    private BusAddressBit convertFunctionConfig(BusDataConfiguration configuration) {
         if (configuration != null && configuration.isValid()) {
             return new BusAddressBit(configuration.getBus(), configuration.getAddress(),
                     configuration.getBit(), configuration.isBitState());
@@ -116,12 +116,12 @@ public class TrackViewerServiceImpl extends RemoteServiceServlet implements Trac
 
     @Override
     public void switchSignal(Signal.TYPE signalType, Signal.FUNCTION signalFunction,
-                             Map<Signal.LIGHT, TrackPartConfiguration> signalConfiguration) {
+                             Map<Signal.LIGHT, BusDataConfiguration> signalConfiguration) {
         // TODO
         Map<Signal.LIGHT, BusAddressBit> availableLightConfig = Maps.newHashMap();
 
         for (Signal.LIGHT light : signalType.getLights()) {
-            TrackPartConfiguration lightFunction = signalConfiguration.get(light);
+            BusDataConfiguration lightFunction = signalConfiguration.get(light);
             if (lightFunction != null && lightFunction.isValid()) {
                 availableLightConfig.put(light, new BusAddressBit(lightFunction.getBus(), lightFunction.getAddress(),
                         lightFunction.getBit(), !lightFunction.isBitState()));

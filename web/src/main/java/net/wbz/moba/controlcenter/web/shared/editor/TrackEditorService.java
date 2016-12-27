@@ -2,19 +2,20 @@ package net.wbz.moba.controlcenter.web.shared.editor;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
-import net.wbz.moba.controlcenter.web.shared.track.model.TrackPart;
+import net.wbz.moba.controlcenter.web.guice.MyGuiceServletConfig;
+import net.wbz.moba.controlcenter.web.shared.track.model.AbstractTrackPart;
 
-import java.util.List;
+import java.util.Collection;
 
 /**
  * @author Daniel Tuerk
  */
-@RemoteServiceRelativePath("trackeditor")
+@RemoteServiceRelativePath(MyGuiceServletConfig.SERVICE_TRACK_EDITOR)
 public interface TrackEditorService extends RemoteService {
 
-    List<TrackPart> loadTrack();
+    Collection<AbstractTrackPart> loadTrack();
 
-    void saveTrack(List<TrackPart> trackParts);
+    void saveTrack(Collection<AbstractTrackPart> trackParts);
 
-    void registerConsumersByConnectedDeviceForTrackParts(List<TrackPart> trackParts);
+    void registerConsumersByConnectedDeviceForTrackParts(Collection<AbstractTrackPart> trackParts);
 }

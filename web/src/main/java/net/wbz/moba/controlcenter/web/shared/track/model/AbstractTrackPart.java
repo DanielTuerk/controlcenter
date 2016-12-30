@@ -27,11 +27,11 @@ public abstract class AbstractTrackPart extends AbstractDto {
 
     public Set<BusDataConfiguration> getConfigurationsOfFunctions() {
         //TODO
-        Set<BusDataConfiguration> configurations = Sets.newHashSet();
+        return  Sets.newHashSet(blockFunction);
 //        for (TrackPartFunctionEntity function : getFunctionConfigs()) {
 //            configurations.add(function.getConfiguration());
 //        }
-        return configurations;
+//        return configurations;
     }
 
     public BusDataConfiguration getBlockFunction() {

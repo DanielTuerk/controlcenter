@@ -2,6 +2,8 @@ package net.wbz.moba.controlcenter.web.shared.track.model;
 
 import com.googlecode.jmapper.annotations.JMap;
 
+import java.util.Set;
+
 /**
  * @author Daniel Tuerk
  */
@@ -31,4 +33,12 @@ public class Uncoupler extends Straight implements HasToggleFunction {
     public void setEventConfiguration(EventConfiguration eventConfiguration) {
         this.eventConfiguration = eventConfiguration;
     }
+
+    @Override
+    public Set<BusDataConfiguration> getConfigurationsOfFunctions() {
+        Set<BusDataConfiguration> functions = super.getConfigurationsOfFunctions();
+        functions.add(toggleFunction);
+        return functions;
+    }
+
 }

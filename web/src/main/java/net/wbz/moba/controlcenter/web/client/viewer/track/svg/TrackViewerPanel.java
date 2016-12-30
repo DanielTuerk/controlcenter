@@ -105,10 +105,11 @@ public class TrackViewerPanel extends AbstractTrackViewerPanel {
                             if (trackWidget instanceof AbstractSignalWidget) {
                                 signalTrackWidgets.add((AbstractSignalWidget) trackWidget);
                             } else {
+//                                if (trackWidget instanceof AbstractControlSvgTrackWidget)
                                 for (BusDataConfiguration configuration : trackPart.getConfigurationsOfFunctions()) {
 
                                     // ignore default configs of track widget to register event handler
-                                    if (configuration.isValid()) {
+                                    if (configuration != null && configuration.isValid()) {
                                         if (!trackWidgetsOfConfiguration.containsKey(configuration)) {
                                             trackWidgetsOfConfiguration.put(configuration,
                                                     new ArrayList<AbstractSvgTrackWidget>());

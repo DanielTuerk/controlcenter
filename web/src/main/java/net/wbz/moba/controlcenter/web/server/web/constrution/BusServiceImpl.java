@@ -5,6 +5,7 @@ import com.google.common.collect.Maps;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import com.google.inject.persist.Transactional;
 import net.wbz.moba.controlcenter.web.server.EventBroadcaster;
 import net.wbz.moba.controlcenter.web.server.persist.device.DeviceInfoDao;
 import net.wbz.moba.controlcenter.web.server.persist.device.DeviceInfoEntity;
@@ -110,6 +111,7 @@ public class BusServiceImpl extends RemoteServiceServlet implements BusService {
     }
 
     @Override
+    @Transactional
     public void createDevice(DeviceInfo deviceInfo) {
         // TODO - device settings (e.g. serial/test)
         DeviceInfoEntity entity = new DeviceInfoEntity();
@@ -123,6 +125,7 @@ public class BusServiceImpl extends RemoteServiceServlet implements BusService {
     }
 
     @Override
+    @Transactional
     public void deleteDevice(DeviceInfo deviceInfo) {
         Device device = deviceManager.getDeviceById(deviceInfo.getKey());
 

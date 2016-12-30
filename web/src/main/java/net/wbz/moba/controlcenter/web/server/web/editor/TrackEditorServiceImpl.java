@@ -209,7 +209,7 @@ public class TrackEditorServiceImpl extends RemoteServiceServlet implements Trac
 
             registerEventConfigurationOfTrackPart(trackPartEntity);
 
-            for (final BusDataConfigurationEntity trackPartConfiguration : trackPartEntity.getConfigurationsOfFunctions()) {
+            for (final BusDataConfiguration trackPartConfiguration : trackPart.getConfigurationsOfFunctions()) {
 
                 if (trackPartConfiguration != null && trackPartConfiguration.isValid()) {
 
@@ -229,7 +229,8 @@ public class TrackEditorServiceImpl extends RemoteServiceServlet implements Trac
 //                        }
                     } else {
                         // add address listener for the default toggle function of the track part
-                        addBusListener(trackPartConfiguration, new BusAddressListener() {
+                        BusDataConfigurationEntity busDataConfigurationEntity = busDataMapper.transformTarget(trackPartConfiguration);
+                        addBusListener(busDataConfigurationEntity, new BusAddressListener() {
                             private boolean firstCall = true;
 
                             @Override
@@ -244,10 +245,10 @@ public class TrackEditorServiceImpl extends RemoteServiceServlet implements Trac
                                         trackPartConfiguration.getBit() - 1) != BigInteger.valueOf(oldValue).testBit(
                                         trackPartConfiguration.getBit() - 1);
 
-                                BusDataConfiguration busDataConfiguration = busDataMapper.transformSource(trackPartConfiguration);
+//                                BusDataConfiguration busDataConfiguration = busDataMapper.transformSource(trackPartConfiguration);
 
                                 if (firstCall || bitStateChanged) {
-                                    eventBroadcaster.fireEvent(new TrackPartStateEvent(busDataConfiguration,
+                                    eventBroadcaster.fireEvent(new TrackPartStateEvent(trackPartConfiguration,
                                             BigInteger.valueOf(newValue).testBit(trackPartConfiguration.getBit() - 1)));
                                 }
                                 firstCall = false;

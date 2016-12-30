@@ -87,15 +87,6 @@ abstract public class AbstractSvgTrackWidget<T extends AbstractTrackPart> extend
         return svgRootElement;
     }
 
-//    /**
-//     * TODO: refactor to config handler
-//     *
-//     * @return
-//     */
-//    public Map<String, BusDataConfiguration> getStoredWidgetFunctionConfigs() {
-//        return new HashMap<>();
-//    }
-
     /**
      * TODO: refactor to config handler
      *
@@ -110,7 +101,6 @@ abstract public class AbstractSvgTrackWidget<T extends AbstractTrackPart> extend
     protected void addDialogContentTab(String title, Widget content) {
         TabPane tabPane = new TabPane();
         tabPane.setActive(dialogContentTabContent.getWidgetCount() == 0);
-
 
         TabListItem tabListItem = new TabListItem(title);
         tabListItem.setDataTargetWidget(tabPane);
@@ -131,8 +121,6 @@ abstract public class AbstractSvgTrackWidget<T extends AbstractTrackPart> extend
 
         Form form = new Form();
         form.setType(FormType.HORIZONTAL);
-
-
         form.add(tabPanel);
 
         return form;
@@ -167,18 +155,12 @@ abstract public class AbstractSvgTrackWidget<T extends AbstractTrackPart> extend
      * @see {#getGridPosition}
      */
     public AbstractTrackPart getTrackPart(Widget containerWidget, int zoomLevel) {
-//        long gridPositionIdOfExistingGridPos = -1;
         if (trackPart.getGridPosition() == null) {
             trackPart.setGridPosition(new GridPosition());
         }
-
         GridPosition gridPositionFromPanel = getGridPosition(containerWidget, zoomLevel);
         trackPart.getGridPosition().setX(gridPositionFromPanel.getX());
         trackPart.getGridPosition().setY(gridPositionFromPanel.getY());
-
-//        if (gridPositionIdOfExistingGridPos >= 0) {
-//            trackPart.getGridPosition().setId(gridPositionIdOfExistingGridPos);
-//        }
         return trackPart;
     }
 

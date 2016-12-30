@@ -45,15 +45,14 @@ public class StatePanel extends org.gwtbootstrap3.client.ui.gwt.FlowPanel {
         setStyleName("statePanel");
 
         // add event receiver for the device connection state
-        // TODO
         deviceInfoEventListener = new RemoteEventListener() {
             public void apply(Event anEvent) {
                 if (anEvent instanceof DeviceInfoEvent) {
                     DeviceInfoEvent event = (DeviceInfoEvent) anEvent;
                     if (event.getEventType() == DeviceInfoEvent.TYPE.CONNECTED) {
-//                        updateDeviceConnectionState(event.getDeviceInfo(), true);
+                        updateDeviceConnectionState(event.getDeviceInfo(), true);
                     } else if (event.getEventType() == DeviceInfoEvent.TYPE.DISCONNECTED) {
-//                        updateDeviceConnectionState(event.getDeviceInfo(), false);
+                        updateDeviceConnectionState(event.getDeviceInfo(), false);
                     }
                 }
             }
@@ -175,7 +174,7 @@ public class StatePanel extends org.gwtbootstrap3.client.ui.gwt.FlowPanel {
 
     @Override
     protected void onLoad() {
-//        EventReceiver.getInstance().addListener(DeviceInfoEvent.class, deviceInfoEventListener);
+        EventReceiver.getInstance().addListener(DeviceInfoEvent.class, deviceInfoEventListener);
         EventReceiver.getInstance().addListener(PlayerEvent.class, busDataPlayerEventListener);
 
         RequestUtils.getInstance().getBusRequest().isBusConnected(new AsyncCallback<Boolean>() {
@@ -214,7 +213,7 @@ public class StatePanel extends org.gwtbootstrap3.client.ui.gwt.FlowPanel {
     @Override
     protected void onUnload() {
         super.onUnload();
-//        EventReceiver.getInstance().removeListener(DeviceInfoEvent.class, deviceInfoEventListener);
+        EventReceiver.getInstance().removeListener(DeviceInfoEvent.class, deviceInfoEventListener);
         EventReceiver.getInstance().removeListener(DeviceInfoEvent.class, busDataPlayerEventListener);
     }
 

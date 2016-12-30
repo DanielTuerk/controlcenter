@@ -4,6 +4,7 @@ import com.google.common.collect.Maps;
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @author Daniel Tuerk
@@ -42,6 +43,13 @@ public class Signal extends Straight implements HasToggleFunction {
     @Override
     public void setEventConfiguration(EventConfiguration eventConfiguration) {
 
+    }
+
+    @Override
+    public Set<BusDataConfiguration> getConfigurationsOfFunctions() {
+        Set<BusDataConfiguration> functions = super.getConfigurationsOfFunctions();
+        //TODO
+        return functions;
     }
 
     /**

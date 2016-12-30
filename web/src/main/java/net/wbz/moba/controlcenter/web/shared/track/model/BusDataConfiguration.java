@@ -1,5 +1,6 @@
 package net.wbz.moba.controlcenter.web.shared.track.model;
 
+import com.google.common.base.Objects;
 import com.googlecode.jmapper.annotations.JMap;
 
 /**
@@ -72,5 +73,20 @@ public class BusDataConfiguration extends AbstractDto {
                 ", bit=" + bit +
                 ", bitState=" + bitState +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        BusDataConfiguration that = (BusDataConfiguration) o;
+        return bus == that.bus &&
+                address == that.address &&
+                bit == that.bit;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(bus, address, bit);
     }
 }

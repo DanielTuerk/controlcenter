@@ -3,10 +3,12 @@ package net.wbz.moba.controlcenter.web.shared.track.model;
 import com.google.gwt.user.client.rpc.IsSerializable;
 import com.googlecode.jmapper.annotations.JMap;
 
+import java.util.Set;
+
 /**
  * @author Daniel Tuerk
  */
-public class Switch extends AbstractTrackPart  implements HasToggleFunction {
+public class Switch extends AbstractTrackPart implements HasToggleFunction {
 
     public enum DIRECTION implements IsSerializable {RIGHT, LEFT}
 
@@ -39,11 +41,13 @@ public class Switch extends AbstractTrackPart  implements HasToggleFunction {
     public void setCurrentPresentation(PRESENTATION currentPresentation) {
         this.currentPresentation = currentPresentation;
     }
-@Override
+
+    @Override
     public BusDataConfiguration getToggleFunction() {
         return toggleFunction;
     }
-@Override
+
+    @Override
     public void setToggleFunction(BusDataConfiguration toggleFunction) {
         this.toggleFunction = toggleFunction;
     }
@@ -55,7 +59,14 @@ public class Switch extends AbstractTrackPart  implements HasToggleFunction {
 
     @Override
     public void setEventConfiguration(EventConfiguration eventConfiguration) {
-this.eventConfiguration=eventConfiguration;
+        this.eventConfiguration = eventConfiguration;
+    }
+
+    @Override
+    public Set<BusDataConfiguration> getConfigurationsOfFunctions() {
+        Set<BusDataConfiguration> functions = super.getConfigurationsOfFunctions();
+        functions.add(toggleFunction);
+        return functions;
     }
 
     /**

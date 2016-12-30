@@ -38,7 +38,6 @@ abstract public class AbstractBlockSvgTrackWidget<T extends AbstractTrackPart> e
      */
     private Map<Train, OMSVGElement> trainElements = Maps.newConcurrentMap();
 
-
     @Override
     public void freeBlock() {
         removeStyleName("unknownBlock");
@@ -59,20 +58,6 @@ abstract public class AbstractBlockSvgTrackWidget<T extends AbstractTrackPart> e
         addStyleName("usedBlock");
         removeStyleName("freeBlock");
     }
-
-//    @Override
-//    public Map<String, BusDataConfiguration> getStoredWidgetFunctionConfigs() {
-//        Map<String, BusDataConfiguration> functionConfigs = super.getStoredWidgetFunctionConfigs();
-//        if (getTrackPart().getDefaultBlockFunctionConfig() != null) {
-//            BusDataConfiguration configuration = new BusDataConfiguration();
-//            configuration.setBus(1); //TODO
-//            configuration.setAddress(getTrackPart().getDefaultBlockFunctionConfig().getAddress());
-//            configuration.setBit(getTrackPart().getDefaultBlockFunctionConfig().getBit());
-//            configuration.setBitState(true);
-//            functionConfigs.put(TrackModelConstants.DEFAULT_BLOCK_FUNCTION, configuration);
-//        }
-//        return functionConfigs;
-//    }
 
     @Override
     public void updateFunctionState(BusDataConfiguration configuration, boolean state) {

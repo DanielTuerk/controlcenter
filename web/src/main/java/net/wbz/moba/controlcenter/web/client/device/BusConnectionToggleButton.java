@@ -60,7 +60,7 @@ public class BusConnectionToggleButton extends ToggleSwitch {
      * parameter is {@code false}.
      *
      * @param value      value to set
-     * @param fireEvents do not fire events for value changed
+     * @param fireEvents {@code false} to do not fire events for value changed
      */
     public void updateValue(Boolean value, boolean fireEvents) {
         fireEvent = fireEvents;

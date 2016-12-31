@@ -12,7 +12,7 @@ import javax.persistence.Table;
  * @author Daniel Tuerk
  */
 @Entity
-@Table(name = "trackpart_curve")
+@Table(name = "TRACKPART_CURVE")
 public class CurveEntity extends AbstractTrackPartEntity {
 
     @JMap

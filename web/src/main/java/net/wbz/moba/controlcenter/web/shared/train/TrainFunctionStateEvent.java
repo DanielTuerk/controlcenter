@@ -1,15 +1,13 @@
 package net.wbz.moba.controlcenter.web.shared.train;
 
-import net.wbz.moba.controlcenter.web.server.persist.train.TrainFunctionEntity;
-
 /**
  * @author Daniel Tuerk
  */
 public class TrainFunctionStateEvent extends TrainStateEvent {
-    private TrainFunction.FUNCTION function;
+    private TrainFunction function;
     private boolean active;
 
-    public TrainFunctionStateEvent(long itemId, TrainFunction.FUNCTION function, boolean active) {
+    public TrainFunctionStateEvent(long itemId, TrainFunction function, boolean active) {
         super(itemId);
         this.function = function;
         this.active = active;
@@ -18,7 +16,7 @@ public class TrainFunctionStateEvent extends TrainStateEvent {
     public TrainFunctionStateEvent() {
     }
 
-    public TrainFunction.FUNCTION getFunction() {
+    public TrainFunction getFunction() {
         return function;
     }
 

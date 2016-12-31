@@ -12,23 +12,23 @@ import javax.persistence.Entity;
  *
  * @author Daniel Tuerk
  */
-@Entity(name = "busdata_config")
+@Entity(name = "BUSDATA_CONFIG")
 public class BusDataConfigurationEntity extends AbstractEntity {
 
     @JMap
-    @Column(name = "config_bus")
+    @Column(name = "CONFIG_BUS")
     private int bus;
 
     @JMap
-    @Column(name = "config_address")
+    @Column(name = "CONFIG_ADDRESS")
     private int address;
 
     @JMap
-    @Column(name = "config_bit")
+    @Column(name = "CONFIG_BIT")
     private int bit;
 
     @JMap
-    @Column(name = "config_bit_state")
+    @Column(name = "CONFIG_BIT_STATE")
     private boolean bitState;
 
     public BusDataConfigurationEntity(int bus, int address, int bit, boolean bitState) {

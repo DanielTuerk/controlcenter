@@ -36,7 +36,7 @@ public class TrainViewerPanel extends AbstractItemViewerPanel<TrainItemPanel, Tr
             public void onClick(ClickEvent event) {
                 Train train = new Train();
                 train.setName(name.getText());
-                RequestUtils.getInstance().getTrainEditorRequest().createTrain(train, new AsyncCallback<Void>() {
+                RequestUtils.getInstance().getTrainEditorService().createTrain(train, new AsyncCallback<Void>() {
                     @Override
                     public void onFailure(Throwable caught) {
 
@@ -45,7 +45,7 @@ public class TrainViewerPanel extends AbstractItemViewerPanel<TrainItemPanel, Tr
                     @Override
                     public void onSuccess(Void result) {
                         name.setText("");
-                        loadData();
+//                        loadData();
                     }
                 });
             }
@@ -54,7 +54,7 @@ public class TrainViewerPanel extends AbstractItemViewerPanel<TrainItemPanel, Tr
 
     @Override
     protected void loadItems() {
-        RequestUtils.getInstance().getTrainEditorRequest().getTrains(new AsyncCallback<Collection<Train>>() {
+        RequestUtils.getInstance().getTrainEditorService().getTrains(new AsyncCallback<Collection<Train>>() {
             @Override
             public void onFailure(Throwable caught) {
 

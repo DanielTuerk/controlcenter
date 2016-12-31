@@ -3,14 +3,12 @@ package net.wbz.moba.controlcenter.web.server.persist.construction.track;
 import com.googlecode.jmapper.annotations.JMap;
 import net.wbz.moba.controlcenter.web.server.persist.AbstractEntity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 
 /**
  * @author Daniel Tuerk
  */
-@Entity(name = "trackpart_function")
+@Entity(name = "TRACKPART_FUNCTION")
 public class TrackPartFunctionEntity extends AbstractEntity {
 
     @JMap
@@ -18,7 +16,7 @@ public class TrackPartFunctionEntity extends AbstractEntity {
     private String functionKey;
 
     @JMap
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private BusDataConfigurationEntity configuration;
 
 //    @ManyToMany(mappedBy="functions",fetch = FetchType.LAZY)

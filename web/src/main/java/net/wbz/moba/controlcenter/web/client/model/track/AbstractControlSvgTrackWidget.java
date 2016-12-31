@@ -54,7 +54,7 @@ abstract public class AbstractControlSvgTrackWidget<T extends AbstractTrackPart 
     public void onClick() {
         if (isEnabled()) {
             BusDataConfiguration toggleFunctionConfig = getTrackPart().getToggleFunction();
-            RequestUtils.getInstance().getTrackViewerRequest().toggleTrackPart(toggleFunctionConfig, !trackPartState, RequestUtils.VOID_ASYNC_CALLBACK);
+            RequestUtils.getInstance().getTrackViewerService().toggleTrackPart(toggleFunctionConfig, !trackPartState, RequestUtils.VOID_ASYNC_CALLBACK);
         }
     }
 

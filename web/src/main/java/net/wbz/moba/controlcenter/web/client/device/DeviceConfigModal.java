@@ -106,7 +106,7 @@ public class DeviceConfigModal extends Modal {
                     public void onClick(ClickEvent event) {
                         // TODO validation feedback on dialog
                         if (!Strings.isNullOrEmpty(txtDeviceName.getText())) {
-                            BusServiceAsync busRequest = RequestUtils.getInstance().getBusRequest();
+                            BusServiceAsync busRequest = RequestUtils.getInstance().getBusService();
                             final DeviceInfo deviceInfo = new DeviceInfo();
                             if ("test".equals(txtDeviceName.getText())) {
                                 deviceInfo.setType(DeviceInfo.DEVICE_TYPE.TEST);
@@ -199,7 +199,7 @@ public class DeviceConfigModal extends Modal {
     }
 
     private void reloadDeviceList() {
-        RequestUtils.getInstance().getBusRequest().getDevices(new AsyncCallback<Collection<DeviceInfo>>() {
+        RequestUtils.getInstance().getBusService().getDevices(new AsyncCallback<Collection<DeviceInfo>>() {
             @Override
             public void onFailure(Throwable caught) {
 
@@ -217,7 +217,7 @@ public class DeviceConfigModal extends Modal {
                     btnDeleteActions.put(deviceInfo, new ClickHandler() {
                         @Override
                         public void onClick(ClickEvent event) {
-                            RequestUtils.getInstance().getBusRequest().deleteDevice(deviceInfo, new AsyncCallback<Void>() {
+                            RequestUtils.getInstance().getBusService().deleteDevice(deviceInfo, new AsyncCallback<Void>() {
                                 @Override
                                 public void onFailure(Throwable caught) {
 

@@ -51,7 +51,7 @@ public class ControlCenterApp implements EntryPoint {
             loadWelcomePage();
         } else {
 
-            RequestUtils.getInstance().getConstructionRequest().loadConstructions(new AsyncCallback<Collection<Construction>>() {
+            RequestUtils.getInstance().getConstructionService().loadConstructions(new AsyncCallback<Collection<Construction>>() {
                 @Override
                 public void onFailure(Throwable caught) {
 
@@ -69,7 +69,7 @@ public class ControlCenterApp implements EntryPoint {
                         }
                     }
                     if (constructionToLoad != null) {
-                        RequestUtils.getInstance().getConstructionRequest().setCurrentConstruction(
+                        RequestUtils.getInstance().getConstructionService().setCurrentConstruction(
                                 constructionToLoad, new AsyncCallback<Void>() {
                                     @Override
                                     public void onFailure(Throwable caught) {

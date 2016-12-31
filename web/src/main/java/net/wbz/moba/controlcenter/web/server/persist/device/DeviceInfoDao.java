@@ -30,7 +30,7 @@ public class DeviceInfoDao extends AbstractDao<DeviceInfoEntity> {
 
     public List<DeviceInfoEntity> listAll() {
         LOG.info("load constructions");
-        return getEntityManager().createQuery("SELECT x FROM device_info x",DeviceInfoEntity.class).getResultList();
+        return getEntityManager().createQuery("SELECT x FROM DEVICE_INFO x",DeviceInfoEntity.class).getResultList();
     }
 
 

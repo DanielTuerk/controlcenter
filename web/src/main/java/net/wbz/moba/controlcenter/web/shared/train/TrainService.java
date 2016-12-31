@@ -30,12 +30,29 @@ public interface TrainService extends RemoteService {
     void toggleDrivingDirection(long id, boolean forward);
 
     /**
+     * Change the driving direction of the {@link TrainEntity}.
+     *
+     * @param id      id of the {@link TrainEntity}
+     * @param on {@code true} to activate light
+     */
+    void toggleHorn(long id, boolean on);
+
+    /**
+     * Change the driving direction of the {@link TrainEntity}.
+     *
+     * @param id      id of the {@link TrainEntity}
+     * @param on {@code true} to activate horn
+     */
+    void toggleLight(long id, boolean on);
+
+
+    /**
      * Control the state of the functions.
      *
      * @param id       id of the {@link TrainEntity}
-     * @param function {@link TrainFunction.FUNCTION}
+     * @param function {@link TrainFunction}
      * @param state    {@link java.lang.Boolean}
      */
-    void setFunctionState(long id, TrainFunction.FUNCTION function, boolean state);
+    void toggleFunctionState(long id, TrainFunction function, boolean state);
 
 }

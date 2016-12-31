@@ -33,7 +33,7 @@ abstract public class AbstractConfigEntry<T> {
                 break;
             case REMOTE:
 //                try {
-                RequestUtils.getInstance().getConfigRequest().loadValue(getConfigKey(), new AsyncCallback<String>() {
+                RequestUtils.getInstance().getConfigService().loadValue(getConfigKey(), new AsyncCallback<String>() {
                     @Override
                     public void onFailure(Throwable caught) {
 
@@ -110,7 +110,7 @@ abstract public class AbstractConfigEntry<T> {
                 setValue(value);
                 break;
             case REMOTE:
-                RequestUtils.getInstance().getConfigRequest().saveValue(getConfigKey(), convertValueToString(value), RequestUtils.VOID_ASYNC_CALLBACK);
+                RequestUtils.getInstance().getConfigService().saveValue(getConfigKey(), convertValueToString(value), RequestUtils.VOID_ASYNC_CALLBACK);
                 break;
         }
     }

@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
+ * TODO drop?
  * @author Daniel Tuerk
  */
 public class SignalConfiguration implements Identity {

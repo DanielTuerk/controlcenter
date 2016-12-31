@@ -26,7 +26,7 @@ public class ConstructionDao extends AbstractDao<ConstructionEntity> {
     @Transactional
     public synchronized List<ConstructionEntity> listConstructions() {
         LOG.info("load constructions");
-        return getEntityManager().createQuery("SELECT x FROM construction x", ConstructionEntity.class).getResultList();
+        return getEntityManager().createQuery("SELECT x FROM CONSTRUCTION x", ConstructionEntity.class).getResultList();
     }
 
 //    @Override

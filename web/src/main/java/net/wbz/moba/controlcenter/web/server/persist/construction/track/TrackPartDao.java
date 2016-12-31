@@ -24,7 +24,7 @@ public class TrackPartDao extends AbstractDao<AbstractTrackPartEntity> {
     }
 
     public List<AbstractTrackPartEntity> findByConstructionId(Long constructionId) {
-        return  getEntityManager().createQuery("SELECT t FROM track_part t"
+        return  getEntityManager().createQuery("SELECT t FROM TRACK_PART t"
                         +" WHERE t.construction.id = :construction",
                 AbstractTrackPartEntity.class)
                 .setParameter("construction", constructionId)

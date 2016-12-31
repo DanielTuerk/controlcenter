@@ -1,14 +1,10 @@
 package net.wbz.moba.controlcenter.web.client.viewer.settings;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import net.wbz.moba.controlcenter.web.client.RequestUtils;
 import net.wbz.moba.controlcenter.web.shared.constrution.Construction;
-
-import com.google.web.bindery.requestfactory.shared.Receiver;
 
 /**
  * Dropdown for the name of the {@link net.wbz.moba.controlcenter.web.shared.constrution.Construction}s.
@@ -26,7 +22,7 @@ public class ConstructionSelectionConfigEntry extends SelectionConfigEntry {
         // at first initialize value for direct usage
         ConstructionSelectionConfigEntry.super.handleStorageRead(value);
         // load available options for the select component
-        RequestUtils.getInstance().getConstructionRequest().loadConstructions(new AsyncCallback<Collection<Construction>>() {
+        RequestUtils.getInstance().getConstructionService().loadConstructions(new AsyncCallback<Collection<Construction>>() {
             @Override
             public void onFailure(Throwable caught) {
 

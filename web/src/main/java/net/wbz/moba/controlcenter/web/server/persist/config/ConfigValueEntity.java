@@ -9,7 +9,7 @@ import java.io.Serializable;
 /**
  * @author Daniel Tuerk
  */
-@Entity
+@Entity(name = "CONFIG_VALUE")
 public class ConfigValueEntity implements Serializable {
 
     @Id

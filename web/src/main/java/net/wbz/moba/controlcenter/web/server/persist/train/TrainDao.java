@@ -29,12 +29,12 @@ public class TrainDao extends AbstractDao<TrainEntity> {
 
 
     public List<TrainEntity> getTrains() {
-        return getEntityManager().createQuery("SELECT x FROM train x",TrainEntity.class).getResultList();
+        return getEntityManager().createQuery("SELECT x FROM TRAIN x", TrainEntity.class).getResultList();
     }
 
     public TrainEntity getTrainByAddress(int address) throws TrainException {
         Query typedQuery = getEntityManager().createQuery(
-                "SELECT x FROM train x where address=:address");
+                "SELECT x FROM TRAIN x WHERE x.address=:address");
         typedQuery.setParameter("address", address);
         TrainEntity train = (TrainEntity) typedQuery.getSingleResult();
         if (train != null) {
@@ -46,7 +46,7 @@ public class TrainDao extends AbstractDao<TrainEntity> {
 
     public TrainEntity getTrainById(long trainId) throws TrainException {
         Query typedQuery = getEntityManager().createQuery(
-                "SELECT x FROM train x where id=:id");
+                "SELECT x FROM TRAIN x WHERE x.id=:id");
         typedQuery.setParameter("id", trainId);
         TrainEntity train = (TrainEntity) typedQuery.getSingleResult();
         if (train != null) {

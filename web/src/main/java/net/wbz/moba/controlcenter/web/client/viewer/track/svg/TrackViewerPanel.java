@@ -64,7 +64,7 @@ public class TrackViewerPanel extends AbstractTrackViewerPanel {
         add(lblTrackPartConfig, 0, 0);
 
         // load the connection state to toggle the state of the widgets
-        RequestUtils.getInstance().getBusRequest().isBusConnected(new AsyncCallback<Boolean>() {
+        RequestUtils.getInstance().getBusService().isBusConnected(new AsyncCallback<Boolean>() {
             @Override
             public void onFailure(Throwable caught) {
 
@@ -73,7 +73,7 @@ public class TrackViewerPanel extends AbstractTrackViewerPanel {
             @Override
             public void onSuccess(final Boolean response) {
 
-                RequestUtils.getInstance().getTrackEditorRequest().loadTrack(new AsyncCallback<Collection<AbstractTrackPart>>() {
+                RequestUtils.getInstance().getTrackEditorService().loadTrack(new AsyncCallback<Collection<AbstractTrackPart>>() {
                     @Override
                     public void onFailure(Throwable caught) {
 
@@ -180,7 +180,7 @@ public class TrackViewerPanel extends AbstractTrackViewerPanel {
     @Override
     protected void updateTrainOnTrack(final int address, final int block, final int train,
                                       final FeedbackBlockEvent.STATE state) {
-        RequestUtils.getInstance().getTrainEditorRequest().getTrain(train, new AsyncCallback<Train>() {
+        RequestUtils.getInstance().getTrainEditorService().getTrain(train, new AsyncCallback<Train>() {
             @Override
             public void onFailure(Throwable caught) {
 
@@ -224,7 +224,7 @@ public class TrackViewerPanel extends AbstractTrackViewerPanel {
     }
 
     private void registerWidgetsToReceiveEvents() {
-        RequestUtils.getInstance().getTrackEditorRequest().registerConsumersByConnectedDeviceForTrackParts(
+        RequestUtils.getInstance().getTrackEditorService().registerConsumersByConnectedDeviceForTrackParts(
                 loadedTrackParts, RequestUtils.VOID_ASYNC_CALLBACK);
     }
 

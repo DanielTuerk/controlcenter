@@ -12,7 +12,7 @@ import javax.persistence.Table;
  * @author Daniel Tuerk
  */
 @Entity
-@Table(name = "trackpart_straight")
+@Table(name = "TRACKPART_STRAIGHT")
 public class StraightEntity extends AbstractTrackPartEntity {
 
     @JMap

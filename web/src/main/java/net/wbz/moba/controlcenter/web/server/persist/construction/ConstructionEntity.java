@@ -11,7 +11,7 @@ import java.util.List;
 /**
  * @author Daniel Tuerk
  */
-@Entity(name = "construction")
+@Entity(name = "CONSTRUCTION")
 public class ConstructionEntity extends AbstractEntity {
 
     @JMap

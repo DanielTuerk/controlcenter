@@ -30,6 +30,7 @@ abstract public class AbstractItemViewerPanel<ItemPanel extends AbstractItemPane
     private RemoteEventListener trainDataChangedEventListener;
 
     public AbstractItemViewerPanel() {
+
         addStyleName("contentPanel");
 
         InputGroup inputCreate = new InputGroup();
@@ -61,6 +62,12 @@ abstract public class AbstractItemViewerPanel<ItemPanel extends AbstractItemPane
                 }
             });
         }
+        trainDataChangedEventListener = new RemoteEventListener() {
+            @Override
+            public void apply(Event event) {
+                loadData();
+            }
+        };
 
     }
 
@@ -71,38 +78,38 @@ abstract public class AbstractItemViewerPanel<ItemPanel extends AbstractItemPane
     @Override
     protected void onLoad() {
         super.onLoad();
-        loadData();
-        trainDataChangedEventListener = new RemoteEventListener() {
-            @Override
-            public void apply(Event event) {
-                loadData();
-            }
-        };
+
+
         EventReceiver.getInstance().addListener(TrainDataChangedEvent.class, trainDataChangedEventListener);
 
         for (Map.Entry<Class<EventType>, RemoteEventListener> eventListenerEntry : eventListeners.entrySet()) {
             EventReceiver.getInstance().addListener(eventListenerEntry.getKey(), eventListenerEntry.getValue());
         }
+
+        loadData();
     }
 
-    protected void loadData() {
+    private void loadData() {
         resetItems();
         loadItems();
     }
 
     private void resetItems() {
-        for (Map.Entry<Class<EventType>, RemoteEventListener> eventListenerEntry : eventListeners.entrySet()) {
-            EventReceiver.getInstance().removeListener(eventListenerEntry.getKey(), eventListenerEntry.getValue());
-        }
-
-        EventReceiver.getInstance().removeListener(TrainDataChangedEvent.class, trainDataChangedEventListener);
-
         itemsContainerPanel.clear();
     }
 
     @Override
     protected void onUnload() {
         super.onUnload();
+
+
+        for (Map.Entry<Class<EventType>, RemoteEventListener> eventListenerEntry : eventListeners.entrySet()) {
+            EventReceiver.getInstance().removeListener(eventListenerEntry.getKey(), eventListenerEntry.getValue());
+        }
+
+        EventReceiver.getInstance().removeListener(TrainDataChangedEvent.class, trainDataChangedEventListener);
+
+
         resetItems();
     }
 

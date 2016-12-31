@@ -43,7 +43,7 @@ public class TrackViewer3dPanel extends AbstractTrackViewerPanel {
         add(renderingPanel);
 
         // load the connection state to toggle the state of the widgets
-        RequestUtils.getInstance().getBusRequest().isBusConnected(new AsyncCallback<Boolean>() {
+        RequestUtils.getInstance().getBusService().isBusConnected(new AsyncCallback<Boolean>() {
             @Override
             public void onFailure(Throwable caught) {
 
@@ -51,7 +51,7 @@ public class TrackViewer3dPanel extends AbstractTrackViewerPanel {
 
             @Override
             public void onSuccess(Boolean response) {
-                RequestUtils.getInstance().getTrackEditorRequest().loadTrack(new AsyncCallback<Collection<AbstractTrackPart>>() {
+                RequestUtils.getInstance().getTrackEditorService().loadTrack(new AsyncCallback<Collection<AbstractTrackPart>>() {
                     @Override
                     public void onFailure(Throwable caught) {
 
@@ -80,7 +80,7 @@ public class TrackViewer3dPanel extends AbstractTrackViewerPanel {
                             }
 
                         }
-                        RequestUtils.getInstance().getTrackEditorRequest()
+                        RequestUtils.getInstance().getTrackEditorService()
                                 .registerConsumersByConnectedDeviceForTrackParts(Lists.newArrayList(trackParts), RequestUtils.VOID_ASYNC_CALLBACK);
 
                         animatedScene.centerCamera();

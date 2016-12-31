@@ -14,9 +14,7 @@ import org.gwtbootstrap3.client.ui.Button;
 import org.gwtbootstrap3.client.ui.LinkedGroup;
 import org.gwtbootstrap3.client.ui.TextBox;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 /**
  * Container for the welcome landing page to load an existing {@link Construction} or create a new one.
@@ -53,7 +51,7 @@ abstract class WelcomeContainer extends Composite {
 
     private void loadConstructions() {
         listGroupConstructions.clear();
-        RequestUtils.getInstance().getConstructionRequest().loadConstructions(
+        RequestUtils.getInstance().getConstructionService().loadConstructions(
                 new AsyncCallback<Collection<Construction>>() {
                     @Override
                     public void onFailure(Throwable caught) {
@@ -83,7 +81,7 @@ abstract class WelcomeContainer extends Composite {
         final Construction construction = new Construction();
         final String constructionName = txtCreateName.getText();
         construction.setName(constructionName);
-        RequestUtils.getInstance().getConstructionRequest().createConstruction(construction, new AsyncCallback<Void>() {
+        RequestUtils.getInstance().getConstructionService().createConstruction(construction, new AsyncCallback<Void>() {
             @Override
             public void onFailure(Throwable caught) {
 
@@ -104,7 +102,7 @@ abstract class WelcomeContainer extends Composite {
      * @param construction {@link Construction} to set
      */
     private void updateCurrentConstruction(final Construction construction) {
-        RequestUtils.getInstance().getConstructionRequest().setCurrentConstruction(
+        RequestUtils.getInstance().getConstructionService().setCurrentConstruction(
                 construction, new AsyncCallback<Void>() {
                     @Override
                     public void onFailure(Throwable caught) {

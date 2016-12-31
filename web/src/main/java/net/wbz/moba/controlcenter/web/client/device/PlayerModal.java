@@ -54,7 +54,7 @@ public class PlayerModal extends Modal {
 
         content.clear();
 
-        RequestUtils.getInstance().getBusRequest().getRecords(new AsyncCallback<Collection<String>>() {
+        RequestUtils.getInstance().getBusService().getRecords(new AsyncCallback<Collection<String>>() {
             @Override
             public void onFailure(Throwable caught) {
 
@@ -67,7 +67,7 @@ public class PlayerModal extends Modal {
                     btnRecord.addClickHandler(new ClickHandler() {
                         @Override
                         public void onClick(ClickEvent event) {
-                            RequestUtils.getInstance().getBusRequest().startPlayer(name, RequestUtils.VOID_ASYNC_CALLBACK);
+                            RequestUtils.getInstance().getBusService().startPlayer(name, RequestUtils.VOID_ASYNC_CALLBACK);
                             hide();
                         }
                     });

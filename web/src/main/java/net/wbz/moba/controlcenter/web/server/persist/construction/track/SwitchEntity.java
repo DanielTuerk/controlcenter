@@ -10,7 +10,7 @@ import javax.persistence.*;
  * @author Daniel Tuerk
  */
 @Entity
-@Table(name = "trackpart_switch")
+@Table(name = "TRACKPART_SWITCH")
 public class SwitchEntity extends AbstractTrackPartEntity implements HasToggleFunctionEntity {
 
     @JMap

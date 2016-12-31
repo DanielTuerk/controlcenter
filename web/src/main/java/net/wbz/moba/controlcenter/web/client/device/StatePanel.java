@@ -123,9 +123,9 @@ public class StatePanel extends org.gwtbootstrap3.client.ui.gwt.FlowPanel {
             @Override
             public void onValueChange(ValueChangeEvent<Boolean> booleanValueChangeEvent) {
                 if (booleanValueChangeEvent.getValue()) {
-                    RequestUtils.getInstance().getBusRequest().startRecording("", RequestUtils.VOID_ASYNC_CALLBACK);
+                    RequestUtils.getInstance().getBusService().startRecording("", RequestUtils.VOID_ASYNC_CALLBACK);
                 } else {
-                    RequestUtils.getInstance().getBusRequest().stopRecording(RequestUtils.VOID_ASYNC_CALLBACK);
+                    RequestUtils.getInstance().getBusService().stopRecording(RequestUtils.VOID_ASYNC_CALLBACK);
                 }
             }
         });
@@ -154,7 +154,7 @@ public class StatePanel extends org.gwtbootstrap3.client.ui.gwt.FlowPanel {
         btnPlayerStop.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                RequestUtils.getInstance().getBusRequest().stopRecording(RequestUtils.VOID_ASYNC_CALLBACK);
+                RequestUtils.getInstance().getBusService().stopRecording(RequestUtils.VOID_ASYNC_CALLBACK);
             }
         });
         add(btnPlayerStop);
@@ -169,7 +169,7 @@ public class StatePanel extends org.gwtbootstrap3.client.ui.gwt.FlowPanel {
     }
 
     private void toggleRailVoltageState() {
-        RequestUtils.getInstance().getBusRequest().toggleRailVoltage(RequestUtils.VOID_ASYNC_CALLBACK);
+        RequestUtils.getInstance().getBusService().toggleRailVoltage(RequestUtils.VOID_ASYNC_CALLBACK);
     }
 
     @Override
@@ -177,7 +177,7 @@ public class StatePanel extends org.gwtbootstrap3.client.ui.gwt.FlowPanel {
         EventReceiver.getInstance().addListener(DeviceInfoEvent.class, deviceInfoEventListener);
         EventReceiver.getInstance().addListener(PlayerEvent.class, busDataPlayerEventListener);
 
-        RequestUtils.getInstance().getBusRequest().isBusConnected(new AsyncCallback<Boolean>() {
+        RequestUtils.getInstance().getBusService().isBusConnected(new AsyncCallback<Boolean>() {
             @Override
             public void onFailure(Throwable caught) {
 
@@ -186,7 +186,7 @@ public class StatePanel extends org.gwtbootstrap3.client.ui.gwt.FlowPanel {
             @Override
             public void onSuccess(Boolean connected) {
                 if (connected) {
-                    RequestUtils.getInstance().getBusRequest().getDevices(new AsyncCallback<Collection<DeviceInfo>>() {
+                    RequestUtils.getInstance().getBusService().getDevices(new AsyncCallback<Collection<DeviceInfo>>() {
                         @Override
                         public void onFailure(Throwable caught) {
 

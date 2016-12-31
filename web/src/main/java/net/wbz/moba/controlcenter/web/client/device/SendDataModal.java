@@ -88,7 +88,7 @@ public class SendDataModal extends Modal {
         final int address = Integer.parseInt(txtAddress.getText());
         final int busNr = Integer.parseInt(txtBus.getText());
         final int data = Integer.parseInt(txtData.getText());
-        RequestUtils.getInstance().getBusRequest().sendBusData(busNr, address, data, new AsyncCallback<Void>() {
+        RequestUtils.getInstance().getBusService().sendBusData(busNr, address, data, new AsyncCallback<Void>() {
             @Override
             public void onFailure(Throwable caught) {
                 Notify.notify("send data", "can't send data: " + caught.getMessage(), IconType.WARNING);

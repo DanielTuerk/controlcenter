@@ -20,7 +20,7 @@ import java.util.Set;
  *
  * @author Daniel Tuerk
  */
-@Entity(name = "track_part")
+@Entity(name = "TRACK_PART")
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public abstract class AbstractTrackPartEntity extends AbstractEntity {
 

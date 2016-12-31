@@ -10,7 +10,7 @@ import javax.persistence.*;
  * @author Daniel Tuerk
  */
 @Entity
-@Table(name = "trackpart_uncoupler")
+@Table(name = "TRACKPART_UNCOUPLER")
 public class UncouplerEntity extends StraightEntity implements HasToggleFunctionEntity{
 
     @JMap

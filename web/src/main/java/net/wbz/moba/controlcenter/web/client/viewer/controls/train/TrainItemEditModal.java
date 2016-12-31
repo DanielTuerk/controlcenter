@@ -1,10 +1,10 @@
 package net.wbz.moba.controlcenter.web.client.viewer.controls.train;
 
+import com.google.common.base.Strings;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.web.bindery.requestfactory.shared.Receiver;
 import net.wbz.moba.controlcenter.web.client.RequestUtils;
 import net.wbz.moba.controlcenter.web.server.persist.train.TrainEntity;
 import net.wbz.moba.controlcenter.web.shared.train.Train;
@@ -84,7 +84,7 @@ public class TrainItemEditModal extends Modal {
             public void onClick(ClickEvent clickEvent) {
                 TrainItemEditModal.this.hide();
 
-                RequestUtils.getInstance().getTrainEditorRequest().deleteTrain(train.getId(), new AsyncCallback<Void>() {
+                RequestUtils.getInstance().getTrainEditorService().deleteTrain(train.getId(), new AsyncCallback<Void>() {
                     @Override
                     public void onFailure(Throwable caught) {
                         Notify.notify("", "Delete TrainEntity " + train.getName() + " Error: " + caught.getMessage(),
@@ -112,13 +112,11 @@ public class TrainItemEditModal extends Modal {
         Button btnSave = new Button("Save", IconType.SAVE, new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-
-//                TrainService trainRequest = RequestUtils.getInstance().getTrainRequest();
-//                trainRequest.append(train);
-
-                train.setAddress(Integer.parseInt(txtAddress.getValue()));
+                if (!Strings.isNullOrEmpty(txtAddress.getValue())) {
+                    train.setAddress(Integer.parseInt(txtAddress.getValue()));
+                }
                 train.setName(txtName.getValue());
-                RequestUtils.getInstance().getTrainEditorRequest().updateTrain(train, new AsyncCallback<Void>() {
+                RequestUtils.getInstance().getTrainEditorService().updateTrain(train, new AsyncCallback<Void>() {
                     @Override
                     public void onFailure(Throwable caught) {
 

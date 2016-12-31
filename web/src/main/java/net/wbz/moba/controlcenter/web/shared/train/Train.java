@@ -1,7 +1,16 @@
 package net.wbz.moba.controlcenter.web.shared.train;
 
+import com.google.common.base.Function;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 import com.googlecode.jmapper.annotations.JMap;
 import net.wbz.moba.controlcenter.web.shared.track.model.AbstractDto;
+import org.apache.commons.lang.ArrayUtils;
+
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Set;
 
 /**
  * @author Daniel Tuerk
@@ -12,6 +21,10 @@ public class Train extends AbstractDto {
     private Integer address;
     @JMap
     private String name;
+
+    @JMap
+    private Set<TrainFunction> functions;
+
 
     private int drivingLevel = 0;
 
@@ -54,8 +67,12 @@ public class Train extends AbstractDto {
         this.forward = forward;
     }
 
-    public TrainFunction[] getFunctions() {
-        //TODO
-        return new TrainFunction[0];
+    public void setFunctions(Set<TrainFunction> functions) {
+        this.functions = functions;
     }
+
+    public Set<TrainFunction> getFunctions() {
+        return functions;
+    }
+
 }

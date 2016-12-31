@@ -2,6 +2,7 @@ package net.wbz.moba.controlcenter.web.server.persist.train;
 
 import com.googlecode.jmapper.annotations.JMap;
 import net.wbz.moba.controlcenter.web.server.persist.AbstractEntity;
+import net.wbz.moba.controlcenter.web.server.persist.construction.track.BusDataConfigurationEntity;
 import net.wbz.moba.controlcenter.web.shared.train.TrainFunction;
 
 import javax.persistence.*;
@@ -12,63 +13,27 @@ import javax.persistence.*;
  *
  * @author Daniel Tuerk
  */
-@Entity(name = "train_function")
+@Entity(name = "TRAIN_FUNCTION")
 public class TrainFunctionEntity extends AbstractEntity {
 
-
-    /**
-     * The mapped function key for the train.
-     */
     @JMap
-    @Enumerated(EnumType.ORDINAL)
-    @Column(name = "function_name")
-    private TrainFunction.FUNCTION function;
-
-    @JMap
-    @Column(name = "function_alias")
+    @Column(name = "FUNCTION_ALIAS")
     private String alias;
 
-    /**
-     * TODO address, bit
-     */
-
-//    @Transient
-//    private boolean state;
-
-//    @ManyToMany(mappedBy = "functions", fetch = FetchType.LAZY)
-//    private List<TrainEntity> trains;
+    @JMap
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    private BusDataConfigurationEntity configuration;
 
     public TrainFunctionEntity() {
     }
 
-//    public TrainFunctionEntity(TrainFunction.FUNCTION function, boolean state) {
-//        this.function = function;
-//        this.state = state;
-//    }
-
-//    public List<TrainEntity> getTrains() {
-//        return trains;
-//    }
-//
-//    public void setTrains(List<TrainEntity> trains) {
-//        this.trains = trains;
-//    }
-
-    public TrainFunction.FUNCTION getFunction() {
-        return function;
+    public BusDataConfigurationEntity getConfiguration() {
+        return configuration;
     }
 
-    public void setFunction(TrainFunction.FUNCTION function) {
-        this.function = function;
+    public void setConfiguration(BusDataConfigurationEntity configuration) {
+        this.configuration = configuration;
     }
-
-//    public boolean isState() {
-//        return state;
-//    }
-//
-//    public void setState(boolean state) {
-//        this.state = state;
-//    }
 
     public String getAlias() {
         return alias;

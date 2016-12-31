@@ -9,7 +9,7 @@ import javax.persistence.ManyToOne;
 /**
  * @author Daniel Tuerk
  */
-@Entity(name = "event_config")
+@Entity(name = "EVENT_CONFIG")
 public class EventConfigurationEntity extends AbstractEntity {
 
     @JMap

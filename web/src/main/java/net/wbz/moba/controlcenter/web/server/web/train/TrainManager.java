@@ -83,53 +83,61 @@ public class TrainManager {
                         }
 
                         @Override
-                        public void functionStateChanged(byte functionAddress, int functionBit, boolean active) {
-                            TrainFunction.FUNCTION trainFunction;
-                            switch (functionBit) {
-                                case 1:
-                                    trainFunction = TrainFunction.FUNCTION.F1;
+                        public void functionStateChanged(int functionAddress, int functionBit, boolean active) {
+                            for (TrainFunction trainFunction : train.getFunctions()) {
+                                if (trainFunction.getConfiguration().getAddress() == functionAddress
+                                        && trainFunction.getConfiguration().getBit() == functionBit) {
+                                    eventBroadcaster.fireEvent(new TrainFunctionStateEvent(train.getId(), trainFunction,
+                                            active));
                                     break;
-                                case 2:
-                                    trainFunction = TrainFunction.FUNCTION.F2;
-                                    break;
-                                case 3:
-                                    trainFunction = TrainFunction.FUNCTION.F3;
-                                    break;
-                                case 4:
-                                    trainFunction = TrainFunction.FUNCTION.F4;
-                                    break;
-                                case 5:
-                                    trainFunction = TrainFunction.FUNCTION.F5;
-                                    break;
-                                case 6:
-                                    trainFunction = TrainFunction.FUNCTION.F6;
-                                    break;
-                                case 7:
-                                    trainFunction = TrainFunction.FUNCTION.F7;
-                                    break;
-                                case 8:
-                                    trainFunction = TrainFunction.FUNCTION.F8;
-                                    break;
-                                default:
-                                    throw new RuntimeException("no function available for bit: " + functionBit);
+                                }
                             }
 
-                            // TODO functions
-
-//                            train.getFunction(trainFunction).setState(active);
-                            eventBroadcaster.fireEvent(new TrainFunctionStateEvent(train.getId(), trainFunction,
-                                    active));
+//                            TrainFunction.FUNCTION trainFunction;
+//                            switch (functionBit) {
+//                                case 1:
+//                                    trainFunction = TrainFunction.FUNCTION.F1;
+//                                    break;
+//                                case 2:
+//                                    trainFunction = TrainFunction.FUNCTION.F2;
+//                                    break;
+//                                case 3:
+//                                    trainFunction = TrainFunction.FUNCTION.F3;
+//                                    break;
+//                                case 4:
+//                                    trainFunction = TrainFunction.FUNCTION.F4;
+//                                    break;
+//                                case 5:
+//                                    trainFunction = TrainFunction.FUNCTION.F5;
+//                                    break;
+//                                case 6:
+//                                    trainFunction = TrainFunction.FUNCTION.F6;
+//                                    break;
+//                                case 7:
+//                                    trainFunction = TrainFunction.FUNCTION.F7;
+//                                    break;
+//                                case 8:
+//                                    trainFunction = TrainFunction.FUNCTION.F8;
+//                                    break;
+//                                default:
+//                                    throw new RuntimeException("no function available for bit: " + functionBit);
+//                            }
+//
+//
+////                            train.getFunction(trainFunction).setActive(active);
+//                            eventBroadcaster.fireEvent(new TrainFunctionStateEvent(train.getId(), trainFunction,
+//                                    active));
                         }
 
                         @Override
                         public void lightStateChanged(boolean state) {
-//                            train.getFunction(TrainFunction.FUNCTION.LIGHT).setState(state);
+//                            train.getFunction(TrainFunction.FUNCTION.LIGHT).setActive(state);
                             eventBroadcaster.fireEvent(new TrainLightStateEvent(train.getId(), state));
                         }
 
                         @Override
                         public void hornStateChanged(boolean state) {
-//                            train.getFunction(TrainFunction.FUNCTION.HORN).setState(state);
+//                            train.getFunction(TrainFunction.FUNCTION.HORN).setActive(state);
                             eventBroadcaster.fireEvent(new TrainHornStateEvent(train.getId(), state));
                         }
                     }

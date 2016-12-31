@@ -6,7 +6,9 @@ import net.wbz.moba.controlcenter.web.shared.track.model.AbstractTrackPart;
 import net.wbz.moba.controlcenter.web.shared.track.model.Signal;
 import net.wbz.moba.controlcenter.web.shared.track.model.TrackModelConstants;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import java.util.Map;
 import net.wbz.moba.controlcenter.web.shared.track.model.Signal.LIGHT;
@@ -18,45 +20,35 @@ import net.wbz.moba.controlcenter.web.shared.track.model.Signal.TYPE;
  * s@author Daniel Tuerk
  */
 @Entity
-@Table(name = "trackpart_signal")
+@Table(name = "TRACKPART_SIGNAL")
 public class SignalEntity extends StraightEntity {
 
-//    /**
-//     * Available lights of the different signal types.
-//     */
-//    public enum LIGHT {
-//        RED1, RED2, GREEN1, GREEN2, YELLOW1, YELLOW2, WHITE
-//    }
+    @JMap
+    @Column
+    private TYPE type;
 
-//    /**
-//     * Available functions for the signal types.
-//     */
-//    public enum FUNCTION {
-//        HP0, HP1, HP2, HP0_SH1
-//    }
-//
-//    /**
-//     * Types of signal with corresponding mapping of the lights.
-//     */
-//    public enum TYPE implements IsSerializable{
-//        BLOCK(new LIGHT[]{LIGHT.RED1, LIGHT.GREEN1}),
-//        ENTER(new LIGHT[]{LIGHT.RED1, LIGHT.GREEN1, LIGHT.YELLOW1}),
-//        EXIT(new LIGHT[]{LIGHT.RED1, LIGHT.RED2, LIGHT.GREEN1, LIGHT.YELLOW1, LIGHT.WHITE}),
-//        BEFORE(new LIGHT[]{LIGHT.GREEN1, LIGHT.GREEN2, LIGHT.YELLOW1, LIGHT.YELLOW2});
-//
-//        private LIGHT[] lights;
-//
-//        TYPE(LIGHT[] lights) {
-//            this.lights = lights;
-//        }
-//
-//        public LIGHT[] getLights() {
-//            return lights;
-//        }
-//    }
 
     @JMap
-    private TYPE type;
+    @ManyToOne
+    private BusDataConfigurationEntity signalConfigRed1;
+    @JMap
+    @ManyToOne
+    private BusDataConfigurationEntity signalConfigRed2;
+    @JMap
+    @ManyToOne
+    private BusDataConfigurationEntity signalConfigGreen1;
+    @JMap
+    @ManyToOne
+    private BusDataConfigurationEntity signalConfigGreen2;
+    @JMap
+    @ManyToOne
+    private BusDataConfigurationEntity signalConfigYellow1;
+    @JMap
+    @ManyToOne
+    private BusDataConfigurationEntity signalConfigYellow2;
+    @JMap
+    @ManyToOne
+    private BusDataConfigurationEntity signalConfigWhite;
 
     public SignalEntity() {
     }
@@ -106,6 +98,62 @@ public class SignalEntity extends StraightEntity {
             }
         }
         return lightConfig;
+    }
+
+    public BusDataConfigurationEntity getSignalConfigRed1() {
+        return signalConfigRed1;
+    }
+
+    public void setSignalConfigRed1(BusDataConfigurationEntity signalConfigRed1) {
+        this.signalConfigRed1 = signalConfigRed1;
+    }
+
+    public BusDataConfigurationEntity getSignalConfigRed2() {
+        return signalConfigRed2;
+    }
+
+    public void setSignalConfigRed2(BusDataConfigurationEntity signalConfigRed2) {
+        this.signalConfigRed2 = signalConfigRed2;
+    }
+
+    public BusDataConfigurationEntity getSignalConfigGreen1() {
+        return signalConfigGreen1;
+    }
+
+    public void setSignalConfigGreen1(BusDataConfigurationEntity signalConfigGreen1) {
+        this.signalConfigGreen1 = signalConfigGreen1;
+    }
+
+    public BusDataConfigurationEntity getSignalConfigGreen2() {
+        return signalConfigGreen2;
+    }
+
+    public void setSignalConfigGreen2(BusDataConfigurationEntity signalConfigGreen2) {
+        this.signalConfigGreen2 = signalConfigGreen2;
+    }
+
+    public BusDataConfigurationEntity getSignalConfigYellow1() {
+        return signalConfigYellow1;
+    }
+
+    public void setSignalConfigYellow1(BusDataConfigurationEntity signalConfigYellow1) {
+        this.signalConfigYellow1 = signalConfigYellow1;
+    }
+
+    public BusDataConfigurationEntity getSignalConfigYellow2() {
+        return signalConfigYellow2;
+    }
+
+    public void setSignalConfigYellow2(BusDataConfigurationEntity signalConfigYellow2) {
+        this.signalConfigYellow2 = signalConfigYellow2;
+    }
+
+    public BusDataConfigurationEntity getSignalConfigWhite() {
+        return signalConfigWhite;
+    }
+
+    public void setSignalConfigWhite(BusDataConfigurationEntity signalConfigWhite) {
+        this.signalConfigWhite = signalConfigWhite;
     }
 
     @Override

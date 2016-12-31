@@ -44,7 +44,7 @@ public class DeviceListBox extends Select {
 
     public void reload() {
 
-        RequestUtils.getInstance().getBusRequest().getDevices(new AsyncCallback<Collection<DeviceInfo>>() {
+        RequestUtils.getInstance().getBusService().getDevices(new AsyncCallback<Collection<DeviceInfo>>() {
             @Override
             public void onFailure(Throwable caught) {
 

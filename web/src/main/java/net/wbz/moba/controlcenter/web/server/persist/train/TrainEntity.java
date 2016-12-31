@@ -15,7 +15,7 @@ import java.util.Set;
  *
  * @author Daniel Tuerk
  */
-@Entity(name = "train")
+@Entity(name = "TRAIN")
 public class TrainEntity extends AbstractEntity {
 
 
@@ -25,6 +25,7 @@ public class TrainEntity extends AbstractEntity {
     @JMap
     private String name;
 
+    @JMap
     @OneToMany(cascade = {CascadeType.ALL}, fetch = FetchType.LAZY)
 //    @JoinTable(joinColumns = {@JoinColumn(name = "ID")}, inverseJoinColumns = {@JoinColumn(name = "TRAINFUNCTION_ID")})
     private Set<TrainFunctionEntity> functions;
@@ -82,13 +83,13 @@ public class TrainEntity extends AbstractEntity {
         this.functions = functions;
     }
 
-    public TrainFunctionEntity getFunction(TrainFunction.FUNCTION function) {
-        for (TrainFunctionEntity trainFunction : functions) {
-            if (function == trainFunction.getFunction()) {
-                return trainFunction;
-            }
-        }
-        return null;
-    }
+//    public TrainFunctionEntity getFunction(TrainFunction.FUNCTION function) {
+//        for (TrainFunctionEntity trainFunction : functions) {
+//            if (function == trainFunction.getFunction()) {
+//                return trainFunction;
+//            }
+//        }
+//        return null;
+//    }
 
 }

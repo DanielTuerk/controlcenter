@@ -105,12 +105,12 @@ public class BusMonitorPanel extends FlowPanel {
 
                 if (deviceInfoEvent.getEventType() == DeviceInfoEvent.TYPE.CONNECTED) {
 
-                    RequestUtils.getInstance().getBusRequest().startTrackingBus(RequestUtils.VOID_ASYNC_CALLBACK);
+                    RequestUtils.getInstance().getBusService().startTrackingBus(RequestUtils.VOID_ASYNC_CALLBACK);
                     remove(wellConnectionState);
                     addBusPanels();
 
                 } else if (deviceInfoEvent.getEventType() == DeviceInfoEvent.TYPE.DISCONNECTED) {
-                    RequestUtils.getInstance().getBusRequest().stopTrackingBus(RequestUtils.VOID_ASYNC_CALLBACK);
+                    RequestUtils.getInstance().getBusService().stopTrackingBus(RequestUtils.VOID_ASYNC_CALLBACK);
                     removeBusPanels();
                     add(wellConnectionState);
                 }
@@ -123,7 +123,7 @@ public class BusMonitorPanel extends FlowPanel {
         super.onLoad();
         EventReceiver.getInstance().addListener(DeviceInfoEvent.class, connectionListener);
 
-        RequestUtils.getInstance().getBusRequest().isBusConnected(new AsyncCallback<Boolean>() {
+        RequestUtils.getInstance().getBusService().isBusConnected(new AsyncCallback<Boolean>() {
             @Override
             public void onFailure(Throwable caught) {
 
@@ -142,7 +142,7 @@ public class BusMonitorPanel extends FlowPanel {
             }
         });
 
-        RequestUtils.getInstance().getBusRequest().startTrackingBus(RequestUtils.VOID_ASYNC_CALLBACK);
+        RequestUtils.getInstance().getBusService().startTrackingBus(RequestUtils.VOID_ASYNC_CALLBACK);
         EventReceiver.getInstance().addListener(BusDataEvent.class, listener);
 
         wellConnectionState.getElement().getStyle().setMarginLeft(getParent().getOffsetWidth() / 2 - 130,
@@ -153,7 +153,7 @@ public class BusMonitorPanel extends FlowPanel {
     @Override
     protected void onUnload() {
         super.onUnload();
-        RequestUtils.getInstance().getBusRequest().stopTrackingBus(RequestUtils.VOID_ASYNC_CALLBACK);
+        RequestUtils.getInstance().getBusService().stopTrackingBus(RequestUtils.VOID_ASYNC_CALLBACK);
         EventReceiver.getInstance().removeListener(BusDataEvent.class, listener);
         EventReceiver.getInstance().removeListener(DeviceInfoEvent.class, connectionListener);
         removeBusPanels();

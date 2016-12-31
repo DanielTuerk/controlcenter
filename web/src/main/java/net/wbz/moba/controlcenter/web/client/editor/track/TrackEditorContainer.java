@@ -91,7 +91,7 @@ public class TrackEditorContainer extends FlowPanel {
 
                 for (AbstractTrackPart trackPart : trackParts) {
                 }
-                RequestUtils.getInstance().getTrackEditorRequest().saveTrack(trackParts, new AsyncCallback<Void>() {
+                RequestUtils.getInstance().getTrackEditorService().saveTrack(trackParts, new AsyncCallback<Void>() {
                     @Override
                     public void onFailure(Throwable caught) {
                         Notify.notify("Editor", "error by save track: " + caught.getMessage(), IconType.WARNING);
@@ -166,7 +166,7 @@ public class TrackEditorContainer extends FlowPanel {
             boundaryPanel.remove(i);
         }
 
-        RequestUtils.getInstance().getTrackEditorRequest().loadTrack(new AsyncCallback<Collection<AbstractTrackPart>>() {
+        RequestUtils.getInstance().getTrackEditorService().loadTrack(new AsyncCallback<Collection<AbstractTrackPart>>() {
             @Override
             public void onFailure(Throwable caught) {
 

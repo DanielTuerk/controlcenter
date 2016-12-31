@@ -4,9 +4,7 @@ import com.google.gwt.user.client.rpc.RpcTokenException;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import com.google.inject.persist.Transactional;
-import net.wbz.moba.controlcenter.web.server.persist.train.TrainEntity;
-import net.wbz.moba.controlcenter.web.server.persist.train.TrainFunctionEntity;
+import net.wbz.moba.controlcenter.web.shared.track.model.BusDataConfiguration;
 import net.wbz.moba.controlcenter.web.shared.train.TrainFunction;
 import net.wbz.moba.controlcenter.web.shared.train.TrainService;
 import net.wbz.selectrix4java.device.DeviceAccessException;
@@ -31,6 +29,7 @@ public class TrainServiceImpl extends RemoteServiceServlet implements TrainServi
         this.trainManager = trainManager;
         this.deviceManager = deviceManager;
     }
+
     @Override
     public void updateDrivingLevel(long id, int level) {
         if (level >= 0 && level <= 31) {
@@ -46,6 +45,7 @@ public class TrainServiceImpl extends RemoteServiceServlet implements TrainServi
             throw new RpcTokenException("invalid level " + level + " (0-127)");
         }
     }
+
     @Override
     public void toggleDrivingDirection(long id, boolean forward) {
         int address = trainManager.getTrain(id).getAddress();
@@ -58,56 +58,52 @@ public class TrainServiceImpl extends RemoteServiceServlet implements TrainServi
             throw new RpcTokenException(msg);
         }
     }
+
     @Override
-    public void setFunctionState(long id, TrainFunction.FUNCTION function, boolean state) {
+    public void toggleHorn(long id, boolean on) {
+        getTrainModule(id).setHorn(on);
+    }
+
+    @Override
+    public void toggleLight(long id, boolean on) {
+        getTrainModule(id).setLight(on);
+    }
+
+//    private TrainModule getTrainModule(long id) {
+//
+//    }
+
+    /**
+     * TODO Avoid null pointer for non connected device
+     *
+     * @param id
+     * @param additionalAddresses
+     * @return
+     */
+    private TrainModule getTrainModule(long id, int... additionalAddresses) {
         int address = trainManager.getTrain(id).getAddress();
         try {
-            switch (function) {
-                case LIGHT:
-                    deviceManager.getConnectedDevice().getTrainModule((byte) address).setLight(state);
-                    break;
-                case HORN:
-                    deviceManager.getConnectedDevice().getTrainModule((byte) address).setHorn(state);
-                    break;
-
-                //TODO
-                case F1:
-//                    toggleExtraFunction(address, Device.BIT.BIT_1, state);
-                    break;
-                case F2:
-//                    toggleExtraFunction(address, Device.BIT.BIT_2, state);
-                    break;
-                case F3:
-//                    toggleExtraFunction(address, Device.BIT.BIT_3, state);
-                    break;
-                case F4:
-//                    toggleExtraFunction(address, Device.BIT.BIT_4, state);
-                    break;
-                case F5:
-//                    toggleExtraFunction(address, Device.BIT.BIT_5, state);
-                    break;
-                case F6:
-//                    toggleExtraFunction(address, Device.BIT.BIT_6, state);
-                    break;
-                case F7:
-//                    toggleExtraFunction(address, Device.BIT.BIT_7, state);
-                    break;
-                case F8:
-//                    toggleExtraFunction(address, Device.BIT.BIT_8, state);
-                    break;
-
-                default:
-                    throw new RuntimeException();
-            }
-
+            return deviceManager.getConnectedDevice().getTrainModule(address, additionalAddresses);
         } catch (DeviceAccessException e) {
-            String msg = String.format("can't change state of function %s of train %d", function.name(), id);
+            throw new RuntimeException("can't found train for address");
+        }
+    }
+
+
+    @Override
+    public void toggleFunctionState(long id, TrainFunction function, boolean state) {
+        try {
+            TrainModule trainModule = getTrainModule(id);
+            BusDataConfiguration functionConfiguration = function.getConfiguration();
+            trainModule.setFunctionState(deviceManager.getConnectedDevice().getBusAddress(
+                    functionConfiguration.getBus(),
+                    functionConfiguration.getAddress()),
+                    functionConfiguration.getBit(), state);
+        } catch (DeviceAccessException e) {
+            String msg = String.format("can't change state of function %s of train %d", function.getAlias(), id);
             LOG.error(msg, e);
             throw new RpcTokenException(msg);
         }
     }
 
-//    private void toggleExtraFunction(int address, Device.BIT bit, boolean state) throws DeviceAccessException {
-//        deviceManager.getConnectedDevice().getTrainModule((byte) (address + 1)).setBit(bit, state).sendData();
-//    }
 }

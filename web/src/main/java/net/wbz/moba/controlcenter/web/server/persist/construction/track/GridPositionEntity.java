@@ -11,7 +11,7 @@ import javax.persistence.Id;
 /**
  * @author Daniel Tuerk
  */
-@Entity(name = "grid_position")
+@Entity(name = "GRID_POSITION")
 public class GridPositionEntity extends AbstractEntity {
 
     @JMap

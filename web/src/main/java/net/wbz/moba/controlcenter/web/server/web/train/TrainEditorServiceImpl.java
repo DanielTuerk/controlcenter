@@ -40,6 +40,9 @@ public class TrainEditorServiceImpl extends RemoteServiceServlet implements Trai
     public void createTrain(Train train) {
         try {
             trainManager.createTrain(train);
+
+            // TODO: use id of new created?
+            eventBroadcaster.fireEvent(new TrainDataChangedEvent(-1));
         } catch (Exception e) {
             String msg = String.format("can't create train '%s'", train.getName());
             LOG.error(msg, e);

@@ -30,7 +30,7 @@ public class BusConnectionToggleButton extends ToggleSwitch {
             public void onValueChange(ValueChangeEvent<Boolean> booleanValueChangeEvent) {
                 if (fireEvent) {
                     if (booleanValueChangeEvent.getValue()) {
-                        RequestUtils.getInstance().getBusRequest().changeDevice(deviceListBox.getSelectedDevice(),
+                        RequestUtils.getInstance().getBusService().changeDevice(deviceListBox.getSelectedDevice(),
                                 new AsyncCallback<Void>() {
                                     @Override
                                     public void onFailure(Throwable caught) {
@@ -39,12 +39,12 @@ public class BusConnectionToggleButton extends ToggleSwitch {
 
                                     @Override
                                     public void onSuccess(Void result) {
-                                        RequestUtils.getInstance().getBusRequest().connectBus(RequestUtils.VOID_ASYNC_CALLBACK);
+                                        RequestUtils.getInstance().getBusService().connectBus(RequestUtils.VOID_ASYNC_CALLBACK);
 
                                     }
                                 });
                     } else {
-                        RequestUtils.getInstance().getBusRequest().disconnectBus(RequestUtils.VOID_ASYNC_CALLBACK);
+                        RequestUtils.getInstance().getBusService().disconnectBus(RequestUtils.VOID_ASYNC_CALLBACK);
                     }
                 } else {
                     // activate for next timestamp

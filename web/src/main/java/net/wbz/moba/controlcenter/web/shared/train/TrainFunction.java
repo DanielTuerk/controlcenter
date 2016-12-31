@@ -2,7 +2,9 @@ package net.wbz.moba.controlcenter.web.shared.train;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 import com.googlecode.jmapper.annotations.JMap;
+import net.wbz.moba.controlcenter.web.server.persist.construction.track.BusDataConfigurationEntity;
 import net.wbz.moba.controlcenter.web.shared.track.model.AbstractDto;
+import net.wbz.moba.controlcenter.web.shared.track.model.BusDataConfiguration;
 
 import java.io.Serializable;
 
@@ -13,29 +15,30 @@ public class TrainFunction extends AbstractDto {
     /**
      * Available functions for the train.
      */
-    public enum FUNCTION implements Serializable, IsSerializable {LIGHT, HORN, F1, F2, F3, F4, F5, F6, F7, F8}
+    public enum FUNCTION implements Serializable, IsSerializable {LIGHT, HORN, FUNCTION}
 
-    @JMap
-    private TrainFunction.FUNCTION function;
+
     @JMap
     private String alias;
+    @JMap
+    private BusDataConfiguration configuration;
 
-    private boolean state;
+    private boolean active;
 
-    public FUNCTION getFunction() {
-        return function;
+    public BusDataConfiguration getConfiguration() {
+        return configuration;
     }
 
-    public void setFunction(FUNCTION function) {
-        this.function = function;
+    public void setConfiguration(BusDataConfiguration configuration) {
+        this.configuration = configuration;
     }
 
-    public boolean isState() {
-        return state;
+    public boolean isActive() {
+        return active;
     }
 
-    public void setState(boolean state) {
-        this.state = state;
+    public void setActive(boolean active) {
+        this.active = active;
     }
 
     public String getAlias() {

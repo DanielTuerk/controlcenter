@@ -4,15 +4,17 @@ import com.google.common.collect.Maps;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Panel;
 import net.wbz.moba.controlcenter.web.client.RequestUtils;
+import net.wbz.moba.controlcenter.web.client.util.OnOffToggleButton;
 import net.wbz.moba.controlcenter.web.client.viewer.controls.AbstractItemPanel;
 import net.wbz.moba.controlcenter.web.shared.train.*;
 import org.gwtbootstrap3.client.ui.*;
 import org.gwtbootstrap3.client.ui.constants.ColumnSize;
 import org.gwtbootstrap3.client.ui.constants.IconType;
-import org.gwtbootstrap3.client.ui.constants.Toggle;
 import org.gwtbootstrap3.extras.slider.client.ui.Slider;
 
 import java.util.Map;
@@ -32,15 +34,16 @@ public class TrainItemPanel extends AbstractItemPanel<Train, TrainStateEvent> {
 
     private Button btnDirectionForward;
     private Button btnDirectionBackward;
-    private Map<TrainFunction, Button> functionButtons = Maps.newConcurrentMap();
+    private Map<TrainFunction, OnOffToggleButton> functionButtons = Maps.newConcurrentMap();
 
     private Label lblName;
     private Label lblState;
     private Label lblStateDetails;
 
     private int lastSendSpeedValue = -1;
-    private Button btnHorn;
-    private Button btnLight;
+    private OnOffToggleButton btnHorn;
+    private OnOffToggleButton btnLight;
+    private Button btnStop;
 
     public TrainItemPanel(Train train) {
         super(train);
@@ -51,16 +54,28 @@ public class TrainItemPanel extends AbstractItemPanel<Train, TrainStateEvent> {
     }
 
     @Override
+    protected void deviceConnectionChanged(boolean connected) {
+        for (OnOffToggleButton button : functionButtons.values()) {
+            button.setEnabled(connected);
+        }
+        btnHorn.setEnabled(connected);
+        btnLight.setEnabled(connected);
+        btnDirectionBackward.setEnabled(connected);
+        btnDirectionForward.setEnabled(connected);
+        btnStop.setEnabled(connected);
+    }
+
+    @Override
     public void updateItemData(TrainStateEvent event) {
         // TODO: slider and buttons need update for remote tracking of other device -> BUT will crash with fast input
         // and update delay
         if (event instanceof TrainHornStateEvent) {
-            btnHorn.setActive(((TrainHornStateEvent) event).isState());
+            btnHorn.setValue(((TrainHornStateEvent) event).isState());
         } else if (event instanceof TrainLightStateEvent) {
-            btnLight.setActive(((TrainLightStateEvent) event).isState());
+            btnLight.setValue(((TrainLightStateEvent) event).isState());
         } else if (event instanceof TrainFunctionStateEvent) {
             TrainFunctionStateEvent functionStateEvent = (TrainFunctionStateEvent) event;
-            functionButtons.get(functionStateEvent.getFunction()).setActive(functionStateEvent.isActive());
+            functionButtons.get(functionStateEvent.getFunction()).setValue(functionStateEvent.isActive());
         } else if (event instanceof TrainDrivingDirectionEvent) {
             lblState.setText(((TrainDrivingDirectionEvent) event).getDirection().name());
             switch (((TrainDrivingDirectionEvent) event).getDirection()) {
@@ -132,7 +147,7 @@ public class TrainItemPanel extends AbstractItemPanel<Train, TrainStateEvent> {
 //                        }
 //                    }
 //                });
-        final Button btnStop = new Button("Stop", new ClickHandler() {
+        btnStop = new Button("Stop", new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
                 RequestUtils.getInstance().getTrainService().updateDrivingLevel(
@@ -173,22 +188,28 @@ public class TrainItemPanel extends AbstractItemPanel<Train, TrainStateEvent> {
         Column functionsColumn = new Column(ColumnSize.LG_1.getCssName());
         contentPanel.add(functionsColumn);
 
-        btnHorn = createFunctionButton("Horn");
-        btnHorn.addClickHandler(new ClickHandler() {
+        btnHorn = new OnOffToggleButton("Horn", new ValueChangeHandler<Boolean>() {
             @Override
-            public void onClick(ClickEvent event) {
+            public void onValueChange(ValueChangeEvent<Boolean> event) {
                 RequestUtils.getInstance().getTrainService().toggleHorn(getModel().getId(),
-                        btnHorn.isActive(), RequestUtils.VOID_ASYNC_CALLBACK);
+                        event.getValue(), RequestUtils.VOID_ASYNC_CALLBACK);
             }
         });
+//        btnHorn = createFunctionButton("Horn");
+//        btnHorn.addClickHandler(new ClickHandler() {
+//            @Override
+//            public void onClick(ClickEvent event) {
+//                RequestUtils.getInstance().getTrainService().toggleHorn(getModel().getId(),
+//                        btnHorn.isActive(), RequestUtils.VOID_ASYNC_CALLBACK);
+//    }
+//        });
         functionsColumn.add(btnHorn);
 
-        btnLight = createFunctionButton("Light");
-        btnLight.addClickHandler(new ClickHandler() {
+        btnLight = new OnOffToggleButton("Light", new ValueChangeHandler<Boolean>() {
             @Override
-            public void onClick(ClickEvent event) {
+            public void onValueChange(ValueChangeEvent<Boolean> event) {
                 RequestUtils.getInstance().getTrainService().toggleLight(getModel().getId(),
-                        btnLight.isActive(), RequestUtils.VOID_ASYNC_CALLBACK);
+                        event.getValue(), RequestUtils.VOID_ASYNC_CALLBACK);
             }
         });
         functionsColumn.add(btnLight);
@@ -196,25 +217,27 @@ public class TrainItemPanel extends AbstractItemPanel<Train, TrainStateEvent> {
         // extra functions
         if (getModel().getFunctions() != null) {
             for (final TrainFunction functionEntry : getModel().getFunctions()) {
-                final Button btnToggleFunction = createFunctionButton(functionEntry.getAlias());
-                btnToggleFunction.addClickHandler(new ClickHandler() {
+
+                final OnOffToggleButton btnToggleFunction = new OnOffToggleButton(functionEntry.getAlias(), new ValueChangeHandler<Boolean>() {
                     @Override
-                    public void onClick(ClickEvent clickEvent) {
+                    public void onValueChange(ValueChangeEvent<Boolean> event) {
                         RequestUtils.getInstance().getTrainService().toggleFunctionState(getModel().getId(),
-                                functionEntry, !btnToggleFunction.isActive(), RequestUtils.VOID_ASYNC_CALLBACK);
+                                functionEntry, event.getValue(), RequestUtils.VOID_ASYNC_CALLBACK);
                     }
                 });
+//                final Button btnToggleFunction = createFunctionButton(functionEntry.getAlias());
                 functionButtons.put(functionEntry, btnToggleFunction);
                 functionsColumn.add(btnToggleFunction);
             }
         }
+
     }
 
-    private Button createFunctionButton(String title) {
-        final Button btnToggleFunction = new Button(title);
-        btnToggleFunction.setDataToggle(Toggle.BUTTON);
-        return btnToggleFunction;
-    }
+//    private Button createFunctionButton(String title) {
+//        final Button btnToggleFunction = new Button(title);
+//        btnToggleFunction.setDataToggle(Toggle.BUTTON);
+//        return btnToggleFunction;
+//    }
 
     private Button createDirectionButton(final boolean forward) {
         Button btnDirection;

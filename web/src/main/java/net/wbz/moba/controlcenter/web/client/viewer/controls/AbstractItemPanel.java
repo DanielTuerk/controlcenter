@@ -2,7 +2,11 @@ package net.wbz.moba.controlcenter.web.client.viewer.controls;
 
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.client.ui.Panel;
+import de.novanic.eventservice.client.event.Event;
+import de.novanic.eventservice.client.event.listener.RemoteEventListener;
+import net.wbz.moba.controlcenter.web.client.EventReceiver;
 import net.wbz.moba.controlcenter.web.shared.AbstractStateEvent;
+import net.wbz.moba.controlcenter.web.shared.bus.DeviceInfoEvent;
 import net.wbz.moba.controlcenter.web.shared.track.model.AbstractDto;
 import org.gwtbootstrap3.client.ui.Button;
 import org.gwtbootstrap3.client.ui.PanelBody;
@@ -28,10 +32,27 @@ abstract public class AbstractItemPanel<Model extends AbstractDto, StateEvent ex
     private Panel headerPanelContent;
     private PanelBody panelBody;
     private PanelHeader panelHeader;
+    private final RemoteEventListener deviceInfoEventListener;
 
     public AbstractItemPanel(Model model) {
         this.model = model;
+
+        // add event receiver for the device connection state
+        deviceInfoEventListener = new RemoteEventListener() {
+            public void apply(Event anEvent) {
+                if (anEvent instanceof DeviceInfoEvent) {
+                    DeviceInfoEvent event = (DeviceInfoEvent) anEvent;
+                    if (event.getEventType() == DeviceInfoEvent.TYPE.CONNECTED) {
+                        deviceConnectionChanged(true);
+                    } else if (event.getEventType() == DeviceInfoEvent.TYPE.DISCONNECTED) {
+                        deviceConnectionChanged(false);
+                    }
+                }
+            }
+        };
     }
+
+    protected abstract void deviceConnectionChanged(boolean connected);
 
     public void init() {
         collapseContentPanel = createCollapseContentPanel();
@@ -68,6 +89,8 @@ abstract public class AbstractItemPanel<Model extends AbstractDto, StateEvent ex
         super.onLoad();
         add(panelHeader);
         add(panelBody);
+
+        EventReceiver.getInstance().addListener(DeviceInfoEvent.class, deviceInfoEventListener);
     }
 
     @Override
@@ -75,6 +98,8 @@ abstract public class AbstractItemPanel<Model extends AbstractDto, StateEvent ex
         super.onUnload();
         remove(panelBody);
         remove(panelHeader);
+
+        EventReceiver.getInstance().removeListener(DeviceInfoEvent.class, deviceInfoEventListener);
     }
 
     public Model getModel() {

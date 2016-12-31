@@ -76,7 +76,8 @@ public class TrackEditorServiceImpl extends RemoteServiceServlet implements Trac
 
             @Override
             public void disconnected(Device device) {
-                removeBusAddressListeners(device);
+                // TODO is to late to remove, need connected device, maybe other way?
+//                removeBusAddressListeners(device);
             }
         });
     }

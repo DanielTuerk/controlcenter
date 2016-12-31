@@ -4,8 +4,7 @@ import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import net.wbz.moba.controlcenter.web.client.RequestUtils;
-import org.gwtbootstrap3.extras.toggleswitch.client.ui.ToggleSwitch;
-import org.gwtbootstrap3.extras.toggleswitch.client.ui.base.constants.ColorType;
+import net.wbz.moba.controlcenter.web.client.util.OnOffToggleButton;
 
 /**
  * Toggle button to connect and disconnect from the bus for the selected device in
@@ -13,57 +12,32 @@ import org.gwtbootstrap3.extras.toggleswitch.client.ui.base.constants.ColorType;
  *
  * @author Daniel Tuerk
  */
-public class BusConnectionToggleButton extends ToggleSwitch {
-
-    /**
-     * Quick fix {@see BusConnectionToggleButton#setValue}.
-     */
-    private boolean fireEvent = true;
+public class BusConnectionToggleButton extends OnOffToggleButton {
 
     public BusConnectionToggleButton(final DeviceListBox deviceListBox) {
-        super();
-        setLabelText("Bus");
-        setOffColor(ColorType.DANGER);
-        setOnColor(ColorType.SUCCESS);
-        addValueChangeHandler(new ValueChangeHandler<Boolean>() {
+        super("Bus", new ValueChangeHandler<Boolean>() {
             @Override
             public void onValueChange(ValueChangeEvent<Boolean> booleanValueChangeEvent) {
-                if (fireEvent) {
-                    if (booleanValueChangeEvent.getValue()) {
-                        RequestUtils.getInstance().getBusService().changeDevice(deviceListBox.getSelectedDevice(),
-                                new AsyncCallback<Void>() {
-                                    @Override
-                                    public void onFailure(Throwable caught) {
+                if (booleanValueChangeEvent.getValue()) {
+                    RequestUtils.getInstance().getBusService().changeDevice(deviceListBox.getSelectedDevice(),
+                            new AsyncCallback<Void>() {
+                                @Override
+                                public void onFailure(Throwable caught) {
 
-                                    }
+                                }
 
-                                    @Override
-                                    public void onSuccess(Void result) {
-                                        RequestUtils.getInstance().getBusService().connectBus(RequestUtils.VOID_ASYNC_CALLBACK);
+                                @Override
+                                public void onSuccess(Void result) {
+                                    RequestUtils.getInstance().getBusService().connectBus(RequestUtils.VOID_ASYNC_CALLBACK);
 
-                                    }
-                                });
-                    } else {
-                        RequestUtils.getInstance().getBusService().disconnectBus(RequestUtils.VOID_ASYNC_CALLBACK);
-                    }
+                                }
+                            });
                 } else {
-                    // activate for next timestamp
-                    fireEvent = true;
+                    RequestUtils.getInstance().getBusService().disconnectBus(RequestUtils.VOID_ASYNC_CALLBACK);
                 }
 
             }
         });
     }
 
-    /**
-     * Quick fix for the fire events state. Bootstrap lib also fire the value change event if the
-     * parameter is {@code false}.
-     *
-     * @param value      value to set
-     * @param fireEvents {@code false} to do not fire events for value changed
-     */
-    public void updateValue(Boolean value, boolean fireEvents) {
-        fireEvent = fireEvents;
-        super.setValue(value, true);
-    }
 }

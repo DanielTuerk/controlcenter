@@ -32,4 +32,13 @@ public class EventReceiver {
     public void removeListener(Class<? extends Event> eventClazz, RemoteEventListener listener) {
         theRemoteEventService.removeListener(DomainFactory.getDomain(eventClazz.getName()), listener);
     }
+
+    /**
+     * Manually fire a event from the client to all client listeners.
+     *
+     * @param event {@link Event}
+     */
+    public void fireEvent(Event event) {
+        theRemoteEventService.addEvent(DomainFactory.getDomain(event.getClass().getName()), event);
+    }
 }

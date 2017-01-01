@@ -95,6 +95,8 @@ public class TrainServiceImpl extends RemoteServiceServlet implements TrainServi
         try {
             TrainModule trainModule = getTrainModule(id);
             BusDataConfiguration functionConfiguration = function.getConfiguration();
+            // TODO remove bus nr quick fix
+            functionConfiguration.setBus(trainModule.getBus());
             trainModule.setFunctionState(deviceManager.getConnectedDevice().getBusAddress(
                     functionConfiguration.getBus(),
                     functionConfiguration.getAddress()),

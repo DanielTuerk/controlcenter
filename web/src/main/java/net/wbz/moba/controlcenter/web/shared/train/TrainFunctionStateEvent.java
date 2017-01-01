@@ -23,4 +23,12 @@ public class TrainFunctionStateEvent extends TrainStateEvent {
     public boolean isActive() {
         return active;
     }
+
+    @Override
+    public String toString() {
+        return "TrainFunctionStateEvent{" +
+                "function=" + function +
+                ", active=" + active +
+                "} " + super.toString();
+    }
 }

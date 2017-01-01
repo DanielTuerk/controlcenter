@@ -11,8 +11,21 @@ import com.google.gwt.user.client.ui.Panel;
 import net.wbz.moba.controlcenter.web.client.RequestUtils;
 import net.wbz.moba.controlcenter.web.client.util.OnOffToggleButton;
 import net.wbz.moba.controlcenter.web.client.viewer.controls.AbstractItemPanel;
-import net.wbz.moba.controlcenter.web.shared.train.*;
-import org.gwtbootstrap3.client.ui.*;
+import net.wbz.moba.controlcenter.web.shared.train.Train;
+import net.wbz.moba.controlcenter.web.shared.train.TrainDrivingDirectionEvent;
+import net.wbz.moba.controlcenter.web.shared.train.TrainDrivingLevelEvent;
+import net.wbz.moba.controlcenter.web.shared.train.TrainFunction;
+import net.wbz.moba.controlcenter.web.shared.train.TrainFunctionStateEvent;
+import net.wbz.moba.controlcenter.web.shared.train.TrainHornStateEvent;
+import net.wbz.moba.controlcenter.web.shared.train.TrainLightStateEvent;
+import net.wbz.moba.controlcenter.web.shared.train.TrainStateEvent;
+import org.gwtbootstrap3.client.ui.Button;
+import org.gwtbootstrap3.client.ui.ButtonGroup;
+import org.gwtbootstrap3.client.ui.Column;
+import org.gwtbootstrap3.client.ui.Label;
+import org.gwtbootstrap3.client.ui.Modal;
+import org.gwtbootstrap3.client.ui.PanelCollapse;
+import org.gwtbootstrap3.client.ui.Row;
 import org.gwtbootstrap3.client.ui.constants.ColumnSize;
 import org.gwtbootstrap3.client.ui.constants.IconType;
 import org.gwtbootstrap3.extras.slider.client.ui.Slider;
@@ -75,7 +88,9 @@ public class TrainItemPanel extends AbstractItemPanel<Train, TrainStateEvent> {
             btnLight.setValue(((TrainLightStateEvent) event).isState());
         } else if (event instanceof TrainFunctionStateEvent) {
             TrainFunctionStateEvent functionStateEvent = (TrainFunctionStateEvent) event;
-            functionButtons.get(functionStateEvent.getFunction()).setValue(functionStateEvent.isActive());
+            if (functionButtons.containsKey(functionStateEvent.getFunction())) {
+                functionButtons.get(functionStateEvent.getFunction()).setValue(functionStateEvent.isActive());
+            }
         } else if (event instanceof TrainDrivingDirectionEvent) {
             lblState.setText(((TrainDrivingDirectionEvent) event).getDirection().name());
             switch (((TrainDrivingDirectionEvent) event).getDirection()) {
@@ -155,13 +170,13 @@ public class TrainItemPanel extends AbstractItemPanel<Train, TrainStateEvent> {
             }
         });
 
-//        rowDrivingFunctions.add(new Column(ColumnSize.MD_12, btnGroupDirection, lblSliderValue, sliderDrivingLevel,btnStop));
         rowDrivingFunctions.add(new Column(ColumnSize.MD_12, btnGroupDirection, lblSliderValue, btnStop));
 
         contentPanel.add(rowDrivingFunctions);
 //
         initFunctions();
 
+        // TODO load the initial state for connected device of the trains (maybe by events?)
 //        // set the initial state for the train by using the event callback
 //        if (getModel().getDrivingDirection() != null) {
 //            updateItemData(new TrainDrivingDirectionEvent(getModel().getId(),
@@ -188,6 +203,7 @@ public class TrainItemPanel extends AbstractItemPanel<Train, TrainStateEvent> {
         Column functionsColumn = new Column(ColumnSize.LG_1.getCssName());
         contentPanel.add(functionsColumn);
 
+        // horn
         btnHorn = new OnOffToggleButton("Horn", new ValueChangeHandler<Boolean>() {
             @Override
             public void onValueChange(ValueChangeEvent<Boolean> event) {
@@ -195,16 +211,9 @@ public class TrainItemPanel extends AbstractItemPanel<Train, TrainStateEvent> {
                         event.getValue(), RequestUtils.VOID_ASYNC_CALLBACK);
             }
         });
-//        btnHorn = createFunctionButton("Horn");
-//        btnHorn.addClickHandler(new ClickHandler() {
-//            @Override
-//            public void onClick(ClickEvent event) {
-//                RequestUtils.getInstance().getTrainService().toggleHorn(getModel().getId(),
-//                        btnHorn.isActive(), RequestUtils.VOID_ASYNC_CALLBACK);
-//    }
-//        });
         functionsColumn.add(btnHorn);
 
+        // light
         btnLight = new OnOffToggleButton("Light", new ValueChangeHandler<Boolean>() {
             @Override
             public void onValueChange(ValueChangeEvent<Boolean> event) {
@@ -225,19 +234,12 @@ public class TrainItemPanel extends AbstractItemPanel<Train, TrainStateEvent> {
                                 functionEntry, event.getValue(), RequestUtils.VOID_ASYNC_CALLBACK);
                     }
                 });
-//                final Button btnToggleFunction = createFunctionButton(functionEntry.getAlias());
                 functionButtons.put(functionEntry, btnToggleFunction);
                 functionsColumn.add(btnToggleFunction);
             }
         }
 
     }
-
-//    private Button createFunctionButton(String title) {
-//        final Button btnToggleFunction = new Button(title);
-//        btnToggleFunction.setDataToggle(Toggle.BUTTON);
-//        return btnToggleFunction;
-//    }
 
     private Button createDirectionButton(final boolean forward) {
         Button btnDirection;

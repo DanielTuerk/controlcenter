@@ -48,4 +48,6 @@ public class TrainFunction extends AbstractDto {
     public void setAlias(String alias) {
         this.alias = alias;
     }
+
+
 }

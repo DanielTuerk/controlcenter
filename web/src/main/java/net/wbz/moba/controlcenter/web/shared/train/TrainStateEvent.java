@@ -13,4 +13,9 @@ public class TrainStateEvent extends AbstractStateEvent {
 
     public TrainStateEvent() {
     }
+
+    @Override
+    public String toString() {
+        return "TrainStateEvent{} " + super.toString();
+    }
 }

@@ -21,4 +21,10 @@ public class AbstractStateEvent implements Event {
         return itemId;
     }
 
+    @Override
+    public String toString() {
+        return "AbstractStateEvent{" +
+                "itemId=" + itemId +
+                '}';
+    }
 }

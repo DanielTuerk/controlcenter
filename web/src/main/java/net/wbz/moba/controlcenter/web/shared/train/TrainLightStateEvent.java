@@ -18,4 +18,11 @@ public class TrainLightStateEvent extends TrainStateEvent {
     public boolean isState() {
         return state;
     }
+
+    @Override
+    public String toString() {
+        return "TrainLightStateEvent{" +
+                "state=" + state +
+                "} " + super.toString();
+    }
 }

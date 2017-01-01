@@ -7,7 +7,13 @@ import net.wbz.moba.controlcenter.web.server.EventBroadcaster;
 import net.wbz.moba.controlcenter.web.server.persist.train.TrainDao;
 import net.wbz.moba.controlcenter.web.server.persist.train.TrainEntity;
 import net.wbz.moba.controlcenter.web.server.web.DataMapper;
-import net.wbz.moba.controlcenter.web.shared.train.*;
+import net.wbz.moba.controlcenter.web.shared.train.Train;
+import net.wbz.moba.controlcenter.web.shared.train.TrainDrivingDirectionEvent;
+import net.wbz.moba.controlcenter.web.shared.train.TrainDrivingLevelEvent;
+import net.wbz.moba.controlcenter.web.shared.train.TrainFunction;
+import net.wbz.moba.controlcenter.web.shared.train.TrainFunctionStateEvent;
+import net.wbz.moba.controlcenter.web.shared.train.TrainHornStateEvent;
+import net.wbz.moba.controlcenter.web.shared.train.TrainLightStateEvent;
 import net.wbz.selectrix4java.device.Device;
 import net.wbz.selectrix4java.device.DeviceAccessException;
 import net.wbz.selectrix4java.device.DeviceConnectionListener;
@@ -131,13 +137,11 @@ public class TrainManager {
 
                         @Override
                         public void lightStateChanged(boolean state) {
-//                            train.getFunction(TrainFunction.FUNCTION.LIGHT).setActive(state);
                             eventBroadcaster.fireEvent(new TrainLightStateEvent(train.getId(), state));
                         }
 
                         @Override
                         public void hornStateChanged(boolean state) {
-//                            train.getFunction(TrainFunction.FUNCTION.HORN).setActive(state);
                             eventBroadcaster.fireEvent(new TrainHornStateEvent(train.getId(), state));
                         }
                     }
@@ -147,10 +151,6 @@ public class TrainManager {
 
     public Train getTrain(long id) {
         return dataMapper.transformSource(dao.findById(id));
-//        if (train != null) {
-//            return train;
-//        }
-//        throw new RuntimeException(String.format("no train for id %d found!", id));
     }
 
     @Transactional
@@ -169,19 +169,19 @@ public class TrainManager {
 
     @Transactional
     public void updateTrain(Train train) {
-
-        TrainEntity entity = updateEntitryFromDto(dao.findById(train.getId()), train);
+        TrainEntity entity = dataMapper.transformTarget(train);
         dao.update(entity);
-
-        // TODO update or create train functions
 
         try {
             reregisterConsumer(train, deviceManager, eventBroadcaster);
         } catch (DeviceAccessException e) {
             e.printStackTrace();
         }
+    }
 
-
+    @Transactional
+    public void deleteTrain(long trainId) {
+        dao.delete(dao.findById(trainId));
     }
 
     private TrainEntity updateEntitryFromDto(TrainEntity entity, Train train) {
@@ -203,8 +203,5 @@ public class TrainManager {
         return null;
     }
 
-    @Transactional
-    public void deleteTrain(long trainId) {
-        dao.delete(dao.findById(trainId));
-    }
+
 }

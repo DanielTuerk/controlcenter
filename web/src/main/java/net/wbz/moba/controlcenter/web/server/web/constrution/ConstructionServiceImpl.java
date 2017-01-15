@@ -7,6 +7,7 @@ import com.google.inject.persist.Transactional;
 import net.wbz.moba.controlcenter.web.server.persist.construction.ConstructionDao;
 import net.wbz.moba.controlcenter.web.server.persist.construction.ConstructionEntity;
 import net.wbz.moba.controlcenter.web.server.web.DataMapper;
+import net.wbz.moba.controlcenter.web.server.web.editor.TrackManager;
 import net.wbz.moba.controlcenter.web.shared.constrution.Construction;
 import net.wbz.moba.controlcenter.web.shared.constrution.ConstructionService;
 import org.slf4j.Logger;
@@ -25,12 +26,14 @@ public class ConstructionServiceImpl extends RemoteServiceServlet implements Con
 
     private final ConstructionDao dao;
     private final DataMapper<Construction, ConstructionEntity> mapper;
+    private final TrackManager trackManager;
 
     private Construction currentConstruction = null;
 
     @Inject
-    public ConstructionServiceImpl(ConstructionDao dao) {
+    public ConstructionServiceImpl(ConstructionDao dao, TrackManager trackManager) {
         this.dao = dao;
+        this.trackManager = trackManager;
         mapper = new DataMapper<>(Construction.class, ConstructionEntity.class);
     }
 
@@ -42,6 +45,7 @@ public class ConstructionServiceImpl extends RemoteServiceServlet implements Con
     @Override
     public void setCurrentConstruction(Construction construction) {
         currentConstruction = construction;
+        trackManager.constructionChanged(construction);
     }
 
     @Override

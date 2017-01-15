@@ -136,7 +136,6 @@ public class TrackViewerPanel extends AbstractTrackViewerPanel {
                             });
                             addTrackWidget(widget, trackPosition.getLeft(), trackPosition.getTop());
                         }
-                        registerWidgetsToReceiveEvents();
                     }
                 });
             }
@@ -232,11 +231,6 @@ public class TrackViewerPanel extends AbstractTrackViewerPanel {
         for (AbstractSvgTrackWidget trackWidget : trackWidgets) {
             trackWidget.setEnabled(state);
         }
-    }
-
-    private void registerWidgetsToReceiveEvents() {
-        RequestUtils.getInstance().getTrackEditorService().registerConsumersByConnectedDeviceForTrackParts(
-                loadedTrackParts, RequestUtils.VOID_ASYNC_CALLBACK);
     }
 
     @Override

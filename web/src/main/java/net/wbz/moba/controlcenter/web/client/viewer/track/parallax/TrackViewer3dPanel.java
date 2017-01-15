@@ -80,9 +80,6 @@ public class TrackViewer3dPanel extends AbstractTrackViewerPanel {
                             }
 
                         }
-                        RequestUtils.getInstance().getTrackEditorService()
-                                .registerConsumersByConnectedDeviceForTrackParts(Lists.newArrayList(trackParts), RequestUtils.VOID_ASYNC_CALLBACK);
-
                         animatedScene.centerCamera();
                     }
                 });

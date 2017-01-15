@@ -17,5 +17,4 @@ public interface TrackEditorService extends RemoteService {
 
     void saveTrack(Collection<AbstractTrackPart> trackParts);
 
-    void registerConsumersByConnectedDeviceForTrackParts(Collection<AbstractTrackPart> trackParts);
 }

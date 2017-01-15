@@ -98,41 +98,6 @@ public class TrainManager {
                                     break;
                                 }
                             }
-
-//                            TrainFunction.FUNCTION trainFunction;
-//                            switch (functionBit) {
-//                                case 1:
-//                                    trainFunction = TrainFunction.FUNCTION.F1;
-//                                    break;
-//                                case 2:
-//                                    trainFunction = TrainFunction.FUNCTION.F2;
-//                                    break;
-//                                case 3:
-//                                    trainFunction = TrainFunction.FUNCTION.F3;
-//                                    break;
-//                                case 4:
-//                                    trainFunction = TrainFunction.FUNCTION.F4;
-//                                    break;
-//                                case 5:
-//                                    trainFunction = TrainFunction.FUNCTION.F5;
-//                                    break;
-//                                case 6:
-//                                    trainFunction = TrainFunction.FUNCTION.F6;
-//                                    break;
-//                                case 7:
-//                                    trainFunction = TrainFunction.FUNCTION.F7;
-//                                    break;
-//                                case 8:
-//                                    trainFunction = TrainFunction.FUNCTION.F8;
-//                                    break;
-//                                default:
-//                                    throw new RuntimeException("no function available for bit: " + functionBit);
-//                            }
-//
-//
-////                            train.getFunction(trainFunction).setActive(active);
-//                            eventBroadcaster.fireEvent(new TrainFunctionStateEvent(train.getId(), trainFunction,
-//                                    active));
                         }
 
                         @Override
@@ -155,7 +120,7 @@ public class TrainManager {
 
     @Transactional
     public void createTrain(Train train) {
-        TrainEntity entity = updateEntitryFromDto(new TrainEntity(), train);
+        TrainEntity entity = updateEntityFromDto(new TrainEntity(), train);
         dao.create(entity);
 
         // TODO update or create train functions
@@ -184,7 +149,7 @@ public class TrainManager {
         dao.delete(dao.findById(trainId));
     }
 
-    private TrainEntity updateEntitryFromDto(TrainEntity entity, Train train) {
+    private TrainEntity updateEntityFromDto(TrainEntity entity, Train train) {
         entity.setName(train.getName());
         entity.setAddress(train.getAddress());
         return entity;

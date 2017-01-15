@@ -16,6 +16,12 @@ public interface TrackViewerService extends RemoteService {
 
     void toggleTrackPart(BusDataConfiguration configuration, boolean state);
 
+    /**
+     * @deprecated should be dropped
+     *
+     * @param configuration
+     * @return
+     */
     boolean getTrackPartState(BusDataConfiguration configuration);
 
     /**

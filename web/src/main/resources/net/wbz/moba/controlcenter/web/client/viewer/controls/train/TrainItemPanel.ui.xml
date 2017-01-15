@@ -1,0 +1,15 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:b="urn:import:org.gwtbootstrap3.client.ui">
+
+    <b:Container fluid="false">
+        <b:PageHeader>Welcome</b:PageHeader>
+        <b:Row>
+            <b:Column size="SM_5">
+
+                <!--<g:input ui:field="sliderInput" type="range" />-->
+            </b:Column>
+        </b:Row>
+    </b:Container>
+
+</ui:UiBinder>

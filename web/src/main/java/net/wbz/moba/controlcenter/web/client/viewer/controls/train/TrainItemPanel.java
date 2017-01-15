@@ -41,6 +41,12 @@ public class TrainItemPanel extends AbstractItemPanel<Train, TrainStateEvent> {
      * Maximum decimal value of the driving level. (Bit 1-5 is on)
      */
     public static final double DRIVING_LEVEL_MAX_VALUE = 31d;
+
+//    interface Binder extends UiBinder<Widget, TrainItemPanel> {
+//    }
+//
+//    private static Binder uiBinder = GWT.create(Binder.class);
+
     private PanelCollapse contentPanel;
 
     private Slider sliderDrivingLevel;
@@ -57,6 +63,7 @@ public class TrainItemPanel extends AbstractItemPanel<Train, TrainStateEvent> {
     private OnOffToggleButton btnHorn;
     private OnOffToggleButton btnLight;
     private Button btnStop;
+    private Label lblSliderValue;
 
     public TrainItemPanel(Train train) {
         super(train);
@@ -105,8 +112,11 @@ public class TrainItemPanel extends AbstractItemPanel<Train, TrainStateEvent> {
             }
         } else if (event instanceof TrainDrivingLevelEvent) {
             TrainDrivingLevelEvent drivingLevelEvent = (TrainDrivingLevelEvent) event;
-            final String text = "speed: " + drivingLevelEvent.getSpeed();
+            int speed = drivingLevelEvent.getSpeed();
+            final String text = "speed: " + speed;
             lblStateDetails.setText(text);
+            sliderDrivingLevel.setValue((double) speed,false);
+            lblSliderValue.setText(String.valueOf(speed));
         }
     }
 
@@ -140,28 +150,30 @@ public class TrainItemPanel extends AbstractItemPanel<Train, TrainStateEvent> {
         Row rowDrivingFunctions = new Row();
 
         ButtonGroup btnGroupDirection = new ButtonGroup();
-        btnDirectionForward = createDirectionButton(true);
-        btnGroupDirection.add(btnDirectionForward);
         btnDirectionBackward = createDirectionButton(false);
         btnGroupDirection.add(btnDirectionBackward);
+        btnDirectionForward = createDirectionButton(true);
+        btnGroupDirection.add(btnDirectionForward);
 
-        final Label lblSliderValue = new Label("0");
+        lblSliderValue = new Label("0");
         lblSliderValue.getElement().getStyle().setMarginRight(15, Style.Unit.PX);
         lblSliderValue.getElement().getStyle().setMarginLeft(10, Style.Unit.PX);
-//        sliderDrivingLevel = new Slider(0d, DRIVING_LEVEL_MAX_VALUE, 0d);
-//        sliderDrivingLevel.addValueChangeHandler(
-//                new ValueChangeHandler<Double>() {
-//                    @Override
-//                    public void onValueChange(ValueChangeEvent<Double> doubleValueChangeEvent) {
-//                        lblSliderValue.setText(doubleValueChangeEvent.getValue().toString());
-//                        int level = doubleValueChangeEvent.getValue().intValue();
-//                        if (level != lastSendSpeedValue) {
-//                            lastSendSpeedValue = level;
-//                            RequestUtils.getInstance().getTrainService().updateDrivingLevel(
-//                                    getModel().getId(), level);
-//                        }
-//                    }
-//                });
+//
+        sliderDrivingLevel = new Slider(0d, DRIVING_LEVEL_MAX_VALUE, 0d);
+        sliderDrivingLevel.addValueChangeHandler(
+                new ValueChangeHandler<Double>() {
+                    @Override
+                    public synchronized void onValueChange(ValueChangeEvent<Double> doubleValueChangeEvent) {
+                        lblSliderValue.setText(doubleValueChangeEvent.getValue().toString());
+                        int level = doubleValueChangeEvent.getValue().intValue();
+                        if (level != lastSendSpeedValue) {
+                            lastSendSpeedValue = level;
+                            RequestUtils.getInstance().getTrainService().updateDrivingLevel(
+                                    getModel().getId(), level, RequestUtils.VOID_ASYNC_CALLBACK);
+                        }
+                    }
+                });
+
         btnStop = new Button("Stop", new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
@@ -170,11 +182,12 @@ public class TrainItemPanel extends AbstractItemPanel<Train, TrainStateEvent> {
             }
         });
 
-        rowDrivingFunctions.add(new Column(ColumnSize.MD_12, btnGroupDirection, lblSliderValue, btnStop));
-
-        contentPanel.add(rowDrivingFunctions);
+        rowDrivingFunctions.add(new Column(ColumnSize.MD_12, btnGroupDirection, lblSliderValue, sliderDrivingLevel, btnStop));
 //
+        contentPanel.add(rowDrivingFunctions);
+////
         initFunctions();
+
 
         // TODO load the initial state for connected device of the trains (maybe by events?)
 //        // set the initial state for the train by using the event callback

@@ -27,4 +27,5 @@ public class TrainHornStateEvent extends TrainStateEvent {
                 "state=" + state +
                 "} " + super.toString();
     }
+
 }

@@ -17,10 +17,10 @@ import org.gwtbootstrap3.client.ui.AnchorListItem;
  */
 abstract class AppMenu extends Composite {
 
-    interface LoginUiBinder extends UiBinder<Widget, AppMenu> {
+    interface AppMenuBinder extends UiBinder<Widget, AppMenu> {
     }
 
-    private static LoginUiBinder uiBinder = GWT.create(LoginUiBinder.class);
+    private static AppMenuBinder uiBinder = GWT.create(AppMenuBinder.class);
     @UiField
     AnchorListItem linkViewer;
     @UiField

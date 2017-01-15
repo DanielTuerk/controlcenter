@@ -19,4 +19,11 @@ public class TrainDrivingLevelEvent extends TrainStateEvent{
     public int getSpeed() {
         return speed;
     }
+
+    @Override
+    public String toString() {
+        return "TrainDrivingLevelEvent{" +
+                "speed=" + speed +
+                "} " + super.toString();
+    }
 }

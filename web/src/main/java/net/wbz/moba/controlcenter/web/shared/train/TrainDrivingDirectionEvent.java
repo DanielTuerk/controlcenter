@@ -21,4 +21,11 @@ public class TrainDrivingDirectionEvent extends TrainStateEvent {
     public DRIVING_DIRECTION getDirection() {
         return direction;
     }
+
+    @Override
+    public String toString() {
+        return "TrainDrivingDirectionEvent{" +
+                "direction=" + direction +
+                "} " + super.toString();
+    }
 }

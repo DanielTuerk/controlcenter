@@ -10,9 +10,9 @@ public class TrackPartBlockEvent implements Event {
 
     private BusDataConfiguration config;
     private STATE state;
-
     public TrackPartBlockEvent() {
     }
+
     public TrackPartBlockEvent(BusDataConfiguration config, STATE state) {
         this.config = config;
         this.state = state;
@@ -32,6 +32,14 @@ public class TrackPartBlockEvent implements Event {
 
     public void setState(STATE state) {
         this.state = state;
+    }
+
+    @Override
+    public String toString() {
+        return "TrackPartBlockEvent{" +
+                "config=" + config +
+                ", state=" + state +
+                '}';
     }
 
     public enum STATE {UNKNOWN, FREE, USED}

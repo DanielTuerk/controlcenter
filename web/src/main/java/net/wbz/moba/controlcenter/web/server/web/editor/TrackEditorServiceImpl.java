@@ -11,7 +11,6 @@ import net.wbz.moba.controlcenter.web.server.persist.construction.ConstructionEn
 import net.wbz.moba.controlcenter.web.server.persist.construction.track.AbstractTrackPartEntity;
 import net.wbz.moba.controlcenter.web.server.persist.construction.track.BusDataConfigurationEntity;
 import net.wbz.moba.controlcenter.web.server.persist.construction.track.TrackPartDao;
-import net.wbz.moba.controlcenter.web.server.web.DataMapper;
 import net.wbz.moba.controlcenter.web.server.web.TrackPartDataMapper;
 import net.wbz.moba.controlcenter.web.server.web.constrution.ConstructionServiceImpl;
 import net.wbz.moba.controlcenter.web.shared.bus.FeedbackBlockEvent;
@@ -58,11 +57,9 @@ public class TrackEditorServiceImpl extends RemoteServiceServlet implements Trac
             Maps.newConcurrentMap();
     private final DeviceManager deviceManager;
     private final EventBroadcaster eventBroadcaster;
-    private final DataMapper<? extends AbstractTrackPart, ? extends AbstractTrackPartEntity> dataMapper = new DataMapper<>(AbstractTrackPart.class, AbstractTrackPartEntity.class);
     private final TrackPartDao dao;
     private final ConstructionDao constructionDao;
     private final TrackPartDataMapper trackPartDataMapper;
-    private final DataMapper<BusDataConfiguration, BusDataConfigurationEntity> busDataMapper = new DataMapper<>(BusDataConfiguration.class, BusDataConfigurationEntity.class);
 
     @Inject
     public TrackEditorServiceImpl(ConstructionServiceImpl constructionService, DeviceManager deviceManager,
@@ -120,11 +117,12 @@ public class TrackEditorServiceImpl extends RemoteServiceServlet implements Trac
                 device.getBusAddress(entry.getKey().getBus(),
                         (byte) entry.getKey().getAddress()).removeListeners(entry.getValue());
             }
-//            for (Map.Entry<BusAddressIdentifier, FeedbackBlockListener> entry : busAddressFeedbackBlockListenersOfTheCurrentTrack.entrySet()) {
-//                device.getBusAddress(entry.getKey().getBus(),
-//                        (byte) entry.getKey().getAddress()).removeListener(entry.getValue());
-//            }
-            //TODO remove feedback listeners
+            for (Map.Entry<BusAddressIdentifier, FeedbackBlockListener> entry : busAddressFeedbackBlockListenersOfTheCurrentTrack.entrySet()) {
+                device.getFeedbackBlockModule(
+                        entry.getKey().getAddress(),
+                        (entry.getKey().getAddress() + 2),
+                        (entry.getKey().getAddress() + 1)).removeFeedbackBlockListener(entry.getValue());
+            }
         } catch (DeviceAccessException e) {
             log.error("can't remove listeners to active device", e);
         }
@@ -179,7 +177,11 @@ public class TrackEditorServiceImpl extends RemoteServiceServlet implements Trac
      * Register the {@link net.wbz.selectrix4java.bus.consumption.BusAddressDataConsumer}s for each address of the given
      * {@link AbstractTrackPartEntity}s.
      * <p/>
-     * TODO: maybe bullshit -> re-register by second browser
+     * TODO bullshit to call from client -> re-register by second browser
+     * TODO register by server only by connection state
+     * TODO only for current construction possible
+     * TODO auto register for trackpart of current track
+     * TODO re-register by changed trackparts (event by track editor service?, or better by manager/dao)
      *
      * @param trackParts {@link AbstractTrackPartEntity}s to register the
      *                   containing {@link BusDataConfigurationEntity}
@@ -197,78 +199,18 @@ public class TrackEditorServiceImpl extends RemoteServiceServlet implements Trac
         } catch (DeviceAccessException e) {
             // ignore
         }
+
+        // reset
         busAddressListenersOfTheCurrentTrack.clear();
         busAddressFeedbackBlockListenersOfTheCurrentTrack.clear();
 
         // create consumers for the configuration of the track parts
         log.info("create consumers of track parts");
 
-        // TODO: required anymore?
-        List<BusDataConfigurationEntity> uniqueTrackPartConfigs = Lists.newArrayList();
-
         for (final AbstractTrackPart trackPart : trackParts) {
-
-//            AbstractTrackPartEntity trackPartEntity = dao.findById(trackPart.getId());
-
-//            registerEventConfigurationOfTrackPart(trackPart);
-
             registerBlockFunctionOfTrackPart(trackPart);
-
             registerToggleFunctionOfTrackPart(trackPart);
-
             registerSignal(trackPart);
-
-            for (final BusDataConfiguration trackPartConfiguration : trackPart.getConfigurationsOfFunctions()) {
-
-                if (trackPartConfiguration != null && trackPartConfiguration.isValid()) {
-
-                    // TODO bus nr - remove quick hack!
-//                    trackPartConfiguration.setBus(1);
-
-                    if (trackPart instanceof Signal) {
-                        // add bit listeners for the configured addresses of the signal
-
-                        // TODO
-//                        for (Map.Entry<BusAddressIdentifier, List<BusAddressBitListener>> entry : new SignalFunctionReceiver(
-//                                (Signal) trackPart, eventBroadcaster).getBusAddressListeners().entrySet()) {
-//                            if (!busAddressListenersOfTheCurrentTrack.containsKey(entry.getKey())) {
-//                                busAddressListenersOfTheCurrentTrack.put(entry.getKey(), new ArrayList<BusListener>());
-//                            }
-//                            busAddressListenersOfTheCurrentTrack.get(entry.getKey()).addAll(entry.getValue());
-//                        }
-                    } else {
-//                        // add address listener for the default toggle function of the track part
-//                        BusDataConfigurationEntity busDataConfigurationEntity = busDataMapper.transformTarget(trackPartConfiguration);
-//                        addBusListener(busDataConfigurationEntity, new BusAddressListener() {
-//                            private boolean firstCall = true;
-//
-//                            @Override
-//                            public void dataChanged(byte oldValue, byte newValue) {
-//                                // TODO: remove quick hack for unset bus nr of old stored widgets
-//
-//                                // TODO
-//                                trackPartConfiguration.setBus(1);
-//
-//                                // fire event for changed bit state of the bus address
-//                                boolean bitStateChanged = BigInteger.valueOf(newValue).testBit(
-//                                        trackPartConfiguration.getBit() - 1) != BigInteger.valueOf(oldValue).testBit(
-//                                        trackPartConfiguration.getBit() - 1);
-//
-////                                BusDataConfiguration busDataConfiguration = busDataMapper.transformSource(trackPartConfiguration);
-//
-//                                if (firstCall || bitStateChanged) {
-//                                    eventBroadcaster.fireEvent(new TrackPartStateEvent(trackPartConfiguration,
-//                                            BigInteger.valueOf(newValue).testBit(trackPartConfiguration.getBit() - 1)));
-//                                }
-//                                firstCall = false;
-//                            }
-//                        });
-                    }
-
-
-                }
-            }
-
         }
         // register consumers if an device is already connected
         try {
@@ -280,12 +222,8 @@ public class TrackEditorServiceImpl extends RemoteServiceServlet implements Trac
 
     private void registerSignal(AbstractTrackPart trackPart) {
         if (trackPart instanceof Signal) {
-            // add bit listeners for the configured addresses of the signal
-
-            // TODO
             Map<BusAddressIdentifier, List<BusAddressBitListener>> busAddressListeners = new SignalFunctionReceiver(
                     (Signal) trackPart, eventBroadcaster).getBusAddressListeners();
-
             for (Map.Entry<BusAddressIdentifier, List<BusAddressBitListener>> entry : busAddressListeners.entrySet()) {
                 if (!busAddressListenersOfTheCurrentTrack.containsKey(entry.getKey())) {
                     busAddressListenersOfTheCurrentTrack.put(entry.getKey(), new ArrayList<BusListener>());
@@ -298,8 +236,6 @@ public class TrackEditorServiceImpl extends RemoteServiceServlet implements Trac
     private void registerToggleFunctionOfTrackPart(AbstractTrackPart trackPart) {
         if (trackPart instanceof HasToggleFunction) {
             HasToggleFunction trackPartConfiguration = (HasToggleFunction) trackPart;
-            // add address listener for the default toggle function of the track part
-//            BusDataConfigurationEntity busDataConfigurationEntity = busDataMapper.transformTarget(trackPartConfiguration);
             final BusDataConfiguration toggleFunction = trackPartConfiguration.getToggleFunction();
             if (toggleFunction != null && toggleFunction.isValid()) {
                 addBusListener(toggleFunction, new BusAddressListener() {
@@ -307,18 +243,10 @@ public class TrackEditorServiceImpl extends RemoteServiceServlet implements Trac
 
                     @Override
                     public void dataChanged(byte oldValue, byte newValue) {
-                        // TODO: remove quick hack for unset bus nr of old stored widgets
-
-                        // TODO
-//                    trackPartConfiguration.setBus(1);
-
                         // fire event for changed bit state of the bus address
                         boolean bitStateChanged = BigInteger.valueOf(newValue).testBit(
                                 toggleFunction.getBit() - 1) != BigInteger.valueOf(oldValue).testBit(
                                 toggleFunction.getBit() - 1);
-
-//                                BusDataConfiguration busDataConfiguration = busDataMapper.transformSource(trackPartConfiguration);
-
                         if (firstCall || bitStateChanged) {
                             eventBroadcaster.fireEvent(new TrackPartStateEvent(toggleFunction,
                                     BigInteger.valueOf(newValue).testBit(toggleFunction.getBit() - 1)));
@@ -339,7 +267,7 @@ public class TrackEditorServiceImpl extends RemoteServiceServlet implements Trac
 
             final BusDataConfiguration trackPartConfiguration = trackPart.getBlockFunction();
 
-            BusAddressIdentifier busAddressIdentifier = new BusAddressIdentifier(trackPartConfiguration
+            final BusAddressIdentifier busAddressIdentifier = new BusAddressIdentifier(trackPartConfiguration
                     .getBus(), trackPartConfiguration.getAddress());
             if (!busAddressFeedbackBlockListenersOfTheCurrentTrack.containsKey(busAddressIdentifier)) {
                 busAddressFeedbackBlockListenersOfTheCurrentTrack.put(busAddressIdentifier,
@@ -366,21 +294,21 @@ public class TrackEditorServiceImpl extends RemoteServiceServlet implements Trac
 
                             @Override
                             public void blockOccupied(int blockNr) {
-                                fireBlockEvent(true);
+                                fireBlockEvent(true, blockNr);
                             }
 
                             @Override
                             public void blockFreed(int blockNr) {
-                                fireBlockEvent(false);
+                                fireBlockEvent(false, blockNr);
                             }
 
-                            private void fireBlockEvent(boolean bitState) {
-                                eventBroadcaster.fireEvent(new TrackPartBlockEvent(new BusDataConfiguration(
-                                        trackPart.getBlockFunction().getBus(),
-                                        trackPart.getBlockFunction().getAddress(),
-                                        trackPart.getBlockFunction().getBit(),
-                                        bitState
-                                ), bitState ? TrackPartBlockEvent.STATE.USED : TrackPartBlockEvent.STATE.FREE));
+                            private void fireBlockEvent(boolean bitState, int blockNr) {
+                                    eventBroadcaster.fireEvent(new TrackPartBlockEvent(new BusDataConfiguration(
+                                            busAddressIdentifier.getBus(),
+                                            busAddressIdentifier.getAddress(),
+                                            blockNr,
+                                            bitState
+                                    ), bitState ? TrackPartBlockEvent.STATE.USED : TrackPartBlockEvent.STATE.FREE));
                             }
                         });
             }
@@ -397,10 +325,6 @@ public class TrackEditorServiceImpl extends RemoteServiceServlet implements Trac
     }
 
     private void registerEventConfigurationOfTrackPart(final HasToggleFunction toggleFunctionEntity) {
-//        if (trackPart instanceof HasToggleFunction) {
-//            HasToggleFunction toggleFunctionEntity = (HasToggleFunction) trackPart;
-
-        // TODO ? && toggleFunctionEntity.getEventConfiguration().isActive() ??
         EventConfiguration eventConfiguration = toggleFunctionEntity.getEventConfiguration();
         if (eventConfiguration != null && eventConfiguration.isActive()) {
 
@@ -413,10 +337,7 @@ public class TrackEditorServiceImpl extends RemoteServiceServlet implements Trac
                         if ((newValue && stateOnConfig.getBitState())
                                 || (!newValue && !stateOnConfig.getBitState())) {
                             try {
-//                                BusDataConfigurationEntity trackPartConfig = trackPart.getDefaultToggleFunctionConfig();
                                 switchToggleFunction(toggleFunctionEntity, true);
-//                                deviceManager.getConnectedDevice().getBusAddress(trackPartConfig.getBus(),
-//                                        trackPartConfig.getAddress().byteValue()).setBit(trackPartConfig.getBit()).send();
                             } catch (DeviceAccessException e) {
                                 e.printStackTrace();
                             }
@@ -444,7 +365,6 @@ public class TrackEditorServiceImpl extends RemoteServiceServlet implements Trac
                 });
             }
         }
-//        }
     }
 
     private void switchToggleFunction(HasToggleFunction toggleFunctionEntity, boolean stateOn) throws DeviceAccessException {
@@ -460,6 +380,5 @@ public class TrackEditorServiceImpl extends RemoteServiceServlet implements Trac
             busAddress.send();
         }
     }
-
 
 }

@@ -79,7 +79,6 @@ public class BusDataConfiguration extends AbstractDto {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        if (!super.equals(o)) return false;
         BusDataConfiguration that = (BusDataConfiguration) o;
         return Objects.equal(bus, that.bus) &&
                 Objects.equal(address, that.address) &&
@@ -88,6 +87,6 @@ public class BusDataConfiguration extends AbstractDto {
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(super.hashCode(), bus, address, bit);
+        return Objects.hashCode(bus, address, bit);
     }
 }

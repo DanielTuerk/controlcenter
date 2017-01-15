@@ -59,7 +59,6 @@ abstract public class AbstractTrackViewerPanel extends AbstractTrackPanel {
             public void apply(Event anEvent) {
                 if (anEvent instanceof TrackPartBlockEvent) {
                     TrackPartBlockEvent event = (TrackPartBlockEvent) anEvent;
-                    // TODO better to handle blocks with own callback as with the same method as the functions
                     updateTrackPartBlockState(event.getConfig(),event.getState()== TrackPartBlockEvent.STATE.USED);
                 }
             }

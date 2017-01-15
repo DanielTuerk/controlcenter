@@ -105,18 +105,17 @@ public class TrackViewerPanel extends AbstractTrackViewerPanel {
 
                             if (trackWidget instanceof AbstractSignalWidget) {
                                 signalTrackWidgets.add((AbstractSignalWidget) trackWidget);
-                            } else {
-                                for (BusDataConfiguration configuration : trackPart.getConfigurationsOfFunctions()) {
-                                    // ignore default configs of track widget to register event handler
-                                    if (configuration != null && configuration.isValid()) {
-                                        if (!trackWidgetsOfConfiguration.containsKey(configuration)) {
-                                            trackWidgetsOfConfiguration.put(configuration,
-                                                    new ArrayList<AbstractSvgTrackWidget>());
-                                        }
-                                        // avoid same widget for equal bit state configuration
-                                        if (!trackWidgetsOfConfiguration.get(configuration).contains(trackWidget)) {
-                                            trackWidgetsOfConfiguration.get(configuration).add(trackWidget);
-                                        }
+                            }
+                            for (BusDataConfiguration configuration : trackPart.getConfigurationsOfFunctions()) {
+                                // ignore default configs of track widget to register event handler
+                                if (configuration != null && configuration.isValid()) {
+                                    if (!trackWidgetsOfConfiguration.containsKey(configuration)) {
+                                        trackWidgetsOfConfiguration.put(configuration,
+                                                new ArrayList<AbstractSvgTrackWidget>());
+                                    }
+                                    // avoid same widget for equal bit state configuration
+                                    if (!trackWidgetsOfConfiguration.get(configuration).contains(trackWidget)) {
+                                        trackWidgetsOfConfiguration.get(configuration).add(trackWidget);
                                     }
                                 }
                             }
@@ -164,7 +163,7 @@ public class TrackViewerPanel extends AbstractTrackViewerPanel {
         if (trackWidgetsOfConfiguration.containsKey(configuration)) {
             for (AbstractSvgTrackWidget controlSvgTrackWidget : trackWidgetsOfConfiguration.get(configuration)) {
                 if (controlSvgTrackWidget instanceof AbstractControlSvgTrackWidget) {
-                    ((AbstractControlSvgTrackWidget)controlSvgTrackWidget).updateFunctionState(configuration, state);
+                    ((AbstractControlSvgTrackWidget) controlSvgTrackWidget).updateFunctionState(configuration, state);
                 }
             }
         }
@@ -175,7 +174,8 @@ public class TrackViewerPanel extends AbstractTrackViewerPanel {
         if (trackWidgetsOfConfiguration.containsKey(configuration)) {
             for (AbstractSvgTrackWidget controlSvgTrackWidget : trackWidgetsOfConfiguration.get(configuration)) {
                 if (controlSvgTrackWidget instanceof AbstractBlockSvgTrackWidget) {
-                    ((AbstractBlockSvgTrackWidget)controlSvgTrackWidget).updateBlockState(configuration, state);}
+                    ((AbstractBlockSvgTrackWidget) controlSvgTrackWidget).updateBlockState(configuration, state);
+                }
             }
         }
     }

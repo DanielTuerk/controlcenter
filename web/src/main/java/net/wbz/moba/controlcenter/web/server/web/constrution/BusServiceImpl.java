@@ -68,10 +68,10 @@ public class BusServiceImpl extends RemoteServiceServlet implements BusService {
             }
         };
 
-        initFoooo();
+        initConnectionListener();
     }
 
-    private void initFoooo() {
+    private void initConnectionListener() {
 
         for (DeviceInfoEntity deviceInfo : deviceInfoDao.listAll()) {
             // TODO - values from config
@@ -139,12 +139,6 @@ public class BusServiceImpl extends RemoteServiceServlet implements BusService {
 
     public List<DeviceInfo> getDevices() {
         return Lists.newArrayList(storedDevices.keySet());
-//        return Lists.newArrayList(Lists.transformSource(deviceManager.getDevices(), new Function<Device, DeviceInfoEntity>() {
-//            @Override
-//            public DeviceInfoEntity apply(@Nullable Device input) {
-//                return getDeviceInfo(input);
-//            }
-//        }));
     }
 
     private DeviceInfo getDeviceInfo(final Device device) {
@@ -155,16 +149,6 @@ public class BusServiceImpl extends RemoteServiceServlet implements BusService {
             }
         }
         throw new RuntimeException("no stored device found for device:" + device);
-
-//        DeviceInfoEntity deviceInfo = new DeviceInfoEntity();
-//        deviceInfo.setKey(deviceManager.getDeviceId(device));
-//        if (device instanceof SerialDevice) {
-//            deviceInfo.setType(DeviceInfoEntity.DEVICE_TYPE.SERIAL);
-//        } else {
-//            deviceInfo.setType(DeviceInfoEntity.DEVICE_TYPE.TEST);
-//        }
-//        deviceInfo.setConnected(device.isConnected());
-//        return deviceInfo;
     }
 
     public boolean getRailVoltage() {

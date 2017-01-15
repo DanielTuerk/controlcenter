@@ -79,8 +79,10 @@ public class TrackEditorServiceImpl extends RemoteServiceServlet implements Trac
 
             @Override
             public void disconnected(Device device) {
-                // TODO is to late to remove, need connected device, maybe other way?
-//                removeBusAddressListeners(device);
+                /*
+                 * Nothing to do, the device reset itself.
+                 * Local listeners can be reused for next connected device.
+                 */
             }
         });
     }
@@ -303,12 +305,12 @@ public class TrackEditorServiceImpl extends RemoteServiceServlet implements Trac
                             }
 
                             private void fireBlockEvent(boolean bitState, int blockNr) {
-                                    eventBroadcaster.fireEvent(new TrackPartBlockEvent(new BusDataConfiguration(
-                                            busAddressIdentifier.getBus(),
-                                            busAddressIdentifier.getAddress(),
-                                            blockNr,
-                                            bitState
-                                    ), bitState ? TrackPartBlockEvent.STATE.USED : TrackPartBlockEvent.STATE.FREE));
+                                eventBroadcaster.fireEvent(new TrackPartBlockEvent(new BusDataConfiguration(
+                                        busAddressIdentifier.getBus(),
+                                        busAddressIdentifier.getAddress(),
+                                        blockNr,
+                                        bitState
+                                ), bitState ? TrackPartBlockEvent.STATE.USED : TrackPartBlockEvent.STATE.FREE));
                             }
                         });
             }

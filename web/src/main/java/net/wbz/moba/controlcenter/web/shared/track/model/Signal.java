@@ -1,9 +1,14 @@
 package net.wbz.moba.controlcenter.web.shared.track.model;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.gwt.user.client.rpc.IsSerializable;
 import com.googlecode.jmapper.annotations.JMap;
 
+import javax.persistence.CascadeType;
+import javax.persistence.FetchType;
+import javax.persistence.ManyToOne;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -12,52 +17,29 @@ import java.util.Set;
  */
 public class Signal extends Straight implements HasToggleFunction {
 
-    /**
-     * Available functions for the signal types.
-     */
-    public enum FUNCTION {
-        HP0, HP1, HP2, HP0_SH1
-    }
-
-    /**
-     * Types of signal with corresponding mapping of the lights.
-     */
-    public enum TYPE implements IsSerializable {
-        BLOCK(new LIGHT[]{LIGHT.RED1, LIGHT.GREEN1}),
-        ENTER(new LIGHT[]{LIGHT.RED1, LIGHT.GREEN1, LIGHT.YELLOW1}),
-        EXIT(new LIGHT[]{LIGHT.RED1, LIGHT.RED2, LIGHT.GREEN1, LIGHT.YELLOW1, LIGHT.WHITE}),
-        BEFORE(new LIGHT[]{LIGHT.GREEN1, LIGHT.GREEN2, LIGHT.YELLOW1, LIGHT.YELLOW2});
-
-        private LIGHT[] lights;
-
-        TYPE(LIGHT[] lights) {
-            this.lights = lights;
-        }
-
-        public LIGHT[] getLights() {
-            return lights;
-        }
-    }
-
-
     @JMap
     private TYPE type;
-
     @JMap
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private BusDataConfiguration signalConfigRed1;
     @JMap
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private BusDataConfiguration signalConfigRed2;
     @JMap
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private BusDataConfiguration signalConfigGreen1;
     @JMap
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private BusDataConfiguration signalConfigGreen2;
     @JMap
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private BusDataConfiguration signalConfigYellow1;
     @JMap
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private BusDataConfiguration signalConfigYellow2;
     @JMap
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private BusDataConfiguration signalConfigWhite;
-
 
     public TYPE getType() {
         return type;
@@ -66,7 +48,6 @@ public class Signal extends Straight implements HasToggleFunction {
     public void setType(TYPE type) {
         this.type = type;
     }
-
 
     @Override
     public BusDataConfiguration getToggleFunction() {
@@ -90,34 +71,77 @@ public class Signal extends Straight implements HasToggleFunction {
     @Override
     public Set<BusDataConfiguration> getConfigurationsOfFunctions() {
         Set<BusDataConfiguration> functions = super.getConfigurationsOfFunctions();
-        //TODO needed or update to common usage?
+        //TODO update to common usage by track editor to register consumers?
+//        functions.addAll(getSignalConfigurations());
         return functions;
     }
 
     /**
-     * TODO doc or drop
+     * Return {@link BusDataConfiguration} for the given {@link LIGHT} or {@code null}.
      *
-     * @return
+     * @param light {@link LIGHT}
+     * @return {@link BusDataConfiguration} of given light
      */
-    public Map<LIGHT, BusDataConfiguration> getSignalConfiguration() {
-        Map<LIGHT, BusDataConfiguration> lightConfig = Maps.newHashMap();
-        lightConfig.put(LIGHT.RED1, signalConfigRed1);
-        lightConfig.put(LIGHT.RED2, signalConfigRed2);
-        lightConfig.put(LIGHT.GREEN1, signalConfigGreen1);
-        lightConfig.put(LIGHT.GREEN2, signalConfigGreen2);
-        lightConfig.put(LIGHT.YELLOW1, signalConfigYellow1);
-        lightConfig.put(LIGHT.YELLOW2, signalConfigYellow2);
-        lightConfig.put(LIGHT.WHITE, signalConfigWhite);
-        return lightConfig;
+    public BusDataConfiguration getSignalConfiguration(LIGHT light) {
+        switch (light) {
+            case RED1:
+                return signalConfigRed1;
+            case RED2:
+                return signalConfigRed2;
+            case GREEN1:
+                return signalConfigGreen1;
+            case GREEN2:
+                return signalConfigGreen2;
+            case YELLOW1:
+                return signalConfigYellow1;
+            case YELLOW2:
+                return signalConfigYellow2;
+            case WHITE:
+                return signalConfigWhite;
+            default:
+                return null;
+        }
     }
 
-    /**
-     * Available lights of the different signal types.
-     */
-    public enum LIGHT {
-        RED1, RED2, GREEN1, GREEN2, YELLOW1, YELLOW2, WHITE
+    public void updateSignalConfiguration(LIGHT light, BusDataConfiguration busDataConfiguration) {
+        switch (light) {
+            case RED1:
+                signalConfigRed1 = busDataConfiguration;
+                break;
+            case RED2:
+                signalConfigRed2 = busDataConfiguration;
+                break;
+            case GREEN1:
+                signalConfigGreen1 = busDataConfiguration;
+                break;
+            case GREEN2:
+                signalConfigGreen2 = busDataConfiguration;
+                break;
+            case YELLOW1:
+                signalConfigYellow1 = busDataConfiguration;
+                break;
+            case YELLOW2:
+                signalConfigYellow2 = busDataConfiguration;
+                break;
+            case WHITE:
+                signalConfigWhite = busDataConfiguration;
+                break;
+        }
     }
 
+    public List<BusDataConfiguration> getSignalConfigurations() {
+        return Lists.newArrayList(signalConfigRed1, signalConfigRed2, signalConfigGreen1, signalConfigGreen2,
+                signalConfigYellow1, signalConfigYellow2, signalConfigWhite);
+    }
+
+
+    public List<BusDataConfiguration> getSignalConfigurations(TYPE type) {
+        List<BusDataConfiguration> configs = Lists.newArrayList();
+        for (LIGHT light : type.getLights()) {
+            configs.add(getSignalConfiguration(light));
+        }
+        return configs;
+    }
 
     public BusDataConfiguration getSignalConfigRed1() {
         return signalConfigRed1;
@@ -173,5 +197,47 @@ public class Signal extends Straight implements HasToggleFunction {
 
     public void setSignalConfigWhite(BusDataConfiguration signalConfigWhite) {
         this.signalConfigWhite = signalConfigWhite;
+    }
+
+    public Map<LIGHT, BusDataConfiguration> getSignalLightsConfigurations(TYPE type) {
+        Map<LIGHT, BusDataConfiguration> lightConfigs = Maps.newConcurrentMap();
+        for (LIGHT light : type.getLights()) {
+            lightConfigs.put(light, getSignalConfiguration(light));
+        }
+        return lightConfigs;
+    }
+
+    /**
+     * Available functions for the signal types.
+     */
+    public enum FUNCTION {
+        HP0, HP1, HP2, HP0_SH1
+    }
+
+    /**
+     * Types of signal with corresponding mapping of the lights.
+     */
+    public enum TYPE implements IsSerializable {
+        BLOCK(new LIGHT[]{LIGHT.RED1, LIGHT.GREEN1}),
+        ENTER(new LIGHT[]{LIGHT.RED1, LIGHT.GREEN1, LIGHT.YELLOW1}),
+        EXIT(new LIGHT[]{LIGHT.RED1, LIGHT.RED2, LIGHT.GREEN1, LIGHT.YELLOW1, LIGHT.WHITE}),
+        BEFORE(new LIGHT[]{LIGHT.GREEN1, LIGHT.GREEN2, LIGHT.YELLOW1, LIGHT.YELLOW2});
+
+        private LIGHT[] lights;
+
+        TYPE(LIGHT[] lights) {
+            this.lights = lights;
+        }
+
+        public LIGHT[] getLights() {
+            return lights;
+        }
+    }
+
+    /**
+     * Available lights of the different signal types.
+     */
+    public enum LIGHT {
+        RED1, RED2, GREEN1, GREEN2, YELLOW1, YELLOW2, WHITE
     }
 }

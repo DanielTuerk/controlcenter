@@ -45,7 +45,7 @@ public class ScenarioRunCallable implements Callable<Boolean> {
 //                    Thread.sleep((long) ((WaitScenarioCommand) command).getSeconds() * 1000L);
 //                } else if (command instanceof ToggleScenarioCommand) {
 //                    ToggleScenarioCommand toggleCommand = (ToggleScenarioCommand) command;
-//                    BusDataConfigurationEntity trackPartConfiguration = toggleCommand.getConfiguration();
+//                    BusDataConfigurationEntity trackPartConfiguration = toggleCommand.getConfigurations();
 //                    if (trackViewerRequest.getTrackPartState(trackPartConfiguration) != toggleCommand.isActive()) {
 //                        trackViewerRequest.toggleTrackPart(trackPartConfiguration, toggleCommand.isActive());
 //                    }

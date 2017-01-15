@@ -21,6 +21,15 @@ import org.vectomatic.dom.svg.utils.SVGConstants;
 import java.util.Map;
 
 /**
+ * Abstract track widget for {@link AbstractTrackPart} which has a block function to change the style of the element
+ * by the state of the block.
+ * The widget change for the {@link BlockPart}:
+ * <ul>
+ * <li>{@link BlockPart#freeBlock()} - block function is {@code 0}</li>
+ * <li>{@link BlockPart#usedBlock()} - block function is {@code 1}</li>
+ * <li>{@link BlockPart#unknownBlock()} - block function is unknown</li>
+ * </ul>
+ *
  * @author Daniel Tuerk
  */
 abstract public class AbstractBlockSvgTrackWidget<T extends AbstractTrackPart> extends AbstractSvgTrackWidget<T>
@@ -57,19 +66,6 @@ abstract public class AbstractBlockSvgTrackWidget<T extends AbstractTrackPart> e
         removeStyleName("unknownBlock");
         addStyleName("usedBlock");
         removeStyleName("freeBlock");
-    }
-
-    @Override
-    public void updateFunctionState(BusDataConfiguration configuration, boolean state) {
-        // update the SVG for the state of the block
-        BusDataConfiguration blockFunctionConfig = getTrackPart().getBlockFunction();
-        if (blockFunctionConfig != null && blockFunctionConfig.equals(configuration)) {
-            if (state == blockFunctionConfig.isBitState()) {
-                usedBlock();
-            } else {
-                freeBlock();
-            }
-        }
     }
 
     @Override
@@ -146,10 +142,10 @@ abstract public class AbstractBlockSvgTrackWidget<T extends AbstractTrackPart> e
      * @param train {@link net.wbz.moba.controlcenter.web.shared.train.Train}
      */
     public void showTrainOnBlock(Train train) {
-        OMSVGTextElement foo = getSvgDocument().createSVGTextElement(1f, 24f, (short) 1, train.getName());
-        foo.getStyle().setSVGProperty(SVGConstants.CSS_FONT_SIZE_PROPERTY, "8pt");
-        trainElements.put(train, foo);
-        getSvgRootElement().appendChild(foo);
+        OMSVGTextElement trainTextElement = getSvgDocument().createSVGTextElement(1f, 24f, (short) 1, train.getName());
+        trainTextElement.getStyle().setSVGProperty(SVGConstants.CSS_FONT_SIZE_PROPERTY, "8pt");
+        trainElements.put(train, trainTextElement);
+        getSvgRootElement().appendChild(trainTextElement);
     }
 
     /**
@@ -167,7 +163,18 @@ abstract public class AbstractBlockSvgTrackWidget<T extends AbstractTrackPart> e
 
     @Override
     public String getConfigurationInfo() {
-        return super.getConfigurationInfo() +
-                "block: " + getTrackPart().getBlockFunction() + "; ";
+        return super.getConfigurationInfo() + "block: " + getTrackPart().getBlockFunction() + "; ";
+    }
+
+    public void updateBlockState(BusDataConfiguration configuration, boolean state) {
+        // update the SVG for the state of the block
+        BusDataConfiguration blockFunctionConfig = getTrackPart().getBlockFunction();
+        if (blockFunctionConfig != null && blockFunctionConfig.equals(configuration)) {
+            if (state == blockFunctionConfig.getBitState()) {
+                usedBlock();
+            } else {
+                freeBlock();
+            }
+        }
     }
 }

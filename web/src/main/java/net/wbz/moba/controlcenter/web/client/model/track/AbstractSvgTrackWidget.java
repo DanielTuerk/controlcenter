@@ -96,8 +96,6 @@ abstract public class AbstractSvgTrackWidget<T extends AbstractTrackPart> extend
         this.trackPart = trackPart;
     }
 
-    abstract public void updateFunctionState(BusDataConfiguration configuration, boolean state);
-
     protected void addDialogContentTab(String title, Widget content) {
         TabPane tabPane = new TabPane();
         tabPane.setActive(dialogContentTabContent.getWidgetCount() == 0);
@@ -240,4 +238,5 @@ abstract public class AbstractSvgTrackWidget<T extends AbstractTrackPart> extend
     public String getConfigurationInfo() {
         return "";
     }
+
 }

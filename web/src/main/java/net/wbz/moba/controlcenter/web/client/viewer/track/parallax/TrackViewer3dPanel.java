@@ -100,6 +100,11 @@ public class TrackViewer3dPanel extends AbstractTrackViewerPanel {
     }
 
     @Override
+    protected void updateTrackPartBlockState(BusDataConfiguration configuration, boolean state) {
+        //TODO
+    }
+
+    @Override
     public void addTrackWidget(Widget widget, int left, int top) {
         // TODO refactor
     }

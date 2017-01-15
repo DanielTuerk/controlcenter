@@ -3,8 +3,8 @@ package net.wbz.moba.controlcenter.web.server.web.editor;
 import com.google.common.collect.Maps;
 import net.wbz.moba.controlcenter.web.server.EventBroadcaster;
 import net.wbz.moba.controlcenter.web.server.persist.construction.track.BusDataConfigurationEntity;
-import net.wbz.moba.controlcenter.web.shared.track.model.Signal;
 import net.wbz.moba.controlcenter.web.shared.track.model.BusDataConfiguration;
+import net.wbz.moba.controlcenter.web.shared.track.model.Signal;
 import net.wbz.moba.controlcenter.web.shared.viewer.SignalFunctionStateEvent;
 import net.wbz.selectrix4java.bus.BusAddressBitListener;
 
@@ -36,8 +36,8 @@ public class SignalFunctionReceiver {
         this.signal = signal;
         this.eventBroadcaster = eventBroadcaster;
 
-
-        for (final Map.Entry<Signal.LIGHT, BusDataConfiguration> lightConfigs : signal.getSignalConfiguration().entrySet()) {
+        //TODO refactor?
+        for (final Map.Entry<Signal.LIGHT, BusDataConfiguration> lightConfigs : signal.getSignalLightsConfigurations(signal.getType()).entrySet()) {
             // initial state 'off' for each light
             lightStates.put(lightConfigs.getKey(), false);
 
@@ -53,7 +53,7 @@ public class SignalFunctionReceiver {
 
                     @Override
                     public synchronized void bitChanged(boolean oldValue, boolean newValue) {
-                        lightStates.put(lightConfigs.getKey(), (newValue) == lightConfigs.getValue().isBitState());
+                        lightStates.put(lightConfigs.getKey(), (newValue) == lightConfigs.getValue().getBitState());
 
                         // check for new function by active lights
                         switch (signal.getType()) {
@@ -131,7 +131,6 @@ public class SignalFunctionReceiver {
                 });
             }
         }
-
     }
 
     /**
@@ -163,7 +162,7 @@ public class SignalFunctionReceiver {
      */
     private synchronized void fireFunction(Signal.FUNCTION function) {
         if (lastFiredFunction != function) {
-            eventBroadcaster.fireEvent(new SignalFunctionStateEvent(signal.getSignalConfiguration(), function));
+            eventBroadcaster.fireEvent(new SignalFunctionStateEvent(signal.getSignalConfigurations(signal.getType()), function));
             lastFiredFunction = function;
         }
     }

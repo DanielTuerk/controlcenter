@@ -4,30 +4,26 @@ import de.novanic.eventservice.client.event.Event;
 import net.wbz.moba.controlcenter.web.shared.track.model.BusDataConfiguration;
 import net.wbz.moba.controlcenter.web.shared.track.model.Signal;
 
-import java.util.Map;
+import java.util.List;
 
 /**
  * @author Daniel Tuerk
  */
 public class SignalFunctionStateEvent implements Event {
 
-    private Map<Signal.LIGHT, BusDataConfiguration> configuration;
+    private List<BusDataConfiguration> configurations;
     private Signal.FUNCTION signalFunction;
 
     public SignalFunctionStateEvent() {
     }
 
-    public SignalFunctionStateEvent(Map<Signal.LIGHT, BusDataConfiguration> configuration, Signal.FUNCTION signalFunction) {
-        this.configuration = configuration;
+    public SignalFunctionStateEvent(List<BusDataConfiguration> configurations, Signal.FUNCTION signalFunction) {
+        this.configurations = configurations;
         this.signalFunction = signalFunction;
     }
 
-    public Map<Signal.LIGHT, BusDataConfiguration> getConfiguration() {
-        return configuration;
-    }
-
-    public void setConfiguration(Map<Signal.LIGHT, BusDataConfiguration> configuration) {
-        this.configuration = configuration;
+    public List<BusDataConfiguration> getConfigurations() {
+        return configurations;
     }
 
     public Signal.FUNCTION getSignalFunction() {

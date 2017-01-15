@@ -10,6 +10,7 @@ import net.wbz.moba.controlcenter.web.client.RequestUtils;
 import net.wbz.moba.controlcenter.web.client.editor.track.ViewerPaletteWidget;
 import net.wbz.moba.controlcenter.web.client.model.track.AbsoluteTrackPosition;
 import net.wbz.moba.controlcenter.web.client.model.track.AbstractBlockSvgTrackWidget;
+import net.wbz.moba.controlcenter.web.client.model.track.AbstractControlSvgTrackWidget;
 import net.wbz.moba.controlcenter.web.client.model.track.AbstractSvgTrackWidget;
 import net.wbz.moba.controlcenter.web.client.model.track.ModelManager;
 import net.wbz.moba.controlcenter.web.client.model.track.signal.AbstractSignalWidget;
@@ -105,9 +106,7 @@ public class TrackViewerPanel extends AbstractTrackViewerPanel {
                             if (trackWidget instanceof AbstractSignalWidget) {
                                 signalTrackWidgets.add((AbstractSignalWidget) trackWidget);
                             } else {
-//                                if (trackWidget instanceof AbstractControlSvgTrackWidget)
                                 for (BusDataConfiguration configuration : trackPart.getConfigurationsOfFunctions()) {
-
                                     // ignore default configs of track widget to register event handler
                                     if (configuration != null && configuration.isValid()) {
                                         if (!trackWidgetsOfConfiguration.containsKey(configuration)) {
@@ -153,8 +152,8 @@ public class TrackViewerPanel extends AbstractTrackViewerPanel {
     @Override
     protected void updateSignalState(SignalFunctionStateEvent signalFunctionStateEvent) {
         for (AbstractSignalWidget signalTrackWidget : signalTrackWidgets) {
-            if (signalTrackWidget.getTrackPart().getSignalConfiguration().equals(signalFunctionStateEvent
-                    .getConfiguration())) {
+            if (signalTrackWidget.getTrackPart().getSignalConfigurations().containsAll(signalFunctionStateEvent
+                    .getConfigurations())) {
                 signalTrackWidget.showSignalFunction(signalFunctionStateEvent.getSignalFunction());
             }
         }
@@ -164,7 +163,19 @@ public class TrackViewerPanel extends AbstractTrackViewerPanel {
     protected void updateTrackPartState(BusDataConfiguration configuration, boolean state) {
         if (trackWidgetsOfConfiguration.containsKey(configuration)) {
             for (AbstractSvgTrackWidget controlSvgTrackWidget : trackWidgetsOfConfiguration.get(configuration)) {
-                controlSvgTrackWidget.updateFunctionState(configuration, state);
+                if (controlSvgTrackWidget instanceof AbstractControlSvgTrackWidget) {
+                    ((AbstractControlSvgTrackWidget)controlSvgTrackWidget).updateFunctionState(configuration, state);
+                }
+            }
+        }
+    }
+
+    @Override
+    protected void updateTrackPartBlockState(BusDataConfiguration configuration, boolean state) {
+        if (trackWidgetsOfConfiguration.containsKey(configuration)) {
+            for (AbstractSvgTrackWidget controlSvgTrackWidget : trackWidgetsOfConfiguration.get(configuration)) {
+                if (controlSvgTrackWidget instanceof AbstractBlockSvgTrackWidget) {
+                    ((AbstractBlockSvgTrackWidget)controlSvgTrackWidget).updateBlockState(configuration, state);}
             }
         }
     }

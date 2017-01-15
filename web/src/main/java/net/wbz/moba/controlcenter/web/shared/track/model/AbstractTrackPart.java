@@ -25,11 +25,15 @@ public abstract class AbstractTrackPart extends AbstractDto {
     }
 
 
+    /**
+     * TODO drop
+     * @return
+     */
     public Set<BusDataConfiguration> getConfigurationsOfFunctions() {
         //TODO
         return  Sets.newHashSet(blockFunction);
 //        for (TrackPartFunctionEntity function : getFunctionConfigs()) {
-//            configurations.add(function.getConfiguration());
+//            configurations.add(function.getConfigurations());
 //        }
 //        return configurations;
     }

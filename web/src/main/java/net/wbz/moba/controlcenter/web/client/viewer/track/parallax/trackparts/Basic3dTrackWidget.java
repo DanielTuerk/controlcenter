@@ -152,7 +152,7 @@ public class Basic3dTrackWidget<T extends AbstractTrackPart> extends Mesh implem
     public void updateFunctionState(BusDataConfiguration configuration, boolean state) {
         BusDataConfiguration blockFunctionConfig = trackPart.getBlockFunction();
         if (blockFunctionConfig != null && blockFunctionConfig.equals(configuration)) {
-            if (state == blockFunctionConfig.isBitState()) {
+            if (state == blockFunctionConfig.getBitState()) {
                 usedBlock();
             } else {
                 freeBlock();

@@ -36,11 +36,11 @@ public class TrackViewerServiceImpl extends RemoteServiceServlet implements Trac
 
     @Override
     public void toggleTrackPart(BusDataConfiguration configuration, boolean state) {
-        if (configuration.isValid()) {
+        if (configuration != null && configuration.isValid()) {
             try {
                 if (deviceManager.getConnectedDevice() != null) {
                     BusAddress busAddress = deviceManager.getConnectedDevice()
-                            .getBusAddress(1, (byte) configuration.getAddress());
+                            .getBusAddress(1, configuration.getAddress().byteValue());
                     if (state) {
                         busAddress.setBit(configuration.getBit());
                     } else {
@@ -60,7 +60,7 @@ public class TrackViewerServiceImpl extends RemoteServiceServlet implements Trac
         if (configuration.isValid()) {
             try {
                 if (deviceManager.getConnectedDevice() != null) {
-                    return deviceManager.getConnectedDevice().getBusAddress(1, (byte) configuration.getAddress())
+                    return deviceManager.getConnectedDevice().getBusAddress(1, configuration.getAddress().byteValue())
                             .getBitState(configuration.getBit());
                 }
             } catch (DeviceAccessException e) {
@@ -109,46 +109,45 @@ public class TrackViewerServiceImpl extends RemoteServiceServlet implements Trac
     private BusAddressBit convertFunctionConfig(BusDataConfiguration configuration) {
         if (configuration != null && configuration.isValid()) {
             return new BusAddressBit(configuration.getBus(), configuration.getAddress(),
-                    configuration.getBit(), configuration.isBitState());
+                    configuration.getBit(), configuration.getBitState());
         }
         return null;
     }
 
     @Override
-    public void switchSignal(Signal.TYPE signalType, Signal.FUNCTION signalFunction,
-                             Map<Signal.LIGHT, BusDataConfiguration> signalConfiguration) {
-        // TODO
+    public void switchSignal(Signal signal, Signal.FUNCTION signalFunction) {
         Map<Signal.LIGHT, BusAddressBit> availableLightConfig = Maps.newHashMap();
 
+        Signal.TYPE signalType = signal.getType();
+        // set all lights to 'off'
         for (Signal.LIGHT light : signalType.getLights()) {
-            BusDataConfiguration lightFunction = signalConfiguration.get(light);
+            BusDataConfiguration lightFunction = signal.getSignalConfiguration(light);
             if (lightFunction != null && lightFunction.isValid()) {
                 availableLightConfig.put(light, new BusAddressBit(lightFunction.getBus(), lightFunction.getAddress(),
-                        lightFunction.getBit(), !lightFunction.isBitState()));
+                        lightFunction.getBit(), !lightFunction.getBitState()));
             }
         }
-
+        // set lights to 'on' for the signal function
         switch (signalFunction) {
             case HP0:
                 switch (signalType) {
                     case BLOCK:
-                        availableLightConfig.put(Signal.LIGHT.RED1, convertFunctionConfig(signalConfiguration.get(
-                                Signal.LIGHT.RED1)));
+                        availableLightConfig.put(Signal.LIGHT.RED1, convertFunctionConfig(signal.getSignalConfiguration(Signal.LIGHT.RED1)));
                         break;
                     case BEFORE:
-                        availableLightConfig.put(Signal.LIGHT.YELLOW1, convertFunctionConfig(signalConfiguration.get(
+                        availableLightConfig.put(Signal.LIGHT.YELLOW1, convertFunctionConfig(signal.getSignalConfiguration(
                                 Signal.LIGHT.YELLOW1)));
-                        availableLightConfig.put(Signal.LIGHT.YELLOW2, convertFunctionConfig(signalConfiguration.get(
+                        availableLightConfig.put(Signal.LIGHT.YELLOW2, convertFunctionConfig(signal.getSignalConfiguration(
                                 Signal.LIGHT.YELLOW2)));
                         break;
                     case EXIT:
-                        availableLightConfig.put(Signal.LIGHT.RED1, convertFunctionConfig(signalConfiguration.get(
+                        availableLightConfig.put(Signal.LIGHT.RED1, convertFunctionConfig(signal.getSignalConfiguration(
                                 Signal.LIGHT.RED1)));
-                        availableLightConfig.put(Signal.LIGHT.RED2, convertFunctionConfig(signalConfiguration.get(
+                        availableLightConfig.put(Signal.LIGHT.RED2, convertFunctionConfig(signal.getSignalConfiguration(
                                 Signal.LIGHT.RED2)));
                         break;
                     case ENTER:
-                        availableLightConfig.put(Signal.LIGHT.RED1, convertFunctionConfig(signalConfiguration.get(
+                        availableLightConfig.put(Signal.LIGHT.RED1, convertFunctionConfig(signal.getSignalConfiguration(
                                 Signal.LIGHT.RED1)));
                         break;
                 }
@@ -156,21 +155,21 @@ public class TrackViewerServiceImpl extends RemoteServiceServlet implements Trac
             case HP1:
                 switch (signalType) {
                     case BLOCK:
-                        availableLightConfig.put(Signal.LIGHT.GREEN1, convertFunctionConfig(signalConfiguration.get(
+                        availableLightConfig.put(Signal.LIGHT.GREEN1, convertFunctionConfig(signal.getSignalConfiguration(
                                 Signal.LIGHT.GREEN1)));
                         break;
                     case BEFORE:
-                        availableLightConfig.put(Signal.LIGHT.GREEN1, convertFunctionConfig(signalConfiguration.get(
+                        availableLightConfig.put(Signal.LIGHT.GREEN1, convertFunctionConfig(signal.getSignalConfiguration(
                                 Signal.LIGHT.GREEN1)));
-                        availableLightConfig.put(Signal.LIGHT.GREEN2, convertFunctionConfig(signalConfiguration.get(
+                        availableLightConfig.put(Signal.LIGHT.GREEN2, convertFunctionConfig(signal.getSignalConfiguration(
                                 Signal.LIGHT.GREEN2)));
                         break;
                     case EXIT:
-                        availableLightConfig.put(Signal.LIGHT.GREEN1, convertFunctionConfig(signalConfiguration.get(
+                        availableLightConfig.put(Signal.LIGHT.GREEN1, convertFunctionConfig(signal.getSignalConfiguration(
                                 Signal.LIGHT.GREEN1)));
                         break;
                     case ENTER:
-                        availableLightConfig.put(Signal.LIGHT.GREEN1, convertFunctionConfig(signalConfiguration.get(
+                        availableLightConfig.put(Signal.LIGHT.GREEN1, convertFunctionConfig(signal.getSignalConfiguration(
                                 Signal.LIGHT.GREEN1)));
                         break;
                 }
@@ -178,21 +177,21 @@ public class TrackViewerServiceImpl extends RemoteServiceServlet implements Trac
             case HP2:
                 switch (signalType) {
                     case BEFORE:
-                        availableLightConfig.put(Signal.LIGHT.GREEN1, convertFunctionConfig(signalConfiguration.get(
+                        availableLightConfig.put(Signal.LIGHT.GREEN1, convertFunctionConfig(signal.getSignalConfiguration(
                                 Signal.LIGHT.GREEN1)));
-                        availableLightConfig.put(Signal.LIGHT.YELLOW2, convertFunctionConfig(signalConfiguration.get(
+                        availableLightConfig.put(Signal.LIGHT.YELLOW2, convertFunctionConfig(signal.getSignalConfiguration(
                                 Signal.LIGHT.YELLOW2)));
                         break;
                     case EXIT:
-                        availableLightConfig.put(Signal.LIGHT.GREEN1, convertFunctionConfig(signalConfiguration.get(
+                        availableLightConfig.put(Signal.LIGHT.GREEN1, convertFunctionConfig(signal.getSignalConfiguration(
                                 Signal.LIGHT.GREEN1)));
-                        availableLightConfig.put(Signal.LIGHT.YELLOW1, convertFunctionConfig(signalConfiguration.get(
+                        availableLightConfig.put(Signal.LIGHT.YELLOW1, convertFunctionConfig(signal.getSignalConfiguration(
                                 Signal.LIGHT.YELLOW1)));
                         break;
                     case ENTER:
-                        availableLightConfig.put(Signal.LIGHT.GREEN1, convertFunctionConfig(signalConfiguration.get(
+                        availableLightConfig.put(Signal.LIGHT.GREEN1, convertFunctionConfig(signal.getSignalConfiguration(
                                 Signal.LIGHT.GREEN1)));
-                        availableLightConfig.put(Signal.LIGHT.YELLOW1, convertFunctionConfig(signalConfiguration.get(
+                        availableLightConfig.put(Signal.LIGHT.YELLOW1, convertFunctionConfig(signal.getSignalConfiguration(
                                 Signal.LIGHT.YELLOW1)));
                         break;
                 }
@@ -200,15 +199,14 @@ public class TrackViewerServiceImpl extends RemoteServiceServlet implements Trac
             case HP0_SH1:
                 switch (signalType) {
                     case EXIT:
-                        availableLightConfig.put(Signal.LIGHT.RED1, convertFunctionConfig(signalConfiguration.get(
+                        availableLightConfig.put(Signal.LIGHT.RED1, convertFunctionConfig(signal.getSignalConfiguration(
                                 Signal.LIGHT.RED1)));
-                        availableLightConfig.put(Signal.LIGHT.WHITE, convertFunctionConfig(signalConfiguration.get(
+                        availableLightConfig.put(Signal.LIGHT.WHITE, convertFunctionConfig(signal.getSignalConfiguration(
                                 Signal.LIGHT.WHITE)));
                         break;
                 }
                 break;
         }
-
         sendTrackPartStates(Lists.newArrayList(availableLightConfig.values()));
     }
 

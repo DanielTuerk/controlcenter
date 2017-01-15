@@ -35,4 +35,8 @@ public class EventConfiguration extends AbstractDto {
                 ", stateOffConfig=" + stateOffConfig +
                 '}';
     }
+
+    public boolean isActive() {
+        return stateOffConfig != null && stateOnConfig != null;
+    }
 }

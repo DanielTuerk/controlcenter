@@ -8,6 +8,7 @@ import net.wbz.moba.controlcenter.web.shared.bus.DeviceInfoEvent;
 import net.wbz.moba.controlcenter.web.shared.bus.FeedbackBlockEvent;
 import net.wbz.moba.controlcenter.web.shared.track.model.BusDataConfiguration;
 import net.wbz.moba.controlcenter.web.shared.viewer.SignalFunctionStateEvent;
+import net.wbz.moba.controlcenter.web.shared.viewer.TrackPartBlockEvent;
 import net.wbz.moba.controlcenter.web.shared.viewer.TrackPartStateEvent;
 
 /**
@@ -23,6 +24,7 @@ abstract public class AbstractTrackViewerPanel extends AbstractTrackPanel {
     private final RemoteEventListener trackPartStateEventListener;
     private final RemoteEventListener signalFunctionStateEventListener;
     private final RemoteEventListener deviceConnectionEventListener;
+    private final RemoteEventListener blockEventListener;
     private final RemoteEventListener feedbackBlockEventListener;
 
     public AbstractTrackViewerPanel() {
@@ -53,6 +55,16 @@ abstract public class AbstractTrackViewerPanel extends AbstractTrackPanel {
                 }
             }
         };
+        blockEventListener = new RemoteEventListener() {
+            public void apply(Event anEvent) {
+                if (anEvent instanceof TrackPartBlockEvent) {
+                    TrackPartBlockEvent event = (TrackPartBlockEvent) anEvent;
+                    // TODO better to handle blocks with own callback as with the same method as the functions
+                    updateTrackPartBlockState(event.getConfig(),event.getState()== TrackPartBlockEvent.STATE.USED);
+                }
+            }
+        };
+
         feedbackBlockEventListener = new RemoteEventListener() {
             public void apply(Event anEvent) {
                 if (anEvent instanceof FeedbackBlockEvent) {
@@ -74,6 +86,7 @@ abstract public class AbstractTrackViewerPanel extends AbstractTrackPanel {
         EventReceiver.getInstance().addListener(TrackPartStateEvent.class, trackPartStateEventListener);
         EventReceiver.getInstance().addListener(SignalFunctionStateEvent.class, signalFunctionStateEventListener);
         EventReceiver.getInstance().addListener(DeviceInfoEvent.class, deviceConnectionEventListener);
+        EventReceiver.getInstance().addListener(TrackPartBlockEvent.class, blockEventListener);
         EventReceiver.getInstance().addListener(FeedbackBlockEvent.class, feedbackBlockEventListener);
     }
 
@@ -83,12 +96,15 @@ abstract public class AbstractTrackViewerPanel extends AbstractTrackPanel {
         EventReceiver.getInstance().removeListener(TrackPartStateEvent.class, trackPartStateEventListener);
         EventReceiver.getInstance().removeListener(SignalFunctionStateEvent.class, signalFunctionStateEventListener);
         EventReceiver.getInstance().removeListener(DeviceInfoEvent.class, deviceConnectionEventListener);
+        EventReceiver.getInstance().removeListener(TrackPartBlockEvent.class, blockEventListener);
         EventReceiver.getInstance().removeListener(FeedbackBlockEvent.class, feedbackBlockEventListener);
     }
 
     protected void updateTrackPartState(BusDataConfiguration configuration, boolean state) {
 
     }
+
+    protected abstract void updateTrackPartBlockState(BusDataConfiguration configuration, boolean state);
 
     /**
      * Show train label on the given block.

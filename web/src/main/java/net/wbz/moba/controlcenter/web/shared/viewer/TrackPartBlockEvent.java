@@ -1,31 +1,28 @@
 package net.wbz.moba.controlcenter.web.shared.viewer;
 
 import de.novanic.eventservice.client.event.Event;
-import net.wbz.moba.controlcenter.web.server.persist.construction.track.BusDataConfigurationEntity;
+import net.wbz.moba.controlcenter.web.shared.track.model.BusDataConfiguration;
 
 /**
  * Created by Daniel on 18.04.2014.
  */
 public class TrackPartBlockEvent implements Event {
 
-    public TrackPartBlockEvent() {
-    }
-
-    public enum STATE { UNKNOWN, FREE, USED}
-
-    private BusDataConfigurationEntity config;
+    private BusDataConfiguration config;
     private STATE state;
 
-    public TrackPartBlockEvent(BusDataConfigurationEntity config, STATE state) {
+    public TrackPartBlockEvent() {
+    }
+    public TrackPartBlockEvent(BusDataConfiguration config, STATE state) {
         this.config = config;
         this.state = state;
     }
 
-    public BusDataConfigurationEntity getConfig() {
+    public BusDataConfiguration getConfig() {
         return config;
     }
 
-    public void setConfig(BusDataConfigurationEntity config) {
+    public void setConfig(BusDataConfiguration config) {
         this.config = config;
     }
 
@@ -36,4 +33,6 @@ public class TrackPartBlockEvent implements Event {
     public void setState(STATE state) {
         this.state = state;
     }
+
+    public enum STATE {UNKNOWN, FREE, USED}
 }

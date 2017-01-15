@@ -1,6 +1,7 @@
 package net.wbz.moba.controlcenter.web.server.persist.construction.track;
 
 
+import com.google.common.base.Objects;
 import com.googlecode.jmapper.annotations.JMap;
 import net.wbz.moba.controlcenter.web.server.persist.AbstractEntity;
 
@@ -17,19 +18,19 @@ public class BusDataConfigurationEntity extends AbstractEntity {
 
     @JMap
     @Column(name = "CONFIG_BUS")
-    private int bus;
+    private Integer bus;
 
     @JMap
     @Column(name = "CONFIG_ADDRESS")
-    private int address;
+    private Integer address;
 
     @JMap
     @Column(name = "CONFIG_BIT")
-    private int bit;
+    private Integer bit;
 
     @JMap
     @Column(name = "CONFIG_BIT_STATE")
-    private boolean bitState;
+    private Boolean bitState;
 
     public BusDataConfigurationEntity(int bus, int address, int bit, boolean bitState) {
         this.bus = bus;
@@ -42,40 +43,40 @@ public class BusDataConfigurationEntity extends AbstractEntity {
     }
 
 
-    public int getAddress() {
+    public Integer getBus() {
+        return bus;
+    }
+
+    public void setBus(Integer bus) {
+        this.bus = bus;
+    }
+
+    public Integer getAddress() {
         return address;
     }
 
-    public void setAddress(int address) {
+    public void setAddress(Integer address) {
         this.address = address;
     }
 
-    public int getBit() {
+    public Integer getBit() {
         return bit;
     }
 
-    public void setBit(int bit) {
+    public void setBit(Integer bit) {
         this.bit = bit;
+    }
+
+    public Boolean getBitState() {
+        return bitState;
+    }
+
+    public void setBitState(Boolean bitState) {
+        this.bitState = bitState;
     }
 
     public boolean isValid() {
         return address > 0 && bit > 0 && bus > -1;
-    }
-
-    public boolean isBitState() {
-        return bitState;
-    }
-
-    public void setBitState(boolean bitState) {
-        this.bitState = bitState;
-    }
-
-    public int getBus() {
-        return bus;
-    }
-
-    public void setBus(int bus) {
-        this.bus = bus;
     }
 
     @Override
@@ -92,23 +93,14 @@ public class BusDataConfigurationEntity extends AbstractEntity {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-
         BusDataConfigurationEntity that = (BusDataConfigurationEntity) o;
-
-        if (address != that.address) return false;
-        if (bit != that.bit) return false;
-        if (bus != that.bus) return false;
-
-        return true;
+        return Objects.equal(bus, that.bus) &&
+                Objects.equal(address, that.address) &&
+                Objects.equal(bit, that.bit);
     }
 
     @Override
     public int hashCode() {
-        int result = bus;
-        result = 31 * result + address;
-        result = 31 * result + bit;
-        return result;
+        return Objects.hashCode(bus, address, bit);
     }
-
-
 }

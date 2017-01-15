@@ -114,8 +114,7 @@ abstract public class AbstractSignalWidget extends AbstractControlSvgTrackWidget
 
     private void switchSignalFunction(Signal.FUNCTION function) {
         Signal signal = getTrackPart();
-        RequestUtils.getInstance().getTrackViewerService().switchSignal(signalType, function,
-                signal.getSignalConfiguration(), RequestUtils.VOID_ASYNC_CALLBACK);
+        RequestUtils.getInstance().getTrackViewerService().switchSignal(signal, function, RequestUtils.VOID_ASYNC_CALLBACK);
     }
 
     @Override

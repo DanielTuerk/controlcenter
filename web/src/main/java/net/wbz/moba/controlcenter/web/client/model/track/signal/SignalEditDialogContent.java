@@ -1,12 +1,23 @@
 package net.wbz.moba.controlcenter.web.client.model.track.signal;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.client.ui.Widget;
 import net.wbz.moba.controlcenter.web.client.util.BitStateToggleButton;
-import net.wbz.moba.controlcenter.web.shared.track.model.Signal;
 import net.wbz.moba.controlcenter.web.shared.track.model.BusDataConfiguration;
-import org.gwtbootstrap3.client.ui.*;
+import net.wbz.moba.controlcenter.web.shared.track.model.Signal;
+import org.gwtbootstrap3.client.ui.Button;
+import org.gwtbootstrap3.client.ui.Column;
+import org.gwtbootstrap3.client.ui.Container;
+import org.gwtbootstrap3.client.ui.NavTabs;
+import org.gwtbootstrap3.client.ui.Row;
+import org.gwtbootstrap3.client.ui.TabContent;
+import org.gwtbootstrap3.client.ui.TabListItem;
+import org.gwtbootstrap3.client.ui.TabPane;
+import org.gwtbootstrap3.client.ui.TabPanel;
+import org.gwtbootstrap3.client.ui.TextBox;
+import org.gwtbootstrap3.client.ui.Well;
 import org.gwtbootstrap3.client.ui.constants.ColumnSize;
 import org.gwtbootstrap3.client.ui.constants.WellSize;
 import org.gwtbootstrap3.client.ui.gwt.FlowPanel;
@@ -98,10 +109,10 @@ public class SignalEditDialogContent {
 
         for (Signal.LIGHT light : signalType.getLights()) {
 
-            BusDataConfiguration existingLightConfig = signal.getSignalConfiguration().get(light);
-            // if (existingLightConfig == null) {
-            // existingLightConfig = new Configuration();
-            // }
+            BusDataConfiguration existingLightConfig = signal.getSignalConfiguration(light);
+            if (existingLightConfig == null) {
+                existingLightConfig = new BusDataConfiguration();
+            }
 
             Row functionRow = new Row();
 
@@ -112,7 +123,9 @@ public class SignalEditDialogContent {
 
             TextBox txtAddress = new TextBox();
             idWidgets.put(getElementId(signalType, light, ID_TXT_ADDRESS), txtAddress);
-            txtAddress.setText(String.valueOf(existingLightConfig.getAddress()));
+            if (existingLightConfig.getAddress() != null) {
+                txtAddress.setText(String.valueOf(existingLightConfig.getAddress()));
+            }
             functionRow.add(new Column(ColumnSize.MD_3, txtAddress));
 
             Select selectBit = new Select();
@@ -123,14 +136,16 @@ public class SignalEditDialogContent {
                 String value = String.valueOf(i);
                 bitOption.setText(value);
                 selectBit.add(bitOption);
-                if (i == existingLightConfig.getBit()) {
+                if (existingLightConfig.getBit() != null && i == existingLightConfig.getBit()) {
                     selectBit.setValue(value);
                 }
             }
             functionRow.add(new Column(ColumnSize.MD_2, selectBit));
 
             final Button btnBitState = new BitStateToggleButton();
-            btnBitState.setActive(existingLightConfig.isBitState());
+            if (existingLightConfig.getBitState() != null) {
+                btnBitState.setActive(existingLightConfig.getBitState());
+            }
             idWidgets.put(getElementId(signalType, light, ID_BTN_BIT_STATE), btnBitState);
             functionRow.add(new Column(ColumnSize.MD_2, btnBitState));
 
@@ -152,15 +167,24 @@ public class SignalEditDialogContent {
 
         // lights
         for (Signal.LIGHT light : signal.getType().getLights()) {
-
             TextBox txtAddress = (TextBox) idWidgets.get(getElementId(signal.getType(), light, ID_TXT_ADDRESS));
             Select selectBit = (Select) idWidgets.get(getElementId(signal.getType(), light, ID_SELECT_BIT));
             Button btnBitState = (Button) idWidgets.get(getElementId(signal.getType(), light, ID_BTN_BIT_STATE));
 
-            // TODO
-            // signal.setLightFunctionConfig(light, new Configuration(1, Integer.parseInt
-            // (txtAddress.getText().trim()), Integer.parseInt(selectBit.getValue()),
-            // btnBitState.isActive()));
+            Integer addressValue = null;
+            String txtAddressText = txtAddress.getText();
+            if (!Strings.isNullOrEmpty(txtAddressText)) {
+                addressValue = Integer.parseInt(txtAddressText.trim());
+            }
+            BusDataConfiguration signalConfiguration = signal.getSignalConfiguration(light);
+            if (signalConfiguration == null) {
+                signalConfiguration = new BusDataConfiguration();
+                signal.updateSignalConfiguration(light, signalConfiguration);
+            }
+            signalConfiguration.setBus(1);
+            signalConfiguration.setAddress(addressValue);
+            signalConfiguration.setBit(Integer.parseInt(selectBit.getValue()));
+            signalConfiguration.setBitState(btnBitState.isActive());
         }
 
     }

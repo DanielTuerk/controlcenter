@@ -58,15 +58,13 @@ abstract public class AbstractControlSvgTrackWidget<T extends AbstractTrackPart 
         }
     }
 
-    @Override
     public void updateFunctionState(BusDataConfiguration configuration, boolean state) {
-        super.updateFunctionState(configuration, state);
         // update the SVG for the state of the {@link AbstractTrackPart#DEFAULT_TOGGLE_FUNCTION}
         BusDataConfiguration toggleFunctionConfig = getTrackPart().getToggleFunction();
         if (toggleFunctionConfig != null && toggleFunctionConfig.equals(configuration)) {
             trackPartState = state;
             clearSvgContent();
-            if (state == toggleFunctionConfig.isBitState()) {
+            if (state == toggleFunctionConfig.getBitState()) {
                 addActiveStateSvgContent(getSvgDocument(), getSvgRootElement());
             } else {
                 addSvgContent(getSvgDocument(), getSvgRootElement());
@@ -75,18 +73,6 @@ abstract public class AbstractControlSvgTrackWidget<T extends AbstractTrackPart 
             Log.warn("received unknown configuration for track widget: " + getClass().getName());
         }
     }
-
-//    @Override
-//    public Map<String, BusDataConfiguration> getStoredWidgetFunctionConfigs() {
-//        Map<String, BusDataConfiguration> functionConfigs = super.getStoredWidgetFunctionConfigs();
-////        BusDataConfiguration configuration = new BusDataConfiguration();
-////        configuration.setBus(1); // TODO
-////        configuration.setAddress(getTrackPart().getDefaultToggleFunctionConfig().getAddress());
-////        configuration.setBit(getTrackPart().getDefaultToggleFunctionConfig().getBit());
-////        configuration.setBitState(true);
-////        functionConfigs.put(TrackModelConstants.DEFAULT_TOGGLE_FUNCTION, configuration);
-//        return functionConfigs;
-//    }
 
     private void addConfigContent() {
         FieldSet fieldSet = new FieldSet();
@@ -208,12 +194,12 @@ abstract public class AbstractControlSvgTrackWidget<T extends AbstractTrackPart 
             if (eventConfigOn != null) {
                 txtEventConfigOnAddress.setValue(String.valueOf(eventConfigOn.getAddress()));
                 txtEventConfigOnBit.setValue(String.valueOf(eventConfigOn.getBit()));
-                toggleEventConfigOnBitState.setActive(eventConfigOn.isBitState());
+                toggleEventConfigOnBitState.setActive(eventConfigOn.getBitState());
             }
             if (eventConfigOff != null) {
                 txtEventConfigOffAddress.setValue(String.valueOf(eventConfigOff.getAddress()));
                 txtEventConfigOffBit.setValue(String.valueOf(eventConfigOff.getBit()));
-                toggleEventConfigOffBitState.setActive(eventConfigOff.isBitState());
+                toggleEventConfigOffBitState.setActive(eventConfigOff.getBitState());
             }
         }
 
@@ -264,6 +250,7 @@ abstract public class AbstractControlSvgTrackWidget<T extends AbstractTrackPart 
             getTrackPart().getToggleFunction().setBus(1);
             getTrackPart().getToggleFunction().setAddress(Integer.parseInt(txtAddress.getText()));
             getTrackPart().getToggleFunction().setBit(Integer.parseInt(selectBit.getValue()));
+            getTrackPart().getToggleFunction().setBitState(true);
         }
     }
 

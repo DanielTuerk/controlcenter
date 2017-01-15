@@ -8,18 +8,18 @@ import com.googlecode.jmapper.annotations.JMap;
  */
 public class BusDataConfiguration extends AbstractDto {
     @JMap
-    private int bus;
+    private Integer bus;
 
     @JMap
-    private int address;
+    private Integer address;
 
     @JMap
-    private int bit;
+    private Integer bit;
 
     @JMap
-    private boolean bitState;
+    private Boolean bitState;
 
-    public BusDataConfiguration(int bus, int address, int bit, boolean bitState) {
+    public BusDataConfiguration(Integer bus, Integer address, Integer bit, Boolean bitState) {
         this.bus = bus;
         this.address = address;
         this.bit = bit;
@@ -29,35 +29,35 @@ public class BusDataConfiguration extends AbstractDto {
     public BusDataConfiguration() {
     }
 
-    public int getBus() {
+    public Integer getBus() {
         return bus;
     }
 
-    public void setBus(int bus) {
+    public void setBus(Integer bus) {
         this.bus = bus;
     }
 
-    public int getAddress() {
+    public Integer getAddress() {
         return address;
     }
 
-    public void setAddress(int address) {
+    public void setAddress(Integer address) {
         this.address = address;
     }
 
-    public int getBit() {
+    public Integer getBit() {
         return bit;
     }
 
-    public void setBit(int bit) {
+    public void setBit(Integer bit) {
         this.bit = bit;
     }
 
-    public boolean isBitState() {
+    public Boolean getBitState() {
         return bitState;
     }
 
-    public void setBitState(boolean bitState) {
+    public void setBitState(Boolean bitState) {
         this.bitState = bitState;
     }
 
@@ -79,14 +79,15 @@ public class BusDataConfiguration extends AbstractDto {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
         BusDataConfiguration that = (BusDataConfiguration) o;
-        return bus == that.bus &&
-                address == that.address &&
-                bit == that.bit;
+        return Objects.equal(bus, that.bus) &&
+                Objects.equal(address, that.address) &&
+                Objects.equal(bit, that.bit);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(bus, address, bit);
+        return Objects.hashCode(super.hashCode(), bus, address, bit);
     }
 }

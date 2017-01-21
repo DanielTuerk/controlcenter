@@ -33,4 +33,12 @@ public class SignalFunctionStateEvent implements Event {
     public void setSignalFunction(Signal.FUNCTION signalFunction) {
         this.signalFunction = signalFunction;
     }
+
+    @Override
+    public String toString() {
+        return "SignalFunctionStateEvent{" +
+                "configurations=" + configurations +
+                ", signalFunction=" + signalFunction +
+                '}';
+    }
 }

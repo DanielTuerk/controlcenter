@@ -44,7 +44,7 @@ public class SignalFunctionReceiver {
             lightStates.put(lightConfigs.getKey(), false);
 
             // register consumer for each light to update the state
-            if (lightConfigs.getValue().isValid()) {
+            if (lightConfigs.getValue() != null && lightConfigs.getValue().isValid()) {
 
                 BusAddressIdentifier busAddressIdentifier = new BusAddressIdentifier(lightConfigs.getValue().getBus(),
                         lightConfigs.getValue().getAddress());

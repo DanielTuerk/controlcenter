@@ -247,22 +247,52 @@ public class TrackManager {
             HasToggleFunction trackPartConfiguration = (HasToggleFunction) trackPart;
             final BusDataConfiguration toggleFunction = trackPartConfiguration.getToggleFunction();
             if (toggleFunction != null && toggleFunction.isValid()) {
-                addBusListener(toggleFunction, new BusAddressListener() {
-                    private boolean firstCall = true;
 
+                addBusListener(toggleFunction, new BusAddressBitListener(toggleFunction.getBit()) {
                     @Override
-                    public void dataChanged(byte oldValue, byte newValue) {
-                        // fire event for changed bit state of the bus address
-                        boolean bitStateChanged = BigInteger.valueOf(newValue).testBit(
-                                toggleFunction.getBit() - 1) != BigInteger.valueOf(oldValue).testBit(
-                                        toggleFunction.getBit() - 1);
-                        if (firstCall || bitStateChanged) {
-                            eventBroadcaster.fireEvent(new TrackPartStateEvent(toggleFunction,
-                                    BigInteger.valueOf(newValue).testBit(toggleFunction.getBit() - 1)));
-                        }
-                        firstCall = false;
+                    public void bitChanged(boolean oldValue, boolean newValue) {
+//                        if(firstCall)
+//                        if ((newValue && stateOnConfig.getBitState())
+//                                || (!newValue && !stateOnConfig.getBitState())) {
+//
+//                        }
+                        eventBroadcaster.fireEvent(new TrackPartStateEvent(toggleFunction,newValue));
                     }
+
+//                    private boolean firstCall = true;
+//
+//                    @Override
+//                    public void dataChanged(byte oldValue, byte newValue) {
+//                        // fire event for changed bit state of the bus address
+//                        boolean bitStateChanged = BigInteger.valueOf(newValue).testBit(
+//                                toggleFunction.getBit() - 1) != BigInteger.valueOf(oldValue).testBit(
+//                                toggleFunction.getBit() - 1);
+//                        if (firstCall || bitStateChanged) {
+//                            eventBroadcaster.fireEvent(new TrackPartStateEvent(toggleFunction,
+//                                    BigInteger.valueOf(newValue).testBit(toggleFunction.getBit() - 1)));
+//                        }
+//                        firstCall = false;
+//                    }
                 });
+
+
+
+//                addBusListener(toggleFunction, new BusAddressListener() {
+//                    private boolean firstCall = true;
+//
+//                    @Override
+//                    public void dataChanged(byte oldValue, byte newValue) {
+//                        // fire event for changed bit state of the bus address
+//                        boolean bitStateChanged = BigInteger.valueOf(newValue).testBit(
+//                                toggleFunction.getBit() - 1) != BigInteger.valueOf(oldValue).testBit(
+//                                        toggleFunction.getBit() - 1);
+//                        if (firstCall || bitStateChanged) {
+//                            eventBroadcaster.fireEvent(new TrackPartStateEvent(toggleFunction,
+//                                    BigInteger.valueOf(newValue).testBit(toggleFunction.getBit() - 1)));
+//                        }
+//                        firstCall = false;
+//                    }
+//                });
 
                 registerEventConfigurationOfTrackPart(trackPartConfiguration);
             }

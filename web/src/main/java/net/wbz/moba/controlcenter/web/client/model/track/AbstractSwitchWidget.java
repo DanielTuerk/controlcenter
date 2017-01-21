@@ -22,5 +22,4 @@ abstract public class AbstractSwitchWidget extends AbstractControlSvgTrackWidget
         return "Switch";
     }
 
-
 }

@@ -2,6 +2,7 @@ package net.wbz.moba.controlcenter.web.client;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+
 import net.wbz.moba.controlcenter.web.shared.bus.BusService;
 import net.wbz.moba.controlcenter.web.shared.bus.BusServiceAsync;
 import net.wbz.moba.controlcenter.web.shared.config.ConfigService;
@@ -68,7 +69,6 @@ public class RequestUtils {
     public ConstructionServiceAsync getConstructionService() {
         return constructionRequest;
     }
-
 
     public static final AsyncCallback<Void> VOID_ASYNC_CALLBACK = new AsyncCallback<Void>() {
         @Override

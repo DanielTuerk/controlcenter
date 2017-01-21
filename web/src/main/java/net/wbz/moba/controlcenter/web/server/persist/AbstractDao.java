@@ -1,10 +1,11 @@
 package net.wbz.moba.controlcenter.web.server.persist;
 
-import net.wbz.moba.controlcenter.web.shared.Identity;
-import org.hibernate.Session;
-
 import javax.inject.Provider;
 import javax.persistence.EntityManager;
+
+import org.hibernate.Session;
+
+import net.wbz.moba.controlcenter.web.shared.Identity;
 
 /**
  * Abstract DAO for CRUD operations to the defined {@link Identity}.
@@ -19,7 +20,7 @@ public abstract class AbstractDao<T extends Identity> {
      * Create DAO for the given entity class.
      *
      * @param entityManager {@link Provider<EntityManager>}
-     * @param entityClazz   class of entity
+     * @param entityClazz class of entity
      */
     public AbstractDao(Provider<EntityManager> entityManager, Class<T> entityClazz) {
         this.entityManager = entityManager;

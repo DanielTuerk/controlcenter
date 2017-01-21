@@ -59,7 +59,7 @@ abstract public class AbstractTrackViewerPanel extends AbstractTrackPanel {
             public void apply(Event anEvent) {
                 if (anEvent instanceof TrackPartBlockEvent) {
                     TrackPartBlockEvent event = (TrackPartBlockEvent) anEvent;
-                    updateTrackPartBlockState(event.getConfig(),event.getState()== TrackPartBlockEvent.STATE.USED);
+                    updateTrackPartBlockState(event.getConfig(), event.getState() == TrackPartBlockEvent.STATE.USED);
                 }
             }
         };
@@ -109,11 +109,12 @@ abstract public class AbstractTrackViewerPanel extends AbstractTrackPanel {
      * Show train label on the given block.
      *
      * @param address address of the block
-     * @param block   number of the block
-     * @param train   address of the train
-     * @param state   {@link net.wbz.moba.controlcenter.web.shared.bus.FeedbackBlockEvent.STATE} enter or exit the block
+     * @param block number of the block
+     * @param train address of the train
+     * @param state {@link net.wbz.moba.controlcenter.web.shared.bus.FeedbackBlockEvent.STATE} enter or exit the block
      */
-    protected void updateTrainOnTrack(final int address, final int block, final int train, final FeedbackBlockEvent.STATE state) {
+    protected void updateTrainOnTrack(final int address, final int block, final int train,
+            final FeedbackBlockEvent.STATE state) {
 
     }
 

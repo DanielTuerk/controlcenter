@@ -1,15 +1,17 @@
 package net.wbz.moba.controlcenter.web.client.viewer.bus;
 
+import java.math.BigInteger;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.gwtbootstrap3.client.ui.Label;
+
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.FlowPanel;
-import net.wbz.moba.controlcenter.web.client.RequestUtils;
-import org.gwtbootstrap3.client.ui.Label;
 
-import java.math.BigInteger;
-import java.util.HashMap;
-import java.util.Map;
+import net.wbz.moba.controlcenter.web.client.RequestUtils;
 
 /**
  * This panel represents the data of a single bus address in the
@@ -22,14 +24,14 @@ import java.util.Map;
  */
 public class BusAddressItemPanel extends FlowPanel {
     /**
-     * Represents the  address value as 8 bits.
+     * Represents the address value as 8 bits.
      */
     private final Map<Integer, ItemPanelButton> bitButtons = new HashMap<>();
 
     /**
      * Construct the panel and initialize the widgets of bus address.
      *
-     * @param busNr   number of the bus
+     * @param busNr number of the bus
      * @param address an address of the bus
      */
     public BusAddressItemPanel(final int busNr, final int address) {
@@ -63,7 +65,7 @@ public class BusAddressItemPanel extends FlowPanel {
                 @Override
                 public void onClick(ClickEvent event) {
                     RequestUtils.getInstance().getBusService().sendBusData(busNr, address,
-                            bitNr, "0".equals(itemPanelButton.getText()),RequestUtils.VOID_ASYNC_CALLBACK);
+                            bitNr, "0".equals(itemPanelButton.getText()), RequestUtils.VOID_ASYNC_CALLBACK);
 
                 }
             });

@@ -1,14 +1,17 @@
 package net.wbz.moba.controlcenter.web.server.web.editor;
 
-import com.google.gwt.user.server.rpc.RemoteServiceServlet;
-import com.google.inject.Singleton;
-import net.wbz.moba.controlcenter.web.shared.editor.TrackEditorService;
-import net.wbz.moba.controlcenter.web.shared.track.model.AbstractTrackPart;
+import java.util.Collection;
+
+import javax.inject.Inject;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.inject.Inject;
-import java.util.Collection;
+import com.google.gwt.user.server.rpc.RemoteServiceServlet;
+import com.google.inject.Singleton;
+
+import net.wbz.moba.controlcenter.web.shared.editor.TrackEditorService;
+import net.wbz.moba.controlcenter.web.shared.track.model.AbstractTrackPart;
 
 /**
  * @author Daniel Tuerk

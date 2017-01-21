@@ -1,16 +1,17 @@
 package net.wbz.moba.controlcenter.web.server.web.editor;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 import com.google.common.collect.Maps;
+
 import net.wbz.moba.controlcenter.web.server.EventBroadcaster;
 import net.wbz.moba.controlcenter.web.server.persist.construction.track.BusDataConfigurationEntity;
 import net.wbz.moba.controlcenter.web.shared.track.model.BusDataConfiguration;
 import net.wbz.moba.controlcenter.web.shared.track.model.Signal;
 import net.wbz.moba.controlcenter.web.shared.viewer.SignalFunctionStateEvent;
 import net.wbz.selectrix4java.bus.BusAddressBitListener;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Register busAddressListeners to update the current signal function by bus data.
@@ -36,20 +37,23 @@ public class SignalFunctionReceiver {
         this.signal = signal;
         this.eventBroadcaster = eventBroadcaster;
 
-        //TODO refactor?
-        for (final Map.Entry<Signal.LIGHT, BusDataConfiguration> lightConfigs : signal.getSignalLightsConfigurations(signal.getType()).entrySet()) {
+        // TODO refactor?
+        for (final Map.Entry<Signal.LIGHT, BusDataConfiguration> lightConfigs : signal.getSignalLightsConfigurations(
+                signal.getType()).entrySet()) {
             // initial state 'off' for each light
             lightStates.put(lightConfigs.getKey(), false);
 
             // register consumer for each light to update the state
             if (lightConfigs.getValue().isValid()) {
 
-                BusAddressIdentifier busAddressIdentifier = new BusAddressIdentifier(lightConfigs.getValue().getBus(), lightConfigs.getValue().getAddress());
+                BusAddressIdentifier busAddressIdentifier = new BusAddressIdentifier(lightConfigs.getValue().getBus(),
+                        lightConfigs.getValue().getAddress());
                 if (!busAddressListeners.containsKey(busAddressIdentifier)) {
                     busAddressListeners.put(busAddressIdentifier, new ArrayList<BusAddressBitListener>());
                 }
 
-                busAddressListeners.get(busAddressIdentifier).add(new BusAddressBitListener(lightConfigs.getValue().getBit()) {
+                busAddressListeners.get(busAddressIdentifier).add(new BusAddressBitListener(lightConfigs.getValue()
+                        .getBit()) {
 
                     @Override
                     public synchronized void bitChanged(boolean oldValue, boolean newValue) {
@@ -162,7 +166,8 @@ public class SignalFunctionReceiver {
      */
     private synchronized void fireFunction(Signal.FUNCTION function) {
         if (lastFiredFunction != function) {
-            eventBroadcaster.fireEvent(new SignalFunctionStateEvent(signal.getSignalConfigurations(signal.getType()), function));
+            eventBroadcaster.fireEvent(new SignalFunctionStateEvent(signal.getSignalConfigurations(signal.getType()),
+                    function));
             lastFiredFunction = function;
         }
     }

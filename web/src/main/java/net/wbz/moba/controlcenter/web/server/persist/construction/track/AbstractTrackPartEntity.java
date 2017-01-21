@@ -1,17 +1,24 @@
 package net.wbz.moba.controlcenter.web.server.persist.construction.track;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+import javax.persistence.ManyToOne;
+import javax.validation.constraints.NotNull;
+
 import com.google.common.collect.Sets;
 import com.googlecode.jmapper.annotations.JMap;
+
 import net.wbz.moba.controlcenter.web.server.persist.AbstractEntity;
 import net.wbz.moba.controlcenter.web.server.persist.construction.ConstructionEntity;
 import net.wbz.moba.controlcenter.web.shared.track.model.AbstractTrackPart;
 import net.wbz.moba.controlcenter.web.shared.track.model.TrackModelConstants;
-
-import javax.persistence.*;
-import javax.validation.constraints.NotNull;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
 
 /**
  * Model for a part of the track.
@@ -54,15 +61,17 @@ public abstract class AbstractTrackPartEntity extends AbstractEntity {
     }
 
     public List<TrackPartFunctionEntity> getFunctionConfigs() {
-        //TODO drop
+        // TODO drop
         return Collections.emptyList();
-//        List<TrackPartFunctionEntity> functions = getFunctions();
-//        if (functions.isEmpty()) {
-//             //create dummy for saved instance without configuration; will be changed during first call of
-//            functions.add(new TrackPartFunctionEntity(TrackModelConstants.DEFAULT_TOGGLE_FUNCTION, new BusDataConfigurationEntity()));
-//            functions.add(new TrackPartFunctionEntity(TrackModelConstants.DEFAULT_BLOCK_FUNCTION, new BusDataConfigurationEntity()));
-//        }
-//        return functions;
+        // List<TrackPartFunctionEntity> functions = getFunctions();
+        // if (functions.isEmpty()) {
+        // //create dummy for saved instance without configuration; will be changed during first call of
+        // functions.add(new TrackPartFunctionEntity(TrackModelConstants.DEFAULT_TOGGLE_FUNCTION, new
+        // BusDataConfigurationEntity()));
+        // functions.add(new TrackPartFunctionEntity(TrackModelConstants.DEFAULT_BLOCK_FUNCTION, new
+        // BusDataConfigurationEntity()));
+        // }
+        // return functions;
     }
 
     public Set<BusDataConfigurationEntity> getConfigurationsOfFunctions() {

@@ -1,5 +1,23 @@
 package net.wbz.moba.controlcenter.web.client.viewer.settings;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.gwtbootstrap3.client.ui.AnchorListItem;
+import org.gwtbootstrap3.client.ui.Button;
+import org.gwtbootstrap3.client.ui.FieldSet;
+import org.gwtbootstrap3.client.ui.Form;
+import org.gwtbootstrap3.client.ui.NavPills;
+import org.gwtbootstrap3.client.ui.Panel;
+import org.gwtbootstrap3.client.ui.PanelBody;
+import org.gwtbootstrap3.client.ui.PanelFooter;
+import org.gwtbootstrap3.client.ui.PanelHeader;
+import org.gwtbootstrap3.client.ui.constants.ButtonType;
+import org.gwtbootstrap3.client.ui.constants.Pull;
+import org.gwtbootstrap3.extras.notify.client.ui.Notify;
+
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -9,16 +27,8 @@ import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.FlowPanel;
-import net.wbz.moba.controlcenter.web.client.Settings;
-import org.gwtbootstrap3.client.ui.*;
-import org.gwtbootstrap3.client.ui.constants.ButtonType;
-import org.gwtbootstrap3.client.ui.constants.Pull;
-import org.gwtbootstrap3.extras.notify.client.ui.Notify;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import net.wbz.moba.controlcenter.web.client.Settings;
 
 /**
  * @author Daniel Tuerk
@@ -34,7 +44,7 @@ public class ConfigPanel extends Panel {
     private HandlerRegistration resizeListenerHandle;
 
     public ConfigPanel() {
-        for(AbstractConfigEntry<?> configEntry : Settings.getInstance().getEntries()) {
+        for (AbstractConfigEntry<?> configEntry : Settings.getInstance().getEntries()) {
             registerEntry(configEntry);
         }
 
@@ -55,14 +65,11 @@ public class ConfigPanel extends Panel {
         final FlowPanel configEntryContainer = new FlowPanel();
         configEntryContainer.addStyleName("configPanel_entry");
 
-
         // TODO: build menu for config groups
-
 
         // TODO: create contents for groups
 
         // TODO: add click handler to load content of selected group from menu
-
 
         for (final String configEntryGroup : configEntries.keySet()) {
 
@@ -79,18 +86,17 @@ public class ConfigPanel extends Panel {
 
                     for (AbstractConfigEntry configEntry : configEntries.get(configEntryGroup)) {
 
-//                        String subGroup = null;
-//                        String[] split = configEntry.getGroup().split(".");
-//                        if(split.length > 1) {
-//                            Panel panel = new Panel();
-//                            PanelHeader panelHeader = new PanelHeader();
-//                            panelHeader.setText(split[1]);
-//                            PanelBody panelBody = new PanelBody();
-//                            panelBody.add(configEntry.getWidget());
-//                            panel.add(panelHeader);
-//                            panel.add(panelBody);
-//                        }
-
+                        // String subGroup = null;
+                        // String[] split = configEntry.getGroup().split(".");
+                        // if(split.length > 1) {
+                        // Panel panel = new Panel();
+                        // PanelHeader panelHeader = new PanelHeader();
+                        // panelHeader.setText(split[1]);
+                        // PanelBody panelBody = new PanelBody();
+                        // panelBody.add(configEntry.getWidget());
+                        // panel.add(panelHeader);
+                        // panel.add(panelBody);
+                        // }
 
                         FieldSet fieldSet = new FieldSet();
                         fieldSet.add(configEntry.getWidget());
@@ -140,9 +146,9 @@ public class ConfigPanel extends Panel {
         configFooter.add(btnCancel);
     }
 
-
     /**
      * TODO: groups not supported yet
+     * 
      * @param configEntry
      * @return
      */

@@ -77,8 +77,10 @@ public class BusDataConfiguration extends AbstractDto {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
         BusDataConfiguration that = (BusDataConfiguration) o;
         return Objects.equal(bus, that.bus) &&
                 Objects.equal(address, that.address) &&

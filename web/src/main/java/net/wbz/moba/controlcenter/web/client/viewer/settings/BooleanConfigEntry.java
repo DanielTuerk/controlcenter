@@ -19,7 +19,7 @@ public class BooleanConfigEntry extends AbstractConfigEntry<Boolean> {
         ((CheckBox) getWidget()).setValue(getValue());
     }
 
-    public BooleanConfigEntry(STORAGE storageType,String group, String name) {
+    public BooleanConfigEntry(STORAGE storageType, String group, String name) {
         super(storageType, group, name, false);
     }
 
@@ -35,7 +35,7 @@ public class BooleanConfigEntry extends AbstractConfigEntry<Boolean> {
 
     @Override
     protected Widget createConfigEntryWidget() {
-        cbx =new CheckBox(getName());
+        cbx = new CheckBox(getName());
         return cbx;
     }
 

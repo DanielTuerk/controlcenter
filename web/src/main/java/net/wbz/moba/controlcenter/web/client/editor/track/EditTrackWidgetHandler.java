@@ -1,6 +1,5 @@
 package net.wbz.moba.controlcenter.web.client.editor.track;
 
-import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 /**

@@ -1,14 +1,11 @@
 package net.wbz.moba.controlcenter.web.shared.bus;
 
 import de.novanic.eventservice.client.event.Event;
-import net.wbz.moba.controlcenter.web.server.persist.device.DeviceInfoEntity;
 
 /**
  * @author Daniel Tuerk
  */
 public class DeviceInfoEvent implements Event {
-
-    public enum TYPE {CREATE, REMOVE, MODIFY, CONNECTED, DISCONNECTED}
 
     private DeviceInfo deviceInfo;
     private TYPE eventType;
@@ -27,5 +24,9 @@ public class DeviceInfoEvent implements Event {
 
     public TYPE getEventType() {
         return eventType;
+    }
+
+    public enum TYPE {
+        CREATE, REMOVE, MODIFY, CONNECTED, DISCONNECTED
     }
 }

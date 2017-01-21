@@ -1,15 +1,17 @@
 package net.wbz.moba.controlcenter.web.server.persist.construction.track;
 
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
-import net.wbz.moba.controlcenter.web.server.persist.AbstractDao;
-import net.wbz.moba.controlcenter.web.shared.constrution.Construction;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.List;
 
 import javax.inject.Provider;
 import javax.persistence.EntityManager;
-import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+
+import net.wbz.moba.controlcenter.web.server.persist.AbstractDao;
 
 /**
  * @author Daniel Tuerk
@@ -24,8 +26,8 @@ public class TrackPartDao extends AbstractDao<AbstractTrackPartEntity> {
     }
 
     public List<AbstractTrackPartEntity> findByConstructionId(Long constructionId) {
-        return  getEntityManager().createQuery("SELECT t FROM TRACK_PART t"
-                        +" WHERE t.construction.id = :construction",
+        return getEntityManager().createQuery("SELECT t FROM TRACK_PART t"
+                + " WHERE t.construction.id = :construction",
                 AbstractTrackPartEntity.class)
                 .setParameter("construction", constructionId)
                 .getResultList();

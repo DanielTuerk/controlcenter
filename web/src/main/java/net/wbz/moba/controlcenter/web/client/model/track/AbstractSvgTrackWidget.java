@@ -1,24 +1,31 @@
 package net.wbz.moba.controlcenter.web.client.model.track;
 
-import com.google.common.base.Strings;
-import com.google.gwt.dom.client.Style;
-import com.google.gwt.user.client.ui.SimplePanel;
-import com.google.gwt.user.client.ui.Widget;
-import net.wbz.moba.controlcenter.web.client.TrackUtils;
-import net.wbz.moba.controlcenter.web.client.editor.track.EditTrackWidgetHandler;
-import net.wbz.moba.controlcenter.web.shared.track.model.AbstractTrackPart;
-import net.wbz.moba.controlcenter.web.shared.track.model.BusDataConfiguration;
-import net.wbz.moba.controlcenter.web.shared.track.model.GridPosition;
-import org.gwtbootstrap3.client.ui.*;
+import org.gwtbootstrap3.client.ui.Form;
+import org.gwtbootstrap3.client.ui.NavTabs;
+import org.gwtbootstrap3.client.ui.TabContent;
+import org.gwtbootstrap3.client.ui.TabListItem;
+import org.gwtbootstrap3.client.ui.TabPane;
+import org.gwtbootstrap3.client.ui.TabPanel;
 import org.gwtbootstrap3.client.ui.constants.FormType;
 import org.vectomatic.dom.svg.OMSVGDocument;
 import org.vectomatic.dom.svg.OMSVGSVGElement;
 import org.vectomatic.dom.svg.utils.OMSVGParser;
 
+import com.google.common.base.Strings;
+import com.google.gwt.dom.client.Style;
+import com.google.gwt.user.client.ui.SimplePanel;
+import com.google.gwt.user.client.ui.Widget;
+
+import net.wbz.moba.controlcenter.web.client.TrackUtils;
+import net.wbz.moba.controlcenter.web.client.editor.track.EditTrackWidgetHandler;
+import net.wbz.moba.controlcenter.web.shared.track.model.AbstractTrackPart;
+import net.wbz.moba.controlcenter.web.shared.track.model.GridPosition;
+
 /**
  * @author Daniel Tuerk
  */
-abstract public class AbstractSvgTrackWidget<T extends AbstractTrackPart> extends SimplePanel implements EditTrackWidgetHandler {
+abstract public class AbstractSvgTrackWidget<T extends AbstractTrackPart> extends SimplePanel implements
+        EditTrackWidgetHandler {
 
     public static final String CSS_WIDGET_DISABLED = "widget-disabled";
 
@@ -148,7 +155,7 @@ abstract public class AbstractSvgTrackWidget<T extends AbstractTrackPart> extend
      * position.
      *
      * @param containerWidget {@link com.google.gwt.user.client.ui.Widget} parent container
-     * @param zoomLevel       level of zoom
+     * @param zoomLevel level of zoom
      * @return {@link AbstractTrackPart}
      * @see {#getGridPosition}
      */
@@ -164,7 +171,7 @@ abstract public class AbstractSvgTrackWidget<T extends AbstractTrackPart> extend
 
     /**
      * @return {@link T} model from initial call of
-     * {@link net.wbz.moba.controlcenter.web.client.model.track.AbstractSvgTrackWidget#initFromTrackPart}.
+     *         {@link net.wbz.moba.controlcenter.web.client.model.track.AbstractSvgTrackWidget#initFromTrackPart}.
      */
     public T getTrackPart() {
         return trackPart;
@@ -206,7 +213,7 @@ abstract public class AbstractSvgTrackWidget<T extends AbstractTrackPart> extend
      * part from the absolute position of the container.
      *
      * @param containerWidget {@link com.google.gwt.user.client.ui.Widget} parent container
-     * @param zoomLevel       level of zoom
+     * @param zoomLevel level of zoom
      * @return {@link net.wbz.moba.controlcenter.web.shared.track.model.GridPosition}
      */
     public GridPosition getGridPosition(Widget containerWidget, int zoomLevel) {

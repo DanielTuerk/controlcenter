@@ -6,7 +6,9 @@ package net.wbz.moba.controlcenter.web.client.model.track;
 public interface BlockPart {
 
     public void freeBlock();
+
     public void unknownBlock();
+
     public void usedBlock();
 
 }

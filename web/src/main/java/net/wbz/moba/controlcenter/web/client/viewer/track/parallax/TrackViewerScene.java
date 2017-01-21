@@ -67,7 +67,6 @@ public class TrackViewerScene extends AnimatedScene {
         Object3D axes = buildAxes(1000);
         getScene().add(axes);
 
-
         // grid
         createGrid();
 
@@ -112,7 +111,6 @@ public class TrackViewerScene extends AnimatedScene {
         return new Line(lineGeom, lineBasicMaterial);
     }
 
-
     public void centerCamera() {
         camera.lookAt(new Vector3(250, 250, 0));
     }
@@ -143,7 +141,6 @@ public class TrackViewerScene extends AnimatedScene {
         this.controls.update();
         getRenderer().render(getScene(), camera);
     }
-
 
     public Basic3dTrackWidget addTrackWidget(AbstractTrackPart widget) {
         Basic3dTrackWidget trackWidget = trackPartGeometryFactory.getTrackWidget(widget);

@@ -1,9 +1,10 @@
 package net.wbz.moba.controlcenter.web.shared.scenario;
 
-import com.google.gwt.user.client.rpc.IsSerializable;
-import net.wbz.moba.controlcenter.web.shared.StringUtils;
-
 import java.util.Arrays;
+
+import com.google.gwt.user.client.rpc.IsSerializable;
+
+import net.wbz.moba.controlcenter.web.shared.StringUtils;
 
 /**
  * @author Daniel Tuerk

@@ -1,5 +1,12 @@
 package net.wbz.moba.controlcenter.web.client;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+import org.gwtbootstrap3.client.ui.constants.IconType;
+import org.gwtbootstrap3.extras.notify.client.ui.Notify;
+
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -7,6 +14,7 @@ import com.google.gwt.user.client.ui.DockLayoutPanel;
 import com.google.gwt.user.client.ui.RootLayoutPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
+
 import net.wbz.moba.controlcenter.web.client.device.StatePanel;
 import net.wbz.moba.controlcenter.web.client.editor.track.TrackEditorContainer;
 import net.wbz.moba.controlcenter.web.client.model.track.ModelManager;
@@ -14,12 +22,6 @@ import net.wbz.moba.controlcenter.web.client.viewer.bus.BusMonitorPanel;
 import net.wbz.moba.controlcenter.web.client.viewer.settings.ConfigPanel;
 import net.wbz.moba.controlcenter.web.client.viewer.track.TrackViewerContainer;
 import net.wbz.moba.controlcenter.web.shared.constrution.Construction;
-import org.gwtbootstrap3.client.ui.constants.IconType;
-import org.gwtbootstrap3.extras.notify.client.ui.Notify;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
@@ -51,42 +53,43 @@ public class ControlCenterApp implements EntryPoint {
             loadWelcomePage();
         } else {
 
-            RequestUtils.getInstance().getConstructionService().loadConstructions(new AsyncCallback<Collection<Construction>>() {
-                @Override
-                public void onFailure(Throwable caught) {
+            RequestUtils.getInstance().getConstructionService().loadConstructions(
+                    new AsyncCallback<Collection<Construction>>() {
+                        @Override
+                        public void onFailure(Throwable caught) {
 
-                }
-
-                @Override
-                public void onSuccess(Collection<Construction> result) {
-
-                    String lastUsedConstruction = Settings.getInstance().getLastUsedConstruction().getValue();
-                    Construction constructionToLoad = null;
-                    for (Construction construction : result) {
-                        if (construction.getName().equals(lastUsedConstruction)) {
-                            constructionToLoad = construction;
-                            break;
                         }
-                    }
-                    if (constructionToLoad != null) {
-                        RequestUtils.getInstance().getConstructionService().setCurrentConstruction(
-                                constructionToLoad, new AsyncCallback<Void>() {
-                                    @Override
-                                    public void onFailure(Throwable caught) {
-                                    }
 
-                                    @Override
-                                    public void onSuccess(Void result) {
-                                        loadControlCenter();
-                                    }
-                                });
-                    } else {
-                        Notify.notify("", "can't load last used construction", IconType.WARNING);
+                        @Override
+                        public void onSuccess(Collection<Construction> result) {
 
-                        loadWelcomePage();
-                    }
-                }
-            });
+                            String lastUsedConstruction = Settings.getInstance().getLastUsedConstruction().getValue();
+                            Construction constructionToLoad = null;
+                            for (Construction construction : result) {
+                                if (construction.getName().equals(lastUsedConstruction)) {
+                                    constructionToLoad = construction;
+                                    break;
+                                }
+                            }
+                            if (constructionToLoad != null) {
+                                RequestUtils.getInstance().getConstructionService().setCurrentConstruction(
+                                        constructionToLoad, new AsyncCallback<Void>() {
+                                            @Override
+                                            public void onFailure(Throwable caught) {
+                                            }
+
+                                            @Override
+                                            public void onSuccess(Void result) {
+                                                loadControlCenter();
+                                            }
+                                        });
+                            } else {
+                                Notify.notify("", "can't load last used construction", IconType.WARNING);
+
+                                loadWelcomePage();
+                            }
+                        }
+                    });
 
         }
     }

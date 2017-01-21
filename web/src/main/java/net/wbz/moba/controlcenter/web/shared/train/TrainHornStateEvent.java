@@ -1,7 +1,5 @@
 package net.wbz.moba.controlcenter.web.shared.train;
 
-import de.novanic.eventservice.client.event.Event;
-
 /**
  * @author Daniel Tuerk
  */

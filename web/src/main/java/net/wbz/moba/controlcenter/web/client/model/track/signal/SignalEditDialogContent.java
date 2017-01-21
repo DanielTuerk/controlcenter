@@ -1,12 +1,7 @@
 package net.wbz.moba.controlcenter.web.client.model.track.signal;
 
-import com.google.common.base.Strings;
-import com.google.common.collect.Maps;
-import com.google.gwt.dom.client.Style;
-import com.google.gwt.user.client.ui.Widget;
-import net.wbz.moba.controlcenter.web.client.util.BitStateToggleButton;
-import net.wbz.moba.controlcenter.web.shared.track.model.BusDataConfiguration;
-import net.wbz.moba.controlcenter.web.shared.track.model.Signal;
+import java.util.Map;
+
 import org.gwtbootstrap3.client.ui.Button;
 import org.gwtbootstrap3.client.ui.Column;
 import org.gwtbootstrap3.client.ui.Container;
@@ -29,7 +24,14 @@ import org.vectomatic.dom.svg.OMSVGDocument;
 import org.vectomatic.dom.svg.OMSVGSVGElement;
 import org.vectomatic.dom.svg.utils.OMSVGParser;
 
-import java.util.Map;
+import com.google.common.base.Strings;
+import com.google.common.collect.Maps;
+import com.google.gwt.dom.client.Style;
+import com.google.gwt.user.client.ui.Widget;
+
+import net.wbz.moba.controlcenter.web.client.util.BitStateToggleButton;
+import net.wbz.moba.controlcenter.web.shared.track.model.BusDataConfiguration;
+import net.wbz.moba.controlcenter.web.shared.track.model.Signal;
 
 /**
  * @author Daniel Tuerk

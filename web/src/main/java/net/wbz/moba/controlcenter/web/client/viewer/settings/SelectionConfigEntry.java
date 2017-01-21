@@ -1,10 +1,11 @@
 package net.wbz.moba.controlcenter.web.client.viewer.settings;
 
-import com.google.gwt.user.client.ui.Widget;
 import org.gwtbootstrap3.client.ui.FormGroup;
 import org.gwtbootstrap3.client.ui.FormLabel;
 import org.gwtbootstrap3.extras.select.client.ui.Option;
 import org.gwtbootstrap3.extras.select.client.ui.Select;
+
+import com.google.gwt.user.client.ui.Widget;
 
 /**
  * Select the text value from dropdown box.

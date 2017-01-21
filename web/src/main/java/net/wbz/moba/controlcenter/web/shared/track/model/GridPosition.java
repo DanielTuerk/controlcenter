@@ -13,8 +13,8 @@ public class GridPosition extends AbstractDto {
     private int y;
 
     public GridPosition(int x, int y) {
-        this.x=x;
-        this.y=y;
+        this.x = x;
+        this.y = y;
     }
 
     public GridPosition() {

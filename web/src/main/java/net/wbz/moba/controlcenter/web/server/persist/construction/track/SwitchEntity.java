@@ -1,10 +1,16 @@
 package net.wbz.moba.controlcenter.web.server.persist.construction.track;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+
 import com.googlecode.jmapper.annotations.JMap;
+
 import net.wbz.moba.controlcenter.web.shared.track.model.AbstractTrackPart;
 import net.wbz.moba.controlcenter.web.shared.track.model.Switch;
-
-import javax.persistence.*;
 
 /**
  * @author Daniel Tuerk
@@ -39,7 +45,6 @@ public class SwitchEntity extends AbstractTrackPartEntity implements HasToggleFu
         eventConfiguration = eventConfigurationEntity;
     }
 
-
     public BusDataConfigurationEntity getToggleFunction() {
         return toggleFunction;
     }
@@ -63,7 +68,6 @@ public class SwitchEntity extends AbstractTrackPartEntity implements HasToggleFu
     public Switch.DIRECTION getCurrentDirection() {
         return currentDirection;
     }
-
 
     @Override
     public Class<? extends AbstractTrackPart> getDefaultDtoClass() {

@@ -1,12 +1,11 @@
 package net.wbz.moba.controlcenter.web.server.persist.construction.track;
 
-import com.googlecode.jmapper.annotations.JMap;
-import net.wbz.moba.controlcenter.web.server.persist.AbstractEntity;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+
+import com.googlecode.jmapper.annotations.JMap;
+
+import net.wbz.moba.controlcenter.web.server.persist.AbstractEntity;
 
 /**
  * @author Daniel Tuerk
@@ -46,6 +45,5 @@ public class GridPositionEntity extends AbstractEntity {
     public void setY(int y) {
         this.y = y;
     }
-
 
 }

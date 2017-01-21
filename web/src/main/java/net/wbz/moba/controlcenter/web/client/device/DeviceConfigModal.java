@@ -1,5 +1,24 @@
 package net.wbz.moba.controlcenter.web.client.device;
 
+import java.util.Collection;
+import java.util.Map;
+
+import org.gwtbootstrap3.client.ui.Button;
+import org.gwtbootstrap3.client.ui.Form;
+import org.gwtbootstrap3.client.ui.FormLabel;
+import org.gwtbootstrap3.client.ui.Modal;
+import org.gwtbootstrap3.client.ui.ModalBody;
+import org.gwtbootstrap3.client.ui.ModalFooter;
+import org.gwtbootstrap3.client.ui.Panel;
+import org.gwtbootstrap3.client.ui.PanelBody;
+import org.gwtbootstrap3.client.ui.PanelHeader;
+import org.gwtbootstrap3.client.ui.TextBox;
+import org.gwtbootstrap3.client.ui.constants.ButtonType;
+import org.gwtbootstrap3.client.ui.constants.IconType;
+import org.gwtbootstrap3.client.ui.gwt.ButtonCell;
+import org.gwtbootstrap3.client.ui.gwt.CellTable;
+import org.gwtbootstrap3.extras.notify.client.ui.Notify;
+
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.google.gwt.cell.client.FieldUpdater;
@@ -10,6 +29,7 @@ import com.google.gwt.user.cellview.client.TextColumn;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.view.client.ListDataProvider;
+
 import de.novanic.eventservice.client.event.Event;
 import de.novanic.eventservice.client.event.listener.RemoteEventListener;
 import net.wbz.moba.controlcenter.web.client.EventReceiver;
@@ -19,15 +39,6 @@ import net.wbz.moba.controlcenter.web.server.persist.device.DeviceInfoEntity;
 import net.wbz.moba.controlcenter.web.shared.bus.BusServiceAsync;
 import net.wbz.moba.controlcenter.web.shared.bus.DeviceInfo;
 import net.wbz.moba.controlcenter.web.shared.bus.DeviceInfoEvent;
-import org.gwtbootstrap3.client.ui.*;
-import org.gwtbootstrap3.client.ui.constants.ButtonType;
-import org.gwtbootstrap3.client.ui.constants.IconType;
-import org.gwtbootstrap3.client.ui.gwt.ButtonCell;
-import org.gwtbootstrap3.client.ui.gwt.CellTable;
-import org.gwtbootstrap3.extras.notify.client.ui.Notify;
-
-import java.util.Collection;
-import java.util.Map;
 
 /**
  * Modal to configure the {@link DeviceInfoEntity}s for the connections.
@@ -66,11 +77,11 @@ public class DeviceConfigModal extends Modal {
         ModalFooter modalFooter = new ModalFooter();
         Button btnClose = new Button(
                 "Close", new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-                DeviceConfigModal.this.hide();
-            }
-        });
+                    @Override
+                    public void onClick(ClickEvent event) {
+                        DeviceConfigModal.this.hide();
+                    }
+                });
         modalFooter.add(btnClose);
         add(modalFooter);
 
@@ -115,7 +126,7 @@ public class DeviceConfigModal extends Modal {
                             }
                             deviceInfo.setKey(txtDeviceName.getValue());
 
-//                            busRequest.createDevice()fire(
+                            // busRequest.createDevice()fire(
 
                             busRequest.createDevice(deviceInfo, new AsyncCallback<Void>() {
                                 @Override
@@ -217,19 +228,22 @@ public class DeviceConfigModal extends Modal {
                     btnDeleteActions.put(deviceInfo, new ClickHandler() {
                         @Override
                         public void onClick(ClickEvent event) {
-                            RequestUtils.getInstance().getBusService().deleteDevice(deviceInfo, new AsyncCallback<Void>() {
-                                @Override
-                                public void onFailure(Throwable caught) {
+                            RequestUtils.getInstance().getBusService().deleteDevice(deviceInfo,
+                                    new AsyncCallback<Void>() {
+                                        @Override
+                                        public void onFailure(Throwable caught) {
 
-                                    Notify.notify("", "Can't delete device: " + deviceInfo.getKey(), IconType.INFO);
-                                }
+                                            Notify.notify("", "Can't delete device: " + deviceInfo.getKey(),
+                                                    IconType.INFO);
+                                        }
 
-                                @Override
-                                public void onSuccess(Void result) {
-                                    Notify.notify("", "Device " + deviceInfo.getKey() + " deleted", IconType.INFO);
+                                        @Override
+                                        public void onSuccess(Void result) {
+                                            Notify.notify("", "Device " + deviceInfo.getKey() + " deleted",
+                                                    IconType.INFO);
 
-                                }
-                            });
+                                        }
+                                    });
                         }
                     });
                 }

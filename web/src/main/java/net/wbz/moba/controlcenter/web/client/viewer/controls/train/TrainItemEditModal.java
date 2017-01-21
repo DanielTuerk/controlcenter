@@ -1,16 +1,7 @@
 package net.wbz.moba.controlcenter.web.client.viewer.controls.train;
 
-import com.google.common.base.Strings;
-import com.google.common.collect.Maps;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.Widget;
-import net.wbz.moba.controlcenter.web.client.RequestUtils;
-import net.wbz.moba.controlcenter.web.server.persist.train.TrainEntity;
-import net.wbz.moba.controlcenter.web.shared.track.model.BusDataConfiguration;
-import net.wbz.moba.controlcenter.web.shared.train.Train;
-import net.wbz.moba.controlcenter.web.shared.train.TrainFunction;
+import java.util.Map;
+
 import org.gwtbootstrap3.client.ui.Button;
 import org.gwtbootstrap3.client.ui.Form;
 import org.gwtbootstrap3.client.ui.FormGroup;
@@ -26,7 +17,18 @@ import org.gwtbootstrap3.client.ui.gwt.FlowPanel;
 import org.gwtbootstrap3.extras.notify.client.constants.NotifyType;
 import org.gwtbootstrap3.extras.notify.client.ui.Notify;
 
-import java.util.Map;
+import com.google.common.base.Strings;
+import com.google.common.collect.Maps;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.Widget;
+
+import net.wbz.moba.controlcenter.web.client.RequestUtils;
+import net.wbz.moba.controlcenter.web.server.persist.train.TrainEntity;
+import net.wbz.moba.controlcenter.web.shared.track.model.BusDataConfiguration;
+import net.wbz.moba.controlcenter.web.shared.train.Train;
+import net.wbz.moba.controlcenter.web.shared.train.TrainFunction;
 
 /**
  * Modal to edit the {@link TrainEntity} data.
@@ -115,19 +117,21 @@ public class TrainItemEditModal extends Modal {
             public void onClick(ClickEvent clickEvent) {
                 TrainItemEditModal.this.hide();
 
-                RequestUtils.getInstance().getTrainEditorService().deleteTrain(train.getId(), new AsyncCallback<Void>() {
-                    @Override
-                    public void onFailure(Throwable caught) {
-                        Notify.notify("", "Delete TrainEntity " + train.getName() + " Error: " + caught.getMessage(),
-                                IconType.WARNING, NotifyType.DANGER);
+                RequestUtils.getInstance().getTrainEditorService().deleteTrain(train.getId(),
+                        new AsyncCallback<Void>() {
+                            @Override
+                            public void onFailure(Throwable caught) {
+                                Notify.notify("", "Delete TrainEntity " + train.getName() + " Error: " + caught
+                                        .getMessage(),
+                                        IconType.WARNING, NotifyType.DANGER);
 
-                    }
+                            }
 
-                    @Override
-                    public void onSuccess(Void result) {
-                        Notify.notify("", "TrainEntity " + train.getName() + " deleted", IconType.INFO);
-                    }
-                });
+                            @Override
+                            public void onSuccess(Void result) {
+                                Notify.notify("", "TrainEntity " + train.getName() + " deleted", IconType.INFO);
+                            }
+                        });
             }
         });
         btnDelete.setType(ButtonType.DANGER);
@@ -136,18 +140,18 @@ public class TrainItemEditModal extends Modal {
         return createForm;
     }
 
-
     private TrainFunctionContainer addFunctionFormGroup(final TrainFunction trainFunction) {
-        final TrainFunctionContainer trainFunctionContainer = new TrainFunctionContainer(trainFunction, new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-                TrainFunctionContainer functionContainer = trainFunctionFormGroups.get(trainFunction);
-                createForm.remove(functionContainer);
-                trainFunctionFormGroups.remove(trainFunction);
+        final TrainFunctionContainer trainFunctionContainer = new TrainFunctionContainer(trainFunction,
+                new ClickHandler() {
+                    @Override
+                    public void onClick(ClickEvent event) {
+                        TrainFunctionContainer functionContainer = trainFunctionFormGroups.get(trainFunction);
+                        createForm.remove(functionContainer);
+                        trainFunctionFormGroups.remove(trainFunction);
 
-                train.getFunctions().remove(trainFunction);
-            }
-        });
+                        train.getFunctions().remove(trainFunction);
+                    }
+                });
         trainFunctionFormGroups.put(trainFunction, trainFunctionContainer);
         return trainFunctionContainer;
     }
@@ -166,7 +170,6 @@ public class TrainItemEditModal extends Modal {
                 for (TrainFunctionContainer trainFunctionContainer : trainFunctionFormGroups.values()) {
                     trainFunctionContainer.updateTrainFunctionFromForm();
                 }
-
 
                 RequestUtils.getInstance().getTrainEditorService().updateTrain(train, new AsyncCallback<Void>() {
                     @Override

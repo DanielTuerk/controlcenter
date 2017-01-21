@@ -7,8 +7,6 @@ import de.novanic.eventservice.client.event.Event;
  */
 public class RecordingEvent implements Event {
 
-    public enum STATE {START, STOP}
-
     private STATE state;
     private String filePath;
 
@@ -30,5 +28,9 @@ public class RecordingEvent implements Event {
 
     public String getFilePath() {
         return filePath;
+    }
+
+    public enum STATE {
+        START, STOP
     }
 }

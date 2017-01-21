@@ -1,7 +1,20 @@
 package net.wbz.moba.controlcenter.web.client.model.track;
 
+import org.gwtbootstrap3.client.ui.Button;
+import org.gwtbootstrap3.client.ui.FieldSet;
+import org.gwtbootstrap3.client.ui.FormGroup;
+import org.gwtbootstrap3.client.ui.FormLabel;
+import org.gwtbootstrap3.client.ui.Label;
+import org.gwtbootstrap3.client.ui.TextBox;
+import org.gwtbootstrap3.client.ui.constants.ColumnSize;
+import org.gwtbootstrap3.extras.select.client.ui.Option;
+import org.gwtbootstrap3.extras.select.client.ui.Select;
+import org.vectomatic.dom.svg.OMSVGDocument;
+import org.vectomatic.dom.svg.OMSVGSVGElement;
+
 import com.google.common.base.Strings;
 import com.google.gwt.user.client.ui.Widget;
+
 import net.wbz.moba.controlcenter.web.client.RequestUtils;
 import net.wbz.moba.controlcenter.web.client.editor.track.ClickActionViewerWidgetHandler;
 import net.wbz.moba.controlcenter.web.client.util.BitStateToggleButton;
@@ -10,12 +23,6 @@ import net.wbz.moba.controlcenter.web.shared.track.model.AbstractTrackPart;
 import net.wbz.moba.controlcenter.web.shared.track.model.BusDataConfiguration;
 import net.wbz.moba.controlcenter.web.shared.track.model.EventConfiguration;
 import net.wbz.moba.controlcenter.web.shared.track.model.HasToggleFunction;
-import org.gwtbootstrap3.client.ui.*;
-import org.gwtbootstrap3.client.ui.constants.ColumnSize;
-import org.gwtbootstrap3.extras.select.client.ui.Option;
-import org.gwtbootstrap3.extras.select.client.ui.Select;
-import org.vectomatic.dom.svg.OMSVGDocument;
-import org.vectomatic.dom.svg.OMSVGSVGElement;
 
 /**
  * A {@link AbstractSvgTrackWidget} with click control
@@ -24,7 +31,8 @@ import org.vectomatic.dom.svg.OMSVGSVGElement;
  *
  * @author Daniel Tuerk
  */
-abstract public class AbstractControlSvgTrackWidget<T extends AbstractTrackPart & HasToggleFunction> extends AbstractBlockSvgTrackWidget<T>
+abstract public class AbstractControlSvgTrackWidget<T extends AbstractTrackPart & HasToggleFunction> extends
+        AbstractBlockSvgTrackWidget<T>
         implements ClickActionViewerWidgetHandler {
 
     private static final String ID_FORM_ADDRESS = "formAddress_control";
@@ -54,7 +62,8 @@ abstract public class AbstractControlSvgTrackWidget<T extends AbstractTrackPart 
     public void onClick() {
         if (isEnabled()) {
             BusDataConfiguration toggleFunctionConfig = getTrackPart().getToggleFunction();
-            RequestUtils.getInstance().getTrackViewerService().toggleTrackPart(toggleFunctionConfig, !trackPartState, RequestUtils.VOID_ASYNC_CALLBACK);
+            RequestUtils.getInstance().getTrackViewerService().toggleTrackPart(toggleFunctionConfig, !trackPartState,
+                    RequestUtils.VOID_ASYNC_CALLBACK);
         }
     }
 
@@ -222,7 +231,8 @@ abstract public class AbstractControlSvgTrackWidget<T extends AbstractTrackPart 
                 eventTrackPartConfiguration.setStateOnConfig(new BusDataConfiguration());
             }
             eventTrackPartConfiguration.getStateOnConfig().setBus(1);
-            eventTrackPartConfiguration.getStateOnConfig().setAddress(Integer.parseInt(txtEventConfigOnAddress.getValue()));
+            eventTrackPartConfiguration.getStateOnConfig().setAddress(Integer.parseInt(txtEventConfigOnAddress
+                    .getValue()));
             eventTrackPartConfiguration.getStateOnConfig().setBit(Integer.parseInt(txtEventConfigOnBit.getValue()));
             eventTrackPartConfiguration.getStateOnConfig().setBitState(toggleEventConfigOnBitState.isActive());
         }
@@ -233,7 +243,8 @@ abstract public class AbstractControlSvgTrackWidget<T extends AbstractTrackPart 
                 eventTrackPartConfiguration.setStateOffConfig(new BusDataConfiguration());
             }
             eventTrackPartConfiguration.getStateOffConfig().setBus(1);
-            eventTrackPartConfiguration.getStateOffConfig().setAddress(Integer.parseInt(txtEventConfigOffAddress.getValue()));
+            eventTrackPartConfiguration.getStateOffConfig().setAddress(Integer.parseInt(txtEventConfigOffAddress
+                    .getValue()));
             eventTrackPartConfiguration.getStateOffConfig().setBit(Integer.parseInt(txtEventConfigOffBit.getValue()));
             eventTrackPartConfiguration.getStateOffConfig().setBitState(toggleEventConfigOffBitState.isActive());
         }

@@ -1,18 +1,20 @@
 package net.wbz.moba.controlcenter.web.client.viewer.controls;
 
+import org.gwtbootstrap3.client.ui.Button;
+import org.gwtbootstrap3.client.ui.PanelBody;
+import org.gwtbootstrap3.client.ui.PanelCollapse;
+import org.gwtbootstrap3.client.ui.PanelHeader;
+import org.gwtbootstrap3.client.ui.constants.Toggle;
+
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.client.ui.Panel;
+
 import de.novanic.eventservice.client.event.Event;
 import de.novanic.eventservice.client.event.listener.RemoteEventListener;
 import net.wbz.moba.controlcenter.web.client.EventReceiver;
 import net.wbz.moba.controlcenter.web.shared.AbstractStateEvent;
 import net.wbz.moba.controlcenter.web.shared.bus.DeviceInfoEvent;
 import net.wbz.moba.controlcenter.web.shared.track.model.AbstractDto;
-import org.gwtbootstrap3.client.ui.Button;
-import org.gwtbootstrap3.client.ui.PanelBody;
-import org.gwtbootstrap3.client.ui.PanelCollapse;
-import org.gwtbootstrap3.client.ui.PanelHeader;
-import org.gwtbootstrap3.client.ui.constants.Toggle;
 
 /**
  * Abstract container panel for the specified {@link net.wbz.moba.controlcenter.web.shared.AbstractIdModel}.

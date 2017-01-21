@@ -1,19 +1,21 @@
 package net.wbz.moba.controlcenter.web.server.web;
 
-import com.google.common.base.Function;
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.inject.Singleton;
-import net.wbz.moba.controlcenter.web.server.persist.construction.track.AbstractTrackPartEntity;
-import net.wbz.moba.controlcenter.web.shared.track.model.AbstractTrackPart;
-import org.reflections.Reflections;
-
 import java.lang.reflect.Modifier;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import org.reflections.Reflections;
+
+import com.google.common.base.Function;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.inject.Singleton;
+
+import net.wbz.moba.controlcenter.web.server.persist.construction.track.AbstractTrackPartEntity;
+import net.wbz.moba.controlcenter.web.shared.track.model.AbstractTrackPart;
 
 /**
  * TODO usage of generics
@@ -31,17 +33,20 @@ public class TrackPartDataMapper {
 
     public TrackPartDataMapper() {
         Reflections reflections = new Reflections(AbstractTrackPartEntity.class.getPackage().getName());
-        Set<Class<? extends AbstractTrackPartEntity>> classes = reflections.getSubTypesOf(AbstractTrackPartEntity.class);
+        Set<Class<? extends AbstractTrackPartEntity>> classes = reflections.getSubTypesOf(
+                AbstractTrackPartEntity.class);
         for (Class<? extends AbstractTrackPartEntity> trackPartClazz : classes) {
             if (!Modifier.isAbstract(trackPartClazz.getModifiers())) {
                 if (!entityMappers.containsKey(trackPartClazz)) {
                     try {
-                        Class<? extends AbstractTrackPart> defaultDtoClass = trackPartClazz.newInstance().getDefaultDtoClass();
+                        Class<? extends AbstractTrackPart> defaultDtoClass = trackPartClazz.newInstance()
+                                .getDefaultDtoClass();
                         DataMapper dataMapper = new DataMapper<>(defaultDtoClass, trackPartClazz);
                         entityMappers.put(trackPartClazz, dataMapper);
                         dtoMappers.put(defaultDtoClass, dataMapper);
                     } catch (InstantiationException | IllegalAccessException e) {
-                        throw new RuntimeException("can't create data mapper for track part: " + trackPartClazz.getName());
+                        throw new RuntimeException("can't create data mapper for track part: " + trackPartClazz
+                                .getName());
                     }
                 }
             }
@@ -62,11 +67,12 @@ public class TrackPartDataMapper {
     }
 
     public Collection<AbstractTrackPart> transformTrackPartEntities(List<AbstractTrackPartEntity> entities) {
-        return Lists.newArrayList(Iterables.transform(entities, new Function<AbstractTrackPartEntity, AbstractTrackPart>() {
-            @Override
-            public AbstractTrackPart apply(AbstractTrackPartEntity trackPartEntity) {
-                return transformTrackPartEntity(trackPartEntity);
-            }
-        }));
+        return Lists.newArrayList(Iterables.transform(entities,
+                new Function<AbstractTrackPartEntity, AbstractTrackPart>() {
+                    @Override
+                    public AbstractTrackPart apply(AbstractTrackPartEntity trackPartEntity) {
+                        return transformTrackPartEntity(trackPartEntity);
+                    }
+                }));
     }
 }

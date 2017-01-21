@@ -6,8 +6,6 @@ import com.googlecode.jmapper.annotations.JMap;
  * @author Daniel Tuerk
  */
 public class Curve extends AbstractTrackPart {
-    public enum DIRECTION {BOTTOM_RIGHT, BOTTOM_LEFT, TOP_LEFT, TOP_RIGHT}
-
     @JMap
     private DIRECTION direction;
 
@@ -33,5 +31,9 @@ public class Curve extends AbstractTrackPart {
             default:
                 return 0d;
         }
+    }
+
+    public enum DIRECTION {
+        BOTTOM_RIGHT, BOTTOM_LEFT, TOP_LEFT, TOP_RIGHT
     }
 }

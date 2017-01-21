@@ -1,20 +1,23 @@
 package net.wbz.moba.controlcenter.web.server.web.constrution;
 
+import java.util.Collection;
+
+import javax.inject.Singleton;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.google.common.collect.Lists;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.google.inject.Inject;
 import com.google.inject.persist.Transactional;
+
 import net.wbz.moba.controlcenter.web.server.persist.construction.ConstructionDao;
 import net.wbz.moba.controlcenter.web.server.persist.construction.ConstructionEntity;
 import net.wbz.moba.controlcenter.web.server.web.DataMapper;
 import net.wbz.moba.controlcenter.web.server.web.editor.TrackManager;
 import net.wbz.moba.controlcenter.web.shared.constrution.Construction;
 import net.wbz.moba.controlcenter.web.shared.constrution.ConstructionService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.inject.Singleton;
-import java.util.Collection;
 
 /**
  * @author Daniel Tuerk

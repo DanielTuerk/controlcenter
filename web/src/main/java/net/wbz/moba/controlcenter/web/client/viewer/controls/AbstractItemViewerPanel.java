@@ -1,27 +1,30 @@
 package net.wbz.moba.controlcenter.web.client.viewer.controls;
 
-import com.google.common.collect.Maps;
-import com.google.gwt.dom.client.Style;
-import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.user.client.ui.FlowPanel;
-import de.novanic.eventservice.client.event.Event;
-import de.novanic.eventservice.client.event.listener.RemoteEventListener;
-import net.wbz.moba.controlcenter.web.client.EventReceiver;
-import net.wbz.moba.controlcenter.web.shared.AbstractStateEvent;
-import net.wbz.moba.controlcenter.web.shared.train.TrainDataChangedEvent;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.gwtbootstrap3.client.ui.Button;
 import org.gwtbootstrap3.client.ui.InputGroup;
 import org.gwtbootstrap3.client.ui.InputGroupButton;
 import org.gwtbootstrap3.client.ui.TextBox;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import com.google.common.collect.Maps;
+import com.google.gwt.dom.client.Style;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.ui.FlowPanel;
+
+import de.novanic.eventservice.client.event.Event;
+import de.novanic.eventservice.client.event.listener.RemoteEventListener;
+import net.wbz.moba.controlcenter.web.client.EventReceiver;
+import net.wbz.moba.controlcenter.web.shared.AbstractStateEvent;
+import net.wbz.moba.controlcenter.web.shared.train.TrainDataChangedEvent;
 
 /**
  * Created by Daniel on 08.03.14.
  */
-abstract public class AbstractItemViewerPanel<ItemPanel extends AbstractItemPanel, EventType extends AbstractStateEvent> extends FlowPanel {
+abstract public class AbstractItemViewerPanel<ItemPanel extends AbstractItemPanel, EventType extends AbstractStateEvent>
+        extends FlowPanel {
 
     private final Map<Long, ItemPanel> itemPanelByIdMap = Maps.newHashMap();
     private final FlowPanel itemsContainerPanel = new FlowPanel();
@@ -51,13 +54,14 @@ abstract public class AbstractItemViewerPanel<ItemPanel extends AbstractItemPane
         for (Class<EventType> stateEventClass : getStateEventClasses()) {
             eventListeners.put(stateEventClass, new RemoteEventListener() {
                 public void apply(Event anEvent) {
-                    //TODO
+                    // TODO
                     EventType eventType = (EventType) anEvent;
 
                     if (itemPanelByIdMap.containsKey(eventType.getItemId())) {
                         itemPanelByIdMap.get(eventType.getItemId()).updateItemData(eventType);
                     } else {
-                        net.wbz.moba.controlcenter.web.client.util.Log.info("event: can't find item " + eventType.getItemId());
+                        net.wbz.moba.controlcenter.web.client.util.Log.info("event: can't find item " + eventType
+                                .getItemId());
                     }
                 }
             });
@@ -78,7 +82,6 @@ abstract public class AbstractItemViewerPanel<ItemPanel extends AbstractItemPane
     @Override
     protected void onLoad() {
         super.onLoad();
-
 
         EventReceiver.getInstance().addListener(TrainDataChangedEvent.class, trainDataChangedEventListener);
 
@@ -102,13 +105,11 @@ abstract public class AbstractItemViewerPanel<ItemPanel extends AbstractItemPane
     protected void onUnload() {
         super.onUnload();
 
-
         for (Map.Entry<Class<EventType>, RemoteEventListener> eventListenerEntry : eventListeners.entrySet()) {
             EventReceiver.getInstance().removeListener(eventListenerEntry.getKey(), eventListenerEntry.getValue());
         }
 
         EventReceiver.getInstance().removeListener(TrainDataChangedEvent.class, trainDataChangedEventListener);
-
 
         resetItems();
     }

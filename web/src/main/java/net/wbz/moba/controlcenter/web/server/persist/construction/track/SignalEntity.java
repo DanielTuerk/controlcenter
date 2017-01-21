@@ -1,10 +1,6 @@
 package net.wbz.moba.controlcenter.web.server.persist.construction.track;
 
-import com.google.common.collect.Maps;
-import com.googlecode.jmapper.annotations.JMap;
-import net.wbz.moba.controlcenter.web.shared.track.model.AbstractTrackPart;
-import net.wbz.moba.controlcenter.web.shared.track.model.Signal;
-import net.wbz.moba.controlcenter.web.shared.track.model.TrackModelConstants;
+import java.util.Map;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -12,9 +8,15 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import java.util.Map;
+
+import com.google.common.collect.Maps;
+import com.googlecode.jmapper.annotations.JMap;
+
+import net.wbz.moba.controlcenter.web.shared.track.model.AbstractTrackPart;
+import net.wbz.moba.controlcenter.web.shared.track.model.Signal;
 import net.wbz.moba.controlcenter.web.shared.track.model.Signal.LIGHT;
 import net.wbz.moba.controlcenter.web.shared.track.model.Signal.TYPE;
+import net.wbz.moba.controlcenter.web.shared.track.model.TrackModelConstants;
 
 /**
  * Widget to show and control a signal.
@@ -82,7 +84,7 @@ public class SignalEntity extends StraightEntity {
      * Create or update the function configuration by the
      * {@link Signal.LIGHT} name.
      *
-     * @param light         {@link Signal.LIGHT}
+     * @param light {@link Signal.LIGHT}
      * @param configuration {@link BusDataConfigurationEntity} or <code>null</code>
      */
     public void setLightFunctionConfig(LIGHT light, BusDataConfigurationEntity configuration) {

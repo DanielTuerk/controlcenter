@@ -1,9 +1,12 @@
 package net.wbz.moba.controlcenter.web.server.persist;
 
-import com.googlecode.jmapper.annotations.JMap;
-import net.wbz.moba.controlcenter.web.shared.Identity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.MappedSuperclass;
 
-import javax.persistence.*;
+import com.googlecode.jmapper.annotations.JMap;
+
+import net.wbz.moba.controlcenter.web.shared.Identity;
 
 /**
  * @author Daniel Tuerk

@@ -1,8 +1,16 @@
 package net.wbz.moba.controlcenter.web.client.viewer.track.parallax;
 
-import net.wbz.moba.controlcenter.web.client.viewer.track.parallax.trackparts.*;
+import net.wbz.moba.controlcenter.web.client.viewer.track.parallax.trackparts.Basic3dTrackWidget;
+import net.wbz.moba.controlcenter.web.client.viewer.track.parallax.trackparts.Curve3dWidget;
+import net.wbz.moba.controlcenter.web.client.viewer.track.parallax.trackparts.Signal3dWidget;
+import net.wbz.moba.controlcenter.web.client.viewer.track.parallax.trackparts.Straight3dWidget;
+import net.wbz.moba.controlcenter.web.client.viewer.track.parallax.trackparts.Switch3dWidget;
 import net.wbz.moba.controlcenter.web.server.persist.construction.track.AbstractTrackPartEntity;
-import net.wbz.moba.controlcenter.web.shared.track.model.*;
+import net.wbz.moba.controlcenter.web.shared.track.model.AbstractTrackPart;
+import net.wbz.moba.controlcenter.web.shared.track.model.Curve;
+import net.wbz.moba.controlcenter.web.shared.track.model.Signal;
+import net.wbz.moba.controlcenter.web.shared.track.model.Straight;
+import net.wbz.moba.controlcenter.web.shared.track.model.Switch;
 import thothbot.parallax.core.shared.math.Vector3;
 
 /**
@@ -26,8 +34,10 @@ public class TrackPartGeometryFactory {
      * @return {@link net.wbz.moba.controlcenter.web.client.viewer.track.parallax.trackparts.Basic3dTrackWidget}
      */
     public Basic3dTrackWidget<?> getTrackWidget(AbstractTrackPart trackPart) {
-        int x = (trackPart.getGridPosition().getX() + 1) * Basic3dTrackWidget.GEOM_SIZE - (Basic3dTrackWidget.GEOM_SIZE / 2);
-        int y = (trackPart.getGridPosition().getY() + 1) * Basic3dTrackWidget.GEOM_SIZE - (Basic3dTrackWidget.GEOM_SIZE / 2);
+        int x = (trackPart.getGridPosition().getX() + 1) * Basic3dTrackWidget.GEOM_SIZE - (Basic3dTrackWidget.GEOM_SIZE
+                / 2);
+        int y = (trackPart.getGridPosition().getY() + 1) * Basic3dTrackWidget.GEOM_SIZE - (Basic3dTrackWidget.GEOM_SIZE
+                / 2);
         Vector3 vector3 = new Vector3(x, -y, 0d);
 
         Basic3dTrackWidget mesh;

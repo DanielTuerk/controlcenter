@@ -7,5 +7,4 @@ public interface ClickActionViewerWidgetHandler {
 
     public void onClick();
 
-
 }

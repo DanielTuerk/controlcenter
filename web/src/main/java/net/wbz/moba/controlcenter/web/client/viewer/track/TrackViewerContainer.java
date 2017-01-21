@@ -3,6 +3,7 @@ package net.wbz.moba.controlcenter.web.client.viewer.track;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.client.ui.DockLayoutPanel;
 import com.google.gwt.user.client.ui.Widget;
+
 import net.wbz.moba.controlcenter.web.client.Settings;
 import net.wbz.moba.controlcenter.web.client.viewer.controls.ViewerControlsPanel;
 import net.wbz.moba.controlcenter.web.client.viewer.track.parallax.TrackViewer3dPanel;
@@ -28,8 +29,8 @@ public class TrackViewerContainer extends DockLayoutPanel {
         addEast(new ViewerControlsPanel(), 400);
 
         Widget trackViewer;
-        if(Settings.getInstance().getUse3dViewer().getValue()) {
-            trackViewer=new TrackViewer3dPanel();
+        if (Settings.getInstance().getUse3dViewer().getValue()) {
+            trackViewer = new TrackViewer3dPanel();
         } else {
             trackViewer = new TrackViewerPanel();
         }

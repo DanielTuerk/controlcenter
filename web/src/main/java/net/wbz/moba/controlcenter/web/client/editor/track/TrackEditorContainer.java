@@ -1,5 +1,17 @@
 package net.wbz.moba.controlcenter.web.client.editor.track;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import org.gwtbootstrap3.client.ui.AnchorListItem;
+import org.gwtbootstrap3.client.ui.NavPills;
+import org.gwtbootstrap3.client.ui.constants.IconType;
+import org.gwtbootstrap3.extras.notify.client.ui.Notify;
+
 import com.allen_sauer.gwt.dnd.client.PickupDragController;
 import com.allen_sauer.gwt.dnd.client.drop.GridConstrainedDropController;
 import com.google.gwt.dom.client.Style;
@@ -10,22 +22,12 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.Widget;
+
 import net.wbz.moba.controlcenter.web.client.RequestUtils;
 import net.wbz.moba.controlcenter.web.client.model.track.AbsoluteTrackPosition;
 import net.wbz.moba.controlcenter.web.client.model.track.AbstractSvgTrackWidget;
 import net.wbz.moba.controlcenter.web.client.model.track.ModelManager;
 import net.wbz.moba.controlcenter.web.shared.track.model.AbstractTrackPart;
-import org.gwtbootstrap3.client.ui.AnchorListItem;
-import org.gwtbootstrap3.client.ui.NavPills;
-import org.gwtbootstrap3.client.ui.constants.IconType;
-import org.gwtbootstrap3.extras.notify.client.ui.Notify;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * @author Daniel Tuerk
@@ -166,26 +168,28 @@ public class TrackEditorContainer extends FlowPanel {
             boundaryPanel.remove(i);
         }
 
-        RequestUtils.getInstance().getTrackEditorService().loadTrack(new AsyncCallback<Collection<AbstractTrackPart>>() {
-            @Override
-            public void onFailure(Throwable caught) {
+        RequestUtils.getInstance().getTrackEditorService().loadTrack(
+                new AsyncCallback<Collection<AbstractTrackPart>>() {
+                    @Override
+                    public void onFailure(Throwable caught) {
 
-            }
+                    }
 
-            @Override
-            public void onSuccess(Collection<AbstractTrackPart> trackParts) {
-                Log.info("load track success " + new Date().toString());
-                for (AbstractTrackPart trackPart : trackParts) {
-                    AbstractSvgTrackWidget trackWidget = ModelManager.getInstance().getWidgetOf(trackPart);
-                    trackWidget.setEnabled(true);
-                    AbsoluteTrackPosition trackPosition = trackWidget.getTrackPosition(trackPart.getGridPosition(),
-                            boundaryPanel.getZoomLevel());
-                    PaletteWidget paletteWidget = new EditorPaletteWidget(trackWidget);
-                    dragController.makeDraggable(paletteWidget);
-                    boundaryPanel.add(paletteWidget, trackPosition.getLeft(), trackPosition.getTop());
-                }
-                Log.info("load track done " + new Date().toString());
-            }
-        });
+                    @Override
+                    public void onSuccess(Collection<AbstractTrackPart> trackParts) {
+                        Log.info("load track success " + new Date().toString());
+                        for (AbstractTrackPart trackPart : trackParts) {
+                            AbstractSvgTrackWidget trackWidget = ModelManager.getInstance().getWidgetOf(trackPart);
+                            trackWidget.setEnabled(true);
+                            AbsoluteTrackPosition trackPosition = trackWidget.getTrackPosition(trackPart
+                                    .getGridPosition(),
+                                    boundaryPanel.getZoomLevel());
+                            PaletteWidget paletteWidget = new EditorPaletteWidget(trackWidget);
+                            dragController.makeDraggable(paletteWidget);
+                            boundaryPanel.add(paletteWidget, trackPosition.getLeft(), trackPosition.getTop());
+                        }
+                        Log.info("load track done " + new Date().toString());
+                    }
+                });
     }
 }

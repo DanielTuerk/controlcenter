@@ -1,12 +1,12 @@
 package net.wbz.moba.controlcenter.web.server.persist.construction.track;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
 
 import com.google.common.base.Objects;
 import com.googlecode.jmapper.annotations.JMap;
-import net.wbz.moba.controlcenter.web.server.persist.AbstractEntity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
+import net.wbz.moba.controlcenter.web.server.persist.AbstractEntity;
 
 /**
  * BusDataConfigurationEntity model of an function for the {@link AbstractTrackPartEntity}.
@@ -41,7 +41,6 @@ public class BusDataConfigurationEntity extends AbstractEntity {
 
     public BusDataConfigurationEntity() {
     }
-
 
     public Integer getBus() {
         return bus;
@@ -91,8 +90,10 @@ public class BusDataConfigurationEntity extends AbstractEntity {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
         BusDataConfigurationEntity that = (BusDataConfigurationEntity) o;
         return Objects.equal(bus, that.bus) &&
                 Objects.equal(address, that.address) &&

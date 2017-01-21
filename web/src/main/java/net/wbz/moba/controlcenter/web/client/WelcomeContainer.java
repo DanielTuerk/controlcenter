@@ -1,5 +1,11 @@
 package net.wbz.moba.controlcenter.web.client;
 
+import java.util.Collection;
+
+import org.gwtbootstrap3.client.ui.Button;
+import org.gwtbootstrap3.client.ui.LinkedGroup;
+import org.gwtbootstrap3.client.ui.TextBox;
+
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -9,12 +15,8 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
-import net.wbz.moba.controlcenter.web.shared.constrution.Construction;
-import org.gwtbootstrap3.client.ui.Button;
-import org.gwtbootstrap3.client.ui.LinkedGroup;
-import org.gwtbootstrap3.client.ui.TextBox;
 
-import java.util.Collection;
+import net.wbz.moba.controlcenter.web.shared.constrution.Construction;
 
 /**
  * Container for the welcome landing page to load an existing {@link Construction} or create a new one.
@@ -72,8 +74,7 @@ abstract class WelcomeContainer extends Composite {
                             listGroupConstructions.add(btnConstructionEntry);
                         }
                     }
-                }
-        );
+                });
     }
 
     @UiHandler("btnCreateConstruction")
@@ -91,7 +92,7 @@ abstract class WelcomeContainer extends Composite {
             public void onSuccess(Void result) {
                 txtCreateName.clear();
                 loadConstructions();
-//                updateCurrentConstruction(construction);
+                // updateCurrentConstruction(construction);
             }
         });
     }

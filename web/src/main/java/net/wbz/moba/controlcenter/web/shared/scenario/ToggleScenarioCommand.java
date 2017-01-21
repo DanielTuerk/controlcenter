@@ -49,7 +49,7 @@ public class ToggleScenarioCommand extends ScenarioCommand {
 
     @Override
     public String[] convertParameters() {
-        return new String[]{String.valueOf(configuration.getAddress()),
-                String.valueOf(configuration.getBit()), String.valueOf(state)};
+        return new String[] { String.valueOf(configuration.getAddress()),
+                String.valueOf(configuration.getBit()), String.valueOf(state) };
     }
 }

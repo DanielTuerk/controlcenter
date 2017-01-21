@@ -1,11 +1,15 @@
 package net.wbz.moba.controlcenter.web.server.persist.train;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.ManyToOne;
+
 import com.googlecode.jmapper.annotations.JMap;
+
 import net.wbz.moba.controlcenter.web.server.persist.AbstractEntity;
 import net.wbz.moba.controlcenter.web.server.persist.construction.track.BusDataConfigurationEntity;
-import net.wbz.moba.controlcenter.web.shared.train.TrainFunction;
-
-import javax.persistence.*;
 
 /**
  * Function of a {@link TrainEntity}. For each train the functions are created

@@ -2,6 +2,7 @@ package net.wbz.moba.controlcenter.web.client.viewer.settings;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Widget;
+
 import net.wbz.moba.controlcenter.web.client.LocalStorage;
 import net.wbz.moba.controlcenter.web.client.RequestUtils;
 
@@ -32,7 +33,7 @@ abstract public class AbstractConfigEntry<T> {
                 handleStorageRead(LocalStorage.getInstance().get(getConfigKey()));
                 break;
             case REMOTE:
-//                try {
+                // try {
                 RequestUtils.getInstance().getConfigService().loadValue(getConfigKey(), new AsyncCallback<String>() {
                     @Override
                     public void onFailure(Throwable caught) {
@@ -44,9 +45,9 @@ abstract public class AbstractConfigEntry<T> {
                         handleStorageRead(result);
                     }
                 });
-//                } catch (ConfigNotAvailableException e) {
-//                    Log.error(e.getMessage());
-//                }
+                // } catch (ConfigNotAvailableException e) {
+                // Log.error(e.getMessage());
+                // }
                 break;
         }
     }
@@ -110,7 +111,8 @@ abstract public class AbstractConfigEntry<T> {
                 setValue(value);
                 break;
             case REMOTE:
-                RequestUtils.getInstance().getConfigService().saveValue(getConfigKey(), convertValueToString(value), RequestUtils.VOID_ASYNC_CALLBACK);
+                RequestUtils.getInstance().getConfigService().saveValue(getConfigKey(), convertValueToString(value),
+                        RequestUtils.VOID_ASYNC_CALLBACK);
                 break;
         }
     }

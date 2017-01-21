@@ -1,9 +1,15 @@
 package net.wbz.moba.controlcenter.web.client.viewer.controls;
 
-import com.google.gwt.dom.client.Style;
-import net.wbz.moba.controlcenter.web.client.viewer.controls.train.TrainViewerPanel;
-import org.gwtbootstrap3.client.ui.*;
+import org.gwtbootstrap3.client.ui.NavTabs;
+import org.gwtbootstrap3.client.ui.TabContent;
+import org.gwtbootstrap3.client.ui.TabListItem;
+import org.gwtbootstrap3.client.ui.TabPane;
+import org.gwtbootstrap3.client.ui.TabPanel;
 import org.gwtbootstrap3.client.ui.constants.TabPosition;
+
+import com.google.gwt.dom.client.Style;
+
+import net.wbz.moba.controlcenter.web.client.viewer.controls.train.TrainViewerPanel;
 
 /**
  * @author Daniel Tuerk
@@ -22,11 +28,11 @@ public class ViewerControlsPanel extends TabPanel {
         navTabs = new NavTabs();
 
         TabListItem navTrainTab = new TabListItem("TrainEntity");
-        navTrainTab.setDataTarget("#"+TAB_ID_TRAIN);
+        navTrainTab.setDataTarget("#" + TAB_ID_TRAIN);
         navTabs.add(navTrainTab);
 
         TabListItem nacScenarioTab = new TabListItem("Scenario");
-        nacScenarioTab.setDataTarget("#"+TAB_ID_SCENARIO);
+        nacScenarioTab.setDataTarget("#" + TAB_ID_SCENARIO);
         navTabs.add(nacScenarioTab);
 
         add(navTabs);

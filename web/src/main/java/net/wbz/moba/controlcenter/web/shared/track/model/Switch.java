@@ -1,24 +1,17 @@
 package net.wbz.moba.controlcenter.web.shared.track.model;
 
+import java.util.Set;
+
 import com.google.gwt.user.client.rpc.IsSerializable;
 import com.googlecode.jmapper.annotations.JMap;
-
-import java.util.Set;
 
 /**
  * @author Daniel Tuerk
  */
 public class Switch extends AbstractTrackPart implements HasToggleFunction {
 
-    public enum DIRECTION implements IsSerializable {RIGHT, LEFT}
-
-    public enum PRESENTATION implements IsSerializable {LEFT_TO_RIGHT, RIGHT_TO_LEFT, BOTTOM_TO_TOP, TOP_TO_BOTTOM}
-
-    public enum STATE implements IsSerializable {STRAIGHT, BRANCH}
-
     @JMap
     private Switch.DIRECTION currentDirection;
-
     @JMap
     private Switch.PRESENTATION currentPresentation;
     @JMap
@@ -89,5 +82,17 @@ public class Switch extends AbstractTrackPart implements HasToggleFunction {
             default:
                 return 0d;
         }
+    }
+
+    public enum DIRECTION implements IsSerializable {
+        RIGHT, LEFT
+    }
+
+    public enum PRESENTATION implements IsSerializable {
+        LEFT_TO_RIGHT, RIGHT_TO_LEFT, BOTTOM_TO_TOP, TOP_TO_BOTTOM
+    }
+
+    public enum STATE implements IsSerializable {
+        STRAIGHT, BRANCH
     }
 }

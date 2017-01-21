@@ -1,10 +1,11 @@
 package net.wbz.moba.controlcenter.web.server.persist.construction.track;
 
-import com.googlecode.jmapper.annotations.JMap;
-import net.wbz.moba.controlcenter.web.server.persist.AbstractEntity;
-
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
+
+import com.googlecode.jmapper.annotations.JMap;
+
+import net.wbz.moba.controlcenter.web.server.persist.AbstractEntity;
 
 /**
  * @author Daniel Tuerk

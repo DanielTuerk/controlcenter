@@ -1,13 +1,14 @@
 package net.wbz.moba.controlcenter.web.client;
 
+import java.util.Collection;
+import java.util.Map;
+
 import com.google.common.collect.Maps;
+
 import net.wbz.moba.controlcenter.web.client.viewer.settings.AbstractConfigEntry;
 import net.wbz.moba.controlcenter.web.client.viewer.settings.BooleanConfigEntry;
 import net.wbz.moba.controlcenter.web.client.viewer.settings.ConstructionSelectionConfigEntry;
 import net.wbz.moba.controlcenter.web.client.viewer.settings.SelectionConfigEntry;
-
-import java.util.Collection;
-import java.util.Map;
 
 /**
  * @author Daniel Tuerk
@@ -31,9 +32,12 @@ public class Settings {
     private Map<String, AbstractConfigEntry<?>> configEntriesByKey = Maps.newConcurrentMap();
 
     private Settings() {
-        configEntriesByKey.put(LAST_USED_CONSTRUCTION, new ConstructionSelectionConfigEntry(AbstractConfigEntry.STORAGE.LOCAL, GROUP_CONSTRUCTION, LAST_USED_CONSTRUCTION));
-        configEntriesByKey.put(SHOW_WELCOME, new BooleanConfigEntry(AbstractConfigEntry.STORAGE.LOCAL, GROUP_COMMON, SHOW_WELCOME, true));
-        configEntriesByKey.put(USE_3D_VIEWER, new BooleanConfigEntry(AbstractConfigEntry.STORAGE.LOCAL, GROUP_COMMON, USE_3D_VIEWER, false));
+        configEntriesByKey.put(LAST_USED_CONSTRUCTION, new ConstructionSelectionConfigEntry(
+                AbstractConfigEntry.STORAGE.LOCAL, GROUP_CONSTRUCTION, LAST_USED_CONSTRUCTION));
+        configEntriesByKey.put(SHOW_WELCOME, new BooleanConfigEntry(AbstractConfigEntry.STORAGE.LOCAL, GROUP_COMMON,
+                SHOW_WELCOME, true));
+        configEntriesByKey.put(USE_3D_VIEWER, new BooleanConfigEntry(AbstractConfigEntry.STORAGE.LOCAL, GROUP_COMMON,
+                USE_3D_VIEWER, false));
     }
 
     public Collection<AbstractConfigEntry<?>> getEntries() {

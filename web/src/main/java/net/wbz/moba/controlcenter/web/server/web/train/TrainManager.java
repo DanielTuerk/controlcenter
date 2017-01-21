@@ -1,8 +1,11 @@
 package net.wbz.moba.controlcenter.web.server.web.train;
 
+import java.util.Collection;
+
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.google.inject.persist.Transactional;
+
 import net.wbz.moba.controlcenter.web.server.EventBroadcaster;
 import net.wbz.moba.controlcenter.web.server.persist.train.TrainDao;
 import net.wbz.moba.controlcenter.web.server.persist.train.TrainEntity;
@@ -20,9 +23,6 @@ import net.wbz.selectrix4java.device.DeviceConnectionListener;
 import net.wbz.selectrix4java.device.DeviceManager;
 import net.wbz.selectrix4java.train.TrainDataListener;
 import net.wbz.selectrix4java.train.TrainModule;
-
-import java.util.Collection;
-
 
 /**
  * Manager to access the {@link TrainEntity}s from database.
@@ -42,7 +42,7 @@ public class TrainManager {
 
     @Inject
     public TrainManager(final EventBroadcaster eventBroadcaster,
-                        final DeviceManager deviceManager, TrainDao dao) {
+            final DeviceManager deviceManager, TrainDao dao) {
         this.dao = dao;
         this.eventBroadcaster = eventBroadcaster;
         this.deviceManager = deviceManager;
@@ -67,7 +67,8 @@ public class TrainManager {
 
     }
 
-    private void reregisterConsumer(final Train train, DeviceManager deviceManager, final EventBroadcaster eventBroadcaster) throws DeviceAccessException {
+    private void reregisterConsumer(final Train train, DeviceManager deviceManager,
+            final EventBroadcaster eventBroadcaster) throws DeviceAccessException {
         if (train.getAddressByte() >= 0 && deviceManager.isConnected()) {
             TrainModule trainModule = deviceManager.getConnectedDevice().getTrainModule(train.getAddressByte());
             trainModule.removeAllTrainDataListeners();
@@ -84,8 +85,7 @@ public class TrainManager {
                             train.setForward(driving_direction == TrainModule.DRIVING_DIRECTION.FORWARD);
                             eventBroadcaster.fireEvent(new TrainDrivingDirectionEvent(train.getId(),
                                     TrainDrivingDirectionEvent.DRIVING_DIRECTION.valueOf(
-                                            driving_direction.name())
-                            ));
+                                            driving_direction.name())));
                         }
 
                         @Override
@@ -109,8 +109,7 @@ public class TrainManager {
                         public void hornStateChanged(boolean state) {
                             eventBroadcaster.fireEvent(new TrainHornStateEvent(train.getId(), state));
                         }
-                    }
-            );
+                    });
         }
     }
 
@@ -163,10 +162,9 @@ public class TrainManager {
         try {
             return dataMapper.transformSource(dao.getTrainByAddress(address));
         } catch (TrainException e) {
-//            LOG.error("can't find train", e);
+            // LOG.error("can't find train", e);
         }
         return null;
     }
-
 
 }

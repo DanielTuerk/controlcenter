@@ -1,18 +1,20 @@
 package net.wbz.moba.controlcenter.web.server.scenario;
 
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+import java.util.concurrent.FutureTask;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+
 import net.wbz.moba.controlcenter.web.server.EventBroadcaster;
 import net.wbz.moba.controlcenter.web.server.web.viewer.TrackViewerServiceImpl;
 import net.wbz.moba.controlcenter.web.shared.scenario.Scenario;
 import net.wbz.moba.controlcenter.web.shared.scenario.ScenarioService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
-import java.util.concurrent.FutureTask;
 
 /**
  * @author Daniel Tuerk
@@ -28,7 +30,8 @@ public class ScenarioServiceImpl extends RemoteServiceServlet implements Scenari
     private final EventBroadcaster eventBroadcaster;
 
     @Inject
-    public ScenarioServiceImpl(TrackViewerServiceImpl trackViewerService, ScenarioManager scenarioManager, EventBroadcaster eventBroadcaster) {
+    public ScenarioServiceImpl(TrackViewerServiceImpl trackViewerService, ScenarioManager scenarioManager,
+            EventBroadcaster eventBroadcaster) {
         this.trackViewerRequest = trackViewerService;
         this.scenarioManager = scenarioManager;
 
@@ -38,8 +41,10 @@ public class ScenarioServiceImpl extends RemoteServiceServlet implements Scenari
     @Override
     public void start(long scenarioId) {
         final Scenario scenario = scenarioManager.getScenarioById(scenarioId);
-        if (scenario.getRunState() != Scenario.RUN_STATE.RUNNING) { //TODO multiple ok -> check by modification for conflicts
-            FutureTask<Boolean> scenarioRunTask = new FutureTask<Boolean>(new ScenarioRunCallable(scenario, trackViewerRequest, eventBroadcaster));
+        if (scenario.getRunState() != Scenario.RUN_STATE.RUNNING) { // TODO multiple ok -> check by modification for
+                                                                    // conflicts
+            FutureTask<Boolean> scenarioRunTask = new FutureTask<Boolean>(new ScenarioRunCallable(scenario,
+                    trackViewerRequest, eventBroadcaster));
             executor.execute(scenarioRunTask);
         } else if (scenario.getRunState() == Scenario.RUN_STATE.PAUSED) {
 
@@ -50,12 +55,12 @@ public class ScenarioServiceImpl extends RemoteServiceServlet implements Scenari
 
     @Override
     public void stop(long scenarioId) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        // To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
     public void pause(long scenarioId) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        // To change body of implemented methods use File | Settings | File Templates.
     }
 
 }

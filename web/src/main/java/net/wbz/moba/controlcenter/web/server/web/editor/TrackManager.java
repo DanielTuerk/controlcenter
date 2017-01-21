@@ -1,9 +1,21 @@
 package net.wbz.moba.controlcenter.web.server.web.editor;
 
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+
+import javax.inject.Inject;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.inject.Singleton;
 import com.google.inject.persist.Transactional;
+
 import net.wbz.moba.controlcenter.web.server.EventBroadcaster;
 import net.wbz.moba.controlcenter.web.server.persist.construction.ConstructionDao;
 import net.wbz.moba.controlcenter.web.server.persist.construction.ConstructionEntity;
@@ -28,15 +40,6 @@ import net.wbz.selectrix4java.device.Device;
 import net.wbz.selectrix4java.device.DeviceAccessException;
 import net.wbz.selectrix4java.device.DeviceConnectionListener;
 import net.wbz.selectrix4java.device.DeviceManager;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.inject.Inject;
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
 
 /**
  * @author Daniel Tuerk
@@ -45,7 +48,6 @@ import java.util.Map;
 public class TrackManager {
 
     private static final Logger log = LoggerFactory.getLogger(TrackManager.class);
-
 
     private final Map<BusAddressIdentifier, List<BusListener>> busAddressListenersOfTheCurrentTrack = Maps
             .newConcurrentMap();
@@ -62,7 +64,7 @@ public class TrackManager {
 
     @Inject
     public TrackManager(DeviceManager deviceManager, EventBroadcaster eventBroadcaster, TrackPartDao dao,
-                        ConstructionDao constructionDao, TrackPartDataMapper trackPartDataMapper) {
+            ConstructionDao constructionDao, TrackPartDataMapper trackPartDataMapper) {
         this.eventBroadcaster = eventBroadcaster;
         this.deviceManager = deviceManager;
         this.dao = dao;
@@ -84,7 +86,6 @@ public class TrackManager {
             }
         });
     }
-
 
     private void addBusAddressListeners(Device device) {
         try {
@@ -117,7 +118,8 @@ public class TrackManager {
                 device.getBusAddress(entry.getKey().getBus(),
                         (byte) entry.getKey().getAddress()).removeListeners(entry.getValue());
             }
-            for (Map.Entry<BusAddressIdentifier, FeedbackBlockListener> entry : busAddressFeedbackBlockListenersOfTheCurrentTrack.entrySet()) {
+            for (Map.Entry<BusAddressIdentifier, FeedbackBlockListener> entry : busAddressFeedbackBlockListenersOfTheCurrentTrack
+                    .entrySet()) {
                 device.getFeedbackBlockModule(
                         entry.getKey().getAddress(),
                         (entry.getKey().getAddress() + 2),
@@ -133,7 +135,8 @@ public class TrackManager {
         ConstructionEntity constructionEntity = constructionDao.findById(currentConstruction.getId());
 
         // load all existing to detect deleted track parts
-        List<AbstractTrackPartEntity> existingTrackParts = Lists.newArrayList(dao.findByConstructionId(constructionEntity.getId()));
+        List<AbstractTrackPartEntity> existingTrackParts = Lists.newArrayList(dao.findByConstructionId(
+                constructionEntity.getId()));
 
         for (AbstractTrackPart trackPart : trackParts) {
             AbstractTrackPartEntity entity = trackPartDataMapper.transformTrackPart(trackPart);
@@ -252,7 +255,7 @@ public class TrackManager {
                         // fire event for changed bit state of the bus address
                         boolean bitStateChanged = BigInteger.valueOf(newValue).testBit(
                                 toggleFunction.getBit() - 1) != BigInteger.valueOf(oldValue).testBit(
-                                toggleFunction.getBit() - 1);
+                                        toggleFunction.getBit() - 1);
                         if (firstCall || bitStateChanged) {
                             eventBroadcaster.fireEvent(new TrackPartStateEvent(toggleFunction,
                                     BigInteger.valueOf(newValue).testBit(toggleFunction.getBit() - 1)));
@@ -280,7 +283,7 @@ public class TrackManager {
                         new FeedbackBlockListener() {
                             @Override
                             public void trainEnterBlock(int blockNumber, int trainAddress,
-                                                        boolean drivingDirection) {
+                                    boolean drivingDirection) {
                                 eventBroadcaster.fireEvent(new FeedbackBlockEvent(
                                         FeedbackBlockEvent.STATE.ENTER,
                                         trackPart.getBlockFunction().getBus(),
@@ -290,7 +293,7 @@ public class TrackManager {
 
                             @Override
                             public void trainLeaveBlock(int blockNumber, int trainAddress,
-                                                        boolean drivingDirection) {
+                                    boolean drivingDirection) {
                                 eventBroadcaster.fireEvent(new FeedbackBlockEvent(
                                         FeedbackBlockEvent.STATE.EXIT,
                                         trackPart.getBlockFunction().getBus(),
@@ -313,8 +316,8 @@ public class TrackManager {
                                         busAddressIdentifier.getBus(),
                                         busAddressIdentifier.getAddress(),
                                         blockNr,
-                                        bitState
-                                ), bitState ? TrackPartBlockEvent.STATE.USED : TrackPartBlockEvent.STATE.FREE));
+                                        bitState), bitState ? TrackPartBlockEvent.STATE.USED
+                                                : TrackPartBlockEvent.STATE.FREE));
                             }
                         });
             }
@@ -373,7 +376,8 @@ public class TrackManager {
         }
     }
 
-    private void switchToggleFunction(HasToggleFunction toggleFunctionEntity, boolean stateOn) throws DeviceAccessException {
+    private void switchToggleFunction(HasToggleFunction toggleFunctionEntity, boolean stateOn)
+            throws DeviceAccessException {
         BusDataConfiguration trackPartConfig = toggleFunctionEntity.getToggleFunction();
         if (trackPartConfig != null && trackPartConfig.isValid()) {
             BusAddress busAddress = deviceManager.getConnectedDevice().getBusAddress(trackPartConfig.getBus(),
@@ -386,7 +390,6 @@ public class TrackManager {
             busAddress.send();
         }
     }
-
 
     public void constructionChanged(Construction construction) {
         currentConstruction = construction;

@@ -11,7 +11,6 @@ public class TrackUtils {
         return (TrackEditorContainer.draggableOffsetHeight + (zoomLevel * TrackEditorContainer.ZOOM_STEP)) * y;
     }
 
-
     public static int getLeftPositionFromX(int x, int zoomLevel) {
         return (TrackEditorContainer.draggableOffsetWidth + (zoomLevel * TrackEditorContainer.ZOOM_STEP)) * x;
     }
@@ -19,7 +18,6 @@ public class TrackUtils {
     public static int getYFromTopPosition(int topPos, int zoomLevel) {
         return topPos / TrackEditorContainer.draggableOffsetHeight + (zoomLevel * TrackEditorContainer.ZOOM_STEP);
     }
-
 
     public static int getXFromLeftPosition(int leftPos, int zoomLevel) {
         return leftPos / (TrackEditorContainer.draggableOffsetWidth + (zoomLevel * TrackEditorContainer.ZOOM_STEP));

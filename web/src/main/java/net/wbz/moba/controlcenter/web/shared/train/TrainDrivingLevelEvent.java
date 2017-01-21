@@ -1,11 +1,9 @@
 package net.wbz.moba.controlcenter.web.shared.train;
 
-import de.novanic.eventservice.client.event.Event;
-
 /**
  * @author Daniel Tuerk
  */
-public class TrainDrivingLevelEvent extends TrainStateEvent{
+public class TrainDrivingLevelEvent extends TrainStateEvent {
     private int speed;
 
     public TrainDrivingLevelEvent(long itemId, int speed) {

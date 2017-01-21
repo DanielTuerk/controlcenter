@@ -1,9 +1,5 @@
 package net.wbz.moba.controlcenter.web.shared;
 
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
 import java.io.Serializable;
 
 /**

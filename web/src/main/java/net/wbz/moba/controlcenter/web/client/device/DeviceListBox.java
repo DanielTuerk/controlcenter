@@ -1,18 +1,20 @@
 package net.wbz.moba.controlcenter.web.client.device;
 
+import java.util.Collection;
+import java.util.List;
+
+import org.gwtbootstrap3.extras.select.client.ui.Option;
+import org.gwtbootstrap3.extras.select.client.ui.Select;
+
 import com.google.common.collect.Lists;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+
 import de.novanic.eventservice.client.event.Event;
 import de.novanic.eventservice.client.event.listener.RemoteEventListener;
 import net.wbz.moba.controlcenter.web.client.EventReceiver;
 import net.wbz.moba.controlcenter.web.client.RequestUtils;
 import net.wbz.moba.controlcenter.web.shared.bus.DeviceInfo;
 import net.wbz.moba.controlcenter.web.shared.bus.DeviceInfoEvent;
-import org.gwtbootstrap3.extras.select.client.ui.Option;
-import org.gwtbootstrap3.extras.select.client.ui.Select;
-
-import java.util.Collection;
-import java.util.List;
 
 /**
  * @author Daniel Tuerk

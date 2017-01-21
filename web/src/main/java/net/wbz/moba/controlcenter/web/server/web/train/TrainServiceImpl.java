@@ -1,17 +1,19 @@
 package net.wbz.moba.controlcenter.web.server.web.train;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.google.gwt.user.client.rpc.RpcTokenException;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+
 import net.wbz.moba.controlcenter.web.shared.track.model.BusDataConfiguration;
 import net.wbz.moba.controlcenter.web.shared.train.TrainFunction;
 import net.wbz.moba.controlcenter.web.shared.train.TrainService;
 import net.wbz.selectrix4java.device.DeviceAccessException;
 import net.wbz.selectrix4java.device.DeviceManager;
 import net.wbz.selectrix4java.train.TrainModule;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Implementation of the {@link TrainService}.
@@ -69,9 +71,9 @@ public class TrainServiceImpl extends RemoteServiceServlet implements TrainServi
         getTrainModule(id).setLight(on);
     }
 
-//    private TrainModule getTrainModule(long id) {
-//
-//    }
+    // private TrainModule getTrainModule(long id) {
+    //
+    // }
 
     /**
      * TODO Avoid null pointer for non connected device
@@ -88,7 +90,6 @@ public class TrainServiceImpl extends RemoteServiceServlet implements TrainServi
             throw new RuntimeException("can't found train for address");
         }
     }
-
 
     @Override
     public void toggleFunctionState(long id, TrainFunction function, boolean state) {

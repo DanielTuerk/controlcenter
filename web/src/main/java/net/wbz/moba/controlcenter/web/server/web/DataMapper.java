@@ -1,15 +1,16 @@
 package net.wbz.moba.controlcenter.web.server.web;
 
+import java.util.Collection;
+
+import javax.annotation.Nullable;
+
 import com.google.common.base.Function;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.googlecode.jmapper.JMapper;
+
 import net.wbz.moba.controlcenter.web.server.persist.AbstractEntity;
 import net.wbz.moba.controlcenter.web.shared.track.model.AbstractDto;
-
-import javax.annotation.Nullable;
-import java.util.Collection;
-import java.util.List;
 
 /**
  * Mapper to create DTOs from Entities and backwards.
@@ -39,7 +40,6 @@ public class DataMapper<Target extends AbstractDto, Source extends AbstractEntit
     public Target transformSource(Source source) {
         return (Target) sourceMapper.getDestination(source);
     }
-
 
     public Collection<Source> transformTarget(final Collection<Target> targetDtos) {
         return Lists.newArrayList(Iterables.transform(targetDtos, new Function<Target, Source>() {

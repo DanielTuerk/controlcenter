@@ -1,12 +1,15 @@
 package net.wbz.moba.controlcenter.web.server.scenario;
 
-import net.wbz.moba.controlcenter.web.server.EventBroadcaster;
-import net.wbz.moba.controlcenter.web.server.web.viewer.TrackViewerServiceImpl;
-import net.wbz.moba.controlcenter.web.shared.scenario.*;
+import java.util.concurrent.Callable;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.concurrent.Callable;
+import net.wbz.moba.controlcenter.web.server.EventBroadcaster;
+import net.wbz.moba.controlcenter.web.server.web.viewer.TrackViewerServiceImpl;
+import net.wbz.moba.controlcenter.web.shared.scenario.Scenario;
+import net.wbz.moba.controlcenter.web.shared.scenario.ScenarioCommand;
+import net.wbz.moba.controlcenter.web.shared.scenario.ScenarioStateEvent;
 
 /**
  * @author Daniel Tuerk
@@ -19,10 +22,11 @@ public class ScenarioRunCallable implements Callable<Boolean> {
 
     private final Scenario scenario;
 
-    public ScenarioRunCallable(Scenario scenario, TrackViewerServiceImpl trackViewerRequest, EventBroadcaster eventBroadcaster) {
+    public ScenarioRunCallable(Scenario scenario, TrackViewerServiceImpl trackViewerRequest,
+            EventBroadcaster eventBroadcaster) {
         this.scenario = scenario;
         this.trackViewerRequest = trackViewerRequest;
-        this.eventBroadcaster=eventBroadcaster;
+        this.eventBroadcaster = eventBroadcaster;
     }
 
     @Override
@@ -36,23 +40,23 @@ public class ScenarioRunCallable implements Callable<Boolean> {
                     Thread.sleep(500L);
                 }
                 // stopped
-                if(scenario.getRunState()== Scenario.RUN_STATE.IDLE) {
+                if (scenario.getRunState() == Scenario.RUN_STATE.IDLE) {
                     LOG.info(String.format("scenario %s stopped", scenario.getName()));
                     break;
                 }
 
-//                if (command instanceof WaitScenarioCommand) {
-//                    Thread.sleep((long) ((WaitScenarioCommand) command).getSeconds() * 1000L);
-//                } else if (command instanceof ToggleScenarioCommand) {
-//                    ToggleScenarioCommand toggleCommand = (ToggleScenarioCommand) command;
-//                    BusDataConfigurationEntity trackPartConfiguration = toggleCommand.getConfigurations();
-//                    if (trackViewerRequest.getTrackPartState(trackPartConfiguration) != toggleCommand.isActive()) {
-//                        trackViewerRequest.toggleTrackPart(trackPartConfiguration, toggleCommand.isActive());
-//                    }
-//                } else {
-//                    LOG.error(String.format("invalid scenario command %s", scenario.getClass().getName()));
-//                    return false;
-//                }
+                // if (command instanceof WaitScenarioCommand) {
+                // Thread.sleep((long) ((WaitScenarioCommand) command).getSeconds() * 1000L);
+                // } else if (command instanceof ToggleScenarioCommand) {
+                // ToggleScenarioCommand toggleCommand = (ToggleScenarioCommand) command;
+                // BusDataConfigurationEntity trackPartConfiguration = toggleCommand.getConfigurations();
+                // if (trackViewerRequest.getTrackPartState(trackPartConfiguration) != toggleCommand.isActive()) {
+                // trackViewerRequest.toggleTrackPart(trackPartConfiguration, toggleCommand.isActive());
+                // }
+                // } else {
+                // LOG.error(String.format("invalid scenario command %s", scenario.getClass().getName()));
+                // return false;
+                // }
             }
 
         } catch (Exception e) {
@@ -71,6 +75,7 @@ public class ScenarioRunCallable implements Callable<Boolean> {
     public void pause() {
         fireEvents(scenario, Scenario.RUN_STATE.PAUSED);
     }
+
     public void resume() {
         fireEvents(scenario, Scenario.RUN_STATE.RUNNING);
     }

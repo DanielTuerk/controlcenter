@@ -9,8 +9,6 @@ import de.novanic.eventservice.client.event.Event;
  */
 public class FeedbackBlockEvent implements Event {
 
-    public enum STATE {ENTER, EXIT}
-
     private int bus;
     private int address;
     private int block;
@@ -21,8 +19,8 @@ public class FeedbackBlockEvent implements Event {
     public FeedbackBlockEvent() {
     }
 
-    public FeedbackBlockEvent(STATE state,int bus, int address, int block, int train, boolean direction) {
-        this.state=state;
+    public FeedbackBlockEvent(STATE state, int bus, int address, int block, int train, boolean direction) {
+        this.state = state;
         this.bus = bus;
         this.address = address;
         this.block = block;
@@ -52,5 +50,9 @@ public class FeedbackBlockEvent implements Event {
 
     public boolean isDirection() {
         return direction;
+    }
+
+    public enum STATE {
+        ENTER, EXIT
     }
 }

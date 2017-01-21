@@ -15,6 +15,6 @@ public class TrackEditorPanel extends AbstractTrackPanel {
 
     @Override
     public void addTrackWidget(Widget widget, int left, int top) {
-        add(widget,left,top);
+        add(widget, left, top);
     }
 }

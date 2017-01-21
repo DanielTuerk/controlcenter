@@ -1,12 +1,16 @@
 package net.wbz.moba.controlcenter.web.client;
 
-import com.google.gwt.dom.client.Element;
-import com.google.gwt.dom.client.Style;
-import com.google.gwt.user.client.*;
-import com.google.gwt.user.client.ui.*;
 import org.gwtbootstrap3.client.ui.Heading;
 import org.gwtbootstrap3.client.ui.constants.HeadingSize;
 import org.gwtbootstrap3.client.ui.gwt.FlowPanel;
+
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.Style;
+import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.ui.Panel;
+import com.google.gwt.user.client.ui.SimplePanel;
+import com.google.gwt.user.client.ui.Widget;
 
 /**
  * Custom popover implementation to show widgets in the content of the popover.
@@ -36,7 +40,7 @@ public class Popover extends FlowPanel {
      * Create a new instance for the given target widget.
      *
      * @param targetWidget {@link com.google.gwt.user.client.ui.Widget} to center the position of the popover
-     * @param title        {@link java.lang.String} additional title in the popover
+     * @param title {@link java.lang.String} additional title in the popover
      */
     public Popover(String parentContainerId, Widget targetWidget, String title) {
         this.parentContainerId = parentContainerId;
@@ -44,7 +48,6 @@ public class Popover extends FlowPanel {
 
         addStyleName("popover fade in");
         getElement().getStyle().setDisplay(Style.Display.BLOCK);
-
 
         arrowPanel = new SimplePanel();
         arrowPanel.addStyleName("arrow");

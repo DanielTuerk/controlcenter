@@ -7,7 +7,6 @@ import net.wbz.moba.controlcenter.web.shared.track.model.Curve;
  */
 public class CurveBottomLeftWidget extends AbstractCurveWidget {
 
-
     @Override
     public String getTrackWidgetStyleName() {
         return "widget_track_curve_bottom_left";
@@ -20,7 +19,7 @@ public class CurveBottomLeftWidget extends AbstractCurveWidget {
 
     @Override
     public Curve getNewTrackPart() {
-        //TODO
+        // TODO
         Curve curveBottomL = new Curve();
         curveBottomL.setDirection(Curve.DIRECTION.BOTTOM_LEFT);
         return curveBottomL;

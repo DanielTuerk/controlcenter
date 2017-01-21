@@ -1,8 +1,8 @@
 package net.wbz.moba.controlcenter.web.shared.track.model;
 
-import com.googlecode.jmapper.annotations.JMap;
-
 import java.util.Set;
+
+import com.googlecode.jmapper.annotations.JMap;
 
 /**
  * @author Daniel Tuerk

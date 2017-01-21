@@ -1,25 +1,27 @@
 package net.wbz.moba.controlcenter.web.client.viewer.bus;
 
-import com.google.common.collect.Maps;
-import com.google.gwt.dom.client.Style;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.Label;
-import de.novanic.eventservice.client.event.Event;
-import de.novanic.eventservice.client.event.listener.RemoteEventListener;
-import net.wbz.moba.controlcenter.web.client.EventReceiver;
-import net.wbz.moba.controlcenter.web.client.RequestUtils;
-import net.wbz.moba.controlcenter.web.shared.bus.BusDataEvent;
-import net.wbz.moba.controlcenter.web.shared.bus.DeviceInfoEvent;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 import org.gwtbootstrap3.client.ui.Panel;
 import org.gwtbootstrap3.client.ui.PanelBody;
 import org.gwtbootstrap3.client.ui.PanelHeader;
 import org.gwtbootstrap3.client.ui.Well;
 import org.gwtbootstrap3.client.ui.constants.WellSize;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import com.google.common.collect.Maps;
+import com.google.gwt.dom.client.Style;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.Label;
+
+import de.novanic.eventservice.client.event.Event;
+import de.novanic.eventservice.client.event.listener.RemoteEventListener;
+import net.wbz.moba.controlcenter.web.client.EventReceiver;
+import net.wbz.moba.controlcenter.web.client.RequestUtils;
+import net.wbz.moba.controlcenter.web.shared.bus.BusDataEvent;
+import net.wbz.moba.controlcenter.web.shared.bus.DeviceInfoEvent;
 
 /**
  * The BusMonitor shows the current data of each address for bus 0 and 1. The

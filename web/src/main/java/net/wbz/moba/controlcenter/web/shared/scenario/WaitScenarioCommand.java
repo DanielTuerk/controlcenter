@@ -12,7 +12,7 @@ public class WaitScenarioCommand extends ScenarioCommand {
     }
 
     public WaitScenarioCommand() {
-        seconds=0;
+        seconds = 0;
     }
 
     public int getSeconds() {
@@ -35,6 +35,6 @@ public class WaitScenarioCommand extends ScenarioCommand {
 
     @Override
     public String[] convertParameters() {
-        return new String[]{String.valueOf(seconds)};
+        return new String[] { String.valueOf(seconds) };
     }
 }

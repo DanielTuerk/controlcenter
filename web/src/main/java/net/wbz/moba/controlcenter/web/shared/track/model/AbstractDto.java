@@ -1,10 +1,11 @@
 package net.wbz.moba.controlcenter.web.shared.track.model;
 
+import java.io.Serializable;
+
 import com.google.common.base.Objects;
 import com.googlecode.jmapper.annotations.JMap;
-import net.wbz.moba.controlcenter.web.shared.Identity;
 
-import java.io.Serializable;
+import net.wbz.moba.controlcenter.web.shared.Identity;
 
 /**
  * @author Daniel Tuerk
@@ -13,7 +14,6 @@ public abstract class AbstractDto implements Serializable, Identity {
 
     @JMap
     private Long id;
-
 
     public AbstractDto() {
     }
@@ -33,8 +33,10 @@ public abstract class AbstractDto implements Serializable, Identity {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
         AbstractDto that = (AbstractDto) o;
         return Objects.equal(id, that.id);
     }

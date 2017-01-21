@@ -1,12 +1,15 @@
 package net.wbz.moba.controlcenter.web.server.persist.construction;
 
+import java.util.List;
+
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.OneToMany;
 
 import com.googlecode.jmapper.annotations.JMap;
+
 import net.wbz.moba.controlcenter.web.server.persist.AbstractEntity;
 import net.wbz.moba.controlcenter.web.server.persist.construction.track.AbstractTrackPartEntity;
-
-import javax.persistence.*;
-import java.util.List;
 
 /**
  * @author Daniel Tuerk

@@ -1,16 +1,13 @@
 package net.wbz.moba.controlcenter.web.shared.track.model;
 
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.gwt.user.client.rpc.IsSerializable;
 import com.googlecode.jmapper.annotations.JMap;
-
-import javax.persistence.CascadeType;
-import javax.persistence.FetchType;
-import javax.persistence.ManyToOne;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * @author Daniel Tuerk
@@ -20,25 +17,18 @@ public class Signal extends Straight implements HasToggleFunction {
     @JMap
     private TYPE type;
     @JMap
-    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private BusDataConfiguration signalConfigRed1;
     @JMap
-    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private BusDataConfiguration signalConfigRed2;
     @JMap
-    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private BusDataConfiguration signalConfigGreen1;
     @JMap
-    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private BusDataConfiguration signalConfigGreen2;
     @JMap
-    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private BusDataConfiguration signalConfigYellow1;
     @JMap
-    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private BusDataConfiguration signalConfigYellow2;
     @JMap
-    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private BusDataConfiguration signalConfigWhite;
 
     public TYPE getType() {
@@ -71,8 +61,8 @@ public class Signal extends Straight implements HasToggleFunction {
     @Override
     public Set<BusDataConfiguration> getConfigurationsOfFunctions() {
         Set<BusDataConfiguration> functions = super.getConfigurationsOfFunctions();
-        //TODO update to common usage by track editor to register consumers?
-//        functions.addAll(getSignalConfigurations());
+        // TODO update to common usage by track editor to register consumers?
+        // functions.addAll(getSignalConfigurations());
         return functions;
     }
 
@@ -133,7 +123,6 @@ public class Signal extends Straight implements HasToggleFunction {
         return Lists.newArrayList(signalConfigRed1, signalConfigRed2, signalConfigGreen1, signalConfigGreen2,
                 signalConfigYellow1, signalConfigYellow2, signalConfigWhite);
     }
-
 
     public List<BusDataConfiguration> getSignalConfigurations(TYPE type) {
         List<BusDataConfiguration> configs = Lists.newArrayList();
@@ -200,7 +189,7 @@ public class Signal extends Straight implements HasToggleFunction {
     }
 
     public Map<LIGHT, BusDataConfiguration> getSignalLightsConfigurations(TYPE type) {
-        Map<LIGHT, BusDataConfiguration> lightConfigs = Maps.newConcurrentMap();
+        Map<LIGHT, BusDataConfiguration> lightConfigs = Maps.newHashMap();
         for (LIGHT light : type.getLights()) {
             lightConfigs.put(light, getSignalConfiguration(light));
         }
@@ -218,10 +207,10 @@ public class Signal extends Straight implements HasToggleFunction {
      * Types of signal with corresponding mapping of the lights.
      */
     public enum TYPE implements IsSerializable {
-        BLOCK(new LIGHT[]{LIGHT.RED1, LIGHT.GREEN1}),
-        ENTER(new LIGHT[]{LIGHT.RED1, LIGHT.GREEN1, LIGHT.YELLOW1}),
-        EXIT(new LIGHT[]{LIGHT.RED1, LIGHT.RED2, LIGHT.GREEN1, LIGHT.YELLOW1, LIGHT.WHITE}),
-        BEFORE(new LIGHT[]{LIGHT.GREEN1, LIGHT.GREEN2, LIGHT.YELLOW1, LIGHT.YELLOW2});
+        BLOCK(new LIGHT[] { LIGHT.RED1, LIGHT.GREEN1 }), ENTER(new LIGHT[] { LIGHT.RED1, LIGHT.GREEN1,
+                LIGHT.YELLOW1 }), EXIT(new LIGHT[] { LIGHT.RED1, LIGHT.RED2, LIGHT.GREEN1, LIGHT.YELLOW1,
+                        LIGHT.WHITE }), BEFORE(new LIGHT[] { LIGHT.GREEN1, LIGHT.GREEN2, LIGHT.YELLOW1,
+                                LIGHT.YELLOW2 });
 
         private LIGHT[] lights;
 

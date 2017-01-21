@@ -3,6 +3,7 @@ package net.wbz.moba.controlcenter.web.client.viewer.settings;
 import java.util.Collection;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
+
 import net.wbz.moba.controlcenter.web.client.RequestUtils;
 import net.wbz.moba.controlcenter.web.shared.constrution.Construction;
 
@@ -22,14 +23,15 @@ public class ConstructionSelectionConfigEntry extends SelectionConfigEntry {
         // at first initialize value for direct usage
         ConstructionSelectionConfigEntry.super.handleStorageRead(value);
         // load available options for the select component
-        RequestUtils.getInstance().getConstructionService().loadConstructions(new AsyncCallback<Collection<Construction>>() {
-            @Override
-            public void onFailure(Throwable caught) {
+        RequestUtils.getInstance().getConstructionService().loadConstructions(
+                new AsyncCallback<Collection<Construction>>() {
+                    @Override
+                    public void onFailure(Throwable caught) {
 
-            }
+                    }
 
-            @Override
-            public void onSuccess(Collection<Construction> result) {
+                    @Override
+                    public void onSuccess(Collection<Construction> result) {
 
                         addOption(NOTHING_SELECTED);
                         for (Construction construction : result) {

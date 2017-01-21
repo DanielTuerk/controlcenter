@@ -1,16 +1,13 @@
 package net.wbz.moba.controlcenter.web.shared.bus;
 
 import com.googlecode.jmapper.annotations.JMap;
+
 import net.wbz.moba.controlcenter.web.shared.track.model.AbstractDto;
 
 /**
  * @author Daniel Tuerk
  */
 public class DeviceInfo extends AbstractDto {
-
-    public enum DEVICE_TYPE {
-        SERIAL, TEST
-    }
 
     @JMap
     private String key;
@@ -42,5 +39,8 @@ public class DeviceInfo extends AbstractDto {
         this.connected = connected;
     }
 
+    public enum DEVICE_TYPE {
+        SERIAL, TEST
+    }
 
 }

@@ -1,9 +1,9 @@
 package net.wbz.moba.controlcenter.web.client;
 
-import com.google.gwt.storage.client.Storage;
 import org.gwtbootstrap3.client.ui.constants.IconType;
 import org.gwtbootstrap3.extras.notify.client.ui.Notify;
 
+import com.google.gwt.storage.client.Storage;
 
 /**
  * @author Daniel Tuerk
@@ -16,7 +16,7 @@ public class LocalStorage {
     private LocalStorage() {
         stockStore = Storage.getLocalStorageIfSupported();
         if (stockStore == null) {
-            Notify.notify("",ERROR_TEXT, IconType.WARNING);
+            Notify.notify("", ERROR_TEXT, IconType.WARNING);
         }
     }
 

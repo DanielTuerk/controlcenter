@@ -1,9 +1,10 @@
 package net.wbz.moba.controlcenter.web.client.model.track;
 
-import net.wbz.moba.controlcenter.web.client.util.SvgTrackUtil;
-import net.wbz.moba.controlcenter.web.shared.track.model.Straight;
 import org.vectomatic.dom.svg.OMSVGDocument;
 import org.vectomatic.dom.svg.OMSVGSVGElement;
+
+import net.wbz.moba.controlcenter.web.client.util.SvgTrackUtil;
+import net.wbz.moba.controlcenter.web.shared.track.model.Straight;
 
 /**
  * @author Daniel Tuerk
@@ -18,11 +19,11 @@ abstract public class AbstractStraightWidget extends AbstractBlockSvgTrackWidget
     @Override
     public Straight getNewTrackPart() {
         Straight straight = new Straight();
-//        Employee newEmployee = request.create(Employee.class);
-//        Straight straight = new Straight();
+        // Employee newEmployee = request.create(Employee.class);
+        // Straight straight = new Straight();
         straight.setDirection(getStraightDirection());
-        //TODO
-//        return straight;
+        // TODO
+        // return straight;
         return straight;
     }
 
@@ -32,6 +33,5 @@ abstract public class AbstractStraightWidget extends AbstractBlockSvgTrackWidget
     public String getPaletteTitle() {
         return "Straight";
     }
-
 
 }

@@ -1,16 +1,32 @@
 package net.wbz.moba.controlcenter.web.server.web.constrution;
 
+import java.io.IOException;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.List;
+import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.google.inject.persist.Transactional;
+
 import net.wbz.moba.controlcenter.web.server.EventBroadcaster;
 import net.wbz.moba.controlcenter.web.server.persist.device.DeviceInfoDao;
 import net.wbz.moba.controlcenter.web.server.persist.device.DeviceInfoEntity;
 import net.wbz.moba.controlcenter.web.server.web.DataMapper;
-import net.wbz.moba.controlcenter.web.shared.bus.*;
+import net.wbz.moba.controlcenter.web.shared.bus.BusDataEvent;
+import net.wbz.moba.controlcenter.web.shared.bus.BusService;
+import net.wbz.moba.controlcenter.web.shared.bus.DeviceInfo;
+import net.wbz.moba.controlcenter.web.shared.bus.DeviceInfoEvent;
+import net.wbz.moba.controlcenter.web.shared.bus.PlayerEvent;
 import net.wbz.moba.controlcenter.web.shared.viewer.RailVoltageEvent;
 import net.wbz.selectrix4java.bus.consumption.AllBusDataConsumer;
 import net.wbz.selectrix4java.data.recording.BusDataPlayer;
@@ -20,16 +36,6 @@ import net.wbz.selectrix4java.device.DeviceAccessException;
 import net.wbz.selectrix4java.device.DeviceConnectionListener;
 import net.wbz.selectrix4java.device.DeviceManager;
 import net.wbz.selectrix4java.device.serial.SerialDevice;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
-import java.nio.file.DirectoryStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.List;
-import java.util.Map;
 
 /**
  * TODO die stored device sind bullshit... is ja nur für mapping von device info zu selectrix device
@@ -53,7 +59,7 @@ public class BusServiceImpl extends RemoteServiceServlet implements BusService {
 
     @Inject
     public BusServiceImpl(DeviceManager deviceManager, final EventBroadcaster eventBroadcaster,
-                          DeviceRecorder deviceRecorder, DeviceInfoDao deviceInfoDao) {
+            DeviceRecorder deviceRecorder, DeviceInfoDao deviceInfoDao) {
         this.deviceManager = deviceManager;
         this.eventBroadcaster = eventBroadcaster;
         this.deviceRecorder = deviceRecorder;
@@ -101,8 +107,9 @@ public class BusServiceImpl extends RemoteServiceServlet implements BusService {
     }
 
     private void registerDevice(DeviceInfoEntity deviceInfo) {
-        storedDevices.put(dtoMapper.transformSource(deviceInfo), deviceManager.registerDevice(DeviceManager.DEVICE_TYPE.valueOf(
-                deviceInfo.getType().name()), deviceInfo.getKey(), SerialDevice.DEFAULT_BAUD_RATE_FCC));
+        storedDevices.put(dtoMapper.transformSource(deviceInfo), deviceManager.registerDevice(DeviceManager.DEVICE_TYPE
+                .valueOf(
+                        deviceInfo.getType().name()), deviceInfo.getKey(), SerialDevice.DEFAULT_BAUD_RATE_FCC));
     }
 
     @Override

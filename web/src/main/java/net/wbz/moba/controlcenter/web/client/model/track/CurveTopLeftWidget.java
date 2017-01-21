@@ -18,12 +18,10 @@ public class CurveTopLeftWidget extends AbstractCurveWidget {
         return curveTopLeft;
     }
 
-
     @Override
     public String getTrackWidgetStyleName() {
         return "widget_track_curve_top_left";
     }
-
 
     @Override
     public Curve.DIRECTION getCurveDirection() {

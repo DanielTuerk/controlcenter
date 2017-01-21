@@ -4,7 +4,6 @@ import net.wbz.moba.controlcenter.web.server.persist.construction.track.Abstract
 
 /**
  * TODO: remove? use constants in DTOs
- *
  * Class to hold all constants to avoid null pointer by old serialized
  * {@link AbstractTrackPartEntity}s which didn't contain newer constants.
  *

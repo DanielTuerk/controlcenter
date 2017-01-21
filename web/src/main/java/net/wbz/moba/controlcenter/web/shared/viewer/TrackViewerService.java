@@ -2,9 +2,8 @@ package net.wbz.moba.controlcenter.web.shared.viewer;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
+
 import net.wbz.moba.controlcenter.web.guice.MyGuiceServletConfig;
-import net.wbz.moba.controlcenter.web.server.persist.construction.track.SignalConfiguration;
-import net.wbz.moba.controlcenter.web.server.persist.construction.track.SignalEntity;
 import net.wbz.moba.controlcenter.web.shared.track.model.BusDataConfiguration;
 import net.wbz.moba.controlcenter.web.shared.track.model.Signal;
 
@@ -18,7 +17,6 @@ public interface TrackViewerService extends RemoteService {
 
     /**
      * @deprecated should be dropped
-     *
      * @param configuration
      * @return
      */
@@ -27,7 +25,7 @@ public interface TrackViewerService extends RemoteService {
     /**
      * Switch the signal to the new {@link Signal.FUNCTION}.
      *
-     * @param signal         {@link Signal}
+     * @param signal {@link Signal}
      * @param signalFunction {@link Signal.FUNCTION}
      */
     void switchSignal(Signal signal, Signal.FUNCTION signalFunction);

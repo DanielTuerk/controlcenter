@@ -1,11 +1,12 @@
 package net.wbz.moba.controlcenter.web.shared.editor;
 
+import java.util.Collection;
+
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
+
 import net.wbz.moba.controlcenter.web.guice.MyGuiceServletConfig;
 import net.wbz.moba.controlcenter.web.shared.track.model.AbstractTrackPart;
-
-import java.util.Collection;
 
 /**
  * @author Daniel Tuerk

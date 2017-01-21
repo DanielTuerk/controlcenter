@@ -10,6 +10,7 @@ public class TrackPartBlockEvent implements Event {
 
     private BusDataConfiguration config;
     private STATE state;
+
     public TrackPartBlockEvent() {
     }
 
@@ -42,5 +43,7 @@ public class TrackPartBlockEvent implements Event {
                 '}';
     }
 
-    public enum STATE {UNKNOWN, FREE, USED}
+    public enum STATE {
+        UNKNOWN, FREE, USED
+    }
 }

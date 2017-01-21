@@ -3,6 +3,7 @@ package net.wbz.moba.controlcenter.web.client.device;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+
 import net.wbz.moba.controlcenter.web.client.RequestUtils;
 import net.wbz.moba.controlcenter.web.client.util.OnOffToggleButton;
 
@@ -28,7 +29,8 @@ public class BusConnectionToggleButton extends OnOffToggleButton {
 
                                 @Override
                                 public void onSuccess(Void result) {
-                                    RequestUtils.getInstance().getBusService().connectBus(RequestUtils.VOID_ASYNC_CALLBACK);
+                                    RequestUtils.getInstance().getBusService().connectBus(
+                                            RequestUtils.VOID_ASYNC_CALLBACK);
 
                                 }
                             });

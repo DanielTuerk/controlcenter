@@ -1,8 +1,9 @@
 package net.wbz.moba.controlcenter.web.client.util;
 
-import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import org.gwtbootstrap3.extras.toggleswitch.client.ui.ToggleSwitch;
 import org.gwtbootstrap3.extras.toggleswitch.client.ui.base.constants.ColorType;
+
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
 
 /**
  * Toggle button with text and state text 'on' and 'off' colored.

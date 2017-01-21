@@ -8,6 +8,7 @@
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
 
         <!-- common models -->
+        <class>net.wbz.moba.controlcenter.web.server.persist.AbstractEntity</class>
         <class>net.wbz.moba.controlcenter.web.server.persist.construction.ConstructionEntity</class>
         <class>net.wbz.moba.controlcenter.web.server.persist.config.ConfigValueEntity</class>
         <class>net.wbz.moba.controlcenter.web.server.persist.train.TrainEntity</class>
@@ -16,10 +17,10 @@
 
         <!-- track configuration models -->
         <class>net.wbz.moba.controlcenter.web.server.persist.construction.track.AbstractTrackPartEntity</class>
+        <class>net.wbz.moba.controlcenter.web.server.persist.construction.track.BusDataConfigurationEntity</class>
         <class>net.wbz.moba.controlcenter.web.server.persist.construction.track.TrackPartFunctionEntity</class>
         <class>net.wbz.moba.controlcenter.web.server.persist.construction.track.GridPositionEntity</class>
         <class>net.wbz.moba.controlcenter.web.server.persist.construction.track.EventConfigurationEntity</class>
-        <class>net.wbz.moba.controlcenter.web.server.persist.construction.track.BusDataConfigurationEntity</class>
 
         <!-- track part models -->
         <class>net.wbz.moba.controlcenter.web.server.persist.construction.track.CurveEntity</class>

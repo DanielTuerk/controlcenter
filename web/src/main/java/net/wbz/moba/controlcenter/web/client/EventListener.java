@@ -7,5 +7,6 @@ import de.novanic.eventservice.client.event.Event;
  */
 public interface EventListener<T extends Event> {
     public void apply(T event);
+
     public Class<? extends Event> getEventClass();
 }

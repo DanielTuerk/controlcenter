@@ -1,9 +1,10 @@
 package net.wbz.moba.controlcenter.web.client.model.track;
 
-import net.wbz.moba.controlcenter.web.client.util.SvgTrackUtil;
-import net.wbz.moba.controlcenter.web.shared.track.model.Curve;
 import org.vectomatic.dom.svg.OMSVGDocument;
 import org.vectomatic.dom.svg.OMSVGSVGElement;
+
+import net.wbz.moba.controlcenter.web.client.util.SvgTrackUtil;
+import net.wbz.moba.controlcenter.web.shared.track.model.Curve;
 
 /**
  * @author Daniel Tuerk

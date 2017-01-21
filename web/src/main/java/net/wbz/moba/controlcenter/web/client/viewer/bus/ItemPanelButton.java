@@ -1,10 +1,11 @@
 package net.wbz.moba.controlcenter.web.client.viewer.bus;
 
-import com.google.gwt.user.client.Timer;
 import org.gwtbootstrap3.client.ui.Button;
 
+import com.google.gwt.user.client.Timer;
+
 /**
- * Button  which represents a single bit for a bus address.
+ * Button which represents a single bit for a bus address.
  * <p/>
  * Toggle the state of the bit and show different background color on change.
  *

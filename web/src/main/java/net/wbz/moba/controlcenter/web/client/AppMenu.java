@@ -1,5 +1,7 @@
 package net.wbz.moba.controlcenter.web.client;
 
+import org.gwtbootstrap3.client.ui.AnchorListItem;
+
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -7,7 +9,6 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
-import org.gwtbootstrap3.client.ui.AnchorListItem;
 
 /**
  * Menu bar on the top of the application.

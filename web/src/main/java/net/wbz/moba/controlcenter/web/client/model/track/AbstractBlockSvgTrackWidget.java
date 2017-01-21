@@ -1,12 +1,7 @@
 package net.wbz.moba.controlcenter.web.client.model.track;
 
-import com.google.common.base.Strings;
-import com.google.common.collect.Maps;
-import com.google.gwt.user.client.ui.Widget;
-import net.wbz.moba.controlcenter.web.client.editor.track.EditTrackWidgetHandler;
-import net.wbz.moba.controlcenter.web.shared.track.model.AbstractTrackPart;
-import net.wbz.moba.controlcenter.web.shared.track.model.BusDataConfiguration;
-import net.wbz.moba.controlcenter.web.shared.train.Train;
+import java.util.Map;
+
 import org.gwtbootstrap3.client.ui.FieldSet;
 import org.gwtbootstrap3.client.ui.FormGroup;
 import org.gwtbootstrap3.client.ui.FormLabel;
@@ -18,7 +13,14 @@ import org.vectomatic.dom.svg.OMSVGElement;
 import org.vectomatic.dom.svg.OMSVGTextElement;
 import org.vectomatic.dom.svg.utils.SVGConstants;
 
-import java.util.Map;
+import com.google.common.base.Strings;
+import com.google.common.collect.Maps;
+import com.google.gwt.user.client.ui.Widget;
+
+import net.wbz.moba.controlcenter.web.client.editor.track.EditTrackWidgetHandler;
+import net.wbz.moba.controlcenter.web.shared.track.model.AbstractTrackPart;
+import net.wbz.moba.controlcenter.web.shared.track.model.BusDataConfiguration;
+import net.wbz.moba.controlcenter.web.shared.train.Train;
 
 /**
  * Abstract track widget for {@link AbstractTrackPart} which has a block function to change the style of the element
@@ -137,7 +139,8 @@ abstract public class AbstractBlockSvgTrackWidget<T extends AbstractTrackPart> e
     }
 
     /**
-     * Show the information of the given {@link net.wbz.moba.controlcenter.web.shared.train.Train} on this block element.
+     * Show the information of the given {@link net.wbz.moba.controlcenter.web.shared.train.Train} on this block
+     * element.
      *
      * @param train {@link net.wbz.moba.controlcenter.web.shared.train.Train}
      */
@@ -159,7 +162,6 @@ abstract public class AbstractBlockSvgTrackWidget<T extends AbstractTrackPart> e
             trainElements.remove(train);
         }
     }
-
 
     @Override
     public String getConfigurationInfo() {

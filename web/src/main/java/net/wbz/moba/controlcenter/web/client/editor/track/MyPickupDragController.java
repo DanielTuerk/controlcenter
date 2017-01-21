@@ -13,12 +13,13 @@ public class MyPickupDragController extends PickupDragController {
      * temporarily picked up and moved around the specified boundary panel.
      * <p/>
      * <p>
-     * Note: An implicit {@link com.allen_sauer.gwt.dnd.client.drop.BoundaryDropController} is created and registered automatically.
+     * Note: An implicit {@link com.allen_sauer.gwt.dnd.client.drop.BoundaryDropController} is created and registered
+     * automatically.
      * </p>
      *
-     * @param boundaryPanel                the desired boundary panel or <code>RootPanel.get()</code> (read
-     *                                     http://code.google.com/p/gwt-dnd/wiki/GettingStarted) if entire document body is to be
-     *                                     the boundary
+     * @param boundaryPanel the desired boundary panel or <code>RootPanel.get()</code> (read
+     *            http://code.google.com/p/gwt-dnd/wiki/GettingStarted) if entire document body is to be
+     *            the boundary
      * @param allowDroppingOnBoundaryPanel whether or not boundary panel should allow dropping
      */
     public MyPickupDragController(AbsolutePanel boundaryPanel, boolean allowDroppingOnBoundaryPanel) {
@@ -27,6 +28,6 @@ public class MyPickupDragController extends PickupDragController {
 
     @Override
     public void toggleSelection(Widget draggable) {
-        super.toggleSelection(draggable);    //To change body of overridden methods use File | Settings | File Templates.
+        super.toggleSelection(draggable); // To change body of overridden methods use File | Settings | File Templates.
     }
 }

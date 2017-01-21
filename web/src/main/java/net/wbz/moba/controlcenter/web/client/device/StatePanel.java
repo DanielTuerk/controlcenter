@@ -1,10 +1,21 @@
 package net.wbz.moba.controlcenter.web.client.device;
 
+import java.util.Collection;
+
+import javax.annotation.Nullable;
+
+import org.gwtbootstrap3.client.ui.Button;
+import org.gwtbootstrap3.client.ui.Label;
+import org.gwtbootstrap3.client.ui.gwt.FlowPanel;
+import org.gwtbootstrap3.extras.notify.client.ui.Notify;
+import org.gwtbootstrap3.extras.toggleswitch.client.ui.ToggleSwitch;
+
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+
 import de.novanic.eventservice.client.event.Event;
 import de.novanic.eventservice.client.event.listener.RemoteEventListener;
 import net.wbz.moba.controlcenter.web.client.EventReceiver;
@@ -15,14 +26,6 @@ import net.wbz.moba.controlcenter.web.shared.bus.DeviceInfoEvent;
 import net.wbz.moba.controlcenter.web.shared.bus.PlayerEvent;
 import net.wbz.moba.controlcenter.web.shared.bus.RecordingEvent;
 import net.wbz.moba.controlcenter.web.shared.viewer.RailVoltageEvent;
-import org.gwtbootstrap3.client.ui.Button;
-import org.gwtbootstrap3.client.ui.Label;
-import org.gwtbootstrap3.client.ui.gwt.FlowPanel;
-import org.gwtbootstrap3.extras.notify.client.ui.Notify;
-import org.gwtbootstrap3.extras.toggleswitch.client.ui.ToggleSwitch;
-
-import javax.annotation.Nullable;
-import java.util.Collection;
 
 /**
  * Panel for the state of the bus.
@@ -197,7 +200,8 @@ public class StatePanel extends FlowPanel {
                         public void onSuccess(Collection<DeviceInfo> result) {
                             for (DeviceInfo deviceInfo : result) {
                                 if (deviceInfo.isConnected()) {
-                                    EventReceiver.getInstance().fireEvent(new DeviceInfoEvent(deviceInfo, DeviceInfoEvent.TYPE.CONNECTED));
+                                    EventReceiver.getInstance().fireEvent(new DeviceInfoEvent(deviceInfo,
+                                            DeviceInfoEvent.TYPE.CONNECTED));
                                     break;
                                 }
                             }

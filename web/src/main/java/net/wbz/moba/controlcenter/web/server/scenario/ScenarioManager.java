@@ -1,29 +1,32 @@
 package net.wbz.moba.controlcenter.web.server.scenario;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
-import net.wbz.moba.controlcenter.web.server.web.constrution.ConstructionServiceImpl;
-import net.wbz.moba.controlcenter.web.shared.scenario.Scenario;
-import net.wbz.moba.controlcenter.web.shared.scenario.ScenarioCommand;
-import org.apache.commons.lang.NotImplementedException;
-import org.reflections.Reflections;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.NotImplementedException;
+import org.reflections.Reflections;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+
+import net.wbz.moba.controlcenter.web.server.web.constrution.ConstructionServiceImpl;
+import net.wbz.moba.controlcenter.web.shared.scenario.Scenario;
+import net.wbz.moba.controlcenter.web.shared.scenario.ScenarioCommand;
+
 /**
  * Manipulation for the {@link net.wbz.moba.controlcenter.web.shared.scenario.Scenario}
  * in an {@link net.wbz.moba.controlcenter.web.shared.constrution.Construction}.
  * <p/>
  * {@link net.wbz.moba.controlcenter.web.shared.scenario.Scenario}s are stored in an own database named by the
- * corresponding construction. Access and manipulation of each {@link net.wbz.moba.controlcenter.web.shared.scenario.Scenario}
+ * corresponding construction. Access and manipulation of each
+ * {@link net.wbz.moba.controlcenter.web.shared.scenario.Scenario}
  * are from persistence.
  *
  * @author Daniel Tuerk
@@ -53,7 +56,8 @@ public class ScenarioManager {
                     ScenarioCommand plugin = constructor.newInstance();
                     commandMapping.put(plugin.getCommand(), plugin.getClass());
                 } catch (Throwable e) {
-                    // catch all possible errors, because a broken plugin should not take effect to start the core components
+                    // catch all possible errors, because a broken plugin should not take effect to start the core
+                    // components
                     LOG.error(errorMsg, e);
                 }
             }
@@ -61,9 +65,9 @@ public class ScenarioManager {
     }
 
     public List<Scenario> getScenarios() throws Exception {
-//        scenarios.clear();
-//        scenarios.addAll(databaseFactory.query());
-//        return scenarios;
+        // scenarios.clear();
+        // scenarios.addAll(databaseFactory.query());
+        // return scenarios;
         return new ArrayList<>();
     }
 
@@ -97,13 +101,13 @@ public class ScenarioManager {
     }
 
     private void storeScenario(Scenario scenario) throws Exception {
-//        databaseFactory.store(scenario);
+        // databaseFactory.store(scenario);
     }
 
     public void deleteDatabase(long scenarioId) {
         throw new NotImplementedException();
-// TODO
-//   databaseFactory.deleteDatabase(getDatabaseKey(getScenarioById(scenarioId)));
+        // TODO
+        // databaseFactory.deleteDatabase(getDatabaseKey(getScenarioById(scenarioId)));
     }
 
     public void updateScenario(Scenario scenario) throws Exception {

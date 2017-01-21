@@ -4,6 +4,7 @@ import com.allen_sauer.gwt.dnd.client.HasDragHandle;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.FocusPanel;
 import com.google.gwt.user.client.ui.Widget;
+
 import net.wbz.moba.controlcenter.web.client.model.track.AbstractSvgTrackWidget;
 
 /**
@@ -56,7 +57,7 @@ public class PaletteWidget extends AbsolutePanel implements HasDragHandle {
     /**
      * Let shim size match our size.
      *
-     * @param width  the desired pixel width
+     * @param width the desired pixel width
      * @param height the desired pixel height
      */
     @Override
@@ -68,7 +69,7 @@ public class PaletteWidget extends AbsolutePanel implements HasDragHandle {
     /**
      * Let shim size match our size.
      *
-     * @param width  the desired CSS width
+     * @param width the desired CSS width
      * @param height the desired CSS height
      */
     @Override

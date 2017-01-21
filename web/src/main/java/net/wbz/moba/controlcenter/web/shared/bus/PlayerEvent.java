@@ -9,8 +9,6 @@ import de.novanic.eventservice.client.event.Event;
  */
 public class PlayerEvent implements Event {
 
-    public enum STATE {START, STOP}
-
     private STATE state;
 
     public PlayerEvent() {
@@ -22,6 +20,10 @@ public class PlayerEvent implements Event {
 
     public STATE getState() {
         return state;
+    }
+
+    public enum STATE {
+        START, STOP
     }
 
 }

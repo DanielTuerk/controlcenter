@@ -1,14 +1,26 @@
 package net.wbz.moba.controlcenter.web.client.device;
 
-import com.google.gwt.event.dom.client.*;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import net.wbz.moba.controlcenter.web.client.RequestUtils;
-import org.gwtbootstrap3.client.ui.*;
+import org.gwtbootstrap3.client.ui.Button;
+import org.gwtbootstrap3.client.ui.Form;
+import org.gwtbootstrap3.client.ui.FormGroup;
+import org.gwtbootstrap3.client.ui.Modal;
+import org.gwtbootstrap3.client.ui.ModalBody;
+import org.gwtbootstrap3.client.ui.ModalFooter;
+import org.gwtbootstrap3.client.ui.TextBox;
 import org.gwtbootstrap3.client.ui.constants.ButtonType;
 import org.gwtbootstrap3.client.ui.constants.FormType;
 import org.gwtbootstrap3.client.ui.constants.IconType;
 import org.gwtbootstrap3.client.ui.constants.Pull;
 import org.gwtbootstrap3.extras.notify.client.ui.Notify;
+
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyPressEvent;
+import com.google.gwt.event.dom.client.KeyPressHandler;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+
+import net.wbz.moba.controlcenter.web.client.RequestUtils;
 
 /**
  * Modal to enter and send the data for an address of a bus.

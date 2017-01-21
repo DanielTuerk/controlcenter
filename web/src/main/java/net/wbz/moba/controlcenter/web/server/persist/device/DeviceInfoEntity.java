@@ -1,11 +1,12 @@
 package net.wbz.moba.controlcenter.web.server.persist.device;
 
-import com.googlecode.jmapper.annotations.JMap;
-import net.wbz.moba.controlcenter.web.server.persist.AbstractEntity;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Transient;
+
+import com.googlecode.jmapper.annotations.JMap;
+
+import net.wbz.moba.controlcenter.web.server.persist.AbstractEntity;
 
 /**
  * @author Daniel Tuerk
@@ -16,7 +17,6 @@ public class DeviceInfoEntity extends AbstractEntity {
     public enum DEVICE_TYPE {
         SERIAL, TEST
     }
-
 
     @Transient
     private boolean connected;
@@ -60,6 +60,5 @@ public class DeviceInfoEntity extends AbstractEntity {
                 ", type=" + type +
                 '}';
     }
-
 
 }

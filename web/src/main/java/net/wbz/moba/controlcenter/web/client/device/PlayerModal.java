@@ -1,9 +1,7 @@
 package net.wbz.moba.controlcenter.web.client.device;
 
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import net.wbz.moba.controlcenter.web.client.RequestUtils;
+import java.util.Collection;
+
 import org.gwtbootstrap3.client.ui.Button;
 import org.gwtbootstrap3.client.ui.Modal;
 import org.gwtbootstrap3.client.ui.ModalBody;
@@ -13,7 +11,11 @@ import org.gwtbootstrap3.client.ui.constants.Pull;
 import org.gwtbootstrap3.client.ui.constants.Spy;
 import org.gwtbootstrap3.client.ui.gwt.FlowPanel;
 
-import java.util.Collection;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+
+import net.wbz.moba.controlcenter.web.client.RequestUtils;
 
 /**
  * Modal to select the playback file to start the playback.
@@ -67,7 +69,8 @@ public class PlayerModal extends Modal {
                     btnRecord.addClickHandler(new ClickHandler() {
                         @Override
                         public void onClick(ClickEvent event) {
-                            RequestUtils.getInstance().getBusService().startPlayer(name, RequestUtils.VOID_ASYNC_CALLBACK);
+                            RequestUtils.getInstance().getBusService().startPlayer(name,
+                                    RequestUtils.VOID_ASYNC_CALLBACK);
                             hide();
                         }
                     });

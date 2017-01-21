@@ -22,13 +22,17 @@ public class BusAddressIdentifier {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
 
         BusAddressIdentifier that = (BusAddressIdentifier) o;
 
-        if (address != that.address) return false;
-        if (bus != that.bus) return false;
+        if (address != that.address)
+            return false;
+        if (bus != that.bus)
+            return false;
 
         return true;
     }

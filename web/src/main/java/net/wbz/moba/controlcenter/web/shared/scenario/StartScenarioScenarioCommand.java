@@ -14,7 +14,7 @@ public class StartScenarioScenarioCommand extends ScenarioCommand {
     }
 
     public StartScenarioScenarioCommand() {
-        scenarioId=-1L;
+        scenarioId = -1L;
     }
 
     public long getScenarioId() {
@@ -33,6 +33,6 @@ public class StartScenarioScenarioCommand extends ScenarioCommand {
 
     @Override
     public String[] convertParameters() {
-        return new String[]{String.valueOf(scenarioId)};
+        return new String[] { String.valueOf(scenarioId) };
     }
 }

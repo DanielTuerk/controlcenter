@@ -1,7 +1,7 @@
 package net.wbz.moba.controlcenter.web.shared.constrution;
 
-
 import com.googlecode.jmapper.annotations.JMap;
+
 import net.wbz.moba.controlcenter.web.shared.track.model.AbstractDto;
 
 /**

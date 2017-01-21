@@ -1,9 +1,9 @@
 package net.wbz.moba.controlcenter.web.shared.track.model;
 
+import java.util.Set;
+
 import com.google.common.collect.Sets;
 import com.googlecode.jmapper.annotations.JMap;
-
-import java.util.Set;
 
 /**
  * @author Daniel Tuerk
@@ -16,26 +16,26 @@ public abstract class AbstractTrackPart extends AbstractDto {
     @JMap
     private BusDataConfiguration blockFunction;
 
-    public void setGridPosition(GridPosition gridPosition) {
-        this.gridPosition = gridPosition;
-    }
-
     public GridPosition getGridPosition() {
         return gridPosition;
     }
 
+    public void setGridPosition(GridPosition gridPosition) {
+        this.gridPosition = gridPosition;
+    }
 
     /**
      * TODO drop
+     * 
      * @return
      */
     public Set<BusDataConfiguration> getConfigurationsOfFunctions() {
-        //TODO
-        return  Sets.newHashSet(blockFunction);
-//        for (TrackPartFunctionEntity function : getFunctionConfigs()) {
-//            configurations.add(function.getConfigurations());
-//        }
-//        return configurations;
+        // TODO
+        return Sets.newHashSet(blockFunction);
+        // for (TrackPartFunctionEntity function : getFunctionConfigs()) {
+        // configurations.add(function.getConfigurations());
+        // }
+        // return configurations;
     }
 
     public BusDataConfiguration getBlockFunction() {

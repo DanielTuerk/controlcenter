@@ -1,17 +1,22 @@
 package net.wbz.moba.controlcenter.web.server.persist.construction.track;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+
 import com.googlecode.jmapper.annotations.JMap;
+
 import net.wbz.moba.controlcenter.web.shared.track.model.AbstractTrackPart;
 import net.wbz.moba.controlcenter.web.shared.track.model.Uncoupler;
-
-import javax.persistence.*;
 
 /**
  * @author Daniel Tuerk
  */
 @Entity
 @Table(name = "TRACKPART_UNCOUPLER")
-public class UncouplerEntity extends StraightEntity implements HasToggleFunctionEntity{
+public class UncouplerEntity extends StraightEntity implements HasToggleFunctionEntity {
 
     @JMap
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
@@ -43,6 +48,5 @@ public class UncouplerEntity extends StraightEntity implements HasToggleFunction
     public Class<? extends AbstractTrackPart> getDefaultDtoClass() {
         return Uncoupler.class;
     }
-
 
 }

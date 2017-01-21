@@ -1,8 +1,5 @@
 package net.wbz.moba.controlcenter.web.client.viewer.controls.train;
 
-import com.google.common.base.Strings;
-import com.google.gwt.event.dom.client.ClickHandler;
-import net.wbz.moba.controlcenter.web.shared.train.TrainFunction;
 import org.gwtbootstrap3.client.ui.Button;
 import org.gwtbootstrap3.client.ui.FieldSet;
 import org.gwtbootstrap3.client.ui.FormGroup;
@@ -11,6 +8,11 @@ import org.gwtbootstrap3.client.ui.TextBox;
 import org.gwtbootstrap3.client.ui.constants.IconType;
 import org.gwtbootstrap3.extras.select.client.ui.Option;
 import org.gwtbootstrap3.extras.select.client.ui.Select;
+
+import com.google.common.base.Strings;
+import com.google.gwt.event.dom.client.ClickHandler;
+
+import net.wbz.moba.controlcenter.web.shared.train.TrainFunction;
 
 /**
  * @author Daniel Tuerk

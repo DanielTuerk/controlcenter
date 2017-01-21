@@ -1,20 +1,20 @@
 package net.wbz.moba.controlcenter.web.client.viewer.track.parallax;
 
-import com.google.common.collect.Lists;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+
 import com.google.common.collect.Maps;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Widget;
+
 import net.wbz.moba.controlcenter.web.client.RequestUtils;
 import net.wbz.moba.controlcenter.web.client.viewer.track.AbstractTrackViewerPanel;
 import net.wbz.moba.controlcenter.web.client.viewer.track.parallax.trackparts.Basic3dTrackWidget;
 import net.wbz.moba.controlcenter.web.shared.track.model.AbstractTrackPart;
 import net.wbz.moba.controlcenter.web.shared.track.model.BusDataConfiguration;
 import thothbot.parallax.core.client.RenderingPanel;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Viewer panel for the 3D scene.
@@ -51,38 +51,40 @@ public class TrackViewer3dPanel extends AbstractTrackViewerPanel {
 
             @Override
             public void onSuccess(Boolean response) {
-                RequestUtils.getInstance().getTrackEditorService().loadTrack(new AsyncCallback<Collection<AbstractTrackPart>>() {
-                    @Override
-                    public void onFailure(Throwable caught) {
+                RequestUtils.getInstance().getTrackEditorService().loadTrack(
+                        new AsyncCallback<Collection<AbstractTrackPart>>() {
+                            @Override
+                            public void onFailure(Throwable caught) {
 
-                    }
-
-                    @Override
-                    public void onSuccess(Collection<AbstractTrackPart> trackParts) {
-                        trackWidgetsOfConfiguration.clear();
-
-                        for (AbstractTrackPart trackPart : trackParts) {
-                            Basic3dTrackWidget trackWidget = animatedScene.addTrackWidget(trackPart);
-
-                            for (BusDataConfiguration configuration : trackPart.getConfigurationsOfFunctions()) {
-
-                                // ignore default configs of track widget to register event handler
-                                if (configuration.isValid()) {
-                                    if (!trackWidgetsOfConfiguration.containsKey(configuration)) {
-                                        trackWidgetsOfConfiguration.put(configuration,
-                                                new ArrayList<Basic3dTrackWidget>());
-                                    }
-                                    // avoid same widget for equal bit state configuration
-                                    if (!trackWidgetsOfConfiguration.get(configuration).contains(trackWidget)) {
-                                        trackWidgetsOfConfiguration.get(configuration).add(trackWidget);
-                                    }
-                                }
                             }
 
-                        }
-                        animatedScene.centerCamera();
-                    }
-                });
+                            @Override
+                            public void onSuccess(Collection<AbstractTrackPart> trackParts) {
+                                trackWidgetsOfConfiguration.clear();
+
+                                for (AbstractTrackPart trackPart : trackParts) {
+                                    Basic3dTrackWidget trackWidget = animatedScene.addTrackWidget(trackPart);
+
+                                    for (BusDataConfiguration configuration : trackPart
+                                            .getConfigurationsOfFunctions()) {
+
+                                        // ignore default configs of track widget to register event handler
+                                        if (configuration.isValid()) {
+                                            if (!trackWidgetsOfConfiguration.containsKey(configuration)) {
+                                                trackWidgetsOfConfiguration.put(configuration,
+                                                        new ArrayList<Basic3dTrackWidget>());
+                                            }
+                                            // avoid same widget for equal bit state configuration
+                                            if (!trackWidgetsOfConfiguration.get(configuration).contains(trackWidget)) {
+                                                trackWidgetsOfConfiguration.get(configuration).add(trackWidget);
+                                            }
+                                        }
+                                    }
+
+                                }
+                                animatedScene.centerCamera();
+                            }
+                        });
             }
         });
     }
@@ -98,7 +100,7 @@ public class TrackViewer3dPanel extends AbstractTrackViewerPanel {
 
     @Override
     protected void updateTrackPartBlockState(BusDataConfiguration configuration, boolean state) {
-        //TODO
+        // TODO
     }
 
     @Override

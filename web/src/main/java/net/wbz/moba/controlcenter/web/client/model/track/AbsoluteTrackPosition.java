@@ -8,7 +8,7 @@ public class AbsoluteTrackPosition {
     private int top;
     private int left;
 
-    public AbsoluteTrackPosition( int left,int top) {
+    public AbsoluteTrackPosition(int left, int top) {
         this.top = top;
         this.left = left;
     }

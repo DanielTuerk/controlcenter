@@ -1,16 +1,24 @@
 package net.wbz.moba.controlcenter.web.client.viewer.controls.train;
 
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import net.wbz.moba.controlcenter.web.client.RequestUtils;
-import net.wbz.moba.controlcenter.web.client.viewer.controls.AbstractItemViewerPanel;
-import net.wbz.moba.controlcenter.web.shared.train.*;
-import org.gwtbootstrap3.client.ui.TextBox;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+
+import org.gwtbootstrap3.client.ui.TextBox;
+
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+
+import net.wbz.moba.controlcenter.web.client.RequestUtils;
+import net.wbz.moba.controlcenter.web.client.viewer.controls.AbstractItemViewerPanel;
+import net.wbz.moba.controlcenter.web.shared.train.Train;
+import net.wbz.moba.controlcenter.web.shared.train.TrainDrivingDirectionEvent;
+import net.wbz.moba.controlcenter.web.shared.train.TrainDrivingLevelEvent;
+import net.wbz.moba.controlcenter.web.shared.train.TrainFunctionStateEvent;
+import net.wbz.moba.controlcenter.web.shared.train.TrainHornStateEvent;
+import net.wbz.moba.controlcenter.web.shared.train.TrainLightStateEvent;
+import net.wbz.moba.controlcenter.web.shared.train.TrainStateEvent;
 
 /**
  * TODO: reload trains for configuration changes
@@ -45,7 +53,7 @@ public class TrainViewerPanel extends AbstractItemViewerPanel<TrainItemPanel, Tr
                     @Override
                     public void onSuccess(Void result) {
                         name.setText("");
-//                        loadData();
+                        // loadData();
                     }
                 });
             }

@@ -14,7 +14,7 @@ public abstract class AbstractTrackPart extends AbstractDto {
     private GridPosition gridPosition;
 
     @JMap
-    private BusDataConfiguration blockFunction;
+    private TrackBlock trackBlock;
 
     public GridPosition getGridPosition() {
         return gridPosition;
@@ -25,25 +25,34 @@ public abstract class AbstractTrackPart extends AbstractDto {
     }
 
     /**
-     * TODO drop
+     * TODO maybe refactor
      * 
      * @return
      */
     public Set<BusDataConfiguration> getConfigurationsOfFunctions() {
         // TODO
-        return Sets.newHashSet(blockFunction);
-        // for (TrackPartFunctionEntity function : getFunctionConfigs()) {
-        // configurations.add(function.getConfigurations());
-        // }
-        // return configurations;
+        if (trackBlock != null && trackBlock.getBlockFunction() != null) {
+            return Sets.newHashSet(trackBlock.getBlockFunction());
+        } else {
+            return Sets.newHashSet();
+        }
     }
 
+    /**
+     * TODO drop?
+     * 
+     * @return
+     */
     public BusDataConfiguration getBlockFunction() {
-        return blockFunction;
+        return trackBlock != null ? trackBlock.getBlockFunction() : null;
     }
 
-    public void setBlockFunction(BusDataConfiguration blockFunction) {
-        this.blockFunction = blockFunction;
+    public TrackBlock getTrackBlock() {
+        return trackBlock;
+    }
+
+    public void setTrackBlock(TrackBlock trackBlock) {
+        this.trackBlock = trackBlock;
     }
 
     /**

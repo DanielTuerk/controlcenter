@@ -12,6 +12,7 @@ import com.google.inject.Singleton;
 
 import net.wbz.moba.controlcenter.web.shared.editor.TrackEditorService;
 import net.wbz.moba.controlcenter.web.shared.track.model.AbstractTrackPart;
+import net.wbz.moba.controlcenter.web.shared.track.model.TrackBlock;
 
 /**
  * @author Daniel Tuerk
@@ -31,6 +32,16 @@ public class TrackEditorServiceImpl extends RemoteServiceServlet implements Trac
     @Override
     public void saveTrack(Collection<AbstractTrackPart> trackParts) {
         trackManager.saveTrack(trackParts);
+    }
+
+    @Override
+    public Collection<TrackBlock> loadTrackBlocks() {
+        return trackManager.loadTrackBlocks();
+    }
+
+    @Override
+    public void saveTrackBlocks(Collection<TrackBlock> trackBlocks) {
+        trackManager.saveTrackBlocks(trackBlocks);
     }
 
     @Override

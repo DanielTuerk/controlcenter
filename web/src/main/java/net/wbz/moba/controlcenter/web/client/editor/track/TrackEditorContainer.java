@@ -8,6 +8,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.gwtbootstrap3.client.ui.AnchorListItem;
+import org.gwtbootstrap3.client.ui.Divider;
 import org.gwtbootstrap3.client.ui.NavPills;
 import org.gwtbootstrap3.client.ui.constants.IconType;
 import org.gwtbootstrap3.extras.notify.client.ui.Notify;
@@ -45,6 +46,8 @@ public class TrackEditorContainer extends FlowPanel {
 
     private PickupDragController dragController;
 
+    private BlockEditModal blockEditModal = new BlockEditModal();
+
     public TrackEditorContainer() {
         this.setSize("100%", "100%");
         //
@@ -65,7 +68,63 @@ public class TrackEditorContainer extends FlowPanel {
             palette.addPaletteItem(widget);
         }
 
+        add(createMenu());
+
+        FlowPanel editorPanel = new FlowPanel();
+        palette.getElement().getStyle().setFloat(Style.Float.LEFT);
+        editorPanel.add(palette);
+
+        ScrollPanel scrollPanel = new ScrollPanel(boundaryPanel);
+        editorPanel.add(scrollPanel);
+
+        add(editorPanel);
+    }
+
+    private NavPills createMenu() {
         NavPills menu = new NavPills();
+        menu.add(createMenuSaveAnchor());
+        menu.add(createMenuDeleteAnchor());
+        menu.add(createMenuEditAnchor());
+        menu.add(new Divider());
+        menu.add(createMenuBlocksAnchor());
+        return menu;
+    }
+
+    private AnchorListItem createMenuBlocksAnchor() {
+        AnchorListItem openBlockEditAnchorListItem = new AnchorListItem("Blocks");
+        openBlockEditAnchorListItem.setIcon(IconType.BOOK);
+        openBlockEditAnchorListItem.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                blockEditModal.show();
+            }
+        });
+        return openBlockEditAnchorListItem;
+    }
+
+    private AnchorListItem createMenuEditAnchor() {
+        /**
+         * TODO clean code
+         */
+        AnchorListItem editAnchorListItem = new AnchorListItem("Edit");
+        editAnchorListItem.setIcon(IconType.PENCIL);
+        editAnchorListItem.addClickHandler(new ClickHandler() {
+
+            @Override
+            public void onClick(ClickEvent event) {
+                for (Widget selectedWidget : dragController.getSelectedWidgets()) {
+
+                    new EditWidgetDoubleClickHandler(((EditorPaletteWidget) selectedWidget)
+                            .getWidget()).onDoubleClick(null);
+                    // boundaryPanel.remove(selectedWidget);
+                    break;
+                }
+            }
+        });
+        return editAnchorListItem;
+    }
+
+    private AnchorListItem createMenuSaveAnchor() {
         AnchorListItem saveAnchorListItem = new AnchorListItem("Save");
         saveAnchorListItem.setIcon(IconType.SAVE);
         saveAnchorListItem.addClickHandler(new ClickHandler() {
@@ -91,8 +150,6 @@ public class TrackEditorContainer extends FlowPanel {
                     }
                 }
 
-                for (AbstractTrackPart trackPart : trackParts) {
-                }
                 RequestUtils.getInstance().getTrackEditorService().saveTrack(trackParts, new AsyncCallback<Void>() {
                     @Override
                     public void onFailure(Throwable caught) {
@@ -107,8 +164,10 @@ public class TrackEditorContainer extends FlowPanel {
                 });
             }
         });
-        menu.add(saveAnchorListItem);
+        return saveAnchorListItem;
+    }
 
+    private AnchorListItem createMenuDeleteAnchor() {
         AnchorListItem deleteAnchorListItem = new AnchorListItem("Delete");
         deleteAnchorListItem.setIcon(IconType.TIMES);
         deleteAnchorListItem.addClickHandler(new ClickHandler() {
@@ -120,38 +179,7 @@ public class TrackEditorContainer extends FlowPanel {
                 }
             }
         });
-        menu.add(deleteAnchorListItem);
-
-        /**
-         * TODO clean code
-         */
-        AnchorListItem editAnchorListItem = new AnchorListItem("Edit");
-        editAnchorListItem.setIcon(IconType.PENCIL);
-        editAnchorListItem.addClickHandler(new ClickHandler() {
-
-            @Override
-            public void onClick(ClickEvent event) {
-                for (Widget selectedWidget : dragController.getSelectedWidgets()) {
-
-                    new EditWidgetDoubleClickHandler(((EditorPaletteWidget) selectedWidget)
-                            .getWidget()).onDoubleClick(null);
-                    // boundaryPanel.remove(selectedWidget);
-                    break;
-                }
-            }
-        });
-        menu.add(editAnchorListItem);
-
-        add(menu);
-
-        FlowPanel editorPanel = new FlowPanel();
-        palette.getElement().getStyle().setFloat(Style.Float.LEFT);
-        editorPanel.add(palette);
-
-        ScrollPanel scrollPanel = new ScrollPanel(boundaryPanel);
-        editorPanel.add(scrollPanel);
-
-        add(editorPanel);
+        return deleteAnchorListItem;
     }
 
     public AbstractTrackPanel getBoundaryPanel() {

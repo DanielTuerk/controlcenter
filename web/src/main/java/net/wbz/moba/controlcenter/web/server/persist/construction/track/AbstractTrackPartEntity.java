@@ -18,7 +18,6 @@ import com.googlecode.jmapper.annotations.JMap;
 import net.wbz.moba.controlcenter.web.server.persist.AbstractEntity;
 import net.wbz.moba.controlcenter.web.server.persist.construction.ConstructionEntity;
 import net.wbz.moba.controlcenter.web.shared.track.model.AbstractTrackPart;
-import net.wbz.moba.controlcenter.web.shared.track.model.TrackModelConstants;
 
 /**
  * Model for a part of the track.
@@ -46,8 +45,8 @@ public abstract class AbstractTrackPartEntity extends AbstractEntity {
     private GridPositionEntity gridPosition;
 
     @JMap
-    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    private BusDataConfigurationEntity blockFunction;
+    @ManyToOne(fetch = FetchType.EAGER)
+    private TrackBlockEntity trackBlock;
 
     public AbstractTrackPartEntity() {
     }
@@ -61,17 +60,8 @@ public abstract class AbstractTrackPartEntity extends AbstractEntity {
     }
 
     public List<TrackPartFunctionEntity> getFunctionConfigs() {
-        // TODO drop
+        // TODO drop?
         return Collections.emptyList();
-        // List<TrackPartFunctionEntity> functions = getFunctions();
-        // if (functions.isEmpty()) {
-        // //create dummy for saved instance without configuration; will be changed during first call of
-        // functions.add(new TrackPartFunctionEntity(TrackModelConstants.DEFAULT_TOGGLE_FUNCTION, new
-        // BusDataConfigurationEntity()));
-        // functions.add(new TrackPartFunctionEntity(TrackModelConstants.DEFAULT_BLOCK_FUNCTION, new
-        // BusDataConfigurationEntity()));
-        // }
-        // return functions;
     }
 
     public Set<BusDataConfigurationEntity> getConfigurationsOfFunctions() {
@@ -82,29 +72,6 @@ public abstract class AbstractTrackPartEntity extends AbstractEntity {
         return configurations;
     }
 
-    /**
-     * Return the {@link BusDataConfigurationEntity} of the default toggle
-     * function. {@link net.wbz.moba.controlcenter.web.shared.track.model.TrackModelConstants#DEFAULT_TOGGLE_FUNCTION}
-     *
-     * @return {@link BusDataConfigurationEntity}
-     */
-    public BusDataConfigurationEntity getDefaultToggleFunctionConfig() {
-        return getFunctionConfig(TrackModelConstants.DEFAULT_TOGGLE_FUNCTION);
-    }
-
-    public BusDataConfigurationEntity getDefaultBlockFunctionConfig() {
-        return getFunctionConfig(TrackModelConstants.DEFAULT_BLOCK_FUNCTION);
-    }
-
-    private BusDataConfigurationEntity getFunctionConfig(String function) {
-        for (TrackPartFunctionEntity trackPartFunction : getFunctionConfigs()) {
-            if (trackPartFunction.getFunctionKey().equalsIgnoreCase(function)) {
-                return trackPartFunction.getConfiguration();
-            }
-        }
-        throw new RuntimeException("no function for key " + function + " found!");
-    }
-
     public GridPositionEntity getGridPosition() {
         return gridPosition;
     }
@@ -113,12 +80,12 @@ public abstract class AbstractTrackPartEntity extends AbstractEntity {
         this.gridPosition = gridPositionEntity;
     }
 
-    public BusDataConfigurationEntity getBlockFunction() {
-        return blockFunction;
+    public TrackBlockEntity getTrackBlock() {
+        return trackBlock;
     }
 
-    public void setBlockFunction(BusDataConfigurationEntity blockFunction) {
-        this.blockFunction = blockFunction;
+    public void setTrackBlock(TrackBlockEntity trackBlock) {
+        this.trackBlock = trackBlock;
     }
 
     public abstract Class<? extends AbstractTrackPart> getDefaultDtoClass();

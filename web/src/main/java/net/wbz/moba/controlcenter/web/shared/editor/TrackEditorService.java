@@ -7,6 +7,7 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
 import net.wbz.moba.controlcenter.web.guice.MyGuiceServletConfig;
 import net.wbz.moba.controlcenter.web.shared.track.model.AbstractTrackPart;
+import net.wbz.moba.controlcenter.web.shared.track.model.TrackBlock;
 
 /**
  * @author Daniel Tuerk
@@ -18,4 +19,6 @@ public interface TrackEditorService extends RemoteService {
 
     void saveTrack(Collection<AbstractTrackPart> trackParts);
 
+    Collection<TrackBlock> loadTrackBlocks();
+    void saveTrackBlocks(Collection<TrackBlock> trackBlocks);
 }

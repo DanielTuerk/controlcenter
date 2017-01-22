@@ -19,6 +19,7 @@
         <class>net.wbz.moba.controlcenter.web.server.persist.construction.track.AbstractTrackPartEntity</class>
         <class>net.wbz.moba.controlcenter.web.server.persist.construction.track.BusDataConfigurationEntity</class>
         <class>net.wbz.moba.controlcenter.web.server.persist.construction.track.TrackPartFunctionEntity</class>
+        <class>net.wbz.moba.controlcenter.web.server.persist.construction.track.TrackBlockEntity</class>
         <class>net.wbz.moba.controlcenter.web.server.persist.construction.track.GridPositionEntity</class>
         <class>net.wbz.moba.controlcenter.web.server.persist.construction.track.EventConfigurationEntity</class>
 

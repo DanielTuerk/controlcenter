@@ -176,11 +176,24 @@ public class TrackManager {
     }
 
     @Transactional
-    public void saveTrackBlocks(Collection<TrackBlock> trackBlocks) {
-        // load all existing to detect deleted blocks
-        List<TrackBlockEntity> existingBlocks = Lists.newArrayList(trackBlockDao.findByConstructionId(
-                currentConstruction.getId()));
+    public void deleteTrackBlock(TrackBlock trackBlock) {
+        List<AbstractTrackPartEntity> byBlockId = trackPartDao.findByBlockId(trackBlock.getId());
+        if (!byBlockId.isEmpty()) {
+            for (AbstractTrackPartEntity trackPartEntity : byBlockId) {
+                trackPartEntity.setTrackBlock(null);
+                trackPartDao.update(trackPartEntity);
+            }
+            trackPartDao.flush();
+        }
+        trackBlockDao.delete(trackBlockDataMapper.transformTarget(trackBlock));
+        trackBlockDao.flush();
+        // reload data
+        loadTrackBlocksData();
+        loadTrackPartData();
+    }
 
+    @Transactional
+    public void saveTrackBlocks(Collection<TrackBlock> trackBlocks) {
         for (TrackBlock trackBlock : trackBlocks) {
             trackBlock.setConstruction(currentConstruction);
             TrackBlockEntity entity = trackBlockDataMapper.transformTarget(trackBlock);
@@ -190,21 +203,9 @@ public class TrackManager {
                 trackBlockDao.update(entity);
             }
         }
-        // delete track part which was not updated
-        for (TrackBlockEntity trackBlockEntity : existingBlocks) {
-            boolean found = false;
-            for (TrackBlock trackBlock : trackBlocks) {
-                if (trackBlockEntity.getId().equals(trackBlock.getId())) {
-                    found = true;
-                }
-            }
-            if (!found) {
-                trackBlockDao.delete(trackBlockEntity);
-            }
-        }
-
         // reload data
         loadTrackBlocksData();
+        loadTrackPartData();
     }
 
     public Collection<AbstractTrackPart> getTrack() {

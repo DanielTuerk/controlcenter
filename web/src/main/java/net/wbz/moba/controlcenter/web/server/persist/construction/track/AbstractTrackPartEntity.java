@@ -45,7 +45,7 @@ public abstract class AbstractTrackPartEntity extends AbstractEntity {
     private GridPositionEntity gridPosition;
 
     @JMap
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.EAGER, cascade = {CascadeType.REMOVE})
     private TrackBlockEntity trackBlock;
 
     public AbstractTrackPartEntity() {

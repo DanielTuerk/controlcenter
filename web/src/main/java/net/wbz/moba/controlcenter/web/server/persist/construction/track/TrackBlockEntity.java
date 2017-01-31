@@ -1,5 +1,6 @@
 package net.wbz.moba.controlcenter.web.server.persist.construction.track;
 
+import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -57,4 +58,5 @@ public class TrackBlockEntity extends AbstractEntity {
     public void setConstruction(ConstructionEntity construction) {
         this.construction = construction;
     }
+
 }

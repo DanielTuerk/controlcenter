@@ -40,6 +40,11 @@ public class TrackEditorServiceImpl extends RemoteServiceServlet implements Trac
     }
 
     @Override
+    public void deleteTrackBlock(TrackBlock trackBlock){
+        trackManager.deleteTrackBlock(trackBlock);
+    }
+
+    @Override
     public void saveTrackBlocks(Collection<TrackBlock> trackBlocks) {
         trackManager.saveTrackBlocks(trackBlocks);
     }

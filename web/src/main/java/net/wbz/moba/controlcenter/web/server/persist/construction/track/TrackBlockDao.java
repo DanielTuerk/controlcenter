@@ -18,6 +18,7 @@ import net.wbz.moba.controlcenter.web.server.persist.AbstractDao;
  */
 @Singleton
 public class TrackBlockDao extends AbstractDao<TrackBlockEntity> {
+
     private static final Logger LOG = LoggerFactory.getLogger(TrackBlockDao.class);
 
     @Inject

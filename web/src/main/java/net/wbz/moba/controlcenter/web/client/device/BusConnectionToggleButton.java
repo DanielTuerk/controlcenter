@@ -2,8 +2,8 @@ package net.wbz.moba.controlcenter.web.client.device;
 
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 
+import net.wbz.moba.controlcenter.web.client.Callbacks.OnlySuccessAsyncCallback;
 import net.wbz.moba.controlcenter.web.client.RequestUtils;
 import net.wbz.moba.controlcenter.web.client.util.OnOffToggleButton;
 
@@ -21,23 +21,16 @@ public class BusConnectionToggleButton extends OnOffToggleButton {
             public void onValueChange(ValueChangeEvent<Boolean> booleanValueChangeEvent) {
                 if (booleanValueChangeEvent.getValue()) {
                     RequestUtils.getInstance().getBusService().changeDevice(deviceListBox.getSelectedDevice(),
-                            new AsyncCallback<Void>() {
-                                @Override
-                                public void onFailure(Throwable caught) {
-
-                                }
-
+                            new OnlySuccessAsyncCallback<Void>("Editor", "error connect device") {
                                 @Override
                                 public void onSuccess(Void result) {
                                     RequestUtils.getInstance().getBusService().connectBus(
                                             RequestUtils.VOID_ASYNC_CALLBACK);
-
                                 }
                             });
                 } else {
                     RequestUtils.getInstance().getBusService().disconnectBus(RequestUtils.VOID_ASYNC_CALLBACK);
                 }
-
             }
         });
     }

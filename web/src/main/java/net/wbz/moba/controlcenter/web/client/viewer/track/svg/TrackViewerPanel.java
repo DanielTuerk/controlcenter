@@ -108,6 +108,9 @@ public class TrackViewerPanel extends AbstractTrackViewerPanel {
 
                                     trackWidgets.add(trackWidget);
 
+                                    if(trackWidget instanceof AbstractBlockSvgTrackWidget){
+                                        ((AbstractBlockSvgTrackWidget) trackWidget).unknownBlock();
+                                    }
                                     if (trackWidget instanceof AbstractSignalWidget) {
                                         signalTrackWidgets.add((AbstractSignalWidget) trackWidget);
                                     }

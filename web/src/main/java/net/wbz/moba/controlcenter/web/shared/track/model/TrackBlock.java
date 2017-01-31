@@ -1,5 +1,6 @@
 package net.wbz.moba.controlcenter.web.shared.track.model;
 
+import com.google.common.base.Objects;
 import com.google.common.base.Strings;
 import com.googlecode.jmapper.annotations.JMap;
 
@@ -22,6 +23,10 @@ public class TrackBlock extends AbstractDto {
     }
 
     public void setBlockFunction(BusDataConfiguration blockFunction) {
+        if (blockFunction != null) {
+            // TODO
+            blockFunction.setBus(1);
+        }
         this.blockFunction = blockFunction;
     }
 

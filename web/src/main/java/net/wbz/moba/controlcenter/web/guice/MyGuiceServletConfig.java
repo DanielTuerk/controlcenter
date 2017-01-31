@@ -90,7 +90,9 @@ public class MyGuiceServletConfig extends GuiceServletContextListener {
                 properties.put("hibernate.connection.username", "");
                 properties.put("hibernate.connection.password", "");
                 // common
+                properties.put("hibernate.show_sql", "false");
                 properties.put("hibernate.hbm2ddl.auto", "update");
+
 
                 /*
                  * Install JPA and delegate all requests by the {@link PersistFilter} to enable transaction
@@ -100,13 +102,6 @@ public class MyGuiceServletConfig extends GuiceServletContextListener {
                  */
                 install(new JpaPersistModule(PERSISTENCE_UNIT).properties(properties));
                 filter("/" + APP_NAME + "/*").through(PersistFilter.class);
-
-                /*
-                 * Install the injection for the GWT request factory.
-                 * Use the @Service implementation instances provided by the Guice DI.
-                 */
-                // install(new InjectedRequestFactoryModule());
-                // serve("/gwtRequest").with(InjectedRequestFactoryServlet.class);
 
                 /*
                  * Register the GWT services.

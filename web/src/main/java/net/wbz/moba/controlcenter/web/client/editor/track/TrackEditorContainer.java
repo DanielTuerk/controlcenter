@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.gwtbootstrap3.client.shared.event.ModalHiddenEvent;
+import org.gwtbootstrap3.client.shared.event.ModalHiddenHandler;
 import org.gwtbootstrap3.client.ui.AnchorListItem;
 import org.gwtbootstrap3.client.ui.Divider;
 import org.gwtbootstrap3.client.ui.NavPills;
@@ -28,6 +30,7 @@ import net.wbz.moba.controlcenter.web.client.RequestUtils;
 import net.wbz.moba.controlcenter.web.client.model.track.AbsoluteTrackPosition;
 import net.wbz.moba.controlcenter.web.client.model.track.AbstractSvgTrackWidget;
 import net.wbz.moba.controlcenter.web.client.model.track.ModelManager;
+import net.wbz.moba.controlcenter.web.client.util.modal.DeleteModal;
 import net.wbz.moba.controlcenter.web.shared.track.model.AbstractTrackPart;
 
 /**
@@ -46,10 +49,19 @@ public class TrackEditorContainer extends FlowPanel {
 
     private PickupDragController dragController;
 
-    private BlockEditModal blockEditModal = new BlockEditModal();
+    private BlockEditModal blockEditModal;
 
     public TrackEditorContainer() {
         this.setSize("100%", "100%");
+
+        blockEditModal = new BlockEditModal();
+        blockEditModal.addHiddenHandler(new ModalHiddenHandler() {
+            @Override
+            public void onHidden(ModalHiddenEvent modalHiddenEvent) {
+                loadTrack();
+            }
+        });
+
         //
         boundaryPanel = new TrackEditorPanel();
 
@@ -174,9 +186,16 @@ public class TrackEditorContainer extends FlowPanel {
 
             @Override
             public void onClick(ClickEvent event) {
-                for (Widget selectedWidget : dragController.getSelectedWidgets()) {
-                    boundaryPanel.remove(selectedWidget);
-                }
+                DeleteModal deleteModal = new DeleteModal("Delete the selected track parts?") {
+
+                    @Override
+                    public void onConfirm() {
+                        for (Widget selectedWidget : dragController.getSelectedWidgets()) {
+                            boundaryPanel.remove(selectedWidget);
+                        }
+                    }
+                };
+                deleteModal.show();
             }
         });
         return deleteAnchorListItem;
@@ -192,6 +211,10 @@ public class TrackEditorContainer extends FlowPanel {
 
         Log.info("load track " + new Date().toString());
 
+        loadTrack();
+    }
+
+    private void loadTrack() {
         for (int i = boundaryPanel.getWidgetCount() - 1; i >= 0; i--) {
             boundaryPanel.remove(i);
         }

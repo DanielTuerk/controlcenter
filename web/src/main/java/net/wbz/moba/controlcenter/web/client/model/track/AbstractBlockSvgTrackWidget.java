@@ -6,7 +6,6 @@ import java.util.Map;
 import org.gwtbootstrap3.client.ui.FieldSet;
 import org.gwtbootstrap3.client.ui.FormGroup;
 import org.gwtbootstrap3.client.ui.FormLabel;
-import org.gwtbootstrap3.client.ui.TextBox;
 import org.gwtbootstrap3.extras.select.client.ui.Option;
 import org.gwtbootstrap3.extras.select.client.ui.Select;
 import org.vectomatic.dom.svg.OMSVGElement;
@@ -41,9 +40,8 @@ abstract public class AbstractBlockSvgTrackWidget<T extends AbstractTrackPart> e
         implements EditTrackWidgetHandler, BlockPart {
 
     private static final String ID_FORM_BLOCK = "formBit_block";
-    Map<String, TrackBlock> trackBlockSelectOptions = Maps.newHashMap();
-    private Select selectBit;
-    private TextBox txtAddress;
+    private final Map<String, TrackBlock> trackBlockSelectOptions = Maps.newHashMap();
+    private Select selectBlock;
     /**
      * Mapping of elements on the track part by each train.
      * Used to add or remove an element for entering and exiting the block of a train
@@ -84,55 +82,11 @@ abstract public class AbstractBlockSvgTrackWidget<T extends AbstractTrackPart> e
         lblBit.setText("Block");
         groupBit.add(lblBit);
 
-        selectBit = new Select();
-        selectBit.setId(ID_FORM_BLOCK);
+        selectBlock = new Select();
+        selectBlock.setId(ID_FORM_BLOCK);
         loadTrackBlocks();
-        groupBit.add(selectBit);
+        groupBit.add(selectBlock);
         fieldSet.add(groupBit);
-
-        //
-        // // module address
-        // FormGroup groupModuleAddress = new FormGroup();
-        // FormLabel lblAddress = new FormLabel();
-        // lblAddress.setText("Address");
-        // lblAddress.setFor(ID_FORM_ADDRESS);
-        // groupModuleAddress.add(lblAddress);
-        //
-        // txtAddress = new TextBox();
-        // txtAddress.setId(ID_FORM_ADDRESS);
-        // if (getTrackPart().getBlockFunction() != null) {
-        // txtAddress.setText(String.valueOf(getTrackPart().getBlockFunction().getAddress()));
-        // }
-        // org.gwtbootstrap3.client.ui.gwt.FlowPanel flowPanel = new org.gwtbootstrap3.client.ui.gwt.FlowPanel();
-        // flowPanel.addStyleName(ColumnSize.MD_2.getCssName());
-        // flowPanel.add(txtAddress);
-        // groupModuleAddress.add(flowPanel);
-        // fieldSet.add(groupModuleAddress);
-        //
-        // // module bit
-        // FormGroup groupBit = new FormGroup();
-        // FormLabel lblBit = new FormLabel();
-        // lblBit.setFor(ID_FORM_BLOCK);
-        // lblBit.setText("Bit");
-        // groupBit.add(lblBit);
-
-        // TODO own component
-        // selectBit = new Select();
-        // selectBit.setId(ID_FORM_BLOCK);
-        // for (int index = 1; index < 9; index++) {
-        // Option option = new Option();
-        // String value = String.valueOf(index);
-        // option.setValue(value);
-        // option.setText(value);
-        // selectBit.add(option);
-        // if (getTrackPart().getBlockFunction() != null) {
-        // if (index == getTrackPart().getBlockFunction().getBit()) {
-        // selectBit.setValue(String.valueOf(index));
-        // }
-        // }
-        // }
-        // groupBit.add(selectBit);
-        // fieldSet.add(groupBit);
 
         addDialogContentTab("Block", fieldSet);
         return dialogContent;
@@ -147,7 +101,7 @@ abstract public class AbstractBlockSvgTrackWidget<T extends AbstractTrackPart> e
 
             @Override
             public void onSuccess(Collection<TrackBlock> trackBlocks) {
-                selectBit.add(new DeleteOption());
+                selectBlock.add(new DeleteOption());
 
                 for (TrackBlock trackBlock : trackBlocks) {
 
@@ -156,17 +110,17 @@ abstract public class AbstractBlockSvgTrackWidget<T extends AbstractTrackPart> e
                         String value = String.valueOf(trackBlock.getId());
                         option.setValue(value);
                         option.setText(trackBlock.getDisplayValue());
-                        selectBit.add(option);
+                        selectBlock.add(option);
                         trackBlockSelectOptions.put(value, trackBlock);
 
                         if (getTrackPart().getTrackBlock() != null) {
                             if (getTrackPart().getTrackBlock().getId().equals(trackBlock.getId())) {
-                                selectBit.setValue(value);
+                                selectBlock.setValue(value);
                             }
                         }
                     }
                 }
-                selectBit.refresh();
+                selectBlock.refresh();
             }
         });
 
@@ -177,22 +131,10 @@ abstract public class AbstractBlockSvgTrackWidget<T extends AbstractTrackPart> e
         super.onConfirmCallback();
         // save block config
         TrackBlock trackBlock = null;
-        if (!Strings.isNullOrEmpty(selectBit.getValue())) {
-            trackBlock = trackBlockSelectOptions.get(selectBit.getValue());
+        if (!Strings.isNullOrEmpty(selectBlock.getValue())) {
+            trackBlock = trackBlockSelectOptions.get(selectBlock.getValue());
         }
         getTrackPart().setTrackBlock(trackBlock);
-
-        // if (Strings.isNullOrEmpty(txtAddress.getText())) {
-        // getTrackPart().setBlockFunction(null);
-        // } else {
-        // if (getTrackPart().getBlockFunction() == null) {
-        // getTrackPart().setBlockFunction(new BusDataConfiguration());
-        // }
-        // getTrackPart().getBlockFunction().setBus(1);
-        // getTrackPart().getBlockFunction().setAddress(Integer.parseInt(txtAddress.getText()));
-        // getTrackPart().getBlockFunction().setBit(Integer.parseInt(selectBit.getValue()));
-        // getTrackPart().getBlockFunction().setBitState(true);
-        // }
     }
 
     /**

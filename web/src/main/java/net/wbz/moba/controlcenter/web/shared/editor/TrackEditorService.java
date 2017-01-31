@@ -20,5 +20,8 @@ public interface TrackEditorService extends RemoteService {
     void saveTrack(Collection<AbstractTrackPart> trackParts);
 
     Collection<TrackBlock> loadTrackBlocks();
+
+    void deleteTrackBlock(TrackBlock trackBlock);
+
     void saveTrackBlocks(Collection<TrackBlock> trackBlocks);
 }

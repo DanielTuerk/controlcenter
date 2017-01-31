@@ -33,4 +33,10 @@ public class TrackPartDao extends AbstractDao<AbstractTrackPartEntity> {
                 .getResultList();
     }
 
+    public List<AbstractTrackPartEntity> findByBlockId(Long blockId) {
+        return getEntityManager().createQuery("SELECT t FROM TRACK_PART t"
+                + " WHERE t.trackBlock.id = :blockId", AbstractTrackPartEntity.class)
+                .setParameter("blockId", blockId)
+                .getResultList();
+    }
 }

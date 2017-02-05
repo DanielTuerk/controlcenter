@@ -113,10 +113,8 @@ class TrackBlockRegistry extends AbstractBlockRegistry<TrackBlock> {
         if (adjustType != DRIVING_LEVEL_ADJUST_TYPE.NONE) {
             Train train = getTrainManager().getTrain(trainAddress);
             if (train != null) {
-                if (adjustType == DRIVING_LEVEL_ADJUST_TYPE.BOTH
-                        || (enterBlock && adjustType == DRIVING_LEVEL_ADJUST_TYPE.ENTER)
+                if ((enterBlock && adjustType == DRIVING_LEVEL_ADJUST_TYPE.ENTER)
                         || (!enterBlock && adjustType == DRIVING_LEVEL_ADJUST_TYPE.EXIT)) {
-
                     Integer drivingLevelForTrain = forward ? trackBlock.getForwardTargetDrivingLevel()
                             : trackBlock.getBackwardTargetDrivingLevel();
                     if (drivingLevelForTrain != null) {

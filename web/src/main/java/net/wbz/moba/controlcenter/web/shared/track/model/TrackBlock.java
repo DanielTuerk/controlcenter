@@ -11,7 +11,18 @@ import net.wbz.moba.controlcenter.web.shared.constrution.Construction;
 public class TrackBlock extends AbstractDto {
 
     public enum DRIVING_LEVEL_ADJUST_TYPE {
-        NONE, ENTER, EXIT, BOTH
+        /**
+         * No adjustment.
+         */
+        NONE,
+        /**
+         * Adjust on entering the block.
+         */
+        ENTER,
+        /**
+         * Adjust after leaving the block
+         */
+        EXIT
     }
 
     @JMap

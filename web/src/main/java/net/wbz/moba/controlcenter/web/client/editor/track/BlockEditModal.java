@@ -2,13 +2,14 @@ package net.wbz.moba.controlcenter.web.client.editor.track;
 
 import java.util.Collection;
 
-import net.wbz.moba.controlcenter.web.shared.track.model.TrackBlock.DRIVING_LEVEL_ADJUST_TYPE;
 import org.gwtbootstrap3.client.ui.Button;
 import org.gwtbootstrap3.client.ui.Modal;
 import org.gwtbootstrap3.client.ui.ModalBody;
 import org.gwtbootstrap3.client.ui.ModalFooter;
+import org.gwtbootstrap3.client.ui.Pagination;
 import org.gwtbootstrap3.client.ui.constants.ButtonType;
 import org.gwtbootstrap3.client.ui.constants.IconType;
+import org.gwtbootstrap3.client.ui.constants.PaginationSize;
 import org.gwtbootstrap3.client.ui.constants.Pull;
 import org.gwtbootstrap3.client.ui.gwt.ButtonCell;
 import org.gwtbootstrap3.client.ui.gwt.CellTable;
@@ -17,41 +18,73 @@ import org.gwtbootstrap3.extras.notify.client.ui.Notify;
 
 import com.google.common.collect.Lists;
 import com.google.gwt.cell.client.FieldUpdater;
-import com.google.gwt.cell.client.TextInputCell;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.cellview.client.Column;
+import com.google.gwt.user.cellview.client.SimplePager;
+import com.google.gwt.user.cellview.client.TextColumn;
+import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.ListDataProvider;
+import com.google.gwt.view.client.RangeChangeEvent;
 
 import net.wbz.moba.controlcenter.web.client.Callbacks.OnlySuccessAsyncCallback;
 import net.wbz.moba.controlcenter.web.client.RequestUtils;
 import net.wbz.moba.controlcenter.web.shared.track.model.BusDataConfiguration;
 import net.wbz.moba.controlcenter.web.shared.track.model.TrackBlock;
+import net.wbz.moba.controlcenter.web.shared.track.model.TrackBlock.DRIVING_LEVEL_ADJUST_TYPE;
 
 /**
  * @author Daniel Tuerk
  */
 public class BlockEditModal extends Modal {
 
+    private static final String TITLE = "Blocks";
+
     /**
-     * The provider that holds the list of contacts in the database.
+     * The provider that holds the list of track blocks to save in the database.
      */
     private ListDataProvider<TrackBlock> dataProvider = new ListDataProvider<>();
+    private final ModalBody modalBody;
+    private final ModalFooter modalFooter;
+    private final FlowPanel overviewFooterPanel;
+    private final Widget overviewBody;
+    private SimplePager simplePager = new SimplePager();
+    private Pagination pagination = new Pagination(PaginationSize.SMALL);
 
     public BlockEditModal() {
         super();
         setFade(true);
-        setTitle("Blocks");
+        setTitle(TITLE);
 
-        ModalBody modalBody = new ModalBody();
-        Widget contentPanel = createBody();
-        modalBody.add(contentPanel);
+        overviewBody = createOverviewBody();
+        overviewFooterPanel = createOverviewFooter();
+
+        modalBody = new ModalBody();
         add(modalBody);
 
-        ModalFooter modalFooter = new ModalFooter();
-        Button btnSave = new Button("Save", new ClickHandler() {
+        modalFooter = new ModalFooter();
+        add(modalFooter);
+    }
+
+    private FlowPanel createEditFooter(final BlockEditBody blockEditBody) {
+        return createFooter("Apply Changes", new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                blockEditBody.applyChanges();
+                showOverview();
+            }
+        }, "Back to overview", new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                showOverview();
+            }
+        });
+    }
+
+    private FlowPanel createOverviewFooter() {
+        return createFooter("Save", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 RequestUtils.getInstance().getTrackEditorService().saveTrackBlocks(
                         Lists.newArrayList(dataProvider.getList()),
@@ -63,25 +96,33 @@ public class BlockEditModal extends Modal {
                         });
                 hide();
             }
-        });
-        btnSave.setType(ButtonType.PRIMARY);
-        btnSave.setPull(Pull.RIGHT);
-        modalFooter.add(btnSave);
-
-        Button btnClose = new Button("Close", new ClickHandler() {
+        }, "Close", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 hide();
             }
         });
+    }
+
+    private FlowPanel createFooter(String btnConfirmText, ClickHandler btnConfirmClickHandler, String btnCancelText,
+            ClickHandler btnCancelClickHandler) {
+        FlowPanel panel = new FlowPanel();
+        Button btnSave = new Button(btnConfirmText, btnConfirmClickHandler);
+        btnSave.setType(ButtonType.PRIMARY);
+        btnSave.setPull(Pull.RIGHT);
+        panel.add(btnSave);
+
+        Button btnClose = new Button(btnCancelText, btnCancelClickHandler);
         btnClose.setType(ButtonType.DANGER);
         btnClose.setPull(Pull.LEFT);
-        modalFooter.add(btnClose);
-        add(modalFooter);
+        panel.add(btnClose);
+        return panel;
     }
 
     @Override
     protected void onLoad() {
         super.onLoad();
+
+        showOverview();
 
         loadData();
     }
@@ -97,12 +138,41 @@ public class BlockEditModal extends Modal {
             @Override
             public void onSuccess(Collection<TrackBlock> trackBlocks) {
                 dataProvider.setList(Lists.newArrayList(trackBlocks));
-                dataProvider.refresh();
+                dataProvider.flush();
+
+                pagination.rebuild(simplePager);
             }
         });
     }
 
-    private Widget createBody() {
+    @Override
+    protected void onShow(Event evt) {
+        super.onShow(evt);
+        loadData();
+    }
+
+    private void showOverview() {
+        modalFooter.clear();
+        modalFooter.add(overviewFooterPanel);
+
+        modalBody.clear();
+        modalBody.add(overviewBody);
+
+        dataProvider.refresh();
+
+        pagination.rebuild(simplePager);
+    }
+
+    private void showEdit(TrackBlock trackBlock) {
+        modalBody.clear();
+        BlockEditBody blockEditBody = new BlockEditBody(trackBlock);
+        modalBody.add(blockEditBody);
+
+        modalFooter.clear();
+        modalFooter.add(createEditFooter(blockEditBody));
+    }
+
+    private Widget createOverviewBody() {
         FlowPanel widgets = new FlowPanel();
         widgets.add(new Button("add block", IconType.PLUS, new ClickHandler() {
             @Override
@@ -111,7 +181,10 @@ public class BlockEditModal extends Modal {
                 trackBlock.setDrivingLevelAdjustType(DRIVING_LEVEL_ADJUST_TYPE.NONE);
 
                 dataProvider.getList().add(trackBlock);
-                dataProvider.refresh();
+                dataProvider.flush();
+
+                pagination.rebuild(simplePager);
+
             }
         }));
 
@@ -121,61 +194,47 @@ public class BlockEditModal extends Modal {
         trackBlockDataGrid.setStriped(true);
         trackBlockDataGrid.setHover(true);
 
-        final Column<TrackBlock, String> colName = new Column<TrackBlock, String>(new TextInputCell()) {
+        trackBlockDataGrid.addColumn(new TextColumn<TrackBlock>() {
             @Override
             public String getValue(TrackBlock trackBlock) {
                 return trackBlock.getName();
             }
+        }, "Name");
+        trackBlockDataGrid.addColumn(new TextColumn<TrackBlock>() {
+            @Override
+            public String getValue(TrackBlock trackBlock) {
+                BusDataConfiguration blockFunction = trackBlock.getBlockFunction();
+                if (blockFunction != null) {
+                    return getStringValue(blockFunction.getAddress());
+                }
+                return "";
+            }
+        }, "Address");
+        trackBlockDataGrid.addColumn(new TextColumn<TrackBlock>() {
+            @Override
+            public String getValue(TrackBlock trackBlock) {
+                BusDataConfiguration blockFunction = trackBlock.getBlockFunction();
+                if (blockFunction != null) {
+                    return getStringValue(blockFunction.getBit());
+                }
+                return "";
+            }
+        }, "Bit");
+
+        final Column<TrackBlock, String> colEdit = new Column<TrackBlock, String>(new ButtonCell(ButtonType.DEFAULT,
+                IconType.EDIT)) {
+            @Override
+            public String getValue(TrackBlock object) {
+                return "";
+            }
         };
-        colName.setFieldUpdater(new FieldUpdater<TrackBlock, String>() {
+        colEdit.setFieldUpdater(new FieldUpdater<TrackBlock, String>() {
             @Override
             public void update(int index, TrackBlock object, String value) {
-                object.setName(value);
+                showEdit(object);
             }
         });
-        trackBlockDataGrid.addColumn(colName, "Name");
-        final Column<TrackBlock, String> colAddress = new Column<TrackBlock, String>(new TextInputCell()) {
-            @Override
-            public String getValue(TrackBlock trackBlock) {
-                BusDataConfiguration blockFunction = trackBlock.getBlockFunction();
-                if (blockFunction != null) {
-                    return String.valueOf(blockFunction.getAddress());
-                }
-                return "";
-            }
-        };
-        colAddress.setFieldUpdater(new FieldUpdater<TrackBlock, String>() {
-            @Override
-            public void update(int index, TrackBlock trackBlock, String value) {
-                if (trackBlock.getBlockFunction() == null) {
-                    trackBlock.setBlockFunction(new BusDataConfiguration(1, null, null, null));
-                }
-                trackBlock.getBlockFunction().setAddress(Integer.parseInt(value));
-            }
-        });
-        trackBlockDataGrid.addColumn(colAddress, "Address");
-
-        final Column<TrackBlock, String> colBit = new Column<TrackBlock, String>(new TextInputCell()) {
-            @Override
-            public String getValue(TrackBlock trackBlock) {
-                BusDataConfiguration blockFunction = trackBlock.getBlockFunction();
-                if (blockFunction != null) {
-                    return String.valueOf(blockFunction.getBit());
-                }
-                return "";
-            }
-        };
-        colBit.setFieldUpdater(new FieldUpdater<TrackBlock, String>() {
-            @Override
-            public void update(int index, TrackBlock trackBlock, String value) {
-                if (trackBlock.getBlockFunction() == null) {
-                    trackBlock.setBlockFunction(new BusDataConfiguration(1, null, null, null));
-                }
-                trackBlock.getBlockFunction().setBit(Integer.parseInt(value));
-                trackBlock.getBlockFunction().setBitState(true);
-            }
-        });
-        trackBlockDataGrid.addColumn(colBit, "Bit");
+        trackBlockDataGrid.addColumn(colEdit, "Edit");
 
         final Column<TrackBlock, String> col4 = new Column<TrackBlock, String>(new ButtonCell(ButtonType.DANGER,
                 IconType.TRASH)) {
@@ -191,6 +250,7 @@ public class BlockEditModal extends Modal {
                         new OnlySuccessAsyncCallback<Void>("Block", "can't delete") {
                             @Override
                             public void onSuccess(Void result) {
+                                // TODO das schmeißt alle anderen änderungen weg
                                 loadData();
                             }
                         });
@@ -198,9 +258,27 @@ public class BlockEditModal extends Modal {
         });
         trackBlockDataGrid.addColumn(col4, "Delete");
 
-        dataProvider.addDataDisplay(trackBlockDataGrid);
         widgets.add(trackBlockDataGrid);
+        widgets.add(pagination);
+
+        trackBlockDataGrid.addRangeChangeHandler(new RangeChangeEvent.Handler() {
+
+            @Override
+            public void onRangeChange(final RangeChangeEvent event) {
+                pagination.rebuild(simplePager);
+            }
+        });
+
+        simplePager.setDisplay(trackBlockDataGrid);
+        pagination.clear();
+
+        dataProvider.addDataDisplay(trackBlockDataGrid);
+
         return widgets;
+    }
+
+    private String getStringValue(Integer value) {
+        return value == null ? "" : String.valueOf(value);
     }
 
 }

@@ -1,5 +1,6 @@
 package net.wbz.moba.controlcenter.web.shared.train;
 
+import com.google.common.base.Objects;
 import java.util.Set;
 
 import com.googlecode.jmapper.annotations.JMap;
@@ -67,4 +68,11 @@ public class Train extends AbstractDto {
         this.functions = functions;
     }
 
+    @Override
+    public String toString() {
+        return Objects.toStringHelper(this)
+            .add("name", name)
+            .add("address", address)
+            .toString();
+    }
 }

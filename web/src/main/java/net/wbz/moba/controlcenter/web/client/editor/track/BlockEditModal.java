@@ -2,6 +2,7 @@ package net.wbz.moba.controlcenter.web.client.editor.track;
 
 import java.util.Collection;
 
+import net.wbz.moba.controlcenter.web.shared.track.model.TrackBlock.DRIVING_LEVEL_ADJUST_TYPE;
 import org.gwtbootstrap3.client.ui.Button;
 import org.gwtbootstrap3.client.ui.Modal;
 import org.gwtbootstrap3.client.ui.ModalBody;
@@ -106,7 +107,10 @@ public class BlockEditModal extends Modal {
         widgets.add(new Button("add block", IconType.PLUS, new ClickHandler() {
             @Override
             public void onClick(ClickEvent clickEvent) {
-                dataProvider.getList().add(new TrackBlock());
+                TrackBlock trackBlock = new TrackBlock();
+                trackBlock.setDrivingLevelAdjustType(DRIVING_LEVEL_ADJUST_TYPE.NONE);
+
+                dataProvider.getList().add(trackBlock);
                 dataProvider.refresh();
             }
         }));

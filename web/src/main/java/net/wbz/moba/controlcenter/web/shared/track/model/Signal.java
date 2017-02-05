@@ -13,7 +13,39 @@ import com.googlecode.jmapper.annotations.JMap;
  * @author Daniel Tuerk
  */
 public class Signal extends Straight implements HasToggleFunction {
+    /**
+     * Available functions for the signal types.
+     */
+    public enum FUNCTION {
+        HP0, HP1, HP2, HP0_SH1
+    }
 
+    /**
+     * Types of signal with corresponding mapping of the lights.
+     */
+    public enum TYPE implements IsSerializable {
+        BLOCK(new LIGHT[] { LIGHT.RED1, LIGHT.GREEN1 }), ENTER(new LIGHT[] { LIGHT.RED1, LIGHT.GREEN1,
+                LIGHT.YELLOW1 }), EXIT(new LIGHT[] { LIGHT.RED1, LIGHT.RED2, LIGHT.GREEN1, LIGHT.YELLOW1,
+                        LIGHT.WHITE }), BEFORE(new LIGHT[] { LIGHT.GREEN1, LIGHT.GREEN2, LIGHT.YELLOW1,
+                                LIGHT.YELLOW2 });
+
+        private LIGHT[] lights;
+
+        TYPE(LIGHT[] lights) {
+            this.lights = lights;
+        }
+
+        public LIGHT[] getLights() {
+            return lights;
+        }
+    }
+
+    /**
+     * Available lights of the different signal types.
+     */
+    public enum LIGHT {
+        RED1, RED2, GREEN1, GREEN2, YELLOW1, YELLOW2, WHITE
+    }
     @JMap
     private TYPE type;
     @JMap
@@ -30,6 +62,15 @@ public class Signal extends Straight implements HasToggleFunction {
     private BusDataConfiguration signalConfigYellow2;
     @JMap
     private BusDataConfiguration signalConfigWhite;
+
+    @JMap
+    private TrackBlock enteringBlock;
+    @JMap
+    private TrackBlock breakingBlock;
+    @JMap
+    private TrackBlock stopBlock;
+    @JMap
+    private TrackBlock monitoringBlock;
 
     public TYPE getType() {
         return type;
@@ -188,6 +229,38 @@ public class Signal extends Straight implements HasToggleFunction {
         this.signalConfigWhite = signalConfigWhite;
     }
 
+    public void setEnteringBlock(TrackBlock enteringBlock) {
+        this.enteringBlock = enteringBlock;
+    }
+
+    public TrackBlock getBreakingBlock() {
+        return breakingBlock;
+    }
+
+    public void setBreakingBlock(TrackBlock breakingBlock) {
+        this.breakingBlock = breakingBlock;
+    }
+
+    public TrackBlock getStopBlock() {
+        return stopBlock;
+    }
+
+    public void setStopBlock(TrackBlock stopBlock) {
+        this.stopBlock = stopBlock;
+    }
+
+    public TrackBlock getMonitoringBlock() {
+        return monitoringBlock;
+    }
+
+    public void setMonitoringBlock(TrackBlock monitoringBlock) {
+        this.monitoringBlock = monitoringBlock;
+    }
+
+    public TrackBlock getEnteringBlock() {
+        return enteringBlock;
+    }
+
     public Map<LIGHT, BusDataConfiguration> getSignalLightsConfigurations(TYPE type) {
         Map<LIGHT, BusDataConfiguration> lightConfigs = Maps.newHashMap();
         for (LIGHT light : type.getLights()) {
@@ -196,37 +269,5 @@ public class Signal extends Straight implements HasToggleFunction {
         return lightConfigs;
     }
 
-    /**
-     * Available functions for the signal types.
-     */
-    public enum FUNCTION {
-        HP0, HP1, HP2, HP0_SH1
-    }
 
-    /**
-     * Types of signal with corresponding mapping of the lights.
-     */
-    public enum TYPE implements IsSerializable {
-        BLOCK(new LIGHT[] { LIGHT.RED1, LIGHT.GREEN1 }), ENTER(new LIGHT[] { LIGHT.RED1, LIGHT.GREEN1,
-                LIGHT.YELLOW1 }), EXIT(new LIGHT[] { LIGHT.RED1, LIGHT.RED2, LIGHT.GREEN1, LIGHT.YELLOW1,
-                        LIGHT.WHITE }), BEFORE(new LIGHT[] { LIGHT.GREEN1, LIGHT.GREEN2, LIGHT.YELLOW1,
-                                LIGHT.YELLOW2 });
-
-        private LIGHT[] lights;
-
-        TYPE(LIGHT[] lights) {
-            this.lights = lights;
-        }
-
-        public LIGHT[] getLights() {
-            return lights;
-        }
-    }
-
-    /**
-     * Available lights of the different signal types.
-     */
-    public enum LIGHT {
-        RED1, RED2, GREEN1, GREEN2, YELLOW1, YELLOW2, WHITE
-    }
 }

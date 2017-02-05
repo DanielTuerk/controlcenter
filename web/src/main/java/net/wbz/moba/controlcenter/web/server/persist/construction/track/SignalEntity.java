@@ -1,11 +1,13 @@
 package net.wbz.moba.controlcenter.web.server.persist.construction.track;
 
+import java.util.List;
 import java.util.Map;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
@@ -52,6 +54,36 @@ public class SignalEntity extends StraightEntity {
     @JMap
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private BusDataConfigurationEntity signalConfigWhite;
+
+
+    /**
+     * Block to detect an entering train which has to be stopped for occupied monitoring blocks.
+     */
+    @JMap
+    @ManyToOne(fetch = FetchType.EAGER)
+    private TrackBlockEntity enteringBlock;
+
+    /**
+     * Block to start breaking.
+     * If it's {@code null} than the breaking is used in the stop block.
+     */
+    @JMap
+    @ManyToOne(fetch = FetchType.EAGER)
+    private TrackBlockEntity breakingBlock;
+
+    /**
+     * Block to immediately stop the train.
+     */
+    @JMap
+    @ManyToOne(fetch = FetchType.EAGER)
+    private TrackBlockEntity stopBlock;
+
+    /**
+     * Blocks which should be monitored to be free.
+     */
+    @JMap
+    @ManyToOne(fetch = FetchType.EAGER)
+    private TrackBlockEntity monitoringBlock;
 
     public SignalEntity() {
     }
@@ -157,6 +189,41 @@ public class SignalEntity extends StraightEntity {
 
     public void setSignalConfigWhite(BusDataConfigurationEntity signalConfigWhite) {
         this.signalConfigWhite = signalConfigWhite;
+    }
+
+    public TrackBlockEntity getEnteringBlock() {
+        return enteringBlock;
+    }
+
+    public void setEnteringBlock(
+        TrackBlockEntity enteringBlock) {
+        this.enteringBlock = enteringBlock;
+    }
+
+    public TrackBlockEntity getBreakingBlock() {
+        return breakingBlock;
+    }
+
+    public void setBreakingBlock(
+        TrackBlockEntity breakingBlock) {
+        this.breakingBlock = breakingBlock;
+    }
+
+    public TrackBlockEntity getStopBlock() {
+        return stopBlock;
+    }
+
+    public void setStopBlock(TrackBlockEntity stopBlock) {
+        this.stopBlock = stopBlock;
+    }
+
+    public TrackBlockEntity getMonitoringBlock() {
+        return monitoringBlock;
+    }
+
+    public void setMonitoringBlock(
+        TrackBlockEntity monitoringBlock) {
+        this.monitoringBlock = monitoringBlock;
     }
 
     @Override

@@ -11,6 +11,8 @@ public class Construction extends AbstractDto {
     @JMap
     private String name;
 
+    private boolean inAutomaticMode = false;
+
     public Construction() {
     }
 
@@ -22,4 +24,11 @@ public class Construction extends AbstractDto {
         this.name = name;
     }
 
+    public boolean isInAutomaticMode() {
+        return inAutomaticMode;
+    }
+
+    public void setInAutomaticMode(boolean inAutomaticMode) {
+        this.inAutomaticMode = inAutomaticMode;
+    }
 }

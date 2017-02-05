@@ -2,6 +2,7 @@ package net.wbz.moba.controlcenter.web.server.persist.construction;
 
 import java.util.List;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
@@ -18,6 +19,7 @@ import net.wbz.moba.controlcenter.web.server.persist.construction.track.Abstract
 public class ConstructionEntity extends AbstractEntity {
 
     @JMap
+    @Column
     private String name;
 
     @OneToMany(fetch = FetchType.LAZY)

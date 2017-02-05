@@ -1,18 +1,18 @@
 package net.wbz.moba.controlcenter.web.server.persist.construction.track;
 
-import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 
 import com.googlecode.jmapper.annotations.JMap;
 
 import net.wbz.moba.controlcenter.web.server.persist.AbstractEntity;
 import net.wbz.moba.controlcenter.web.server.persist.construction.ConstructionEntity;
-import net.wbz.moba.controlcenter.web.shared.constrution.Construction;
+import net.wbz.moba.controlcenter.web.shared.track.model.TrackBlock.DRIVING_LEVEL_ADJUST_TYPE;
 
 /**
  * @author Daniel Tuerk
@@ -31,6 +31,26 @@ public class TrackBlockEntity extends AbstractEntity {
     @JMap
     @Column
     private String name;
+
+    /**
+     * Target driving level to set to train which is entering with driving direction 'forward'.
+     * Could be {@code null} to don't change driving level of train.
+     */
+    @JMap
+    @Column
+    private Integer forwardTargetDrivingLevel;
+
+    /**
+     * @see #forwardTargetDrivingLevel for 'backward'.
+     */
+    @JMap
+    @Column
+    private Integer backwardTargetDrivingLevel;
+
+    @JMap
+    @Column(nullable = false, columnDefinition = "int default 0")
+    @Enumerated(EnumType.ORDINAL)
+    private DRIVING_LEVEL_ADJUST_TYPE drivingLevelAdjustType;
 
     public TrackBlockEntity() {
     }
@@ -59,4 +79,28 @@ public class TrackBlockEntity extends AbstractEntity {
         this.construction = construction;
     }
 
+    public Integer getForwardTargetDrivingLevel() {
+        return forwardTargetDrivingLevel;
+    }
+
+    public void setForwardTargetDrivingLevel(Integer forwardTargetDrivingLevel) {
+        this.forwardTargetDrivingLevel = forwardTargetDrivingLevel;
+    }
+
+    public Integer getBackwardTargetDrivingLevel() {
+        return backwardTargetDrivingLevel;
+    }
+
+    public void setBackwardTargetDrivingLevel(Integer backwardTargetDrivingLevel) {
+        this.backwardTargetDrivingLevel = backwardTargetDrivingLevel;
+    }
+
+    public DRIVING_LEVEL_ADJUST_TYPE getDrivingLevelAdjustType() {
+        return drivingLevelAdjustType;
+    }
+
+    public void setDrivingLevelAdjustType(
+        DRIVING_LEVEL_ADJUST_TYPE drivingLevelAdjustType) {
+        this.drivingLevelAdjustType = drivingLevelAdjustType;
+    }
 }

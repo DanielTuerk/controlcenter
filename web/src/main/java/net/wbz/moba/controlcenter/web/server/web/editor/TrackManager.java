@@ -24,7 +24,6 @@ import net.wbz.moba.controlcenter.web.server.persist.construction.track.TrackBlo
 import net.wbz.moba.controlcenter.web.server.persist.construction.track.TrackPartDao;
 import net.wbz.moba.controlcenter.web.server.web.DataMapper;
 import net.wbz.moba.controlcenter.web.server.web.TrackPartDataMapper;
-import net.wbz.moba.controlcenter.web.shared.bus.FeedbackBlockEvent;
 import net.wbz.moba.controlcenter.web.shared.constrution.Construction;
 import net.wbz.moba.controlcenter.web.shared.track.model.AbstractTrackPart;
 import net.wbz.moba.controlcenter.web.shared.track.model.BusDataConfiguration;
@@ -32,9 +31,7 @@ import net.wbz.moba.controlcenter.web.shared.track.model.EventConfiguration;
 import net.wbz.moba.controlcenter.web.shared.track.model.HasToggleFunction;
 import net.wbz.moba.controlcenter.web.shared.track.model.Signal;
 import net.wbz.moba.controlcenter.web.shared.track.model.TrackBlock;
-import net.wbz.moba.controlcenter.web.shared.viewer.TrackPartBlockEvent;
 import net.wbz.moba.controlcenter.web.shared.viewer.TrackPartStateEvent;
-import net.wbz.selectrix4java.block.FeedbackBlockListener;
 import net.wbz.selectrix4java.bus.BusAddress;
 import net.wbz.selectrix4java.bus.BusAddressBitListener;
 import net.wbz.selectrix4java.bus.BusListener;
@@ -53,8 +50,7 @@ public class TrackManager {
 
     private final Map<BusAddressIdentifier, List<BusListener>> busAddressListenersOfTheCurrentTrack = Maps
             .newConcurrentMap();
-    private final Map<BusAddressIdentifier, FeedbackBlockListener> busAddressFeedbackBlockListenersOfTheCurrentTrack =
-            Maps.newConcurrentMap();
+
     private final DeviceManager deviceManager;
     private final EventBroadcaster eventBroadcaster;
     private final TrackPartDao trackPartDao;
@@ -63,6 +59,8 @@ public class TrackManager {
     private final TrackBlockDao trackBlockDao;
     private final DataMapper<TrackBlock, TrackBlockEntity> trackBlockDataMapper = new DataMapper<>(TrackBlock.class,
             TrackBlockEntity.class);
+    private final TrackBlockRegistry trackBlockRegistry;
+    private final SignalBlockRegistry signalBlockRegistry;
 
     private final Collection<AbstractTrackPart> cachedData = Lists.newArrayList();
     private final Collection<TrackBlock> cachedTrackBlocks = Lists.newArrayList();
@@ -70,13 +68,16 @@ public class TrackManager {
 
     @Inject
     public TrackManager(DeviceManager deviceManager, EventBroadcaster eventBroadcaster, TrackPartDao trackPartDao,
-            ConstructionDao constructionDao, TrackPartDataMapper trackPartDataMapper, TrackBlockDao trackBlockDao) {
+            ConstructionDao constructionDao, TrackPartDataMapper trackPartDataMapper, TrackBlockDao trackBlockDao,
+            TrackBlockRegistry trackBlockRegistry, SignalBlockRegistry signalBlockRegistry) {
         this.eventBroadcaster = eventBroadcaster;
         this.deviceManager = deviceManager;
         this.trackPartDao = trackPartDao;
         this.constructionDao = constructionDao;
         this.trackPartDataMapper = trackPartDataMapper;
         this.trackBlockDao = trackBlockDao;
+        this.trackBlockRegistry = trackBlockRegistry;
+        this.signalBlockRegistry = signalBlockRegistry;
 
         deviceManager.addDeviceConnectionListener(new DeviceConnectionListener() {
             @Override
@@ -106,13 +107,8 @@ public class TrackManager {
         }
 
         try {
-            for (Map.Entry<BusAddressIdentifier, FeedbackBlockListener> entry : busAddressFeedbackBlockListenersOfTheCurrentTrack
-                    .entrySet()) {
-                device.getFeedbackBlockModule(
-                        entry.getKey().getAddress(),
-                        (entry.getKey().getAddress() + 2),
-                        (entry.getKey().getAddress() + 1)).addFeedbackBlockListener(entry.getValue());
-            }
+            trackBlockRegistry.registerListeners(device);
+            signalBlockRegistry.registerListeners(device);
         } catch (DeviceAccessException e) {
             log.error("can't register feedback block listeners to active device", e);
         }
@@ -125,13 +121,10 @@ public class TrackManager {
                 device.getBusAddress(entry.getKey().getBus(),
                         (byte) entry.getKey().getAddress()).removeListeners(entry.getValue());
             }
-            for (Map.Entry<BusAddressIdentifier, FeedbackBlockListener> entry : busAddressFeedbackBlockListenersOfTheCurrentTrack
-                    .entrySet()) {
-                device.getFeedbackBlockModule(
-                        entry.getKey().getAddress(),
-                        (entry.getKey().getAddress() + 2),
-                        (entry.getKey().getAddress() + 1)).removeFeedbackBlockListener(entry.getValue());
-            }
+
+            trackBlockRegistry.removeListeners(device);
+            signalBlockRegistry.removeListeners(device);
+
         } catch (DeviceAccessException e) {
             log.error("can't remove listeners to active device", e);
         }
@@ -267,10 +260,7 @@ public class TrackManager {
             // ignore
         }
 
-        log.info("create consumers of track blocks");
-        busAddressFeedbackBlockListenersOfTheCurrentTrack.clear();
-
-        registerBlockFunctions(cachedTrackBlocks);
+        trackBlockRegistry.initBlocks(cachedTrackBlocks);
 
         log.info("create consumers of track parts");
         busAddressListenersOfTheCurrentTrack.clear();
@@ -280,11 +270,20 @@ public class TrackManager {
             return;
         }
 
+        List<Signal> signals = Lists.newArrayList();
         // create consumers for the configuration of the track parts
         for (final AbstractTrackPart trackPart : trackParts) {
             registerToggleFunctionOfTrackPart(trackPart);
-            registerSignal(trackPart);
+            if (trackPart instanceof Signal) {
+                Signal signal = (Signal) trackPart;
+                registerSignalFunction(signal);
+                signals.add(signal);
+            }
+
         }
+
+        // register signal blocks
+        signalBlockRegistry.initBlocks(signals);
 
         // register consumers if an device is already connected
         try {
@@ -294,17 +293,15 @@ public class TrackManager {
         }
     }
 
-    private void registerSignal(AbstractTrackPart trackPart) {
-        if (trackPart instanceof Signal) {
+    private void registerSignalFunction(Signal signal) {
             Map<BusAddressIdentifier, List<BusAddressBitListener>> busAddressListeners = new SignalFunctionReceiver(
-                    (Signal) trackPart, eventBroadcaster).getBusAddressListeners();
+                signal, eventBroadcaster).getBusAddressListeners();
             for (Map.Entry<BusAddressIdentifier, List<BusAddressBitListener>> entry : busAddressListeners.entrySet()) {
                 if (!busAddressListenersOfTheCurrentTrack.containsKey(entry.getKey())) {
                     busAddressListenersOfTheCurrentTrack.put(entry.getKey(), new ArrayList<BusListener>());
                 }
                 busAddressListenersOfTheCurrentTrack.get(entry.getKey()).addAll(entry.getValue());
             }
-        }
     }
 
     private void registerToggleFunctionOfTrackPart(AbstractTrackPart trackPart) {
@@ -312,82 +309,17 @@ public class TrackManager {
             HasToggleFunction trackPartConfiguration = (HasToggleFunction) trackPart;
             final BusDataConfiguration toggleFunction = trackPartConfiguration.getToggleFunction();
             if (toggleFunction != null && toggleFunction.isValid()) {
-
                 addBusListener(toggleFunction, new BusAddressBitListener(toggleFunction.getBit()) {
                     @Override
                     public void bitChanged(boolean oldValue, boolean newValue) {
-                        // if(firstCall)
-                        // if ((newValue && stateOnConfig.getBitState())
-                        // || (!newValue && !stateOnConfig.getBitState())) {
-                        //
-                        // }
                         eventBroadcaster.fireEvent(new TrackPartStateEvent(toggleFunction, newValue));
                     }
-
                 });
-
                 registerEventConfigurationOfTrackPart(trackPartConfiguration);
             }
         }
     }
 
-    private void registerBlockFunctions(final Collection<TrackBlock> trackBlocks) {
-        // configure feedback blocks
-
-        for (TrackBlock trackBlock : trackBlocks) {
-
-            final BusDataConfiguration blockFunction = trackBlock.getBlockFunction();
-
-            if (blockFunction != null && blockFunction.isValid()) {
-
-                final BusAddressIdentifier busAddressIdentifier = new BusAddressIdentifier(blockFunction
-                        .getBus(), blockFunction.getAddress());
-                if (!busAddressFeedbackBlockListenersOfTheCurrentTrack.containsKey(busAddressIdentifier)) {
-                    busAddressFeedbackBlockListenersOfTheCurrentTrack.put(busAddressIdentifier,
-                            new FeedbackBlockListener() {
-                                @Override
-                                public void trainEnterBlock(int blockNumber, int trainAddress,
-                                        boolean drivingDirection) {
-                                    eventBroadcaster.fireEvent(new FeedbackBlockEvent(
-                                            FeedbackBlockEvent.STATE.ENTER,
-                                            blockFunction.getBus(),
-                                            blockFunction.getAddress(),
-                                            blockNumber, trainAddress, drivingDirection));
-                                }
-
-                                @Override
-                                public void trainLeaveBlock(int blockNumber, int trainAddress,
-                                        boolean drivingDirection) {
-                                    eventBroadcaster.fireEvent(new FeedbackBlockEvent(
-                                            FeedbackBlockEvent.STATE.EXIT,
-                                            blockFunction.getBus(),
-                                            blockFunction.getAddress(),
-                                            blockNumber, trainAddress, drivingDirection));
-                                }
-
-                                @Override
-                                public void blockOccupied(int blockNr) {
-                                    fireBlockEvent(true, blockNr);
-                                }
-
-                                @Override
-                                public void blockFreed(int blockNr) {
-                                    fireBlockEvent(false, blockNr);
-                                }
-
-                                private void fireBlockEvent(boolean bitState, int blockNr) {
-                                    eventBroadcaster.fireEvent(new TrackPartBlockEvent(new BusDataConfiguration(
-                                            busAddressIdentifier.getBus(),
-                                            busAddressIdentifier.getAddress(),
-                                            blockNr,
-                                            bitState), bitState ? TrackPartBlockEvent.STATE.USED
-                                                    : TrackPartBlockEvent.STATE.FREE));
-                                }
-                            });
-                }
-            }
-        }
-    }
 
     private void addBusListener(BusDataConfiguration trackPartConfiguration, BusListener listener) {
         BusAddressIdentifier busAddressIdentifier = new BusAddressIdentifier(trackPartConfiguration.getBus(),
@@ -428,7 +360,6 @@ public class TrackManager {
                     public void bitChanged(boolean oldValue, boolean newValue) {
                         if ((newValue && stateOffConfig.getBitState())
                                 || (!newValue && !stateOffConfig.getBitState())) {
-
                             try {
                                 switchToggleFunction(toggleFunctionEntity, false);
                             } catch (DeviceAccessException e) {
@@ -459,7 +390,7 @@ public class TrackManager {
     /**
      * TODO refactor to listener
      * 
-     * @param construction
+     * @param construction {@link Construction}
      */
     public void constructionChanged(Construction construction) {
         currentConstruction = construction;

@@ -9,6 +9,7 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
 import net.wbz.moba.controlcenter.web.shared.track.model.BusDataConfiguration;
+import net.wbz.moba.controlcenter.web.shared.train.Train;
 import net.wbz.moba.controlcenter.web.shared.train.TrainFunction;
 import net.wbz.moba.controlcenter.web.shared.train.TrainService;
 import net.wbz.selectrix4java.device.DeviceAccessException;
@@ -32,19 +33,29 @@ public class TrainServiceImpl extends RemoteServiceServlet implements TrainServi
         this.deviceManager = deviceManager;
     }
 
+    public void updateAutomaticDrivingLevel(Train train, int level) {
+        if (train.getDrivingLevel() > 0) {
+            updateDrivingLevel(train.getId(), level);
+        }
+    }
+
     @Override
     public void updateDrivingLevel(long id, int level) {
+        updateDrivingLevel(trainManager.getTrain(id), level);
+    }
+
+    public void updateDrivingLevel(Train train, int level) {
         if (level >= 0 && level <= 31) {
-            int address = trainManager.getTrain(id).getAddress();
+            int address = train.getAddress();
             try {
                 deviceManager.getConnectedDevice().getTrainModule((byte) address).setDrivingLevel(level);
             } catch (DeviceAccessException e) {
-                String msg = "can't change level of train " + id;
+                String msg = "can't change level of train " + train;
                 LOG.error(msg, e);
                 throw new RpcTokenException(msg);
             }
         } else {
-            throw new RpcTokenException("invalid level " + level + " (0-127)");
+            throw new RpcTokenException("invalid level " + level + " (0-31)");
         }
     }
 

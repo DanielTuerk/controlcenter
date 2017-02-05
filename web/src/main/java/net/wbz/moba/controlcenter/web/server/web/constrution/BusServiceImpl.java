@@ -28,9 +28,11 @@ import net.wbz.moba.controlcenter.web.shared.bus.DeviceInfo;
 import net.wbz.moba.controlcenter.web.shared.bus.DeviceInfoEvent;
 import net.wbz.moba.controlcenter.web.shared.bus.PlayerEvent;
 import net.wbz.moba.controlcenter.web.shared.viewer.RailVoltageEvent;
+import net.wbz.selectrix4java.bus.BusAddressBitListener;
 import net.wbz.selectrix4java.bus.consumption.AllBusDataConsumer;
 import net.wbz.selectrix4java.data.recording.BusDataPlayer;
 import net.wbz.selectrix4java.data.recording.BusDataPlayerListener;
+import net.wbz.selectrix4java.device.AbstractDevice;
 import net.wbz.selectrix4java.device.Device;
 import net.wbz.selectrix4java.device.DeviceAccessException;
 import net.wbz.selectrix4java.device.DeviceConnectionListener;
@@ -87,11 +89,21 @@ public class BusServiceImpl extends RemoteServiceServlet implements BusService {
         deviceManager.addDeviceConnectionListener(new DeviceConnectionListener() {
             @Override
             public void connected(Device device) {
-                BusServiceImpl.this.eventBroadcaster.fireEvent(new DeviceInfoEvent(getDeviceInfo(device),
+                final DeviceInfo deviceInfo = getDeviceInfo(device);
+                BusServiceImpl.this.eventBroadcaster.fireEvent(new DeviceInfoEvent(deviceInfo,
                         DeviceInfoEvent.TYPE.CONNECTED));
                 // receive actual state of rail voltage -> no consumer available for addresses > 112
                 try {
                     eventBroadcaster.fireEvent(new RailVoltageEvent(device.getRailVoltage()));
+
+                    device.getRailVoltageAddress().addListener(new BusAddressBitListener(
+                            AbstractDevice.RAILVOLTAGE_BIT) {
+                        @Override
+                        public void bitChanged(boolean oldValue, boolean newValue) {
+                            eventBroadcaster.fireEvent(new RailVoltageEvent(newValue));
+                        }
+                    });
+
                 } catch (DeviceAccessException e) {
                     e.printStackTrace();
                 }

@@ -1,4 +1,4 @@
-package net.wbz.moba.controlcenter.web.server.web.editor;
+package net.wbz.moba.controlcenter.web.server.web.editor.block;
 
 /**
  * @author Daniel Tuerk
@@ -7,7 +7,7 @@ public class BusAddressIdentifier {
     private final int bus;
     private final int address;
 
-    protected BusAddressIdentifier(int bus, int address) {
+    public BusAddressIdentifier(int bus, int address) {
         this.bus = bus;
         this.address = address;
     }

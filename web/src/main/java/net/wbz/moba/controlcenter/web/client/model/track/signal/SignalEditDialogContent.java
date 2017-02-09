@@ -6,6 +6,7 @@ import org.gwtbootstrap3.client.ui.Button;
 import org.gwtbootstrap3.client.ui.Column;
 import org.gwtbootstrap3.client.ui.Container;
 import org.gwtbootstrap3.client.ui.NavTabs;
+import org.gwtbootstrap3.client.ui.PanelBody;
 import org.gwtbootstrap3.client.ui.Row;
 import org.gwtbootstrap3.client.ui.TabContent;
 import org.gwtbootstrap3.client.ui.TabListItem;
@@ -26,9 +27,14 @@ import org.vectomatic.dom.svg.utils.OMSVGParser;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style;
+import com.google.gwt.uibinder.client.UiBinder;
+import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
 
+import net.wbz.moba.controlcenter.web.client.components.TrackBlockSelect;
 import net.wbz.moba.controlcenter.web.client.util.BitStateToggleButton;
 import net.wbz.moba.controlcenter.web.shared.track.model.BusDataConfiguration;
 import net.wbz.moba.controlcenter.web.shared.track.model.Signal;
@@ -36,21 +42,55 @@ import net.wbz.moba.controlcenter.web.shared.track.model.Signal;
 /**
  * @author Daniel Tuerk
  */
-public class SignalEditDialogContent {
+public class SignalEditDialogContent extends Composite {
+
+    interface Binder extends UiBinder<Widget, SignalEditDialogContent> {
+    }
+
+    private static Binder uiBinder = GWT.create(Binder.class);
+
+    @UiField
+    PanelBody panelBodyLightsConfig;
+
+    @UiField
+    TrackBlockSelect selectEnteringBlock;
+    @UiField
+    TrackBlockSelect selectBreakingBlock;
+    @UiField
+    TrackBlockSelect selectStopBlock;
+    @UiField
+    TrackBlockSelect selectMonitoringBlock;
 
     private static final String ID_TXT_ADDRESS = "txtAddress";
     private static final String ID_SELECT_BIT = "selectBit";
     private static final String ID_BTN_BIT_STATE = "btnBitState";
-    private final Signal signal;
+    private Signal signal;
 
     private Map<Signal.TYPE, TabListItem> signalTypesTabs = Maps.newHashMap();
     private Map<String, Widget> idWidgets = Maps.newHashMap();
 
-    public SignalEditDialogContent(Signal signal) {
-        this.signal = signal;
+    public SignalEditDialogContent() {
+        initWidget(uiBinder.createAndBindUi(this));
     }
 
-    public Widget getDialogContent() {
+    public void setSignal(Signal signal) {
+        this.signal = signal;
+        initBlocksConfigPanel();
+        initLightsConfigPanel();
+    }
+
+    private void initBlocksConfigPanel() {
+        // TODO
+
+        selectEnteringBlock.setSelectedTrackBlockValue(signal.getEnteringBlock());
+        selectBreakingBlock.setSelectedTrackBlockValue(signal.getBreakingBlock());
+        selectStopBlock.setSelectedTrackBlockValue(signal.getStopBlock());
+        selectMonitoringBlock.setSelectedTrackBlockValue(signal.getMonitoringBlock());
+    }
+
+    private void initLightsConfigPanel() {
+        // TODO refactor to split init and create
+        panelBodyLightsConfig.clear();
         TabPanel tabPanel = new TabPanel();
         NavTabs navTabs = new NavTabs();
         TabContent tabContent = new TabContent();
@@ -72,13 +112,15 @@ public class SignalEditDialogContent {
             TabListItem tabListItem = new TabListItem(signalType.name());
             signalTypesTabs.put(signalType, tabListItem);
             tabListItem.setDataTargetWidget(tabPane);
-            tabListItem.setActive(signal.getType() == signalType);
+
             navTabs.add(tabListItem);
         }
         tabPanel.add(navTabs);
         tabPanel.add(tabContent);
-        return tabPanel;
+
+        panelBodyLightsConfig.add(tabPanel);
     }
+
 
     private Widget createPreview(Signal.TYPE signalType) {
         FlowPanel panel = new FlowPanel();
@@ -189,6 +231,11 @@ public class SignalEditDialogContent {
             signalConfiguration.setBitState(btnBitState.isActive());
         }
 
+        // blocks
+        signal.setEnteringBlock(selectEnteringBlock.getSelectedTrackBlockValue());
+        signal.setBreakingBlock(selectBreakingBlock.getSelectedTrackBlockValue());
+        signal.setStopBlock(selectStopBlock.getSelectedTrackBlockValue());
+        signal.setMonitoringBlock(selectMonitoringBlock.getSelectedTrackBlockValue());
     }
 
     private String getElementId(Signal.TYPE signalType, Signal.LIGHT signalLight, String elementId) {

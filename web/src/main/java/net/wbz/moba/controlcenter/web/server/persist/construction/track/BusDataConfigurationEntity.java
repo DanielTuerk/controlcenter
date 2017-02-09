@@ -29,7 +29,7 @@ public class BusDataConfigurationEntity extends AbstractEntity {
     private Integer bit;
 
     @JMap
-    @Column(name = "CONFIG_BIT_STATE")
+    @Column(name = "CONFIG_BIT_STATE", columnDefinition = "tinyint(1) default 1")
     private Boolean bitState;
 
     public BusDataConfigurationEntity(int bus, int address, int bit, boolean bitState) {

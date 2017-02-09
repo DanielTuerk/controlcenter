@@ -1,5 +1,6 @@
-package net.wbz.moba.controlcenter.web.server.web.editor;
+package net.wbz.moba.controlcenter.web.server.web.editor.block;
 
+import com.google.common.base.Objects;
 import net.wbz.moba.controlcenter.web.shared.track.model.Signal;
 import net.wbz.moba.controlcenter.web.shared.train.Train;
 
@@ -36,5 +37,14 @@ import net.wbz.moba.controlcenter.web.shared.train.Train;
 
     public Signal getSignal() {
         return signal;
+    }
+
+    @Override
+    public String toString() {
+        return Objects.toStringHelper(this)
+                .add("monitoringBlockFree", monitoringBlockFree)
+                .add("waitingTrain", waitingTrain)
+                .add("signal", signal)
+                .toString();
     }
 }

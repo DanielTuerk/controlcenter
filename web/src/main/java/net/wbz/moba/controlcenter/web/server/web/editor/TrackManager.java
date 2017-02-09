@@ -7,6 +7,9 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import net.wbz.moba.controlcenter.web.server.web.editor.block.BusAddressIdentifier;
+import net.wbz.moba.controlcenter.web.server.web.editor.block.SignalBlockRegistry;
+import net.wbz.moba.controlcenter.web.server.web.editor.block.TrackBlockRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -108,9 +111,14 @@ public class TrackManager {
 
         try {
             trackBlockRegistry.registerListeners(device);
+        } catch (DeviceAccessException e) {
+            log.error("can't register track block listeners to active device", e);
+        }
+
+        try {
             signalBlockRegistry.registerListeners(device);
         } catch (DeviceAccessException e) {
-            log.error("can't register feedback block listeners to active device", e);
+            log.error("can't register signal block listeners to active device", e);
         }
     }
 

@@ -66,7 +66,7 @@ abstract public class AbstractSignalWidget extends AbstractControlSvgTrackWidget
             signalType = Signal.TYPE.BLOCK;
         }
 
-        dialogContent = new SignalEditDialogContent(trackPart);
+        dialogContent = new SignalEditDialogContent();
 
         Button btnDrive = new Button("drive");
         btnDrive.addClickHandler(new ClickHandler() {
@@ -121,7 +121,8 @@ abstract public class AbstractSignalWidget extends AbstractControlSvgTrackWidget
 
     @Override
     public Widget getDialogContent() {
-        return dialogContent.getDialogContent();
+        dialogContent.setSignal(getTrackPart());
+        return dialogContent;
     }
 
     @Override

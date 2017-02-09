@@ -23,7 +23,7 @@ public class BusDataConfiguration extends AbstractDto {
         this.bus = bus;
         this.address = address;
         this.bit = bit;
-        this.bitState = bitState;
+        setBitState(bitState);
     }
 
     public BusDataConfiguration() {
@@ -58,11 +58,11 @@ public class BusDataConfiguration extends AbstractDto {
     }
 
     public void setBitState(Boolean bitState) {
-        this.bitState = bitState;
+        this.bitState = bitState == null ? true : bitState;
     }
 
     public boolean isValid() {
-        return address > 0 && bit > 0 && bus > -1;
+        return (bus != null && address != null && bit != null) && address > 0 && bit > 0 && bus > -1;
     }
 
     @Override

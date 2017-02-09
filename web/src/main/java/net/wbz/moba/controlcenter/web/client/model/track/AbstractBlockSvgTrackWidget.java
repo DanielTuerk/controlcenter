@@ -1,23 +1,19 @@
 package net.wbz.moba.controlcenter.web.client.model.track;
 
-import java.util.Collection;
 import java.util.Map;
 
+import net.wbz.moba.controlcenter.web.client.components.TrackBlockSelect;
 import org.gwtbootstrap3.client.ui.FieldSet;
 import org.gwtbootstrap3.client.ui.FormGroup;
 import org.gwtbootstrap3.client.ui.FormLabel;
 import org.gwtbootstrap3.extras.select.client.ui.Option;
-import org.gwtbootstrap3.extras.select.client.ui.Select;
 import org.vectomatic.dom.svg.OMSVGElement;
 import org.vectomatic.dom.svg.OMSVGTextElement;
 import org.vectomatic.dom.svg.utils.SVGConstants;
 
-import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Widget;
 
-import net.wbz.moba.controlcenter.web.client.RequestUtils;
 import net.wbz.moba.controlcenter.web.client.editor.track.EditTrackWidgetHandler;
 import net.wbz.moba.controlcenter.web.shared.track.model.AbstractTrackPart;
 import net.wbz.moba.controlcenter.web.shared.track.model.BusDataConfiguration;
@@ -40,14 +36,21 @@ abstract public class AbstractBlockSvgTrackWidget<T extends AbstractTrackPart> e
         implements EditTrackWidgetHandler, BlockPart {
 
     private static final String ID_FORM_BLOCK = "formBit_block";
-    private final Map<String, TrackBlock> trackBlockSelectOptions = Maps.newHashMap();
-    private Select selectBlock;
+    private TrackBlockSelect selectBlock;
     /**
      * Mapping of elements on the track part by each train.
      * Used to add or remove an element for entering and exiting the block of a train
      * called by the {@link net.wbz.moba.controlcenter.web.shared.bus.FeedbackBlockEvent}.
      */
     private Map<Train, OMSVGElement> trainElements = Maps.newConcurrentMap();
+
+    @Override
+    protected void onLoad() {
+        super.onLoad();
+
+        selectBlock = new TrackBlockSelect();
+        selectBlock.setId(ID_FORM_BLOCK);
+    }
 
     @Override
     public void freeBlock() {
@@ -82,9 +85,10 @@ abstract public class AbstractBlockSvgTrackWidget<T extends AbstractTrackPart> e
         lblBit.setText("Block");
         groupBit.add(lblBit);
 
-        selectBlock = new Select();
-        selectBlock.setId(ID_FORM_BLOCK);
-        loadTrackBlocks();
+        // TODO to early?
+        selectBlock.setSelectedTrackBlockValue(getTrackPart().getTrackBlock());
+        // selectBlock.refresh();
+        // loadTrackBlocks();
         groupBit.add(selectBlock);
         fieldSet.add(groupBit);
 
@@ -92,48 +96,48 @@ abstract public class AbstractBlockSvgTrackWidget<T extends AbstractTrackPart> e
         return dialogContent;
     }
 
-    private void loadTrackBlocks() {
-        RequestUtils.getInstance().getTrackEditorService().loadTrackBlocks(new AsyncCallback<Collection<TrackBlock>>() {
-            @Override
-            public void onFailure(Throwable throwable) {
-
-            }
-
-            @Override
-            public void onSuccess(Collection<TrackBlock> trackBlocks) {
-                selectBlock.add(new DeleteOption());
-
-                for (TrackBlock trackBlock : trackBlocks) {
-
-                    if (trackBlock.getId() != null) {
-                        Option option = new Option();
-                        String value = String.valueOf(trackBlock.getId());
-                        option.setValue(value);
-                        option.setText(trackBlock.getDisplayValue());
-                        selectBlock.add(option);
-                        trackBlockSelectOptions.put(value, trackBlock);
-
-                        if (getTrackPart().getTrackBlock() != null) {
-                            if (getTrackPart().getTrackBlock().getId().equals(trackBlock.getId())) {
-                                selectBlock.setValue(value);
-                            }
-                        }
-                    }
-                }
-                selectBlock.refresh();
-            }
-        });
-
-    }
+    // private void loadTrackBlocks() {
+    // RequestUtils.getInstance().getTrackEditorService().loadTrackBlocks(new AsyncCallback<Collection<TrackBlock>>() {
+    // @Override
+    // public void onFailure(Throwable throwable) {
+    //
+    // }
+    //
+    // @Override
+    // public void onSuccess(Collection<TrackBlock> trackBlocks) {
+    // selectBlock.add(new DeleteOption());
+    //
+    // for (TrackBlock trackBlock : trackBlocks) {
+    //
+    // if (trackBlock.getId() != null) {
+    // Option option = new Option();
+    // String value = String.valueOf(trackBlock.getId());
+    // option.setValue(value);
+    // option.setText(trackBlock.getDisplayValue());
+    // selectBlock.add(option);
+    // trackBlockSelectOptions.put(value, trackBlock);
+    //
+    // if (getTrackPart().getTrackBlock() != null) {
+    // if (getTrackPart().getTrackBlock().getId().equals(trackBlock.getId())) {
+    // selectBlock.setValue(value);
+    // }
+    // }
+    // }
+    // }
+    // selectBlock.refresh();
+    // }
+    // });
+    //
+    // }
 
     @Override
     public void onConfirmCallback() {
         super.onConfirmCallback();
         // save block config
-        TrackBlock trackBlock = null;
-        if (!Strings.isNullOrEmpty(selectBlock.getValue())) {
-            trackBlock = trackBlockSelectOptions.get(selectBlock.getValue());
-        }
+        TrackBlock trackBlock = selectBlock.getSelectedTrackBlockValue();
+        // if (!Strings.isNullOrEmpty(selectBlock.getValue())) {
+        // trackBlock = trackBlockSelectOptions.get(selectBlock.getValue());
+        // }
         getTrackPart().setTrackBlock(trackBlock);
     }
 

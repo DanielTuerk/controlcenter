@@ -55,7 +55,6 @@ public class SignalEntity extends StraightEntity {
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private BusDataConfigurationEntity signalConfigWhite;
 
-
     /**
      * Block to detect an entering train which has to be stopped for occupied monitoring blocks.
      */

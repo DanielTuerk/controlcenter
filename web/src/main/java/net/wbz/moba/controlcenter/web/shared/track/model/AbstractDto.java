@@ -45,4 +45,11 @@ public abstract class AbstractDto implements Serializable, Identity {
     public int hashCode() {
         return Objects.hashCode(id);
     }
+
+    @Override
+    public String toString() {
+        return Objects.toStringHelper(this)
+                .add("id", id)
+                .toString();
+    }
 }

@@ -1,5 +1,6 @@
 package net.wbz.moba.controlcenter.web.shared.track.model;
 
+import com.google.common.base.Objects;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -269,5 +270,25 @@ public class Signal extends Straight implements HasToggleFunction {
         return lightConfigs;
     }
 
-
+    @Override
+    public String toString() {
+        return Objects.toStringHelper(this)
+                .add("type", type)
+                .add("signalConfigRed1", signalConfigRed1)
+                .add("signalConfigRed2", signalConfigRed2)
+                .add("signalConfigGreen1", signalConfigGreen1)
+                .add("signalConfigGreen2", signalConfigGreen2)
+                .add("signalConfigYellow1", signalConfigYellow1)
+                .add("signalConfigYellow2", signalConfigYellow2)
+                .add("signalConfigWhite", signalConfigWhite)
+                .add("enteringBlock", enteringBlock)
+                .add("breakingBlock", breakingBlock)
+                .add("stopBlock", stopBlock)
+                .add("monitoringBlock", monitoringBlock)
+                .add("toggleFunction", getToggleFunction())
+                .add("eventConfiguration", getEventConfiguration())
+                .add("configurationsOfFunctions", getConfigurationsOfFunctions())
+                .add("signalConfigurations", getSignalConfigurations())
+                .toString();
+    }
 }

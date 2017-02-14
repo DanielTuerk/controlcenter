@@ -1,5 +1,6 @@
 package net.wbz.moba.controlcenter.web.server.web.editor.block;
 
+import net.wbz.moba.controlcenter.web.server.web.train.TrainManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,36 +19,31 @@ abstract class SignalMonitoringBlockListener extends AbstractSignalBlockListener
 
     private final SignalBlock signalBlock;
     private final TrackViewerService trackViewerService;
+    private final TrainManager trainManager;
 
-    SignalMonitoringBlockListener(SignalBlock signalBlock, TrackViewerService trackViewerService) {
-        super(signalBlock.getSignal().getMonitoringBlock());
+    SignalMonitoringBlockListener(SignalBlock signalBlock, TrackViewerService trackViewerService,
+            TrainManager trainManager) {
+        super(signalBlock.getSignal().getMonitoringBlock(), trainManager);
         this.signalBlock = signalBlock;
         this.trackViewerService = trackViewerService;
+        this.trainManager = trainManager;
     }
 
-    public abstract void trackClear(BusDataConfiguration monitoringBlockFunction);
+    public abstract void trackClear();
 
     @Override
     public void trainEnterBlock(int blockNumber, int trainAddress, boolean forward) {
-
-        // remove waiting train from block which start the train
         if (blockNumber == getMonitoringBlockFunction().getBit()) {
-
             log.debug("signal monitoring block {} - train enter {} ", new Object[] { blockNumber, trainAddress });
-
-            // if (signalBlock.getWaitingTrain() != null && signalBlock.getWaitingTrain()
-            // .getAddress() == trainAddress) {
-            // signalBlock.setWaitingTrain(null);
-            // }
+            signalBlock.setTrainInMonitoringBlock(trainManager.getTrain(trainAddress));
         }
-
     }
 
     @Override
     public void trainLeaveBlock(int blockNumber, int trainAddress, boolean forward) {
-
         if (blockNumber == getTrackBlock().getBlockFunction().getBit()) {
             log.debug("signal monitoring block {} - train leave {}", new Object[] { blockNumber, trainAddress });
+            signalBlock.setTrainInMonitoringBlock(null);
         }
 
     }
@@ -68,11 +64,7 @@ abstract class SignalMonitoringBlockListener extends AbstractSignalBlockListener
             log.debug("signal monitoring (block {}) - freed (signal: {})", blockNr, signalBlock
                     .getSignal().getSignalConfigRed1());
 
-            trackClear(getMonitoringBlockFunction());
-
-            // clear - for each one
-            signalBlock.setMonitoringBlockFree(true);
-
+            trackClear();
         }
     }
 

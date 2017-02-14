@@ -14,6 +14,7 @@ import net.wbz.moba.controlcenter.web.shared.train.Train;
     private Train waitingTrain;
 
     private final Signal signal;
+    private Train trainInMonitoringBlock;
 
     SignalBlock(Signal signal) {
         this.signal = signal;
@@ -46,5 +47,13 @@ import net.wbz.moba.controlcenter.web.shared.train.Train;
                 .add("waitingTrain", waitingTrain)
                 .add("signal", signal)
                 .toString();
+    }
+
+    public void setTrainInMonitoringBlock(Train trainInMonitoringBlock) {
+        this.trainInMonitoringBlock = trainInMonitoringBlock;
+    }
+
+    public Train getTrainInMonitoringBlock() {
+        return trainInMonitoringBlock;
     }
 }

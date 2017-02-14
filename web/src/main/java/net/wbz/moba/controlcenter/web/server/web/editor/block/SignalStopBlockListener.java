@@ -6,7 +6,6 @@ import org.slf4j.LoggerFactory;
 import net.wbz.moba.controlcenter.web.server.web.train.TrainManager;
 import net.wbz.moba.controlcenter.web.shared.train.Train;
 import net.wbz.moba.controlcenter.web.shared.train.TrainService;
-import net.wbz.moba.controlcenter.web.shared.viewer.TrackViewerService;
 
 /**
  * @author Daniel Tuerk
@@ -15,16 +14,11 @@ public class SignalStopBlockListener extends AbstractSignalBlockListener {
     private static final Logger log = LoggerFactory.getLogger(SignalStopBlockListener.class);
 
     private final SignalBlock signalBlock;
-    private final TrackViewerService trackViewerService;
-    private final TrainManager trainManager;
     private final TrainService trainService;
 
-    public SignalStopBlockListener(SignalBlock signalBlock, TrackViewerService trackViewerService,
-            TrainManager trainManager, TrainService trainService) {
-        super(signalBlock.getSignal().getStopBlock());
+    public SignalStopBlockListener(SignalBlock signalBlock, TrainManager trainManager, TrainService trainService) {
+        super(signalBlock.getSignal().getStopBlock(), trainManager);
         this.signalBlock = signalBlock;
-        this.trackViewerService = trackViewerService;
-        this.trainManager = trainManager;
         this.trainService = trainService;
     }
 
@@ -34,8 +28,8 @@ public class SignalStopBlockListener extends AbstractSignalBlockListener {
                 .getBit()) {
             log.debug("signal stop block {} - train enter {} (signal {})", new Object[] { blockNumber, trainAddress,
                     signalBlock.getSignal().getSignalConfigRed1() });
-            Train train = trainManager.getTrain(trainAddress);
-            if (train != null) {
+            Train train = getTrain(trainAddress);
+            if (train != null && signalBlock.getTrainInMonitoringBlock() != train) {
                 signalBlock.setWaitingTrain(train);
                 trainService.updateDrivingLevel(train.getId(), 0);
             }
@@ -47,11 +41,9 @@ public class SignalStopBlockListener extends AbstractSignalBlockListener {
         if (blockNumber == getTrackBlock().getBlockFunction().getBit()) {
             log.debug("signal stop block {} - train leave {} (signal {})", new Object[] { blockNumber, trainAddress,
                     signalBlock.getSignal().getSignalConfigRed1() });
-            signalBlock.setWaitingTrain(null);
-            // Train train = signalBlock.getWaitingTrains();
-            // if (train != null) {
-            // getTrainService().updateDrivingLevel(train.getId(), DRIVING_LEVEL_START);
-            // }
+            if (getTrain(trainAddress) != signalBlock.getTrainInMonitoringBlock()) {
+                signalBlock.setWaitingTrain(null);
+            }
         }
     }
 
@@ -68,4 +60,5 @@ public class SignalStopBlockListener extends AbstractSignalBlockListener {
             // signal.setMonitoringBlockFree(true);
         }
     }
+
 }

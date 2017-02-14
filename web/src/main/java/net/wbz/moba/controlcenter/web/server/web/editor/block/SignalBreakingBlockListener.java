@@ -1,9 +1,8 @@
 package net.wbz.moba.controlcenter.web.server.web.editor.block;
 
+import net.wbz.moba.controlcenter.web.server.web.train.TrainManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import net.wbz.selectrix4java.block.FeedbackBlockListener;
 
 /**
  * // TODO breaking block
@@ -15,8 +14,8 @@ public class SignalBreakingBlockListener extends AbstractSignalBlockListener {
 
     private final SignalBlock signalBlock;
 
-    public SignalBreakingBlockListener(SignalBlock signalBlock) {
-        super(signalBlock.getSignal().getBreakingBlock());
+    public SignalBreakingBlockListener(SignalBlock signalBlock, TrainManager trainManager) {
+        super(signalBlock.getSignal().getBreakingBlock(), trainManager);
         this.signalBlock = signalBlock;
     }
 

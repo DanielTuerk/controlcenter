@@ -27,6 +27,7 @@ import net.wbz.moba.controlcenter.web.server.web.train.TrainServiceImpl;
 import net.wbz.moba.controlcenter.web.server.web.viewer.TrackViewerServiceImpl;
 import net.wbz.moba.controlcenter.web.shared.track.model.BusDataConfiguration;
 import net.wbz.moba.controlcenter.web.shared.track.model.Signal;
+import net.wbz.moba.controlcenter.web.shared.track.model.Signal.FUNCTION;
 import net.wbz.moba.controlcenter.web.shared.viewer.TrackViewerService;
 import net.wbz.selectrix4java.block.FeedbackBlockListener;
 import net.wbz.selectrix4java.block.FeedbackBlockModule;
@@ -34,7 +35,9 @@ import net.wbz.selectrix4java.device.Device;
 import net.wbz.selectrix4java.device.DeviceAccessException;
 
 /**
+ * TODO doc
  * TODO alles abhänig vom rail voltage machen? derzeit connected device
+ * TODO wie mit re-register umgehen?
  * 
  * @author Daniel Tuerk
  */
@@ -43,21 +46,26 @@ public class SignalBlockRegistry extends AbstractBlockRegistry<Signal> {
 
     private static final Logger log = LoggerFactory.getLogger(SignalBlockRegistry.class);
 
+    /**
+     * The unique {@link BusAddressIdentifier}s for the {@link FeedbackBlockModule}s which have to register the
+     * {@link AbstractSignalBlockListener}s by connected device.
+     */
     private final Map<BusAddressIdentifier, List<AbstractSignalBlockListener>> feedbackBlockListeners =
             Maps.newConcurrentMap();
-    // private final Map<Signal, List<FeedbackBlockListener>> feedbackBlockListeners =
-    // Maps.newConcurrentMap();
-    // private final List<FeedbackBlockListener> feedbackBlockListeners =Lists.newArrayList();
 
+    /**
+     * Mapping for all {@link SignalBlock}s which have the same monitoring blocks.
+     */
     private final Map<BusDataConfiguration, List<SignalBlock>> monitoringBlockSignals = Maps.newConcurrentMap();
-
-    // private final List<SignalBlock> signalBlocks = Lists.newArrayList();
 
     /**
      * Executor to start waiting train on {@link SignalBlock} for freed track of monitoring block.
      */
     private final ExecutorService taskExecutor;
 
+    /**
+     * Service to control the {@link Signal}s.
+     */
     private final TrackViewerService trackViewerService;
 
     @Inject
@@ -86,49 +94,62 @@ public class SignalBlockRegistry extends AbstractBlockRegistry<Signal> {
 
                 final BusDataConfiguration monitoringBlockFunction = signal.getMonitoringBlock().getBlockFunction();
 
+                /*
+                 * Store all signal blocks which have the same monitoring block to request drive from different stop
+                 * blocks to equal monitoring block.
+                 */
                 if (!monitoringBlockSignals.containsKey(monitoringBlockFunction)) {
                     monitoringBlockSignals.put(monitoringBlockFunction, Lists.<SignalBlock> newArrayList());
                 }
                 monitoringBlockSignals.get(monitoringBlockFunction).add(signalBlock);
 
                 // monitoring block
-                addFeedbackBlockListener(new SignalMonitoringBlockListener(signalBlock, trackViewerService) {
+                addFeedbackBlockListener(new SignalMonitoringBlockListener(signalBlock, trackViewerService,
+                        getTrainManager()) {
                     @Override
-                    public void trackClear(BusDataConfiguration monitoringBlockFunction) {
-                        // TODO remove
-                        // trackViewerService.switchSignal(signalBlock.getSignal(), FUNCTION.HP1);
-
-                        // TODO waiting trains
-                        Iterator<SignalBlock> iterator = getSignalBlocksWithWaitingTrains(monitoringBlockFunction)
-                                .iterator();
-                        while (iterator.hasNext()) {
-                            SignalBlock next = iterator.next();
-                            if (next != null) {
-                                // TODO search route, apply, allocate
-                                // TODO wie ohne route vorgehen?
-                                // TODO hat der monitoring block abhänigkeiten?
-                                taskExecutor.submit(new FreeBlockTask(next, getTrainService(), trackViewerService));
-                                // stop only start one train and wait for the next clear track
-                                break;
-                            }
-                        }
-
+                    public void trackClear() {
+                        startWaitingTrainForFreeTrack(signalBlock);
                     }
                 });
                 // stop block
-                addFeedbackBlockListener(new SignalStopBlockListener(signalBlock, trackViewerService, getTrainManager(),
+                addFeedbackBlockListener(new SignalStopBlockListener(signalBlock, getTrainManager(),
                         getTrainService()));
 
                 // breaking block
                 if (checkBlockFunction(signal.getBreakingBlock())) {
-                    addFeedbackBlockListener(new SignalBreakingBlockListener(signalBlock));
+                    addFeedbackBlockListener(new SignalBreakingBlockListener(signalBlock, getTrainManager()));
                 }
                 // entering block
                 if (checkBlockFunction(signal.getEnteringBlock())) {
-                    addFeedbackBlockListener(new SignalEnteringBlockListener(signalBlock, trackViewerService));
+                    addFeedbackBlockListener(new SignalEnteringBlockListener(signalBlock, getTrainManager()) {
+                        @Override
+                        protected void requestFreeTrack() {
+                            requestDriveForEnteringSignalBlock(signalBlock);
+                        }
+                    });
                 }
             }
         }
+    }
+
+    private synchronized void startWaitingTrainForFreeTrack(SignalBlock signalBlock) {
+        log.debug("start waiting train for signalBlock: {}", signalBlock);
+        Iterator<SignalBlock> iterator = getSignalBlocksWithWaitingTrains(signalBlock.getSignal().getMonitoringBlock()
+                .getBlockFunction())
+                        .iterator();
+        while (iterator.hasNext()) {
+            SignalBlock next = iterator.next();
+            if (next != null) {
+                // TODO search route, apply, allocate
+                // TODO wie ohne route vorgehen?
+                // TODO hat der monitoring block abhänigkeiten?
+                taskExecutor.submit(new FreeBlockTask(next, getTrainService(), trackViewerService));
+                // stop only start one train and wait for the next clear track
+                break;
+            }
+        }
+        // clear
+        signalBlock.setMonitoringBlockFree(true);
     }
 
     @Override
@@ -162,6 +183,39 @@ public class SignalBlockRegistry extends AbstractBlockRegistry<Signal> {
         feedbackBlockListeners.get(busAddressIdentifier).add(signalBlockListener);
     }
 
+    /**
+     * Request free drive by switching the {@link Signal} to {@link Signal.FUNCTION#HP1}.
+     * All other {@link SignalBlock}s which have the same monitoring block updated to stop by
+     * {@link SignalBlock#setMonitoringBlockFree(boolean)} to {@code false}.
+     * Synchronized to avoid multiple request at same monitoring block for different entering blocks.
+     *
+     * @param signalBlock {@link SignalBlock} which should drive trough from entering train
+     */
+    private synchronized void requestDriveForEnteringSignalBlock(SignalBlock signalBlock) {
+        if (signalBlock.isMonitoringBlockFree()) {
+            log.debug("request free track for signalBlock: {}", signalBlock);
+            BusDataConfiguration monitoringBlockFunction = signalBlock.getSignal().getMonitoringBlock()
+                    .getBlockFunction();
+            if (monitoringBlockSignals.containsKey(monitoringBlockFunction)) {
+                for (SignalBlock signalBlockOfMonitoring : monitoringBlockSignals.get(
+                        monitoringBlockFunction)) {
+                    if (signalBlockOfMonitoring != signalBlock) {
+                        // mark all others to stop the entering train and don't request free track
+                        signalBlockOfMonitoring.setMonitoringBlockFree(false);
+                    }
+                }
+            }
+            trackViewerService.switchSignal(signalBlock.getSignal(), FUNCTION.HP1);
+        }
+    }
+
+    /**
+     * Load all {@link SignalBlock}s which have no free monitoring block and a waiting
+     * {@link net.wbz.moba.controlcenter.web.shared.train.Train} on it.
+     * 
+     * @param monitoringBlockFunction {@link BusDataConfiguration}
+     * @return {@link SignalBlock}s
+     */
     private synchronized Collection<SignalBlock> getSignalBlocksWithWaitingTrains(
             BusDataConfiguration monitoringBlockFunction) {
         return Collections2.filter(monitoringBlockSignals.get(monitoringBlockFunction), new Predicate<SignalBlock>() {
@@ -170,12 +224,6 @@ public class SignalBlockRegistry extends AbstractBlockRegistry<Signal> {
                 return input != null && input.getWaitingTrain() != null && !input.isMonitoringBlockFree();
             }
         });
-        // for (SignalBlock signalBlock : monitoringBlockSignals.get(monitoringBlockFunction)) {
-        // if (!signalBlock.isMonitoringBlockFree()) {
-        // return signalBlock;
-        // }
-        // }
-        // return null;
     }
 
 }

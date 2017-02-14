@@ -1,5 +1,6 @@
 package net.wbz.moba.controlcenter.web.shared.bus;
 
+import com.google.common.base.Objects;
 import de.novanic.eventservice.client.event.Event;
 
 /**
@@ -15,6 +16,10 @@ public class FeedbackBlockEvent implements Event {
     private int train;
     private boolean direction;
     private STATE state;
+
+    public enum STATE {
+        ENTER, EXIT
+    }
 
     public FeedbackBlockEvent() {
     }
@@ -52,7 +57,15 @@ public class FeedbackBlockEvent implements Event {
         return direction;
     }
 
-    public enum STATE {
-        ENTER, EXIT
+    @Override
+    public String toString() {
+        return Objects.toStringHelper(this)
+                .add("bus", bus)
+                .add("address", address)
+                .add("block", block)
+                .add("train", train)
+                .add("direction", direction)
+                .add("state", state)
+                .toString();
     }
 }

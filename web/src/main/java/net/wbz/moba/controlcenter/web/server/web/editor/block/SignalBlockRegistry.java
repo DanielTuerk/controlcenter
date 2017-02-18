@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.ThreadFactory;
 
 import javax.annotation.Nullable;
@@ -59,6 +60,13 @@ public class SignalBlockRegistry extends AbstractBlockRegistry<Signal> {
     private final Map<BusDataConfiguration, List<SignalBlock>> monitoringBlockSignals = Maps.newConcurrentMap();
 
     /**
+     * Mapping the future which runs the {@link FreeBlockTask} to the the same monitoring blocks.
+     * Detect which signal has a running request and don't start tasks for all other signals with the same monitoring
+     * block.
+     */
+    private final Map<BusDataConfiguration, Future<?>> monitoringBlockFuture = Maps.newConcurrentMap();
+
+    /**
      * Executor to start waiting train on {@link SignalBlock} for freed track of monitoring block.
      */
     private final ExecutorService taskExecutor;
@@ -108,7 +116,14 @@ public class SignalBlockRegistry extends AbstractBlockRegistry<Signal> {
                         getTrainManager()) {
                     @Override
                     public void trackClear() {
-                        startWaitingTrainForFreeTrack(signalBlock);
+                        log.debug("track clear: signalBlock {}", signalBlock);
+                        if (signalBlock.getWaitingTrain() != null) {
+                            // start a waiting train in the signal stop block
+                            startWaitingTrainForFreeTrack(signalBlock);
+                        } else {
+                            // set the signal to free for next trains entering which check this state
+                            signalBlock.setMonitoringBlockFree(true);
+                        }
                     }
                 });
                 // stop block
@@ -134,22 +149,36 @@ public class SignalBlockRegistry extends AbstractBlockRegistry<Signal> {
 
     private synchronized void startWaitingTrainForFreeTrack(SignalBlock signalBlock) {
         log.debug("start waiting train for signalBlock: {}", signalBlock);
-        Iterator<SignalBlock> iterator = getSignalBlocksWithWaitingTrains(signalBlock.getSignal().getMonitoringBlock()
-                .getBlockFunction())
+
+        BusDataConfiguration monitoringBlockFunctionOfSignalBlock = signalBlock.getSignal().getMonitoringBlock()
+                .getBlockFunction();
+
+        // check for running requests to start train
+        if (monitoringBlockFuture.containsKey(monitoringBlockFunctionOfSignalBlock)) {
+            Future<?> future = monitoringBlockFuture.get(monitoringBlockFunctionOfSignalBlock);
+            if (future != null && !future.isDone()) {
+                // another signal block has submit a task for the same monitoring block
+                return;
+            }
+        }
+
+        Iterator<SignalBlock> iterator = getSignalBlocksWithWaitingTrains(monitoringBlockFunctionOfSignalBlock)
                         .iterator();
-        while (iterator.hasNext()) {
+        // start the first train that is waiting
+        if (iterator.hasNext()) {
             SignalBlock next = iterator.next();
             if (next != null) {
+
+                boolean driveRequested = true;
                 // TODO search route, apply, allocate
                 // TODO wie ohne route vorgehen?
                 // TODO hat der monitoring block abhänigkeiten?
-                taskExecutor.submit(new FreeBlockTask(next, getTrainService(), trackViewerService));
-                // stop only start one train and wait for the next clear track
-                break;
+
+                Future<Void> future = taskExecutor
+                        .submit(new FreeBlockTask(next, getTrainService(), trackViewerService));
+                monitoringBlockFuture.put(monitoringBlockFunctionOfSignalBlock, future);
             }
         }
-        // clear
-        signalBlock.setMonitoringBlockFree(true);
     }
 
     @Override

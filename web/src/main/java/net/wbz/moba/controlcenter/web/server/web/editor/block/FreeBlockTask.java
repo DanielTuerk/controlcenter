@@ -22,7 +22,7 @@ final class FreeBlockTask implements Callable<Void> {
     /**
      * TODO move to config
      */
-    private static final int DRIVING_LEVEL_START = 4;
+    private static final int DRIVING_LEVEL_START = 3; // 150ms
     /**
      * TODO move to config
      */
@@ -51,9 +51,7 @@ final class FreeBlockTask implements Callable<Void> {
             log.debug("start train to drive {}", train);
             trainService.updateDrivingLevel(train.getId(), DRIVING_LEVEL_START);
         }
-        // mark free but only current, don't mark all blocks
-        signalBlock.setMonitoringBlockFree(true);
-
+        // no more action, clearing the signal and train is handled by the block listeners
         return null;
     }
 }

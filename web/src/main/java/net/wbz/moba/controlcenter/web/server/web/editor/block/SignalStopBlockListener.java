@@ -29,6 +29,9 @@ public class SignalStopBlockListener extends AbstractSignalBlockListener {
             log.debug("signal stop block {} - train enter {} (signal {})", new Object[] { blockNumber, trainAddress,
                     signalBlock.getSignal().getSignalConfigRed1() });
             Train train = getTrain(trainAddress);
+
+            signalBlock.setTrainInStopBlock(train);
+
             if (train != null && signalBlock.getTrainInMonitoringBlock() != train) {
                 signalBlock.setWaitingTrain(train);
                 trainService.updateDrivingLevel(train.getId(), 0);
@@ -41,7 +44,10 @@ public class SignalStopBlockListener extends AbstractSignalBlockListener {
         if (blockNumber == getTrackBlock().getBlockFunction().getBit()) {
             log.debug("signal stop block {} - train leave {} (signal {})", new Object[] { blockNumber, trainAddress,
                     signalBlock.getSignal().getSignalConfigRed1() });
-            if (getTrain(trainAddress) != signalBlock.getTrainInMonitoringBlock()) {
+
+            signalBlock.setTrainInStopBlock(null);
+
+            if (getTrain(trainAddress) == signalBlock.getWaitingTrain()) {// != signalBlock.getTrainInMonitoringBlock()
                 signalBlock.setWaitingTrain(null);
             }
         }

@@ -1,8 +1,10 @@
 package net.wbz.moba.controlcenter.web.server.web.editor.block;
 
-import net.wbz.moba.controlcenter.web.server.web.train.TrainManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import net.wbz.moba.controlcenter.web.server.web.train.TrainManager;
+import net.wbz.moba.controlcenter.web.shared.train.Train;
 
 /**
  * // TODO breaking block
@@ -21,11 +23,23 @@ public class SignalBreakingBlockListener extends AbstractSignalBlockListener {
 
     @Override
     public void trainEnterBlock(int blockNumber, int trainAddress, boolean forward) {
+
+        if (!signalBlock.isMonitoringBlockFree() && blockNumber == getTrackBlock().getBlockFunction()
+                .getBit()) {
+            Train train = getTrain(trainAddress);
+
+            signalBlock.setTrainInBreakingBlock(train);
+
+        }
         // TODO break
+
     }
 
     @Override
     public void trainLeaveBlock(int blockNumber, int trainAddress, boolean forward) {
+        if (blockNumber == getTrackBlock().getBlockFunction().getBit()) {
+            signalBlock.setTrainInBreakingBlock(null);
+        }
     }
 
     @Override

@@ -1,5 +1,6 @@
 package net.wbz.moba.controlcenter.web.server.web.editor.block;
 
+import net.wbz.moba.controlcenter.web.shared.train.Train;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,9 +41,12 @@ public abstract class SignalEnteringBlockListener extends AbstractSignalBlockLis
         if (blockNumber == getTrackBlock().getBlockFunction().getBit()) {
             log.debug("signal entering block {} - train enter {} (signal {})", new Object[] { blockNumber, trainAddress,
                     signalBlock.getSignal().getSignalConfigRed1() });
-            if (getTrain(trainAddress) != signalBlock.getTrainInMonitoringBlock()) {
+
+            Train train = getTrain(trainAddress);
+            if (!signalBlock.isTrainInAnyBlock()) {
                 requestFreeTrack();
             }
+            signalBlock.setTrainInEnteringBlock(train);
         }
     }
 
@@ -52,6 +56,7 @@ public abstract class SignalEnteringBlockListener extends AbstractSignalBlockLis
         if (blockNumber == getTrackBlock().getBlockFunction().getBit()) {
             log.debug("signal entering block {} - train leave {} (signal {})", new Object[] { blockNumber, trainAddress,
                     signalBlock.getSignal().getSignalConfigRed1() });
+            signalBlock.setTrainInEnteringBlock(null);
         }
     }
 }

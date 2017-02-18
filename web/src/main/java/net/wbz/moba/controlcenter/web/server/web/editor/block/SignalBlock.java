@@ -15,6 +15,9 @@ import net.wbz.moba.controlcenter.web.shared.train.Train;
 
     private final Signal signal;
     private Train trainInMonitoringBlock;
+    private Train trainInStopBlock;
+    private Train trainInEnteringBlock;
+    private Train trainInBreakingBlock;
 
     SignalBlock(Signal signal) {
         this.signal = signal;
@@ -55,5 +58,36 @@ import net.wbz.moba.controlcenter.web.shared.train.Train;
 
     public Train getTrainInMonitoringBlock() {
         return trainInMonitoringBlock;
+    }
+
+    public void setTrainInStopBlock(Train trainInStopBlock) {
+        this.trainInStopBlock = trainInStopBlock;
+    }
+
+    public Train getTrainInStopBlock() {
+        return trainInStopBlock;
+    }
+
+    public Train getTrainInEnteringBlock() {
+        return trainInEnteringBlock;
+    }
+
+    public void setTrainInEnteringBlock(Train trainInEnteringBlock) {
+        this.trainInEnteringBlock = trainInEnteringBlock;
+    }
+
+    public Train getTrainInBreakingBlock() {
+        return trainInBreakingBlock;
+    }
+
+    public void setTrainInBreakingBlock(Train trainInBreakingBlock) {
+        this.trainInBreakingBlock = trainInBreakingBlock;
+    }
+
+    public boolean isTrainInAnyBlock() {
+        return trainInStopBlock != null
+                || trainInMonitoringBlock != null
+                || trainInEnteringBlock != null
+                || trainInBreakingBlock != null;
     }
 }

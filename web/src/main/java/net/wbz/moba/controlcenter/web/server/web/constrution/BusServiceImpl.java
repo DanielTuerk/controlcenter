@@ -90,6 +90,7 @@ public class BusServiceImpl extends RemoteServiceServlet implements BusService {
             @Override
             public void connected(Device device) {
                 final DeviceInfo deviceInfo = getDeviceInfo(device);
+                deviceInfo.setConnected(true);
                 BusServiceImpl.this.eventBroadcaster.fireEvent(new DeviceInfoEvent(deviceInfo,
                         DeviceInfoEvent.TYPE.CONNECTED));
                 // receive actual state of rail voltage -> no consumer available for addresses > 112
@@ -111,7 +112,9 @@ public class BusServiceImpl extends RemoteServiceServlet implements BusService {
 
             @Override
             public void disconnected(Device device) {
-                BusServiceImpl.this.eventBroadcaster.fireEvent(new DeviceInfoEvent(getDeviceInfo(device),
+                DeviceInfo deviceInfo = getDeviceInfo(device);
+                deviceInfo.setConnected(false);
+                BusServiceImpl.this.eventBroadcaster.fireEvent(new DeviceInfoEvent(deviceInfo,
                         DeviceInfoEvent.TYPE.DISCONNECTED));
                 device.getBusDataDispatcher().unregisterConsumer(allBusDataConsumer);
             }

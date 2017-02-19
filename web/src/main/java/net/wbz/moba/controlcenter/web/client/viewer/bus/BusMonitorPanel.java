@@ -92,9 +92,13 @@ public class BusMonitorPanel extends FlowPanel {
         listener = new RemoteEventListener() {
             public void apply(Event anEvent) {
                 BusDataEvent busDataEvent = (BusDataEvent) anEvent;
-                addressItemMapping.get(busDataEvent.getBus())
-                        .get(busDataEvent.getAddress())
-                        .updateData(busDataEvent.getData());
+                Map<Integer, BusAddressItemPanel> busMapping = addressItemMapping
+                        .get(busDataEvent.getBus());
+                if (busMapping.containsKey(busDataEvent.getAddress())) {
+                    busMapping.get(busDataEvent.getAddress())
+                            .updateData(busDataEvent.getData());
+                }
+
             }
         };
         // connectionListener processes events on user side of deviceInfo

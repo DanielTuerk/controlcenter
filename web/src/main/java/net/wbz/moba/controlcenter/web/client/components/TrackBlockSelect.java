@@ -53,12 +53,6 @@ public class TrackBlockSelect extends Select {
                         option.setText(trackBlock.getDisplayValue());
                         add(option);
                         trackBlockSelectOptions.put(value, trackBlock);
-
-                        // if (getTrackPart().getTrackBlock() != null) {
-                        // if (getTrackPart().getTrackBlock().getId().equals(trackBlock.getId())) {
-                        // setValue(value);
-                        // }
-                        // }
                     }
                 }
 

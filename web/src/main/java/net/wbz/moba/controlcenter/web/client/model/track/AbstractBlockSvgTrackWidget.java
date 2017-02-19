@@ -168,7 +168,7 @@ abstract public class AbstractBlockSvgTrackWidget<T extends AbstractTrackPart> e
 
     @Override
     public String getConfigurationInfo() {
-        return super.getConfigurationInfo() + "block: " + getTrackPart().getBlockFunction() + "; ";
+        return super.getConfigurationInfo() + "block: " + getTrackPart().getTrackBlock() + "; ";
     }
 
     public void updateBlockState(BusDataConfiguration configuration, boolean state) {

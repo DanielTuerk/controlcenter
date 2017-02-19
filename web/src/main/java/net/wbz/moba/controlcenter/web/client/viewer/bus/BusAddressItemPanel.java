@@ -80,13 +80,13 @@ public class BusAddressItemPanel extends FlowPanel {
     public void updateData(int data) {
         BigInteger bits = new BigInteger(String.valueOf(data));
         // check the bits of each address and show it in revert order for the widgets
-        for (int i = 0; i < 8; i++) {
-            String dataBtn = bitButtons.get(i + 1).getText();
-            bitButtons.get(i + 1).setText(
-                    String.valueOf(bits.testBit(i) ? 1 : 0));
-            if (!dataBtn.equals(bitButtons.get(i + 1).getText())) {
+        for (int i = 1; i <= 8; i++) {
+            String dataBtn = bitButtons.get(i).getText();
+            bitButtons.get(i).setText(
+                    String.valueOf(bits.testBit(i - 1) ? 1 : 0));
+            if (!dataBtn.equals(bitButtons.get(i).getText())) {
 
-                bitButtons.get(i + 1).flashLight();
+                bitButtons.get(i).flashLight();
             }
         }
     }

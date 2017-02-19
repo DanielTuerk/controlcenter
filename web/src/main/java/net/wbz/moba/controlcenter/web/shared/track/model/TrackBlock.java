@@ -103,6 +103,10 @@ public class TrackBlock extends AbstractDto {
         return "TrackBlock{" +
                 "blockFunction=" + blockFunction +
                 ", name='" + name + '\'' +
+                (drivingLevelAdjustType != DRIVING_LEVEL_ADJUST_TYPE.NONE ? (", drivingLevelAdjustType='"
+                        + drivingLevelAdjustType + '\'' +
+                        ", name='" + forwardTargetDrivingLevel + '\'' +
+                        ", name='" + backwardTargetDrivingLevel + '\'') : "") +
                 "} " + super.toString();
     }
 

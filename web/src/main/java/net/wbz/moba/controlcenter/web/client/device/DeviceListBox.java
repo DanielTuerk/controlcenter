@@ -79,7 +79,8 @@ public class DeviceListBox extends Select {
 
     public void setConnectedDevice(DeviceInfo deviceInfo) {
         if (deviceInfo != null) {
-            setValue(deviceInfo.getKey());
+            setValue(deviceInfo.getKey(), false);
+            refresh();
         }
     }
 }

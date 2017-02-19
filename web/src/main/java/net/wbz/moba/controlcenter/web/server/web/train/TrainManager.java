@@ -1,5 +1,8 @@
 package net.wbz.moba.controlcenter.web.server.web.train;
 
+import com.google.common.base.Function;
+import com.google.common.collect.Collections2;
+import com.google.common.collect.Sets;
 import java.util.Collection;
 import java.util.List;
 
@@ -8,6 +11,8 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.google.inject.persist.Transactional;
 
+import java.util.Set;
+import javax.annotation.Nullable;
 import net.wbz.moba.controlcenter.web.server.EventBroadcaster;
 import net.wbz.moba.controlcenter.web.server.persist.train.TrainDao;
 import net.wbz.moba.controlcenter.web.server.persist.train.TrainEntity;
@@ -25,6 +30,7 @@ import net.wbz.selectrix4java.device.DeviceConnectionListener;
 import net.wbz.selectrix4java.device.DeviceManager;
 import net.wbz.selectrix4java.train.TrainDataListener;
 import net.wbz.selectrix4java.train.TrainModule;
+import org.apache.commons.lang.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -76,7 +82,7 @@ public class TrainManager {
     private void reregisterConsumer(final Train train, DeviceManager deviceManager,
             final EventBroadcaster eventBroadcaster) throws DeviceAccessException {
         if (train.getAddressByte() >= 0 && deviceManager.isConnected()) {
-            TrainModule trainModule = deviceManager.getConnectedDevice().getTrainModule(train.getAddressByte());
+            TrainModule trainModule = getTrainModule(train, deviceManager);
             trainModule.removeAllTrainDataListeners();
             trainModule.addTrainDataListener(
                     new TrainDataListener() {
@@ -117,6 +123,18 @@ public class TrainManager {
                         }
                     });
         }
+    }
+
+    private TrainModule getTrainModule(Train train, DeviceManager deviceManager) throws DeviceAccessException {
+
+        Set<Integer> additionalAddresses = Sets.newHashSet();
+        for (TrainFunction trainFunction : train.getFunctions()) {
+            if (trainFunction != null && trainFunction.getConfiguration() != null) {
+                additionalAddresses.add(trainFunction.getConfiguration().getAddress());
+            }
+        }
+        return deviceManager.getConnectedDevice().getTrainModule(train.getAddressByte(), ArrayUtils.toPrimitive(
+                additionalAddresses.toArray(new Integer[additionalAddresses.size()])));
     }
 
     public Train getTrain(long id) {

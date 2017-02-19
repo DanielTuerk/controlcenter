@@ -183,32 +183,8 @@ public class TrainItemPanel extends AbstractItemPanel<Train, TrainStateEvent> {
         });
 
         rowDrivingFunctions.add(new Column(ColumnSize.MD_12, btnGroupDirection, lblSliderValue, sliderDrivingLevel, btnStop));
-//
         contentPanel.add(rowDrivingFunctions);
-////
         initFunctions();
-
-
-        // TODO load the initial state for connected device of the trains (maybe by events?)
-//        // set the initial state for the train by using the event callback
-//        if (getModel().getDrivingDirection() != null) {
-//            updateItemData(new TrainDrivingDirectionEvent(getModel().getId(),
-//                    TrainDrivingDirectionEvent.DRIVING_DIRECTION.valueOf(getModel().getDrivingDirection().name())));
-//        }
-//        updateItemData(new TrainDrivingLevelEvent(getModel().getId(), getModel().getDrivingLevel()));
-//
-//        if(getModel().getFunctions()!=null ) {
-//            // TODO ... if null
-//        for (TrainFunction trainFunction : getModel().getFunctions()) {
-//            if (trainFunction.getFunction() == TrainFunction.FUNCTION.HORN) {
-//                updateItemData(new TrainHornStateEvent(getModel().getId(), trainFunction.isActive()));
-//            } else if (trainFunction.getFunction() == TrainFunction.FUNCTION.LIGHT) {
-//                updateItemData(new TrainLightStateEvent(getModel().getId(), trainFunction.isActive()));
-//            }
-//        }
-//            // TODO train functions
-//
-//        }
         return contentPanel;
     }
 

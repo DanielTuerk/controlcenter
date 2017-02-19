@@ -66,7 +66,7 @@ public class TrainFunctionContainer extends FieldSet {
             option.setText(value);
             selectBit.add(option);
         }
-        if (trainFunction.getConfiguration().getBit() > 0) {
+        if (trainFunction.getConfiguration().getBit() != null && trainFunction.getConfiguration().getBit() > 0) {
             selectBit.setValue(String.valueOf(trainFunction.getConfiguration().getBit()));
         } else {
             selectBit.setValue("1");

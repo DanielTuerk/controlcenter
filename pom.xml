@@ -124,7 +124,7 @@
 
         <selectrix.version>0.3.1-SNAPSHOT</selectrix.version>
 
-        <gwtbootstrap3.version>0.9.3</gwtbootstrap3.version>
+        <gwtbootstrap3.version>0.9.4</gwtbootstrap3.version>
 
         <!-- setting this makes build more platform independent by explicitly specifying an encoding -->
         <logback.version>0.9.15</logback.version>

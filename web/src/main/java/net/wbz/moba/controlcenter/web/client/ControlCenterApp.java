@@ -15,6 +15,7 @@ import com.google.gwt.user.client.ui.RootLayoutPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
 
+import net.wbz.moba.controlcenter.web.client.Callbacks.OnlySuccessAsyncCallback;
 import net.wbz.moba.controlcenter.web.client.device.StatePanel;
 import net.wbz.moba.controlcenter.web.client.editor.track.TrackEditorContainer;
 import net.wbz.moba.controlcenter.web.client.model.track.ModelManager;
@@ -49,49 +50,58 @@ public class ControlCenterApp implements EntryPoint {
 
         ModelManager.getInstance().init();
 
-        if (Settings.getInstance().getShowWelcome().getValue()) {
-            loadWelcomePage();
-        } else {
-
-            RequestUtils.getInstance().getConstructionService().loadConstructions(
-                    new AsyncCallback<Collection<Construction>>() {
-                        @Override
-                        public void onFailure(Throwable caught) {
-
-                        }
-
-                        @Override
-                        public void onSuccess(Collection<Construction> result) {
-
-                            String lastUsedConstruction = Settings.getInstance().getLastUsedConstruction().getValue();
-                            Construction constructionToLoad = null;
-                            for (Construction construction : result) {
-                                if (construction.getName().equals(lastUsedConstruction)) {
-                                    constructionToLoad = construction;
-                                    break;
-                                }
-                            }
-                            if (constructionToLoad != null) {
-                                RequestUtils.getInstance().getConstructionService().setCurrentConstruction(
-                                        constructionToLoad, new AsyncCallback<Void>() {
-                                            @Override
-                                            public void onFailure(Throwable caught) {
-                                            }
-
-                                            @Override
-                                            public void onSuccess(Void result) {
-                                                loadControlCenter();
-                                            }
-                                        });
-                            } else {
-                                Notify.notify("", "can't load last used construction", IconType.WARNING);
-
+        // check existing construction on server
+        RequestUtils.getInstance().getConstructionService().getCurrentConstruction(
+                new OnlySuccessAsyncCallback<Construction>() {
+                    @Override
+                    public void onSuccess(Construction result) {
+                        if (result != null) {
+                            loadControlCenter();
+                        } else {
+                            // construction on server, set construction
+                            if (Settings.getInstance().getShowWelcome().getValue()) {
                                 loadWelcomePage();
+                            } else {
+                                loadLastUsedConstruction();
                             }
                         }
-                    });
+                    }
+                });
+    }
 
-        }
+    private void loadLastUsedConstruction() {
+        RequestUtils.getInstance().getConstructionService().loadConstructions(
+                new OnlySuccessAsyncCallback<Collection<Construction>>() {
+                    @Override
+                    public void onSuccess(Collection<Construction> result) {
+
+                        String lastUsedConstruction = Settings.getInstance().getLastUsedConstruction().getValue();
+                        Construction constructionToLoad = null;
+                        for (Construction construction : result) {
+                            if (construction.getName().equals(lastUsedConstruction)) {
+                                constructionToLoad = construction;
+                                break;
+                            }
+                        }
+                        if (constructionToLoad != null) {
+                            RequestUtils.getInstance().getConstructionService().setCurrentConstruction(
+                                    constructionToLoad, new AsyncCallback<Void>() {
+                                        @Override
+                                        public void onFailure(Throwable caught) {
+                                        }
+
+                                        @Override
+                                        public void onSuccess(Void result) {
+                                            loadControlCenter();
+                                        }
+                                    });
+                        } else {
+                            Notify.notify("", "can't load last used construction", IconType.WARNING);
+
+                            loadWelcomePage();
+                        }
+                    }
+                });
     }
 
     private void loadWelcomePage() {

@@ -1,5 +1,6 @@
 package net.wbz.moba.controlcenter.web.server;
 
+import de.novanic.eventservice.config.EventServiceConfigurationFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

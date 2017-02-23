@@ -205,8 +205,7 @@ public class TrackManager {
             }
         }
         // reload data
-        loadTrackBlocksData();
-        loadTrackPartData();
+        loadData();
     }
 
     public Collection<AbstractTrackPart> getTrack() {

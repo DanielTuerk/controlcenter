@@ -32,6 +32,13 @@ public class DeviceListBox extends Select {
                 reload();
             }
         });
+
+    }
+
+    @Override
+    protected void onLoad() {
+        super.onLoad();
+
         reload();
     }
 

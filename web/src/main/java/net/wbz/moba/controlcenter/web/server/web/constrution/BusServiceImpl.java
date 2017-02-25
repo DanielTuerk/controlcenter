@@ -26,6 +26,7 @@ import net.wbz.moba.controlcenter.web.shared.bus.BusDataEvent;
 import net.wbz.moba.controlcenter.web.shared.bus.BusService;
 import net.wbz.moba.controlcenter.web.shared.bus.DeviceInfo;
 import net.wbz.moba.controlcenter.web.shared.bus.DeviceInfoEvent;
+import net.wbz.moba.controlcenter.web.shared.bus.DeviceInfoEvent.TYPE;
 import net.wbz.moba.controlcenter.web.shared.bus.PlayerEvent;
 import net.wbz.moba.controlcenter.web.shared.viewer.RailVoltageEvent;
 import net.wbz.selectrix4java.bus.BusAddressBitListener;
@@ -40,8 +41,6 @@ import net.wbz.selectrix4java.device.DeviceManager;
 import net.wbz.selectrix4java.device.serial.SerialDevice;
 
 /**
- * TODO die stored device sind bullshit... is ja nur für mapping von device info zu selectrix device
- *
  * @author Daniel Tuerk
  */
 @Singleton
@@ -50,14 +49,17 @@ public class BusServiceImpl extends RemoteServiceServlet implements BusService {
     private static final Logger LOGGER = LoggerFactory.getLogger(BusServiceImpl.class);
     private final DeviceManager deviceManager;
     private final EventBroadcaster eventBroadcaster;
+    /**
+     * TODO really needed?
+     */
     private final AllBusDataConsumer allBusDataConsumer;
     private final DeviceRecorder deviceRecorder;
-    private net.wbz.selectrix4java.device.Device activeDevice;
-    private boolean trackingActive = false;
-    private BusDataPlayer busDataPlayer;
     private final Map<DeviceInfo, Device> storedDevices = Maps.newHashMap();
     private final DeviceInfoDao deviceInfoDao;
     private final DataMapper<DeviceInfo, DeviceInfoEntity> dtoMapper;
+    private net.wbz.selectrix4java.device.Device activeDevice;
+    private boolean trackingActive = false;
+    private BusDataPlayer busDataPlayer;
 
     @Inject
     public BusServiceImpl(DeviceManager deviceManager, final EventBroadcaster eventBroadcaster,
@@ -287,6 +289,7 @@ public class BusServiceImpl extends RemoteServiceServlet implements BusService {
                 activeDevice.connect();
             } catch (DeviceAccessException e) {
                 LOGGER.error(String.format("can't connect active device: %s", activeDevice.getClass().getName()), e);
+                eventBroadcaster.fireEvent(new DeviceInfoEvent(null, TYPE.DISCONNECTED));
             }
         }
     }

@@ -83,7 +83,7 @@ public class MyGuiceServletConfig extends GuiceServletContextListener {
                 Properties properties = new Properties();
                 // derby
                 properties.put("hibernate.connection.driver_class", "org.apache.derby.jdbc.EmbeddedDriver");
-                properties.put("hibernate.dialect", "org.hibernate.dialect.DerbyDialect");
+                properties.put("hibernate.dialect", "net.wbz.moba.controlcenter.web.guice.DerbyDialect");
                 // auth
                 properties.put("hibernate.connection.url", "jdbc:derby:" + homePath() + "/data/" + PERSISTENCE_UNIT
                         + ";create=true");
@@ -92,7 +92,6 @@ public class MyGuiceServletConfig extends GuiceServletContextListener {
                 // common
                 properties.put("hibernate.show_sql", "false");
                 properties.put("hibernate.hbm2ddl.auto", "update");
-
 
                 /*
                  * Install JPA and delegate all requests by the {@link PersistFilter} to enable transaction

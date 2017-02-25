@@ -1,36 +1,46 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <persistence xmlns="http://java.sun.com/xml/ns/persistence"
-             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-             xsi:schemaLocation="http://java.sun.com/xml/ns/persistence
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://java.sun.com/xml/ns/persistence
     http://java.sun.com/xml/ns/persistence/persistence_1_0.xsd" version="1.0">
 
-    <persistence-unit name="derby_db" transaction-type="RESOURCE_LOCAL">
-        <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+  <persistence-unit name="derby_db" transaction-type="RESOURCE_LOCAL">
+    <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
 
-        <!-- common models -->
-        <class>net.wbz.moba.controlcenter.web.server.persist.AbstractEntity</class>
-        <class>net.wbz.moba.controlcenter.web.server.persist.construction.ConstructionEntity</class>
-        <class>net.wbz.moba.controlcenter.web.server.persist.config.ConfigValueEntity</class>
-        <class>net.wbz.moba.controlcenter.web.server.persist.train.TrainEntity</class>
-        <class>net.wbz.moba.controlcenter.web.server.persist.train.TrainFunctionEntity</class>
-        <class>net.wbz.moba.controlcenter.web.server.persist.device.DeviceInfoEntity</class>
+    <!-- common models -->
+    <class>net.wbz.moba.controlcenter.web.server.persist.AbstractEntity</class>
+    <class>net.wbz.moba.controlcenter.web.server.persist.construction.ConstructionEntity</class>
+    <class>net.wbz.moba.controlcenter.web.server.persist.config.ConfigValueEntity</class>
 
-        <!-- track configuration models -->
-        <class>net.wbz.moba.controlcenter.web.server.persist.construction.track.AbstractTrackPartEntity</class>
-        <class>net.wbz.moba.controlcenter.web.server.persist.construction.track.BusDataConfigurationEntity</class>
-        <class>net.wbz.moba.controlcenter.web.server.persist.construction.track.TrackPartFunctionEntity</class>
-        <class>net.wbz.moba.controlcenter.web.server.persist.construction.track.TrackBlockEntity</class>
-        <class>net.wbz.moba.controlcenter.web.server.persist.construction.track.GridPositionEntity</class>
-        <class>net.wbz.moba.controlcenter.web.server.persist.construction.track.EventConfigurationEntity</class>
+    <!-- train -->
+    <class>net.wbz.moba.controlcenter.web.server.persist.train.TrainEntity</class>
+    <class>net.wbz.moba.controlcenter.web.server.persist.train.TrainFunctionEntity</class>
+    <class>net.wbz.moba.controlcenter.web.server.persist.device.DeviceInfoEntity</class>
 
-        <!-- track part models -->
-        <class>net.wbz.moba.controlcenter.web.server.persist.construction.track.CurveEntity</class>
-        <class>net.wbz.moba.controlcenter.web.server.persist.construction.track.SignalEntity</class>
-        <class>net.wbz.moba.controlcenter.web.server.persist.construction.track.StraightEntity</class>
-        <class>net.wbz.moba.controlcenter.web.server.persist.construction.track.SwitchEntity</class>
-        <class>net.wbz.moba.controlcenter.web.server.persist.construction.track.UncouplerEntity</class>
+    <!-- track configuration models -->
+    <class>net.wbz.moba.controlcenter.web.server.persist.construction.track.BusDataConfigurationEntity</class>
+    <class>net.wbz.moba.controlcenter.web.server.persist.construction.track.AbstractTrackPartEntity</class>
+    <class>net.wbz.moba.controlcenter.web.server.persist.construction.track.TrackPartFunctionEntity</class>
+    <class>net.wbz.moba.controlcenter.web.server.persist.construction.track.TrackBlockEntity</class>
+    <class>net.wbz.moba.controlcenter.web.server.persist.construction.track.GridPositionEntity</class>
+    <class>net.wbz.moba.controlcenter.web.server.persist.construction.track.EventConfigurationEntity</class>
 
-        <exclude-unlisted-classes>true</exclude-unlisted-classes>
-        <!--<properties> from Guice -->
-    </persistence-unit>
+    <!-- track part models -->
+    <class>net.wbz.moba.controlcenter.web.server.persist.construction.track.CurveEntity</class>
+    <class>net.wbz.moba.controlcenter.web.server.persist.construction.track.StraightEntity</class>
+    <class>net.wbz.moba.controlcenter.web.server.persist.construction.track.SignalEntity</class>
+    <class>net.wbz.moba.controlcenter.web.server.persist.construction.track.SwitchEntity</class>
+    <class>net.wbz.moba.controlcenter.web.server.persist.construction.track.UncouplerEntity</class>
+
+    <!-- scenario models -->
+    <class>net.wbz.moba.controlcenter.web.server.persist.scenario.StationRailEntity</class>
+    <class>net.wbz.moba.controlcenter.web.server.persist.scenario.StationEntity</class>
+    <class>net.wbz.moba.controlcenter.web.server.persist.scenario.RouteBlockPartEntity</class>
+    <class>net.wbz.moba.controlcenter.web.server.persist.scenario.RouteBlockEntity</class>
+    <class>net.wbz.moba.controlcenter.web.server.persist.scenario.RouteEntity</class>
+    <class>net.wbz.moba.controlcenter.web.server.persist.scenario.ScenarioEntity</class>
+
+    <exclude-unlisted-classes>true</exclude-unlisted-classes>
+    <!--<properties> from Guice -->
+  </persistence-unit>
 </persistence>

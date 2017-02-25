@@ -18,9 +18,6 @@ import com.google.gwt.user.client.ui.Widget;
  */
 abstract class AppMenu extends Composite {
 
-    interface AppMenuBinder extends UiBinder<Widget, AppMenu> {
-    }
-
     private static AppMenuBinder uiBinder = GWT.create(AppMenuBinder.class);
     @UiField
     AnchorListItem linkViewer;
@@ -28,6 +25,8 @@ abstract class AppMenu extends Composite {
     AnchorListItem linkEditor;
     @UiField
     AnchorListItem linkBusMonitor;
+    @UiField
+    AnchorListItem linkScenarioEditor;
     @UiField
     AnchorListItem linkConfiguration;
 
@@ -53,6 +52,12 @@ abstract class AppMenu extends Composite {
         linkBusMonitor.setActive(true);
     }
 
+    @UiHandler("linkScenarioEditor")
+    void clickLinkScenarioEditor(ClickEvent event) {
+        showScenarioEditor();
+        linkScenarioEditor.setActive(true);
+    }
+
     @UiHandler("linkConfiguration")
     void clickLinkConfiguration(ClickEvent event) {
         showConfiguration();
@@ -65,6 +70,11 @@ abstract class AppMenu extends Composite {
 
     abstract void showBusMonitor();
 
+    abstract void showScenarioEditor();
+
     abstract void showConfiguration();
+
+    interface AppMenuBinder extends UiBinder<Widget, AppMenu> {
+    }
 
 }

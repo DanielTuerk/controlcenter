@@ -11,6 +11,7 @@
                 <b:AnchorListItem ui:field="linkViewer" active="true">Viewer</b:AnchorListItem>
                 <b:AnchorListItem ui:field="linkEditor">Editor</b:AnchorListItem>
                 <b:AnchorListItem ui:field="linkBusMonitor">Bus Monitor</b:AnchorListItem>
+                <b:AnchorListItem ui:field="linkScenarioEditor">Scenario Editor</b:AnchorListItem>
             </b:NavbarNav>
 
             <b:NavbarNav pull="RIGHT">

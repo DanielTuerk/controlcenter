@@ -2,12 +2,13 @@ package net.wbz.moba.controlcenter.web.server.web.editor.block;
 
 import java.util.concurrent.Callable;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import net.wbz.moba.controlcenter.web.shared.track.model.Signal.FUNCTION;
 import net.wbz.moba.controlcenter.web.shared.train.Train;
 import net.wbz.moba.controlcenter.web.shared.train.TrainService;
 import net.wbz.moba.controlcenter.web.shared.viewer.TrackViewerService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * {@link Callable} to switch the signal to
@@ -22,11 +23,12 @@ final class FreeBlockTask implements Callable<Void> {
     /**
      * TODO move to config
      */
-    private static final int DRIVING_LEVEL_START = 3; // 150ms
+    private static final int DRIVING_LEVEL_START = 4;
     /**
      * TODO move to config
      */
     private static final long SIGNAL_DELAY = 3000L;
+
     private final SignalBlock signalBlock;
     private final TrainService trainService;
     private final TrackViewerService trackViewerService;

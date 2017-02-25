@@ -13,6 +13,8 @@ import net.wbz.moba.controlcenter.web.shared.track.model.AbstractTrackPart;
 import net.wbz.moba.controlcenter.web.shared.track.model.Switch;
 
 /**
+ * Entity for a two-way switch.
+ *
  * @author Daniel Tuerk
  */
 @Entity

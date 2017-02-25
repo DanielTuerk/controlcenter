@@ -67,4 +67,11 @@ public class SignalStopBlockListener extends AbstractSignalBlockListener {
         }
     }
 
+    protected SignalBlock getSignalBlock() {
+        return signalBlock;
+    }
+
+    protected TrainService getTrainService() {
+        return trainService;
+    }
 }

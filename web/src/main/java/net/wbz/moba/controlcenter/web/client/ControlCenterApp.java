@@ -19,6 +19,7 @@ import net.wbz.moba.controlcenter.web.client.Callbacks.OnlySuccessAsyncCallback;
 import net.wbz.moba.controlcenter.web.client.device.StatePanel;
 import net.wbz.moba.controlcenter.web.client.editor.track.TrackEditorContainer;
 import net.wbz.moba.controlcenter.web.client.model.track.ModelManager;
+import net.wbz.moba.controlcenter.web.client.scenario.ScenarioEditor;
 import net.wbz.moba.controlcenter.web.client.viewer.bus.BusMonitorPanel;
 import net.wbz.moba.controlcenter.web.client.viewer.settings.ConfigPanel;
 import net.wbz.moba.controlcenter.web.client.viewer.track.TrackViewerContainer;
@@ -32,6 +33,7 @@ public class ControlCenterApp implements EntryPoint {
     private TrackEditorContainer trackEditorContainer;
     private TrackViewerContainer trackViewerContainer;
     private BusMonitorPanel busMonitorPanel;
+    private ScenarioEditor trackScenarioEditorPanel;
     private ConfigPanel configPanel;
 
     private SimplePanel contentContainerPanel;
@@ -125,6 +127,8 @@ public class ControlCenterApp implements EntryPoint {
         containerPanels.add(trackEditorContainer);
         busMonitorPanel = new BusMonitorPanel();
         containerPanels.add(busMonitorPanel);
+        trackScenarioEditorPanel = new ScenarioEditor();
+        containerPanels.add(trackScenarioEditorPanel);
         configPanel = new ConfigPanel();
         containerPanels.add(configPanel);
 
@@ -165,6 +169,11 @@ public class ControlCenterApp implements EntryPoint {
             @Override
             void showBusMonitor() {
                 show(busMonitorPanel);
+            }
+
+            @Override
+            void showScenarioEditor() {
+                show(trackScenarioEditorPanel);
             }
 
             @Override

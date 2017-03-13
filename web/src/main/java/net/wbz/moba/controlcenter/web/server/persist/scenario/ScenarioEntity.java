@@ -1,13 +1,14 @@
 package net.wbz.moba.controlcenter.web.server.persist.scenario;
 
 import java.util.List;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 
 import com.googlecode.jmapper.annotations.JMap;
 
-import javax.persistence.OneToMany;
 import net.wbz.moba.controlcenter.web.server.persist.AbstractEntity;
 import net.wbz.moba.controlcenter.web.server.persist.train.TrainEntity;
 
@@ -38,8 +39,8 @@ public class ScenarioEntity extends AbstractEntity {
      * TODO: interstations aren't supported yet
      */
     @JMap
-    @OneToMany
-    private List<RouteEntity> routes;
+    @OneToMany(mappedBy = "scenario")
+    private List<RouteSequenceEntity> routeSequences;
 
     public String getName() {
         return name;
@@ -65,11 +66,12 @@ public class ScenarioEntity extends AbstractEntity {
         this.train = train;
     }
 
-    public List<RouteEntity> getRoutes() {
-        return routes;
+    public List<RouteSequenceEntity> getRouteSequences() {
+        return routeSequences;
     }
 
-    public void setRoutes(List<RouteEntity> routes) {
-        this.routes = routes;
+    public void setRouteSequences(
+            List<RouteSequenceEntity> routeSequences) {
+        this.routeSequences = routeSequences;
     }
 }

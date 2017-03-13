@@ -12,6 +12,10 @@ import net.wbz.moba.controlcenter.web.shared.constrution.ConstructionService;
 import net.wbz.moba.controlcenter.web.shared.constrution.ConstructionServiceAsync;
 import net.wbz.moba.controlcenter.web.shared.editor.TrackEditorService;
 import net.wbz.moba.controlcenter.web.shared.editor.TrackEditorServiceAsync;
+import net.wbz.moba.controlcenter.web.shared.scenario.ScenarioEditorService;
+import net.wbz.moba.controlcenter.web.shared.scenario.ScenarioEditorServiceAsync;
+import net.wbz.moba.controlcenter.web.shared.scenario.ScenarioService;
+import net.wbz.moba.controlcenter.web.shared.scenario.ScenarioServiceAsync;
 import net.wbz.moba.controlcenter.web.shared.train.TrainEditorService;
 import net.wbz.moba.controlcenter.web.shared.train.TrainEditorServiceAsync;
 import net.wbz.moba.controlcenter.web.shared.train.TrainService;
@@ -35,6 +39,8 @@ public class RequestUtils {
     private BusServiceAsync busRequest = GWT.create(BusService.class);
     private ConfigServiceAsync configRequest = GWT.create(ConfigService.class);
     private ConstructionServiceAsync constructionRequest = GWT.create(ConstructionService.class);
+    private ScenarioServiceAsync scenarioService = GWT.create(ScenarioService.class);
+    private ScenarioEditorServiceAsync scenarioEditorService = GWT.create(ScenarioEditorService.class);
 
     private RequestUtils() {
     }
@@ -69,5 +75,13 @@ public class RequestUtils {
 
     public ConstructionServiceAsync getConstructionService() {
         return constructionRequest;
+    }
+
+    public ScenarioServiceAsync getScenarioService() {
+        return scenarioService;
+    }
+
+    public ScenarioEditorServiceAsync getScenarioEditorService() {
+        return scenarioEditorService;
     }
 }

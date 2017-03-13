@@ -25,11 +25,12 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
 import net.wbz.moba.controlcenter.web.server.EventBroadcaster;
-import net.wbz.moba.controlcenter.web.server.scenario.ScenarioManager;
-import net.wbz.moba.controlcenter.web.server.scenario.ScenarioServiceImpl;
+import net.wbz.moba.controlcenter.web.server.web.scenario.ScenarioServiceImpl;
+import net.wbz.moba.controlcenter.web.server.web.scenario.ScenarioStateListener;
 import net.wbz.moba.controlcenter.web.server.web.train.TrainManager;
 import net.wbz.moba.controlcenter.web.server.web.train.TrainServiceImpl;
 import net.wbz.moba.controlcenter.web.server.web.viewer.TrackViewerServiceImpl;
+import net.wbz.moba.controlcenter.web.shared.scenario.RouteBlock;
 import net.wbz.moba.controlcenter.web.shared.scenario.Scenario;
 import net.wbz.moba.controlcenter.web.shared.track.model.BusDataConfiguration;
 import net.wbz.moba.controlcenter.web.shared.track.model.Signal;
@@ -88,34 +89,28 @@ public class SignalBlockRegistry extends AbstractBlockRegistry<Signal> {
      */
     private final ScenarioServiceImpl scenarioService;
 
-    private final ScenarioManager scenarioManager;
-
     @Inject
     public SignalBlockRegistry(EventBroadcaster eventBroadcaster, TrainServiceImpl trainService,
             TrainManager trainManager,
-            TrackViewerServiceImpl trackViewerService, ScenarioServiceImpl scenarioService,
-            final ScenarioManager scenarioManager) {
+            TrackViewerServiceImpl trackViewerService, ScenarioServiceImpl scenarioService) {
         super(eventBroadcaster, trainService, trainManager);
         this.trackViewerService = trackViewerService;
         this.scenarioService = scenarioService;
-        this.scenarioManager = scenarioManager;
 
         ThreadFactory namedThreadFactory = new ThreadFactoryBuilder().setNameFormat("signal-block-registry-%d").build();
         // TODO shutdown
         taskExecutor = Executors.newSingleThreadExecutor(namedThreadFactory);
 
-        // TODO als eigener listener - events nicht möglich auf server seite
-        // @Override
-        // public void apply(Event anEvent) {
-        // if (anEvent instanceof ScenarioStateEvent) {
-        // Scenario scenario = scenarioManager.getScenarioById(((ScenarioStateEvent) anEvent).getItemId());
-        // Optional<RouteBlock> currentRouteBlock = scenario.getFirstRouteBlock();
-        // if (currentRouteBlock.isPresent()
-        // && currentRouteBlock.get().getStartPoint().getType() == TYPE.EXIT) {
-        // requestDriveForTrainOnExitSignal(scenario.getTrain(), currentRouteBlock.get().getStartPoint());
-        // }
-        // }
-        // }
+        scenarioService.addScenarioStateListener(new ScenarioStateListener() {
+            @Override
+            public void scenarioStarted(Scenario scenario) {
+                Optional<RouteBlock> currentRouteBlock = scenario.getFirstRouteBlock();
+                if (currentRouteBlock.isPresent()
+                        && currentRouteBlock.get().getStartPoint().getType() == TYPE.EXIT) {
+                    requestDriveForTrainOnExitSignal(scenario.getTrain(), currentRouteBlock.get().getStartPoint());
+                }
+            }
+        });
     }
 
     @Override

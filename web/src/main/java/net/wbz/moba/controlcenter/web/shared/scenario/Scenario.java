@@ -31,7 +31,7 @@ public class Scenario extends AbstractDto {
      * TODO: interstations aren't supported yet
      */
     @JMap
-    private List<Route> routes;
+    private List<RouteSequence> routeSequences;
 
     private RUN_STATE runState = RUN_STATE.IDLE;
     private MODE mode = MODE.OFF;
@@ -60,12 +60,12 @@ public class Scenario extends AbstractDto {
         this.train = train;
     }
 
-    public List<Route> getRoutes() {
-        return routes;
+    public List<RouteSequence> getRouteSequences() {
+        return routeSequences;
     }
 
-    public void setRoutes(List<Route> routes) {
-        this.routes = routes;
+    public void setRouteSequences(List<RouteSequence> routeSequences) {
+        this.routeSequences = routeSequences;
     }
 
     public RUN_STATE getRunState() {
@@ -85,22 +85,26 @@ public class Scenario extends AbstractDto {
     }
 
     public Optional<RouteBlock> getRouteBlockForStartSignal(Signal signal) {
-        for (Route route : routes) {
-            for (RouteBlock routeBlock : route.getRouteBlocks()) {
-                if (routeBlock.getStartPoint().equals(signal)) {
-                    return Optional.of(routeBlock);
+        for (RouteSequence routeSequence : routeSequences) {
+            if (routeSequence.getRoute() != null) {
+                for (RouteBlock routeBlock : routeSequence.getRoute().getRouteBlocks()) {
+                    if (routeBlock.getStartPoint().equals(signal)) {
+                        return Optional.of(routeBlock);
+                    }
                 }
             }
-
         }
         return Optional.absent();
     }
 
     public Optional<RouteBlock> getFirstRouteBlock() {
-        if (routes.isEmpty()) {
-            return Optional.absent();
+        if (!routeSequences.isEmpty()) {
+            Route route = routeSequences.get(0).getRoute();
+            if (route != null) {
+                return route.getFirstRouteBlock();
+            }
         }
-        return routes.get(0).getFirstRouteBlock();
+        return Optional.absent();
     }
 
     public enum RUN_STATE {

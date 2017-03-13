@@ -26,7 +26,7 @@ public class RouteEntity extends AbstractEntity {
      */
     @JMap
     @Column
-    private int number;
+    private String name;
 
     @JMap
     @ManyToOne
@@ -52,15 +52,15 @@ public class RouteEntity extends AbstractEntity {
      * make it possible to run different route blocks on the same time.
      */
     @JMap
-    @OneToMany
+    @OneToMany(mappedBy = "route")
     private List<RouteBlockEntity> routeBlocks;
 
-    public int getNumber() {
-        return number;
+    public String getName() {
+        return name;
     }
 
-    public void setNumber(int number) {
-        this.number = number;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public StationRailEntity getStartStationRail() {
@@ -80,11 +80,11 @@ public class RouteEntity extends AbstractEntity {
         this.endStationRail = endStationRail;
     }
 
-    public boolean isOneway() {
+    public Boolean getOneway() {
         return oneway;
     }
 
-    public void setOneway(boolean oneway) {
+    public void setOneway(Boolean oneway) {
         this.oneway = oneway;
     }
 

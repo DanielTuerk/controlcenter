@@ -13,7 +13,7 @@ import net.wbz.moba.controlcenter.web.shared.track.model.AbstractDto;
 public class Route extends AbstractDto {
 
     @JMap
-    private int number;
+    private String name;
 
     @JMap
     private StationRail startStationRail;
@@ -21,17 +21,17 @@ public class Route extends AbstractDto {
     private StationRail endStationRail;
 
     @JMap
-    private boolean oneway;
+    private Boolean oneway;
 
     @JMap
     private List<RouteBlock> routeBlocks;
 
-    public int getNumber() {
-        return number;
+    public String getName() {
+        return name;
     }
 
-    public void setNumber(int number) {
-        this.number = number;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public StationRail getStartStationRail() {
@@ -50,11 +50,11 @@ public class Route extends AbstractDto {
         this.endStationRail = endStationRail;
     }
 
-    public boolean isOneway() {
+    public Boolean getOneway() {
         return oneway;
     }
 
-    public void setOneway(boolean oneway) {
+    public void setOneway(Boolean oneway) {
         this.oneway = oneway;
     }
 
@@ -71,5 +71,10 @@ public class Route extends AbstractDto {
             return Optional.absent();
         }
         return Optional.of(routeBlocks.get(0));
+    }
+
+    public String getStationRailDisplayName(StationRail stationRail) {
+        return String.valueOf(stationRail != null ? stationRail.getRailNumber()
+                : "");
     }
 }

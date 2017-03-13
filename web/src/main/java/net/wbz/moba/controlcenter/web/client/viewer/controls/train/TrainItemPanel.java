@@ -158,7 +158,7 @@ public class TrainItemPanel extends AbstractItemPanel<Train, TrainStateEvent> {
         lblSliderValue = new Label("0");
         lblSliderValue.getElement().getStyle().setMarginRight(15, Style.Unit.PX);
         lblSliderValue.getElement().getStyle().setMarginLeft(10, Style.Unit.PX);
-//
+
         sliderDrivingLevel = new Slider(0d, DRIVING_LEVEL_MAX_VALUE, 0d);
         sliderDrivingLevel.addValueChangeHandler(
                 new ValueChangeHandler<Double>() {

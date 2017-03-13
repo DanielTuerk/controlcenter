@@ -15,7 +15,9 @@ import com.google.gwt.user.client.ui.Widget;
 
 /**
  * @author Daniel Tuerk
+ * @deprecated refactor with {@link net.wbz.moba.controlcenter.web.client.components.AbstractEditModal}
  */
+@Deprecated
 public abstract class AbstractConfirmModal extends Modal {
 
     public AbstractConfirmModal(String title, String message, String confirmButtonText, IconType confirmButtonIcon,

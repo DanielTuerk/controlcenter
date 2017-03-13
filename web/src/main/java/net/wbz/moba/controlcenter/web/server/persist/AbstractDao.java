@@ -1,5 +1,6 @@
 package net.wbz.moba.controlcenter.web.server.persist;
 
+import java.util.List;
 import javax.inject.Provider;
 import javax.persistence.EntityManager;
 
@@ -27,8 +28,10 @@ public abstract class AbstractDao<T extends Identity> {
         this.entityClazz = entityClazz;
     }
 
-    public void create(T entity) {
+    public T create(T entity) {
         getEntityManager().persist(entity);
+        getEntityManager().merge(entity);
+        return entity;
     }
 
     public void update(T entity) {

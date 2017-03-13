@@ -70,6 +70,7 @@
     <inherits name="org.gwtbootstrap3.extras.slider.Slider"/>
     <inherits name="org.gwtbootstrap3.extras.notify.Notify"/>
 
+
     <inherits name="com.google.web.bindery.requestfactory.RequestFactory"/>
 
     <inherits name="de.novanic.eventservice.GWTEventService"/>

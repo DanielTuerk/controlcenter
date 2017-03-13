@@ -13,12 +13,12 @@ import net.wbz.moba.controlcenter.web.shared.track.model.Signal;
 public class RouteBlock extends AbstractDto {
 
     /**
-     * Number of the route block which must be unique in the {@link Route}. Represents the order of the blocks to
+     * Position of the route block which must be unique in the {@link Route}. Represents the order of the blocks to
      * drive.
      * TODO validations
      */
     @JMap
-    private int number;
+    private int position;
 
     /**
      * Start of the block.
@@ -37,12 +37,12 @@ public class RouteBlock extends AbstractDto {
     @JMap
     private List<RouteBlockPart> routeBlockParts;
 
-    public int getNumber() {
-        return number;
+    public int getPosition() {
+        return position;
     }
 
-    public void setNumber(int number) {
-        this.number = number;
+    public void setPosition(int position) {
+        this.position = position;
     }
 
     public Signal getStartPoint() {

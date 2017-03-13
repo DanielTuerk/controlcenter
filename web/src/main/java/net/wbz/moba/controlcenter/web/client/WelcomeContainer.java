@@ -2,6 +2,7 @@ package net.wbz.moba.controlcenter.web.client;
 
 import java.util.Collection;
 
+import net.wbz.moba.controlcenter.web.client.Callbacks.OnlySuccessAsyncCallback;
 import org.gwtbootstrap3.client.ui.Button;
 import org.gwtbootstrap3.client.ui.LinkedGroup;
 import org.gwtbootstrap3.client.ui.TextBox;
@@ -54,12 +55,7 @@ abstract class WelcomeContainer extends Composite {
     private void loadConstructions() {
         listGroupConstructions.clear();
         RequestUtils.getInstance().getConstructionService().loadConstructions(
-                new AsyncCallback<Collection<Construction>>() {
-                    @Override
-                    public void onFailure(Throwable caught) {
-
-                    }
-
+                new OnlySuccessAsyncCallback<Collection<Construction>>() {
                     @Override
                     public void onSuccess(Collection<Construction> result) {
                         for (final Construction construction : result) {
@@ -82,17 +78,12 @@ abstract class WelcomeContainer extends Composite {
         final Construction construction = new Construction();
         final String constructionName = txtCreateName.getText();
         construction.setName(constructionName);
-        RequestUtils.getInstance().getConstructionService().createConstruction(construction, new AsyncCallback<Void>() {
-            @Override
-            public void onFailure(Throwable caught) {
-
-            }
-
+        RequestUtils.getInstance().getConstructionService().createConstruction(construction,
+                new OnlySuccessAsyncCallback<Void>() {
             @Override
             public void onSuccess(Void result) {
                 txtCreateName.clear();
                 loadConstructions();
-                // updateCurrentConstruction(construction);
             }
         });
     }
@@ -104,12 +95,7 @@ abstract class WelcomeContainer extends Composite {
      */
     private void updateCurrentConstruction(final Construction construction) {
         RequestUtils.getInstance().getConstructionService().setCurrentConstruction(
-                construction, new AsyncCallback<Void>() {
-                    @Override
-                    public void onFailure(Throwable caught) {
-
-                    }
-
+                construction, new OnlySuccessAsyncCallback<Void>() {
                     @Override
                     public void onSuccess(Void result) {
                         Settings.getInstance().getLastUsedConstruction().setValueAndSave(construction.getName());

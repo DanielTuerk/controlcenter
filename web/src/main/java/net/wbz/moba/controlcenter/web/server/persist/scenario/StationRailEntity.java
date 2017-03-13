@@ -18,24 +18,8 @@ public class StationRailEntity extends AbstractEntity {
     @Column
     private int railNumber;
 
-    @JMap
     @ManyToOne
     private StationEntity station;
-
-    // TODO geht auch über die route blocks - oder direkt zugriff erlauben?
-    // @ManyToOne
-    // private SignalEntity frontSignal;
-    // @ManyToOne
-    // private TrackBlockEntity frontBreakingBlock;
-    // @ManyToOne
-    // private TrackBlockEntity frontStopBlock;
-    //
-    // @ManyToOne
-    // private SignalEntity backSignal;
-    // @ManyToOne
-    // private TrackBlockEntity backBreakingBlock;
-    // @ManyToOne
-    // private TrackBlockEntity backStopBlock;
 
     public int getRailNumber() {
         return railNumber;

@@ -13,8 +13,8 @@ import com.google.inject.persist.jpa.JpaPersistModule;
 import com.google.inject.servlet.GuiceServletContextListener;
 import com.google.inject.servlet.ServletModule;
 
-import net.wbz.moba.controlcenter.web.server.scenario.ScenarioEditorServiceImpl;
-import net.wbz.moba.controlcenter.web.server.scenario.ScenarioServiceImpl;
+import net.wbz.moba.controlcenter.web.server.web.scenario.ScenarioEditorServiceImpl;
+import net.wbz.moba.controlcenter.web.server.web.scenario.ScenarioServiceImpl;
 import net.wbz.moba.controlcenter.web.server.web.config.ConfigServiceImpl;
 import net.wbz.moba.controlcenter.web.server.web.constrution.BusServiceImpl;
 import net.wbz.moba.controlcenter.web.server.web.constrution.ConstructionServiceImpl;

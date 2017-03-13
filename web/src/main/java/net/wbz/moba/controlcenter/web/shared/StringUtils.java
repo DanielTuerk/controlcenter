@@ -8,9 +8,9 @@ import java.util.Iterator;
  */
 public class StringUtils {
 
-    public static String join(Collection<String> strings, String delimiter) {
+    public static String join(Collection<?> elements, String delimiter) {
         StringBuilder builder = new StringBuilder();
-        Iterator<String> iter = strings.iterator();
+        Iterator<?> iter = elements.iterator();
         while (iter.hasNext()) {
             builder.append(iter.next());
             if (iter.hasNext()) {

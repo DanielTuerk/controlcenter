@@ -1,8 +1,11 @@
-package net.wbz.moba.controlcenter.web.server.scenario;
+package net.wbz.moba.controlcenter.web.server.web.scenario;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
+import org.apache.commons.lang.NotImplementedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,7 +23,6 @@ import net.wbz.moba.controlcenter.web.shared.scenario.RouteBlockPart;
 import net.wbz.moba.controlcenter.web.shared.scenario.Scenario;
 import net.wbz.moba.controlcenter.web.shared.scenario.Scenario.RUN_STATE;
 import net.wbz.moba.controlcenter.web.shared.scenario.ScenarioService;
-import net.wbz.moba.controlcenter.web.shared.scenario.ScenarioStateEvent;
 import net.wbz.moba.controlcenter.web.shared.track.model.Signal;
 import net.wbz.moba.controlcenter.web.shared.train.Train;
 
@@ -31,11 +33,24 @@ import net.wbz.moba.controlcenter.web.shared.train.Train;
 public class ScenarioServiceImpl extends RemoteServiceServlet implements ScenarioService {
     private static final Logger LOG = LoggerFactory.getLogger(ScenarioServiceImpl.class);
 
+    /**
+     * Service to toggle track parts of the track in the scenarios.
+     */
     private final TrackViewerServiceImpl trackViewerRequest;
-    private final Executor executor = Executors.newSingleThreadExecutor();
-
+    /**
+     * Manager for the scenario data.
+     */
     private final ScenarioManager scenarioManager;
+    /**
+     * Broadcaster for client side event handling of state changes.
+     */
     private final EventBroadcaster eventBroadcaster;
+    /**
+     * Server side listeners for state changes.
+     */
+    private final List<ScenarioStateListener> listeners = new ArrayList<>();
+
+    private final Executor executor = Executors.newSingleThreadExecutor();
 
     @Inject
     public ScenarioServiceImpl(TrackViewerServiceImpl trackViewerService, ScenarioManager scenarioManager,
@@ -46,30 +61,32 @@ public class ScenarioServiceImpl extends RemoteServiceServlet implements Scenari
         this.eventBroadcaster = eventBroadcaster;
     }
 
+    public void addScenarioStateListener(ScenarioStateListener listener) {
+        listeners.add(listener);
+    }
+
+    public void removeScenarioStateListener(ScenarioStateListener listener) {
+        listeners.remove(listener);
+    }
+
     @Override
     public void start(long scenarioId) {
-        // final Scenario scenario = scenarioManager.getScenarioById(scenarioId);
-        // if (scenario.getRunState() != Scenario.RUN_STATE.RUNNING) { // TODO multiple ok -> check by modification for
-        // // conflicts
-        // FutureTask<Boolean> scenarioRunTask = new FutureTask<Boolean>(new ScenarioRunCallable(scenario,
-        // trackViewerRequest, eventBroadcaster));
-        // executor.execute(scenarioRunTask);
-        // } else if (scenario.getRunState() == Scenario.RUN_STATE.PAUSED) {
-        //
-        // } else {
-        // LOG.error(String.format("can't start %d (%s)", scenarioId, scenario.getRunState()));
-        // }
-        eventBroadcaster.fireEvent(new ScenarioStateEvent());
+        // TODO
+        throw new NotImplementedException();
+
+        // eventBroadcaster.fireEvent(new ScenarioStateEvent());
     }
 
     @Override
     public void stop(long scenarioId) {
-        // To change body of implemented methods use File | Settings | File Templates.
+        // TODO
+        throw new NotImplementedException();
     }
 
     @Override
     public void pause(long scenarioId) {
-        // To change body of implemented methods use File | Settings | File Templates.
+        // TODO
+        throw new NotImplementedException();
     }
 
     /**
@@ -82,6 +99,7 @@ public class ScenarioServiceImpl extends RemoteServiceServlet implements Scenari
      * @param signal current {@link Signal}
      */
     public void updateTrack(Scenario scenario, Signal signal) {
+        LOG.debug("update the track for scenario {} in signal: ", scenario, signal);
         Optional<RouteBlock> routeBlockOptional = scenario.getRouteBlockForStartSignal(signal);
         if (routeBlockOptional.isPresent()) {
             RouteBlock routeBlock = routeBlockOptional.get();

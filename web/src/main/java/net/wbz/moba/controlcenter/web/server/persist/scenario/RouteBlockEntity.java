@@ -19,13 +19,14 @@ import net.wbz.moba.controlcenter.web.server.persist.construction.track.SignalEn
 public class RouteBlockEntity extends AbstractEntity {
 
     /**
-     * Number of the route block which must be unique in the {@link RouteEntity}. Represents the order of the blocks to
+     * Position of the route block which must be unique in the {@link RouteEntity}. Represents the order of the blocks
+     * to
      * drive.
      * TODO validations
      */
     @JMap
     @Column
-    private int number;
+    private int position;
 
     /**
      * Start of the block.
@@ -45,15 +46,26 @@ public class RouteBlockEntity extends AbstractEntity {
      * Parts between the start and end point to toggle to crate the route to drive.
      */
     @JMap
-    @OneToMany
+    @OneToMany(mappedBy = "routeBlock")
     private List<RouteBlockPartEntity> routeBlockParts;
 
-    public int getNumber() {
-        return number;
+    @ManyToOne
+    private RouteEntity route;
+
+    public RouteEntity getRoute() {
+        return route;
     }
 
-    public void setNumber(int number) {
-        this.number = number;
+    public void setRoute(RouteEntity route) {
+        this.route = route;
+    }
+
+    public int getPosition() {
+        return position;
+    }
+
+    public void setPosition(int number) {
+        this.position = number;
     }
 
     public SignalEntity getStartPoint() {

@@ -30,6 +30,17 @@ public class RouteBlockPartEntity extends AbstractEntity {
     @Column(columnDefinition = "int default 1", nullable = false)
     private boolean state;
 
+    @ManyToOne
+    private RouteBlockEntity routeBlock;
+
+    public RouteBlockEntity getRouteBlock() {
+        return routeBlock;
+    }
+
+    public void setRouteBlock(RouteBlockEntity routeBlock) {
+        this.routeBlock = routeBlock;
+    }
+
     public SwitchEntity getSwitchTrackPart() {
         return switchTrackPart;
     }

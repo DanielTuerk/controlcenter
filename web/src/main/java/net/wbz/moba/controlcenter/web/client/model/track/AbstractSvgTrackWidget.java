@@ -28,14 +28,12 @@ abstract public class AbstractSvgTrackWidget<T extends AbstractTrackPart> extend
         EditTrackWidgetHandler {
 
     public static final String CSS_WIDGET_DISABLED = "widget-disabled";
-
+    private final OMSVGDocument svgDocument = OMSVGParser.currentDocument();
+    private final OMSVGSVGElement svgRootElement;
     /**
      * Model for the widget.
      */
     private T trackPart = null;
-
-    private final OMSVGDocument svgDocument = OMSVGParser.currentDocument();
-    private final OMSVGSVGElement svgRootElement;
     private boolean enabled;
     private TabContent dialogContentTabContent;
     private NavTabs dialogContentNavTabs;
@@ -222,6 +220,10 @@ abstract public class AbstractSvgTrackWidget<T extends AbstractTrackPart> extend
                 TrackUtils.getYFromTopPosition(getAbsoluteTop() - containerWidget.getAbsoluteTop(), zoomLevel));
     }
 
+    public boolean isEnabled() {
+        return enabled;
+    }
+
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
         if (!enabled) {
@@ -229,10 +231,6 @@ abstract public class AbstractSvgTrackWidget<T extends AbstractTrackPart> extend
         } else {
             removeStyleName(CSS_WIDGET_DISABLED);
         }
-    }
-
-    public boolean isEnabled() {
-        return enabled;
     }
 
     /**
@@ -243,7 +241,7 @@ abstract public class AbstractSvgTrackWidget<T extends AbstractTrackPart> extend
     abstract public T getNewTrackPart();
 
     public String getConfigurationInfo() {
-        return "";
+        return "[ " + getTrackPart().getId() + " ]";
     }
 
 }

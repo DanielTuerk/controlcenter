@@ -11,6 +11,8 @@ import com.googlecode.jmapper.annotations.JMap;
 
 import net.wbz.moba.controlcenter.web.server.persist.AbstractEntity;
 import net.wbz.moba.controlcenter.web.server.persist.construction.track.SignalEntity;
+import net.wbz.moba.controlcenter.web.server.persist.construction.track.TrackBlockEntity;
+import net.wbz.moba.controlcenter.web.shared.track.model.TrackBlock;
 
 /**
  * @author Daniel Tuerk
@@ -40,7 +42,7 @@ public class RouteBlockEntity extends AbstractEntity {
      */
     @JMap
     @ManyToOne
-    private SignalEntity endPoint;
+    private TrackBlockEntity endPoint;
 
     /**
      * Parts between the start and end point to toggle to crate the route to drive.
@@ -76,11 +78,11 @@ public class RouteBlockEntity extends AbstractEntity {
         this.startPoint = startPoint;
     }
 
-    public SignalEntity getEndPoint() {
+    public TrackBlockEntity getEndPoint() {
         return endPoint;
     }
 
-    public void setEndPoint(SignalEntity endPoint) {
+    public void setEndPoint(TrackBlockEntity endPoint) {
         this.endPoint = endPoint;
     }
 

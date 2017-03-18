@@ -9,6 +9,7 @@ import org.gwtbootstrap3.client.ui.constants.TabPosition;
 
 import com.google.gwt.dom.client.Style;
 
+import net.wbz.moba.controlcenter.web.client.viewer.controls.scenario.ScenarioViewerPanel;
 import net.wbz.moba.controlcenter.web.client.viewer.controls.train.TrainViewerPanel;
 
 /**
@@ -48,6 +49,7 @@ public class ViewerControlsPanel extends TabPanel {
 
         TabPane scenarioTab = new TabPane();
         scenarioTab.setId(TAB_ID_SCENARIO);
+        scenarioTab.add(new ScenarioViewerPanel());
         tabContent.add(scenarioTab);
 
         add(tabContent);

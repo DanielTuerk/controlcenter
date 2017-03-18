@@ -13,6 +13,8 @@ public interface ScenarioService extends RemoteService {
 
     void start(long scenarioId);
 
+    void schedule(long scenarioId);
+
     void stop(long scenarioId);
 
     void pause(long scenarioId);

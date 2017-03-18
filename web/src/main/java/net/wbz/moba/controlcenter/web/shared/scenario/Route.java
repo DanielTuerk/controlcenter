@@ -73,6 +73,13 @@ public class Route extends AbstractDto {
         return Optional.of(routeBlocks.get(0));
     }
 
+    public Optional<RouteBlock> getLastRouteBlock() {
+        if (routeBlocks.isEmpty()) {
+            return Optional.absent();
+        }
+        return Optional.of(routeBlocks.get(routeBlocks.size() - 1));
+    }
+
     public String getStationRailDisplayName(StationRail stationRail) {
         return String.valueOf(stationRail != null ? stationRail.getRailNumber()
                 : "");

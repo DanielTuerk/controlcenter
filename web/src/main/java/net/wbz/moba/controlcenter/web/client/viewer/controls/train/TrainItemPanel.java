@@ -1,24 +1,7 @@
 package net.wbz.moba.controlcenter.web.client.viewer.controls.train;
 
-import com.google.common.collect.Maps;
-import com.google.gwt.dom.client.Style;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.logical.shared.ValueChangeEvent;
-import com.google.gwt.event.logical.shared.ValueChangeHandler;
-import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.Panel;
-import net.wbz.moba.controlcenter.web.client.RequestUtils;
-import net.wbz.moba.controlcenter.web.client.util.OnOffToggleButton;
-import net.wbz.moba.controlcenter.web.client.viewer.controls.AbstractItemPanel;
-import net.wbz.moba.controlcenter.web.shared.train.Train;
-import net.wbz.moba.controlcenter.web.shared.train.TrainDrivingDirectionEvent;
-import net.wbz.moba.controlcenter.web.shared.train.TrainDrivingLevelEvent;
-import net.wbz.moba.controlcenter.web.shared.train.TrainFunction;
-import net.wbz.moba.controlcenter.web.shared.train.TrainFunctionStateEvent;
-import net.wbz.moba.controlcenter.web.shared.train.TrainHornStateEvent;
-import net.wbz.moba.controlcenter.web.shared.train.TrainLightStateEvent;
-import net.wbz.moba.controlcenter.web.shared.train.TrainStateEvent;
+import java.util.Map;
+
 import org.gwtbootstrap3.client.ui.Button;
 import org.gwtbootstrap3.client.ui.ButtonGroup;
 import org.gwtbootstrap3.client.ui.Column;
@@ -30,7 +13,24 @@ import org.gwtbootstrap3.client.ui.constants.ColumnSize;
 import org.gwtbootstrap3.client.ui.constants.IconType;
 import org.gwtbootstrap3.extras.slider.client.ui.Slider;
 
-import java.util.Map;
+import com.google.common.collect.Maps;
+import com.google.gwt.dom.client.Style;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
+
+import net.wbz.moba.controlcenter.web.client.RequestUtils;
+import net.wbz.moba.controlcenter.web.client.util.OnOffToggleButton;
+import net.wbz.moba.controlcenter.web.client.viewer.controls.AbstractItemPanel;
+import net.wbz.moba.controlcenter.web.shared.train.Train;
+import net.wbz.moba.controlcenter.web.shared.train.TrainDrivingDirectionEvent;
+import net.wbz.moba.controlcenter.web.shared.train.TrainDrivingLevelEvent;
+import net.wbz.moba.controlcenter.web.shared.train.TrainFunction;
+import net.wbz.moba.controlcenter.web.shared.train.TrainFunctionStateEvent;
+import net.wbz.moba.controlcenter.web.shared.train.TrainHornStateEvent;
+import net.wbz.moba.controlcenter.web.shared.train.TrainLightStateEvent;
+import net.wbz.moba.controlcenter.web.shared.train.TrainStateEvent;
 
 /**
  * @author Daniel Tuerk
@@ -42,10 +42,10 @@ public class TrainItemPanel extends AbstractItemPanel<Train, TrainStateEvent> {
      */
     public static final double DRIVING_LEVEL_MAX_VALUE = 31d;
 
-//    interface Binder extends UiBinder<Widget, TrainItemPanel> {
-//    }
-//
-//    private static Binder uiBinder = GWT.create(Binder.class);
+    // interface Binder extends UiBinder<Widget, TrainItemPanel> {
+    // }
+    //
+    // private static Binder uiBinder = GWT.create(Binder.class);
 
     private PanelCollapse contentPanel;
 
@@ -55,10 +55,6 @@ public class TrainItemPanel extends AbstractItemPanel<Train, TrainStateEvent> {
     private Button btnDirectionBackward;
     private Map<TrainFunction, OnOffToggleButton> functionButtons = Maps.newConcurrentMap();
 
-    private Label lblName;
-    private Label lblState;
-    private Label lblStateDetails;
-
     private int lastSendSpeedValue = -1;
     private OnOffToggleButton btnHorn;
     private OnOffToggleButton btnLight;
@@ -66,11 +62,8 @@ public class TrainItemPanel extends AbstractItemPanel<Train, TrainStateEvent> {
     private Label lblSliderValue;
 
     public TrainItemPanel(Train train) {
-        super(train);
+        super(train, train.getName());
         assert getModel() != null;
-        lblName = new Label(getModel().getName());
-        lblState = new Label();
-        lblStateDetails = new Label();
     }
 
     @Override
@@ -99,7 +92,7 @@ public class TrainItemPanel extends AbstractItemPanel<Train, TrainStateEvent> {
                 functionButtons.get(functionStateEvent.getFunction()).setValue(functionStateEvent.isActive());
             }
         } else if (event instanceof TrainDrivingDirectionEvent) {
-            lblState.setText(((TrainDrivingDirectionEvent) event).getDirection().name());
+            getLblState().setText(((TrainDrivingDirectionEvent) event).getDirection().name());
             switch (((TrainDrivingDirectionEvent) event).getDirection()) {
                 case BACKWARD:
                     btnDirectionBackward.setActive(true);
@@ -114,20 +107,10 @@ public class TrainItemPanel extends AbstractItemPanel<Train, TrainStateEvent> {
             TrainDrivingLevelEvent drivingLevelEvent = (TrainDrivingLevelEvent) event;
             int speed = drivingLevelEvent.getSpeed();
             final String text = "speed: " + speed;
-            lblStateDetails.setText(text);
-            sliderDrivingLevel.setValue((double) speed,false);
+            getLblStateDetails().setText(text);
+            sliderDrivingLevel.setValue((double) speed, false);
             lblSliderValue.setText(String.valueOf(speed));
         }
-    }
-
-    @Override
-    protected Panel createHeaderPanel() {
-        Panel headerPanel = new FlowPanel();
-        lblName.getElement().getStyle().setDisplay(Style.Display.BLOCK);
-        headerPanel.add(lblName);
-        headerPanel.add(lblState);
-        headerPanel.add(lblStateDetails);
-        return headerPanel;
     }
 
     @Override
@@ -182,7 +165,8 @@ public class TrainItemPanel extends AbstractItemPanel<Train, TrainStateEvent> {
             }
         });
 
-        rowDrivingFunctions.add(new Column(ColumnSize.MD_12, btnGroupDirection, lblSliderValue, sliderDrivingLevel, btnStop));
+        rowDrivingFunctions.add(new Column(ColumnSize.MD_12, btnGroupDirection, lblSliderValue, sliderDrivingLevel,
+                btnStop));
         contentPanel.add(rowDrivingFunctions);
         initFunctions();
         return contentPanel;
@@ -216,13 +200,14 @@ public class TrainItemPanel extends AbstractItemPanel<Train, TrainStateEvent> {
         if (getModel().getFunctions() != null) {
             for (final TrainFunction functionEntry : getModel().getFunctions()) {
 
-                final OnOffToggleButton btnToggleFunction = new OnOffToggleButton(functionEntry.getAlias(), new ValueChangeHandler<Boolean>() {
-                    @Override
-                    public void onValueChange(ValueChangeEvent<Boolean> event) {
-                        RequestUtils.getInstance().getTrainService().toggleFunctionState(getModel().getId(),
-                                functionEntry, event.getValue(), RequestUtils.VOID_ASYNC_CALLBACK);
-                    }
-                });
+                final OnOffToggleButton btnToggleFunction = new OnOffToggleButton(functionEntry.getAlias(),
+                        new ValueChangeHandler<Boolean>() {
+                            @Override
+                            public void onValueChange(ValueChangeEvent<Boolean> event) {
+                                RequestUtils.getInstance().getTrainService().toggleFunctionState(getModel().getId(),
+                                        functionEntry, event.getValue(), RequestUtils.VOID_ASYNC_CALLBACK);
+                            }
+                        });
                 functionButtons.put(functionEntry, btnToggleFunction);
                 functionsColumn.add(btnToggleFunction);
             }
@@ -240,7 +225,8 @@ public class TrainItemPanel extends AbstractItemPanel<Train, TrainStateEvent> {
         btnDirection.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                RequestUtils.getInstance().getTrainService().toggleDrivingDirection(getModel().getId(), forward, RequestUtils.VOID_ASYNC_CALLBACK);
+                RequestUtils.getInstance().getTrainService().toggleDrivingDirection(getModel().getId(), forward,
+                        RequestUtils.VOID_ASYNC_CALLBACK);
             }
         });
         return btnDirection;

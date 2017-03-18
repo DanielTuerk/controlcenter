@@ -1,6 +1,8 @@
 package net.wbz.moba.controlcenter.web.client.viewer.controls;
 
+import com.google.gwt.user.client.ui.FlowPanel;
 import org.gwtbootstrap3.client.ui.Button;
+import org.gwtbootstrap3.client.ui.Label;
 import org.gwtbootstrap3.client.ui.PanelBody;
 import org.gwtbootstrap3.client.ui.PanelCollapse;
 import org.gwtbootstrap3.client.ui.PanelHeader;
@@ -36,7 +38,11 @@ abstract public class AbstractItemPanel<Model extends AbstractDto, StateEvent ex
     private PanelHeader panelHeader;
     private final RemoteEventListener deviceInfoEventListener;
 
-    public AbstractItemPanel(Model model) {
+    private Label lblName;
+    private Label lblState;
+    private Label lblStateDetails;
+
+    public AbstractItemPanel(Model model, String title) {
         this.model = model;
 
         // add event receiver for the device connection state
@@ -52,6 +58,10 @@ abstract public class AbstractItemPanel<Model extends AbstractDto, StateEvent ex
                 }
             }
         };
+
+        lblName = new Label(title);
+        lblState = new Label();
+        lblStateDetails = new Label();
     }
 
     protected abstract void deviceConnectionChanged(boolean connected);
@@ -82,7 +92,14 @@ abstract public class AbstractItemPanel<Model extends AbstractDto, StateEvent ex
 
     }
 
-    abstract protected Panel createHeaderPanel();
+    protected Panel createHeaderPanel() {
+        Panel headerPanel = new FlowPanel();
+        lblName.getElement().getStyle().setDisplay(Style.Display.BLOCK);
+        headerPanel.add(lblName);
+        headerPanel.add(lblState);
+        headerPanel.add(lblStateDetails);
+        return headerPanel;
+    }
 
     abstract public void updateItemData(StateEvent event);
 
@@ -118,4 +135,16 @@ abstract public class AbstractItemPanel<Model extends AbstractDto, StateEvent ex
     }
 
     public abstract PanelCollapse createCollapseContentPanel();
+
+    public Label getLblName() {
+        return lblName;
+    }
+
+    public Label getLblState() {
+        return lblState;
+    }
+
+    public Label getLblStateDetails() {
+        return lblStateDetails;
+    }
 }

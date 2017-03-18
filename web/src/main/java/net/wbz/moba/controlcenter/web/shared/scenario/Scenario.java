@@ -7,6 +7,7 @@ import com.googlecode.jmapper.annotations.JMap;
 
 import net.wbz.moba.controlcenter.web.shared.track.model.AbstractDto;
 import net.wbz.moba.controlcenter.web.shared.track.model.Signal;
+import net.wbz.moba.controlcenter.web.shared.track.model.TrackBlock;
 import net.wbz.moba.controlcenter.web.shared.train.Train;
 
 /**
@@ -107,8 +108,24 @@ public class Scenario extends AbstractDto {
         return Optional.absent();
     }
 
+    public TrackBlock getEndPoint() {
+        if (!routeSequences.isEmpty()) {
+            Route route = routeSequences.get(routeSequences.size() - 1).getRoute();
+            if (route != null) {
+                Optional<RouteBlock> lastRouteBlock = route.getLastRouteBlock();
+                if (lastRouteBlock.isPresent()) {
+                    TrackBlock endPoint = lastRouteBlock.get().getEndPoint();
+                    if (endPoint != null) {
+                        return endPoint;
+                    }
+                }
+            }
+        }
+        throw new RuntimeException("scenario has no valid endpoint");
+    }
+
     public enum RUN_STATE {
-        RUNNING, IDLE, PAUSED
+        RUNNING, IDLE, PAUSED, STOPPED
     }
 
     public enum MODE {

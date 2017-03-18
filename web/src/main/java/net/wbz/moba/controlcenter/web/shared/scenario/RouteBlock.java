@@ -6,6 +6,7 @@ import com.googlecode.jmapper.annotations.JMap;
 
 import net.wbz.moba.controlcenter.web.shared.track.model.AbstractDto;
 import net.wbz.moba.controlcenter.web.shared.track.model.Signal;
+import net.wbz.moba.controlcenter.web.shared.track.model.TrackBlock;
 
 /**
  * @author Daniel Tuerk
@@ -29,7 +30,7 @@ public class RouteBlock extends AbstractDto {
      * End of the block.
      */
     @JMap
-    private Signal endPoint;
+    private TrackBlock endPoint;
 
     /**
      * Parts between the start and end point to toggle to crate the route to drive.
@@ -53,11 +54,11 @@ public class RouteBlock extends AbstractDto {
         this.startPoint = startPoint;
     }
 
-    public Signal getEndPoint() {
+    public TrackBlock getEndPoint() {
         return endPoint;
     }
 
-    public void setEndPoint(Signal endPoint) {
+    public void setEndPoint(TrackBlock endPoint) {
         this.endPoint = endPoint;
     }
 

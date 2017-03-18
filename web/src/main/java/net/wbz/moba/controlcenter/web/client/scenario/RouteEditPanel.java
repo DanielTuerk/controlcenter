@@ -84,7 +84,7 @@ public class RouteEditPanel extends Composite {
                                     .append(routeBlock.getStartPoint() != null ? routeBlock.getStartPoint()
                                             .getStopBlock().getDisplayValue() : "")
                                     .append(" end: ")
-                                    .append(routeBlock.getEndPoint() != null ? routeBlock.getEndPoint().getStopBlock()
+                                    .append(routeBlock.getEndPoint() != null ? routeBlock.getEndPoint()
                                             .getDisplayValue() : "")
                                     .append("\n");
                             if (routeBlock.getRouteBlockParts() != null) {

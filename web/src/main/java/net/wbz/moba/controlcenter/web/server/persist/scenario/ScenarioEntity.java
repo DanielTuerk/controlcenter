@@ -47,6 +47,10 @@ public class ScenarioEntity extends AbstractEntity {
     @OneToMany(mappedBy = "scenario")
     private List<RouteSequenceEntity> routeSequences;
 
+    @JMap
+    @Column
+    private Integer startDrivingLevel;
+
     public String getName() {
         return name;
     }
@@ -86,5 +90,13 @@ public class ScenarioEntity extends AbstractEntity {
 
     public void setTrainDrivingDirection(Train.DRIVING_DIRECTION trainDrivingDirection) {
         this.trainDrivingDirection = trainDrivingDirection;
+    }
+
+    public Integer getStartDrivingLevel() {
+        return startDrivingLevel;
+    }
+
+    public void setStartDrivingLevel(Integer startDrivingLevel) {
+        this.startDrivingLevel = startDrivingLevel;
     }
 }

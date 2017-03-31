@@ -1,11 +1,11 @@
 package net.wbz.moba.controlcenter.web.server.web.editor.block;
 
-import net.wbz.moba.controlcenter.web.server.web.train.TrainManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Objects;
 
+import net.wbz.moba.controlcenter.web.server.web.train.TrainManager;
 import net.wbz.moba.controlcenter.web.shared.track.model.BusDataConfiguration;
 import net.wbz.moba.controlcenter.web.shared.track.model.Signal.FUNCTION;
 import net.wbz.moba.controlcenter.web.shared.viewer.TrackViewerService;
@@ -42,7 +42,8 @@ abstract class SignalMonitoringBlockListener extends AbstractSignalBlockListener
     @Override
     public void trainLeaveBlock(int blockNumber, int trainAddress, boolean forward) {
         if (blockNumber == getTrackBlock().getBlockFunction().getBit()) {
-            log.debug("signal monitoring block {} - train leave {}", new Object[] { blockNumber, trainAddress });
+            log.debug("signal: {} monitoring block {} - train leave {}", new Object[] { signalBlock.getSignal().getId(),
+                    blockNumber, trainAddress });
             signalBlock.setTrainInMonitoringBlock(null);
         }
 

@@ -88,6 +88,11 @@ class SignalBlock {
     }
 
     public void setTrainInMonitoringBlock(Train trainInMonitoringBlock) {
+        if ((trainInMonitoringBlock != null && waitingTrain != null)
+                && trainInMonitoringBlock.equals(waitingTrain)) {
+            // same train entered the monitoring block, remove as waiting train, if not until happen
+            setWaitingTrain(null);
+        }
         this.trainInMonitoringBlock = trainInMonitoringBlock;
     }
 

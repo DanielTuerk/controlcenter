@@ -44,6 +44,7 @@ public class TrainServiceImpl extends RemoteServiceServlet implements TrainServi
         updateDrivingLevel(trainManager.getTrain(id), level);
     }
 
+    @Override
     public void updateDrivingLevel(Train train, int level) {
         if (level >= 0 && level <= 31) {
             int address = train.getAddress();

@@ -78,6 +78,12 @@ public class ScenarioEditPanel extends Composite {
         scenarioTable.addColumn(new TextColumn<Scenario>() {
             @Override
             public String getValue(Scenario object) {
+                return String.valueOf(object.getStartDrivingLevel());
+            }
+        }, "Start driving level");
+        scenarioTable.addColumn(new TextColumn<Scenario>() {
+            @Override
+            public String getValue(Scenario object) {
                 return object.getRunState() != null ? object.getRunState().name() : "";
             }
         }, "State");
@@ -195,7 +201,7 @@ public class ScenarioEditPanel extends Composite {
     }
 
     @UiHandler("btnCreateScenario")
-    void onClick(ClickEvent e) {
+    void onClick(ClickEvent ignored) {
         new ScenarioCreateModal(new Scenario()).show();
     }
 

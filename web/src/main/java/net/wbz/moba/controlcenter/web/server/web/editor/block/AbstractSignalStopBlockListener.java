@@ -24,6 +24,19 @@ abstract class AbstractSignalStopBlockListener extends AbstractSignalBlockListen
     }
 
     @Override
+    public void trainLeaveBlock(int blockNumber, int trainAddress, boolean forward) {
+        if (blockNumber == getTrackBlock().getBlockFunction().getBit()) {
+            log.debug("signal stop block {} - train leave {} (signal {})", new Object[] { blockNumber, trainAddress,
+                    getSignalBlock().getSignal().getSignalConfigRed1() });
+
+            getSignalBlock().setTrainInStopBlock(null);
+
+            if (getTrain(trainAddress) == getSignalBlock().getWaitingTrain()) {
+                getSignalBlock().setWaitingTrain(null);
+            }
+        }
+    }
+    @Override
     public void blockOccupied(int blockNr) {
     }
 

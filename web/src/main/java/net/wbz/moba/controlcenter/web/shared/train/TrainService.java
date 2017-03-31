@@ -17,10 +17,18 @@ public interface TrainService extends RemoteService {
     /**
      * Change level of driving for the train id.
      *
-     * @param id id of the {@link TrainEntity}
+     * @param id id of the {@link Train}
      * @param level level of speed
      */
     void updateDrivingLevel(long id, int level);
+
+    /**
+     * Update driving level for given {@link Train}.
+     *
+     * @param train {@link Train}
+     * @param level level of speed
+     */
+    void updateDrivingLevel(Train train, int level);
 
     /**
      * Change the driving direction of the {@link TrainEntity}.

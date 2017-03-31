@@ -149,7 +149,6 @@ public class SignalBlockRegistry extends AbstractBlockRegistry<Signal> {
                     @Override
                     public void trackClear() {
                         SignalBlock signalBlock = getSignalBlock();
-                        // TODO falscher signalBlock???
                         log.debug("track clear: signalBlock {}", signalBlock);
                         if (signalBlock.getWaitingTrain() != null) {
                             // start a waiting train in the signal stop block
@@ -215,6 +214,7 @@ public class SignalBlockRegistry extends AbstractBlockRegistry<Signal> {
         log.debug("request drive on exit signal {} for train: {}", signal, train.getName());
         SignalBlock signalBlock = getSignalBlockBySignal(signal);
         if (signalBlock != null) {
+            getTrainService().toggleLight(train.getId(), true);
             // set the train as waiting train in the stop block of the signal
             signalBlock.setWaitingTrain(train);
             if (signalBlock.isMonitoringBlockFree()) {
@@ -259,17 +259,21 @@ public class SignalBlockRegistry extends AbstractBlockRegistry<Signal> {
         if (iterator.hasNext()) {
             SignalBlock next = iterator.next();
             if (next != null) {
+                int startDrivingLevel = FreeBlockTask.DRIVING_LEVEL_START;
                 // search route, and update track
                 Optional<Scenario> scenario = scenarioService.getRunningScenarioOfTrain(signalBlock
                         .getWaitingTrain());
                 if (scenario.isPresent()) {
                     // TODO allocate route or track necessary?
                     scenarioService.updateTrack(scenario.get(), next.getSignal());
+                    if (scenario.get().getStartDrivingLevel() != null) {
+                        startDrivingLevel = scenario.get().getStartDrivingLevel();
+                    }
                 }
                 // TODO wie ohne route vorgehen?
                 // TODO hat der monirequest drive on exit signal
                 Future<Void> future = taskExecutor
-                        .submit(new FreeBlockTask(next, getTrainService(), trackViewerService));
+                        .submit(new FreeBlockTask(next, getTrainService(), trackViewerService, startDrivingLevel));
                 monitoringBlockFuture.put(monitoringBlockFunctionOfSignalBlock, future);
             }
         }
@@ -346,7 +350,9 @@ public class SignalBlockRegistry extends AbstractBlockRegistry<Signal> {
             public boolean apply(@Nullable SignalBlock input) {
                 // return input != null && input.getWaitingTrain() != null && !input.isMonitoringBlockFree();
                 // TODO free monitoring check removed, is that still working for block signals?
-                return input != null && input.getWaitingTrain() != null;
+                return input != null && input.getWaitingTrain() != null && input.getTrainInStopBlock() != null; // TODO
+                                                                                                                // verify
+                                                                                                                // getTrainInStopBlock
             }
         });
     }

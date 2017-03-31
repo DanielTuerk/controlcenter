@@ -38,6 +38,9 @@ public class Scenario extends AbstractDto {
     @JMap
     private List<RouteSequence> routeSequences;
 
+    @JMap
+    private Integer startDrivingLevel;
+
     private RUN_STATE runState = RUN_STATE.IDLE;
 
     private MODE mode = MODE.OFF;
@@ -96,6 +99,14 @@ public class Scenario extends AbstractDto {
 
     public void setTrainDrivingDirection(Train.DRIVING_DIRECTION trainDrivingDirection) {
         this.trainDrivingDirection = trainDrivingDirection;
+    }
+
+    public Integer getStartDrivingLevel() {
+        return startDrivingLevel;
+    }
+
+    public void setStartDrivingLevel(Integer startDrivingLevel) {
+        this.startDrivingLevel = startDrivingLevel;
     }
 
     /**

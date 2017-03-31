@@ -23,7 +23,7 @@ final class FreeBlockTask implements Callable<Void> {
     /**
      * TODO move to config
      */
-    private static final int DRIVING_LEVEL_START = 4;
+    public static final int DRIVING_LEVEL_START = 4;
     /**
      * TODO move to config
      */
@@ -32,11 +32,14 @@ final class FreeBlockTask implements Callable<Void> {
     private final SignalBlock signalBlock;
     private final TrainService trainService;
     private final TrackViewerService trackViewerService;
+    private final int startDrivingLevel;
 
-    FreeBlockTask(SignalBlock signalBlock, TrainService trainService, TrackViewerService trackViewerService) {
+    FreeBlockTask(SignalBlock signalBlock, TrainService trainService, TrackViewerService trackViewerService,
+            int startDrivingLevel) {
         this.signalBlock = signalBlock;
         this.trainService = trainService;
         this.trackViewerService = trackViewerService;
+        this.startDrivingLevel = startDrivingLevel;
     }
 
     @Override
@@ -51,7 +54,7 @@ final class FreeBlockTask implements Callable<Void> {
             Thread.sleep(SIGNAL_DELAY);
             // start train
             log.debug("start train to drive {}", train);
-            trainService.updateDrivingLevel(train.getId(), DRIVING_LEVEL_START);
+            trainService.updateDrivingLevel(train.getId(), startDrivingLevel);
         }
         // no more action, clearing the signal and train is handled by the block listeners
         return null;

@@ -185,7 +185,7 @@ public class ScenarioServiceImpl extends RemoteServiceServlet implements Scenari
      * @param signal current {@link Signal}
      */
     public void updateTrack(Scenario scenario, Signal signal) {
-        LOG.debug("update the track for scenario {} in signal: ", scenario, signal);
+        LOG.debug("update the track for scenario {} with start signal: {}", scenario, signal);
         Optional<RouteBlock> routeBlockOptional = scenario.getRouteBlockForStartSignal(signal);
         if (routeBlockOptional.isPresent()) {
             Map<BusDataConfiguration, Boolean> trackPartStates = new HashMap<>();
@@ -300,8 +300,9 @@ public class ScenarioServiceImpl extends RemoteServiceServlet implements Scenari
     }
 
     private void stopScenario(long scenarioId) {
+        LOG.debug("stop scenario: {}", scenarioId);
         Scenario scenario = scenarioManager.getScenarioById(scenarioId);
-        scenario.getTrain().setDrivingLevel(0);
+        trainService.updateDrivingLevel(scenario.getTrain().getId(), 0);
 
         try {
             trackBlockRegistry.removeFeedbackListener(deviceManager.getConnectedDevice(), scenario.getEndPoint(),
@@ -338,7 +339,7 @@ public class ScenarioServiceImpl extends RemoteServiceServlet implements Scenari
         @Override
         public void trainEnterBlock(int blockNumber, int trainAddress, boolean forward) {
             if (scenario.getTrain().getAddress() == trainAddress && blockNumber == scenario.getEndPoint()
-                    .getBlockFunction().getBit() + 1) {
+                    .getBlockFunction().getBit()) {
                 scenarioFinished();
             }
         }

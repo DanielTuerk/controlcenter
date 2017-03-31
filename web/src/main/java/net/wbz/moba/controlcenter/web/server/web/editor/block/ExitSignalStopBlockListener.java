@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import net.wbz.moba.controlcenter.web.server.web.train.TrainManager;
+import net.wbz.moba.controlcenter.web.shared.train.Train;
 import net.wbz.moba.controlcenter.web.shared.train.TrainService;
 
 /**
@@ -24,27 +25,27 @@ class ExitSignalStopBlockListener extends AbstractSignalStopBlockListener {
 
     @Override
     public void trainEnterBlock(int blockNumber, int trainAddress, boolean forward) {
-    }
-
-    @Override
-    public void trainLeaveBlock(int blockNumber, int trainAddress, boolean forward) {
         if (blockNumber == getTrackBlock().getBlockFunction().getBit()) {
-            log.debug("exit signal stop block {} - train leave {} (signal {})", new Object[] { blockNumber,
-                    trainAddress,
+            log.debug("signal stop block {} - train enter {} (signal {})", new Object[] { blockNumber, trainAddress,
                     getSignalBlock().getSignal().getSignalConfigRed1() });
+            Train train = getTrain(trainAddress);
 
-            if (getTrain(trainAddress) == getSignalBlock().getWaitingTrain()) {
-                getSignalBlock().setWaitingTrain(null);
-            }
+            getSignalBlock().setTrainInStopBlock(train);
         }
+        // nothing to do, entering trains are only for scenarios which will set the waiting train to the signal block
     }
 
-    @Override
-    public void blockOccupied(int blockNr) {
-    }
-
-    @Override
-    public void blockFreed(int blockNr) {
-    }
+    // @Override
+    // public void trainLeaveBlock(int blockNumber, int trainAddress, boolean forward) {
+    // if (blockNumber == getTrackBlock().getBlockFunction().getBit()) {
+    // log.debug("exit signal stop block {} - train leave {} (signal {})", new Object[] { blockNumber,
+    // trainAddress,
+    // getSignalBlock().getSignal().getSignalConfigRed1() });
+    //
+    // if (getTrain(trainAddress) == getSignalBlock().getWaitingTrain()) {
+    // getSignalBlock().setWaitingTrain(null);
+    // }
+    // }
+    // }
 
 }

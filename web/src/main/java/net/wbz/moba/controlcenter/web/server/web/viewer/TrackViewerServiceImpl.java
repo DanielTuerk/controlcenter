@@ -1,6 +1,6 @@
 package net.wbz.moba.controlcenter.web.server.web.viewer;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -31,7 +31,7 @@ import net.wbz.selectrix4java.device.DeviceManager;
  */
 @Singleton
 public class TrackViewerServiceImpl extends RemoteServiceServlet implements TrackViewerService {
-    private static final Logger log = LoggerFactory.getLogger(TrackViewerServiceImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(TrackViewerServiceImpl.class);
 
     private final DeviceManager deviceManager;
 
@@ -55,7 +55,7 @@ public class TrackViewerServiceImpl extends RemoteServiceServlet implements Trac
                     busAddress.send();
                 }
             } catch (DeviceAccessException e) {
-                log.error("can't toggle track part", e);
+                LOG.error("can't toggle track part", e);
                 throw new RpcTokenException("can't toggle track part");
             }
         }
@@ -63,36 +63,49 @@ public class TrackViewerServiceImpl extends RemoteServiceServlet implements Trac
 
     @Override
     public void toggleTrackParts(Map<BusDataConfiguration, Boolean> trackPartStates) {
-        try {
-            if (deviceManager.getConnectedDevice() != null) {
-                Device device = deviceManager.getConnectedDevice();
 
-                Map<Integer, BusAddress> busAddresses = new HashMap<>();
-                for (Entry<BusDataConfiguration, Boolean> entry : trackPartStates.entrySet()) {
-                    BusDataConfiguration busDataConfiguration = entry.getKey();
-                    if (busDataConfiguration != null && busDataConfiguration.isValid()) {
-                        assert busDataConfiguration.getBus() == 1;
-                        Integer address = busDataConfiguration.getAddress();
-                        if (!busAddresses.containsKey(address)) {
-                            busAddresses.put(address, device.getBusAddress(busDataConfiguration.getBus(),
-                                    address));
-                        }
-                        BusAddress busAddress = busAddresses.get(address);
-                        if (entry.getValue()) {
-                            busAddress.setBit(busDataConfiguration.getBit());
-                        } else {
-                            busAddress.clearBit(busDataConfiguration.getBit());
-                        }
-                    }
-                }
-                // send data
-                for (BusAddress busAddress : busAddresses.values()) {
-                    busAddress.send();
-                }
+        List<BusAddressBit> busAddressBits = new ArrayList<>();
+
+        for (Entry<BusDataConfiguration, Boolean> entry : trackPartStates.entrySet()) {
+            BusDataConfiguration busDataConfiguration = entry.getKey();
+            Boolean configState = entry.getValue();
+            if (busDataConfiguration != null && busDataConfiguration.isValid()) {
+                busAddressBits.add(new BusAddressBit(busDataConfiguration.getBus(), busDataConfiguration.getAddress(),
+                        busDataConfiguration.getBit(), configState));
             }
-        } catch (DeviceAccessException e) {
-            log.error("can't toggle track parts", e);
         }
+        sendTrackPartStates(busAddressBits);
+        //
+        // try {
+        // if (deviceManager.getConnectedDevice() != null) {
+        // Device device = deviceManager.getConnectedDevice();
+        //
+        // Map<Integer, BusAddress> busAddresses = new HashMap<>();
+        // for (Entry<BusDataConfiguration, Boolean> entry : trackPartStates.entrySet()) {
+        // BusDataConfiguration busDataConfiguration = entry.getKey();
+        // if (busDataConfiguration != null && busDataConfiguration.isValid()) {
+        // assert busDataConfiguration.getBus() == 1;
+        // Integer address = busDataConfiguration.getAddress();
+        // if (!busAddresses.containsKey(address)) {
+        // busAddresses.put(address, device.getBusAddress(busDataConfiguration.getBus(),
+        // address));
+        // }
+        // BusAddress busAddress = busAddresses.get(address);
+        // if (entry.getValue()) {
+        // busAddress.setBit(busDataConfiguration.getBit());
+        // } else {
+        // busAddress.clearBit(busDataConfiguration.getBit());
+        // }
+        // }
+        // }
+        // // send data
+        // for (BusAddress busAddress : busAddresses.values()) {
+        // busAddress.send();
+        // }
+        // }
+        // } catch (DeviceAccessException e) {
+        // LOG.error("can't toggle track parts", e);
+        // }
     }
 
     @Override
@@ -105,14 +118,14 @@ public class TrackViewerServiceImpl extends RemoteServiceServlet implements Trac
                 }
             } catch (DeviceAccessException e) {
                 String msg = "can't load state of track part";
-                log.error(msg, e);
+                LOG.error(msg, e);
                 throw new RpcTokenException(msg);
             }
         }
         throw new RpcTokenException("invalid configuration: " + configuration);
     }
 
-    private void sendTrackPartStates(List<BusAddressBit> busAddressBits) {
+    private synchronized void sendTrackPartStates(List<BusAddressBit> busAddressBits) {
         try {
             Device connectedDevice = deviceManager.getConnectedDevice();
 
@@ -141,7 +154,7 @@ public class TrackViewerServiceImpl extends RemoteServiceServlet implements Trac
 
         } catch (DeviceAccessException e) {
             String msg = "can't change data of addresses";
-            log.error(msg, e);
+            LOG.error(msg, e);
             throw new RpcTokenException(msg);
         }
     }
@@ -156,7 +169,7 @@ public class TrackViewerServiceImpl extends RemoteServiceServlet implements Trac
 
     @Override
     public void switchSignal(Signal signal, Signal.FUNCTION signalFunction) {
-        log.debug("switch signal {} to {}", signal, signalFunction);
+        LOG.debug("switch signal {} to {}", signal, signalFunction);
         Map<Signal.LIGHT, BusAddressBit> availableLightConfig = Maps.newHashMap();
 
         Signal.TYPE signalType = signal.getType();

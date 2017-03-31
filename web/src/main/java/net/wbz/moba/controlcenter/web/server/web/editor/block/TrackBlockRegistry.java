@@ -24,6 +24,11 @@ import net.wbz.selectrix4java.device.Device;
 import net.wbz.selectrix4java.device.DeviceAccessException;
 
 /**
+ * Registry for available {@link TrackBlock}s to add the {@link FeedbackBlockListener}s for receiving the block states
+ * and to adjust driving levels of trains entering or exiting the blocks.
+ * Also the current position of the train is set.
+ * 
+ * @see Train#setCurrentBlock
  * @author Daniel Tuerk
  */
 @Singleton
@@ -93,7 +98,6 @@ public class TrackBlockRegistry extends AbstractBlockRegistry<TrackBlock> {
 
     protected void addFeedbackBlockListener(TrackBlock trackBlock,
             FeedbackBlockListener feedbackBlockListener) {
-        // final BusAddressIdentifier busAddressIdentifier = getBusAddressIdentifier(blockFunction);
         if (!feedbackBlockListeners.containsKey(trackBlock)) {
             feedbackBlockListeners.put(trackBlock, feedbackBlockListener);
         }
@@ -101,8 +105,7 @@ public class TrackBlockRegistry extends AbstractBlockRegistry<TrackBlock> {
 
     @Override
     public void registerListeners(Device device) throws DeviceAccessException {
-        for (Map.Entry<TrackBlock, FeedbackBlockListener> entry : feedbackBlockListeners
-                .entrySet()) {
+        for (Map.Entry<TrackBlock, FeedbackBlockListener> entry : feedbackBlockListeners.entrySet()) {
             getFeedbackBlockModule(device, getBusAddressIdentifier(entry.getKey().getBlockFunction()))
                     .addFeedbackBlockListener(entry.getValue());
         }
@@ -110,8 +113,7 @@ public class TrackBlockRegistry extends AbstractBlockRegistry<TrackBlock> {
 
     @Override
     public void removeListeners(Device device) throws DeviceAccessException {
-        for (Map.Entry<TrackBlock, FeedbackBlockListener> entry : feedbackBlockListeners
-                .entrySet()) {
+        for (Map.Entry<TrackBlock, FeedbackBlockListener> entry : feedbackBlockListeners.entrySet()) {
             getFeedbackBlockModule(device, getBusAddressIdentifier(entry.getKey().getBlockFunction()))
                     .removeFeedbackBlockListener(entry.getValue());
         }
@@ -119,10 +121,15 @@ public class TrackBlockRegistry extends AbstractBlockRegistry<TrackBlock> {
 
     private void handleTrainOnBlock(boolean enterBlock, int blockNumber, int trainAddress, boolean forward,
             TrackBlock trackBlock) {
-        DRIVING_LEVEL_ADJUST_TYPE adjustType = trackBlock.getDrivingLevelAdjustType();
-        if (adjustType != DRIVING_LEVEL_ADJUST_TYPE.NONE) {
-            Train train = getTrainManager().getTrain(trainAddress);
-            if (train != null) {
+        // update current block of the train
+        Train train = getTrainManager().getTrain(trainAddress);
+        if (train != null) {
+            if (enterBlock) {
+                train.setCurrentBlock(trackBlock);
+            }
+            // update automatic driving level
+            DRIVING_LEVEL_ADJUST_TYPE adjustType = trackBlock.getDrivingLevelAdjustType();
+            if (adjustType != DRIVING_LEVEL_ADJUST_TYPE.NONE) {
                 if ((enterBlock && adjustType == DRIVING_LEVEL_ADJUST_TYPE.ENTER)
                         || (!enterBlock && adjustType == DRIVING_LEVEL_ADJUST_TYPE.EXIT)) {
                     Integer drivingLevelForTrain = forward ? trackBlock.getForwardTargetDrivingLevel()
@@ -133,6 +140,7 @@ public class TrackBlockRegistry extends AbstractBlockRegistry<TrackBlock> {
                 }
             }
         }
+        // fire position event of train to clients
         getEventBroadcaster().fireEvent(new FeedbackBlockEvent(
                 enterBlock ? FeedbackBlockEvent.STATE.ENTER : FeedbackBlockEvent.STATE.EXIT,
                 trackBlock.getBlockFunction().getBus(),
@@ -157,4 +165,5 @@ public class TrackBlockRegistry extends AbstractBlockRegistry<TrackBlock> {
             log.error("can't add feedback listener");
         }
     }
+
 }

@@ -78,4 +78,8 @@ abstract class SignalMonitoringBlockListener extends AbstractSignalBlockListener
     private BusDataConfiguration getMonitoringBlockFunction() {
         return signalBlock.getSignal().getMonitoringBlock().getBlockFunction();
     }
+
+    protected SignalBlock getSignalBlock() {
+        return signalBlock;
+    }
 }

@@ -11,6 +11,7 @@ import com.googlecode.jmapper.annotations.JMap;
 
 import net.wbz.moba.controlcenter.web.server.persist.AbstractEntity;
 import net.wbz.moba.controlcenter.web.server.persist.train.TrainEntity;
+import net.wbz.moba.controlcenter.web.shared.train.Train;
 
 /**
  * @author Daniel Tuerk
@@ -33,6 +34,10 @@ public class ScenarioEntity extends AbstractEntity {
     @JMap
     @ManyToOne
     private TrainEntity train;
+
+    @JMap
+    @Column
+    private Train.DRIVING_DIRECTION trainDrivingDirection;
 
     /**
      * Route to drive from start to end station.
@@ -73,5 +78,13 @@ public class ScenarioEntity extends AbstractEntity {
     public void setRouteSequences(
             List<RouteSequenceEntity> routeSequences) {
         this.routeSequences = routeSequences;
+    }
+
+    public Train.DRIVING_DIRECTION getTrainDrivingDirection() {
+        return trainDrivingDirection;
+    }
+
+    public void setTrainDrivingDirection(Train.DRIVING_DIRECTION trainDrivingDirection) {
+        this.trainDrivingDirection = trainDrivingDirection;
     }
 }

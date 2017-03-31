@@ -77,7 +77,7 @@ abstract public class AbstractItemPanel<Model extends AbstractDto, StateEvent ex
         panelHeader.add(headerPanelContent);
 
         // collapse
-        String collapseContainerId = "collapse" + getModel().getId();
+        String collapseContainerId = "collapse" + this.getClass().getSimpleName() + getModel().getId();
         Button btnCollapse = new Button(">>");
         panelHeader.add(btnCollapse);
         btnCollapse.setDataTarget("#" + collapseContainerId);

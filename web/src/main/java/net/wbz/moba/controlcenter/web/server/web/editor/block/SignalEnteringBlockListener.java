@@ -59,4 +59,8 @@ public abstract class SignalEnteringBlockListener extends AbstractSignalBlockLis
             signalBlock.setTrainInEnteringBlock(null);
         }
     }
+
+    protected SignalBlock getSignalBlock() {
+        return signalBlock;
+    }
 }

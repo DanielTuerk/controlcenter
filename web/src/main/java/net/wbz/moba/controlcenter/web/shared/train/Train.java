@@ -6,11 +6,19 @@ import java.util.Set;
 import com.googlecode.jmapper.annotations.JMap;
 
 import net.wbz.moba.controlcenter.web.shared.track.model.AbstractDto;
+import net.wbz.moba.controlcenter.web.shared.track.model.TrackBlock;
 
 /**
  * @author Daniel Tuerk
  */
 public class Train extends AbstractDto {
+
+    /**
+     * Driving direction of the train.
+     */
+    public enum DRIVING_DIRECTION {
+        FORWARD, BACKWARD
+    }
 
     @JMap
     private Integer address;
@@ -23,6 +31,7 @@ public class Train extends AbstractDto {
     private int drivingLevel = 0;
 
     private boolean forward;
+    private TrackBlock currentBlock;
 
     public Integer getAddress() {
         return address;
@@ -73,6 +82,15 @@ public class Train extends AbstractDto {
         return Objects.toStringHelper(this)
             .add("name", name)
             .add("address", address)
+                .add("currentBlock", currentBlock)
             .toString();
+    }
+
+    public void setCurrentBlock(TrackBlock currentBlock) {
+        this.currentBlock = currentBlock;
+    }
+
+    public TrackBlock getCurrentBlock() {
+        return currentBlock;
     }
 }

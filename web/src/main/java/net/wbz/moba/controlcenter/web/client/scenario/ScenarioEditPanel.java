@@ -68,8 +68,11 @@ public class ScenarioEditPanel extends Composite {
         scenarioTable.addColumn(new TextColumn<Scenario>() {
             @Override
             public String getValue(Scenario object) {
-                return object.getTrain() != null ? object.getTrain().getName() + "(" + object.getTrain().getAddress()
-                        + ")" : "";
+                String trainDisplayValue =
+                        object.getTrain() != null ? object.getTrain().getName() + "(" + object.getTrain().getAddress()
+                                + ")" : "unknown";
+                return trainDisplayValue + " direction: "
+                        + (object.getTrainDrivingDirection() != null ? object.getTrainDrivingDirection().name() : "");
             }
         }, "Train");
         scenarioTable.addColumn(new TextColumn<Scenario>() {

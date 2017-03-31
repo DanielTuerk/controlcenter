@@ -45,7 +45,7 @@ public class ScenarioEditorServiceImpl extends RemoteServiceServlet implements S
 
     @Override
     public void deleteScenario(long scenarioId) {
-        scenarioManager.deleteDatabase(scenarioId);
+        scenarioManager.deleteScenario(scenarioId);
     }
 
     @Override

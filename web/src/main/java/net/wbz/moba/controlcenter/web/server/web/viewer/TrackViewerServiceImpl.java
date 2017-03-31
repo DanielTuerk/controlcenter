@@ -1,7 +1,9 @@
 package net.wbz.moba.controlcenter.web.server.web.viewer;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,6 +25,8 @@ import net.wbz.selectrix4java.device.DeviceAccessException;
 import net.wbz.selectrix4java.device.DeviceManager;
 
 /**
+ * Implementation of {@link TrackViewerService}.
+ *
  * @author Daniel Tuerk
  */
 @Singleton
@@ -54,6 +58,40 @@ public class TrackViewerServiceImpl extends RemoteServiceServlet implements Trac
                 log.error("can't toggle track part", e);
                 throw new RpcTokenException("can't toggle track part");
             }
+        }
+    }
+
+    @Override
+    public void toggleTrackParts(Map<BusDataConfiguration, Boolean> trackPartStates) {
+        try {
+            if (deviceManager.getConnectedDevice() != null) {
+                Device device = deviceManager.getConnectedDevice();
+
+                Map<Integer, BusAddress> busAddresses = new HashMap<>();
+                for (Entry<BusDataConfiguration, Boolean> entry : trackPartStates.entrySet()) {
+                    BusDataConfiguration busDataConfiguration = entry.getKey();
+                    if (busDataConfiguration != null && busDataConfiguration.isValid()) {
+                        assert busDataConfiguration.getBus() == 1;
+                        Integer address = busDataConfiguration.getAddress();
+                        if (!busAddresses.containsKey(address)) {
+                            busAddresses.put(address, device.getBusAddress(busDataConfiguration.getBus(),
+                                    address));
+                        }
+                        BusAddress busAddress = busAddresses.get(address);
+                        if (entry.getValue()) {
+                            busAddress.setBit(busDataConfiguration.getBit());
+                        } else {
+                            busAddress.clearBit(busDataConfiguration.getBit());
+                        }
+                    }
+                }
+                // send data
+                for (BusAddress busAddress : busAddresses.values()) {
+                    busAddress.send();
+                }
+            }
+        } catch (DeviceAccessException e) {
+            log.error("can't toggle track parts", e);
         }
     }
 
@@ -118,6 +156,7 @@ public class TrackViewerServiceImpl extends RemoteServiceServlet implements Trac
 
     @Override
     public void switchSignal(Signal signal, Signal.FUNCTION signalFunction) {
+        log.debug("switch signal {} to {}", signal, signalFunction);
         Map<Signal.LIGHT, BusAddressBit> availableLightConfig = Maps.newHashMap();
 
         Signal.TYPE signalType = signal.getType();

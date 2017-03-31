@@ -7,9 +7,6 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-import net.wbz.moba.controlcenter.web.server.web.editor.block.BusAddressIdentifier;
-import net.wbz.moba.controlcenter.web.server.web.editor.block.SignalBlockRegistry;
-import net.wbz.moba.controlcenter.web.server.web.editor.block.TrackBlockRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,6 +24,9 @@ import net.wbz.moba.controlcenter.web.server.persist.construction.track.TrackBlo
 import net.wbz.moba.controlcenter.web.server.persist.construction.track.TrackPartDao;
 import net.wbz.moba.controlcenter.web.server.web.DataMapper;
 import net.wbz.moba.controlcenter.web.server.web.TrackPartDataMapper;
+import net.wbz.moba.controlcenter.web.server.web.editor.block.BusAddressIdentifier;
+import net.wbz.moba.controlcenter.web.server.web.editor.block.SignalBlockRegistry;
+import net.wbz.moba.controlcenter.web.server.web.editor.block.TrackBlockRegistry;
 import net.wbz.moba.controlcenter.web.shared.constrution.Construction;
 import net.wbz.moba.controlcenter.web.shared.track.model.AbstractTrackPart;
 import net.wbz.moba.controlcenter.web.shared.track.model.BusDataConfiguration;
@@ -51,6 +51,10 @@ public class TrackManager {
 
     private static final Logger log = LoggerFactory.getLogger(TrackManager.class);
 
+    /**
+     * Map for all {@link BusListener}s of a single {@link BusAddressIdentifier} to avoid duplicated listeners to
+     * register and to call from {@link net.wbz.selectrix4java.data.BusDataChannel}.
+     */
     private final Map<BusAddressIdentifier, List<BusListener>> busAddressListenersOfTheCurrentTrack = Maps
             .newConcurrentMap();
 
@@ -65,8 +69,17 @@ public class TrackManager {
     private final TrackBlockRegistry trackBlockRegistry;
     private final SignalBlockRegistry signalBlockRegistry;
 
+    /**
+     * Cached track of current {@link Construction}.
+     */
     private final Collection<AbstractTrackPart> cachedData = Lists.newArrayList();
+    /**
+     * Cached {@link TrackBlock}s of current {@link Construction}.
+     */
     private final Collection<TrackBlock> cachedTrackBlocks = Lists.newArrayList();
+    /**
+     * The current {@link Construction}.
+     */
     private Construction currentConstruction;
 
     @Inject
@@ -301,14 +314,14 @@ public class TrackManager {
     }
 
     private void registerSignalFunction(Signal signal) {
-            Map<BusAddressIdentifier, List<BusAddressBitListener>> busAddressListeners = new SignalFunctionReceiver(
+        Map<BusAddressIdentifier, List<BusAddressBitListener>> busAddressListeners = new SignalFunctionReceiver(
                 signal, eventBroadcaster).getBusAddressListeners();
-            for (Map.Entry<BusAddressIdentifier, List<BusAddressBitListener>> entry : busAddressListeners.entrySet()) {
-                if (!busAddressListenersOfTheCurrentTrack.containsKey(entry.getKey())) {
-                    busAddressListenersOfTheCurrentTrack.put(entry.getKey(), new ArrayList<BusListener>());
-                }
-                busAddressListenersOfTheCurrentTrack.get(entry.getKey()).addAll(entry.getValue());
+        for (Map.Entry<BusAddressIdentifier, List<BusAddressBitListener>> entry : busAddressListeners.entrySet()) {
+            if (!busAddressListenersOfTheCurrentTrack.containsKey(entry.getKey())) {
+                busAddressListenersOfTheCurrentTrack.put(entry.getKey(), new ArrayList<BusListener>());
             }
+            busAddressListenersOfTheCurrentTrack.get(entry.getKey()).addAll(entry.getValue());
+        }
     }
 
     private void registerToggleFunctionOfTrackPart(AbstractTrackPart trackPart) {
@@ -326,7 +339,6 @@ public class TrackManager {
             }
         }
     }
-
 
     private void addBusListener(BusDataConfiguration trackPartConfiguration, BusListener listener) {
         BusAddressIdentifier busAddressIdentifier = new BusAddressIdentifier(trackPartConfiguration.getBus(),

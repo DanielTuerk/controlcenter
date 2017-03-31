@@ -1,18 +1,19 @@
 package net.wbz.moba.controlcenter.web.server.web.train;
 
-import com.google.common.base.Function;
-import com.google.common.collect.Collections2;
-import com.google.common.collect.Sets;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
+
+import org.apache.commons.lang.ArrayUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.google.inject.persist.Transactional;
 
-import java.util.Set;
-import javax.annotation.Nullable;
 import net.wbz.moba.controlcenter.web.server.EventBroadcaster;
 import net.wbz.moba.controlcenter.web.server.persist.train.TrainDao;
 import net.wbz.moba.controlcenter.web.server.persist.train.TrainEntity;
@@ -30,20 +31,17 @@ import net.wbz.selectrix4java.device.DeviceConnectionListener;
 import net.wbz.selectrix4java.device.DeviceManager;
 import net.wbz.selectrix4java.train.TrainDataListener;
 import net.wbz.selectrix4java.train.TrainModule;
-import org.apache.commons.lang.ArrayUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
- * Manager to access the {@link TrainEntity}s from database.
- * Each {@link TrainEntity} register an
- * {@link net.wbz.selectrix4java.train.TrainDataListener} and throw the state changes by
- * the {@link net.wbz.moba.controlcenter.web.server.EventBroadcaster} as train events to the client.
+ * Manager to access the {@link TrainEntity}s from database. Each {@link TrainEntity} register an {@link
+ * net.wbz.selectrix4java.train.TrainDataListener} and throw the state changes by the {@link
+ * net.wbz.moba.controlcenter.web.server.EventBroadcaster} as train events to the client.
  *
  * @author Daniel Tuerk
  */
 @Singleton
 public class TrainManager {
+
     private static final Logger LOG = LoggerFactory.getLogger(TrainManager.class);
 
     private final TrainDao dao;
@@ -108,8 +106,8 @@ public class TrainManager {
                                     eventBroadcaster.fireEvent(new TrainFunctionStateEvent(train.getId(), trainFunction,
                                             active));
                                     break;
-                                }
                             }
+                        }
                         }
 
                         @Override
@@ -137,20 +135,10 @@ public class TrainManager {
                 additionalAddresses.toArray(new Integer[additionalAddresses.size()])));
     }
 
-    public Train getTrain(long id) {
-        for (Train train : getTrains()) {
-            if (train.getId() == id) {
-                return train;
-            }
-        }
-        return null;
-        // return dataMapper.transformSource(dao.findById(id));
-    }
-
     private synchronized void reloadTrains() {
         cachedTrains.clear();
         Collection<Train> trains = getTrains();
-        if (deviceManager.isConnected())
+        if (deviceManager.isConnected()) {
             for (Train train : trains) {
                 try {
                     reregisterConsumer(train, deviceManager, eventBroadcaster);
@@ -158,11 +146,14 @@ public class TrainManager {
                     e.printStackTrace();
                 }
             }
+        }
     }
 
     @Transactional
     public void createTrain(Train train) {
-        TrainEntity entity = updateEntityFromDto(new TrainEntity(), train);
+        TrainEntity entity = new TrainEntity();
+        entity.setName(train.getName());
+        entity.setAddress(train.getAddress());
         dao.create(entity);
 
         reloadTrains();
@@ -182,12 +173,6 @@ public class TrainManager {
         reloadTrains();
     }
 
-    private TrainEntity updateEntityFromDto(TrainEntity entity, Train train) {
-        entity.setName(train.getName());
-        entity.setAddress(train.getAddress());
-        return entity;
-    }
-
     public Collection<Train> getTrains() {
         if (cachedTrains.isEmpty()) {
             cachedTrains.addAll(dataMapper.transformSource(dao.getTrains()));
@@ -195,18 +180,34 @@ public class TrainManager {
         return cachedTrains;
     }
 
+    /**
+     * Return the {@link Train} for the given id.
+     *
+     * @param id id of {@link Train}
+     * @return {@link Train} of given id or {@code null} if not found
+     */
+    public Train getTrain(long id) {
+        for (Train train : getTrains()) {
+            if (train.getId() == id) {
+                return train;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Return the {@link Train} for the given address.
+     *
+     * @param address address of {@link Train}
+     * @return {@link Train} of given address or {@code null} if not found
+     */
     public Train getTrain(int address) {
         for (Train train : getTrains()) {
             if (train.getAddress() != null && train.getAddress() == address) {
                 return train;
             }
         }
-
-        // try {
-        // return dataMapper.transformSource(dao.getTrainByAddress(address));
-        // } catch (TrainException e) {
         LOG.error("can't find train for address " + address);
-        // }
         return null;
     }
 

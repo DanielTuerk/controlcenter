@@ -7,6 +7,8 @@ import net.wbz.moba.controlcenter.web.shared.train.Train;
 import net.wbz.selectrix4java.block.FeedbackBlockListener;
 
 /**
+ * Abstract {@link FeedbackBlockListener} for a {@link TrackBlock}.
+ *
  * @author Daniel Tuerk
  */
 abstract class AbstractSignalBlockListener implements FeedbackBlockListener {

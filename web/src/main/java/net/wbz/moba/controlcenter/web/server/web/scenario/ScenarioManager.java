@@ -22,6 +22,9 @@ import net.wbz.moba.controlcenter.web.shared.scenario.Scenario;
 import net.wbz.moba.controlcenter.web.shared.scenario.Station;
 
 /**
+ * Manager to access the {@link Scenario}s from database.
+ * The data is cached.
+ *
  * @author Daniel Tuerk
  */
 @Singleton
@@ -79,11 +82,21 @@ public class ScenarioManager {
         return scenarioDao.create(dataMapper.transformTarget(scenario));
     }
 
-    public void deleteDatabase(long scenarioId) {
+    /**
+     * Delete the {@link Scenario} for the given id and reload the cached data.
+     *
+     * @param scenarioId id of {@link Scenario} to delete
+     */
+    public void deleteScenario(long scenarioId) {
         scenarioDao.delete(scenarioDao.findById(scenarioId));
         loadScenariosFromDatabase();
     }
 
+    /**
+     * Update the given {@link Scenario} and reload the cached data.
+     *
+     * @param scenario {@link Scenario} to update in database
+     */
     public void updateScenario(Scenario scenario) {
         scenarioDao.update(dataMapper.transformTarget(scenario));
         loadScenariosFromDatabase();

@@ -1,0 +1,41 @@
+package net.wbz.moba.controlcenter.web.server.web.editor.block;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import net.wbz.moba.controlcenter.web.server.web.train.TrainManager;
+import net.wbz.moba.controlcenter.web.shared.train.TrainService;
+
+/**
+ * Abstract {@link AbstractSignalBlockListener} for the stop block of a {@link SignalBlock}.
+ *
+ * @author Daniel Tuerk
+ */
+abstract class AbstractSignalStopBlockListener extends AbstractSignalBlockListener {
+    private static final Logger log = LoggerFactory.getLogger(AbstractSignalStopBlockListener.class);
+
+    private final SignalBlock signalBlock;
+    private final TrainService trainService;
+
+    AbstractSignalStopBlockListener(SignalBlock signalBlock, TrainManager trainManager, TrainService trainService) {
+        super(signalBlock.getSignal().getStopBlock(), trainManager);
+        this.signalBlock = signalBlock;
+        this.trainService = trainService;
+    }
+
+    @Override
+    public void blockOccupied(int blockNr) {
+    }
+
+    @Override
+    public void blockFreed(int blockNr) {
+    }
+
+    protected SignalBlock getSignalBlock() {
+        return signalBlock;
+    }
+
+    protected TrainService getTrainService() {
+        return trainService;
+    }
+}

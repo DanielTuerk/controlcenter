@@ -28,7 +28,13 @@ import net.wbz.moba.controlcenter.web.shared.track.model.AbstractTrackPart;
 @Singleton
 public class TrackPartDataMapper {
 
+    /**
+     * Mapper from entity to dto.
+     */
     private final Map<Class<? extends AbstractTrackPart>, DataMapper> dtoMappers = Maps.newConcurrentMap();
+    /**
+     * Mapper from dto to entity.
+     */
     private final Map<Class<? extends AbstractTrackPartEntity>, DataMapper> entityMappers = Maps.newConcurrentMap();
 
     public TrackPartDataMapper() {
@@ -54,16 +60,14 @@ public class TrackPartDataMapper {
 
     }
 
+    @SuppressWarnings(value = "unchecked")
     public AbstractTrackPartEntity transformTrackPart(AbstractTrackPart trackPart) {
         return (AbstractTrackPartEntity) dtoMappers.get(trackPart.getClass()).transformTarget(trackPart);
     }
 
+    @SuppressWarnings(value = "unchecked")
     public AbstractTrackPart transformTrackPartEntity(AbstractTrackPartEntity trackPart) {
         return (AbstractTrackPart) entityMappers.get(trackPart.getClass()).transformSource(trackPart);
-    }
-
-    public DataMapper getMapper(AbstractTrackPartEntity trackPartEntity) {
-        return entityMappers.get(trackPartEntity.getClass());
     }
 
     public Collection<AbstractTrackPart> transformTrackPartEntities(List<AbstractTrackPartEntity> entities) {

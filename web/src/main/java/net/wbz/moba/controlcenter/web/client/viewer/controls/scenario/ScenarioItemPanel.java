@@ -51,9 +51,15 @@ public class ScenarioItemPanel extends AbstractItemPanel<Scenario, ScenarioState
                 btnStop.setEnabled(false);
                 break;
             case PAUSED:
+                btnSchedule.setEnabled(false);
+                btnStart.setEnabled(false);
+                btnStop.setEnabled(true);
+                // TODO resume
+                break;
+            case STOPPED:
                 btnSchedule.setEnabled(true);
                 btnStart.setEnabled(true);
-                btnStop.setEnabled(true);
+                btnStop.setEnabled(false);
                 break;
         }
 

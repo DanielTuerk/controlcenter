@@ -44,7 +44,14 @@ import net.wbz.selectrix4java.device.Device;
 import net.wbz.selectrix4java.device.DeviceAccessException;
 
 /**
- * TODO doc
+ * <p>
+ * Block registry for the {@link SignalBlock}s.
+ * Register listeners for the blocks of the {@link SignalBlock} to update the actual state of the {@link SignalBlock}.
+ * {@link Train} entering or exiting and occupied state of blocks are detected.
+ * </p>
+ * <p>
+ * The registry reacts to free montioring blocks of the {@link SignalBlock} and will start waiting {@link Train}s.
+ * </p>
  * TODO alles abhänig vom rail voltage machen? derzeit connected device
  * TODO wie mit re-register umgehen?
  * 
@@ -104,10 +111,10 @@ public class SignalBlockRegistry extends AbstractBlockRegistry<Signal> {
         scenarioService.addScenarioStateListener(new ScenarioStateListener() {
             @Override
             public void scenarioStarted(Scenario scenario) {
-                Optional<RouteBlock> currentRouteBlock = scenario.getFirstRouteBlock();
-                if (currentRouteBlock.isPresent()
-                        && currentRouteBlock.get().getStartPoint().getType() == TYPE.EXIT) {
-                    requestDriveForTrainOnExitSignal(scenario.getTrain(), currentRouteBlock.get().getStartPoint());
+                Optional<RouteBlock> firstRouteBlock = scenario.getFirstRouteBlock();
+                if (firstRouteBlock.isPresent()
+                        && firstRouteBlock.get().getStartPoint().getType() == TYPE.EXIT) {
+                    requestDriveForTrainOnExitSignal(scenario.getTrain(), firstRouteBlock.get().getStartPoint());
                 }
             }
         });
@@ -122,7 +129,7 @@ public class SignalBlockRegistry extends AbstractBlockRegistry<Signal> {
 
             if (checkBlockFunction(signal.getMonitoringBlock()) && checkBlockFunction(signal.getStopBlock())) {
 
-                final SignalBlock signalBlock = new SignalBlock(signal);
+                SignalBlock signalBlock = new SignalBlock(signal);
                 log.debug("add signal block: {}", signalBlock);
 
                 final BusDataConfiguration monitoringBlockFunction = signal.getMonitoringBlock().getBlockFunction();
@@ -141,6 +148,8 @@ public class SignalBlockRegistry extends AbstractBlockRegistry<Signal> {
                         getTrainManager()) {
                     @Override
                     public void trackClear() {
+                        SignalBlock signalBlock = getSignalBlock();
+                        // TODO falscher signalBlock???
                         log.debug("track clear: signalBlock {}", signalBlock);
                         if (signalBlock.getWaitingTrain() != null) {
                             // start a waiting train in the signal stop block
@@ -167,10 +176,18 @@ public class SignalBlockRegistry extends AbstractBlockRegistry<Signal> {
                         addFeedbackBlockListener(new SignalEnteringBlockListener(signalBlock, getTrainManager()) {
                             @Override
                             protected void requestFreeTrack() {
-                                requestDriveForEnteringSignalBlock(signalBlock);
+                                requestDriveForEnteringSignalBlock(getSignalBlock());
                             }
                         });
                     }
+                } else {
+                    /*
+                     * Exit signals getting the waiting train from the scenario and only have to clear the waiting train
+                     * in case of leaving the stop block.
+                     */
+                    addFeedbackBlockListener(new ExitSignalStopBlockListener(signalBlock, getTrainManager(),
+                            getTrainService()));
+
                 }
             }
         }
@@ -250,8 +267,7 @@ public class SignalBlockRegistry extends AbstractBlockRegistry<Signal> {
                     scenarioService.updateTrack(scenario.get(), next.getSignal());
                 }
                 // TODO wie ohne route vorgehen?
-                // TODO hat der monitoring block abhänigkeiten?
-
+                // TODO hat der monirequest drive on exit signal
                 Future<Void> future = taskExecutor
                         .submit(new FreeBlockTask(next, getTrainService(), trackViewerService));
                 monitoringBlockFuture.put(monitoringBlockFunctionOfSignalBlock, future);
@@ -328,7 +344,9 @@ public class SignalBlockRegistry extends AbstractBlockRegistry<Signal> {
         return Collections2.filter(monitoringBlockSignals.get(monitoringBlockFunction), new Predicate<SignalBlock>() {
             @Override
             public boolean apply(@Nullable SignalBlock input) {
-                return input != null && input.getWaitingTrain() != null && !input.isMonitoringBlockFree();
+                // return input != null && input.getWaitingTrain() != null && !input.isMonitoringBlockFree();
+                // TODO free monitoring check removed, is that still working for block signals?
+                return input != null && input.getWaitingTrain() != null;
             }
         });
     }

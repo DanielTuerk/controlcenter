@@ -1,7 +1,9 @@
 package net.wbz.moba.controlcenter.web.server.web.scenario;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadFactory;
@@ -27,6 +29,8 @@ import com.google.inject.Singleton;
 
 import net.wbz.moba.controlcenter.web.server.EventBroadcaster;
 import net.wbz.moba.controlcenter.web.server.web.editor.block.TrackBlockRegistry;
+import net.wbz.moba.controlcenter.web.server.web.train.TrainManager;
+import net.wbz.moba.controlcenter.web.server.web.train.TrainServiceImpl;
 import net.wbz.moba.controlcenter.web.server.web.viewer.TrackViewerServiceImpl;
 import net.wbz.moba.controlcenter.web.shared.scenario.RouteBlock;
 import net.wbz.moba.controlcenter.web.shared.scenario.RouteBlockPart;
@@ -35,18 +39,28 @@ import net.wbz.moba.controlcenter.web.shared.scenario.Scenario.MODE;
 import net.wbz.moba.controlcenter.web.shared.scenario.Scenario.RUN_STATE;
 import net.wbz.moba.controlcenter.web.shared.scenario.ScenarioService;
 import net.wbz.moba.controlcenter.web.shared.scenario.ScenarioStateEvent;
+import net.wbz.moba.controlcenter.web.shared.track.model.BusDataConfiguration;
 import net.wbz.moba.controlcenter.web.shared.track.model.Signal;
 import net.wbz.moba.controlcenter.web.shared.train.Train;
+import net.wbz.moba.controlcenter.web.shared.train.TrainService;
 import net.wbz.selectrix4java.block.FeedbackBlockListener;
 import net.wbz.selectrix4java.device.DeviceAccessException;
 import net.wbz.selectrix4java.device.DeviceManager;
 
 /**
+ * Implementation of {@link ScenarioService}.
+ * 
  * @author Daniel Tuerk
  */
 @Singleton
 public class ScenarioServiceImpl extends RemoteServiceServlet implements ScenarioService {
+
     private static final Logger LOG = LoggerFactory.getLogger(ScenarioServiceImpl.class);
+
+    /**
+     * TODO limit the scenarios to run asynchronous? How much for raspberry?
+     */
+    private static final int SCHEDULER_POOL_SIZE = 10;
 
     /**
      * Service to toggle track parts of the track in the scenarios.
@@ -64,22 +78,44 @@ public class ScenarioServiceImpl extends RemoteServiceServlet implements Scenari
      * Server side listeners for state changes.
      */
     private final List<ScenarioStateListener> listeners = new ArrayList<>();
-    private final ScheduledExecutorService scheduledExecutorService;
+    /**
+     * Actual registered listeners for the scenario to determine the end of the scenario run.
+     * The {@link ScenarioEndpointFeedbackListener} should remove itself by successful end of run. Otherwise it's
+     * removed by calling {#stopScenario}.
+     */
+    private final Map<Scenario, ScenarioEndpointFeedbackListener> scenarioEndpointFeedbackListenerMap = new HashMap<>();
     private final TrackBlockRegistry trackBlockRegistry;
     private final DeviceManager deviceManager;
+    /**
+     * Parser for the cron value in the {@link Scenario}.
+     * Supports {@link CronType#UNIX} cron syntax only.
+     */
+    private final CronParser cronParser = new CronParser(CronDefinitionBuilder.instanceDefinitionFor(CronType.UNIX));
+    /**
+     * Executor to schedule {@link Scenario} runs.
+     */
+    private final ScheduledExecutorService scheduledExecutorService;
+    private final TrainManager trainManager;
+    /**
+     * Service to control the {@link Train} in the running {@link Scenario}.
+     */
+    private final TrainService trainService;
 
     @Inject
     public ScenarioServiceImpl(TrackViewerServiceImpl trackViewerService, ScenarioManager scenarioManager,
-            EventBroadcaster eventBroadcaster, TrackBlockRegistry trackBlockRegistry, DeviceManager deviceManager) {
+            EventBroadcaster eventBroadcaster, TrackBlockRegistry trackBlockRegistry, DeviceManager deviceManager,
+            TrainManager trainManager, TrainServiceImpl trainService) {
         this.trackViewerRequest = trackViewerService;
         this.scenarioManager = scenarioManager;
 
         this.eventBroadcaster = eventBroadcaster;
         this.trackBlockRegistry = trackBlockRegistry;
         this.deviceManager = deviceManager;
+        this.trainManager = trainManager;
+        this.trainService = trainService;
 
         ThreadFactory namedThreadFactory = new ThreadFactoryBuilder().setNameFormat("scenario-executor-%d").build();
-        scheduledExecutorService = Executors.newScheduledThreadPool(10, namedThreadFactory);
+        scheduledExecutorService = Executors.newScheduledThreadPool(SCHEDULER_POOL_SIZE, namedThreadFactory);
     }
 
     public void addScenarioStateListener(ScenarioStateListener listener) {
@@ -105,8 +141,7 @@ public class ScenarioServiceImpl extends RemoteServiceServlet implements Scenari
         String cron = scenarioById.getCron();
         if (!Strings.isNullOrEmpty(cron)) {
 
-            CronParser parser = new CronParser(CronDefinitionBuilder.instanceDefinitionFor(CronType.UNIX));
-            ExecutionTime executionTime = ExecutionTime.forCron(parser.parse("* * * * * ? *"));
+            ExecutionTime executionTime = ExecutionTime.forCron(cronParser.parse(cron));
             DateTime now = DateTime.now();
             DateTime nextExecution = executionTime.nextExecution(now);
 
@@ -127,15 +162,6 @@ public class ScenarioServiceImpl extends RemoteServiceServlet implements Scenari
         } else {
             LOG.error("no cron expression");
         }
-    }
-
-    private void fireEvent(Scenario scenario) {
-        for (ScenarioStateListener listener : listeners) {
-            if (scenario.getRunState() == RUN_STATE.RUNNING) {
-                listener.scenarioStarted(scenario);
-            }
-        }
-        eventBroadcaster.fireEvent(new ScenarioStateEvent(scenario.getId(), scenario.getRunState()));
     }
 
     @Override
@@ -162,11 +188,17 @@ public class ScenarioServiceImpl extends RemoteServiceServlet implements Scenari
         LOG.debug("update the track for scenario {} in signal: ", scenario, signal);
         Optional<RouteBlock> routeBlockOptional = scenario.getRouteBlockForStartSignal(signal);
         if (routeBlockOptional.isPresent()) {
+            Map<BusDataConfiguration, Boolean> trackPartStates = new HashMap<>();
+
             RouteBlock routeBlock = routeBlockOptional.get();
             for (RouteBlockPart routeBlockPart : routeBlock.getRouteBlockParts()) {
-                trackViewerRequest.toggleTrackPart(routeBlockPart.getSwitchTrackPart().getToggleFunction(),
-                        routeBlockPart.isState());
+                if (routeBlockPart.getSwitchTrackPart() != null && routeBlockPart.getSwitchTrackPart()
+                        .getToggleFunction() != null) {
+                    trackPartStates.put(routeBlockPart.getSwitchTrackPart().getToggleFunction(), routeBlockPart
+                            .isState());
+                }
             }
+            trackViewerRequest.toggleTrackParts(trackPartStates);
         }
     }
 
@@ -200,37 +232,69 @@ public class ScenarioServiceImpl extends RemoteServiceServlet implements Scenari
         return Optional.absent();
     }
 
+    private void fireEvent(Scenario scenario) {
+        for (ScenarioStateListener listener : listeners) {
+            if (scenario.getRunState() == RUN_STATE.RUNNING) {
+                listener.scenarioStarted(scenario);
+            }
+        }
+        eventBroadcaster.fireEvent(new ScenarioStateEvent(scenario.getId(), scenario.getRunState()));
+    }
+
     private void startScenario(final long scenarioId) {
         if (deviceManager.isConnected()) {
             final Scenario scenario = scenarioManager.getScenarioById(scenarioId);
             if (scenario.getRunState() != RUN_STATE.RUNNING) {
-
-                scenario.setRunState(RUN_STATE.RUNNING);
-
-                fireEvent(scenario);
+                // reload train, because the DTO is not up to date
+                Train train = trainManager.getTrain(scenario.getTrain().getId());
+                // check train available at start position
+                if (train != null && train.getCurrentBlock() != null) {
+                    if (scenario.getFirstRouteBlock().isPresent()) {
+                        Signal startPoint = scenario.getFirstRouteBlock().get().getStartPoint();
+                        if (startPoint != null) {
+                            if (startPoint.getStopBlock().equals(train.getCurrentBlock())) {
+                                scenario.setRunState(RUN_STATE.RUNNING);
+                                // set the driving direction for the train
+                                if (scenario.getTrainDrivingDirection() != null) {
+                                    trainService.toggleDrivingDirection(train.getId(),
+                                            scenario.getTrainDrivingDirection() == Train.DRIVING_DIRECTION.FORWARD);
+                                }
+                                // fire events to start the train by block/signal
+                                fireEvent(scenario);
+                            } else {
+                                LOG.error("train on wrong block to start: " + train.getCurrentBlock());
+                            }
+                        }
+                    }
+                } else {
+                    LOG.error("train or position unknown: " + scenario.getTrain());
+                }
+                // add listener for last block to determine finished execution
+                try {
+                    final ScenarioEndpointFeedbackListener listener = new ScenarioEndpointFeedbackListener(scenario) {
+                        @Override
+                        protected void scenarioFinished() {
+                            try {
+                                // remove itself, next run will add a new listener
+                                trackBlockRegistry.removeFeedbackListener(deviceManager.getConnectedDevice(),
+                                        scenario.getEndPoint(), this);
+                                scenarioEndpointFeedbackListenerMap.remove(scenario);
+                            } catch (DeviceAccessException e) {
+                                e.printStackTrace();
+                            }
+                            scenario.setRunState(RUN_STATE.IDLE);
+                            fireEvent(scenario);
+                        }
+                    };
+                    trackBlockRegistry.addFeedbackListener(deviceManager.getConnectedDevice(), scenario.getEndPoint(),
+                            listener);
+                    scenarioEndpointFeedbackListenerMap.put(scenario, listener);
+                } catch (DeviceAccessException e) {
+                    LOG.error("add listener", e);
+                }
             } else {
                 LOG.error("scenario already running");
                 // TODO error
-            }
-            // TODO add listener for last block to determine finished execution
-            try {
-                final ScenarioEndpointFeedbackListener listener = new ScenarioEndpointFeedbackListener(scenario) {
-                    @Override
-                    protected void scenarioFinished() {
-                        try {
-                            trackBlockRegistry.removeFeedbackListener(deviceManager.getConnectedDevice(),
-                                    scenario.getEndPoint(), this);
-                        } catch (DeviceAccessException e) {
-                            e.printStackTrace();
-                        }
-                        scenario.setRunState(RUN_STATE.IDLE);
-                        fireEvent(scenario);
-                    }
-                };
-                trackBlockRegistry.addFeedbackListener(deviceManager.getConnectedDevice(), scenario.getEndPoint(),
-                        listener);
-            } catch (DeviceAccessException e) {
-                e.printStackTrace();
             }
         }
     }
@@ -239,12 +303,23 @@ public class ScenarioServiceImpl extends RemoteServiceServlet implements Scenari
         Scenario scenario = scenarioManager.getScenarioById(scenarioId);
         scenario.getTrain().setDrivingLevel(0);
 
+        try {
+            trackBlockRegistry.removeFeedbackListener(deviceManager.getConnectedDevice(), scenario.getEndPoint(),
+                    scenarioEndpointFeedbackListenerMap.get(scenario));
+        } catch (DeviceAccessException e) {
+            LOG.error("can't remove listener", e);
+        }
+
         scenario.setMode(MODE.OFF);
         scenario.setRunState(RUN_STATE.STOPPED);
 
         fireEvent(scenario);
     }
 
+    /**
+     * Abstract {@link FeedbackBlockListener} to use for determinate the end of the {@link Scenario} run in case of
+     * defined train reaching the end block.
+     */
     abstract private class ScenarioEndpointFeedbackListener implements FeedbackBlockListener {
         private final Scenario scenario;
 
@@ -272,6 +347,10 @@ public class ScenarioServiceImpl extends RemoteServiceServlet implements Scenari
 
         @Override
         public void trainLeaveBlock(int blockNumber, int trainAddress, boolean forward) {
+        }
+
+        public Scenario getScenario() {
+            return scenario;
         }
     }
 }

@@ -15,6 +15,9 @@ import net.wbz.moba.controlcenter.web.shared.train.TrainDataChangedEvent;
 import net.wbz.moba.controlcenter.web.shared.train.TrainEditorService;
 
 /**
+ * Implementation of {@link TrainEditorService}.
+ * TODO error handling
+ * 
  * @author Daniel Tuerk
  */
 @Singleton
@@ -31,14 +34,17 @@ public class TrainEditorServiceImpl extends RemoteServiceServlet implements Trai
         this.eventBroadcaster = eventBroadcaster;
     }
 
+    @Override
     public Collection<Train> getTrains() {
         return trainManager.getTrains();
     }
 
+    @Override
     public Train getTrain(int address) {
         return trainManager.getTrain(address);
     }
 
+    @Override
     public void createTrain(Train train) {
         try {
             trainManager.createTrain(train);
@@ -51,15 +57,16 @@ public class TrainEditorServiceImpl extends RemoteServiceServlet implements Trai
         }
     }
 
+    @Override
     public void deleteTrain(long trainId) {
         trainManager.deleteTrain(trainId);
         eventBroadcaster.fireEvent(new TrainDataChangedEvent(trainId));
     }
 
+    @Override
     public void updateTrain(Train train) {
         try {
             trainManager.updateTrain(train);
-
             eventBroadcaster.fireEvent(new TrainDataChangedEvent(train.getId()));
         } catch (Exception e) {
             String msg = String.format("can't update train '%s'", train.getName());

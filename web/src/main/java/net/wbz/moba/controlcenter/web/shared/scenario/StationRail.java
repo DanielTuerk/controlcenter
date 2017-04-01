@@ -15,10 +15,6 @@ public class StationRail extends AbstractDto {
     @JMap
     private int railNumber;
 
-    // @JMap
-    // private Station station;
-
-
     public int getRailNumber() {
         return railNumber;
     }
@@ -27,12 +23,4 @@ public class StationRail extends AbstractDto {
         this.railNumber = railNumber;
     }
 
-
-    // public Station getStation() {
-    // return station;
-    // }
-    //
-    // public void setStation(Station station) {
-    // this.station = station;
-    // }
 }

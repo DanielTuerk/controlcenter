@@ -117,6 +117,11 @@ public class SignalBlockRegistry extends AbstractBlockRegistry<Signal> {
                     requestDriveForTrainOnExitSignal(scenario.getTrain(), firstRouteBlock.get().getStartPoint());
                 }
             }
+
+            @Override
+            public void scenarioStopped(Scenario scenario) {
+
+            }
         });
     }
 

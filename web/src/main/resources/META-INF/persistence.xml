@@ -40,6 +40,7 @@
     <class>net.wbz.moba.controlcenter.web.server.persist.scenario.RouteEntity</class>
     <class>net.wbz.moba.controlcenter.web.server.persist.scenario.ScenarioEntity</class>
     <class>net.wbz.moba.controlcenter.web.server.persist.scenario.RouteSequenceEntity</class>
+    <class>net.wbz.moba.controlcenter.web.server.persist.scenario.ScenarioHistoryEntity</class>
 
     <exclude-unlisted-classes>true</exclude-unlisted-classes>
     <!--<properties> from Guice -->

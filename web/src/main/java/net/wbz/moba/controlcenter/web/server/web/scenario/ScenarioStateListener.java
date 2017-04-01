@@ -15,4 +15,11 @@ public interface ScenarioStateListener {
      * @param scenario {@link Scenario}
      */
     void scenarioStarted(Scenario scenario);
+
+    /**
+     * The given scenario has stopped.
+     *
+     * @param scenario {@link Scenario}
+     */
+    void scenarioStopped(Scenario scenario);
 }

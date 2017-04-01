@@ -104,7 +104,7 @@ public class ScenarioServiceImpl extends RemoteServiceServlet implements Scenari
     @Inject
     public ScenarioServiceImpl(TrackViewerServiceImpl trackViewerService, ScenarioManager scenarioManager,
             EventBroadcaster eventBroadcaster, TrackBlockRegistry trackBlockRegistry, DeviceManager deviceManager,
-            TrainManager trainManager, TrainServiceImpl trainService) {
+            TrainManager trainManager, TrainServiceImpl trainService, ScenarioHistoryService scenarioHistoryService) {
         this.trackViewerRequest = trackViewerService;
         this.scenarioManager = scenarioManager;
 
@@ -116,6 +116,8 @@ public class ScenarioServiceImpl extends RemoteServiceServlet implements Scenari
 
         ThreadFactory namedThreadFactory = new ThreadFactoryBuilder().setNameFormat("scenario-executor-%d").build();
         scheduledExecutorService = Executors.newScheduledThreadPool(SCHEDULER_POOL_SIZE, namedThreadFactory);
+
+        addScenarioStateListener(scenarioHistoryService);
     }
 
     public void addScenarioStateListener(ScenarioStateListener listener) {
@@ -236,6 +238,8 @@ public class ScenarioServiceImpl extends RemoteServiceServlet implements Scenari
         for (ScenarioStateListener listener : listeners) {
             if (scenario.getRunState() == RUN_STATE.RUNNING) {
                 listener.scenarioStarted(scenario);
+            } else {
+                listener.scenarioStopped(scenario);
             }
         }
         eventBroadcaster.fireEvent(new ScenarioStateEvent(scenario.getId(), scenario.getRunState()));
@@ -262,7 +266,8 @@ public class ScenarioServiceImpl extends RemoteServiceServlet implements Scenari
                                 // fire events to start the train by block/signal
                                 fireEvent(scenario);
                             } else {
-                                LOG.error("train on wrong block to start: " + train.getCurrentBlock());
+                                LOG.error("train on wrong block to start: {} expected: {}", train.getCurrentBlock(),
+                                        startPoint.getStopBlock());
                             }
                         }
                     }

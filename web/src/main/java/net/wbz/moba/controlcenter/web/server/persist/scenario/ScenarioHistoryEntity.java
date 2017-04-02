@@ -1,13 +1,12 @@
 package net.wbz.moba.controlcenter.web.server.persist.scenario;
 
-import com.googlecode.jmapper.annotations.JMap;
-import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import net.wbz.moba.controlcenter.web.server.persist.AbstractEntity;
+
 import org.joda.time.DateTime;
+
+import net.wbz.moba.controlcenter.web.server.persist.AbstractEntity;
 
 /**
  * @author Daniel Tuerk
@@ -15,15 +14,15 @@ import org.joda.time.DateTime;
 @Entity(name = "SCENARIO_HISTORY")
 public class ScenarioHistoryEntity extends AbstractEntity {
 
-    @JMap
     @ManyToOne
     private ScenarioEntity scenario;
 
-    @JMap
     @Column
-    private DateTime runDate;
+    private DateTime startDate;
 
-    @JMap
+    @Column
+    private DateTime endDate;
+
     @Column
     private long elapsedTime;
 
@@ -35,12 +34,20 @@ public class ScenarioHistoryEntity extends AbstractEntity {
         this.scenario = scenario;
     }
 
-    public DateTime getRunDate() {
-        return runDate;
+    public DateTime getStartDate() {
+        return startDate;
     }
 
-    public void setRunDate(DateTime runDate) {
-        this.runDate = runDate;
+    public void setStartDate(DateTime startDate) {
+        this.startDate = startDate;
+    }
+
+    public DateTime getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(DateTime endDate) {
+        this.endDate = endDate;
     }
 
     public long getElapsedTime() {

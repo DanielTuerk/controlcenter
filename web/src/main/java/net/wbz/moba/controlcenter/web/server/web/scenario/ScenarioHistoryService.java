@@ -3,7 +3,9 @@ package net.wbz.moba.controlcenter.web.server.web.scenario;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.google.common.base.Stopwatch;
+import org.joda.time.DateTime;
+import org.joda.time.Interval;
+
 import com.google.inject.Inject;
 
 import net.wbz.moba.controlcenter.web.server.persist.scenario.ScenarioEntity;
@@ -12,7 +14,6 @@ import net.wbz.moba.controlcenter.web.server.persist.scenario.ScenarioHistoryEnt
 import net.wbz.moba.controlcenter.web.server.web.DataMapper;
 import net.wbz.moba.controlcenter.web.shared.scenario.Scenario;
 import net.wbz.moba.controlcenter.web.shared.scenario.Scenario.RUN_STATE;
-import org.joda.time.DateTime;
 
 /**
  * @author Daniel Tuerk
@@ -20,7 +21,7 @@ import org.joda.time.DateTime;
 public class ScenarioHistoryService implements ScenarioStateListener {
 
     private final ScenarioHistoryDao scenarioHistoryDao;
-    private final Map<Scenario, Stopwatch> scenarioStopwatch = new ConcurrentHashMap<>();
+    private final Map<Long, DateTime> scenarioStartDateTimes = new ConcurrentHashMap<>();
     private final DataMapper<Scenario, ScenarioEntity> scenarioEntityDataMapper = new DataMapper<>(Scenario.class,
             ScenarioEntity.class);
 
@@ -31,18 +32,21 @@ public class ScenarioHistoryService implements ScenarioStateListener {
 
     @Override
     public void scenarioStarted(Scenario scenario) {
-        scenarioStopwatch.put(scenario, new Stopwatch().start());
+        scenarioStartDateTimes.put(scenario.getId(), DateTime.now());
     }
 
     @Override
     public void scenarioStopped(Scenario scenario) {
-        if (scenarioStopwatch.containsKey(scenario)) {
-            Stopwatch stopwatch = scenarioStopwatch.get(scenario).stop();
+        Long scenarioId = scenario.getId();
+        if (scenarioStartDateTimes.containsKey(scenarioId)) {
+            DateTime startDate = scenarioStartDateTimes.get(scenarioId);
             if (scenario.getRunState() == RUN_STATE.IDLE) {
                 ScenarioHistoryEntity entity = new ScenarioHistoryEntity();
                 entity.setScenario(scenarioEntityDataMapper.transformTarget(scenario));
-                entity.setRunDate(DateTime.now());
-                entity.setElapsedTime(stopwatch.elapsedMillis());
+                entity.setStartDate(DateTime.now());
+                DateTime endDate = DateTime.now();
+                entity.setEndDate(endDate);
+                entity.setElapsedTime(new Interval(startDate, endDate).toDurationMillis());
                 scenarioHistoryDao.create(entity);
             }
         }

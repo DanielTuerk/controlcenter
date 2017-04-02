@@ -264,21 +264,16 @@ public class SignalBlockRegistry extends AbstractBlockRegistry<Signal> {
         if (iterator.hasNext()) {
             SignalBlock next = iterator.next();
             if (next != null) {
-                int startDrivingLevel = FreeBlockTask.DRIVING_LEVEL_START;
-                // search route, and update track
+
+                // search route
                 Optional<Scenario> scenario = scenarioService.getRunningScenarioOfTrain(signalBlock
                         .getWaitingTrain());
-                if (scenario.isPresent()) {
-                    // TODO allocate route or track necessary?
-                    scenarioService.updateTrack(scenario.get(), next.getSignal());
-                    if (scenario.get().getStartDrivingLevel() != null) {
-                        startDrivingLevel = scenario.get().getStartDrivingLevel();
-                    }
-                }
+
                 // TODO wie ohne route vorgehen?
                 // TODO hat der monirequest drive on exit signal
                 Future<Void> future = taskExecutor
-                        .submit(new FreeBlockTask(next, getTrainService(), trackViewerService, startDrivingLevel));
+                        .submit(new FreeBlockTask(next, getTrainService(), trackViewerService, scenario,
+                                scenarioService));
                 monitoringBlockFuture.put(monitoringBlockFunctionOfSignalBlock, future);
             }
         }

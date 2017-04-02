@@ -140,29 +140,35 @@ public class ScenarioServiceImpl extends RemoteServiceServlet implements Scenari
     public void schedule(final long scenarioId) {
         Scenario scenarioById = scenarioManager.getScenarioById(scenarioId);
 
-        String cron = scenarioById.getCron();
-        if (!Strings.isNullOrEmpty(cron)) {
+        if (scenarioById.getRunState() == RUN_STATE.IDLE) {
 
-            ExecutionTime executionTime = ExecutionTime.forCron(cronParser.parse(cron));
-            DateTime now = DateTime.now();
-            DateTime nextExecution = executionTime.nextExecution(now);
+            String cron = scenarioById.getCron();
+            if (!Strings.isNullOrEmpty(cron)) {
 
-            long millisecondsToNextRun = nextExecution.minus(now.getMillis()).getMillis();
+                ExecutionTime executionTime = ExecutionTime.forCron(cronParser.parse(cron));
+                DateTime now = DateTime.now();
+                DateTime nextExecution = executionTime.nextExecution(now);
 
-            scenarioById.setRunState(RUN_STATE.IDLE);
-            scenarioById.setMode(MODE.AUTOMATIC);
+                long millisecondsToNextRun = nextExecution.minus(now.getMillis()).getMillis();
 
-            fireEvent(scenarioById);
+                scenarioById.setRunState(RUN_STATE.IDLE);
+                scenarioById.setMode(MODE.AUTOMATIC);
 
-            scheduledExecutorService.scheduleAtFixedRate(new Runnable() {
-                @Override
-                public void run() {
-                    startScenario(scenarioId);
-                }
-            }, millisecondsToNextRun, millisecondsToNextRun, TimeUnit.MILLISECONDS);
+                fireEvent(scenarioById);
 
+                scheduledExecutorService.scheduleAtFixedRate(new Runnable() {
+                    @Override
+                    public void run() {
+                        startScenario(scenarioId);
+                    }
+                }, millisecondsToNextRun, millisecondsToNextRun, TimeUnit.MILLISECONDS);
+
+            } else {
+                LOG.error("no cron expression");
+            }
         } else {
-            LOG.error("no cron expression");
+            LOG.warn("Can't schedule scenario: {} - not in IDLE state (actual {})", scenarioById, scenarioById
+                    .getRunState());
         }
     }
 
@@ -265,6 +271,34 @@ public class ScenarioServiceImpl extends RemoteServiceServlet implements Scenari
                                 }
                                 // fire events to start the train by block/signal
                                 fireEvent(scenario);
+
+                                // add listener for last block to determine finished execution
+                                try {
+                                    final ScenarioEndpointFeedbackListener listener =
+                                            new ScenarioEndpointFeedbackListener(scenario) {
+                                                @Override
+                                                protected void scenarioFinished() {
+                                                    try {
+                                                        // remove itself, next run will add a new listener
+                                                        trackBlockRegistry.removeFeedbackListener(deviceManager
+                                                                .getConnectedDevice(),
+                                                                scenario.getEndPoint(), this);
+                                                        scenarioEndpointFeedbackListenerMap.remove(scenario);
+                                                    } catch (DeviceAccessException e) {
+                                                        e.printStackTrace();
+                                                    }
+                                                    scenario.setRunState(RUN_STATE.IDLE);
+                                                    fireEvent(scenario);
+                                                }
+                                            };
+                                    trackBlockRegistry.addFeedbackListener(deviceManager.getConnectedDevice(), scenario
+                                            .getEndPoint(),
+                                            listener);
+                                    scenarioEndpointFeedbackListenerMap.put(scenario, listener);
+                                } catch (DeviceAccessException e) {
+                                    LOG.error("add listener", e);
+                                }
+
                             } else {
                                 LOG.error("train on wrong block to start: {} expected: {}", train.getCurrentBlock(),
                                         startPoint.getStopBlock());
@@ -274,29 +308,7 @@ public class ScenarioServiceImpl extends RemoteServiceServlet implements Scenari
                 } else {
                     LOG.error("train or position unknown: " + scenario.getTrain());
                 }
-                // add listener for last block to determine finished execution
-                try {
-                    final ScenarioEndpointFeedbackListener listener = new ScenarioEndpointFeedbackListener(scenario) {
-                        @Override
-                        protected void scenarioFinished() {
-                            try {
-                                // remove itself, next run will add a new listener
-                                trackBlockRegistry.removeFeedbackListener(deviceManager.getConnectedDevice(),
-                                        scenario.getEndPoint(), this);
-                                scenarioEndpointFeedbackListenerMap.remove(scenario);
-                            } catch (DeviceAccessException e) {
-                                e.printStackTrace();
-                            }
-                            scenario.setRunState(RUN_STATE.IDLE);
-                            fireEvent(scenario);
-                        }
-                    };
-                    trackBlockRegistry.addFeedbackListener(deviceManager.getConnectedDevice(), scenario.getEndPoint(),
-                            listener);
-                    scenarioEndpointFeedbackListenerMap.put(scenario, listener);
-                } catch (DeviceAccessException e) {
-                    LOG.error("add listener", e);
-                }
+
             } else {
                 LOG.error("scenario already running");
                 // TODO error

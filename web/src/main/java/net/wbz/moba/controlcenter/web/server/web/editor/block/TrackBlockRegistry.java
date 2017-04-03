@@ -3,6 +3,7 @@ package net.wbz.moba.controlcenter.web.server.web.editor.block;
 import java.util.Collection;
 import java.util.Map;
 
+import net.wbz.selectrix4java.block.FeedbackBlockModule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -106,8 +107,11 @@ public class TrackBlockRegistry extends AbstractBlockRegistry<TrackBlock> {
     @Override
     public void registerListeners(Device device) throws DeviceAccessException {
         for (Map.Entry<TrackBlock, FeedbackBlockListener> entry : feedbackBlockListeners.entrySet()) {
-            getFeedbackBlockModule(device, getBusAddressIdentifier(entry.getKey().getBlockFunction()))
-                    .addFeedbackBlockListener(entry.getValue());
+            FeedbackBlockModule feedbackBlockModule = getFeedbackBlockModule(device,
+                    getBusAddressIdentifier(entry.getKey().getBlockFunction()));
+            feedbackBlockModule.addFeedbackBlockListener(entry.getValue());
+
+            feedbackBlockModule.requestCurrentFeedbackState();
         }
     }
 
@@ -125,7 +129,9 @@ public class TrackBlockRegistry extends AbstractBlockRegistry<TrackBlock> {
         Train train = getTrainManager().getTrain(trainAddress);
         if (train != null) {
             if (enterBlock) {
-                train.setCurrentBlock(trackBlock);
+                train.addCurrentBlock(trackBlock);
+            } else {
+                train.removeCurrentBlock(trackBlock);
             }
             // update automatic driving level
             DRIVING_LEVEL_ADJUST_TYPE adjustType = trackBlock.getDrivingLevelAdjustType();

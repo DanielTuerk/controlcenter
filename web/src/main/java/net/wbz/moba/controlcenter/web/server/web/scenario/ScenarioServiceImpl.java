@@ -4,25 +4,25 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.NotImplementedException;
-import org.joda.time.DateTime;
+import org.quartz.CronScheduleBuilder;
+import org.quartz.JobBuilder;
+import org.quartz.JobDetail;
+import org.quartz.JobKey;
+import org.quartz.Scheduler;
+import org.quartz.SchedulerException;
+import org.quartz.Trigger;
+import org.quartz.TriggerBuilder;
+import org.quartz.TriggerKey;
+import org.quartz.impl.StdSchedulerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.cronutils.model.CronType;
-import com.cronutils.model.definition.CronDefinitionBuilder;
-import com.cronutils.model.time.ExecutionTime;
-import com.cronutils.parser.CronParser;
 import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
 import com.google.common.base.Strings;
 import com.google.common.collect.Iterables;
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -55,13 +55,14 @@ import net.wbz.selectrix4java.device.DeviceManager;
 @Singleton
 public class ScenarioServiceImpl extends RemoteServiceServlet implements ScenarioService {
 
+    private static final String JOB_SCENARIO_PREFIX = "job-scenario-";
+    private static final String TRIGGER_SCENARIO_PREFIX = "trigger-scenario-";
     private static final Logger LOG = LoggerFactory.getLogger(ScenarioServiceImpl.class);
 
     /**
-     * TODO limit the scenarios to run asynchronous? How much for raspberry?
+     * TODO REMOVE this ugly hack.
      */
-    private static final int SCHEDULER_POOL_SIZE = 10;
-
+    private static ScenarioServiceImpl INSTANCE;
     /**
      * Service to toggle track parts of the track in the scenarios.
      */
@@ -86,20 +87,15 @@ public class ScenarioServiceImpl extends RemoteServiceServlet implements Scenari
     private final Map<Scenario, ScenarioEndpointFeedbackListener> scenarioEndpointFeedbackListenerMap = new HashMap<>();
     private final TrackBlockRegistry trackBlockRegistry;
     private final DeviceManager deviceManager;
-    /**
-     * Parser for the cron value in the {@link Scenario}.
-     * Supports {@link CronType#UNIX} cron syntax only.
-     */
-    private final CronParser cronParser = new CronParser(CronDefinitionBuilder.instanceDefinitionFor(CronType.UNIX));
-    /**
-     * Executor to schedule {@link Scenario} runs.
-     */
-    private final ScheduledExecutorService scheduledExecutorService;
     private final TrainManager trainManager;
     /**
      * Service to control the {@link Train} in the running {@link Scenario}.
      */
     private final TrainService trainService;
+    /**
+     * Scheduler to start {@link Scenario} runs by cron trigger.
+     */
+    private final Scheduler scheduler;
 
     @Inject
     public ScenarioServiceImpl(TrackViewerServiceImpl trackViewerService, ScenarioManager scenarioManager,
@@ -114,10 +110,26 @@ public class ScenarioServiceImpl extends RemoteServiceServlet implements Scenari
         this.trainManager = trainManager;
         this.trainService = trainService;
 
-        ThreadFactory namedThreadFactory = new ThreadFactoryBuilder().setNameFormat("scenario-executor-%d").build();
-        scheduledExecutorService = Executors.newScheduledThreadPool(SCHEDULER_POOL_SIZE, namedThreadFactory);
+        // start the scheduler to trigger scenarios by cron
+        try {
+            scheduler = StdSchedulerFactory.getDefaultScheduler();
+            scheduler.start();
+        } catch (SchedulerException e) {
+            throw new RuntimeException("Can't create scheduler", e);
+        }
 
         addScenarioStateListener(scenarioHistoryService);
+
+        INSTANCE = this;
+    }
+
+    /**
+     * TODO refactor
+     * 
+     * @return
+     */
+    public static ScenarioServiceImpl getInstance() {
+        return INSTANCE;
     }
 
     public void addScenarioStateListener(ScenarioStateListener listener) {
@@ -133,35 +145,40 @@ public class ScenarioServiceImpl extends RemoteServiceServlet implements Scenari
         Scenario scenario = scenarioManager.getScenarioById(scenarioId);
         scenario.setMode(MODE.MANUAL);
 
-        startScenario(scenarioId);
+        startScenario(scenario);
     }
 
     @Override
-    public void schedule(final long scenarioId) {
-        Scenario scenarioById = scenarioManager.getScenarioById(scenarioId);
+    public void schedule(long scenarioId) {
+        final Scenario scenarioById = scenarioManager.getScenarioById(scenarioId);
 
         if (scenarioById.getRunState() == RUN_STATE.IDLE) {
 
             String cron = scenarioById.getCron();
             if (!Strings.isNullOrEmpty(cron)) {
 
-                ExecutionTime executionTime = ExecutionTime.forCron(cronParser.parse(cron));
-                DateTime now = DateTime.now();
-                DateTime nextExecution = executionTime.nextExecution(now);
+                JobDetail job = JobBuilder.newJob(ScheduleScenarioJob.class)
+                        .withIdentity(JobKey.jobKey(JOB_SCENARIO_PREFIX + scenarioId))
+                        .usingJobData("scenario", scenarioId)
+                        .build();
 
-                long millisecondsToNextRun = nextExecution.minus(now.getMillis()).getMillis();
+                Trigger trigger = TriggerBuilder.newTrigger()
+                        .withIdentity(TriggerKey.triggerKey(TRIGGER_SCENARIO_PREFIX + scenarioId))
+                        .withSchedule(CronScheduleBuilder.cronSchedule(cron))
+                        .forJob(job)
+                        .build();
 
                 scenarioById.setRunState(RUN_STATE.IDLE);
                 scenarioById.setMode(MODE.AUTOMATIC);
 
                 fireEvent(scenarioById);
 
-                scheduledExecutorService.scheduleAtFixedRate(new Runnable() {
-                    @Override
-                    public void run() {
-                        startScenario(scenarioId);
-                    }
-                }, millisecondsToNextRun, millisecondsToNextRun, TimeUnit.MILLISECONDS);
+                // Tell quartz to schedule the job using our trigger
+                try {
+                    scheduler.scheduleJob(job, trigger);
+                } catch (SchedulerException e) {
+                    LOG.error("error by schedule job", e);
+                }
 
             } else {
                 LOG.error("no cron expression");
@@ -251,18 +268,41 @@ public class ScenarioServiceImpl extends RemoteServiceServlet implements Scenari
         eventBroadcaster.fireEvent(new ScenarioStateEvent(scenario.getId(), scenario.getRunState()));
     }
 
-    private void startScenario(final long scenarioId) {
+    /**
+     * TODO refactor to job
+     * 
+     * @param scenarioId id of {@link Scenario}
+     */
+    public synchronized void foobarStartScheduledScenario(long scenarioId) {
+        Scenario scenario = scenarioManager.getScenarioById(scenarioId);
+        LOG.info("Start scheduled scenario: {}", scenario);
+        if (scenario.getMode() != MODE.AUTOMATIC) {
+
+            LOG.error("Scenario ({" + scenario + "}) not in {"
+                    + MODE.AUTOMATIC.name() + "} mode to schedule!");
+
+            // stop execution if scenario not anymore in automatic mode
+            String triggerKey = TRIGGER_SCENARIO_PREFIX + scenarioId;
+            try {
+                scheduler.unscheduleJob(TriggerKey.triggerKey(triggerKey));
+            } catch (SchedulerException e) {
+                LOG.error("unschedule job by trigger: " + triggerKey, e);
+            }
+        }
+        startScenario(scenario);
+    }
+
+    private void startScenario(final Scenario scenario) {
         if (deviceManager.isConnected()) {
-            final Scenario scenario = scenarioManager.getScenarioById(scenarioId);
             if (scenario.getRunState() != RUN_STATE.RUNNING) {
                 // reload train, because the DTO is not up to date
                 Train train = trainManager.getTrain(scenario.getTrain().getId());
                 // check train available at start position
-                if (train != null && train.getCurrentBlock() != null) {
+                if (train != null && train.isPresentOnTrack()) {
                     if (scenario.getFirstRouteBlock().isPresent()) {
                         Signal startPoint = scenario.getFirstRouteBlock().get().getStartPoint();
                         if (startPoint != null) {
-                            if (startPoint.getStopBlock().equals(train.getCurrentBlock())) {
+                            if (train.isCurrentlyInBlock(startPoint.getStopBlock())) {
                                 scenario.setRunState(RUN_STATE.RUNNING);
                                 // set the driving direction for the train
                                 if (scenario.getTrainDrivingDirection() != null) {
@@ -300,7 +340,7 @@ public class ScenarioServiceImpl extends RemoteServiceServlet implements Scenari
                                 }
 
                             } else {
-                                LOG.error("train on wrong block to start: {} expected: {}", train.getCurrentBlock(),
+                                LOG.error("train on wrong block to start: {} expected: {}", train.getCurrentBlocks(),
                                         startPoint.getStopBlock());
                             }
                         }
@@ -308,7 +348,6 @@ public class ScenarioServiceImpl extends RemoteServiceServlet implements Scenari
                 } else {
                     LOG.error("train or position unknown: " + scenario.getTrain());
                 }
-
             } else {
                 LOG.error("scenario already running");
                 // TODO error
@@ -319,6 +358,7 @@ public class ScenarioServiceImpl extends RemoteServiceServlet implements Scenari
     private void stopScenario(long scenarioId) {
         LOG.debug("stop scenario: {}", scenarioId);
         Scenario scenario = scenarioManager.getScenarioById(scenarioId);
+        // stop train
         trainService.updateDrivingLevel(scenario.getTrain().getId(), 0);
 
         try {
@@ -371,4 +411,5 @@ public class ScenarioServiceImpl extends RemoteServiceServlet implements Scenari
             return scenario;
         }
     }
+
 }

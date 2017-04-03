@@ -1,8 +1,9 @@
 package net.wbz.moba.controlcenter.web.shared.train;
 
-import com.google.common.base.Objects;
+import java.util.HashSet;
 import java.util.Set;
 
+import com.google.common.base.Objects;
 import com.googlecode.jmapper.annotations.JMap;
 
 import net.wbz.moba.controlcenter.web.shared.track.model.AbstractDto;
@@ -14,14 +15,13 @@ import net.wbz.moba.controlcenter.web.shared.track.model.TrackBlock;
 public class Train extends AbstractDto {
 
     /**
-     * Driving direction of the train.
+     * Set of {@link TrackBlock}s which the train is actual located.
      */
-    public enum DRIVING_DIRECTION {
-        FORWARD, BACKWARD
-    }
+    private final Set<TrackBlock> currentBlocks = new HashSet<>();
 
     @JMap
     private Integer address;
+
     @JMap
     private String name;
 
@@ -31,7 +31,6 @@ public class Train extends AbstractDto {
     private int drivingLevel = 0;
 
     private boolean forward;
-    private TrackBlock currentBlock;
 
     public Integer getAddress() {
         return address;
@@ -77,20 +76,40 @@ public class Train extends AbstractDto {
         this.functions = functions;
     }
 
+    public synchronized void addCurrentBlock(TrackBlock trackBlock) {
+        currentBlocks.add(trackBlock);
+    }
+
+    public synchronized void removeCurrentBlock(TrackBlock trackBlock) {
+        currentBlocks.remove(trackBlock);
+    }
+
+    public boolean isCurrentlyInBlock(TrackBlock trackBlock) {
+        return currentBlocks.contains(trackBlock);
+    }
+
+    public boolean isPresentOnTrack() {
+        return !currentBlocks.isEmpty();
+    }
+
+    public Set<TrackBlock> getCurrentBlocks() {
+        return currentBlocks;
+    }
+
     @Override
     public String toString() {
         return Objects.toStringHelper(this)
-            .add("name", name)
-            .add("address", address)
-                .add("currentBlock", currentBlock)
-            .toString();
+                .add("name", name)
+                .add("address", address)
+                .add("currentBlocks", currentBlocks)
+                .toString();
     }
 
-    public void setCurrentBlock(TrackBlock currentBlock) {
-        this.currentBlock = currentBlock;
+    /**
+     * Driving direction of the train.
+     */
+    public enum DRIVING_DIRECTION {
+        FORWARD, BACKWARD
     }
 
-    public TrackBlock getCurrentBlock() {
-        return currentBlock;
-    }
 }

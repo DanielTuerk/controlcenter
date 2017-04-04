@@ -1,5 +1,6 @@
 package net.wbz.moba.controlcenter.web.server.web.scenario;
 
+import com.google.inject.persist.Transactional;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -41,14 +42,19 @@ public class ScenarioHistoryService implements ScenarioStateListener {
         if (scenarioStartDateTimes.containsKey(scenarioId)) {
             DateTime startDate = scenarioStartDateTimes.get(scenarioId);
             if (scenario.getRunState() == RUN_STATE.IDLE) {
-                ScenarioHistoryEntity entity = new ScenarioHistoryEntity();
-                entity.setScenario(scenarioEntityDataMapper.transformTarget(scenario));
-                entity.setStartDate(DateTime.now());
-                DateTime endDate = DateTime.now();
-                entity.setEndDate(endDate);
-                entity.setElapsedTime(new Interval(startDate, endDate).toDurationMillis());
-                scenarioHistoryDao.create(entity);
+                createHistoryEntry(scenario, startDate);
             }
         }
+    }
+
+    @Transactional
+    private void createHistoryEntry(Scenario scenario, DateTime startDate) {
+        ScenarioHistoryEntity entity = new ScenarioHistoryEntity();
+        entity.setScenario(scenarioEntityDataMapper.transformTarget(scenario));
+        entity.setStartDate(DateTime.now());
+        DateTime endDate = DateTime.now();
+        entity.setEndDate(endDate);
+        entity.setElapsedTime(new Interval(startDate, endDate).toDurationMillis());
+        scenarioHistoryDao.create(entity);
     }
 }

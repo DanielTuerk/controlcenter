@@ -29,7 +29,7 @@ import net.wbz.selectrix4java.device.DeviceAccessException;
  * and to adjust driving levels of trains entering or exiting the blocks.
  * Also the current position of the train is set.
  * 
- * @see Train#setCurrentBlock
+ * @see Train#currentBlocks
  * @author Daniel Tuerk
  */
 @Singleton
@@ -73,23 +73,19 @@ public class TrackBlockRegistry extends AbstractBlockRegistry<TrackBlock> {
                     @Override
                     public void blockOccupied(int blockNr) {
                         if (blockNr == blockFunction.getBit()) {
-                            fireBlockEvent(true, blockNr);
+                            fireBlockEvent(true);
                         }
                     }
 
                     @Override
                     public void blockFreed(int blockNr) {
                         if (blockNr == blockFunction.getBit()) {
-                            fireBlockEvent(false, blockNr);
+                            fireBlockEvent(false);
                         }
                     }
 
-                    private void fireBlockEvent(boolean bitState, int blockNr) {
-                        getEventBroadcaster().fireEvent(new TrackPartBlockEvent(new BusDataConfiguration(
-                                blockFunction.getBus(),
-                                blockFunction.getAddress(),
-                                blockNr,
-                                bitState),
+                    private void fireBlockEvent(boolean bitState) {
+                        getEventBroadcaster().fireEvent(new TrackPartBlockEvent(blockFunction,
                                 bitState ? TrackPartBlockEvent.STATE.USED : TrackPartBlockEvent.STATE.FREE));
                     }
                 });
@@ -110,8 +106,6 @@ public class TrackBlockRegistry extends AbstractBlockRegistry<TrackBlock> {
             FeedbackBlockModule feedbackBlockModule = getFeedbackBlockModule(device,
                     getBusAddressIdentifier(entry.getKey().getBlockFunction()));
             feedbackBlockModule.addFeedbackBlockListener(entry.getValue());
-
-            feedbackBlockModule.requestCurrentFeedbackState();
         }
     }
 

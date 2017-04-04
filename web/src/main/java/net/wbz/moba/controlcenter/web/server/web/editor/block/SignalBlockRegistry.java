@@ -112,9 +112,16 @@ public class SignalBlockRegistry extends AbstractBlockRegistry<Signal> {
             @Override
             public void scenarioStarted(Scenario scenario) {
                 Optional<RouteBlock> firstRouteBlock = scenario.getFirstRouteBlock();
-                if (firstRouteBlock.isPresent()
-                        && firstRouteBlock.get().getStartPoint().getType() == TYPE.EXIT) {
-                    requestDriveForTrainOnExitSignal(scenario.getTrain(), firstRouteBlock.get().getStartPoint());
+                if (firstRouteBlock.isPresent()) {
+                    Signal startPointSignal = firstRouteBlock.get().getStartPoint();
+                    if (startPointSignal.getType() == TYPE.EXIT) {
+                        requestDriveForTrainOnExitSignal(scenario.getTrain(), startPointSignal);
+                    } else {
+                        log.warn("can't request drive for scenario ({}): signal not of type '{}' (signal: {})",
+                                new Object[] { scenario, TYPE.EXIT.name(), startPointSignal });
+                    }
+                } else {
+                    log.warn("can't request drive for scenario ({}): no first route block found");
                 }
             }
 

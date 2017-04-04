@@ -17,7 +17,7 @@ public class Train extends AbstractDto {
     /**
      * Set of {@link TrackBlock}s which the train is actual located.
      */
-    private final Set<TrackBlock> currentBlocks = new HashSet<>();
+    private Set<TrackBlock> currentBlocks = new HashSet<>();
 
     @JMap
     private Integer address;

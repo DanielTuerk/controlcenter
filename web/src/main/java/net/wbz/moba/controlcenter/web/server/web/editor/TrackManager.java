@@ -133,6 +133,9 @@ public class TrackManager {
         } catch (DeviceAccessException e) {
             log.error("can't register signal block listeners to active device", e);
         }
+
+        // init state of all feedback modules
+        device.requestCurrentFeedbackStateOfAllRegisteredFeedbackModules();
     }
 
     private void removeBusAddressListeners(Device device) {
@@ -274,10 +277,14 @@ public class TrackManager {
     private void registerConsumersByConnectedDeviceForTrackParts() {
 
         // unregister existing to create new ones from given track parts
+        Device connectedDevice = null;
         try {
-            removeBusAddressListeners(deviceManager.getConnectedDevice());
+            connectedDevice = deviceManager.getConnectedDevice();
         } catch (DeviceAccessException e) {
             // ignore
+        }
+        if (connectedDevice != null) {
+            removeBusAddressListeners(connectedDevice);
         }
 
         trackBlockRegistry.initBlocks(cachedTrackBlocks);
@@ -306,10 +313,8 @@ public class TrackManager {
         signalBlockRegistry.initBlocks(signals);
 
         // register consumers if an device is already connected
-        try {
-            addBusAddressListeners(deviceManager.getConnectedDevice());
-        } catch (DeviceAccessException e) {
-            // ignore
+        if (connectedDevice != null) {
+            addBusAddressListeners(connectedDevice);
         }
     }
 

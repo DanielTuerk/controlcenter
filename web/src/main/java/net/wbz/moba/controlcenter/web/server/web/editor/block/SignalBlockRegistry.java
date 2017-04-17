@@ -271,13 +271,10 @@ public class SignalBlockRegistry extends AbstractBlockRegistry<Signal> {
         if (iterator.hasNext()) {
             SignalBlock next = iterator.next();
             if (next != null) {
-
-                // search route
+                // search optional route from scenario
                 Optional<Scenario> scenario = scenarioService.getRunningScenarioOfTrain(signalBlock
                         .getWaitingTrain());
-
-                // TODO wie ohne route vorgehen?
-                // TODO hat der monirequest drive on exit signal
+                // submit task to start driving
                 Future<Void> future = taskExecutor
                         .submit(new FreeBlockTask(next, getTrainService(), trackViewerService, scenario,
                                 scenarioService));

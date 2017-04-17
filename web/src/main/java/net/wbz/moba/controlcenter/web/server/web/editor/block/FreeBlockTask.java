@@ -65,6 +65,7 @@ final class FreeBlockTask implements Callable<Void> {
             }
         }
 
+        // start waiting train on signal
         Train train = signalBlock.getWaitingTrain();
         if (train != null) {
             // delay the start of the train

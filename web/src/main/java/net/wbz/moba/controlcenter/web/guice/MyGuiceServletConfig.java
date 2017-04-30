@@ -3,6 +3,7 @@ package net.wbz.moba.controlcenter.web.guice;
 import java.io.File;
 import java.util.Properties;
 
+import com.google.common.base.Strings;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Provides;
@@ -13,12 +14,12 @@ import com.google.inject.persist.jpa.JpaPersistModule;
 import com.google.inject.servlet.GuiceServletContextListener;
 import com.google.inject.servlet.ServletModule;
 
-import net.wbz.moba.controlcenter.web.server.web.scenario.ScenarioEditorServiceImpl;
-import net.wbz.moba.controlcenter.web.server.web.scenario.ScenarioServiceImpl;
 import net.wbz.moba.controlcenter.web.server.web.config.ConfigServiceImpl;
 import net.wbz.moba.controlcenter.web.server.web.constrution.BusServiceImpl;
 import net.wbz.moba.controlcenter.web.server.web.constrution.ConstructionServiceImpl;
 import net.wbz.moba.controlcenter.web.server.web.editor.TrackEditorServiceImpl;
+import net.wbz.moba.controlcenter.web.server.web.scenario.ScenarioEditorServiceImpl;
+import net.wbz.moba.controlcenter.web.server.web.scenario.ScenarioServiceImpl;
 import net.wbz.moba.controlcenter.web.server.web.train.TrainEditorServiceImpl;
 import net.wbz.moba.controlcenter.web.server.web.train.TrainServiceImpl;
 import net.wbz.moba.controlcenter.web.server.web.viewer.TrackViewerServiceImpl;
@@ -33,15 +34,6 @@ import net.wbz.selectrix4java.device.DeviceManager;
  */
 public class MyGuiceServletConfig extends GuiceServletContextListener {
 
-    /**
-     * Key for the persistence unit to use in web app. (also db name and directory name)
-     */
-    private static final String PERSISTENCE_UNIT = "derby_db";
-    /**
-     * Name of the GWT app.
-     */
-    private static final String APP_NAME = "ControlCenterApp";
-
     public static final String SERVICE_BUS = "bus";
     public static final String SERVICE_CONFIG = "config";
     public static final String SERVICE_CONSTRUCTION = "construction";
@@ -51,6 +43,14 @@ public class MyGuiceServletConfig extends GuiceServletContextListener {
     public static final String SERVICE_TRACK_EDITOR = "trackEditor";
     public static final String SERVICE_TRAIN = "train";
     public static final String SERVICE_TRAIN_EDITOR = "trainEditor";
+    /**
+     * Key for the persistence unit to use in web app. (also db name and directory name)
+     */
+    private static final String PERSISTENCE_UNIT = "derby_db";
+    /**
+     * Name of the GWT app.
+     */
+    private static final String APP_NAME = "ControlCenterApp";
 
     @Override
     protected Injector getInjector() {
@@ -80,18 +80,13 @@ public class MyGuiceServletConfig extends GuiceServletContextListener {
                 /*
                  * Database properties for JPA.
                  */
-                Properties properties = new Properties();
-                // derby
-                properties.put("hibernate.connection.driver_class", "org.apache.derby.jdbc.EmbeddedDriver");
-                properties.put("hibernate.dialect", "net.wbz.moba.controlcenter.web.guice.DerbyDialect");
-                // auth
-                properties.put("hibernate.connection.url", "jdbc:derby:" + homePath() + "/data/" + PERSISTENCE_UNIT
-                        + ";create=true");
-                properties.put("hibernate.connection.username", "");
-                properties.put("hibernate.connection.password", "");
-                // common
-                properties.put("hibernate.show_sql", "false");
-                properties.put("hibernate.hbm2ddl.auto", "update");
+                Properties properties;
+                String dbMode = System.getProperty("dbMode");
+                if (!Strings.isNullOrEmpty(dbMode) && dbMode.equalsIgnoreCase("remote")) {
+                    properties = new RemoteDerbyConfiguration().getProperties();
+                } else {
+                    properties = new EmbeddedDerbyConfiguration(homePath(), PERSISTENCE_UNIT).getProperties();
+                }
 
                 /*
                  * Install JPA and delegate all requests by the {@link PersistFilter} to enable transaction
@@ -105,7 +100,6 @@ public class MyGuiceServletConfig extends GuiceServletContextListener {
                 /*
                  * Register the GWT services.
                  */
-
                 serve("/" + APP_NAME + "/" + SERVICE_BUS).with(BusServiceImpl.class);
                 serve("/" + APP_NAME + "/" + SERVICE_CONFIG).with(ConfigServiceImpl.class);
                 serve("/" + APP_NAME + "/" + SERVICE_CONSTRUCTION).with(ConstructionServiceImpl.class);

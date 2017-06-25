@@ -3,8 +3,9 @@
   xmlns:b-gwt="urn:import:org.gwtbootstrap3.client.ui.gwt">
 
   <b:Container fluid="true" ui:field="container">
-    <b-gwt:CellTable ui:field="routeTable" bordered="true" condensed="true" striped="true" hover="true"
-      height="100%" width="90%"/>
+    <b:ButtonGroup dataToggle="BUTTONS" ui:field="radioMode">
+    </b:ButtonGroup>
+
   </b:Container>
 
 </ui:UiBinder>

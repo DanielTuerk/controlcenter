@@ -6,6 +6,7 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
+import net.wbz.moba.controlcenter.web.client.scenario.route.RouteEditPanel;
 import org.gwtbootstrap3.client.ui.PanelBody;
 
 /**

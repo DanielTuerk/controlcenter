@@ -117,4 +117,12 @@ public class ScenarioManager {
     public Collection<Route> getRoutes() {
         return routeDataMapper.transformSource(routeDao.listAll());
     }
+
+    public void updateRoute(Route route) {
+        routeDao.update(routeDataMapper.transformTarget(route));
+    }
+
+    public void createRoute(Route route) {
+        routeDao.create(routeDataMapper.transformTarget(route));
+    }
 }

@@ -1,0 +1,15 @@
+.widget_track_selected_trackparts {
+  background-color: blueviolet;
+}
+
+.widget_track_selected_start {
+  background-color: red;
+}
+
+.widget_track_selected_end {
+  background-color: lightseagreen;
+}
+
+.route-track-legend {
+  float: left;
+}

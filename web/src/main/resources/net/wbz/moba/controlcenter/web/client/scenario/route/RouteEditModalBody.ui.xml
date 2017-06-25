@@ -1,0 +1,78 @@
+<ui:UiBinder xmlns:b="urn:import:org.gwtbootstrap3.client.ui"
+  xmlns:b.html="urn:import:org.gwtbootstrap3.client.ui.html"
+  xmlns:g="urn:import:com.google.gwt.user.client.ui"
+  xmlns:route="urn:import:net.wbz.moba.controlcenter.web.client.scenario.route"
+  xmlns:track="urn:import:net.wbz.moba.controlcenter.web.client.editor.track"
+  xmlns:ui='urn:ui:com.google.gwt.uibinder'
+>
+
+
+  <b:Container fluid="true" height="100%" paddingBottom="20" paddingTop="20">
+
+    <b:Panel>
+      <b:PanelHeader>
+        <b:Heading size="H3" text="Route"/>
+      </b:PanelHeader>
+      <b:PanelBody>
+
+
+        <b:Form type="HORIZONTAL">
+          <b:FieldSet>
+
+            <b:FormGroup>
+              <b:FormLabel addStyleNames="col-lg-2" for="formName">Name</b:FormLabel>
+              <g:FlowPanel addStyleNames="col-lg-10">
+                <b:TextBox ui:field="txtName"/>
+              </g:FlowPanel>
+            </b:FormGroup>
+
+            <b:FormGroup>
+              <b:InlineCheckBox text="Oneway" ui:field="cbxOneway"/>
+            </b:FormGroup>
+
+          </b:FieldSet>
+        </b:Form>
+
+      </b:PanelBody>
+    </b:Panel>
+
+    <b:Panel>
+      <b:PanelHeader>
+        <b:Heading size="H3" text="Blocks"/>
+      </b:PanelHeader>
+      <b:PanelBody>
+        <b:Row>
+          <b:Column size="SM_2">
+
+            <b:Button type="PRIMARY" text="add Block" icon="PLUS" ui:field="btnCreateRouteBlock"/>
+
+            <b:NavPills stacked="true" ui:field="navRouteBlocks">
+            </b:NavPills>
+
+          </b:Column>
+          <b:Column size="SM_10">
+
+            <b:Row>
+              <b:Column size="SM_9">
+                <route:RouteEditTrackToolbar ui:field="trackToolbar"/>
+              </b:Column>
+              <b:Column size="SM_3">
+                <b.html:UnorderedList inline="true" ui:field="legend">
+                </b.html:UnorderedList>
+              </b:Column>
+            </b:Row>
+
+            <g:ScrollPanel height="400px">
+              <track:SimpleTrackPanel ui:field="trackPanel"/>
+            </g:ScrollPanel>
+
+            <b:Button type="DANGER" icon="TRASH" text="Delete Route Block" ui:field="btnDeleteRouteBlock"/>
+          </b:Column>
+        </b:Row>
+      </b:PanelBody>
+    </b:Panel>
+
+
+  </b:Container>
+
+</ui:UiBinder>

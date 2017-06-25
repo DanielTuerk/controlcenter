@@ -1,19 +1,24 @@
-package net.wbz.moba.controlcenter.web.client.scenario;
+package net.wbz.moba.controlcenter.web.client.scenario.route;
 
 import java.util.ArrayList;
 import java.util.Collection;
 
-import net.wbz.moba.controlcenter.web.shared.scenario.Station;
-import net.wbz.moba.controlcenter.web.shared.scenario.StationRail;
 import org.gwtbootstrap3.client.ui.Container;
 import org.gwtbootstrap3.client.ui.Pagination;
+import org.gwtbootstrap3.client.ui.constants.ButtonType;
+import org.gwtbootstrap3.client.ui.constants.IconType;
 import org.gwtbootstrap3.client.ui.constants.PaginationSize;
+import org.gwtbootstrap3.client.ui.gwt.ButtonCell;
 import org.gwtbootstrap3.client.ui.gwt.CellTable;
 
 import com.google.common.collect.Lists;
+import com.google.gwt.cell.client.FieldUpdater;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.SimplePager;
 import com.google.gwt.user.cellview.client.TextColumn;
 import com.google.gwt.user.client.ui.Composite;
@@ -26,6 +31,8 @@ import net.wbz.moba.controlcenter.web.client.RequestUtils;
 import net.wbz.moba.controlcenter.web.shared.scenario.Route;
 import net.wbz.moba.controlcenter.web.shared.scenario.RouteBlock;
 import net.wbz.moba.controlcenter.web.shared.scenario.RouteBlockPart;
+import net.wbz.moba.controlcenter.web.shared.scenario.Station;
+import net.wbz.moba.controlcenter.web.shared.scenario.StationRail;
 
 /**
  * @author Daniel Tuerk
@@ -42,6 +49,7 @@ public class RouteEditPanel extends Composite {
     private SimplePager simplePager = new SimplePager();
     private Pagination pagination = new Pagination(PaginationSize.SMALL);
     private ListDataProvider<Route> dataProvider = new ListDataProvider<>();
+    private Collection<Station> stations = new ArrayList<>();
 
     public RouteEditPanel() {
         initWidget(uiBinder.createAndBindUi(this));
@@ -102,6 +110,20 @@ public class RouteEditPanel extends Composite {
                 return sb.toString();
             }
         }, "Blocks");
+        final Column<Route, String> colEdit = new Column<Route, String>(new ButtonCell(ButtonType.DEFAULT,
+                IconType.EDIT)) {
+            @Override
+            public String getValue(Route object) {
+                return "";
+            }
+        };
+        colEdit.setFieldUpdater(new FieldUpdater<Route, String>() {
+            @Override
+            public void update(int index, Route object, String value) {
+                showEdit(object);
+            }
+        });
+        routeTable.addColumn(colEdit, "Edit");
 
         container.add(pagination);
 
@@ -119,7 +141,16 @@ public class RouteEditPanel extends Composite {
         dataProvider.addDataDisplay(routeTable);
     }
 
-    private Collection<Station> stations = new ArrayList<>();
+    @UiHandler("btnCreateRoute")
+    void onClick(ClickEvent ignored) {
+        Route route = new Route();
+        route.setRouteBlocks(new ArrayList<RouteBlock>());
+        showEdit(route);
+    }
+
+    private void showEdit(Route route) {
+        new RouteEditModal(route).show();
+    }
 
     @Override
     protected void onLoad() {
@@ -132,7 +163,7 @@ public class RouteEditPanel extends Composite {
                         stations.clear();
                         stations.addAll(result);
 
-        loadRoutes();
+                        loadRoutes();
                     }
                 });
     }

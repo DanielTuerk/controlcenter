@@ -128,7 +128,7 @@ public class ScenarioEditPanel extends Composite {
                 showEdit(object);
             }
         });
-        scenarioTable.addColumn(colEdit, "Delete");
+        scenarioTable.addColumn(colEdit, "Edit");
         final Column<Scenario, String> colDelete = new Column<Scenario, String>(new ButtonCell(ButtonType.DANGER,
                 IconType.TRASH)) {
             @Override
@@ -142,7 +142,7 @@ public class ScenarioEditPanel extends Composite {
                 showDelete(object);
             }
         });
-        scenarioTable.addColumn(colDelete, "Edit");
+        scenarioTable.addColumn(colDelete, "Delete");
 
         container.add(pagination);
 

@@ -72,4 +72,14 @@ public class ScenarioEditorServiceImpl extends RemoteServiceServlet implements S
     public Collection<Route> getRoutes() {
         return scenarioManager.getRoutes();
     }
+
+    @Override
+    public void createRoute(Route route) {
+        scenarioManager.createRoute(route);
+    }
+
+    @Override
+    public void updateRoute(Route route) {
+        scenarioManager.updateRoute(route);
+    }
 }

@@ -1,0 +1,14 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+  xmlns:b="urn:import:org.gwtbootstrap3.client.ui" xmlns:g="urn:import:com.google.gwt.user.client.ui"
+  xmlns:select="urn:import:org.gwtbootstrap3.extras.select.client.ui">
+
+  <b:Panel>
+    <b:PanelBody>
+      <b:Label ui:field="name"></b:Label>
+      <b:Button type="PRIMARY" icon="ARROW_UP" ui:field="btnMoveUp"/>
+      <b:Button type="PRIMARY" icon="ARROW_DOWN" ui:field="btnMoveDown"/>
+      <b:Button type="PRIMARY" icon="TRASH" ui:field="btnDelete"/>
+    </b:PanelBody>
+  </b:Panel>
+
+</ui:UiBinder>

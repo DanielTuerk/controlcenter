@@ -9,16 +9,25 @@ import org.slf4j.LoggerFactory;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import com.google.inject.persist.Transactional;
 
+import net.wbz.moba.controlcenter.web.server.EventBroadcaster;
+import net.wbz.moba.controlcenter.web.server.persist.scenario.RouteBlockDao;
+import net.wbz.moba.controlcenter.web.server.persist.scenario.RouteBlockPartEntity;
 import net.wbz.moba.controlcenter.web.server.persist.scenario.RouteDao;
 import net.wbz.moba.controlcenter.web.server.persist.scenario.RouteEntity;
+import net.wbz.moba.controlcenter.web.server.persist.scenario.RouteSequenceDao;
+import net.wbz.moba.controlcenter.web.server.persist.scenario.RouteSequenceEntity;
 import net.wbz.moba.controlcenter.web.server.persist.scenario.ScenarioDao;
 import net.wbz.moba.controlcenter.web.server.persist.scenario.ScenarioEntity;
 import net.wbz.moba.controlcenter.web.server.persist.scenario.StationDao;
 import net.wbz.moba.controlcenter.web.server.persist.scenario.StationEntity;
 import net.wbz.moba.controlcenter.web.server.web.DataMapper;
 import net.wbz.moba.controlcenter.web.shared.scenario.Route;
+import net.wbz.moba.controlcenter.web.shared.scenario.RouteBlockPart;
+import net.wbz.moba.controlcenter.web.shared.scenario.RouteSequence;
 import net.wbz.moba.controlcenter.web.shared.scenario.Scenario;
+import net.wbz.moba.controlcenter.web.shared.scenario.ScenariosChangedEvent;
 import net.wbz.moba.controlcenter.web.shared.scenario.Station;
 
 /**
@@ -40,16 +49,29 @@ public class ScenarioManager {
             StationEntity.class);
     private final DataMapper<Route, RouteEntity> routeDataMapper = new DataMapper<>(Route.class,
             RouteEntity.class);
+    private final DataMapper<RouteBlockPart, RouteBlockPartEntity> routeBlockDataMapper = new DataMapper<>(
+            RouteBlockPart.class,
+            RouteBlockPartEntity.class);
+    private final DataMapper<RouteSequence, RouteSequenceEntity> routeSequenceDataMapper = new DataMapper<>(
+            RouteSequence.class,
+            RouteSequenceEntity.class);
 
     private final ScenarioDao scenarioDao;
     private final StationDao stationDao;
     private final RouteDao routeDao;
+    private final RouteBlockDao routeBlockDao;
+    private final RouteSequenceDao routeSequenceDao;
+    private final EventBroadcaster eventBroadcaster;
 
     @Inject
-    public ScenarioManager(ScenarioDao scenarioDao, StationDao stationDao, RouteDao routeDao) {
+    public ScenarioManager(ScenarioDao scenarioDao, StationDao stationDao, RouteDao routeDao,
+            RouteBlockDao routeBlockDao, RouteSequenceDao routeSequenceDao, EventBroadcaster eventBroadcaster) {
         this.scenarioDao = scenarioDao;
         this.stationDao = stationDao;
         this.routeDao = routeDao;
+        this.routeBlockDao = routeBlockDao;
+        this.routeSequenceDao = routeSequenceDao;
+        this.eventBroadcaster = eventBroadcaster;
     }
 
     private void loadScenariosFromDatabase() {
@@ -78,8 +100,15 @@ public class ScenarioManager {
         throw new RuntimeException(String.format("no scenario found for id: %d", scenarioId));
     }
 
+    @Transactional
     public ScenarioEntity createScenario(Scenario scenario) {
-        return scenarioDao.create(dataMapper.transformTarget(scenario));
+        ScenarioEntity transformedEntity = dataMapper.transformTarget(scenario);
+        createOrUpdateRouteSequences(scenario.getRouteSequences(), transformedEntity);
+
+        ScenarioEntity createdEntity = scenarioDao.create(transformedEntity);
+        loadScenariosFromDatabase();
+        fireScenariosChanged();
+        return createdEntity;
     }
 
     /**
@@ -87,9 +116,11 @@ public class ScenarioManager {
      *
      * @param scenarioId id of {@link Scenario} to delete
      */
+    @Transactional
     public void deleteScenario(long scenarioId) {
         scenarioDao.delete(scenarioDao.findById(scenarioId));
         loadScenariosFromDatabase();
+        fireScenariosChanged();
     }
 
     /**
@@ -97,19 +128,32 @@ public class ScenarioManager {
      *
      * @param scenario {@link Scenario} to update in database
      */
+    @Transactional
     public void updateScenario(Scenario scenario) {
-        scenarioDao.update(dataMapper.transformTarget(scenario));
+        ScenarioEntity scenarioEntity = dataMapper.transformTarget(scenario);
+
+        createOrUpdateRouteSequences(scenario.getRouteSequences(), scenarioEntity);
+
+        scenarioDao.update(scenarioEntity);
         loadScenariosFromDatabase();
+        fireScenariosChanged();
     }
 
+    private void fireScenariosChanged() {
+        eventBroadcaster.fireEvent(new ScenariosChangedEvent());
+    }
+
+    @Transactional
     public void createStation(Station station) {
         stationDao.create(stationDataMapper.transformTarget(station));
     }
 
+    @Transactional
     public void updateStation(Station station) {
         stationDao.update(stationDataMapper.transformTarget(station));
     }
 
+    @Transactional
     public void deleteStation(long stationId) {
         stationDao.delete(stationDao.findById(stationId));
     }
@@ -118,11 +162,43 @@ public class ScenarioManager {
         return routeDataMapper.transformSource(routeDao.listAll());
     }
 
+    @Transactional
     public void updateRoute(Route route) {
-        routeDao.update(routeDataMapper.transformTarget(route));
+        RouteEntity entity = routeDataMapper.transformTarget(route);
+        routeDao.update(entity);
+        createOrUpdateRouteBlocks(route.getRouteBlockParts(), entity);
     }
 
+    @Transactional
     public void createRoute(Route route) {
-        routeDao.create(routeDataMapper.transformTarget(route));
+        RouteEntity entity = routeDataMapper.transformTarget(route);
+        routeDao.create(entity);
+        createOrUpdateRouteBlocks(route.getRouteBlockParts(), entity);
+    }
+
+    private void createOrUpdateRouteBlocks(List<RouteBlockPart> routeBlockParts, RouteEntity route) {
+        for (RouteBlockPart routeBlockPart : routeBlockParts) {
+            RouteBlockPartEntity entity = routeBlockDataMapper.transformTarget(routeBlockPart);
+            entity.setRoute(route);
+            if (routeBlockPart.getId() == null) {
+                routeBlockDao.create(entity);
+            } else {
+                routeBlockDao.update(entity);
+            }
+        }
+        routeBlockDao.flush();
+    }
+
+    private void createOrUpdateRouteSequences(List<RouteSequence> routeSequences, ScenarioEntity scenarioEntity) {
+        for (RouteSequence routeBlockPart : routeSequences) {
+            RouteSequenceEntity routeEntity = routeSequenceDataMapper.transformTarget(routeBlockPart);
+            routeEntity.setScenario(scenarioEntity);
+            if (routeBlockPart.getId() == null) {
+                routeSequenceDao.create(routeEntity);
+            } else {
+                routeSequenceDao.update(routeEntity);
+            }
+        }
+        routeSequenceDao.flush();
     }
 }

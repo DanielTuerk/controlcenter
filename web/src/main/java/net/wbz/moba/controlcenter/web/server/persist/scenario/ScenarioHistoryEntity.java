@@ -9,6 +9,8 @@ import org.joda.time.DateTime;
 import net.wbz.moba.controlcenter.web.server.persist.AbstractEntity;
 
 /**
+ * TODO refactor to routes from RouteSequenceEntity to be able to track the time also for intersections.
+ *
  * @author Daniel Tuerk
  */
 @Entity(name = "SCENARIO_HISTORY")

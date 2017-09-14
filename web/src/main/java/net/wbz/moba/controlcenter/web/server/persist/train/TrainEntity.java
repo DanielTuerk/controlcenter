@@ -28,7 +28,7 @@ public class TrainEntity extends AbstractEntity {
     private String name;
 
     @JMap
-    @OneToMany(cascade = { CascadeType.ALL }, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "train", cascade = { CascadeType.ALL }, fetch = FetchType.LAZY)
     private Set<TrainFunctionEntity> functions;
 
     public TrainEntity() {

@@ -17,16 +17,16 @@ import net.wbz.moba.controlcenter.web.server.persist.AbstractDao;
  * @author Daniel Tuerk
  */
 @Singleton
-public class RouteDao extends AbstractDao<RouteEntity> {
-    private static final Logger LOG = LoggerFactory.getLogger(RouteDao.class);
+public class RouteSequenceDao extends AbstractDao<RouteSequenceEntity> {
+    private static final Logger LOG = LoggerFactory.getLogger(RouteSequenceDao.class);
 
     @Inject
-    public RouteDao(Provider<EntityManager> entityManager) {
-        super(entityManager, RouteEntity.class);
+    public RouteSequenceDao(Provider<EntityManager> entityManager) {
+        super(entityManager, RouteSequenceEntity.class);
     }
 
-    public List<RouteEntity> listAll() {
-        return getEntityManager().createQuery("SELECT x FROM SCENARIO_ROUTE x ORDER BY x.name", RouteEntity.class)
+    public List<RouteSequenceEntity> listAll() {
+        return getEntityManager().createQuery("SELECT x FROM SCENARIO_SEQUENCE x", RouteSequenceEntity.class)
                 .getResultList();
     }
 

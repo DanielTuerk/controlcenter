@@ -1,5 +1,6 @@
 package net.wbz.moba.controlcenter.web.shared.track.model;
 
+import com.google.common.base.Objects;
 import com.google.common.base.Strings;
 import com.googlecode.jmapper.annotations.JMap;
 
@@ -119,4 +120,25 @@ public class TrackBlock extends AbstractDto {
                 + ")";
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        if (!super.equals(o)) {
+            return false;
+        }
+        TrackBlock that = (TrackBlock) o;
+        return Objects.equal(blockFunction, that.blockFunction) &&
+                Objects.equal(construction, that.construction) &&
+                Objects.equal(name, that.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(super.hashCode(), blockFunction, construction, name);
+    }
 }

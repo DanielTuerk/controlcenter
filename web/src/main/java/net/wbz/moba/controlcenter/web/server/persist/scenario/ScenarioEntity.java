@@ -2,8 +2,10 @@ package net.wbz.moba.controlcenter.web.server.persist.scenario;
 
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
@@ -35,21 +37,27 @@ public class ScenarioEntity extends AbstractEntity {
     @ManyToOne
     private TrainEntity train;
 
+    /**
+     * Driving direction to set for the train at scenario start on the route.
+     */
     @JMap
     @Column
     private Train.DRIVING_DIRECTION trainDrivingDirection;
+
+    /**
+     * Driving level to start the train for scenario start on the route.
+     */
+    @JMap
+    @Column
+    private Integer startDrivingLevel;
 
     /**
      * Route to drive from start to end station.
      * TODO: interstations aren't supported yet
      */
     @JMap
-    @OneToMany(mappedBy = "scenario")
+    @OneToMany(mappedBy = "scenario", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<RouteSequenceEntity> routeSequences;
-
-    @JMap
-    @Column
-    private Integer startDrivingLevel;
 
     public String getName() {
         return name;

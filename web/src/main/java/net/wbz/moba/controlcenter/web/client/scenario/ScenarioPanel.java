@@ -1,8 +1,12 @@
 package net.wbz.moba.controlcenter.web.client.scenario;
 
+import de.novanic.eventservice.client.event.Event;
+import de.novanic.eventservice.client.event.listener.RemoteEventListener;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import net.wbz.moba.controlcenter.web.client.EventReceiver;
+import net.wbz.moba.controlcenter.web.shared.scenario.ScenariosChangedEvent;
 import org.gwtbootstrap3.client.ui.Container;
 import org.gwtbootstrap3.client.ui.Pagination;
 import org.gwtbootstrap3.client.ui.constants.ButtonType;
@@ -33,12 +37,11 @@ import net.wbz.moba.controlcenter.web.shared.scenario.Route;
 import net.wbz.moba.controlcenter.web.shared.scenario.RouteSequence;
 import net.wbz.moba.controlcenter.web.shared.scenario.Scenario;
 import net.wbz.moba.controlcenter.web.shared.scenario.Station;
-import net.wbz.moba.controlcenter.web.shared.scenario.StationRail;
 
 /**
  * @author Daniel Tuerk
  */
-public class ScenarioEditPanel extends Composite {
+public class ScenarioPanel extends Composite {
 
     private static Binder uiBinder = GWT.create(Binder.class);
     @UiField
@@ -49,9 +52,19 @@ public class ScenarioEditPanel extends Composite {
     private Pagination pagination = new Pagination(PaginationSize.SMALL);
     private ListDataProvider<Scenario> dataProvider = new ListDataProvider<>();
     private Collection<Station> stations = new ArrayList<>();
+    private final RemoteEventListener scenarioEventListener;
 
-    public ScenarioEditPanel() {
+    public ScenarioPanel() {
         initWidget(uiBinder.createAndBindUi(this));
+
+        scenarioEventListener = new RemoteEventListener() {
+            @Override
+            public void apply(Event anEvent) {
+                if (anEvent instanceof ScenariosChangedEvent) {
+                    loadScenarios();
+                }
+            }
+        };
 
         scenarioTable.addColumn(new TextColumn<Scenario>() {
             @Override
@@ -103,9 +116,9 @@ public class ScenarioEditPanel extends Composite {
                         Route route = routeSequence.getRoute();
                         if (route != null) {
                             sb.append("from: ");
-                            sb.append(getStationRailDisplayName(route.getStartStationRail()));
+                            sb.append(route.getStart().getDisplayValue());
                             sb.append(" to: ");
-                            sb.append(getStationRailDisplayName(route.getEndStationRail()));
+                            sb.append(route.getEnd().getDisplayValue());
                             sb.append("\n");
                         }
                     }
@@ -161,20 +174,22 @@ public class ScenarioEditPanel extends Composite {
 
     }
 
-    private String getStationRailDisplayName(StationRail stationRail) {
-        for (Station station : stations) {
-            for (StationRail rail : station.getRails()) {
-                if (rail.equals(stationRail)) {
-                    return String.valueOf(station.getName() + " - " + rail.getRailNumber());
-                }
-            }
-        }
-        return "";
-    }
+    // private String getStationRailDisplayName(StationRail stationRail) {
+    // for (Station station : stations) {
+    // for (StationRail rail : station.getRails()) {
+    // if (rail.equals(stationRail)) {
+    // return String.valueOf(station.getName() + " - " + rail.getRailNumber());
+    // }
+    // }
+    // }
+    // return "";
+    // }
 
     @Override
     protected void onLoad() {
         super.onLoad();
+
+        EventReceiver.getInstance().addListener(ScenariosChangedEvent.class, scenarioEventListener);
 
         RequestUtils.getInstance().getScenarioEditorService().getStations(
                 new OnlySuccessAsyncCallback<Collection<Station>>() {
@@ -186,6 +201,12 @@ public class ScenarioEditPanel extends Composite {
                         loadScenarios();
                     }
                 });
+    }
+
+    @Override
+    protected void onUnload() {
+        super.onUnload();
+        EventReceiver.getInstance().removeListener(ScenariosChangedEvent.class, scenarioEventListener);
     }
 
     private void showDelete(final Scenario scenario) {
@@ -222,7 +243,7 @@ public class ScenarioEditPanel extends Composite {
         new ScenarioEditModal(scenario).show();
     }
 
-    interface Binder extends UiBinder<Widget, ScenarioEditPanel> {
+    interface Binder extends UiBinder<Widget, ScenarioPanel> {
     }
 
 }

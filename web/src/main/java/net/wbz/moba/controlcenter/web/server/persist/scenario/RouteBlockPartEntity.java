@@ -15,6 +15,9 @@ import net.wbz.moba.controlcenter.web.server.persist.construction.track.SwitchEn
 @Entity(name = "SCENARIO_ROUTE_BLOCK_PART")
 public class RouteBlockPartEntity extends AbstractEntity {
 
+    @ManyToOne
+    private RouteEntity route;
+
     /**
      * Switch for the route.
      * TODO refactor to abstract parts which have toggle functions
@@ -29,17 +32,6 @@ public class RouteBlockPartEntity extends AbstractEntity {
     @JMap
     @Column(columnDefinition = "int default 1", nullable = false)
     private boolean state;
-
-    @ManyToOne
-    private RouteBlockEntity routeBlock;
-
-    public RouteBlockEntity getRouteBlock() {
-        return routeBlock;
-    }
-
-    public void setRouteBlock(RouteBlockEntity routeBlock) {
-        this.routeBlock = routeBlock;
-    }
 
     public SwitchEntity getSwitchTrackPart() {
         return switchTrackPart;
@@ -56,5 +48,13 @@ public class RouteBlockPartEntity extends AbstractEntity {
 
     public void setState(boolean state) {
         this.state = state;
+    }
+
+    public RouteEntity getRoute() {
+        return route;
+    }
+
+    public void setRoute(RouteEntity route) {
+        this.route = route;
     }
 }

@@ -4,14 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.gwtbootstrap3.client.ui.Button;
-import org.gwtbootstrap3.client.ui.InputGroup;
-import org.gwtbootstrap3.client.ui.InputGroupButton;
-import org.gwtbootstrap3.client.ui.TextBox;
-
 import com.google.common.collect.Maps;
-import com.google.gwt.dom.client.Style;
-import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.FlowPanel;
 
 import de.novanic.eventservice.client.event.Event;
@@ -21,37 +14,42 @@ import net.wbz.moba.controlcenter.web.shared.AbstractStateEvent;
 import net.wbz.moba.controlcenter.web.shared.train.TrainDataChangedEvent;
 
 /**
- * Created by Daniel on 08.03.14.
+ * Abstract viewer panel for the items.
+ *
+ * @author Daniel Tuerk
  */
-abstract public class AbstractItemViewerPanel<ItemPanel extends AbstractItemPanel, EventType extends AbstractStateEvent>
+abstract public class AbstractItemViewerPanel<ItemPanel extends AbstractItemPanel, EventType extends AbstractStateEvent, DataEventType extends Event>
         extends FlowPanel {
 
     private final Map<Long, ItemPanel> itemPanelByIdMap = Maps.newHashMap();
     private final FlowPanel itemsContainerPanel = new FlowPanel();
-    private final Map<Class<EventType>, RemoteEventListener> eventListeners = new HashMap<>();
+    private final Map<Class<? extends EventType>, RemoteEventListener> eventListeners = new HashMap<>();
 
-    private RemoteEventListener trainDataChangedEventListener;
+    private RemoteEventListener dataChangeEventListener;
 
     public AbstractItemViewerPanel() {
 
         addStyleName("contentPanel");
 
-        InputGroup inputCreate = new InputGroup();
-        inputCreate.getElement().getStyle().setPaddingBottom(10, Style.Unit.PX);
-        final TextBox txtName = new TextBox();
-        inputCreate.add(txtName);
-        InputGroupButton groupButton = new InputGroupButton();
-        Button btnNew = new Button("new");
-        btnNew.addClickHandler(getBtnNewClickHandler(txtName));
-        groupButton.add(btnNew);
-        inputCreate.add(groupButton);
+        addContent();
 
-        add(inputCreate);
+        registerItemEventListeners();
 
-        // TODO: scrollable container
-        add(itemsContainerPanel);
+        registerDataListener();
 
-        for (Class<EventType> stateEventClass : getStateEventClasses()) {
+    }
+
+    private void registerDataListener() {
+        dataChangeEventListener = new RemoteEventListener() {
+            @Override
+            public void apply(Event event) {
+                loadData();
+            }
+        };
+    }
+
+    private void registerItemEventListeners() {
+        for (Class<? extends EventType> stateEventClass : getStateEventClasses()) {
             eventListeners.put(stateEventClass, new RemoteEventListener() {
                 public void apply(Event anEvent) {
                     // TODO
@@ -66,26 +64,26 @@ abstract public class AbstractItemViewerPanel<ItemPanel extends AbstractItemPane
                 }
             });
         }
-        trainDataChangedEventListener = new RemoteEventListener() {
-            @Override
-            public void apply(Event event) {
-                loadData();
-            }
-        };
-
     }
 
-    abstract protected List<Class<EventType>> getStateEventClasses();
+    protected void addContent() {
 
-    abstract protected ClickHandler getBtnNewClickHandler(TextBox name);
+        // TODO: scrollable container
+        add(itemsContainerPanel);
+    }
+
+    abstract protected List<Class<? extends EventType>> getStateEventClasses();
+
+    abstract protected Class<DataEventType> getDataEventClass();
 
     @Override
     protected void onLoad() {
         super.onLoad();
 
-        EventReceiver.getInstance().addListener(TrainDataChangedEvent.class, trainDataChangedEventListener);
+        EventReceiver.getInstance().addListener(getDataEventClass(), dataChangeEventListener);
 
-        for (Map.Entry<Class<EventType>, RemoteEventListener> eventListenerEntry : eventListeners.entrySet()) {
+        for (Map.Entry<Class<? extends EventType>, RemoteEventListener> eventListenerEntry : eventListeners
+                .entrySet()) {
             EventReceiver.getInstance().addListener(eventListenerEntry.getKey(), eventListenerEntry.getValue());
         }
 
@@ -105,11 +103,12 @@ abstract public class AbstractItemViewerPanel<ItemPanel extends AbstractItemPane
     protected void onUnload() {
         super.onUnload();
 
-        for (Map.Entry<Class<EventType>, RemoteEventListener> eventListenerEntry : eventListeners.entrySet()) {
+        for (Map.Entry<Class<? extends EventType>, RemoteEventListener> eventListenerEntry : eventListeners
+                .entrySet()) {
             EventReceiver.getInstance().removeListener(eventListenerEntry.getKey(), eventListenerEntry.getValue());
         }
 
-        EventReceiver.getInstance().removeListener(TrainDataChangedEvent.class, trainDataChangedEventListener);
+        EventReceiver.getInstance().removeListener(TrainDataChangedEvent.class, dataChangeEventListener);
 
         resetItems();
     }

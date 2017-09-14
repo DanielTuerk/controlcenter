@@ -4,38 +4,31 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.gwtbootstrap3.client.ui.TextBox;
-
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
-
 import net.wbz.moba.controlcenter.web.client.Callbacks.OnlySuccessAsyncCallback;
 import net.wbz.moba.controlcenter.web.client.RequestUtils;
 import net.wbz.moba.controlcenter.web.client.viewer.controls.AbstractItemViewerPanel;
 import net.wbz.moba.controlcenter.web.shared.scenario.Scenario;
 import net.wbz.moba.controlcenter.web.shared.scenario.ScenarioStateEvent;
+import net.wbz.moba.controlcenter.web.shared.scenario.ScenariosChangedEvent;
 
 /**
- * TODO: reload trains for configuration changes
- * Created by Daniel on 08.03.14.
+ * Viewer for the {@link Scenario}s.
+ * 
+ * @author Daniel Tuerk
  */
-public class ScenarioViewerPanel extends AbstractItemViewerPanel<ScenarioItemPanel, ScenarioStateEvent> {
+public class ScenarioViewerPanel extends
+        AbstractItemViewerPanel<ScenarioItemPanel, ScenarioStateEvent, ScenariosChangedEvent> {
 
     @Override
-    protected List<Class<ScenarioStateEvent>> getStateEventClasses() {
-        List<Class<ScenarioStateEvent>> classes = new ArrayList<>();
+    protected List<Class<? extends ScenarioStateEvent>> getStateEventClasses() {
+        List<Class<? extends ScenarioStateEvent>> classes = new ArrayList<>();
         classes.add(ScenarioStateEvent.class);
         return classes;
     }
 
     @Override
-    protected ClickHandler getBtnNewClickHandler(final TextBox name) {
-        // TODO only for train
-        return new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-            }
-        };
+    protected Class<ScenariosChangedEvent> getDataEventClass() {
+        return ScenariosChangedEvent.class;
     }
 
     @Override

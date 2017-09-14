@@ -12,6 +12,8 @@ public class RouteSequence extends AbstractDto {
     private int position;
     @JMap
     private Route route;
+    @JMap
+    private int endDelayInSeconds;
 
     public RouteSequence() {
     }
@@ -30,5 +32,13 @@ public class RouteSequence extends AbstractDto {
 
     public void setRoute(Route route) {
         this.route = route;
+    }
+
+    public int getEndDelayInSeconds() {
+        return endDelayInSeconds;
+    }
+
+    public void setEndDelayInSeconds(int endDelayInSeconds) {
+        this.endDelayInSeconds = endDelayInSeconds;
     }
 }

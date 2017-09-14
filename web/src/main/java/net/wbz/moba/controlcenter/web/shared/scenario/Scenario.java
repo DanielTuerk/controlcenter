@@ -1,12 +1,11 @@
 package net.wbz.moba.controlcenter.web.shared.scenario;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import com.google.common.base.Optional;
 import com.googlecode.jmapper.annotations.JMap;
 
 import net.wbz.moba.controlcenter.web.shared.track.model.AbstractDto;
-import net.wbz.moba.controlcenter.web.shared.track.model.Signal;
 import net.wbz.moba.controlcenter.web.shared.track.model.TrackBlock;
 import net.wbz.moba.controlcenter.web.shared.train.Train;
 
@@ -27,19 +26,13 @@ public class Scenario extends AbstractDto {
      */
     @JMap
     private Train train;
-
     @JMap
     private Train.DRIVING_DIRECTION trainDrivingDirection;
-    /**
-     * Route to drive from start to end station.
-     * TODO: interstations aren't supported yet
-     */
+    @JMap
+    private Integer startDrivingLevel;
 
     @JMap
     private List<RouteSequence> routeSequences;
-
-    @JMap
-    private Integer startDrivingLevel;
 
     private RUN_STATE runState = RUN_STATE.IDLE;
 
@@ -70,7 +63,7 @@ public class Scenario extends AbstractDto {
     }
 
     public List<RouteSequence> getRouteSequences() {
-        return routeSequences;
+        return routeSequences != null ? routeSequences : new ArrayList<RouteSequence>();
     }
 
     public void setRouteSequences(List<RouteSequence> routeSequences) {
@@ -109,39 +102,20 @@ public class Scenario extends AbstractDto {
         this.startDrivingLevel = startDrivingLevel;
     }
 
-    /**
-     * TODO obsolete by getFirstRouteBlock ?
-     * 
-     * @param signal
-     * @return
-     */
-    public Optional<RouteBlock> getRouteBlockForStartSignal(Signal signal) {
-        for (RouteSequence routeSequence : routeSequences) {
-            if (routeSequence.getRoute() != null) {
-                for (RouteBlock routeBlock : routeSequence.getRoute().getRouteBlocks()) {
-                    if (routeBlock.getStartPoint().equals(signal)) {
-                        return Optional.of(routeBlock);
-                    }
-                }
-            }
-        }
-        return Optional.absent();
-    }
-
-    /**
-     * Get the first {@link RouteBlock} of the scenario.
-     *
-     * @return {@link Optional} of {@link RouteBlock}
-     */
-    public Optional<RouteBlock> getFirstRouteBlock() {
-        if (!routeSequences.isEmpty()) {
-            Route route = routeSequences.get(0).getRoute();
-            if (route != null) {
-                return route.getFirstRouteBlock();
-            }
-        }
-        return Optional.absent();
-    }
+    // /**
+    // * Get the first {@link RouteBlock} of the scenario.
+    // *
+    // * @return {@link Optional} of {@link RouteBlock}
+    // */
+    // public Optional<RouteBlockPart> getFirstRouteBlock() {
+    // if (!routeSequences.isEmpty()) {
+    // Route route = routeSequences.get(0).getRoute();
+    // if (route != null) {
+    // return route.getFirstRouteBlock();
+    // }
+    // }
+    // return Optional.absent();
+    // }
 
     /**
      * Return the {@link TrackBlock} which is the endpoint of the scenario.
@@ -152,13 +126,7 @@ public class Scenario extends AbstractDto {
         if (!routeSequences.isEmpty()) {
             Route route = routeSequences.get(routeSequences.size() - 1).getRoute();
             if (route != null) {
-                Optional<RouteBlock> lastRouteBlock = route.getLastRouteBlock();
-                if (lastRouteBlock.isPresent()) {
-                    TrackBlock endPoint = lastRouteBlock.get().getEndPoint();
-                    if (endPoint != null) {
-                        return endPoint;
-                    }
-                }
+                return route.getEnd();
             }
         }
         throw new RuntimeException("scenario has no valid endpoint");

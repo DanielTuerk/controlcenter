@@ -6,6 +6,7 @@ import com.google.common.base.Optional;
 import com.googlecode.jmapper.annotations.JMap;
 
 import net.wbz.moba.controlcenter.web.shared.track.model.AbstractDto;
+import net.wbz.moba.controlcenter.web.shared.track.model.TrackBlock;
 
 /**
  * @author Daniel Tuerk
@@ -16,15 +17,15 @@ public class Route extends AbstractDto {
     private String name;
 
     @JMap
-    private StationRail startStationRail;
+    private TrackBlock start;
     @JMap
-    private StationRail endStationRail;
+    private TrackBlock end;
 
     @JMap
     private Boolean oneway;
 
     @JMap
-    private List<RouteBlock> routeBlocks;
+    private List<RouteBlockPart> routeBlockParts;
 
     public String getName() {
         return name;
@@ -34,20 +35,20 @@ public class Route extends AbstractDto {
         this.name = name;
     }
 
-    public StationRail getStartStationRail() {
-        return startStationRail;
+    public TrackBlock getStart() {
+        return start;
     }
 
-    public void setStartStationRail(StationRail startStationRail) {
-        this.startStationRail = startStationRail;
+    public void setStart(TrackBlock start) {
+        this.start = start;
     }
 
-    public StationRail getEndStationRail() {
-        return endStationRail;
+    public TrackBlock getEnd() {
+        return end;
     }
 
-    public void setEndStationRail(StationRail endStationRail) {
-        this.endStationRail = endStationRail;
+    public void setEnd(TrackBlock end) {
+        this.end = end;
     }
 
     public Boolean getOneway() {
@@ -58,30 +59,26 @@ public class Route extends AbstractDto {
         this.oneway = oneway;
     }
 
-    public List<RouteBlock> getRouteBlocks() {
-        return routeBlocks;
+    public List<RouteBlockPart> getRouteBlockParts() {
+        return routeBlockParts;
     }
 
-    public void setRouteBlocks(List<RouteBlock> routeBlocks) {
-        this.routeBlocks = routeBlocks;
+    public void setRouteBlockParts(List<RouteBlockPart> routeBlockParts) {
+        this.routeBlockParts = routeBlockParts;
     }
 
-    public Optional<RouteBlock> getFirstRouteBlock() {
-        if (routeBlocks.isEmpty()) {
-            return Optional.absent();
-        }
-        return Optional.of(routeBlocks.get(0));
-    }
+    // public Optional<RouteBlockPart> getFirstRouteBlock() {
+    // if (routeBlockParts.isEmpty()) {
+    // return Optional.absent();
+    // }
+    // return Optional.of(routeBlockParts.get(0));
+    // }
+    //
+    // public Optional<RouteBlockPart> getLastRouteBlock() {
+    // if (routeBlockParts.isEmpty()) {
+    // return Optional.absent();
+    // }
+    // return Optional.of(routeBlockParts.get(routeBlockParts.size() - 1));
+    // }
 
-    public Optional<RouteBlock> getLastRouteBlock() {
-        if (routeBlocks.isEmpty()) {
-            return Optional.absent();
-        }
-        return Optional.of(routeBlocks.get(routeBlocks.size() - 1));
-    }
-
-    public String getStationRailDisplayName(StationRail stationRail) {
-        return String.valueOf(stationRail != null ? stationRail.getRailNumber()
-                : "");
-    }
 }

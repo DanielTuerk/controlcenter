@@ -2,7 +2,6 @@
   xmlns:b.html="urn:import:org.gwtbootstrap3.client.ui.html"
   xmlns:g="urn:import:com.google.gwt.user.client.ui"
   xmlns:route="urn:import:net.wbz.moba.controlcenter.web.client.scenario.route"
-  xmlns:track="urn:import:net.wbz.moba.controlcenter.web.client.editor.track"
   xmlns:ui='urn:ui:com.google.gwt.uibinder'
 >
 
@@ -42,33 +41,17 @@
       </b:PanelHeader>
       <b:PanelBody>
         <b:Row>
-          <b:Column size="SM_2">
-
-            <b:Button type="PRIMARY" text="add Block" icon="PLUS" ui:field="btnCreateRouteBlock"/>
-
-            <b:NavPills stacked="true" ui:field="navRouteBlocks">
-            </b:NavPills>
-
+          <b:Column size="SM_9">
+            <route:RouteEditTrackToolbar ui:field="trackToolbar"/>
           </b:Column>
-          <b:Column size="SM_10">
-
-            <b:Row>
-              <b:Column size="SM_9">
-                <route:RouteEditTrackToolbar ui:field="trackToolbar"/>
-              </b:Column>
-              <b:Column size="SM_3">
-                <b.html:UnorderedList inline="true" ui:field="legend">
-                </b.html:UnorderedList>
-              </b:Column>
-            </b:Row>
-
-            <g:ScrollPanel height="400px">
-              <track:SimpleTrackPanel ui:field="trackPanel"/>
-            </g:ScrollPanel>
-
-            <b:Button type="DANGER" icon="TRASH" text="Delete Route Block" ui:field="btnDeleteRouteBlock"/>
+          <b:Column size="SM_3">
+            <b.html:UnorderedList inline="true" ui:field="legend">
+            </b.html:UnorderedList>
           </b:Column>
         </b:Row>
+
+        <g:ScrollPanel height="400px" ui:field="trackPanelContainer">
+        </g:ScrollPanel>
       </b:PanelBody>
     </b:Panel>
 

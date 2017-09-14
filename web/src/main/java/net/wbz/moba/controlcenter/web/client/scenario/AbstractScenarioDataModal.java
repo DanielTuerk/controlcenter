@@ -2,13 +2,16 @@ package net.wbz.moba.controlcenter.web.client.scenario;
 
 import com.google.gwt.user.client.ui.IsWidget;
 
+import com.google.inject.Inject;
+import net.wbz.moba.controlcenter.web.client.RequestUtils;
 import net.wbz.moba.controlcenter.web.client.components.AbstractEditModal;
+import net.wbz.moba.controlcenter.web.server.web.scenario.ScenarioManager;
 import net.wbz.moba.controlcenter.web.shared.scenario.Scenario;
 
 /**
  * @author Daniel Tuerk
  */
-class AbstractScenarioDataModal extends AbstractEditModal<Scenario> {
+abstract class AbstractScenarioDataModal extends AbstractEditModal<Scenario> {
 
     private ScenarioEditModalBody editModalBody;
 
@@ -29,7 +32,9 @@ class AbstractScenarioDataModal extends AbstractEditModal<Scenario> {
 
     @Override
     protected void onConfirm(Scenario model) {
-        editModalBody.getUpdatedModel();
+        saveScenario(editModalBody.getUpdatedModel());
         hide();
     }
+
+    protected abstract void saveScenario(Scenario scenario);
 }

@@ -32,7 +32,6 @@ import net.wbz.moba.controlcenter.web.server.web.editor.block.TrackBlockRegistry
 import net.wbz.moba.controlcenter.web.server.web.train.TrainManager;
 import net.wbz.moba.controlcenter.web.server.web.train.TrainServiceImpl;
 import net.wbz.moba.controlcenter.web.server.web.viewer.TrackViewerServiceImpl;
-import net.wbz.moba.controlcenter.web.shared.scenario.RouteBlock;
 import net.wbz.moba.controlcenter.web.shared.scenario.RouteBlockPart;
 import net.wbz.moba.controlcenter.web.shared.scenario.Scenario;
 import net.wbz.moba.controlcenter.web.shared.scenario.Scenario.MODE;
@@ -210,21 +209,23 @@ public class ScenarioServiceImpl extends RemoteServiceServlet implements Scenari
      * @param signal current {@link Signal}
      */
     public void updateTrack(Scenario scenario, Signal signal) {
-        LOG.debug("update the track for scenario {} with start signal: {}", scenario, signal);
-        Optional<RouteBlock> routeBlockOptional = scenario.getRouteBlockForStartSignal(signal);
-        if (routeBlockOptional.isPresent()) {
-            Map<BusDataConfiguration, Boolean> trackPartStates = new HashMap<>();
-
-            RouteBlock routeBlock = routeBlockOptional.get();
-            for (RouteBlockPart routeBlockPart : routeBlock.getRouteBlockParts()) {
-                if (routeBlockPart.getSwitchTrackPart() != null && routeBlockPart.getSwitchTrackPart()
-                        .getToggleFunction() != null) {
-                    trackPartStates.put(routeBlockPart.getSwitchTrackPart().getToggleFunction(), routeBlockPart
-                            .isState());
-                }
-            }
-            trackViewerRequest.toggleTrackParts(trackPartStates);
-        }
+        throw new NotImplementedException("");
+        // TODO
+        // LOG.debug("update the track for scenario {} with start signal: {}", scenario, signal);
+        // Optional<RouteBlock> routeBlockOptional = scenario.getRouteBlockForStartSignal(signal);
+        // if (routeBlockOptional.isPresent()) {
+        // Map<BusDataConfiguration, Boolean> trackPartStates = new HashMap<>();
+        //
+        // RouteBlock routeBlock = routeBlockOptional.get();
+        // for (RouteBlockPart routeBlockPart : routeBlock.getRouteBlockParts()) {
+        // if (routeBlockPart.getSwitchTrackPart() != null && routeBlockPart.getSwitchTrackPart()
+        // .getToggleFunction() != null) {
+        // trackPartStates.put(routeBlockPart.getSwitchTrackPart().getToggleFunction(), routeBlockPart
+        // .isState());
+        // }
+        // }
+        // trackViewerRequest.toggleTrackParts(trackPartStates);
+        // }
     }
 
     /**
@@ -293,66 +294,68 @@ public class ScenarioServiceImpl extends RemoteServiceServlet implements Scenari
     }
 
     private void startScenario(final Scenario scenario) {
-        if (deviceManager.isConnected()) {
-            if (scenario.getRunState() != RUN_STATE.RUNNING) {
-                // reload train, because the DTO is not up to date
-                Train train = trainManager.getTrain(scenario.getTrain().getId());
-                // check train available at start position
-                if (train != null && train.isPresentOnTrack()) {
-                    if (scenario.getFirstRouteBlock().isPresent()) {
-                        Signal startPoint = scenario.getFirstRouteBlock().get().getStartPoint();
-                        if (startPoint != null) {
-                            if (train.isCurrentlyInBlock(startPoint.getStopBlock())) {
-                                scenario.setRunState(RUN_STATE.RUNNING);
-                                // set the driving direction for the train
-                                if (scenario.getTrainDrivingDirection() != null) {
-                                    trainService.toggleDrivingDirection(train.getId(),
-                                            scenario.getTrainDrivingDirection() == Train.DRIVING_DIRECTION.FORWARD);
-                                }
-                                // fire events to start the train by block/signal
-                                fireEvent(scenario);
-
-                                // add listener for last block to determine finished execution
-                                try {
-                                    final ScenarioEndpointFeedbackListener listener =
-                                            new ScenarioEndpointFeedbackListener(scenario) {
-                                                @Override
-                                                protected void scenarioFinished() {
-                                                    try {
-                                                        // remove itself, next run will add a new listener
-                                                        trackBlockRegistry.removeFeedbackListener(deviceManager
-                                                                .getConnectedDevice(),
-                                                                scenario.getEndPoint(), this);
-                                                        scenarioEndpointFeedbackListenerMap.remove(scenario);
-                                                    } catch (DeviceAccessException e) {
-                                                        e.printStackTrace();
-                                                    }
-                                                    scenario.setRunState(RUN_STATE.IDLE);
-                                                    fireEvent(scenario);
-                                                }
-                                            };
-                                    trackBlockRegistry.addFeedbackListener(deviceManager.getConnectedDevice(), scenario
-                                            .getEndPoint(),
-                                            listener);
-                                    scenarioEndpointFeedbackListenerMap.put(scenario, listener);
-                                } catch (DeviceAccessException e) {
-                                    LOG.error("add listener", e);
-                                }
-
-                            } else {
-                                LOG.error("train on wrong block to start: {} expected: {}", train.getCurrentBlocks(),
-                                        startPoint.getStopBlock());
-                            }
-                        }
-                    }
-                } else {
-                    LOG.error("train or position unknown: " + scenario.getTrain());
-                }
-            } else {
-                LOG.error("scenario already running");
-                // TODO error
-            }
-        }
+        throw new NotImplementedException();
+        // TODO
+        // if (deviceManager.isConnected()) {
+        // if (scenario.getRunState() != RUN_STATE.RUNNING) {
+        // // reload train, because the DTO is not up to date
+        // Train train = trainManager.getTrain(scenario.getTrain().getId());
+        // // check train available at start position
+        // if (train != null && train.isPresentOnTrack()) {
+        // if (scenario.getFirstRouteBlock().isPresent()) {
+        // Signal startPoint = scenario.getFirstRouteBlock().get().getStartPoint();
+        // if (startPoint != null) {
+        // if (train.isCurrentlyInBlock(startPoint.getStopBlock())) {
+        // scenario.setRunState(RUN_STATE.RUNNING);
+        // // set the driving direction for the train
+        // if (scenario.getTrainDrivingDirection() != null) {
+        // trainService.toggleDrivingDirection(train.getId(),
+        // scenario.getTrainDrivingDirection() == Train.DRIVING_DIRECTION.FORWARD);
+        // }
+        // // fire events to start the train by block/signal
+        // fireEvent(scenario);
+        //
+        // // add listener for last block to determine finished execution
+        // try {
+        // final ScenarioEndpointFeedbackListener listener =
+        // new ScenarioEndpointFeedbackListener(scenario) {
+        // @Override
+        // protected void scenarioFinished() {
+        // try {
+        // // remove itself, next run will add a new listener
+        // trackBlockRegistry.removeFeedbackListener(deviceManager
+        // .getConnectedDevice(),
+        // scenario.getEndPoint(), this);
+        // scenarioEndpointFeedbackListenerMap.remove(scenario);
+        // } catch (DeviceAccessException e) {
+        // e.printStackTrace();
+        // }
+        // scenario.setRunState(RUN_STATE.IDLE);
+        // fireEvent(scenario);
+        // }
+        // };
+        // trackBlockRegistry.addFeedbackListener(deviceManager.getConnectedDevice(), scenario
+        // .getEndPoint(),
+        // listener);
+        // scenarioEndpointFeedbackListenerMap.put(scenario, listener);
+        // } catch (DeviceAccessException e) {
+        // LOG.error("add listener", e);
+        // }
+        //
+        // } else {
+        // LOG.error("train on wrong block to start: {} expected: {}", train.getCurrentBlocks(),
+        // startPoint.getStopBlock());
+        // }
+        // }
+        // }
+        // } else {
+        // LOG.error("train or position unknown: " + scenario.getTrain());
+        // }
+        // } else {
+        // LOG.error("scenario already running");
+        // // TODO error
+        // }
+        // }
     }
 
     private void stopScenario(long scenarioId) {

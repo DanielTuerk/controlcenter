@@ -8,7 +8,7 @@
           <b:PanelHeader>
             <b:Heading size="H4" text="Scenario"/>
           </b:PanelHeader>
-          <b:PanelBody ui:field="scenarioEditBody">
+          <b:PanelBody ui:field="scenarioBody">
           </b:PanelBody>
         </b:Panel>
       </b:Column>
@@ -20,7 +20,7 @@
           <b:PanelHeader>
             <b:Heading size="H4" text="Stations"/>
           </b:PanelHeader>
-          <b:PanelBody ui:field="stationEditBody">
+          <b:PanelBody ui:field="stationBody">
           </b:PanelBody>
         </b:Panel>
       </b:Column>
@@ -31,7 +31,7 @@
           <b:PanelHeader>
             <b:Heading size="H4" text="Route"/>
           </b:PanelHeader>
-          <b:PanelBody ui:field="routeEditBody">
+          <b:PanelBody ui:field="routeBody">
           </b:PanelBody>
         </b:Panel>
       </b:Column>

@@ -28,7 +28,18 @@ public class TrainFunctionEntity extends AbstractEntity {
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private BusDataConfigurationEntity configuration;
 
+    @ManyToOne
+    private TrainEntity train;
+
     public TrainFunctionEntity() {
+    }
+
+    public TrainEntity getTrain() {
+        return train;
+    }
+
+    public void setTrain(TrainEntity train) {
+        this.train = train;
     }
 
     public BusDataConfigurationEntity getConfiguration() {

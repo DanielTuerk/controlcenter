@@ -30,7 +30,6 @@ import net.wbz.moba.controlcenter.web.server.web.scenario.ScenarioStateListener;
 import net.wbz.moba.controlcenter.web.server.web.train.TrainManager;
 import net.wbz.moba.controlcenter.web.server.web.train.TrainServiceImpl;
 import net.wbz.moba.controlcenter.web.server.web.viewer.TrackViewerServiceImpl;
-import net.wbz.moba.controlcenter.web.shared.scenario.RouteBlock;
 import net.wbz.moba.controlcenter.web.shared.scenario.Scenario;
 import net.wbz.moba.controlcenter.web.shared.track.model.BusDataConfiguration;
 import net.wbz.moba.controlcenter.web.shared.track.model.Signal;
@@ -108,28 +107,29 @@ public class SignalBlockRegistry extends AbstractBlockRegistry<Signal> {
         // TODO shutdown
         taskExecutor = Executors.newSingleThreadExecutor(namedThreadFactory);
 
-        scenarioService.addScenarioStateListener(new ScenarioStateListener() {
-            @Override
-            public void scenarioStarted(Scenario scenario) {
-                Optional<RouteBlock> firstRouteBlock = scenario.getFirstRouteBlock();
-                if (firstRouteBlock.isPresent()) {
-                    Signal startPointSignal = firstRouteBlock.get().getStartPoint();
-                    if (startPointSignal.getType() == TYPE.EXIT) {
-                        requestDriveForTrainOnExitSignal(scenario.getTrain(), startPointSignal);
-                    } else {
-                        log.warn("can't request drive for scenario ({}): signal not of type '{}' (signal: {})",
-                                new Object[] { scenario, TYPE.EXIT.name(), startPointSignal });
-                    }
-                } else {
-                    log.warn("can't request drive for scenario ({}): no first route block found");
-                }
-            }
-
-            @Override
-            public void scenarioStopped(Scenario scenario) {
-
-            }
-        });
+        // TODO
+        // scenarioService.addScenarioStateListener(new ScenarioStateListener() {
+        // @Override
+        // public void scenarioStarted(Scenario scenario) {
+        // Optional<RouteBlock> firstRouteBlock = scenario.getFirstRouteBlock();
+        // if (firstRouteBlock.isPresent()) {
+        // Signal startPointSignal = firstRouteBlock.get().getStartPoint();
+        // if (startPointSignal.getType() == TYPE.EXIT) {
+        // requestDriveForTrainOnExitSignal(scenario.getTrain(), startPointSignal);
+        // } else {
+        // log.warn("can't request drive for scenario ({}): signal not of type '{}' (signal: {})",
+        // new Object[] { scenario, TYPE.EXIT.name(), startPointSignal });
+        // }
+        // } else {
+        // log.warn("can't request drive for scenario ({}): no first route block found");
+        // }
+        // }
+        //
+        // @Override
+        // public void scenarioStopped(Scenario scenario) {
+        //
+        // }
+        // });
     }
 
     @Override

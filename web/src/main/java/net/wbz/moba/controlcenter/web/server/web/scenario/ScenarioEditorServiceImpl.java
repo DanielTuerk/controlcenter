@@ -9,9 +9,11 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
+import net.wbz.moba.controlcenter.web.server.EventBroadcaster;
 import net.wbz.moba.controlcenter.web.shared.scenario.Route;
 import net.wbz.moba.controlcenter.web.shared.scenario.Scenario;
 import net.wbz.moba.controlcenter.web.shared.scenario.ScenarioEditorService;
+import net.wbz.moba.controlcenter.web.shared.scenario.ScenariosChangedEvent;
 import net.wbz.moba.controlcenter.web.shared.scenario.Station;
 
 /**
@@ -23,9 +25,15 @@ public class ScenarioEditorServiceImpl extends RemoteServiceServlet implements S
 
     private final ScenarioManager scenarioManager;
 
+    /**
+     * Broadcaster for client side event handling of state changes.
+     */
+    private final EventBroadcaster eventBroadcaster;
+
     @Inject
-    public ScenarioEditorServiceImpl(ScenarioManager scenarioManager) {
+    public ScenarioEditorServiceImpl(ScenarioManager scenarioManager, EventBroadcaster eventBroadcaster) {
         this.scenarioManager = scenarioManager;
+        this.eventBroadcaster = eventBroadcaster;
     }
 
     @Override
@@ -76,10 +84,16 @@ public class ScenarioEditorServiceImpl extends RemoteServiceServlet implements S
     @Override
     public void createRoute(Route route) {
         scenarioManager.createRoute(route);
+        fireChangeEvent();
     }
 
     @Override
     public void updateRoute(Route route) {
         scenarioManager.updateRoute(route);
+        fireChangeEvent();
+    }
+
+    private void fireChangeEvent() {
+        eventBroadcaster.fireEvent(new ScenariosChangedEvent());
     }
 }

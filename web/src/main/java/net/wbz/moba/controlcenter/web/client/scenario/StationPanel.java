@@ -23,13 +23,16 @@ import net.wbz.moba.controlcenter.web.shared.scenario.Station;
 import net.wbz.moba.controlcenter.web.shared.scenario.StationRail;
 
 /**
+ * TODO edit
+ * TODO change event
+ *
  * @author Daniel Tuerk
  */
-public class StationEditPanel extends Composite {
+public class StationPanel extends Composite {
 
     private static Binder uiBinder = GWT.create(Binder.class);
 
-    interface Binder extends UiBinder<Widget, StationEditPanel> {
+    interface Binder extends UiBinder<Widget, StationPanel> {
     }
 
     @UiField
@@ -37,7 +40,7 @@ public class StationEditPanel extends Composite {
     @UiField
     ListGroup stationsList;
 
-    public StationEditPanel() {
+    public StationPanel() {
         initWidget(uiBinder.createAndBindUi(this));
     }
 

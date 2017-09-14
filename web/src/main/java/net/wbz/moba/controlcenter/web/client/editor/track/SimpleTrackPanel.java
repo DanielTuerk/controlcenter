@@ -58,8 +58,16 @@ public class SimpleTrackPanel extends AbstractTrackPanel {
                             add(initTrackWidget(trackWidget), trackPosition.getLeft(), trackPosition.getTop());
                         }
                         Log.info("load track done " + new Date().toString());
+                        trackLoaded();
                     }
                 });
+    }
+
+    /**
+     * Track was successfully loaded and initialize.
+     * Override to add custom action after loading.
+     */
+    protected void trackLoaded() {
     }
 
     public List<AbstractSvgTrackWidget> getTrackParts() {

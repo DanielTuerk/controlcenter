@@ -6,28 +6,41 @@ import javax.persistence.ManyToOne;
 
 import com.googlecode.jmapper.annotations.JMap;
 
-import javax.persistence.OneToMany;
 import net.wbz.moba.controlcenter.web.server.persist.AbstractEntity;
-import net.wbz.moba.controlcenter.web.shared.scenario.Scenario;
 
 /**
  * @author Daniel Tuerk
  */
-@Entity(name = "SCENARIO_ROUTE_SEQUENCE")
+@Entity(name = "SCENARIO_SEQUENCE")
 public class RouteSequenceEntity extends AbstractEntity {
 
     @JMap
     @Column
     private int position;
 
+    @ManyToOne
+    private ScenarioEntity scenario;
+
     @JMap
     @ManyToOne
     private RouteEntity route;
 
-    @ManyToOne
-    private ScenarioEntity scenario;
+    /**
+     * Seconds to wait after the train arrived on the end block of the route.
+     */
+    @JMap
+    @Column
+    private int endDelayInSeconds;
 
     public RouteSequenceEntity() {
+    }
+
+    public ScenarioEntity getScenario() {
+        return scenario;
+    }
+
+    public void setScenario(ScenarioEntity scenario) {
+        this.scenario = scenario;
     }
 
     public int getPosition() {
@@ -46,11 +59,11 @@ public class RouteSequenceEntity extends AbstractEntity {
         this.route = route;
     }
 
-    public ScenarioEntity getScenario() {
-        return scenario;
+    public int getEndDelayInSeconds() {
+        return endDelayInSeconds;
     }
 
-    public void setScenario(ScenarioEntity scenario) {
-        this.scenario = scenario;
+    public void setEndDelayInSeconds(int endDelayInSeconds) {
+        this.endDelayInSeconds = endDelayInSeconds;
     }
 }

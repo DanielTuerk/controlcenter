@@ -17,7 +17,7 @@ import net.wbz.moba.controlcenter.web.shared.track.model.AbstractDto;
 /**
  * @author Daniel Tuerk
  */
-abstract public class AbstractEditModal<T extends AbstractDto> extends Modal {
+abstract public class AbstractEditModal<T> extends Modal {
 
     private final ModalBody modalBody;
     private final ModalFooter modalFooter;

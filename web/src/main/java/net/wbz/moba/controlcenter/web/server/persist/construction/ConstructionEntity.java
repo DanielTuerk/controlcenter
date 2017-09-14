@@ -22,7 +22,7 @@ public class ConstructionEntity extends AbstractEntity {
     @Column
     private String name;
 
-    @OneToMany(fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "construction", fetch = FetchType.LAZY)
     private List<AbstractTrackPartEntity> trackPartEntities;
 
     public String getName() {

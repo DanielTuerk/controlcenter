@@ -26,52 +26,66 @@ import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.ListDataProvider;
 import com.google.gwt.view.client.RangeChangeEvent;
 
+import de.novanic.eventservice.client.event.Event;
+import de.novanic.eventservice.client.event.listener.RemoteEventListener;
 import net.wbz.moba.controlcenter.web.client.Callbacks.OnlySuccessAsyncCallback;
+import net.wbz.moba.controlcenter.web.client.EventReceiver;
 import net.wbz.moba.controlcenter.web.client.RequestUtils;
 import net.wbz.moba.controlcenter.web.shared.scenario.Route;
-import net.wbz.moba.controlcenter.web.shared.scenario.RouteBlock;
 import net.wbz.moba.controlcenter.web.shared.scenario.RouteBlockPart;
+import net.wbz.moba.controlcenter.web.shared.scenario.ScenariosChangedEvent;
 import net.wbz.moba.controlcenter.web.shared.scenario.Station;
 import net.wbz.moba.controlcenter.web.shared.scenario.StationRail;
 
 /**
  * @author Daniel Tuerk
  */
-public class RouteEditPanel extends Composite {
+public class RoutePanel extends Composite {
 
     private static Binder uiBinder = GWT.create(Binder.class);
-
+    private final RemoteEventListener scenarioEventListener;
     @UiField
     Container container;
     @UiField
     CellTable<Route> routeTable;
-
     private SimplePager simplePager = new SimplePager();
     private Pagination pagination = new Pagination(PaginationSize.SMALL);
     private ListDataProvider<Route> dataProvider = new ListDataProvider<>();
     private Collection<Station> stations = new ArrayList<>();
 
-    public RouteEditPanel() {
+    public RoutePanel() {
         initWidget(uiBinder.createAndBindUi(this));
 
-        routeTable.addColumn(new TextColumn<Route>() {
+        scenarioEventListener = new RemoteEventListener() {
+            @Override
+            public void apply(Event anEvent) {
+                if (anEvent instanceof ScenariosChangedEvent) {
+                    loadRoutes();
+                }
+            }
+        };
+
+        TextColumn<Route> colName = new TextColumn<Route>() {
             @Override
             public String getValue(Route object) {
                 return object.getName();
             }
-        }, "Name");
-        routeTable.addColumn(new TextColumn<Route>() {
+        };
+        routeTable.addColumn(colName, "Name");
+        TextColumn<Route> colStart = new TextColumn<Route>() {
             @Override
             public String getValue(Route route) {
-                return getStationRailDisplayName(route.getStartStationRail());
+                return route.getStart().getDisplayValue();
             }
-        }, "Start");
-        routeTable.addColumn(new TextColumn<Route>() {
+        };
+        routeTable.addColumn(colStart, "Start");
+        TextColumn<Route> colEnd = new TextColumn<Route>() {
             @Override
             public String getValue(Route route) {
-                return getStationRailDisplayName(route.getEndStationRail());
+                return route.getEnd().getDisplayValue();
             }
-        }, "End");
+        };
+        routeTable.addColumn(colEnd, "End");
         routeTable.addColumn(new TextColumn<Route>() {
             @Override
             public String getValue(Route route) {
@@ -79,37 +93,6 @@ public class RouteEditPanel extends Composite {
             }
         }, "Oneway");
 
-        routeTable.addColumn(new TextColumn<Route>() {
-            @Override
-            public String getValue(Route route) {
-                StringBuilder sb = new StringBuilder();
-                if (route.getRouteBlocks() != null) {
-                    for (RouteBlock routeBlock : route.getRouteBlocks()) {
-                        if (routeBlock != null) {
-                            sb.append("pos: ")
-                                    .append(routeBlock.getPosition())
-                                    .append("start: ")
-                                    .append(routeBlock.getStartPoint() != null ? routeBlock.getStartPoint()
-                                            .getStopBlock().getDisplayValue() : "")
-                                    .append(" end: ")
-                                    .append(routeBlock.getEndPoint() != null ? routeBlock.getEndPoint()
-                                            .getDisplayValue() : "")
-                                    .append("\n");
-                            if (routeBlock.getRouteBlockParts() != null) {
-                                sb.append("blocks: ").append("\n");
-                                for (RouteBlockPart blockPart : routeBlock.getRouteBlockParts()) {
-                                    sb.append("pos: ")
-                                            .append(blockPart.getSwitchTrackPart().getToggleFunction())
-                                            .append(" state: ").append(blockPart.isState());
-                                }
-
-                            }
-                        }
-                    }
-                }
-                return sb.toString();
-            }
-        }, "Blocks");
         final Column<Route, String> colEdit = new Column<Route, String>(new ButtonCell(ButtonType.DEFAULT,
                 IconType.EDIT)) {
             @Override
@@ -144,7 +127,7 @@ public class RouteEditPanel extends Composite {
     @UiHandler("btnCreateRoute")
     void onClick(ClickEvent ignored) {
         Route route = new Route();
-        route.setRouteBlocks(new ArrayList<RouteBlock>());
+        route.setRouteBlockParts(new ArrayList<RouteBlockPart>());
         showEdit(route);
     }
 
@@ -156,6 +139,8 @@ public class RouteEditPanel extends Composite {
     protected void onLoad() {
         super.onLoad();
 
+        EventReceiver.getInstance().addListener(ScenariosChangedEvent.class, scenarioEventListener);
+
         RequestUtils.getInstance().getScenarioEditorService().getStations(
                 new OnlySuccessAsyncCallback<Collection<Station>>() {
                     @Override
@@ -166,6 +151,12 @@ public class RouteEditPanel extends Composite {
                         loadRoutes();
                     }
                 });
+    }
+
+    @Override
+    protected void onUnload() {
+        super.onUnload();
+        EventReceiver.getInstance().removeListener(ScenariosChangedEvent.class, scenarioEventListener);
     }
 
     private String getStationRailDisplayName(StationRail stationRail) {
@@ -192,6 +183,6 @@ public class RouteEditPanel extends Composite {
                 });
     }
 
-    interface Binder extends UiBinder<Widget, RouteEditPanel> {
+    interface Binder extends UiBinder<Widget, RoutePanel> {
     }
 }

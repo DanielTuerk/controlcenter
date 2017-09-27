@@ -56,7 +56,7 @@ public class ScenarioEntity extends AbstractEntity {
      * TODO: interstations aren't supported yet
      */
     @JMap
-    @OneToMany(mappedBy = "scenario", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "scenario", fetch = FetchType.EAGER)
     private List<RouteSequenceEntity> routeSequences;
 
     public String getName() {

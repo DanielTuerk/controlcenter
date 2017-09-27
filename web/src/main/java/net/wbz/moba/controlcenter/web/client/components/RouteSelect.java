@@ -11,7 +11,7 @@ import net.wbz.moba.controlcenter.web.shared.scenario.Route;
  * 
  * @author Daniel Tuerk
  */
-public class RouteSelect extends AbstractSelect<Route> {
+public class RouteSelect extends AbstractLoadableSelect<Route> {
 
     @Override
     protected String getKey(Route object) {

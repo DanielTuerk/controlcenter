@@ -9,12 +9,9 @@ import org.gwtbootstrap3.extras.select.client.ui.Select;
 
 import com.google.common.base.Optional;
 
-import net.wbz.moba.controlcenter.web.client.Callbacks.OnlySuccessAsyncCallback;
-
 /**
  * Select component for the model parameter.
- * Loading the choices by service call of implementation.
- * 
+ *
  * @author Daniel Tuerk
  */
 abstract public class AbstractSelect<T> extends Select {
@@ -32,14 +29,7 @@ abstract public class AbstractSelect<T> extends Select {
     @Override
     protected void onLoad() {
         super.onLoad();
-
-        loadChoices(new OnlySuccessAsyncCallback<Collection<T>>() {
-            @Override
-            public void onSuccess(Collection<T> result) {
-                initOptions(result);
-            }
-        });
-
+        initOptions(getChoices());
     }
 
     /**
@@ -69,11 +59,11 @@ abstract public class AbstractSelect<T> extends Select {
     abstract protected String getKey(T object);
 
     /**
-     * Load the choices with given callback.
-     *
-     * @param callback {@link OnlySuccessAsyncCallback}
+     * Returns the available choices.
+     * 
+     * @return choices
      */
-    abstract protected void loadChoices(OnlySuccessAsyncCallback<Collection<T>> callback);
+    abstract Collection<T> getChoices();
 
     /**
      * Return the display value for the option of the given choice.
@@ -92,7 +82,7 @@ abstract public class AbstractSelect<T> extends Select {
      *
      * @param result choices
      */
-    private void initOptions(Collection<T> result) {
+    protected void initOptions(Collection<T> result) {
         choices.clear();
         clear();
         choices.addAll(result);

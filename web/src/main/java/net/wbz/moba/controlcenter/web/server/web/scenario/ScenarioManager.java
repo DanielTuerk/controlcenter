@@ -1,5 +1,6 @@
 package net.wbz.moba.controlcenter.web.server.web.scenario;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -102,10 +103,15 @@ public class ScenarioManager {
 
     @Transactional
     public ScenarioEntity createScenario(Scenario scenario) {
+        // save scenario without route mapping
         ScenarioEntity transformedEntity = dataMapper.transformTarget(scenario);
-        createOrUpdateRouteSequences(scenario.getRouteSequences(), transformedEntity);
-
+        transformedEntity.getRouteSequences().clear();
         ScenarioEntity createdEntity = scenarioDao.create(transformedEntity);
+        // create routes for scenario
+        createOrUpdateRouteSequences(scenario.getRouteSequences(), transformedEntity);
+        // update scenario for created routes
+        scenarioDao.update(createdEntity);
+
         loadScenariosFromDatabase();
         fireScenariosChanged();
         return createdEntity;
@@ -118,7 +124,8 @@ public class ScenarioManager {
      */
     @Transactional
     public void deleteScenario(long scenarioId) {
-        scenarioDao.delete(scenarioDao.findById(scenarioId));
+        routeSequenceDao.deleteByScenario(scenarioId);
+        scenarioDao.delete(scenarioId);
         loadScenariosFromDatabase();
         fireScenariosChanged();
     }
@@ -189,16 +196,29 @@ public class ScenarioManager {
         routeBlockDao.flush();
     }
 
-    private void createOrUpdateRouteSequences(List<RouteSequence> routeSequences, ScenarioEntity scenarioEntity) {
+    private void createOrUpdateRouteSequences(List<RouteSequence> routeSequences,
+            ScenarioEntity scenarioEntity) {
+        // create or update route sequences
+        List<RouteSequenceEntity> entities = new ArrayList<>();
         for (RouteSequence routeBlockPart : routeSequences) {
             RouteSequenceEntity routeEntity = routeSequenceDataMapper.transformTarget(routeBlockPart);
             routeEntity.setScenario(scenarioEntity);
             if (routeBlockPart.getId() == null) {
-                routeSequenceDao.create(routeEntity);
+                routeEntity = routeSequenceDao.create(routeEntity);
             } else {
                 routeSequenceDao.update(routeEntity);
             }
+            entities.add(routeEntity);
         }
-        routeSequenceDao.flush();
+        // delete removed route sequences
+        List<RouteSequenceEntity> routeSequenceEntities = new ArrayList<>(
+                routeSequenceDao.findByScenario(scenarioEntity.getId()));
+        routeSequenceEntities.removeAll(entities);
+        for (RouteSequenceEntity routeSequenceEntity : routeSequenceEntities) {
+            routeSequenceDao.delete(routeSequenceEntity);
+        }
+
+        // set to actual merged entities
+        scenarioEntity.setRouteSequences(entities);
     }
 }

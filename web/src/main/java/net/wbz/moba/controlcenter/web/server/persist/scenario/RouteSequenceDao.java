@@ -30,4 +30,17 @@ public class RouteSequenceDao extends AbstractDao<RouteSequenceEntity> {
                 .getResultList();
     }
 
+    public List<RouteSequenceEntity> findByScenario(Long scenarioId) {
+        return getEntityManager().createQuery(
+                "SELECT x FROM SCENARIO_SEQUENCE x where x.scenario.id = :scenarioId", RouteSequenceEntity.class)
+                .setParameter("scenarioId", scenarioId)
+                .getResultList();
+    }
+
+    public void deleteByScenario(Long scenarioId) {
+        getEntityManager().createQuery(
+                "DELETE FROM SCENARIO_SEQUENCE x where x.scenario.id = :scenarioId")
+                .setParameter("scenarioId", scenarioId)
+                .executeUpdate();
+    }
 }

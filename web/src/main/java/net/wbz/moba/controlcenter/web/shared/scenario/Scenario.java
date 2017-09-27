@@ -63,7 +63,10 @@ public class Scenario extends AbstractDto {
     }
 
     public List<RouteSequence> getRouteSequences() {
-        return routeSequences != null ? routeSequences : new ArrayList<RouteSequence>();
+        if (routeSequences == null) {
+            routeSequences = new ArrayList<>();
+        }
+        return routeSequences;
     }
 
     public void setRouteSequences(List<RouteSequence> routeSequences) {

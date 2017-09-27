@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.gwtbootstrap3.client.ui.TextBox;
 
+import com.google.common.base.Strings;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -18,6 +19,7 @@ import com.google.gwt.user.client.ui.Widget;
 
 import net.wbz.moba.controlcenter.web.client.components.AbstractEditModal;
 import net.wbz.moba.controlcenter.web.client.components.RouteSelect;
+import net.wbz.moba.controlcenter.web.client.components.TrainDrivingDirectionSelect;
 import net.wbz.moba.controlcenter.web.client.components.TrainSelect;
 import net.wbz.moba.controlcenter.web.shared.scenario.RouteSequence;
 import net.wbz.moba.controlcenter.web.shared.scenario.Scenario;
@@ -36,7 +38,11 @@ public class ScenarioEditModalBody extends Composite {
     @UiField
     TextBox txtCron;
     @UiField
+    TextBox txtStartDrivingLevel;
+    @UiField
     TrainSelect selectTrain;
+    @UiField
+    TrainDrivingDirectionSelect selectTrainDrivingDirection;
     @UiField
     Panel routesPanel;
 
@@ -45,6 +51,7 @@ public class ScenarioEditModalBody extends Composite {
         initWidget(uiBinder.createAndBindUi(this));
 
         selectTrain.setSelectedItem(scenario.getTrain());
+        selectTrainDrivingDirection.setSelectedItem(scenario.getTrainDrivingDirection());
     }
 
     @Override
@@ -53,6 +60,13 @@ public class ScenarioEditModalBody extends Composite {
 
         txtName.setText(scenario.getName());
         txtCron.setText(scenario.getCron());
+
+        Integer startDrivingLevel = scenario.getStartDrivingLevel();
+        if (startDrivingLevel != null) {
+            txtStartDrivingLevel.setText(String.valueOf(startDrivingLevel));
+        } else {
+            txtStartDrivingLevel.setText(null);
+        }
 
         initRouteSequences();
     }
@@ -118,6 +132,13 @@ public class ScenarioEditModalBody extends Composite {
         scenario.setName(txtName.getText());
         scenario.setCron(txtCron.getText());
         scenario.setTrain(selectTrain.getSelected().orNull());
+        scenario.setTrainDrivingDirection(selectTrainDrivingDirection.getSelected().orNull());
+        String txtStartDrivingLevelText = txtStartDrivingLevel.getText();
+        if (Strings.isNullOrEmpty(txtStartDrivingLevelText)) {
+            scenario.setStartDrivingLevel(null);
+        } else {
+            scenario.setStartDrivingLevel(Integer.parseInt(txtStartDrivingLevelText));
+        }
         return scenario;
     }
 

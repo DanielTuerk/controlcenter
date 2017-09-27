@@ -1,12 +1,8 @@
 package net.wbz.moba.controlcenter.web.client.scenario;
 
-import de.novanic.eventservice.client.event.Event;
-import de.novanic.eventservice.client.event.listener.RemoteEventListener;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import net.wbz.moba.controlcenter.web.client.EventReceiver;
-import net.wbz.moba.controlcenter.web.shared.scenario.ScenariosChangedEvent;
 import org.gwtbootstrap3.client.ui.Container;
 import org.gwtbootstrap3.client.ui.Pagination;
 import org.gwtbootstrap3.client.ui.constants.ButtonType;
@@ -30,12 +26,16 @@ import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.ListDataProvider;
 import com.google.gwt.view.client.RangeChangeEvent;
 
+import de.novanic.eventservice.client.event.Event;
+import de.novanic.eventservice.client.event.listener.RemoteEventListener;
 import net.wbz.moba.controlcenter.web.client.Callbacks.OnlySuccessAsyncCallback;
+import net.wbz.moba.controlcenter.web.client.EventReceiver;
 import net.wbz.moba.controlcenter.web.client.RequestUtils;
 import net.wbz.moba.controlcenter.web.client.util.modal.DeleteModal;
 import net.wbz.moba.controlcenter.web.shared.scenario.Route;
 import net.wbz.moba.controlcenter.web.shared.scenario.RouteSequence;
 import net.wbz.moba.controlcenter.web.shared.scenario.Scenario;
+import net.wbz.moba.controlcenter.web.shared.scenario.ScenariosChangedEvent;
 import net.wbz.moba.controlcenter.web.shared.scenario.Station;
 
 /**
@@ -44,6 +44,7 @@ import net.wbz.moba.controlcenter.web.shared.scenario.Station;
 public class ScenarioPanel extends Composite {
 
     private static Binder uiBinder = GWT.create(Binder.class);
+    private final RemoteEventListener scenarioEventListener;
     @UiField
     Container container;
     @UiField
@@ -52,7 +53,6 @@ public class ScenarioPanel extends Composite {
     private Pagination pagination = new Pagination(PaginationSize.SMALL);
     private ListDataProvider<Scenario> dataProvider = new ListDataProvider<>();
     private Collection<Station> stations = new ArrayList<>();
-    private final RemoteEventListener scenarioEventListener;
 
     public ScenarioPanel() {
         initWidget(uiBinder.createAndBindUi(this));
@@ -88,6 +88,12 @@ public class ScenarioPanel extends Composite {
                         + (object.getTrainDrivingDirection() != null ? object.getTrainDrivingDirection().name() : "");
             }
         }, "Train");
+        scenarioTable.addColumn(new TextColumn<Scenario>() {
+            @Override
+            public String getValue(Scenario object) {
+                return String.valueOf(object.getTrainDrivingDirection());
+            }
+        }, "direction");
         scenarioTable.addColumn(new TextColumn<Scenario>() {
             @Override
             public String getValue(Scenario object) {
@@ -173,17 +179,6 @@ public class ScenarioPanel extends Composite {
         dataProvider.addDataDisplay(scenarioTable);
 
     }
-
-    // private String getStationRailDisplayName(StationRail stationRail) {
-    // for (Station station : stations) {
-    // for (StationRail rail : station.getRails()) {
-    // if (rail.equals(stationRail)) {
-    // return String.valueOf(station.getName() + " - " + rail.getRailNumber());
-    // }
-    // }
-    // }
-    // return "";
-    // }
 
     @Override
     protected void onLoad() {

@@ -43,6 +43,10 @@ public abstract class AbstractDao<T extends Identity> {
         getEntityManager().remove(merge);
     }
 
+    public void delete(Long id) {
+        delete(findById(id));
+    }
+
     /**
      * Find entity for the given id.
      *

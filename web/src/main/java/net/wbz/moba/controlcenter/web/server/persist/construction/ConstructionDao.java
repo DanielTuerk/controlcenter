@@ -32,10 +32,4 @@ public class ConstructionDao extends AbstractDao<ConstructionEntity> {
         return getEntityManager().createQuery("SELECT x FROM CONSTRUCTION x", ConstructionEntity.class).getResultList();
     }
 
-    // @Override
-    // @Transactional
-    // public ConstructionEntity getById(Long id) {
-    // return getEntityManager().createQuery("SELECT x FROM construction x WHERE x.id = :id",ConstructionEntity.class)
-    // .setParameter("id", id).getSingleResult();
-    // }
 }

@@ -11,7 +11,7 @@ import net.wbz.moba.controlcenter.web.shared.train.Train;
  * 
  * @author Daniel Tuerk
  */
-public class TrainSelect extends AbstractSelect<Train> {
+public class TrainSelect extends AbstractLoadableSelect<Train> {
 
     @Override
     protected String getKey(Train object) {

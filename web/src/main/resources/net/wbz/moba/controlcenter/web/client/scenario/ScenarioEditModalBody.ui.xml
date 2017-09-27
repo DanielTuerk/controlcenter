@@ -28,10 +28,25 @@
         </g:FlowPanel>
       </b:FormGroup>
 
+      <b:FormGroup>
+        <b:FormLabel addStyleNames="col-lg-2">Driving Direction</b:FormLabel>
+        <g:FlowPanel addStyleNames="col-lg-10">
+          <cc:TrainDrivingDirectionSelect ui:field="selectTrainDrivingDirection">
+          </cc:TrainDrivingDirectionSelect>
+        </g:FlowPanel>
+      </b:FormGroup>
+
+      <b:FormGroup>
+        <b:FormLabel addStyleNames="col-lg-2" for="formAddress">Start Driving Level</b:FormLabel>
+        <g:FlowPanel addStyleNames="col-lg-10">
+          <b:TextBox ui:field="txtStartDrivingLevel"/>
+        </g:FlowPanel>
+      </b:FormGroup>
+
     </b:FieldSet>
     <b:FieldSet>
 
-    <b:FormGroup>
+      <b:FormGroup>
         <b:FormLabel addStyleNames="col-lg-2">Routes</b:FormLabel>
         <g:FlowPanel addStyleNames="col-lg-10">
           <b:Button icon="PLUS" type="PRIMARY" ui:field="btnAddRouteSequence"/>

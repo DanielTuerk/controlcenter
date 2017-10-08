@@ -20,20 +20,20 @@ class SignalStopBlockListener extends AbstractSignalStopBlockListener {
 
     @Override
     public void trainEnterBlock(int blockNumber, int trainAddress, boolean forward) {
-        if (blockNumber == getTrackBlock().getBlockFunction().getBit()) {
-            log.debug("signal stop block {} - train enter {} (signal {})", new Object[] { blockNumber, trainAddress,
-                    getSignalBlock().getSignal().getSignalConfigRed1() });
-            Train train = getTrain(trainAddress);
-
-            getSignalBlock().setTrainInStopBlock(train);
-
-            if (!getSignalBlock().isMonitoringBlockFree()) {
-                if (train != null && getSignalBlock().getTrainInMonitoringBlock() != train) {
-                    getSignalBlock().setWaitingTrain(train);
-                    getTrainService().updateDrivingLevel(train.getId(), 0);
-                }
-            }
-        }
+        // if (blockNumber == getTrackBlock().getBlockFunction().getBit()) {
+        // log.debug("signal stop block {} - train enter {} (signal {})", new Object[] { blockNumber, trainAddress,
+        // getSignalBlock().getSignal().getSignalConfigRed1() });
+        // Train train = getTrain(trainAddress);
+        //
+        // getSignalBlock().setTrainInStopBlock(train);
+        //
+        // if (!getSignalBlock().isMonitoringBlockFree()) {
+        // if (train != null && getSignalBlock().getTrainInMonitoringBlock() != train) {
+        // getSignalBlock().setWaitingTrain(train);
+        // getTrainService().updateDrivingLevel(train.getId(), 0);
+        // }
+        // }
+        // }
     }
 
 }

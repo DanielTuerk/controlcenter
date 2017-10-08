@@ -1,9 +1,12 @@
 package net.wbz.moba.controlcenter.web.client.scenario;
 
+import com.google.gwt.cell.client.CompositeCell;
 import java.util.ArrayList;
 import java.util.Collection;
 
 import org.gwtbootstrap3.client.ui.Container;
+import org.gwtbootstrap3.client.ui.ListGroup;
+import org.gwtbootstrap3.client.ui.ListGroupItem;
 import org.gwtbootstrap3.client.ui.Pagination;
 import org.gwtbootstrap3.client.ui.constants.ButtonType;
 import org.gwtbootstrap3.client.ui.constants.IconType;
@@ -112,6 +115,7 @@ public class ScenarioPanel extends Composite {
                 return object.getMode() != null ? object.getMode().name() : "";
             }
         }, "Mode");
+
         scenarioTable.addColumn(new TextColumn<Scenario>() {
             @Override
             public String getValue(Scenario object) {
@@ -122,9 +126,10 @@ public class ScenarioPanel extends Composite {
                         Route route = routeSequence.getRoute();
                         if (route != null) {
                             sb.append("from: ");
-                            sb.append(route.getStart().getDisplayValue());
+                            sb.append(route.getName());
+                            sb.append("\n");
                             sb.append(" to: ");
-                            sb.append(route.getEnd().getDisplayValue());
+                            sb.append(route.getName());
                             sb.append("\n");
                         }
                     }

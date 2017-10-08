@@ -2,6 +2,7 @@ package net.wbz.moba.controlcenter.web.server.web.editor.block;
 
 import java.util.Collection;
 
+import net.wbz.moba.controlcenter.web.server.SelectrixHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -78,10 +79,7 @@ public abstract class AbstractBlockRegistry<T extends AbstractDto> {
 
     protected FeedbackBlockModule getFeedbackBlockModule(Device device,
             BusAddressIdentifier entry) throws DeviceAccessException {
-        return device.getFeedbackBlockModule(
-                entry.getAddress(),
-                (entry.getAddress() + 2),
-                (entry.getAddress() + 1));
+        return SelectrixHelper.getFeedbackBlockModule(device, entry);
     }
 
     protected boolean checkBlockFunction(TrackBlock trackBlock) {
@@ -89,8 +87,7 @@ public abstract class AbstractBlockRegistry<T extends AbstractDto> {
     }
 
     protected BusAddressIdentifier getBusAddressIdentifier(BusDataConfiguration blockFunction) {
-        return new BusAddressIdentifier(blockFunction
-                .getBus(), blockFunction.getAddress());
+        return new BusAddressIdentifier(blockFunction);
     }
 
     protected EventBroadcaster getEventBroadcaster() {

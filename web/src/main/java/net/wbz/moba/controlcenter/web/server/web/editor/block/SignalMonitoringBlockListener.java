@@ -65,47 +65,51 @@ abstract class SignalMonitoringBlockListener extends AbstractSignalBlockListener
 
     @Override
     public void trainEnterBlock(int blockNumber, int trainAddress, boolean forward) {
-        if (blockNumber == blockNrToMonitore) {
-            blockOccupiedByTrain(blockNumber);
-
-            log.debug("signal monitoring block {} - train enter {} ", new Object[] { blockNumber, trainAddress });
-            signalBlock.setTrainInMonitoringBlock(trainManager.getTrain(trainAddress));
-        }
+        // if (blockNumber == blockNrToMonitore) {
+        // blockOccupiedByTrain(blockNumber);
+        //
+        // log.debug("signal monitoring block {} - train enter {} ", new Object[] { blockNumber, trainAddress });
+        // signalBlock.setTrainInMonitoringBlock(trainManager.getTrain(trainAddress));
+        // }
     }
 
     @Override
     public void trainLeaveBlock(int blockNumber, int trainAddress, boolean forward) {
-        if (blockNumber == blockNrToMonitore) {
-            log.debug("signal: {} monitoring block {} - train leave {}", new Object[] { signalBlock.getSignal().getId(),
-                    blockNumber, trainAddress });
-
-            // TODO maybe wait for duplicates?
-            signalBlock.setTrainInMonitoringBlock(null);
-        }
+        // if (blockNumber == blockNrToMonitore) {
+        // log.debug("signal: {} monitoring block {} - train leave {}", new Object[] { signalBlock.getSignal().getId(),
+        // blockNumber, trainAddress });
+        //
+        // // TODO maybe wait for duplicates?
+        // signalBlock.setTrainInMonitoringBlock(null);
+        // }
 
     }
 
     @Override
-    public void blockOccupied(int blockNr) {
+    public void blockOccupied(int blockNumber) {
+        if (blockNumber == blockNrToMonitore) {
+            trackViewerService.switchSignal(signalBlock.getSignal(), FUNCTION.HP0);
+            // blockOccupiedByTrain(blockNumber);
+        }
     }
 
-    private void blockOccupiedByTrain(int blockNr) {
-        log.debug("signal monitoring block {} - occupied (signal {})", blockNr, signalBlock
-                .getSignal().getSignalConfigRed1());
-
-        lastReceivedBlockStateWasFree = new LastBlockState(false);
-
-        signalBlock.setMonitoringBlockFree(false);
-        trackViewerService.switchSignal(signalBlock.getSignal(), FUNCTION.HP0);
-    }
+    // private void blockOccupiedByTrain(int blockNr) {
+    // log.debug("signal monitoring block {} - occupied (signal {})", blockNr, signalBlock
+    // .getSignal().getSignalConfigRed1());
+    //
+    // lastReceivedBlockStateWasFree = new LastBlockState(false);
+    //
+    // signalBlock.setMonitoringBlockFree(false);
+    // trackViewerService.switchSignal(signalBlock.getSignal(), FUNCTION.HP0);
+    // }
 
     @Override
     public void blockFreed(int blockNr) {
-        if (blockNr == blockNrToMonitore) {
-            lastReceivedBlockStateWasFree = new LastBlockState(true);
-
-            executorService.submit(new WaitAndSetBlockToFree(lastReceivedBlockStateWasFree.getId()));
-        }
+        // if (blockNr == blockNrToMonitore) {
+        // lastReceivedBlockStateWasFree = new LastBlockState(true);
+        //
+        // executorService.submit(new WaitAndSetBlockToFree(lastReceivedBlockStateWasFree.getId()));
+        // }
     }
 
     @Override

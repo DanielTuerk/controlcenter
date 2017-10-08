@@ -133,7 +133,6 @@ public class TrackBlock extends AbstractDto {
         }
         TrackBlock that = (TrackBlock) o;
         return Objects.equal(blockFunction, that.blockFunction) &&
-                Objects.equal(construction, that.construction) &&
                 Objects.equal(name, that.name);
     }
 

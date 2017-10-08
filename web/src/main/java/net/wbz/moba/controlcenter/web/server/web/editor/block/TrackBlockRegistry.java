@@ -3,7 +3,6 @@ package net.wbz.moba.controlcenter.web.server.web.editor.block;
 import java.util.Collection;
 import java.util.Map;
 
-import net.wbz.selectrix4java.block.FeedbackBlockModule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,6 +20,7 @@ import net.wbz.moba.controlcenter.web.shared.track.model.TrackBlock.DRIVING_LEVE
 import net.wbz.moba.controlcenter.web.shared.train.Train;
 import net.wbz.moba.controlcenter.web.shared.viewer.TrackPartBlockEvent;
 import net.wbz.selectrix4java.block.FeedbackBlockListener;
+import net.wbz.selectrix4java.block.FeedbackBlockModule;
 import net.wbz.selectrix4java.device.Device;
 import net.wbz.selectrix4java.device.DeviceAccessException;
 
@@ -39,6 +39,7 @@ public class TrackBlockRegistry extends AbstractBlockRegistry<TrackBlock> {
 
     private final Map<TrackBlock, FeedbackBlockListener> feedbackBlockListeners =
             Maps.newConcurrentMap();
+    private Collection<TrackBlock> trackBlocks;
 
     @Inject
     public TrackBlockRegistry(EventBroadcaster eventBroadcaster, TrainServiceImpl trainService,
@@ -46,9 +47,14 @@ public class TrackBlockRegistry extends AbstractBlockRegistry<TrackBlock> {
         super(eventBroadcaster, trainService, trainManager);
     }
 
+    public Collection<TrackBlock> getTrackBlocks() {
+        return trackBlocks;
+    }
+
     @Override
     protected void doInit(Collection<TrackBlock> trackBlocks) {
         log.debug("init track blocks");
+        this.trackBlocks = trackBlocks;
         feedbackBlockListeners.clear();
         for (final TrackBlock trackBlock : trackBlocks) {
 

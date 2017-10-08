@@ -25,13 +25,13 @@ class ExitSignalStopBlockListener extends AbstractSignalStopBlockListener {
 
     @Override
     public void trainEnterBlock(int blockNumber, int trainAddress, boolean forward) {
-        if (blockNumber == getTrackBlock().getBlockFunction().getBit()) {
-            log.debug("signal stop block {} - train enter {} (signal {})", new Object[] { blockNumber, trainAddress,
-                    getSignalBlock().getSignal().getSignalConfigRed1() });
-            Train train = getTrain(trainAddress);
-
-            getSignalBlock().setTrainInStopBlock(train);
-        }
+        // if (blockNumber == getTrackBlock().getBlockFunction().getBit()) {
+        // log.debug("signal stop block {} - train enter {} (signal {})", new Object[] { blockNumber, trainAddress,
+        // getSignalBlock().getSignal().getSignalConfigRed1() });
+        // Train train = getTrain(trainAddress);
+        //
+        // getSignalBlock().setTrainInStopBlock(train);
+        // }
         // nothing to do, entering trains are only for scenarios which will set the waiting train to the signal block
     }
 

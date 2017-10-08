@@ -1,5 +1,7 @@
 package net.wbz.moba.controlcenter.web.server.web.editor.block;
 
+import net.wbz.moba.controlcenter.web.shared.track.model.BusDataConfiguration;
+
 /**
  * Identifier for a address of in a bus.
  *
@@ -18,6 +20,10 @@ public class BusAddressIdentifier {
     public BusAddressIdentifier(int bus, int address) {
         this.bus = bus;
         this.address = address;
+    }
+
+    public BusAddressIdentifier(BusDataConfiguration blockFunction) {
+        this(blockFunction.getBus(), blockFunction.getAddress());
     }
 
     public int getBus() {

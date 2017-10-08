@@ -38,26 +38,26 @@ public abstract class SignalEnteringBlockListener extends AbstractSignalBlockLis
 
     @Override
     public void trainEnterBlock(int blockNumber, int trainAddress, boolean forward) {
-        if (blockNumber == getTrackBlock().getBlockFunction().getBit()) {
-            log.debug("signal entering block {} - train enter {} (signal {})", new Object[] { blockNumber, trainAddress,
-                    signalBlock.getSignal().getSignalConfigRed1() });
-
-            Train train = getTrain(trainAddress);
-            if (!signalBlock.isTrainInAnyBlock()) {
-                requestFreeTrack();
-            }
-            signalBlock.setTrainInEnteringBlock(train);
-        }
+        // if (blockNumber == getTrackBlock().getBlockFunction().getBit()) {
+        // log.debug("signal entering block {} - train enter {} (signal {})", new Object[] { blockNumber, trainAddress,
+        // signalBlock.getSignal().getSignalConfigRed1() });
+        //
+        // Train train = getTrain(trainAddress);
+        // if (!signalBlock.isTrainInAnyBlock()) {
+        // requestFreeTrack();
+        // }
+        // signalBlock.setTrainInEnteringBlock(train);
+        // }
     }
 
 
     @Override
     public void trainLeaveBlock(int blockNumber, int trainAddress, boolean forward) {
-        if (blockNumber == getTrackBlock().getBlockFunction().getBit()) {
-            log.debug("signal entering block {} - train leave {} (signal {})", new Object[] { blockNumber, trainAddress,
-                    signalBlock.getSignal().getSignalConfigRed1() });
-            signalBlock.setTrainInEnteringBlock(null);
-        }
+        // if (blockNumber == getTrackBlock().getBlockFunction().getBit()) {
+        // log.debug("signal entering block {} - train leave {} (signal {})", new Object[] { blockNumber, trainAddress,
+        // signalBlock.getSignal().getSignalConfigRed1() });
+        // signalBlock.setTrainInEnteringBlock(null);
+        // }
     }
 
     protected SignalBlock getSignalBlock() {

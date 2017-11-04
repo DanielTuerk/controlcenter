@@ -8,6 +8,7 @@ import org.gwtbootstrap3.client.ui.InlineCheckBox;
 import org.gwtbootstrap3.client.ui.ListItem;
 import org.gwtbootstrap3.client.ui.TextBox;
 import org.gwtbootstrap3.client.ui.html.UnorderedList;
+import org.vectomatic.dom.svg.utils.SVGConstants;
 
 import com.google.common.base.Strings;
 import com.google.gwt.core.client.GWT;
@@ -20,12 +21,17 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.Widget;
 
+import net.wbz.moba.controlcenter.web.client.Callbacks.OnlySuccessAsyncCallback;
+import net.wbz.moba.controlcenter.web.client.RequestUtils;
 import net.wbz.moba.controlcenter.web.client.editor.track.SimpleTrackPanel;
 import net.wbz.moba.controlcenter.web.client.model.track.AbstractSvgTrackWidget;
 import net.wbz.moba.controlcenter.web.client.model.track.AbstractSwitchWidget;
+import net.wbz.moba.controlcenter.web.client.util.SvgTrackUtil;
 import net.wbz.moba.controlcenter.web.shared.scenario.Route;
-import net.wbz.moba.controlcenter.web.shared.scenario.RouteBlockPart;
+import net.wbz.moba.controlcenter.web.shared.scenario.Track;
 import net.wbz.moba.controlcenter.web.shared.track.model.AbstractTrackPart;
+import net.wbz.moba.controlcenter.web.shared.track.model.BusDataConfiguration;
+import net.wbz.moba.controlcenter.web.shared.track.model.GridPosition;
 import net.wbz.moba.controlcenter.web.shared.track.model.TrackBlock;
 
 /**
@@ -83,18 +89,67 @@ public class RouteEditModalBody extends Composite {
     }
 
     private void loadRoute() {
-        for (HandlerRegistration trackPartClickHandler : trackPartClickHandlers) {
-            trackPartClickHandler.removeHandler();
-        }
-        trackPartClickHandlers.clear();
+        if (route != null) {
+            final List<AbstractSvgTrackWidget> trackParts = trackPanel.getTrackParts();
 
-        for (final AbstractSvgTrackWidget<?> trackWidget : trackPanel.getTrackParts()) {
-            for (RouteEditMode mode : RouteEditMode.values()) {
-                if (!Strings.isNullOrEmpty(mode.getCssName())) {
-                    trackWidget.removeStyleName(mode.getCssName());
+            if (route.getStart() != null && route.getEnd() != null) {
+
+                for (AbstractSvgTrackWidget svgTrackWidget : trackParts) {
+                    svgTrackWidget.removeStyleName("widget_track_route_block");
+                    svgTrackWidget.setColor(SvgTrackUtil.DEFAULT_TRACK_COLOR);
+                    svgTrackWidget.repaint();
                 }
+
+                RequestUtils.getInstance().getScenarioEditorService().buildTrack(route,
+                        new OnlySuccessAsyncCallback<Track>() {
+                            @Override
+                            public void onSuccess(Track track) {
+                                for (AbstractSvgTrackWidget trackWidget : trackParts) {
+                                    // draw the route for all grid positions of the track
+                                    for (GridPosition gridPosition : track.getGridPositions()) {
+                                        if (gridPosition.isSame(trackWidget.getTrackPart().getGridPosition())) {
+                                            if (track.getTrackBlocks().contains(
+                                                    trackWidget.getTrackPart().getTrackBlock())) {
+                                                // set style for track blocks on the track
+                                                trackWidget.addStyleName("widget_track_route_block");
+                                            }
+                                            trackWidget.setColor(SVGConstants.CSS_BLUE_VALUE);
+                                            if (trackWidget instanceof AbstractSwitchWidget) {
+                                                // paint by switch function
+                                                AbstractSwitchWidget switchWidget = (AbstractSwitchWidget) trackWidget;
+                                                int i = track.getTrackFunctions()
+                                                        .indexOf(switchWidget.getTrackPart().getToggleFunction());
+                                                BusDataConfiguration toggleFunctionConfig = track.getTrackFunctions()
+                                                        .get(i);
+                                                switchWidget.updateFunctionState(toggleFunctionConfig,
+                                                        toggleFunctionConfig.getBitState());
+                                            } else {
+                                                // repaint default widgets to update the color
+                                                trackWidget.repaint();
+                                            }
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+                        });
             }
-            if (route != null) {
+
+            /*
+             * Reinitialize the click handlers to assign the {@link RouteEditMode}.
+             */
+            for (HandlerRegistration trackPartClickHandler : trackPartClickHandlers) {
+                trackPartClickHandler.removeHandler();
+            }
+            trackPartClickHandlers.clear();
+
+            for (final AbstractSvgTrackWidget<?> trackWidget : trackParts) {
+                for (RouteEditMode mode : RouteEditMode.values()) {
+                    if (!Strings.isNullOrEmpty(mode.getCssName())) {
+                        trackWidget.removeStyleName(mode.getCssName());
+                    }
+                }
+
                 trackPartClickHandlers.add(trackWidget.addDomHandler(new ClickHandler() {
                     @Override
                     public void onClick(ClickEvent event) {
@@ -111,13 +166,9 @@ public class RouteEditModalBody extends Composite {
                             && Objects.equals(trackPart.getTrackBlock(), route.getEnd())) {
                         trackWidget.addStyleName(RouteEditMode.END.getCssName());
                     } else {
-                        for (RouteBlockPart routeBlockPart : route.getRouteBlockParts()) {
-                            if (Objects.equals(trackPart, routeBlockPart.getSwitchTrackPart())) {
-                                AbstractSwitchWidget switchTrackPart = (AbstractSwitchWidget) trackWidget;
-                                switchTrackPart.addStyleName(RouteEditMode.TRACK_PART.getCssName());
-                                switchTrackPart.updateFunctionState(
-                                        routeBlockPart.getSwitchTrackPart().getToggleFunction(),
-                                        routeBlockPart.isState());
+                        for (GridPosition trackPartId : route.getWaypoints()) {
+                            if (Objects.equals(trackPart.getGridPosition(), trackPartId)) {
+                                trackWidget.addStyleName(RouteEditMode.WAYPOINT.getCssName());
                             }
                         }
                     }
@@ -142,43 +193,24 @@ public class RouteEditModalBody extends Composite {
                     route.setEnd(trackBlock);
                 }
                 break;
-            case TRACK_PART:
+            case WAYPOINT:
                 updateTrackPart(trackWidget, route);
-                break;
-            case SWITCH_STATE:
-                toggleSwitchState(trackWidget, route);
                 break;
         }
         loadRoute();
     }
 
-    private void toggleSwitchState(AbstractSvgTrackWidget trackWidget, Route routeBlock) {
-        if (trackWidget instanceof AbstractSwitchWidget) {
-            for (RouteBlockPart routeBlockPart : routeBlock.getRouteBlockParts()) {
-                if (routeBlockPart.getSwitchTrackPart().equals(((AbstractSwitchWidget) trackWidget)
-                        .getTrackPart())) {
-                    routeBlockPart.setState(!routeBlockPart.isState());
-                }
-            }
-        }
-    }
-
     private void updateTrackPart(AbstractSvgTrackWidget trackWidget, Route routeBlock) {
-        if (trackWidget instanceof AbstractSwitchWidget) {
-            // check for existing to delete
-            for (RouteBlockPart routeBlockPart : routeBlock.getRouteBlockParts()) {
-                if (routeBlockPart.getSwitchTrackPart().equals(((AbstractSwitchWidget) trackWidget)
-                        .getTrackPart())) {
-                    routeBlock.getRouteBlockParts().remove(routeBlockPart);
-                    return;
-                }
+        AbstractTrackPart trackPart = trackWidget.getTrackPart();
+        // check for existing to delete
+        for (GridPosition routeBlockPart : routeBlock.getWaypoints()) {
+            if (routeBlockPart.equals(trackPart.getGridPosition())) {
+                routeBlock.getWaypoints().remove(routeBlockPart);
+                return;
             }
-            // create new route block
-            RouteBlockPart routeBlockPart = new RouteBlockPart();
-            routeBlockPart.setSwitchTrackPart(((AbstractSwitchWidget) trackWidget).getTrackPart());
-            routeBlockPart.setState(false);
-            routeBlock.getRouteBlockParts().add(routeBlockPart);
         }
+        // add new waypoint
+        routeBlock.addWaypoint(trackPart.getGridPosition());
     }
 
     String getSelectedName() {

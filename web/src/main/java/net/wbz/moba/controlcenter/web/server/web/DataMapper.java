@@ -37,6 +37,17 @@ public class DataMapper<Target extends AbstractDto, Source extends AbstractEntit
     public DataMapper(Class<Target> dtoClass, Class<Source> entityClass) {
         sourceMapper = new JMapper<>(dtoClass, entityClass);
         targetMapper = new JMapper<>(entityClass, dtoClass);
+
+        configureSourceMapper(sourceMapper);
+        configureTargetMapper(targetMapper);
+    }
+
+    protected void configureSourceMapper(JMapper<Target, Source> sourceMapper) {
+        // optional configuration
+    }
+
+    protected void configureTargetMapper(JMapper<Source, Target> targetMapper) {
+        // optional configuration
     }
 
     /**

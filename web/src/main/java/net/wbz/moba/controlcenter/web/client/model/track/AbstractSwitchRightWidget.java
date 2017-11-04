@@ -17,17 +17,17 @@ abstract public class AbstractSwitchRightWidget extends AbstractSwitchWidget {
     }
 
     @Override
-    protected void addSvgContent(OMSVGDocument doc, OMSVGSVGElement svg) {
-        svg.appendChild(SvgTrackUtil.createRectangle(doc, 0f, 10f, 25f, 5f));
-        svg.appendChild(SvgTrackUtil.createLine(doc, 0f, 10f, 10f, 25f, 2));
-        svg.appendChild(SvgTrackUtil.createLine(doc, 5f, 10f, 15f, 25f, 2));
+    protected void addSvgContent(OMSVGDocument doc, OMSVGSVGElement svg, String color) {
+        svg.appendChild(SvgTrackUtil.createRectangle(doc, 0f, 10f, 25f, 5f, color));
+        svg.appendChild(SvgTrackUtil.createLine(doc, 0f, 10f, 10f, 25f, 2, color));
+        svg.appendChild(SvgTrackUtil.createLine(doc, 5f, 10f, 15f, 25f, 2, color));
     }
 
     @Override
-    protected void addActiveStateSvgContent(OMSVGDocument doc, OMSVGSVGElement svg) {
-        svg.appendChild(SvgTrackUtil.createLine(doc, 0f, 10f, 13f, 26f, 5));
-        svg.appendChild(SvgTrackUtil.createLine(doc, 0f, 10f, 25f, 10f, 2));
-        svg.appendChild(SvgTrackUtil.createLine(doc, 0f, 14f, 25f, 14f, 2));
+    protected void addActiveStateSvgContent(OMSVGDocument doc, OMSVGSVGElement svg, String color) {
+        svg.appendChild(SvgTrackUtil.createLine(doc, 0f, 10f, 13f, 26f, 5, color));
+        svg.appendChild(SvgTrackUtil.createLine(doc, 0f, 10f, 25f, 10f, 2, color));
+        svg.appendChild(SvgTrackUtil.createLine(doc, 0f, 14f, 25f, 14f, 2, color));
     }
 
 }

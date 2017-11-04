@@ -32,10 +32,10 @@ import net.wbz.moba.controlcenter.web.client.Callbacks.OnlySuccessAsyncCallback;
 import net.wbz.moba.controlcenter.web.client.EventReceiver;
 import net.wbz.moba.controlcenter.web.client.RequestUtils;
 import net.wbz.moba.controlcenter.web.shared.scenario.Route;
-import net.wbz.moba.controlcenter.web.shared.scenario.RouteBlockPart;
 import net.wbz.moba.controlcenter.web.shared.scenario.ScenariosChangedEvent;
 import net.wbz.moba.controlcenter.web.shared.scenario.Station;
 import net.wbz.moba.controlcenter.web.shared.scenario.StationRail;
+import net.wbz.moba.controlcenter.web.shared.track.model.GridPosition;
 
 /**
  * @author Daniel Tuerk
@@ -92,6 +92,12 @@ public class RoutePanel extends Composite {
                 return String.valueOf(route.getOneway());
             }
         }, "Oneway");
+        routeTable.addColumn(new TextColumn<Route>() {
+            @Override
+            public String getValue(Route route) {
+                return route.getTrack() != null && route.getTrack().getLength() > 0 ? "Ok" : "Error";
+            }
+        }, "Route");
 
         final Column<Route, String> colEdit = new Column<Route, String>(new ButtonCell(ButtonType.DEFAULT,
                 IconType.EDIT)) {
@@ -127,7 +133,7 @@ public class RoutePanel extends Composite {
     @UiHandler("btnCreateRoute")
     void onClick(ClickEvent ignored) {
         Route route = new Route();
-        route.setRouteBlockParts(new ArrayList<RouteBlockPart>());
+        route.setWaypoints(new ArrayList<GridPosition>());
         showEdit(route);
     }
 

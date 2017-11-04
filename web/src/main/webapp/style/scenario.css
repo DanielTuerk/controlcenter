@@ -10,6 +10,11 @@
   background-color: lightseagreen;
 }
 
+.widget_track_route_block {
+  background-color: chartreuse;
+}
+
 .route-track-legend {
   float: left;
 }
+

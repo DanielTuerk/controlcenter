@@ -20,11 +20,7 @@ enum RouteEditMode implements HasCssName {
     /**
      * Track parts to toggle between start and end point.
      */
-    TRACK_PART("widget_track_selected_trackparts"),
-    /**
-     * Configure the switch state of the track parts.
-     */
-    SWITCH_STATE("");
+    WAYPOINT("widget_track_selected_trackparts");
 
     private String cssName;
 

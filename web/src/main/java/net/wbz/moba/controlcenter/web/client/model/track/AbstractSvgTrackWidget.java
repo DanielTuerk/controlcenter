@@ -18,6 +18,7 @@ import com.google.gwt.user.client.ui.Widget;
 
 import net.wbz.moba.controlcenter.web.client.TrackUtils;
 import net.wbz.moba.controlcenter.web.client.editor.track.EditTrackWidgetHandler;
+import net.wbz.moba.controlcenter.web.client.util.SvgTrackUtil;
 import net.wbz.moba.controlcenter.web.shared.track.model.AbstractTrackPart;
 import net.wbz.moba.controlcenter.web.shared.track.model.GridPosition;
 
@@ -37,6 +38,7 @@ abstract public class AbstractSvgTrackWidget<T extends AbstractTrackPart> extend
     private boolean enabled;
     private TabContent dialogContentTabContent;
     private NavTabs dialogContentNavTabs;
+    private String color = SvgTrackUtil.DEFAULT_TRACK_COLOR;
 
     public AbstractSvgTrackWidget() {
         addStyleName("widget_track");
@@ -54,10 +56,26 @@ abstract public class AbstractSvgTrackWidget<T extends AbstractTrackPart> extend
         setEnabled(false);
     }
 
+    /**
+     * Repaint the SVG content.
+     */
+    public void repaint() {
+        clearSvgContent();
+        addSvgContent(getSvgDocument(), getSvgRootElement(), color);
+    }
+
+    public String getColor() {
+        return color;
+    }
+
+    public void setColor(String color) {
+        this.color = color;
+    }
+
     @Override
     protected void onLoad() {
         super.onLoad();
-        addSvgContent(svgDocument, svgRootElement);
+        addSvgContent(svgDocument, svgRootElement, color);
         getElement().appendChild(svgRootElement.getElement());
     }
 
@@ -69,11 +87,12 @@ abstract public class AbstractSvgTrackWidget<T extends AbstractTrackPart> extend
 
     /**
      * Add the SVG content for the track part to the given {@link org.vectomatic.dom.svg.OMSVGSVGElement}.
-     *
-     * @param doc {@link org.vectomatic.dom.svg.OMSVGDocument}
-     * @param svg {@link org.vectomatic.dom.svg.OMSVGSVGElement}
+     * 
+     * @param doc {@link OMSVGDocument}
+     * @param svg {@link OMSVGSVGElement}
+     * @param color SVG color for content
      */
-    abstract protected void addSvgContent(OMSVGDocument doc, OMSVGSVGElement svg);
+    abstract protected void addSvgContent(OMSVGDocument doc, OMSVGSVGElement svg, String color);
 
     /**
      * Clear the SVG content from the widget.

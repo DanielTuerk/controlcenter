@@ -2,16 +2,15 @@ package net.wbz.moba.controlcenter.web.server.persist.scenario;
 
 import java.util.List;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 
 import com.googlecode.jmapper.annotations.JMap;
 
+import javax.persistence.OneToMany;
 import net.wbz.moba.controlcenter.web.server.persist.AbstractEntity;
+import net.wbz.moba.controlcenter.web.server.persist.construction.track.GridPositionEntity;
 import net.wbz.moba.controlcenter.web.server.persist.construction.track.TrackBlockEntity;
 
 /**
@@ -47,11 +46,11 @@ public class RouteEntity extends AbstractEntity {
     private Boolean oneway;
 
     /**
-     * Parts between the start and end point to toggle to create the route on track to drive.
+     * Optional waypoints between the start and end point.
      */
     @JMap
-    @OneToMany(mappedBy = "route", fetch = FetchType.EAGER)
-    private List<RouteBlockPartEntity> routeBlockParts;
+    @OneToMany
+    private List<GridPositionEntity> waypoints;
 
     public String getName() {
         return name;
@@ -85,12 +84,12 @@ public class RouteEntity extends AbstractEntity {
         this.end = end;
     }
 
-    public List<RouteBlockPartEntity> getRouteBlockParts() {
-        return routeBlockParts;
+    public List<GridPositionEntity> getWaypoints() {
+        return waypoints;
     }
 
-    public void setRouteBlockParts(
-            List<RouteBlockPartEntity> routeBlockParts) {
-        this.routeBlockParts = routeBlockParts;
+    public void setWaypoints(List<GridPositionEntity> waypoints) {
+        this.waypoints = waypoints;
     }
+
 }

@@ -14,13 +14,13 @@ import net.wbz.moba.controlcenter.web.shared.track.model.Uncoupler;
 abstract public class AbstractUncouplerWidget extends AbstractControlSvgTrackWidget<Uncoupler> {
 
     @Override
-    protected void addSvgContent(OMSVGDocument doc, OMSVGSVGElement svg) {
-        svg.appendChild(SvgTrackUtil.createLine(doc, 0f, 10f, 12.5f, 14f, 5, SvgTrackUtil.TRACK_COLOR));
-        svg.appendChild(SvgTrackUtil.createLine(doc, 12.5f, 14f, 25f, 10f, 5, SvgTrackUtil.TRACK_COLOR));
+    protected void addSvgContent(OMSVGDocument doc, OMSVGSVGElement svg, String color) {
+        svg.appendChild(SvgTrackUtil.createLine(doc, 0f, 10f, 12.5f, 14f, 5, SvgTrackUtil.DEFAULT_TRACK_COLOR));
+        svg.appendChild(SvgTrackUtil.createLine(doc, 12.5f, 14f, 25f, 10f, 5, SvgTrackUtil.DEFAULT_TRACK_COLOR));
     }
 
     @Override
-    protected void addActiveStateSvgContent(OMSVGDocument doc, OMSVGSVGElement svg) {
+    protected void addActiveStateSvgContent(OMSVGDocument doc, OMSVGSVGElement svg, String color) {
         svg.appendChild(SvgTrackUtil.createLine(doc, 0f, 10f, 12.5f, 6f, 5, SVGConstants.CSS_RED_VALUE));
         svg.appendChild(SvgTrackUtil.createLine(doc, 12.5f, 6f, 25f, 10f, 5, SVGConstants.CSS_RED_VALUE));
     }

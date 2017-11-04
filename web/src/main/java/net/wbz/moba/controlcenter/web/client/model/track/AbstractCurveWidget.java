@@ -12,8 +12,8 @@ import net.wbz.moba.controlcenter.web.shared.track.model.Curve;
 abstract public class AbstractCurveWidget extends AbstractBlockSvgTrackWidget<Curve> {
 
     @Override
-    protected void addSvgContent(OMSVGDocument doc, OMSVGSVGElement svg) {
-        svg.appendChild(SvgTrackUtil.createLine(doc, 12f, 26f, 26f, 12f, 5));
+    protected void addSvgContent(OMSVGDocument doc, OMSVGSVGElement svg, String color) {
+        svg.appendChild(SvgTrackUtil.createLine(doc, 12f, 26f, 26f, 12f, 5, color));
     }
 
     @Override

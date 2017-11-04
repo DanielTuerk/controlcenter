@@ -12,18 +12,14 @@ import net.wbz.moba.controlcenter.web.shared.track.model.Straight;
 abstract public class AbstractStraightWidget extends AbstractBlockSvgTrackWidget<Straight> {
 
     @Override
-    protected void addSvgContent(OMSVGDocument doc, OMSVGSVGElement svg) {
-        svg.appendChild(SvgTrackUtil.createRectangle(getSvgDocument(), 0f, 10f, 25f, 5f));
+    protected void addSvgContent(OMSVGDocument doc, OMSVGSVGElement svg, String color) {
+        svg.appendChild(SvgTrackUtil.createRectangle(getSvgDocument(), 0f, 10f, 25f, 5f, color));
     }
 
     @Override
     public Straight getNewTrackPart() {
         Straight straight = new Straight();
-        // Employee newEmployee = request.create(Employee.class);
-        // Straight straight = new Straight();
         straight.setDirection(getStraightDirection());
-        // TODO
-        // return straight;
         return straight;
     }
 

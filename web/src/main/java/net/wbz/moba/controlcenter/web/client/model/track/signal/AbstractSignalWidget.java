@@ -48,13 +48,13 @@ abstract public class AbstractSignalWidget extends AbstractControlSvgTrackWidget
     }
 
     @Override
-    protected void addSvgContent(OMSVGDocument doc, OMSVGSVGElement svg) {
-        SignalSvgBuilder.getInstance().addSvgContent(signalType, Signal.FUNCTION.HP0, doc, svg);
+    protected void addSvgContent(OMSVGDocument doc, OMSVGSVGElement svg, String color) {
+        SignalSvgBuilder.getInstance().addSvgContent(signalType, Signal.FUNCTION.HP0, doc, svg, color);
     }
 
     @Override
-    protected void addActiveStateSvgContent(OMSVGDocument doc, OMSVGSVGElement svg) {
-        SignalSvgBuilder.getInstance().addSvgContent(signalType, activeFunction, doc, svg);
+    protected void addActiveStateSvgContent(OMSVGDocument doc, OMSVGSVGElement svg, String color) {
+        SignalSvgBuilder.getInstance().addSvgContent(signalType, activeFunction, doc, svg, color);
     }
 
     @Override
@@ -162,7 +162,8 @@ abstract public class AbstractSignalWidget extends AbstractControlSvgTrackWidget
 
     public void showSignalFunction(Signal.FUNCTION signalFunction) {
         clearSvgContent();
-        SignalSvgBuilder.getInstance().addSvgContent(signalType, signalFunction, getSvgDocument(), getSvgRootElement());
+        SignalSvgBuilder.getInstance().addSvgContent(signalType, signalFunction, getSvgDocument(), getSvgRootElement(),
+                getColor());
         activeFunction = signalFunction;
     }
 }

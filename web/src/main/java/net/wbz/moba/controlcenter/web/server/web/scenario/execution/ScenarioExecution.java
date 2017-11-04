@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.commons.lang.NotImplementedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,7 +19,6 @@ import net.wbz.moba.controlcenter.web.server.web.editor.block.BusAddressIdentifi
 import net.wbz.moba.controlcenter.web.server.web.editor.block.SignalBlockRegistry;
 import net.wbz.moba.controlcenter.web.server.web.train.TrainManager;
 import net.wbz.moba.controlcenter.web.shared.scenario.Route;
-import net.wbz.moba.controlcenter.web.shared.scenario.RouteBlockPart;
 import net.wbz.moba.controlcenter.web.shared.scenario.RouteSequence;
 import net.wbz.moba.controlcenter.web.shared.scenario.Scenario;
 import net.wbz.moba.controlcenter.web.shared.scenario.Scenario.MODE;
@@ -290,13 +290,15 @@ public abstract class ScenarioExecution {
     private void updateTrack(Scenario scenario, Route route) {
         LOG.info("update the track for scenario {} with start route: {}", scenario, route);
         Map<BusDataConfiguration, Boolean> trackPartStates = new HashMap<>();
-        for (RouteBlockPart routeBlockPart : route.getRouteBlockParts()) {
-            if (routeBlockPart.getSwitchTrackPart() != null && routeBlockPart.getSwitchTrackPart()
-                    .getToggleFunction() != null) {
-                trackPartStates.put(routeBlockPart.getSwitchTrackPart().getToggleFunction(), routeBlockPart
-                        .isState());
-            }
-        }
-        trackViewerService.toggleTrackParts(trackPartStates);
+        throw new NotImplementedException("track from route");
+        // for (RouteBlockPart routeBlockPart : route.getRouteBlockParts()) {
+        // if (routeBlockPart.getSwitchTrackPart() != null && routeBlockPart.getSwitchTrackPart()
+        // .getToggleFunction() != null) {
+        // trackPartStates.put(routeBlockPart.getSwitchTrackPart().getToggleFunction(), routeBlockPart
+        // .isState());
+        // }
+        // }
+
+        // trackViewerService.toggleTrackParts(trackPartStates);
     }
 }

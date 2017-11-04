@@ -1,149 +1,164 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
-    <modelVersion>4.0.0</modelVersion>
+  <modelVersion>4.0.0</modelVersion>
 
-    <groupId>net.wbz.moba</groupId>
+  <groupId>net.wbz.moba</groupId>
 
-    <artifactId>controlcenter</artifactId>
-    <name>Control Center</name>
-    <packaging>pom</packaging>
-    <version>0.2-SNAPSHOT</version>
+  <artifactId>controlcenter</artifactId>
+  <name>Control Center</name>
+  <packaging>pom</packaging>
+  <version>0.2-SNAPSHOT</version>
 
-    <modules>
-        <module>web</module>
-    </modules>
+  <modules>
+    <module>web</module>
+  </modules>
 
-    <developers>
-        <developer>
-            <id>dtuerk</id>
-            <name>Daniel Türk</name>
-            <email>Daniel.Tuerk@w-b-z.com</email>
-        </developer>
-    </developers>
+  <developers>
+    <developer>
+      <id>dtuerk</id>
+      <name>Daniel Türk</name>
+      <email>Daniel.Tuerk@w-b-z.com</email>
+    </developer>
+  </developers>
 
-    <build>
+  <build>
 
-        <plugins>
-            <!-- COMPILING -->
-            <plugin>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>2.5.1</version>
-                <configuration>
-                    <source>${maven.compiler.source}</source>
-                    <target>${maven.compiler.target}</target>
-                    <debug>true</debug>
-                    <encoding>UTF-8</encoding>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
+    <plugins>
+      <!-- COMPILING -->
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>2.5.1</version>
+        <configuration>
+          <source>${maven.compiler.source}</source>
+          <target>${maven.compiler.target}</target>
+          <debug>true</debug>
+          <encoding>UTF-8</encoding>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 
-    <dependencies>
-        <!-- Logging -->
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>${org.slf4j.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>jcl-over-slf4j</artifactId>
-            <version>${org.slf4j.version}</version>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
-            <version>${logback.version}</version>
-            <scope>runtime</scope>
-        </dependency>
+  <dependencies>
+    <!-- Logging -->
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>${org.slf4j.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>jcl-over-slf4j</artifactId>
+      <version>${org.slf4j.version}</version>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-classic</artifactId>
+      <version>${logback.version}</version>
+      <scope>runtime</scope>
+    </dependency>
 
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-core</artifactId>
-            <version>${logback.version}</version>
-        </dependency>
+    <dependency>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-core</artifactId>
+      <version>${logback.version}</version>
+    </dependency>
 
-        <!-- Joda Time -->
-        <dependency>
-            <groupId>joda-time</groupId>
-            <artifactId>joda-time</artifactId>
-            <version>${joda.time.version}</version>
-        </dependency>
+    <!-- Joda Time -->
+    <dependency>
+      <groupId>joda-time</groupId>
+      <artifactId>joda-time</artifactId>
+      <version>${joda.time.version}</version>
+    </dependency>
 
-        <!-- Google Guava -->
-        <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-            <version>13.0.1</version>
-        </dependency>
+    <!-- Google Guava -->
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+      <version>13.0.1</version>
+    </dependency>
 
-        <!-- get nullable annotation -->
-        <dependency>
-            <groupId>com.google.code.findbugs</groupId>
-            <artifactId>jsr305</artifactId>
-            <version>2.0.1</version>
-        </dependency>
+    <!-- get nullable annotation -->
+    <dependency>
+      <groupId>com.google.code.findbugs</groupId>
+      <artifactId>jsr305</artifactId>
+      <version>2.0.1</version>
+    </dependency>
 
-        <!--+++ Jakarta's Commons Lang +++ -->
-        <dependency>
-            <groupId>commons-lang</groupId>
-            <artifactId>commons-lang</artifactId>
-            <version>2.6</version>
-        </dependency>
+    <!--+++ Jakarta's Commons Lang +++ -->
+    <dependency>
+      <groupId>commons-lang</groupId>
+      <artifactId>commons-lang</artifactId>
+      <version>2.6</version>
+    </dependency>
 
-        <!-- Guice -->
-        <dependency>
-            <groupId>com.google.inject</groupId>
-            <artifactId>guice</artifactId>
-            <version>3.0</version>
-        </dependency>
+    <!-- Guice -->
+    <dependency>
+      <groupId>com.google.inject</groupId>
+      <artifactId>guice</artifactId>
+      <version>3.0</version>
+    </dependency>
 
-        <!-- DTO -->
-        <dependency>
-            <groupId>com.googlecode.jmapper-framework</groupId>
-            <artifactId>jmapper-core</artifactId>
-            <version>1.6.1.CR1</version>
-        </dependency>
+    <!-- DTO -->
+    <dependency>
+      <groupId>com.googlecode.jmapper-framework</groupId>
+      <artifactId>jmapper-core</artifactId>
+      <version>1.6.1.CR1</version>
+    </dependency>
 
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.11</version>
-            <scope>test</scope>
-        </dependency>
+    <!-- Testing -->
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.11</version>
+      <scope>test</scope>
+    </dependency>
 
-    </dependencies>
+    <dependency>
+      <groupId>org.testng</groupId>
+      <artifactId>testng</artifactId>
+      <version>6.8</version>
+      <scope>test</scope>
+    </dependency>
 
-    <properties>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-core</artifactId>
+      <version>2.11.0</version>
+      <scope>test</scope>
+    </dependency>
 
-        <maven.compiler.source>1.7</maven.compiler.source>
-        <maven.compiler.target>1.7</maven.compiler.target>
+  </dependencies>
 
-        <selectrix.version>0.3.1-SNAPSHOT</selectrix.version>
+  <properties>
 
-        <gwtbootstrap3.version>0.9.4</gwtbootstrap3.version>
+    <maven.compiler.source>1.7</maven.compiler.source>
+    <maven.compiler.target>1.7</maven.compiler.target>
 
-        <!-- setting this makes build more platform independent by explicitly specifying an encoding -->
-        <logback.version>0.9.15</logback.version>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <googlecollections.version>1.0</googlecollections.version>
-        <jcloverslf4j.version>1.5.10</jcloverslf4j.version>
+    <selectrix.version>0.3.1-SNAPSHOT</selectrix.version>
 
-        <org.slf4j.version>1.5.10</org.slf4j.version>
-        <joda.time.version>2.1</joda.time.version>
-        <joda.time.jsptags.version>1.0.2</joda.time.jsptags.version>
-        <com.google.collections.version>1.0</com.google.collections.version>
-        <javax.servlet.api.version>2.5</javax.servlet.api.version>
-        <javax.servlet.jsp.api.version>2.1</javax.servlet.jsp.api.version>
-        <javax.servlet.jstl.version>1.2</javax.servlet.jstl.version>
-        <org.tuckey.urlrewritefilter.version>3.2.0</org.tuckey.urlrewritefilter.version>
+    <gwtbootstrap3.version>0.9.4</gwtbootstrap3.version>
 
-        <org.codehaus.jackson.version>1.8.3</org.codehaus.jackson.version>
-        <build.helper.maven.plugin.version>1.5</build.helper.maven.plugin.version>
+    <!-- setting this makes build more platform independent by explicitly specifying an encoding -->
+    <logback.version>0.9.15</logback.version>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <googlecollections.version>1.0</googlecollections.version>
+    <jcloverslf4j.version>1.5.10</jcloverslf4j.version>
 
-    </properties>
+    <org.slf4j.version>1.5.10</org.slf4j.version>
+    <joda.time.version>2.1</joda.time.version>
+    <joda.time.jsptags.version>1.0.2</joda.time.jsptags.version>
+    <com.google.collections.version>1.0</com.google.collections.version>
+    <javax.servlet.api.version>2.5</javax.servlet.api.version>
+    <javax.servlet.jsp.api.version>2.1</javax.servlet.jsp.api.version>
+    <javax.servlet.jstl.version>1.2</javax.servlet.jstl.version>
+    <org.tuckey.urlrewritefilter.version>3.2.0</org.tuckey.urlrewritefilter.version>
+
+    <org.codehaus.jackson.version>1.8.3</org.codehaus.jackson.version>
+    <build.helper.maven.plugin.version>1.5</build.helper.maven.plugin.version>
+
+  </properties>
 
 </project>

@@ -13,20 +13,22 @@ import com.google.inject.Singleton;
 import com.google.inject.persist.Transactional;
 
 import net.wbz.moba.controlcenter.web.server.EventBroadcaster;
-import net.wbz.moba.controlcenter.web.server.persist.scenario.RouteBlockDao;
-import net.wbz.moba.controlcenter.web.server.persist.scenario.RouteBlockPartEntity;
 import net.wbz.moba.controlcenter.web.server.persist.scenario.RouteDao;
+import net.wbz.moba.controlcenter.web.server.persist.scenario.RouteDataMapper;
 import net.wbz.moba.controlcenter.web.server.persist.scenario.RouteEntity;
 import net.wbz.moba.controlcenter.web.server.persist.scenario.RouteSequenceDao;
+import net.wbz.moba.controlcenter.web.server.persist.scenario.RouteSequenceDataMapper;
 import net.wbz.moba.controlcenter.web.server.persist.scenario.RouteSequenceEntity;
 import net.wbz.moba.controlcenter.web.server.persist.scenario.ScenarioDao;
+import net.wbz.moba.controlcenter.web.server.persist.scenario.ScenarioDataMapper;
 import net.wbz.moba.controlcenter.web.server.persist.scenario.ScenarioEntity;
 import net.wbz.moba.controlcenter.web.server.persist.scenario.StationDao;
-import net.wbz.moba.controlcenter.web.server.persist.scenario.StationEntity;
-import net.wbz.moba.controlcenter.web.server.web.DataMapper;
+import net.wbz.moba.controlcenter.web.server.persist.scenario.StationDataMapper;
+import net.wbz.moba.controlcenter.web.server.persist.scenario.TrackBuilder;
+import net.wbz.moba.controlcenter.web.server.persist.scenario.TrackBuilder.TrackNotFoundException;
 import net.wbz.moba.controlcenter.web.shared.scenario.Route;
-import net.wbz.moba.controlcenter.web.shared.scenario.RouteBlockPart;
 import net.wbz.moba.controlcenter.web.shared.scenario.RouteSequence;
+import net.wbz.moba.controlcenter.web.shared.scenario.RoutesChangedEvent;
 import net.wbz.moba.controlcenter.web.shared.scenario.Scenario;
 import net.wbz.moba.controlcenter.web.shared.scenario.ScenariosChangedEvent;
 import net.wbz.moba.controlcenter.web.shared.scenario.Station;
@@ -34,7 +36,8 @@ import net.wbz.moba.controlcenter.web.shared.scenario.Station;
 /**
  * Manager to access the {@link Scenario}s from database.
  * The data is cached.
- *
+ * TODO cache Stations
+ * 
  * @author Daniel Tuerk
  */
 @Singleton
@@ -43,42 +46,34 @@ public class ScenarioManager {
     private static final Logger LOG = LoggerFactory.getLogger(ScenarioManager.class);
 
     private final List<Scenario> scenarios = Lists.newArrayList();
-
-    private final DataMapper<Scenario, ScenarioEntity> dataMapper = new DataMapper<>(Scenario.class,
-            ScenarioEntity.class);
-    private final DataMapper<Station, StationEntity> stationDataMapper = new DataMapper<>(Station.class,
-            StationEntity.class);
-    private final DataMapper<Route, RouteEntity> routeDataMapper = new DataMapper<>(Route.class,
-            RouteEntity.class);
-    private final DataMapper<RouteBlockPart, RouteBlockPartEntity> routeBlockDataMapper = new DataMapper<>(
-            RouteBlockPart.class,
-            RouteBlockPartEntity.class);
-    private final DataMapper<RouteSequence, RouteSequenceEntity> routeSequenceDataMapper = new DataMapper<>(
-            RouteSequence.class,
-            RouteSequenceEntity.class);
+    private final List<Route> routes = Lists.newArrayList();
 
     private final ScenarioDao scenarioDao;
     private final StationDao stationDao;
     private final RouteDao routeDao;
-    private final RouteBlockDao routeBlockDao;
     private final RouteSequenceDao routeSequenceDao;
     private final EventBroadcaster eventBroadcaster;
+    private final ScenarioDataMapper dataMapper;
+    private final RouteDataMapper routeDataMapper;
+    private final StationDataMapper stationDataMapper;
+    private final RouteSequenceDataMapper routeSequenceDataMapper;
+    private final TrackBuilder trackBuilder;
 
     @Inject
     public ScenarioManager(ScenarioDao scenarioDao, StationDao stationDao, RouteDao routeDao,
-            RouteBlockDao routeBlockDao, RouteSequenceDao routeSequenceDao, EventBroadcaster eventBroadcaster) {
+            RouteSequenceDao routeSequenceDao, EventBroadcaster eventBroadcaster,
+            RouteDataMapper routeDataMapper, ScenarioDataMapper dataMapper, StationDataMapper stationDataMapper,
+            RouteSequenceDataMapper routeSequenceDataMapper, TrackBuilder trackBuilder) {
         this.scenarioDao = scenarioDao;
         this.stationDao = stationDao;
         this.routeDao = routeDao;
-        this.routeBlockDao = routeBlockDao;
         this.routeSequenceDao = routeSequenceDao;
         this.eventBroadcaster = eventBroadcaster;
-    }
-
-    private void loadScenariosFromDatabase() {
-        LOG.debug("load scenarios from database");
-        scenarios.clear();
-        scenarios.addAll(dataMapper.transformSource(scenarioDao.listAll()));
+        this.routeDataMapper = routeDataMapper;
+        this.dataMapper = dataMapper;
+        this.stationDataMapper = stationDataMapper;
+        this.routeSequenceDataMapper = routeSequenceDataMapper;
+        this.trackBuilder = trackBuilder;
     }
 
     public synchronized List<Scenario> getScenarios() {
@@ -146,10 +141,6 @@ public class ScenarioManager {
         fireScenariosChanged();
     }
 
-    private void fireScenariosChanged() {
-        eventBroadcaster.fireEvent(new ScenariosChangedEvent());
-    }
-
     @Transactional
     public void createStation(Station station) {
         stationDao.create(stationDataMapper.transformTarget(station));
@@ -166,34 +157,49 @@ public class ScenarioManager {
     }
 
     public Collection<Route> getRoutes() {
-        return routeDataMapper.transformSource(routeDao.listAll());
+        if (routes.isEmpty()) {
+            loadRoutesFromDatabase();
+        }
+        return routes;
     }
 
     @Transactional
     public void updateRoute(Route route) {
         RouteEntity entity = routeDataMapper.transformTarget(route);
         routeDao.update(entity);
-        createOrUpdateRouteBlocks(route.getRouteBlockParts(), entity);
+        loadRoutesFromDatabase();
+        fireRoutesChanged();
     }
 
     @Transactional
     public void createRoute(Route route) {
         RouteEntity entity = routeDataMapper.transformTarget(route);
         routeDao.create(entity);
-        createOrUpdateRouteBlocks(route.getRouteBlockParts(), entity);
+        loadRoutesFromDatabase();
+        fireRoutesChanged();
     }
 
-    private void createOrUpdateRouteBlocks(List<RouteBlockPart> routeBlockParts, RouteEntity route) {
-        for (RouteBlockPart routeBlockPart : routeBlockParts) {
-            RouteBlockPartEntity entity = routeBlockDataMapper.transformTarget(routeBlockPart);
-            entity.setRoute(route);
-            if (routeBlockPart.getId() == null) {
-                routeBlockDao.create(entity);
-            } else {
-                routeBlockDao.update(entity);
+    private void loadScenariosFromDatabase() {
+        LOG.debug("load scenarios from database");
+        scenarios.clear();
+        scenarios.addAll(dataMapper.transformSource(scenarioDao.listAll()));
+    }
+
+    private void loadRoutesFromDatabase() {
+        LOG.debug("load routes from database");
+
+        routes.clear();
+        routes.addAll(routeDataMapper.transformSource(routeDao.listAll()));
+        LOG.debug("build tracks");
+
+        for (Route route : routes) {
+            try {
+                route.setTrack(trackBuilder.build(route));
+            } catch (TrackNotFoundException e) {
+                LOG.error("can't build track of route: {} ({})", new Object[] { route, e.getMessage() });
             }
         }
-        routeBlockDao.flush();
+        LOG.debug("tracks finished");
     }
 
     private void createOrUpdateRouteSequences(List<RouteSequence> routeSequences,
@@ -221,4 +227,13 @@ public class ScenarioManager {
         // set to actual merged entities
         scenarioEntity.setRouteSequences(entities);
     }
+
+    private void fireScenariosChanged() {
+        eventBroadcaster.fireEvent(new ScenariosChangedEvent());
+    }
+
+    private void fireRoutesChanged() {
+        eventBroadcaster.fireEvent(new RoutesChangedEvent());
+    }
+
 }

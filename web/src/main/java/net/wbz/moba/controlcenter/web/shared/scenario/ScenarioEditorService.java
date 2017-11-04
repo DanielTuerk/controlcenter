@@ -33,4 +33,6 @@ public interface ScenarioEditorService extends RemoteService {
     void createRoute(Route route);
 
     void updateRoute(Route route);
+
+    Track buildTrack(Route route);
 }

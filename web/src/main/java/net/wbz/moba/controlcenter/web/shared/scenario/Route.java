@@ -2,10 +2,10 @@ package net.wbz.moba.controlcenter.web.shared.scenario;
 
 import java.util.List;
 
-import com.google.common.base.Optional;
 import com.googlecode.jmapper.annotations.JMap;
 
 import net.wbz.moba.controlcenter.web.shared.track.model.AbstractDto;
+import net.wbz.moba.controlcenter.web.shared.track.model.GridPosition;
 import net.wbz.moba.controlcenter.web.shared.track.model.TrackBlock;
 
 /**
@@ -25,7 +25,12 @@ public class Route extends AbstractDto {
     private Boolean oneway;
 
     @JMap
-    private List<RouteBlockPart> routeBlockParts;
+    private List<GridPosition> waypoints;
+
+    /**
+     * {@link Track} for this route.
+     */
+    private Track track;
 
     public String getName() {
         return name;
@@ -59,26 +64,23 @@ public class Route extends AbstractDto {
         this.oneway = oneway;
     }
 
-    public List<RouteBlockPart> getRouteBlockParts() {
-        return routeBlockParts;
+    public List<GridPosition> getWaypoints() {
+        return waypoints;
     }
 
-    public void setRouteBlockParts(List<RouteBlockPart> routeBlockParts) {
-        this.routeBlockParts = routeBlockParts;
+    public void setWaypoints(List<GridPosition> waypoints) {
+        this.waypoints = waypoints;
     }
 
-    // public Optional<RouteBlockPart> getFirstRouteBlock() {
-    // if (routeBlockParts.isEmpty()) {
-    // return Optional.absent();
-    // }
-    // return Optional.of(routeBlockParts.get(0));
-    // }
-    //
-    // public Optional<RouteBlockPart> getLastRouteBlock() {
-    // if (routeBlockParts.isEmpty()) {
-    // return Optional.absent();
-    // }
-    // return Optional.of(routeBlockParts.get(routeBlockParts.size() - 1));
-    // }
+    public void addWaypoint(GridPosition gridPosition) {
+        waypoints.add(gridPosition);
+    }
 
+    public void setTrack(Track track) {
+        this.track = track;
+    }
+
+    public Track getTrack() {
+        return track;
+    }
 }

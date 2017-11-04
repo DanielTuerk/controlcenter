@@ -18,7 +18,7 @@ public class SvgTrackUtil {
     /**
      * Default color for the track part widgets.
      */
-    public final static String TRACK_COLOR = SVGConstants.CSS_BLACK_VALUE;
+    public final static String DEFAULT_TRACK_COLOR = SVGConstants.CSS_BLACK_VALUE;
 
     /**
      * Create a rectangle.
@@ -34,12 +34,14 @@ public class SvgTrackUtil {
      * @param y start y value
      * @param width width as pixel
      * @param height height as pixel
+     * @param trackColor
      * @return {@link OMSVGRectElement}
      */
-    public static OMSVGRectElement createRectangle(OMSVGDocument doc, float x, float y, float width, float height) {
+    public static OMSVGRectElement createRectangle(OMSVGDocument doc, float x, float y, float width, float height,
+            String trackColor) {
         OMSVGRectElement rect = doc.createSVGRectElement(x, y, width, height, 0f, 0f);
-        rect.getStyle().setSVGProperty(SVGConstants.CSS_FILL_PROPERTY, TRACK_COLOR);
-        rect.getStyle().setSVGProperty(SVGConstants.CSS_STROKE_PROPERTY, TRACK_COLOR);
+        rect.getStyle().setSVGProperty(SVGConstants.CSS_FILL_PROPERTY, trackColor);
+        rect.getStyle().setSVGProperty(SVGConstants.CSS_STROKE_PROPERTY, trackColor);
         return rect;
     }
 
@@ -63,7 +65,7 @@ public class SvgTrackUtil {
     public static OMSVGLineElement createLine(OMSVGDocument doc, float fromX, float fromY, float toX, float toY,
             int widthPx) {
         OMSVGLineElement lineElement = doc.createSVGLineElement(fromX, fromY, toX, toY);
-        lineElement.getStyle().setSVGProperty(SVGConstants.CSS_STROKE_VALUE, TRACK_COLOR);
+        lineElement.getStyle().setSVGProperty(SVGConstants.CSS_STROKE_VALUE, DEFAULT_TRACK_COLOR);
         lineElement.getStyle().setSVGProperty(SVGConstants.CSS_STROKE_WIDTH_PROPERTY, widthPx + "px");
         return lineElement;
     }
@@ -88,7 +90,7 @@ public class SvgTrackUtil {
      */
     public static OMSVGCircleElement createCircle(OMSVGDocument doc, float x, float y, float radius, String color) {
         OMSVGCircleElement circleElement = doc.createSVGCircleElement(x, y, radius);
-        circleElement.getStyle().setSVGProperty(SVGConstants.CSS_STROKE_VALUE, TRACK_COLOR);
+        circleElement.getStyle().setSVGProperty(SVGConstants.CSS_STROKE_VALUE, DEFAULT_TRACK_COLOR);
         circleElement.getStyle().setSVGProperty(SVGConstants.CSS_FILL_VALUE, color);
         circleElement.getStyle().setSVGProperty(SVGConstants.CSS_STROKE_WIDTH_PROPERTY, "2px");
         return circleElement;

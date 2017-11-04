@@ -10,11 +10,14 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
 import net.wbz.moba.controlcenter.web.server.EventBroadcaster;
+import net.wbz.moba.controlcenter.web.server.persist.scenario.TrackBuilder;
+import net.wbz.moba.controlcenter.web.server.persist.scenario.TrackBuilder.TrackNotFoundException;
 import net.wbz.moba.controlcenter.web.shared.scenario.Route;
 import net.wbz.moba.controlcenter.web.shared.scenario.Scenario;
 import net.wbz.moba.controlcenter.web.shared.scenario.ScenarioEditorService;
 import net.wbz.moba.controlcenter.web.shared.scenario.ScenariosChangedEvent;
 import net.wbz.moba.controlcenter.web.shared.scenario.Station;
+import net.wbz.moba.controlcenter.web.shared.scenario.Track;
 
 /**
  * @author Daniel Tuerk
@@ -24,6 +27,7 @@ public class ScenarioEditorServiceImpl extends RemoteServiceServlet implements S
     private static final Logger LOG = LoggerFactory.getLogger(ScenarioEditorServiceImpl.class);
 
     private final ScenarioManager scenarioManager;
+    private final TrackBuilder trackBuilder;
 
     /**
      * Broadcaster for client side event handling of state changes.
@@ -31,8 +35,10 @@ public class ScenarioEditorServiceImpl extends RemoteServiceServlet implements S
     private final EventBroadcaster eventBroadcaster;
 
     @Inject
-    public ScenarioEditorServiceImpl(ScenarioManager scenarioManager, EventBroadcaster eventBroadcaster) {
+    public ScenarioEditorServiceImpl(ScenarioManager scenarioManager, TrackBuilder trackBuilder,
+            EventBroadcaster eventBroadcaster) {
         this.scenarioManager = scenarioManager;
+        this.trackBuilder = trackBuilder;
         this.eventBroadcaster = eventBroadcaster;
     }
 
@@ -91,6 +97,16 @@ public class ScenarioEditorServiceImpl extends RemoteServiceServlet implements S
     public void updateRoute(Route route) {
         scenarioManager.updateRoute(route);
         fireChangeEvent();
+    }
+
+    @Override
+    public Track buildTrack(Route route) {
+        try {
+            return trackBuilder.build(route);
+        } catch (TrackNotFoundException e) {
+            LOG.error("can't build track of route:" + route, e);
+        }
+        return null;
     }
 
     private void fireChangeEvent() {

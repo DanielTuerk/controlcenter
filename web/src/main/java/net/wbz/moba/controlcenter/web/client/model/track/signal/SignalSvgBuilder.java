@@ -8,6 +8,8 @@ import org.vectomatic.dom.svg.utils.SVGConstants;
 
 import net.wbz.moba.controlcenter.web.client.util.SvgTrackUtil;
 import net.wbz.moba.controlcenter.web.shared.track.model.Signal;
+import net.wbz.moba.controlcenter.web.shared.track.model.Signal.FUNCTION;
+import net.wbz.moba.controlcenter.web.shared.track.model.Signal.TYPE;
 
 /**
  * Create the SVG elements for the different types of an
@@ -17,12 +19,6 @@ import net.wbz.moba.controlcenter.web.shared.track.model.Signal;
  */
 public class SignalSvgBuilder {
 
-    private final static SignalSvgBuilder INSTANCE = new SignalSvgBuilder();
-
-    private final static float PREVIEW_PADDING_LEFT = 15f;
-    private final static float PREVIEW_WIDTH = 50f;
-    private final static float PREVIEW_HEIGHT = 120f;
-
     public static final String SHORTCUT_RED_1 = "r1";
     public static final String SHORTCUT_RED_2 = "r2";
     public static final String SHORTCUT_GREEN_1 = "g1";
@@ -30,20 +26,15 @@ public class SignalSvgBuilder {
     public static final String SHORTCUT_WHITE = "w";
     public static final String SHORTCUT_YELLOW_1 = "y1";
     public static final String SHORTCUT_YELLOW_2 = "y2";
-
+    private final static SignalSvgBuilder INSTANCE = new SignalSvgBuilder();
+    private final static float PREVIEW_PADDING_LEFT = 15f;
+    private final static float PREVIEW_WIDTH = 50f;
+    private final static float PREVIEW_HEIGHT = 120f;
     private final static String GREEN = SVGConstants.CSS_LIMEGREEN_VALUE;
     private final static String RED = SVGConstants.CSS_RED_VALUE;
     private final static String YELLOW = SVGConstants.CSS_YELLOW_VALUE;
     private final static String WHITE = SVGConstants.CSS_WHITE_VALUE;
     private final static String GRAY = SVGConstants.CSS_GRAY_VALUE;
-
-    public enum HEIGHT_LEVEL {
-        H1, H2, H3
-    }
-
-    public enum WIDTH_LEVEL {
-        W1, W2
-    }
 
     private SignalSvgBuilder() {
     }
@@ -157,14 +148,15 @@ public class SignalSvgBuilder {
      * {@link net.wbz.moba.controlcenter.web.shared.track.model.Signal.TYPE} to the
      * {@link org.vectomatic.dom.svg.OMSVGSVGElement}.
      *
-     * @param signalType {@link net.wbz.moba.controlcenter.web.shared.track.model.Signal.TYPE}
-     * @param function {@link net.wbz.moba.controlcenter.web.shared.track.model.Signal.FUNCTION}
-     * @param doc {@link org.vectomatic.dom.svg.OMSVGDocument}
-     * @param svg {@link org.vectomatic.dom.svg.OMSVGSVGElement}
+     * @param signalType {@link TYPE}
+     * @param function {@link FUNCTION}
+     * @param doc {@link OMSVGDocument}
+     * @param svg {@link OMSVGSVGElement}
+     * @param color
      */
-    public void addSvgContent(Signal.TYPE signalType, Signal.FUNCTION function, OMSVGDocument doc,
-            OMSVGSVGElement svg) {
-        addTrackRectangle(doc, svg);
+    public void addSvgContent(TYPE signalType, FUNCTION function, OMSVGDocument doc,
+            OMSVGSVGElement svg, String color) {
+        addTrackRectangle(doc, svg, color);
 
         switch (signalType) {
             case BLOCK:
@@ -276,9 +268,10 @@ public class SignalSvgBuilder {
      *
      * @param doc {@link org.vectomatic.dom.svg.OMSVGDocument}
      * @param svg {@link org.vectomatic.dom.svg.OMSVGSVGElement}
+     * @param color
      */
-    public void addTrackRectangle(OMSVGDocument doc, OMSVGSVGElement svg) {
-        svg.appendChild(SvgTrackUtil.createRectangle(doc, 0f, 10f, 25f, 5f));
+    public void addTrackRectangle(OMSVGDocument doc, OMSVGSVGElement svg, String color) {
+        svg.appendChild(SvgTrackUtil.createRectangle(doc, 0f, 10f, 25f, 5f, color));
     }
 
     /**
@@ -409,5 +402,13 @@ public class SignalSvgBuilder {
         polygon.getStyle().setSVGProperty(SVGConstants.CSS_FILL_VALUE, GRAY);
         polygon.getStyle().setSVGProperty(SVGConstants.CSS_STROKE_VALUE, SVGConstants.CSS_BLACK_VALUE);
         return polygon;
+    }
+
+    public enum HEIGHT_LEVEL {
+        H1, H2, H3
+    }
+
+    public enum WIDTH_LEVEL {
+        W1, W2
     }
 }

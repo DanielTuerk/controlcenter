@@ -52,11 +52,12 @@ abstract public class AbstractControlSvgTrackWidget<T extends AbstractTrackPart 
 
     /**
      * Add the svg items to the element which represents the active state of the widget.
-     *
-     * @param doc {@link org.vectomatic.dom.svg.OMSVGDocument}
-     * @param svg {@link org.vectomatic.dom.svg.OMSVGSVGElement}
+     * 
+     * @param doc {@link OMSVGDocument}
+     * @param svg {@link OMSVGSVGElement}
+     * @param color color of SVG content
      */
-    abstract protected void addActiveStateSvgContent(OMSVGDocument doc, OMSVGSVGElement svg);
+    abstract protected void addActiveStateSvgContent(OMSVGDocument doc, OMSVGSVGElement svg, String color);
 
     @Override
     public void onClick() {
@@ -74,9 +75,9 @@ abstract public class AbstractControlSvgTrackWidget<T extends AbstractTrackPart 
             trackPartState = state;
             clearSvgContent();
             if (state == toggleFunctionConfig.getBitState()) {
-                addActiveStateSvgContent(getSvgDocument(), getSvgRootElement());
+                addActiveStateSvgContent(getSvgDocument(), getSvgRootElement(), getColor());
             } else {
-                addSvgContent(getSvgDocument(), getSvgRootElement());
+                addSvgContent(getSvgDocument(), getSvgRootElement(), getColor());
             }
         } else {
             Log.warn("received unknown configuration for track widget: " + getClass().getName());

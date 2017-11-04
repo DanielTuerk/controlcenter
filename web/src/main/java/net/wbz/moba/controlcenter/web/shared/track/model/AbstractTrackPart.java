@@ -1,5 +1,6 @@
 package net.wbz.moba.controlcenter.web.shared.track.model;
 
+import java.util.Collection;
 import java.util.Set;
 
 import com.google.common.collect.Sets;
@@ -25,8 +26,23 @@ public abstract class AbstractTrackPart extends AbstractDto {
     }
 
     /**
+     * Get the next {@link GridPosition} which is connected to this track part.
+     *
+     * @param previousPosition previous {@link GridPosition}
+     * @return next {@link GridPosition}
+     */
+    public abstract Collection<GridPosition> getNextGridPositions(GridPosition previousPosition);
+
+    /**
+     * Get the last {@link GridPosition} which is connected to this track part.
+     *
+     * @return last {@link GridPosition}
+     */
+    public abstract Collection<GridPosition> getLastGridPositions();
+
+    /**
      * TODO maybe refactor
-     * 
+     *
      * @return
      */
     public Set<BusDataConfiguration> getConfigurationsOfFunctions() {
@@ -40,7 +56,7 @@ public abstract class AbstractTrackPart extends AbstractDto {
 
     /**
      * TODO drop?
-     * 
+     *
      * @return
      */
     public BusDataConfiguration getBlockFunction() {
@@ -63,4 +79,5 @@ public abstract class AbstractTrackPart extends AbstractDto {
     public double getRotationAngle() {
         return 0;
     }
+
 }

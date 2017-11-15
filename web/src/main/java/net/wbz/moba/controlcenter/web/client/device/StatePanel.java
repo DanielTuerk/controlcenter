@@ -5,22 +5,25 @@ import java.util.Collection;
 import javax.annotation.Nullable;
 
 import org.gwtbootstrap3.client.ui.Button;
-import org.gwtbootstrap3.client.ui.Label;
-import org.gwtbootstrap3.client.ui.gwt.FlowPanel;
 import org.gwtbootstrap3.extras.notify.client.ui.Notify;
 import org.gwtbootstrap3.extras.toggleswitch.client.ui.ToggleSwitch;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
+import com.google.gwt.uibinder.client.UiBinder;
+import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.Widget;
 
 import de.novanic.eventservice.client.event.Event;
 import de.novanic.eventservice.client.event.listener.RemoteEventListener;
+import net.wbz.moba.controlcenter.web.client.Callbacks.OnlySuccessAsyncCallback;
 import net.wbz.moba.controlcenter.web.client.EventReceiver;
 import net.wbz.moba.controlcenter.web.client.RequestUtils;
-import net.wbz.moba.controlcenter.web.client.util.OnOffToggleButton;
 import net.wbz.moba.controlcenter.web.shared.bus.DeviceInfo;
 import net.wbz.moba.controlcenter.web.shared.bus.DeviceInfoEvent;
 import net.wbz.moba.controlcenter.web.shared.bus.PlayerEvent;
@@ -33,26 +36,35 @@ import net.wbz.moba.controlcenter.web.shared.viewer.RailVoltageEvent;
  *
  * @author Daniel Tuerk
  */
-public class StatePanel extends FlowPanel {
+public class StatePanel extends Composite {
 
-    private final RemoteEventListener deviceInfoEventListener;
+    private static StatePanelBinder uiBinder = GWT.create(StatePanelBinder.class);
     private final SendDataModal sendDataModal = new SendDataModal();
-    private final Button btnSendData;
-    private final DeviceListBox deviceListBox;
     private final RecordingModal recordingModal = new RecordingModal();
-    private final ToggleSwitch toggleRecording;
-    private final Button btnPlayerStart = new Button("Play");
-    private final Button btnPlayerStop = new Button("Stop");
     private final PlayerModal playerModal = new PlayerModal();
+    private final RemoteEventListener deviceInfoEventListener;
     private final RemoteEventListener busDataPlayerEventListener;
     private final RemoteEventListener voltageEventListener;
     private final RemoteEventListener recordingEventListener;
-    private ToggleSwitch toggleRailVoltage;
-    private Button btnDeviceConfig;
-    private BusConnectionToggleButton busConnectionToggleButton;
+    @UiField
+    Button btnSendData;
+    @UiField
+    DeviceListBox deviceListBox;
+    @UiField
+    ToggleSwitch toggleRecording;
+    @UiField
+    Button btnPlayerStart;
+    @UiField
+    Button btnPlayerStop;
+    @UiField
+    ToggleSwitch toggleRailVoltage;
+    @UiField
+    Button btnDeviceConfig;
+    @UiField
+    BusConnectionToggleButton busConnectionToggleButton;
 
     public StatePanel() {
-        setStyleName("statePanel");
+        initWidget(uiBinder.createAndBindUi(this));
 
         // add event receiver for the device connection state
         deviceInfoEventListener = new RemoteEventListener() {
@@ -67,7 +79,6 @@ public class StatePanel extends FlowPanel {
                 }
             }
         };
-
         // add event receiver for the device connection state
         busDataPlayerEventListener = new RemoteEventListener() {
             public void apply(Event anEvent) {
@@ -80,24 +91,8 @@ public class StatePanel extends FlowPanel {
             }
         };
 
-        deviceListBox = new DeviceListBox();
-        busConnectionToggleButton = new BusConnectionToggleButton(deviceListBox);
-        add(busConnectionToggleButton);
-        add(deviceListBox);
-
-        final DeviceConfigModal configureDeviceModal = new DeviceConfigModal();
-
-        btnDeviceConfig = new Button("Config");
-        btnDeviceConfig.addClickHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-                configureDeviceModal.show();
-            }
-        });
-        add(btnDeviceConfig);
-
-        add(new Label("SX-Bus"));
-        toggleRailVoltage = new OnOffToggleButton("Voltage", new ValueChangeHandler<Boolean>() {
+        busConnectionToggleButton.addValueChangeHandler(deviceListBox);
+        toggleRailVoltage.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
             @Override
             public void onValueChange(ValueChangeEvent<Boolean> booleanValueChangeEvent) {
                 toggleRailVoltageState();
@@ -110,19 +105,7 @@ public class StatePanel extends FlowPanel {
                 }
             }
         };
-
-        add(toggleRailVoltage);
-
-        btnSendData = new Button("send");
-        btnSendData.addClickHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-                sendDataModal.show();
-            }
-        });
-        add(btnSendData);
-
-        toggleRecording = new OnOffToggleButton("Record", new ValueChangeHandler<Boolean>() {
+        toggleRecording.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
             @Override
             public void onValueChange(ValueChangeEvent<Boolean> booleanValueChangeEvent) {
                 if (booleanValueChangeEvent.getValue()) {
@@ -143,28 +126,26 @@ public class StatePanel extends FlowPanel {
                 }
             }
         };
+    }
 
-        add(toggleRecording);
+    @UiHandler("btnDeviceConfig")
+    void onClickDeviceConfig(ClickEvent ignored) {
+        new DeviceConfigModal().show();
+    }
 
-        // player
-        btnPlayerStart.addClickHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-                playerModal.show();
-            }
-        });
-        add(btnPlayerStart);
+    @UiHandler("btnSendData")
+    void onClickSendData(ClickEvent ignored) {
+        sendDataModal.show();
+    }
 
-        btnPlayerStop.addClickHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-                RequestUtils.getInstance().getBusService().stopRecording(RequestUtils.VOID_ASYNC_CALLBACK);
-            }
-        });
-        add(btnPlayerStop);
+    @UiHandler("btnPlayerStart")
+    void onClickPlayerStart(ClickEvent ignored) {
+        playerModal.show();
+    }
 
-        add(new Label("v0.01.alpha"));
-
+    @UiHandler("btnPlayerStop")
+    void onClickPlayerStop(ClickEvent ignored) {
+        RequestUtils.getInstance().getBusService().stopRecording(RequestUtils.VOID_ASYNC_CALLBACK);
     }
 
     private void updatePlayerState(boolean playing) {
@@ -183,11 +164,7 @@ public class StatePanel extends FlowPanel {
         EventReceiver.getInstance().addListener(RailVoltageEvent.class, voltageEventListener);
         EventReceiver.getInstance().addListener(RecordingEvent.class, recordingEventListener);
 
-        RequestUtils.getInstance().getBusService().isBusConnected(new AsyncCallback<Boolean>() {
-            @Override
-            public void onFailure(Throwable caught) {
-            }
-
+        RequestUtils.getInstance().getBusService().isBusConnected(new OnlySuccessAsyncCallback<Boolean>() {
             @Override
             public void onSuccess(Boolean connected) {
                 if (connected) {
@@ -240,5 +217,8 @@ public class StatePanel extends FlowPanel {
         if (connected) {
             updatePlayerState(false);
         }
+    }
+
+    interface StatePanelBinder extends UiBinder<Widget, StatePanel> {
     }
 }

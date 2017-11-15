@@ -35,7 +35,7 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
 
 import net.wbz.moba.controlcenter.web.client.components.TrackBlockSelect;
-import net.wbz.moba.controlcenter.web.client.util.BitStateToggleButton;
+import net.wbz.moba.controlcenter.web.client.components.BitStateToggleButton;
 import net.wbz.moba.controlcenter.web.shared.track.model.BusDataConfiguration;
 import net.wbz.moba.controlcenter.web.shared.track.model.Signal;
 

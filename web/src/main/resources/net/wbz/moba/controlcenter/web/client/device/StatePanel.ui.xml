@@ -1,0 +1,22 @@
+<ui:UiBinder xmlns:b="urn:import:org.gwtbootstrap3.client.ui"
+  xmlns:cc="urn:import:net.wbz.moba.controlcenter.web.client.components"
+  xmlns:device="urn:import:net.wbz.moba.controlcenter.web.client.device"
+  xmlns:g="urn:import:com.google.gwt.user.client.ui"
+  xmlns:ui='urn:ui:com.google.gwt.uibinder'>
+
+  <g:FlowPanel styleName="statePanel">
+
+    <device:BusConnectionToggleButton ui:field="busConnectionToggleButton"/>
+    <device:DeviceListBox ui:field="deviceListBox"/>
+    <b:Button text="Config" ui:field="btnDeviceConfig"/>
+    <b:Label text="SX-Bus"/>
+    <cc:OnOffToggleButton labelText="Voltage" ui:field="toggleRailVoltage"/>
+    <b:Button text="send" ui:field="btnSendData"/>
+    <cc:OnOffToggleButton labelText="Record" ui:field="toggleRecording"/>
+    <b:Button text="Player" ui:field="btnPlayerStart"/>
+    <b:Button text="Stop Player" ui:field="btnPlayerStop"/>
+    <b:Label text="version"/>
+
+  </g:FlowPanel>
+
+</ui:UiBinder>

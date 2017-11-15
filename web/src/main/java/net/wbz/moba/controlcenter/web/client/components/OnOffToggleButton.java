@@ -1,4 +1,4 @@
-package net.wbz.moba.controlcenter.web.client.util;
+package net.wbz.moba.controlcenter.web.client.components;
 
 import org.gwtbootstrap3.extras.toggleswitch.client.ui.ToggleSwitch;
 import org.gwtbootstrap3.extras.toggleswitch.client.ui.base.constants.ColorType;
@@ -12,11 +12,14 @@ import com.google.gwt.event.logical.shared.ValueChangeHandler;
  */
 public class OnOffToggleButton extends ToggleSwitch {
 
-    public OnOffToggleButton(String text, ValueChangeHandler<Boolean> valueChangeHandler) {
-        super();
-        setLabelText(text);
+    public OnOffToggleButton() {
         setOffColor(ColorType.DANGER);
         setOnColor(ColorType.SUCCESS);
+    }
+
+    public OnOffToggleButton(String text, ValueChangeHandler<Boolean> valueChangeHandler) {
+        this();
+        setLabelText(text);
         addValueChangeHandler(valueChangeHandler);
     }
 

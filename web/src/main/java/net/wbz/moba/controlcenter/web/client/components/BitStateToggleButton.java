@@ -1,4 +1,4 @@
-package net.wbz.moba.controlcenter.web.client.util;
+package net.wbz.moba.controlcenter.web.client.components;
 
 import org.gwtbootstrap3.client.ui.Button;
 import org.gwtbootstrap3.client.ui.constants.Toggle;

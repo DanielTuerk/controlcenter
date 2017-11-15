@@ -5,7 +5,7 @@ import com.google.gwt.event.logical.shared.ValueChangeHandler;
 
 import net.wbz.moba.controlcenter.web.client.Callbacks.OnlySuccessAsyncCallback;
 import net.wbz.moba.controlcenter.web.client.RequestUtils;
-import net.wbz.moba.controlcenter.web.client.util.OnOffToggleButton;
+import net.wbz.moba.controlcenter.web.client.components.OnOffToggleButton;
 
 /**
  * Toggle button to connect and disconnect from the bus for the selected device in
@@ -15,8 +15,13 @@ import net.wbz.moba.controlcenter.web.client.util.OnOffToggleButton;
  */
 public class BusConnectionToggleButton extends OnOffToggleButton {
 
-    public BusConnectionToggleButton(final DeviceListBox deviceListBox) {
-        super("Bus", new ValueChangeHandler<Boolean>() {
+    public BusConnectionToggleButton() {
+        super();
+        setLabelText("Bus");
+    }
+
+    public void addValueChangeHandler(final DeviceListBox deviceListBox) {
+        addValueChangeHandler(new ValueChangeHandler<Boolean>() {
             @Override
             public void onValueChange(ValueChangeEvent<Boolean> booleanValueChangeEvent) {
                 if (booleanValueChangeEvent.getValue()) {
@@ -34,5 +39,4 @@ public class BusConnectionToggleButton extends OnOffToggleButton {
             }
         });
     }
-
 }

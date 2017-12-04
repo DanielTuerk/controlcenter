@@ -173,7 +173,7 @@ public class TrackBuilderTest extends AbstractTrackBuilderTest {
         Assert.assertEquals(7, track.getLength());
         Assert.assertEquals(1, track.getTrackBlocks().size());
         Assert.assertEquals(new BusDataConfiguration(1, blockAddress, blockBit, true),
-                track.getTrackBlocks().get(0).getBlockFunction());
+                track.getTrackBlocks().iterator().next().getBlockFunction());
         Assert.assertEquals(0, track.getTrackFunctions().size());
     }
 
@@ -218,7 +218,7 @@ public class TrackBuilderTest extends AbstractTrackBuilderTest {
         Assert.assertEquals(7, track.getLength());
         Assert.assertEquals(1, track.getTrackBlocks().size());
         Assert.assertEquals(new BusDataConfiguration(1, blockAddress, blockBit, true),
-                track.getTrackBlocks().get(0).getBlockFunction());
+                track.getTrackBlocks().iterator().next().getBlockFunction());
         Assert.assertEquals(0, track.getTrackFunctions().size());
     }
 

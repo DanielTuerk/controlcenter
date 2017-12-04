@@ -300,7 +300,7 @@ public class SignalBlockRegistry extends AbstractBlockRegistry<Signal> {
                 .entrySet()) {
             for (FeedbackBlockListener feedbackBlockListener : entry.getValue()) {
                 FeedbackBlockModule feedbackBlockModule = getFeedbackBlockModule(device, entry.getKey());
-                log.debug("Feedback Module {}: register listener {}", feedbackBlockModule, feedbackBlockListener);
+                log.debug("Feedback Module ({}): register listener {}", feedbackBlockModule, feedbackBlockListener);
                 feedbackBlockModule.addFeedbackBlockListener(feedbackBlockListener);
             }
         }

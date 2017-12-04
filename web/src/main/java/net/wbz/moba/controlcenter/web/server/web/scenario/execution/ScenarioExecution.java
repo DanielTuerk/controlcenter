@@ -8,37 +8,41 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.commons.lang.NotImplementedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Optional;
 
 import net.wbz.moba.controlcenter.web.server.SelectrixHelper;
+import net.wbz.moba.controlcenter.web.server.persist.scenario.TrackBuilder;
+import net.wbz.moba.controlcenter.web.server.persist.scenario.TrackBuilder.TrackNotFoundException;
 import net.wbz.moba.controlcenter.web.server.web.editor.block.BusAddressIdentifier;
 import net.wbz.moba.controlcenter.web.server.web.editor.block.SignalBlockRegistry;
+import net.wbz.moba.controlcenter.web.server.web.scenario.ScenarioManager;
 import net.wbz.moba.controlcenter.web.server.web.train.TrainManager;
 import net.wbz.moba.controlcenter.web.shared.scenario.Route;
 import net.wbz.moba.controlcenter.web.shared.scenario.RouteSequence;
 import net.wbz.moba.controlcenter.web.shared.scenario.Scenario;
 import net.wbz.moba.controlcenter.web.shared.scenario.Scenario.MODE;
 import net.wbz.moba.controlcenter.web.shared.scenario.Scenario.RUN_STATE;
+import net.wbz.moba.controlcenter.web.shared.scenario.Track;
 import net.wbz.moba.controlcenter.web.shared.track.model.BusDataConfiguration;
 import net.wbz.moba.controlcenter.web.shared.track.model.Signal;
 import net.wbz.moba.controlcenter.web.shared.track.model.Signal.FUNCTION;
-import net.wbz.moba.controlcenter.web.shared.track.model.TrackBlock;
 import net.wbz.moba.controlcenter.web.shared.train.Train;
 import net.wbz.moba.controlcenter.web.shared.train.Train.DRIVING_DIRECTION;
 import net.wbz.moba.controlcenter.web.shared.train.TrainService;
 import net.wbz.moba.controlcenter.web.shared.viewer.TrackViewerService;
-import net.wbz.selectrix4java.block.FeedbackBlockListener;
+import net.wbz.selectrix4java.block.BlockListener;
 import net.wbz.selectrix4java.block.FeedbackBlockModule;
 import net.wbz.selectrix4java.device.Device;
 import net.wbz.selectrix4java.device.DeviceAccessException;
 import net.wbz.selectrix4java.device.DeviceManager;
 
 /**
- * TODO doc
+ * The execution of a {@link Scenario} started by the {@link ScenarioExecutor}.
+ * Update the run state of the {@link Scenario} and start the {@link Route}s after each other.
+ * The execution can be stopped between routes.
  * 
  * @author Daniel Tuerk
  */
@@ -52,9 +56,11 @@ public abstract class ScenarioExecution {
     private final TrainService trainService;
     private final SignalBlockRegistry signalBlockRegistry;
     private final DeviceManager deviceManager;
-    private final Map<FeedbackBlockModule, List<FeedbackBlockListener>> feedbackBlockListeners =
+    private final Map<FeedbackBlockModule, List<BlockListener>> blockListeners =
             new ConcurrentHashMap<>();
     private final TrainManager trainManager;
+    private final TrackBuilder trackBuilder;
+    private final ScenarioManager scenarioManager;
     /**
      * Flag for stop called to scenario.
      */
@@ -65,13 +71,16 @@ public abstract class ScenarioExecution {
     private volatile boolean blockRunning = false;
 
     public ScenarioExecution(Scenario scenario, TrackViewerService trackViewerService, TrainService trainService,
-            SignalBlockRegistry signalBlockRegistry, DeviceManager deviceManager, TrainManager trainManager) {
+            SignalBlockRegistry signalBlockRegistry, DeviceManager deviceManager, TrainManager trainManager,
+            TrackBuilder trackBuilder, ScenarioManager scenarioManager) {
         this.scenario = scenario;
         this.trackViewerService = trackViewerService;
         this.trainService = trainService;
         this.signalBlockRegistry = signalBlockRegistry;
         this.deviceManager = deviceManager;
         this.trainManager = trainManager;
+        this.trackBuilder = trackBuilder;
+        this.scenarioManager = scenarioManager;
     }
 
     /**
@@ -92,41 +101,37 @@ public abstract class ScenarioExecution {
         });
 
         LOG.info("start scenario {}", scenario);
+
+        buildTracks();
+        boolean isFirstRoute = true;
         for (RouteSequence routeSequence : routeSequences) {
             if (stopped) {
                 LOG.info("stop scenario {}", scenario);
                 finishScenarioExecution();
                 return;
             }
+            scenarioManager.routeStarted(routeSequence);
             LOG.info("start route sequence {}", routeSequence);
 
             blockRunning = true;
             try {
-                prepare(routeSequence.getRoute());
+                prepare(routeSequence.getRoute(), isFirstRoute);
             } catch (InterruptedException e) {
                 LOG.error("execution error of route sequence at pos: " + routeSequence.getPosition(), e);
             } catch (DeviceAccessException e) {
                 LOG.error("no device", e);
             }
 
-            // wait TODO doc
+            // wait for next route block action and check the stop flag
             while (!stopped && blockRunning) {
-                Thread.sleep(500L);
+                Thread.sleep(200L);
 
             }
-            // currentPosition++;
             LOG.info("finished route sequence {}", routeSequence);
+            scenarioManager.routeFinished(routeSequence);
+            isFirstRoute = false;
         }
         finishScenarioExecution();
-    }
-
-    private void finishScenarioExecution() {
-        LOG.info("finished scenario {}", scenario);
-
-        scenario.setMode(MODE.OFF);
-        scenario.setRunState(RUN_STATE.STOPPED);
-
-        fireScenarioStateChangeEvent(scenario);
     }
 
     /**
@@ -139,6 +144,28 @@ public abstract class ScenarioExecution {
         tearDown();
     }
 
+    private void buildTracks() {
+        LOG.info("build track for routes");
+        for (RouteSequence routeSequence : scenario.getRouteSequences()) {
+            try {
+                Track track = trackBuilder.build(routeSequence.getRoute());
+                routeSequence.getRoute().setTrack(track);
+            } catch (TrackNotFoundException e) {
+                LOG.error("can't build track for route {}.", routeSequence.getRoute(), e);
+            }
+        }
+        LOG.info("finished track for routes", scenario);
+    }
+
+    private void finishScenarioExecution() {
+        LOG.info("finished scenario {}", scenario);
+
+        scenario.setMode(MODE.OFF);
+        scenario.setRunState(RUN_STATE.STOPPED);
+
+        fireScenarioStateChangeEvent(scenario);
+    }
+
     /**
      * Callback for the run state change of the execution.
      *
@@ -146,16 +173,29 @@ public abstract class ScenarioExecution {
      */
     protected abstract void fireScenarioStateChangeEvent(Scenario scenario);
 
-    private void prepare(final Route route) throws InterruptedException, DeviceAccessException {
-        // check for available train
+    /**
+     * Prepare the {@link Route} for drive.
+     * 
+     * @param route {@link Route}
+     * @param isFirstRoute {@code true} if this is the check for the first route in the execution
+     * @throws InterruptedException
+     * @throws DeviceAccessException
+     */
+    private void prepare(final Route route, boolean isFirstRoute) throws InterruptedException, DeviceAccessException {
+        /*
+         * Check for available train in the first route block. Others are saved by the execution. An explicit check
+         * can't be performed because the feedback could be too late.
+         */
         Train train = getTrain();
-        if (!train.isCurrentlyInBlock(route.getStart())) {
+
+        if (isFirstRoute && !train.isCurrentlyInBlock(route.getStart())) {
             LOG.error("train {} not in start block {}!", new Object[] { train,
                     route.getStart() });
             stop();
             return;
         }
 
+        // find start position on signal
         Optional<Signal> signal = findStartSignal(route);
         if (!signal.isPresent()) {
             LOG.error("no signal found for start block {}!", new Object[] { route.getStart() });
@@ -184,9 +224,9 @@ public abstract class ScenarioExecution {
 
     private Optional<Signal> findStartSignal(Route route) {
         for (Signal availableSignal : signalBlockRegistry.getSignals()) {
-            // TODO why equals doesnt work?
             if (availableSignal.getStopBlock() != null && route.getStart() != null) {
-                if (availableSignal.getStopBlock().getName().equals(route.getStart().getName())) {
+                // TODO check equals working?
+                if (availableSignal.getStopBlock().equals(route.getStart())) {
                     return Optional.of(availableSignal);
                 }
             }
@@ -200,17 +240,17 @@ public abstract class ScenarioExecution {
         FeedbackBlockModule feedbackBlockModule = SelectrixHelper.getFeedbackBlockModule(device,
                 new BusAddressIdentifier(route.getEnd().getBlockFunction()));
 
-        feedbackBlockListeners.put(feedbackBlockModule, new ArrayList<FeedbackBlockListener>());
+        blockListeners.put(feedbackBlockModule, new ArrayList<BlockListener>());
 
-        FeedbackBlockListener feedbackBlockListener = new RouteEndFeedbackBlockListener(route, train) {
+        BlockListener feedbackBlockListener = new RouteEndBlockListener(route) {
             @Override
             protected void trainEnterRouteEnd() {
                 routeFinished();
             }
         };
-        feedbackBlockListeners.get(feedbackBlockModule).add(feedbackBlockListener);
+        blockListeners.get(feedbackBlockModule).add(feedbackBlockListener);
 
-        feedbackBlockModule.addFeedbackBlockListener(feedbackBlockListener);
+        feedbackBlockModule.addBlockListener(feedbackBlockListener);
     }
 
     private void prepareTrainToStart(Train train) {
@@ -221,16 +261,15 @@ public abstract class ScenarioExecution {
 
     private void requestFreeTrack(final Route route, final Signal signal, final Train train)
             throws DeviceAccessException, InterruptedException {
-
-        TrackBlock startBlock = route.getStart();
-        TrackBlock monitoringBlock = signal.getMonitoringBlock();
-        TrackBlock endBlock = route.getEnd();
-
+        LOG.info("train ({}) request free track: {}", train, route);
         // TODO implement stop
-        FreeTrackListener freeTrackListener = new FreeTrackListener(monitoringBlock, endBlock,
-                deviceManager.getConnectedDevice()) {
+
+        // TODO reference to running routes by new object !!!!!
+        FreeTrackListener freeTrackListener = new FreeTrackListener(route, deviceManager.getConnectedDevice(),
+                scenarioManager) {
             @Override
             void ready() {
+                LOG.info("track ({}) free for train: ", route, train);
                 try {
                     execute(route, train, signal);
                 } catch (InterruptedException e) {
@@ -273,12 +312,11 @@ public abstract class ScenarioExecution {
     }
 
     private void tearDown() {
-        for (FeedbackBlockModule feedbackBlockModule : feedbackBlockListeners.keySet()) {
-            for (FeedbackBlockListener feedbackBlockListener : feedbackBlockListeners.get(feedbackBlockModule)) {
-                feedbackBlockModule.removeFeedbackBlockListener(feedbackBlockListener);
+        for (FeedbackBlockModule feedbackBlockModule : blockListeners.keySet()) {
+            for (BlockListener feedbackBlockListener : blockListeners.get(feedbackBlockModule)) {
+                feedbackBlockModule.removeBlockListener(feedbackBlockListener);
             }
         }
-
     }
 
     /**
@@ -290,15 +328,9 @@ public abstract class ScenarioExecution {
     private void updateTrack(Scenario scenario, Route route) {
         LOG.info("update the track for scenario {} with start route: {}", scenario, route);
         Map<BusDataConfiguration, Boolean> trackPartStates = new HashMap<>();
-        throw new NotImplementedException("track from route");
-        // for (RouteBlockPart routeBlockPart : route.getRouteBlockParts()) {
-        // if (routeBlockPart.getSwitchTrackPart() != null && routeBlockPart.getSwitchTrackPart()
-        // .getToggleFunction() != null) {
-        // trackPartStates.put(routeBlockPart.getSwitchTrackPart().getToggleFunction(), routeBlockPart
-        // .isState());
-        // }
-        // }
-
-        // trackViewerService.toggleTrackParts(trackPartStates);
+        for (BusDataConfiguration routeBlockPart : route.getTrack().getTrackFunctions()) {
+            trackPartStates.put(routeBlockPart, routeBlockPart.getBitState());
+        }
+        trackViewerService.toggleTrackParts(trackPartStates);
     }
 }

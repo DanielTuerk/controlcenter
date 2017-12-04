@@ -17,7 +17,9 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
 import net.wbz.moba.controlcenter.web.server.EventBroadcaster;
+import net.wbz.moba.controlcenter.web.server.persist.scenario.TrackBuilder;
 import net.wbz.moba.controlcenter.web.server.web.editor.block.SignalBlockRegistry;
+import net.wbz.moba.controlcenter.web.server.web.scenario.ScenarioManager;
 import net.wbz.moba.controlcenter.web.server.web.scenario.ScenarioStateListener;
 import net.wbz.moba.controlcenter.web.server.web.train.TrainManager;
 import net.wbz.moba.controlcenter.web.server.web.train.TrainServiceImpl;
@@ -44,6 +46,7 @@ public class ScenarioExecutor {
     private final SignalBlockRegistry signalBlockRegistry;
     private final TrainManager trainManager;
     private final DeviceManager deviceManager;
+    private final TrackBuilder trackBuilder;
 
     /**
      * Running executions of each scenario by id.
@@ -57,17 +60,20 @@ public class ScenarioExecutor {
      * Server side listeners for state changes.
      */
     private final List<ScenarioStateListener> listeners = new ArrayList<>();
+    private final ScenarioManager scenarioManager;
 
     @Inject
     public ScenarioExecutor(TrackViewerServiceImpl trackViewerService, TrainServiceImpl trainService,
             SignalBlockRegistry signalBlockRegistry, TrainManager trainManager, DeviceManager deviceManager,
-            EventBroadcaster eventBroadcaster) {
+            TrackBuilder trackBuilder, EventBroadcaster eventBroadcaster, ScenarioManager scenarioManager) {
         this.trackViewerService = trackViewerService;
         this.trainService = trainService;
         this.signalBlockRegistry = signalBlockRegistry;
         this.trainManager = trainManager;
         this.deviceManager = deviceManager;
+        this.trackBuilder = trackBuilder;
         this.eventBroadcaster = eventBroadcaster;
+        this.scenarioManager = scenarioManager;
 
         ThreadFactory namedThreadFactory = new ThreadFactoryBuilder().setNameFormat(getClass().getSimpleName() + "-%d")
                 .build();
@@ -83,10 +89,12 @@ public class ScenarioExecutor {
     public synchronized void startScenario(Scenario scenario) {
         if (!executionsByScenarioId.containsKey(scenario.getId())) {
             final ScenarioExecution scenarioExecution = new ScenarioExecution(scenario, trackViewerService,
-                    trainService, signalBlockRegistry, deviceManager, trainManager) {
+                    trainService, signalBlockRegistry, deviceManager, trainManager, trackBuilder, scenarioManager) {
                 @Override
                 protected void fireScenarioStateChangeEvent(Scenario scenario) {
-                    finishExecution(scenario);
+                    if (scenario.getRunState() == RUN_STATE.STOPPED) {
+                        finishExecution(scenario);
+                    }
                 }
             };
             executionsByScenarioId.put(scenario.getId(), scenarioExecution);
@@ -127,7 +135,6 @@ public class ScenarioExecutor {
     }
 
     private void fireEvent(Scenario scenario) {
-        finishExecution(scenario);
         for (ScenarioStateListener listener : listeners) {
             if (scenario.getRunState() == RUN_STATE.RUNNING) {
                 listener.scenarioStarted(scenario);

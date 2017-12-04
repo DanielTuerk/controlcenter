@@ -11,38 +11,19 @@ import net.wbz.moba.controlcenter.web.shared.constrution.Construction;
  */
 public class TrackBlock extends AbstractDto {
 
-    public enum DRIVING_LEVEL_ADJUST_TYPE {
-        /**
-         * No adjustment.
-         */
-        NONE,
-        /**
-         * Adjust on entering the block.
-         */
-        ENTER,
-        /**
-         * Adjust after leaving the block
-         */
-        EXIT
-    }
-
     @JMap
     private BusDataConfiguration blockFunction;
     @JMap
     private Construction construction;
-
     @JMap
     private String name;
-
     @JMap
     private Integer forwardTargetDrivingLevel;
-
     /**
      * @see #forwardTargetDrivingLevel for 'backward'.
      */
     @JMap
     private Integer backwardTargetDrivingLevel;
-
     @JMap
     private DRIVING_LEVEL_ADJUST_TYPE drivingLevelAdjustType;
 
@@ -95,7 +76,7 @@ public class TrackBlock extends AbstractDto {
     }
 
     public void setDrivingLevelAdjustType(
-        DRIVING_LEVEL_ADJUST_TYPE drivingLevelAdjustType) {
+            DRIVING_LEVEL_ADJUST_TYPE drivingLevelAdjustType) {
         this.drivingLevelAdjustType = drivingLevelAdjustType;
     }
 
@@ -138,6 +119,21 @@ public class TrackBlock extends AbstractDto {
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(super.hashCode(), blockFunction, construction, name);
+        return Objects.hashCode(super.hashCode(), blockFunction, name);
+    }
+
+    public enum DRIVING_LEVEL_ADJUST_TYPE {
+        /**
+         * No adjustment.
+         */
+        NONE,
+        /**
+         * Adjust on entering the block.
+         */
+        ENTER,
+        /**
+         * Adjust after leaving the block
+         */
+        EXIT
     }
 }

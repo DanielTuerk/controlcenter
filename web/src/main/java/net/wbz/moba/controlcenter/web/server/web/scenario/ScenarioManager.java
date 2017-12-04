@@ -4,9 +4,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import javax.annotation.Nullable;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Predicate;
+import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -32,6 +36,7 @@ import net.wbz.moba.controlcenter.web.shared.scenario.RoutesChangedEvent;
 import net.wbz.moba.controlcenter.web.shared.scenario.Scenario;
 import net.wbz.moba.controlcenter.web.shared.scenario.ScenariosChangedEvent;
 import net.wbz.moba.controlcenter.web.shared.scenario.Station;
+import net.wbz.moba.controlcenter.web.shared.track.model.TrackBlock;
 
 /**
  * Manager to access the {@link Scenario}s from database.
@@ -58,6 +63,7 @@ public class ScenarioManager {
     private final StationDataMapper stationDataMapper;
     private final RouteSequenceDataMapper routeSequenceDataMapper;
     private final TrackBuilder trackBuilder;
+    private final List<RouteSequence> runningRouteSequences = new ArrayList<>();
 
     @Inject
     public ScenarioManager(ScenarioDao scenarioDao, StationDao stationDao, RouteDao routeDao,
@@ -163,6 +169,22 @@ public class ScenarioManager {
         return routes;
     }
 
+    public Collection<Route> getRoutesByTrackBlock(final TrackBlock trackBlock) {
+        Collections2.filter(Lists.newArrayList(getRoutes()), new Predicate<Route>() {
+            @Override
+            public boolean apply(@Nullable Route input) {
+                return input != null
+                        && (isExpectedBlock(input.getStart(), trackBlock)
+                                || isExpectedBlock(input.getStart(), trackBlock));
+            }
+
+            private boolean isExpectedBlock(final TrackBlock trackBlock, final TrackBlock expected) {
+                return trackBlock != null && trackBlock.equals(expected);
+            }
+        });
+        return routes;
+    }
+
     @Transactional
     public void updateRoute(Route route) {
         RouteEntity entity = routeDataMapper.transformTarget(route);
@@ -177,6 +199,14 @@ public class ScenarioManager {
         routeDao.create(entity);
         loadRoutesFromDatabase();
         fireRoutesChanged();
+    }
+
+    public void routeStarted(RouteSequence routeSequence) {
+        runningRouteSequences.add(routeSequence);
+    }
+
+    public void routeFinished(RouteSequence routeSequence) {
+        runningRouteSequences.remove(routeSequence);
     }
 
     private void loadScenariosFromDatabase() {
@@ -236,4 +266,35 @@ public class ScenarioManager {
         eventBroadcaster.fireEvent(new RoutesChangedEvent());
     }
 
+    /**
+     * Check that the {@link TrackBlock}s of the given {@link Route} are not used by any other running route.
+     *
+     * @param route {@link Route} to check
+     * @param blocksToCheck {@link TrackBlock}s which are used by the route
+     * @return {@code true} if running depending route exists
+     */
+    public boolean isDependingRouteRunning(final Route route, final Collection<TrackBlock> blocksToCheck) {
+        List<RouteSequence> unfiltered = Lists.newArrayList(runningRouteSequences);
+        Collection<RouteSequence> filtered = Collections2.filter(unfiltered, new Predicate<RouteSequence>() {
+            @Override
+            public boolean apply(RouteSequence input) {
+                if (route.equals(input.getRoute())) {
+                    return false;
+                }
+                List<TrackBlock> runningTrackBlocks = new ArrayList<>();
+                runningTrackBlocks.add(input.getRoute().getStart());
+                if (input.getRoute().getTrack() != null) {
+                    runningTrackBlocks.addAll(input.getRoute().getTrack().getTrackBlocks());
+                }
+                runningTrackBlocks.add(input.getRoute().getEnd());
+                for (TrackBlock blockToCheck : blocksToCheck) {
+                    if (runningTrackBlocks.contains(blockToCheck)) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+        });
+        return !filtered.isEmpty();
+    }
 }

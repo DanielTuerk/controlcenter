@@ -152,11 +152,6 @@ public class TrackViewerPanel extends AbstractTrackViewerPanel {
     }
 
     @Override
-    protected void onUnload() {
-        super.onUnload();
-    }
-
-    @Override
     protected void updateSignalState(SignalFunctionStateEvent signalFunctionStateEvent) {
         for (AbstractSignalWidget signalTrackWidget : signalTrackWidgets) {
             if (signalTrackWidget.getTrackPart().getSignalConfigurations().containsAll(signalFunctionStateEvent

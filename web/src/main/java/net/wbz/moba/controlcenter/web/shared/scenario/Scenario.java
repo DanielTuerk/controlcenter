@@ -3,6 +3,7 @@ package net.wbz.moba.controlcenter.web.shared.scenario;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.common.base.Objects;
 import com.googlecode.jmapper.annotations.JMap;
 
 import net.wbz.moba.controlcenter.web.shared.track.model.AbstractDto;
@@ -105,20 +106,13 @@ public class Scenario extends AbstractDto {
         this.startDrivingLevel = startDrivingLevel;
     }
 
-    // /**
-    // * Get the first {@link RouteBlock} of the scenario.
-    // *
-    // * @return {@link Optional} of {@link RouteBlock}
-    // */
-    // public Optional<RouteBlockPart> getFirstRouteBlock() {
-    // if (!routeSequences.isEmpty()) {
-    // Route route = routeSequences.get(0).getRoute();
-    // if (route != null) {
-    // return route.getFirstRouteBlock();
-    // }
-    // }
-    // return Optional.absent();
-    // }
+    @Override
+    public String toString() {
+        return Objects.toStringHelper(this)
+                .add("id", getId())
+                .add("name", name)
+                .toString();
+    }
 
     /**
      * Return the {@link TrackBlock} which is the endpoint of the scenario.

@@ -2,6 +2,7 @@ package net.wbz.moba.controlcenter.web.shared.scenario;
 
 import java.util.List;
 
+import com.google.common.base.Objects;
 import com.googlecode.jmapper.annotations.JMap;
 
 import net.wbz.moba.controlcenter.web.shared.track.model.AbstractDto;
@@ -76,11 +77,19 @@ public class Route extends AbstractDto {
         waypoints.add(gridPosition);
     }
 
+    public Track getTrack() {
+        return track;
+    }
+
     public void setTrack(Track track) {
         this.track = track;
     }
 
-    public Track getTrack() {
-        return track;
+    @Override
+    public String toString() {
+        return Objects.toStringHelper(this)
+                .add("id", getId())
+                .add("name", name)
+                .toString();
     }
 }

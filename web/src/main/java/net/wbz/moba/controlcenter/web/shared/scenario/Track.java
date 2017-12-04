@@ -1,11 +1,14 @@
 package net.wbz.moba.controlcenter.web.shared.scenario;
 
+import com.google.common.collect.Sets;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 import com.google.common.collect.Lists;
 import com.google.gwt.user.client.rpc.IsSerializable;
 
+import java.util.Set;
 import net.wbz.moba.controlcenter.web.shared.track.model.BusDataConfiguration;
 import net.wbz.moba.controlcenter.web.shared.track.model.GridPosition;
 import net.wbz.moba.controlcenter.web.shared.track.model.TrackBlock;
@@ -22,7 +25,7 @@ public class Track implements IsSerializable {
     /**
      * Blocks which need to be freed to drive.
      */
-    private List<TrackBlock> trackBlocks;
+    private Set<TrackBlock> trackBlocks;
     /**
      * Function with needed state.
      */
@@ -33,22 +36,22 @@ public class Track implements IsSerializable {
     private List<GridPosition> gridPositions;
 
     public Track() {
-        this(new ArrayList<TrackBlock>(), new ArrayList<BusDataConfiguration>(), new ArrayList<GridPosition>());
+        this(new HashSet<TrackBlock>(), new ArrayList<BusDataConfiguration>(), new ArrayList<GridPosition>());
     }
 
     public Track(Track track) {
-        this(Lists.newArrayList(track.getTrackBlocks()), Lists.newArrayList(track.getTrackFunctions()),
+        this(Sets.newHashSet(track.getTrackBlocks()), Lists.newArrayList(track.getTrackFunctions()),
                 Lists.newArrayList(track.getGridPositions()));
     }
 
-    public Track(List<TrackBlock> trackBlocks, List<BusDataConfiguration> trackFunctions,
+    public Track(Set<TrackBlock> trackBlocks, List<BusDataConfiguration> trackFunctions,
             List<GridPosition> gridPositions) {
         this.trackBlocks = trackBlocks;
         this.trackFunctions = trackFunctions;
         this.gridPositions = gridPositions;
     }
 
-    public List<TrackBlock> getTrackBlocks() {
+    public Set<TrackBlock> getTrackBlocks() {
         return trackBlocks;
     }
 

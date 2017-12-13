@@ -1,6 +1,5 @@
 package net.wbz.moba.controlcenter.web.server.web.scenario;
 
-import com.google.inject.persist.Transactional;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -8,15 +7,18 @@ import org.joda.time.DateTime;
 import org.joda.time.Interval;
 
 import com.google.inject.Inject;
+import com.google.inject.persist.Transactional;
 
 import net.wbz.moba.controlcenter.web.server.persist.scenario.ScenarioEntity;
 import net.wbz.moba.controlcenter.web.server.persist.scenario.ScenarioHistoryDao;
 import net.wbz.moba.controlcenter.web.server.persist.scenario.ScenarioHistoryEntity;
 import net.wbz.moba.controlcenter.web.server.web.DataMapper;
 import net.wbz.moba.controlcenter.web.shared.scenario.Scenario;
-import net.wbz.moba.controlcenter.web.shared.scenario.Scenario.RUN_STATE;
 
 /**
+ * Service to create the history entries for the {@link Scenario} executions.
+ * It record the time between start and finish.
+ *
  * @author Daniel Tuerk
  */
 public class ScenarioHistoryService implements ScenarioStateListener {
@@ -38,13 +40,20 @@ public class ScenarioHistoryService implements ScenarioStateListener {
 
     @Override
     public void scenarioStopped(Scenario scenario) {
+        scenarioStartDateTimes.remove(scenario.getId());
+    }
+
+    @Override
+    public void scenarioFinished(Scenario scenario) {
         Long scenarioId = scenario.getId();
         if (scenarioStartDateTimes.containsKey(scenarioId)) {
             DateTime startDate = scenarioStartDateTimes.get(scenarioId);
-            if (scenario.getRunState() == RUN_STATE.IDLE) {
-                createHistoryEntry(scenario, startDate);
-            }
+            createHistoryEntry(scenario, startDate);
         }
+    }
+
+    @Override
+    public void scenarioQueued(Scenario scenario) {
     }
 
     @Transactional

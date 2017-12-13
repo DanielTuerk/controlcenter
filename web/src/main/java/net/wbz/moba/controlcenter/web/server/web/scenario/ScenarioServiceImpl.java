@@ -1,6 +1,7 @@
 package net.wbz.moba.controlcenter.web.server.web.scenario;
 
 import org.apache.commons.lang.NotImplementedException;
+import org.apache.commons.lang.NotImplementedException;
 import org.quartz.CronScheduleBuilder;
 import org.quartz.JobBuilder;
 import org.quartz.JobDetail;
@@ -22,11 +23,13 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
+import net.wbz.moba.controlcenter.web.server.EventBroadcaster;
 import net.wbz.moba.controlcenter.web.server.web.scenario.execution.ScenarioExecutor;
 import net.wbz.moba.controlcenter.web.shared.scenario.Scenario;
 import net.wbz.moba.controlcenter.web.shared.scenario.Scenario.MODE;
 import net.wbz.moba.controlcenter.web.shared.scenario.Scenario.RUN_STATE;
 import net.wbz.moba.controlcenter.web.shared.scenario.ScenarioService;
+import net.wbz.moba.controlcenter.web.shared.scenario.ScenarioStateEvent;
 import net.wbz.moba.controlcenter.web.shared.train.Train;
 import net.wbz.selectrix4java.device.DeviceManager;
 
@@ -59,12 +62,19 @@ public class ScenarioServiceImpl extends RemoteServiceServlet implements Scenari
 
     private final ScenarioExecutor scenarioExecutor;
 
+    /**
+     * Broadcaster for client side event handling of state changes.
+     */
+    private final EventBroadcaster eventBroadcaster;
+
     @Inject
     public ScenarioServiceImpl(ScenarioManager scenarioManager, DeviceManager deviceManager,
-            ScenarioHistoryService scenarioHistoryService, ScenarioExecutor scenarioExecutor) {
+            ScenarioHistoryService scenarioHistoryService, ScenarioExecutor scenarioExecutor,
+            EventBroadcaster eventBroadcaster) {
         this.scenarioManager = scenarioManager;
         this.deviceManager = deviceManager;
         this.scenarioExecutor = scenarioExecutor;
+        this.eventBroadcaster = eventBroadcaster;
 
         // start the scheduler to trigger scenarios by cron
         try {
@@ -108,7 +118,7 @@ public class ScenarioServiceImpl extends RemoteServiceServlet implements Scenari
     public void schedule(long scenarioId) {
         final Scenario scenarioById = scenarioManager.getScenarioById(scenarioId);
 
-        if (scenarioById.getRunState() == RUN_STATE.IDLE) {
+        if (scenarioById.getRunState() != RUN_STATE.RUNNING) {
 
             String cron = scenarioById.getCron();
             if (!Strings.isNullOrEmpty(cron)) {
@@ -128,7 +138,7 @@ public class ScenarioServiceImpl extends RemoteServiceServlet implements Scenari
                 scenarioById.setMode(MODE.AUTOMATIC);
 
                 // TODO
-                // fireScenarioStateChangeEvent(scenarioById);
+                fireScenarioStateChangeEvent(scenarioById);
 
                 // Tell quartz to schedule the job using our trigger
                 try {
@@ -146,6 +156,10 @@ public class ScenarioServiceImpl extends RemoteServiceServlet implements Scenari
         }
     }
 
+    private void fireScenarioStateChangeEvent(Scenario scenario) {
+        eventBroadcaster.fireEvent(new ScenarioStateEvent(scenario.getId(), scenario.getRunState()));
+    }
+
     @Override
     public void stop(long scenarioId) {
         stopScenario(scenarioId);
@@ -154,7 +168,7 @@ public class ScenarioServiceImpl extends RemoteServiceServlet implements Scenari
     @Override
     public void pause(long scenarioId) {
         // TODO
-        throw new NotImplementedException();
+        throw new NotImplementedException("");
     }
 
     /**

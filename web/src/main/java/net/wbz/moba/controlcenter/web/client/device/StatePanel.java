@@ -164,6 +164,7 @@ public class StatePanel extends Composite {
         EventReceiver.getInstance().addListener(RailVoltageEvent.class, voltageEventListener);
         EventReceiver.getInstance().addListener(RecordingEvent.class, recordingEventListener);
 
+        // TODO removeable if we have sever event cache
         RequestUtils.getInstance().getBusService().isBusConnected(new OnlySuccessAsyncCallback<Boolean>() {
             @Override
             public void onSuccess(Boolean connected) {

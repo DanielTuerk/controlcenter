@@ -1,5 +1,7 @@
 package net.wbz.moba.controlcenter.web.shared.train;
 
+import java.util.Objects;
+
 /**
  * @author Daniel Tuerk
  */
@@ -22,6 +24,27 @@ public class TrainFunctionStateEvent extends TrainStateEvent {
 
     public boolean isActive() {
         return active;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        if (!super.equals(o)) {
+            return false;
+        }
+        TrainFunctionStateEvent that = (TrainFunctionStateEvent) o;
+        return super.equals(o) &&
+                Objects.equals(function, that.function);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), function);
     }
 
     @Override

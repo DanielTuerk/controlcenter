@@ -61,7 +61,7 @@ abstract class SignalMonitoringBlockListener extends AbstractSignalBlockListener
         this.executorService = Executors.newSingleThreadExecutor(namedThreadFactory);
     }
 
-    public abstract void trackClear();
+    // public abstract void trackClear();
 
     @Override
     public void trainEnterBlock(int blockNumber, int trainAddress, boolean forward) {
@@ -161,29 +161,29 @@ abstract class SignalMonitoringBlockListener extends AbstractSignalBlockListener
      * thread is responsible for the {@link LastBlockState} of the monitoring block.
      * After that the callbacks for the monitoring blocks are called.
      */
-    private final class WaitAndSetBlockToFree implements Runnable {
-        private final long idToCheck;
+    // private final class WaitAndSetBlockToFree implements Runnable {
+    // private final long idToCheck;
 
-        private WaitAndSetBlockToFree(long idToCheck) {
-            this.idToCheck = idToCheck;
-        }
-
-        @Override
-        public void run() {
-            try {
-                Thread.sleep(TIME_TO_WAIT_FOR_FREE_TRACK);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            if (lastReceivedBlockStateWasFree != null) {
-                if (lastReceivedBlockStateWasFree.getId() == idToCheck
-                        && lastReceivedBlockStateWasFree.getState()) {
-                    log.debug("signal monitoring (block {}) - freed (signal: {})", blockNrToMonitore, signalBlock
-                            .getSignal().getSignalConfigRed1());
-
-                    trackClear();
-                }
-            }
-        }
-    }
+    // private WaitAndSetBlockToFree(long idToCheck) {
+    // this.idToCheck = idToCheck;
+    // }
+    //
+    // @Override
+    // public void run() {
+    // try {
+    // Thread.sleep(TIME_TO_WAIT_FOR_FREE_TRACK);
+    // } catch (InterruptedException e) {
+    // e.printStackTrace();
+    // }
+    // if (lastReceivedBlockStateWasFree != null) {
+    // if (lastReceivedBlockStateWasFree.getId() == idToCheck
+    // && lastReceivedBlockStateWasFree.getState()) {
+    // log.debug("signal monitoring (block {}) - freed (signal: {})", blockNrToMonitore, signalBlock
+    // .getSignal().getSignalConfigRed1());
+    //
+    // trackClear();
+    // }
+    // }
+    // }
+    // }
 }

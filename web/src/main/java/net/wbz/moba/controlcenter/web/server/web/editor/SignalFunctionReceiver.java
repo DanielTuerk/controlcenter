@@ -167,8 +167,7 @@ public class SignalFunctionReceiver {
      */
     private synchronized void fireFunction(Signal.FUNCTION function) {
         if (lastFiredFunction != function) {
-            eventBroadcaster.fireEvent(new SignalFunctionStateEvent(signal.getSignalConfigurations(signal.getType()),
-                    function));
+            eventBroadcaster.fireEvent(new SignalFunctionStateEvent(signal.getId(), function));
             lastFiredFunction = function;
         }
     }

@@ -1,6 +1,7 @@
 package net.wbz.moba.controlcenter.web.shared.scenario;
 
 import com.google.common.base.Objects;
+
 import net.wbz.moba.controlcenter.web.shared.AbstractStateEvent;
 import net.wbz.moba.controlcenter.web.shared.scenario.Scenario.RUN_STATE;
 

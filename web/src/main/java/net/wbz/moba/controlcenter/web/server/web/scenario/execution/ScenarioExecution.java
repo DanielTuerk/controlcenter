@@ -107,7 +107,7 @@ public abstract class ScenarioExecution {
         for (RouteSequence routeSequence : routeSequences) {
             if (stopped) {
                 LOG.info("stop scenario {}", scenario);
-                finishScenarioExecution();
+                finishScenarioExecution(RUN_STATE.STOPPED);
                 return;
             }
             scenarioManager.routeStarted(routeSequence);
@@ -131,7 +131,7 @@ public abstract class ScenarioExecution {
             scenarioManager.routeFinished(routeSequence);
             isFirstRoute = false;
         }
-        finishScenarioExecution();
+        finishScenarioExecution(RUN_STATE.FINISHED);
     }
 
     /**
@@ -157,11 +157,11 @@ public abstract class ScenarioExecution {
         LOG.info("finished track for routes", scenario);
     }
 
-    private void finishScenarioExecution() {
+    private void finishScenarioExecution(RUN_STATE runState) {
         LOG.info("finished scenario {}", scenario);
 
         scenario.setMode(MODE.OFF);
-        scenario.setRunState(RUN_STATE.STOPPED);
+        scenario.setRunState(runState);
 
         fireScenarioStateChangeEvent(scenario);
     }
@@ -202,6 +202,10 @@ public abstract class ScenarioExecution {
             stop();
             return;
         }
+
+        // TODO init route start; on leave start block; grab block before end block -> track free, than move forward and
+        // don't stop
+        // TODO how to handle next train comming meanwhile and allocate the track?
 
         initRouteEndListener(route, train);
 
@@ -264,8 +268,7 @@ public abstract class ScenarioExecution {
         LOG.info("train ({}) request free track: {}", train, route);
         // TODO implement stop
 
-        // TODO reference to running routes by new object !!!!!
-        FreeTrackListener freeTrackListener = new FreeTrackListener(route, deviceManager.getConnectedDevice(),
+        FreeTrackListener freeTrackListener = new FreeTrackListener(scenario, route, deviceManager.getConnectedDevice(),
                 scenarioManager) {
             @Override
             void ready() {

@@ -22,4 +22,18 @@ public interface ScenarioStateListener {
      * @param scenario {@link Scenario}
      */
     void scenarioStopped(Scenario scenario);
+
+    /**
+     * The given scenario has finish the execution.
+     *
+     * @param scenario {@link Scenario}
+     */
+    void scenarioFinished(Scenario scenario);
+
+    /**
+     * The given scenario was queued up to the execution.
+     *
+     * @param scenario {@link Scenario}
+     */
+    void scenarioQueued(Scenario scenario);
 }

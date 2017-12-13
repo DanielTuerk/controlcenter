@@ -148,7 +148,11 @@ public class Scenario extends AbstractDto {
         /**
          * Scenario is stopped.
          */
-        STOPPED
+        STOPPED,
+        /**
+         * Scenario is finished.
+         */
+        FINISHED
     }
 
     /**

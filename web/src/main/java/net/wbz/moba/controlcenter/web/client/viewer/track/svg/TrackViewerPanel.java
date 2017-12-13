@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import org.gwtbootstrap3.client.ui.Label;
 import org.gwtbootstrap3.client.ui.constants.LabelType;
@@ -108,7 +109,7 @@ public class TrackViewerPanel extends AbstractTrackViewerPanel {
 
                                     trackWidgets.add(trackWidget);
 
-                                    if(trackWidget instanceof AbstractBlockSvgTrackWidget){
+                                    if (trackWidget instanceof AbstractBlockSvgTrackWidget) {
                                         ((AbstractBlockSvgTrackWidget) trackWidget).unknownBlock();
                                     }
                                     if (trackWidget instanceof AbstractSignalWidget) {
@@ -154,8 +155,7 @@ public class TrackViewerPanel extends AbstractTrackViewerPanel {
     @Override
     protected void updateSignalState(SignalFunctionStateEvent signalFunctionStateEvent) {
         for (AbstractSignalWidget signalTrackWidget : signalTrackWidgets) {
-            if (signalTrackWidget.getTrackPart().getSignalConfigurations().containsAll(signalFunctionStateEvent
-                    .getConfigurations())) {
+            if (Objects.equals(signalTrackWidget.getTrackPart().getId(), signalFunctionStateEvent.getSignalId())) {
                 signalTrackWidget.showSignalFunction(signalFunctionStateEvent.getSignalFunction());
             }
         }

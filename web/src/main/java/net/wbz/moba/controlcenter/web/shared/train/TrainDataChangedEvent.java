@@ -1,27 +1,23 @@
 package net.wbz.moba.controlcenter.web.shared.train;
 
-import de.novanic.eventservice.client.event.Event;
+import net.wbz.moba.controlcenter.web.shared.AbstractStateEvent;
 
 /**
  * Event for modified data of {@link Train} or created/deleted entity.
  *
  * @author Daniel Tuerk
  */
-public class TrainDataChangedEvent implements Event {
-
-    /**
-     * ID of the persisted train entity.
-     */
-    private long trainId;
+public class TrainDataChangedEvent extends AbstractStateEvent {
 
     public TrainDataChangedEvent(long trainId) {
-        this.trainId = trainId;
+        super(trainId);
     }
 
     public TrainDataChangedEvent() {
     }
 
-    public long getTrainId() {
-        return trainId;
+    @Override
+    public String toString() {
+        return "TrainDataChangedEvent{} " + super.toString();
     }
 }

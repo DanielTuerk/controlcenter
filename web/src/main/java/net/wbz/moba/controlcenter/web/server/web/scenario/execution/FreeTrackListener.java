@@ -16,6 +16,8 @@ import net.wbz.moba.controlcenter.web.server.SelectrixHelper;
 import net.wbz.moba.controlcenter.web.server.web.editor.block.BusAddressIdentifier;
 import net.wbz.moba.controlcenter.web.server.web.scenario.ScenarioManager;
 import net.wbz.moba.controlcenter.web.shared.scenario.Route;
+import net.wbz.moba.controlcenter.web.shared.scenario.Scenario;
+import net.wbz.moba.controlcenter.web.shared.scenario.Scenario.RUN_STATE;
 import net.wbz.moba.controlcenter.web.shared.track.model.TrackBlock;
 import net.wbz.selectrix4java.block.BlockListener;
 import net.wbz.selectrix4java.block.BlockNumberListener;
@@ -45,18 +47,31 @@ abstract class FreeTrackListener {
      * End block of the track.
      */
     private final Device device;
+    /**
+     * Registered blocks to check.
+     */
     private final List<BlockListener> blockListeners = new ArrayList<>();
     private final ScenarioManager scenarioManager;
+    /**
+     * Actual executed {@link Scenario}.
+     */
+    private final Scenario scenario;
+    /**
+     * Actual running {@link Route} in the route sequences of the {@link Scenario}.
+     */
     private final Route route;
 
     /**
      * Create listener.
-     * 
+     *
+     * @param scenario {@link Scenario}
      * @param route {@link Route}
      * @param device connected {@link Device}
      * @param scenarioManager {@link ScenarioManager}
      */
-    FreeTrackListener(@NotNull Route route, @NotNull Device device, ScenarioManager scenarioManager) {
+    FreeTrackListener(Scenario scenario, @NotNull Route route, @NotNull Device device,
+            ScenarioManager scenarioManager) {
+        this.scenario = scenario;
         this.route = route;
         this.trackBlocks = route.getTrack().getTrackBlocks();
         trackBlocks.add(route.getEnd());
@@ -131,7 +146,7 @@ abstract class FreeTrackListener {
 
     private boolean noDependingRoutesRunning(Collection<TrackBlock> blocks) {
         boolean run = true;
-        while (run) {
+        while (run && scenario.getRunState() != RUN_STATE.STOPPED) {
             // TODO refactor to listeners or (and) route dependencies
             if (scenarioManager.isDependingRouteRunning(route, blocks)) {
                 // dependency running, wait and recheck

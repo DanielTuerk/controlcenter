@@ -1,7 +1,6 @@
 package net.wbz.moba.controlcenter.web.server.web.editor.block;
 
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
@@ -15,7 +14,6 @@ import org.apache.commons.lang.NotImplementedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
@@ -26,12 +24,9 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
 import net.wbz.moba.controlcenter.web.server.EventBroadcaster;
-import net.wbz.moba.controlcenter.web.server.web.scenario.ScenarioServiceImpl;
-import net.wbz.moba.controlcenter.web.server.web.scenario.ScenarioStateListener;
 import net.wbz.moba.controlcenter.web.server.web.train.TrainManager;
 import net.wbz.moba.controlcenter.web.server.web.train.TrainServiceImpl;
 import net.wbz.moba.controlcenter.web.server.web.viewer.TrackViewerServiceImpl;
-import net.wbz.moba.controlcenter.web.shared.scenario.Scenario;
 import net.wbz.moba.controlcenter.web.shared.track.model.BusDataConfiguration;
 import net.wbz.moba.controlcenter.web.shared.track.model.Signal;
 import net.wbz.moba.controlcenter.web.shared.track.model.Signal.FUNCTION;
@@ -168,18 +163,18 @@ public class SignalBlockRegistry extends AbstractBlockRegistry<Signal> {
                 // monitoring block
                 addFeedbackBlockListener(new SignalMonitoringBlockListener(signalBlock, trackViewerService,
                         getTrainManager()) {
-                    @Override
-                    public void trackClear() {
-                        SignalBlock signalBlock = getSignalBlock();
-                        log.debug("track clear: signalBlock {}", signalBlock);
-                        if (signalBlock.getWaitingTrain() != null) {
-                            // start a waiting train in the signal stop block
-                            startWaitingTrainForFreeTrack(signalBlock);
-                        } else {
-                            // set the signal to free for next trains entering which check this state
-                            signalBlock.setMonitoringBlockFree(true);
-                        }
-                    }
+                    // @Override
+                    // public void trackClear() {
+                    // SignalBlock signalBlock = getSignalBlock();
+                    // log.debug("track clear: signalBlock {}", signalBlock);
+                    // if (signalBlock.getWaitingTrain() != null) {
+                    // // start a waiting train in the signal stop block
+                    // startWaitingTrainForFreeTrack(signalBlock);
+                    // } else {
+                    // // set the signal to free for next trains entering which check this state
+                    // signalBlock.setMonitoringBlockFree(true);
+                    // }
+                    // }
                 });
 
                 if (signal.getType() != TYPE.EXIT) {
@@ -206,8 +201,8 @@ public class SignalBlockRegistry extends AbstractBlockRegistry<Signal> {
                      * Exit signals getting the waiting train from the scenario and only have to clear the waiting train
                      * in case of leaving the stop block.
                      */
-                    addFeedbackBlockListener(new ExitSignalStopBlockListener(signalBlock, getTrainManager(),
-                            getTrainService()));
+                    // addFeedbackBlockListener(new ExitSignalStopBlockListener(signalBlock, getTrainManager(),
+                    // getTrainService()));
 
                 }
             }
@@ -261,7 +256,7 @@ public class SignalBlockRegistry extends AbstractBlockRegistry<Signal> {
     }
 
     private synchronized void startWaitingTrainForFreeTrack(SignalBlock signalBlock) {
-        throw new NotImplementedException();
+        throw new NotImplementedException("");
         // log.debug("start waiting train for signalBlock: {}", signalBlock);
         //
         // BusDataConfiguration monitoringBlockFunctionOfSignalBlock = signalBlock.getSignal().getMonitoringBlock()

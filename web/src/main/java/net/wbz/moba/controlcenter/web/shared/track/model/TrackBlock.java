@@ -103,6 +103,9 @@ public class TrackBlock extends AbstractDto {
 
     @Override
     public boolean equals(Object o) {
+
+        // TODO remove? because only ID from abstract dto?!
+
         if (this == o) {
             return true;
         }

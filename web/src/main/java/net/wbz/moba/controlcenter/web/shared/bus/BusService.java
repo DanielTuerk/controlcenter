@@ -63,13 +63,36 @@ public interface BusService extends RemoteService {
      */
     void sendBusData(int busNr, int address, int data);
 
+    /**
+     * Start recording to the give file name.
+     *
+     * @param fileName name of file to store the record on local system
+     */
     void startRecording(String fileName);
 
+    /**
+     * Stop the actual running recording.
+     */
     void stopRecording();
 
+    /**
+     * Start playback from the give file path.
+     *
+     * @param absoluteFilePath path of file on local system
+     */
     void startPlayer(String absoluteFilePath);
 
+    /**
+     * Stop the actual running playback.
+     */
     void stopPlayer();
 
+    /**
+     * List all available records from local file system.
+     *
+     * @return file names
+     */
     Collection<String> getRecords();
+
+    void requestResendLastEvent(String eventClazzName);
 }

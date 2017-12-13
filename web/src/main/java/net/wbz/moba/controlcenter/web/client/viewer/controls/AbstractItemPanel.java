@@ -36,7 +36,6 @@ abstract public class AbstractItemPanel<Model extends AbstractDto, StateEvent ex
     private Panel headerPanelContent;
     private PanelBody panelBody;
     private PanelHeader panelHeader;
-    private final RemoteEventListener deviceInfoEventListener;
 
     private Label lblName;
     private Label lblState;
@@ -44,20 +43,6 @@ abstract public class AbstractItemPanel<Model extends AbstractDto, StateEvent ex
 
     public AbstractItemPanel(Model model, String title) {
         this.model = model;
-
-        // add event receiver for the device connection state
-        deviceInfoEventListener = new RemoteEventListener() {
-            public void apply(Event anEvent) {
-                if (anEvent instanceof DeviceInfoEvent) {
-                    DeviceInfoEvent event = (DeviceInfoEvent) anEvent;
-                    if (event.getEventType() == DeviceInfoEvent.TYPE.CONNECTED) {
-                        deviceConnectionChanged(true);
-                    } else if (event.getEventType() == DeviceInfoEvent.TYPE.DISCONNECTED) {
-                        deviceConnectionChanged(false);
-                    }
-                }
-            }
-        };
 
         lblName = new Label(title);
         lblState = new Label();
@@ -108,8 +93,6 @@ abstract public class AbstractItemPanel<Model extends AbstractDto, StateEvent ex
         super.onLoad();
         add(panelHeader);
         add(panelBody);
-
-        EventReceiver.getInstance().addListener(DeviceInfoEvent.class, deviceInfoEventListener);
     }
 
     @Override
@@ -117,8 +100,6 @@ abstract public class AbstractItemPanel<Model extends AbstractDto, StateEvent ex
         super.onUnload();
         remove(panelBody);
         remove(panelHeader);
-
-        EventReceiver.getInstance().removeListener(DeviceInfoEvent.class, deviceInfoEventListener);
     }
 
     public Model getModel() {

@@ -55,7 +55,7 @@ public class GridPosition extends AbstractDto {
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(x, y);
+        return Objects.hashCode(super.hashCode(), x, y);
     }
 
     @Override

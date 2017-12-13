@@ -32,7 +32,6 @@ abstract class RouteEndBlockListener implements BlockListener {
 
     @Override
     public void blockFreed(int blockNr) {
-
     }
 
     /**

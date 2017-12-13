@@ -1,5 +1,7 @@
 package net.wbz.moba.controlcenter.web.shared.bus;
 
+import com.google.common.base.Objects;
+
 import de.novanic.eventservice.client.event.Event;
 
 /**
@@ -29,6 +31,25 @@ public class BusDataEvent implements Event {
 
     public int getData() {
         return data;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        BusDataEvent that = (BusDataEvent) o;
+        return super.equals(o) && getBus() == that.getBus() &&
+                getAddress() == that.getAddress() &&
+                getData() == that.getData();
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(super.hashCode(), getBus(), getAddress(), getData());
     }
 
     @Override

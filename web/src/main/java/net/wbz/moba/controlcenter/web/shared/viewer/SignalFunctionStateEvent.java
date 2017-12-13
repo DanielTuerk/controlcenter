@@ -1,9 +1,6 @@
 package net.wbz.moba.controlcenter.web.shared.viewer;
 
-import java.util.List;
-
 import de.novanic.eventservice.client.event.Event;
-import net.wbz.moba.controlcenter.web.shared.track.model.BusDataConfiguration;
 import net.wbz.moba.controlcenter.web.shared.track.model.Signal;
 
 /**
@@ -11,34 +8,47 @@ import net.wbz.moba.controlcenter.web.shared.track.model.Signal;
  */
 public class SignalFunctionStateEvent implements Event {
 
-    private List<BusDataConfiguration> configurations;
+    private Long signalId;
     private Signal.FUNCTION signalFunction;
 
     public SignalFunctionStateEvent() {
     }
 
-    public SignalFunctionStateEvent(List<BusDataConfiguration> configurations, Signal.FUNCTION signalFunction) {
-        this.configurations = configurations;
+    public SignalFunctionStateEvent(Long signalId, Signal.FUNCTION signalFunction) {
+        this.signalId = signalId;
         this.signalFunction = signalFunction;
     }
 
-    public List<BusDataConfiguration> getConfigurations() {
-        return configurations;
+    public Long getSignalId() {
+        return signalId;
     }
 
     public Signal.FUNCTION getSignalFunction() {
         return signalFunction;
     }
 
-    public void setSignalFunction(Signal.FUNCTION signalFunction) {
-        this.signalFunction = signalFunction;
-    }
-
     @Override
     public String toString() {
         return "SignalFunctionStateEvent{" +
-                "configurations=" + configurations +
+                "signalId=" + signalId +
                 ", signalFunction=" + signalFunction +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        SignalFunctionStateEvent that = (SignalFunctionStateEvent) o;
+        return com.google.common.base.Objects.equal(signalId, that.signalId);
+    }
+
+    @Override
+    public int hashCode() {
+        return com.google.common.base.Objects.hashCode(signalId);
     }
 }

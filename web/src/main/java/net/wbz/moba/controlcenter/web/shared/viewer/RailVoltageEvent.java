@@ -1,6 +1,7 @@
 package net.wbz.moba.controlcenter.web.shared.viewer;
 
 import com.google.common.base.Objects;
+
 import de.novanic.eventservice.client.event.Event;
 
 /**

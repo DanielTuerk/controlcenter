@@ -2,91 +2,89 @@
 <module rename-to='ControlCenterApp'>
 
 
-    <!-- Inherit the core Web Toolkit stuff. -->
-    <inherits name='com.google.gwt.core.Core'/>
-    <inherits name='com.google.gwt.user.User'/>
-    <inherits name="com.google.gwt.i18n.I18N"/>
-    <inherits name="com.google.gwt.i18n.CldrLocales"/>
-    <inherits name="com.google.gwt.user.theme.clean.CleanResources"/>
+  <!-- Inherit the core Web Toolkit stuff. -->
+  <inherits name='com.google.gwt.core.Core'/>
+  <inherits name='com.google.gwt.user.User'/>
+  <inherits name="com.google.gwt.i18n.I18N"/>
+  <inherits name="com.google.gwt.i18n.CldrLocales"/>
+  <inherits name="com.google.gwt.user.theme.clean.CleanResources"/>
 
-    <!-- Enable debug ID. -->
-    <inherits name="com.google.gwt.user.Debug"/>
-    <set-property name="gwt.enableDebugId" value="true"/>
+  <!-- Enable debug ID. -->
+  <inherits name="com.google.gwt.user.Debug"/>
+  <set-property name="gwt.enableDebugId" value="true"/>
 
-    <!-- Internationalization support. -->
-    <extend-property name="locale" values="en"/>
+  <!-- Internationalization support. -->
+  <extend-property name="locale" values="en"/>
 
-    <extend-property name="locale" values="ar"/>
-    <extend-property name="locale" values="fr"/>
-    <extend-property name="locale" values="zh"/>
+  <extend-property name="locale" values="ar"/>
+  <extend-property name="locale" values="fr"/>
+  <extend-property name="locale" values="zh"/>
 
-    <set-property-fallback name="locale" value="en"/>
-    <set-configuration-property name="locale.cookie" value="SHOWCASE_LOCALE"/>
-    <set-configuration-property name="locale.useragent" value="Y"/>
+  <set-property-fallback name="locale" value="en"/>
+  <set-configuration-property name="locale.cookie" value="SHOWCASE_LOCALE"/>
+  <set-configuration-property name="locale.useragent" value="Y"/>
 
-    <!--<source path="client" />-->
-
-
-
-    <!--&lt;!&ndash; Inherit the core Web Toolkit stuff.                        &ndash;&gt;-->
-    <!--<inherits name='com.google.gwt.user.User'/>-->
-
-    <!--&lt;!&ndash; Inherit the default GWT style sheet.  You can change       &ndash;&gt;-->
-    <!--&lt;!&ndash; the theme of your GWT application by uncommenting          &ndash;&gt;-->
-    <!--&lt;!&ndash; any one of the following lines.                            &ndash;&gt;-->
-    <!--<inherits name='com.google.gwt.user.theme.standard.Standard'/>-->
-    <!--&lt;!&ndash;<inherits name='com.google.gwt.user.theme.standard.Standard'/>&ndash;&gt;-->
-    <!--&lt;!&ndash; <inherits name='com.google.gwt.user.theme.chrome.Chrome'/> &ndash;&gt;-->
-    <!--&lt;!&ndash; <inherits name='com.google.gwt.user.theme.dark.Dark'/>     &ndash;&gt;-->
-
-    <!--&lt;!&ndash; Other module inherits                                      &ndash;&gt;-->
-
-    <inherits name='com.orange.links.Links'/>
-    <inherits name='com.google.gwt.widgetideas.WidgetIdeas'/>
-    <inherits name='com.google.gwt.libideas.LibIdeas'/>
-    <inherits name="com.google.gwt.gen2.logging.LoggingBase"/>
-
-    <inherits name="com.google.gwt.logging.Logging"/>
-    <set-property name="gwt.logging.logLevel" value="INFO"/>
-    <set-property name="gwt.logging.enabled" value="FALSE"/>
-    <set-property name="gwt.logging.consoleHandler" value="ENABLED"/>
-    <!--<set-property name="gwt.logging.popupHandler" value="DISABLED" />-->
-    <set-property name="gwt.logging.developmentModeHandler" value="ENABLED" />
-
-    <!-- Google Guave -->
-    <inherits name="com.google.common.base.Base" />
-    <inherits name="com.google.common.collect.Collect"/>
-
-    <inherits name="thothbot.parallax.core.Core"/>
-
-    <inherits name="com.kiouri.sliderbar.SliderBarMVP" />
-
-    <inherits name="org.vectomatic.libgwtsvg"/>
-
-    <inherits name="org.gwtbootstrap3.GwtBootstrap3"/>
-    <inherits name="org.gwtbootstrap3.extras.positionedtabs.PositionedTabs"/>
-    <inherits name="org.gwtbootstrap3.extras.toggleswitch.ToggleSwitch"/>
-    <inherits name="org.gwtbootstrap3.extras.select.Select"/>
-    <inherits name="org.gwtbootstrap3.extras.slider.Slider"/>
-    <inherits name="org.gwtbootstrap3.extras.notify.Notify"/>
+  <!--<source path="client" />-->
 
 
-    <inherits name="com.google.web.bindery.requestfactory.RequestFactory"/>
+  <!--&lt;!&ndash; Inherit the core Web Toolkit stuff.                        &ndash;&gt;-->
+  <!--<inherits name='com.google.gwt.user.User'/>-->
 
-    <inherits name="de.novanic.eventservice.GWTEventService"/>
+  <!--&lt;!&ndash; Inherit the default GWT style sheet.  You can change       &ndash;&gt;-->
+  <!--&lt;!&ndash; the theme of your GWT application by uncommenting          &ndash;&gt;-->
+  <!--&lt;!&ndash; any one of the following lines.                            &ndash;&gt;-->
+  <!--<inherits name='com.google.gwt.user.theme.standard.Standard'/>-->
+  <!--&lt;!&ndash;<inherits name='com.google.gwt.user.theme.standard.Standard'/>&ndash;&gt;-->
+  <!--&lt;!&ndash; <inherits name='com.google.gwt.user.theme.chrome.Chrome'/> &ndash;&gt;-->
+  <!--&lt;!&ndash; <inherits name='com.google.gwt.user.theme.dark.Dark'/>     &ndash;&gt;-->
 
-    <entry-point class='net.wbz.moba.controlcenter.web.client.ControlCenterApp'/>
+  <!--&lt;!&ndash; Other module inherits                                      &ndash;&gt;-->
+  <inherits name='com.orange.links.Links'/>
+  <inherits name='com.google.gwt.widgetideas.WidgetIdeas'/>
+  <inherits name='com.google.gwt.libideas.LibIdeas'/>
+  <inherits name="com.google.gwt.gen2.logging.LoggingBase"/>
 
-    <!-- Specify the paths for translatable code                    -->
-    <source path='client'/>
-    <source path='shared'/>
+  <inherits name="com.google.gwt.logging.Logging"/>
+  <set-property name="gwt.logging.logLevel" value="INFO"/>
+  <set-property name="gwt.logging.enabled" value="FALSE"/>
+  <set-property name="gwt.logging.consoleHandler" value="ENABLED"/>
+  <!--<set-property name="gwt.logging.popupHandler" value="DISABLED" />-->
+  <set-property name="gwt.logging.developmentModeHandler" value="ENABLED"/>
 
-    <!--&lt;!&ndash;   Logging &ndash;&gt;-->
-    <!--<inherits name="com.google.gwt.logging.Logging"/>-->
-    <!--<set-property name="gwt.logging.enabled" value="TRUE"/>-->
-    <!--<set-property name="gwt.logging.logLevel" value="ALL"/>-->
+  <!-- Google Guave -->
+  <inherits name="com.google.common.base.Base"/>
+  <inherits name="com.google.common.collect.Collect"/>
 
-    <!--<set-property name="gwt.logging.consoleHandler" value="DISABLED" />-->
-    <!--<set-property name="gwt.logging.popupHandler" value="DISABLED" />-->
+  <inherits name="thothbot.parallax.core.Core"/>
+
+  <inherits name="com.kiouri.sliderbar.SliderBarMVP"/>
+
+  <inherits name="org.vectomatic.libgwtsvg"/>
+
+  <inherits name="org.gwtbootstrap3.GwtBootstrap3"/>
+  <inherits name="org.gwtbootstrap3.extras.positionedtabs.PositionedTabs"/>
+  <inherits name="org.gwtbootstrap3.extras.toggleswitch.ToggleSwitch"/>
+  <inherits name="org.gwtbootstrap3.extras.select.Select"/>
+  <inherits name="org.gwtbootstrap3.extras.slider.Slider"/>
+  <inherits name="org.gwtbootstrap3.extras.notify.Notify"/>
+
+
+  <inherits name="com.google.web.bindery.requestfactory.RequestFactory"/>
+
+  <inherits name="de.novanic.eventservice.GWTEventService"/>
+
+  <entry-point class='net.wbz.moba.controlcenter.web.client.ControlCenterApp'/>
+
+  <!-- Specify the paths for translatable code                    -->
+  <source path='client'/>
+  <source path='shared'/>
+
+  <!--&lt;!&ndash;   Logging &ndash;&gt;-->
+  <!--<inherits name="com.google.gwt.logging.Logging"/>-->
+  <!--<set-property name="gwt.logging.enabled" value="TRUE"/>-->
+  <!--<set-property name="gwt.logging.logLevel" value="ALL"/>-->
+
+  <!--<set-property name="gwt.logging.consoleHandler" value="DISABLED" />-->
+  <!--<set-property name="gwt.logging.popupHandler" value="DISABLED" />-->
 
 </module>

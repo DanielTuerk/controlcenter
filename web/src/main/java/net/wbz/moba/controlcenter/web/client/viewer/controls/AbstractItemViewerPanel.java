@@ -11,6 +11,7 @@ import de.novanic.eventservice.client.event.Event;
 import de.novanic.eventservice.client.event.listener.RemoteEventListener;
 import net.wbz.moba.controlcenter.web.client.EventReceiver;
 import net.wbz.moba.controlcenter.web.shared.AbstractStateEvent;
+import net.wbz.moba.controlcenter.web.shared.bus.DeviceInfoEvent;
 import net.wbz.moba.controlcenter.web.shared.train.TrainDataChangedEvent;
 
 /**
@@ -24,7 +25,7 @@ abstract public class AbstractItemViewerPanel<ItemPanel extends AbstractItemPane
     private final Map<Long, ItemPanel> itemPanelByIdMap = Maps.newHashMap();
     private final FlowPanel itemsContainerPanel = new FlowPanel();
     private final Map<Class<? extends EventType>, RemoteEventListener> eventListeners = new HashMap<>();
-
+    private final RemoteEventListener deviceInfoEventListener;
     private RemoteEventListener dataChangeEventListener;
 
     public AbstractItemViewerPanel() {
@@ -36,6 +37,22 @@ abstract public class AbstractItemViewerPanel<ItemPanel extends AbstractItemPane
         registerItemEventListeners();
 
         registerDataListener();
+
+        // add event receiver for the device connection state
+        deviceInfoEventListener = new RemoteEventListener() {
+            public void apply(Event anEvent) {
+                if (anEvent instanceof DeviceInfoEvent) {
+                    DeviceInfoEvent event = (DeviceInfoEvent) anEvent;
+                    for (ItemPanel itemPanel : itemPanelByIdMap.values()) {
+                        if (event.getEventType() == DeviceInfoEvent.TYPE.CONNECTED) {
+                            itemPanel.deviceConnectionChanged(true);
+                        } else if (event.getEventType() == DeviceInfoEvent.TYPE.DISCONNECTED) {
+                            itemPanel.deviceConnectionChanged(false);
+                        }
+                    }
+                }
+            }
+        };
 
     }
 
@@ -80,6 +97,8 @@ abstract public class AbstractItemViewerPanel<ItemPanel extends AbstractItemPane
     protected void onLoad() {
         super.onLoad();
 
+        EventReceiver.getInstance().removeListener(DeviceInfoEvent.class, deviceInfoEventListener);
+
         EventReceiver.getInstance().addListener(getDataEventClass(), dataChangeEventListener);
 
         for (Map.Entry<Class<? extends EventType>, RemoteEventListener> eventListenerEntry : eventListeners
@@ -88,6 +107,8 @@ abstract public class AbstractItemViewerPanel<ItemPanel extends AbstractItemPane
         }
 
         loadData();
+
+        EventReceiver.getInstance().addListener(DeviceInfoEvent.class, deviceInfoEventListener);
     }
 
     private void loadData() {

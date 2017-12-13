@@ -10,8 +10,6 @@ import com.google.common.base.Optional;
 
 import net.wbz.moba.controlcenter.web.server.web.scenario.ScenarioServiceImpl;
 import net.wbz.moba.controlcenter.web.shared.scenario.Scenario;
-import net.wbz.moba.controlcenter.web.shared.track.model.Signal.FUNCTION;
-import net.wbz.moba.controlcenter.web.shared.train.Train;
 import net.wbz.moba.controlcenter.web.shared.train.TrainService;
 import net.wbz.moba.controlcenter.web.shared.viewer.TrackViewerService;
 

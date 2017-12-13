@@ -283,6 +283,11 @@ public class BusServiceImpl extends RemoteServiceServlet implements BusService {
         return recordsAbsoluteFilePath;
     }
 
+    @Override
+    public void requestResendLastEvent(final String eventClazzName) {
+        eventBroadcaster.refireEvent(eventClazzName);
+    }
+
     public void connectBus() {
         if (activeDevice != null) {
             try {

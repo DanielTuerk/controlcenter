@@ -106,8 +106,8 @@ public class TrainManager {
                                     eventBroadcaster.fireEvent(new TrainFunctionStateEvent(train.getId(), trainFunction,
                                             active));
                                     break;
+                                }
                             }
-                        }
                         }
 
                         @Override

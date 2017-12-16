@@ -39,13 +39,4 @@ public class EventReceiver {
         theRemoteEventService.removeListener(DomainFactory.getDomain(eventClazz.getName()), listener);
     }
 
-    /**
-     * Manually fire a event from the client to all client listeners.
-     * TODO remove? because it will only send to the actual client and where is no chance to use the server event cache
-     * 
-     * @param event {@link Event}
-     */
-    public void fireEvent(Event event) {
-        theRemoteEventService.addEvent(DomainFactory.getDomain(event.getClass().getName()), event);
-    }
 }

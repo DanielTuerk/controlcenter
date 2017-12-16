@@ -148,49 +148,12 @@ public class StatePanel extends Composite {
         RequestUtils.getInstance().getBusService().stopRecording(RequestUtils.VOID_ASYNC_CALLBACK);
     }
 
-    private void updatePlayerState(boolean playing) {
-        btnPlayerStart.setEnabled(!playing);
-        btnPlayerStop.setEnabled(playing);
-    }
-
-    private void toggleRailVoltageState() {
-        RequestUtils.getInstance().getBusService().toggleRailVoltage(RequestUtils.VOID_ASYNC_CALLBACK);
-    }
-
     @Override
     protected void onLoad() {
         EventReceiver.getInstance().addListener(DeviceInfoEvent.class, deviceInfoEventListener);
         EventReceiver.getInstance().addListener(PlayerEvent.class, busDataPlayerEventListener);
         EventReceiver.getInstance().addListener(RailVoltageEvent.class, voltageEventListener);
         EventReceiver.getInstance().addListener(RecordingEvent.class, recordingEventListener);
-
-        // TODO removeable if we have sever event cache
-        RequestUtils.getInstance().getBusService().isBusConnected(new OnlySuccessAsyncCallback<Boolean>() {
-            @Override
-            public void onSuccess(Boolean connected) {
-                if (connected) {
-                    RequestUtils.getInstance().getBusService().getDevices(new AsyncCallback<Collection<DeviceInfo>>() {
-                        @Override
-                        public void onFailure(Throwable caught) {
-                        }
-
-                        @Override
-                        public void onSuccess(Collection<DeviceInfo> result) {
-                            for (DeviceInfo deviceInfo : result) {
-                                if (deviceInfo.isConnected()) {
-                                    EventReceiver.getInstance().fireEvent(new DeviceInfoEvent(deviceInfo,
-                                            DeviceInfoEvent.TYPE.CONNECTED));
-                                    break;
-                                }
-                            }
-                        }
-                    });
-
-                } else {
-                    EventReceiver.getInstance().fireEvent(new DeviceInfoEvent(null, DeviceInfoEvent.TYPE.DISCONNECTED));
-                }
-            }
-        });
     }
 
     @Override
@@ -200,6 +163,15 @@ public class StatePanel extends Composite {
         EventReceiver.getInstance().removeListener(DeviceInfoEvent.class, busDataPlayerEventListener);
         EventReceiver.getInstance().removeListener(RailVoltageEvent.class, voltageEventListener);
         EventReceiver.getInstance().removeListener(RecordingEvent.class, recordingEventListener);
+    }
+
+    private void updatePlayerState(boolean playing) {
+        btnPlayerStart.setEnabled(!playing);
+        btnPlayerStop.setEnabled(playing);
+    }
+
+    private void toggleRailVoltageState() {
+        RequestUtils.getInstance().getBusService().toggleRailVoltage(RequestUtils.VOID_ASYNC_CALLBACK);
     }
 
     private void updateDeviceConnectionState(@Nullable DeviceInfo deviceInfo, boolean connected) {

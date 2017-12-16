@@ -15,6 +15,8 @@ import com.google.gwt.user.client.ui.RootLayoutPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
 
+import de.novanic.eventservice.client.event.Event;
+import de.novanic.eventservice.client.event.listener.RemoteEventListener;
 import net.wbz.moba.controlcenter.web.client.Callbacks.OnlySuccessAsyncCallback;
 import net.wbz.moba.controlcenter.web.client.device.StatePanel;
 import net.wbz.moba.controlcenter.web.client.editor.track.TrackEditorContainer;
@@ -24,6 +26,7 @@ import net.wbz.moba.controlcenter.web.client.viewer.bus.BusMonitorPanel;
 import net.wbz.moba.controlcenter.web.client.viewer.settings.ConfigPanel;
 import net.wbz.moba.controlcenter.web.client.viewer.track.TrackViewerContainer;
 import net.wbz.moba.controlcenter.web.shared.constrution.Construction;
+import net.wbz.moba.controlcenter.web.shared.constrution.CurrentConstructionChangeEvent;
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
@@ -41,6 +44,8 @@ public class ControlCenterApp implements EntryPoint {
     private WelcomeContainer welcomeContainerContainer;
 
     private List<Widget> containerPanels = new ArrayList<>();
+    private RemoteEventListener constructionListener;
+    private DockLayoutPanel dockLayoutPanel;
 
     public ControlCenterApp() {
     }
@@ -69,6 +74,26 @@ public class ControlCenterApp implements EntryPoint {
                         }
                     }
                 });
+
+        constructionListener = new RemoteEventListener() {
+            @Override
+            public void apply(Event anEvent) {
+                if (anEvent instanceof CurrentConstructionChangeEvent) {
+                    reloadControlCenter();
+                }
+            }
+        };
+        EventReceiver.getInstance().addListener(CurrentConstructionChangeEvent.class, constructionListener);
+    }
+
+    private void reloadControlCenter() {
+        if (welcomeContainerContainer != null && RootLayoutPanel.get().getWidgetIndex(welcomeContainerContainer) >= 0) {
+            RootLayoutPanel.get().remove(welcomeContainerContainer);
+        }
+        if (dockLayoutPanel != null && RootLayoutPanel.get().getWidgetIndex(dockLayoutPanel) >= 0) {
+            RootLayoutPanel.get().remove(dockLayoutPanel);
+        }
+        loadControlCenter();
     }
 
     private void loadLastUsedConstruction() {
@@ -134,7 +159,7 @@ public class ControlCenterApp implements EntryPoint {
 
         final AppMenu appMenu = createAppMenu();
 
-        DockLayoutPanel dockLayoutPanel = new DockLayoutPanel(Style.Unit.PX);
+        dockLayoutPanel = new DockLayoutPanel(Style.Unit.PX);
         dockLayoutPanel.addNorth(appMenu, 50);
 
         StatePanel statePanel = new StatePanel();

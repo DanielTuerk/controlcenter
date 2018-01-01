@@ -2,11 +2,17 @@ package net.wbz.moba.controlcenter.web.client.viewer.controls.scenario;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import de.novanic.eventservice.client.event.Event;
+import de.novanic.eventservice.client.event.listener.RemoteEventListener;
 import net.wbz.moba.controlcenter.web.client.Callbacks.OnlySuccessAsyncCallback;
+import net.wbz.moba.controlcenter.web.client.EventReceiver;
 import net.wbz.moba.controlcenter.web.client.RequestUtils;
 import net.wbz.moba.controlcenter.web.client.viewer.controls.AbstractItemViewerPanel;
+import net.wbz.moba.controlcenter.web.shared.scenario.RouteStateEvent;
 import net.wbz.moba.controlcenter.web.shared.scenario.Scenario;
 import net.wbz.moba.controlcenter.web.shared.scenario.ScenarioStateEvent;
 import net.wbz.moba.controlcenter.web.shared.scenario.ScenariosChangedEvent;
@@ -18,6 +24,15 @@ import net.wbz.moba.controlcenter.web.shared.scenario.ScenariosChangedEvent;
  */
 public class ScenarioViewerPanel extends
         AbstractItemViewerPanel<ScenarioItemPanel, ScenarioStateEvent, ScenariosChangedEvent> {
+
+    /**
+     * Listener for the {@link RouteStateEvent}s to delegate to update the route state of the {@link ScenarioItemPanel}.
+     */
+    private RemoteEventListener routeStateListener;
+    /**
+     * Mapping of scenario ids to the {@link ScenarioItemPanel}s.
+     */
+    private Map<Long, ScenarioItemPanel> scenarioIdItemPanels = new HashMap<>();
 
     @Override
     protected List<Class<? extends ScenarioStateEvent>> getStateEventClasses() {
@@ -33,14 +48,40 @@ public class ScenarioViewerPanel extends
 
     @Override
     protected void loadItems() {
+        scenarioIdItemPanels.clear();
         RequestUtils.getInstance().getScenarioEditorService().getScenarios(
                 new OnlySuccessAsyncCallback<Collection<Scenario>>() {
                     @Override
                     public void onSuccess(Collection<Scenario> result) {
                         for (Scenario scenario : result) {
-                            addItemPanel(new ScenarioItemPanel(scenario));
+                            ScenarioItemPanel panel = new ScenarioItemPanel(scenario);
+                            addItemPanel(panel);
+                            scenarioIdItemPanels.put(scenario.getId(), panel);
                         }
                     }
                 });
+    }
+
+    @Override
+    protected void addListeners() {
+        super.addListeners();
+        routeStateListener = new RemoteEventListener() {
+
+            @Override
+            public void apply(Event anEvent) {
+                if (anEvent instanceof RouteStateEvent) {
+                    Long scenarioId = ((RouteStateEvent) anEvent).getScenarioId();
+                    scenarioIdItemPanels.get(scenarioId).updateRouteState((RouteStateEvent) anEvent);
+                }
+            }
+        };
+        EventReceiver.getInstance().addListener(RouteStateEvent.class, routeStateListener);
+
+    }
+
+    @Override
+    protected void removeListeners() {
+        super.removeListeners();
+        EventReceiver.getInstance().removeListener(RouteStateEvent.class, routeStateListener);
     }
 }

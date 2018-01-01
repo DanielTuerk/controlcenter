@@ -36,4 +36,11 @@ public interface ScenarioStateListener {
      * @param scenario {@link Scenario}
      */
     void scenarioQueued(Scenario scenario);
+
+    /**
+     * The given scenario is paused.
+     *
+     * @param scenario {@link Scenario}
+     */
+    void scenarioPaused(Scenario scenario);
 }

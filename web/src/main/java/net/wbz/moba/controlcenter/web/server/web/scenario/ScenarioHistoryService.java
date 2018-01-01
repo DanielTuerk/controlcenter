@@ -56,6 +56,10 @@ public class ScenarioHistoryService implements ScenarioStateListener {
     public void scenarioQueued(Scenario scenario) {
     }
 
+    @Override
+    public void scenarioPaused(Scenario scenario) {
+    }
+
     @Transactional
     private void createHistoryEntry(Scenario scenario, DateTime startDate) {
         ScenarioHistoryEntity entity = new ScenarioHistoryEntity();

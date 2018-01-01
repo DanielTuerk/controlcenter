@@ -9,6 +9,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 
+import net.wbz.moba.controlcenter.web.server.web.scenario.RouteListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,11 +62,13 @@ public class ScenarioExecutor {
      */
     private final List<ScenarioStateListener> listeners = new ArrayList<>();
     private final ScenarioManager scenarioManager;
+    private final List<RouteListener> routeListeners = new ArrayList<>();
 
     @Inject
     public ScenarioExecutor(TrackViewerServiceImpl trackViewerService, TrainServiceImpl trainService,
             SignalBlockRegistry signalBlockRegistry, TrainManager trainManager, DeviceManager deviceManager,
-            TrackBuilder trackBuilder, EventBroadcaster eventBroadcaster, ScenarioManager scenarioManager) {
+            TrackBuilder trackBuilder, EventBroadcaster eventBroadcaster, ScenarioManager scenarioManager,
+            ScenarioRouteEventBroadcaster scenarioRouteEventBroadcaster) {
         this.trackViewerService = trackViewerService;
         this.trainService = trainService;
         this.signalBlockRegistry = signalBlockRegistry;
@@ -79,6 +82,8 @@ public class ScenarioExecutor {
                 .build();
         // TODO shutdown
         taskExecutor = Executors.newCachedThreadPool(namedThreadFactory);
+
+        routeListeners.add(scenarioRouteEventBroadcaster);
     }
 
     /**
@@ -89,7 +94,8 @@ public class ScenarioExecutor {
     public synchronized void startScenario(Scenario scenario) {
         if (!executionsByScenarioId.containsKey(scenario.getId())) {
             final ScenarioExecution scenarioExecution = new ScenarioExecution(scenario, trackViewerService,
-                    trainService, signalBlockRegistry, deviceManager, trainManager, trackBuilder, scenarioManager) {
+                    trainService, signalBlockRegistry, deviceManager, trainManager, trackBuilder, scenarioManager,
+                    routeListeners) {
                 @Override
                 protected void fireScenarioStateChangeEvent(Scenario scenario) {
                     if (scenario.getRunState() == RUN_STATE.FINISHED) {
@@ -129,6 +135,14 @@ public class ScenarioExecutor {
         listeners.remove(listener);
     }
 
+    public void addRouteListener(RouteListener listener) {
+        routeListeners.add(listener);
+    }
+
+    public void removeRouteListener(RouteListener listener) {
+        routeListeners.remove(listener);
+    }
+
     private void finishExecution(Scenario scenario) {
         executionsByScenarioId.remove(scenario.getId());
         ScenarioExecutor.this.fireEvent(scenario);
@@ -144,6 +158,7 @@ public class ScenarioExecutor {
                     listener.scenarioQueued(scenario);
                     break;
                 case PAUSED:
+                    listener.scenarioPaused(scenario);
                     break;
                 case STOPPED:
                     listener.scenarioStopped(scenario);

@@ -101,14 +101,18 @@ abstract public class AbstractItemViewerPanel<ItemPanel extends AbstractItemPane
 
         EventReceiver.getInstance().addListener(getDataEventClass(), dataChangeEventListener);
 
-        for (Map.Entry<Class<? extends EventType>, RemoteEventListener> eventListenerEntry : eventListeners
-                .entrySet()) {
-            EventReceiver.getInstance().addListener(eventListenerEntry.getKey(), eventListenerEntry.getValue());
-        }
+        addListeners();
 
         loadData();
 
         EventReceiver.getInstance().addListener(DeviceInfoEvent.class, deviceInfoEventListener);
+    }
+
+    protected void addListeners() {
+        for (Map.Entry<Class<? extends EventType>, RemoteEventListener> eventListenerEntry : eventListeners
+                .entrySet()) {
+            EventReceiver.getInstance().addListener(eventListenerEntry.getKey(), eventListenerEntry.getValue());
+        }
     }
 
     private void loadData() {
@@ -124,14 +128,18 @@ abstract public class AbstractItemViewerPanel<ItemPanel extends AbstractItemPane
     protected void onUnload() {
         super.onUnload();
 
+        removeListeners();
+
+        resetItems();
+    }
+
+    protected void removeListeners() {
         for (Map.Entry<Class<? extends EventType>, RemoteEventListener> eventListenerEntry : eventListeners
                 .entrySet()) {
             EventReceiver.getInstance().removeListener(eventListenerEntry.getKey(), eventListenerEntry.getValue());
         }
 
         EventReceiver.getInstance().removeListener(TrainDataChangedEvent.class, dataChangeEventListener);
-
-        resetItems();
     }
 
     protected abstract void loadItems();

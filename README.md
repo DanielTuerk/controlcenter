@@ -3,7 +3,7 @@ ControlCenter
 
 Software to control an model railroad construction with selectrix.
 
-Take a look at the website: http://danieltuerk.github.io/controlcenter
+For more information feel free to contact me, the current state is NOT ready to use. 
 
 ###Supported Format: SX1
 

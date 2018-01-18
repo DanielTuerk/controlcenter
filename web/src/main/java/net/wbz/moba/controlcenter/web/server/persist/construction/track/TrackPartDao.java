@@ -20,9 +20,12 @@ import net.wbz.moba.controlcenter.web.server.persist.AbstractDao;
 public class TrackPartDao extends AbstractDao<AbstractTrackPartEntity> {
     private static final Logger LOG = LoggerFactory.getLogger(TrackPartDao.class);
 
+    private final GridPositionDao gridPositionDao;
+
     @Inject
-    public TrackPartDao(Provider<EntityManager> entityManager) {
+    public TrackPartDao(Provider<EntityManager> entityManager, GridPositionDao gridPositionDao) {
         super(entityManager, AbstractTrackPartEntity.class);
+        this.gridPositionDao = gridPositionDao;
     }
 
     public List<AbstractTrackPartEntity> findByConstructionId(Long constructionId) {
@@ -38,5 +41,12 @@ public class TrackPartDao extends AbstractDao<AbstractTrackPartEntity> {
                 + " WHERE t.trackBlock.id = :blockId", AbstractTrackPartEntity.class)
                 .setParameter("blockId", blockId)
                 .getResultList();
+    }
+
+    public boolean deleteById(AbstractTrackPartEntity id) {
+        // TODO gridpos delete by id
+        return getEntityManager().createQuery("DELETE FROM TRACK_PART t WHERE t.id = :id")
+                .setParameter("id", id)
+                .executeUpdate() == 1;
     }
 }

@@ -1,11 +1,14 @@
 package net.wbz.moba.controlcenter.web.server.web.scenario;
 
+import com.google.common.base.Function;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 import javax.annotation.Nullable;
 
+import net.wbz.moba.controlcenter.web.server.persist.construction.track.GridPositionDao;
+import net.wbz.moba.controlcenter.web.server.persist.construction.track.GridPositionEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,6 +60,7 @@ public class ScenarioManager {
     private final StationDao stationDao;
     private final RouteDao routeDao;
     private final RouteSequenceDao routeSequenceDao;
+
     private final EventBroadcaster eventBroadcaster;
     private final ScenarioDataMapper dataMapper;
     private final RouteDataMapper routeDataMapper;
@@ -263,6 +267,7 @@ public class ScenarioManager {
     }
 
     private void fireRoutesChanged() {
+        // TODO split to create, update, delete event; to prevent reload and rebuild all tracks
         eventBroadcaster.fireEvent(new RoutesChangedEvent());
     }
 

@@ -10,6 +10,7 @@ import org.gwtbootstrap3.client.ui.TextBox;
 import org.gwtbootstrap3.client.ui.html.UnorderedList;
 import org.vectomatic.dom.svg.utils.SVGConstants;
 
+import com.google.common.base.Optional;
 import com.google.common.base.Strings;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -117,12 +118,14 @@ public class RouteEditModalBody extends Composite {
                                             if (trackWidget instanceof AbstractSwitchWidget) {
                                                 // paint by switch function
                                                 AbstractSwitchWidget switchWidget = (AbstractSwitchWidget) trackWidget;
-                                                int i = track.getTrackFunctions()
-                                                        .indexOf(switchWidget.getTrackPart().getToggleFunction());
-                                                BusDataConfiguration toggleFunctionConfig = track.getTrackFunctions()
-                                                        .get(i);
-                                                switchWidget.updateFunctionState(toggleFunctionConfig,
-                                                        toggleFunctionConfig.getBitState());
+                                                BusDataConfiguration switchToggleFunction = switchWidget.getTrackPart()
+                                                        .getToggleFunction();
+                                                Optional<Boolean> functionState = track.getTrackFunctionState(
+                                                        switchToggleFunction);
+                                                if (functionState.isPresent()) {
+                                                    switchWidget.updateFunctionState(switchToggleFunction,
+                                                            functionState.get());
+                                                }
                                             } else {
                                                 // repaint default widgets to update the color
                                                 trackWidget.repaint();
@@ -204,7 +207,7 @@ public class RouteEditModalBody extends Composite {
         AbstractTrackPart trackPart = trackWidget.getTrackPart();
         // check for existing to delete
         for (GridPosition routeBlockPart : routeBlock.getWaypoints()) {
-            if (routeBlockPart.equals(trackPart.getGridPosition())) {
+            if (routeBlockPart.isSame(trackPart.getGridPosition())) {
                 routeBlock.getWaypoints().remove(routeBlockPart);
                 return;
             }

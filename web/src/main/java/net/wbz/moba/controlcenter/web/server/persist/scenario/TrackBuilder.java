@@ -185,9 +185,9 @@ public class TrackBuilder {
 
                 Map<GridPosition, AbstractTrackPart> positionsCopy = Maps
                         .newHashMap(positions);
-                for (GridPosition gridPosition : positionsCopy.keySet()) {
-                    gridPosition.setId(null);
-                }
+                // for (GridPosition gridPosition : positionsCopy.keySet()) {
+                // gridPosition.setId(null);
+                // }
 
                 if (positionsCopy.containsKey(nextPosition)) {
                     AbstractTrackPart trackPartOfNextPos = positionsCopy.get(nextPosition);

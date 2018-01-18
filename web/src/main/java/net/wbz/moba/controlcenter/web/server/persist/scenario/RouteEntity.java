@@ -4,6 +4,8 @@ import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 
 import com.googlecode.jmapper.annotations.JMap;
@@ -49,7 +51,7 @@ public class RouteEntity extends AbstractEntity {
      * Optional waypoints between the start and end point.
      */
     @JMap
-    @OneToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     private List<GridPositionEntity> waypoints;
 
     public String getName() {

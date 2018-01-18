@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
+import javax.persistence.EntityManager;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,6 +21,7 @@ import net.wbz.moba.controlcenter.web.server.EventBroadcaster;
 import net.wbz.moba.controlcenter.web.server.persist.construction.ConstructionDao;
 import net.wbz.moba.controlcenter.web.server.persist.construction.ConstructionEntity;
 import net.wbz.moba.controlcenter.web.server.persist.construction.track.AbstractTrackPartEntity;
+import net.wbz.moba.controlcenter.web.server.persist.construction.track.GridPositionDao;
 import net.wbz.moba.controlcenter.web.server.persist.construction.track.TrackBlockDao;
 import net.wbz.moba.controlcenter.web.server.persist.construction.track.TrackBlockEntity;
 import net.wbz.moba.controlcenter.web.server.persist.construction.track.TrackPartDao;
@@ -62,17 +65,19 @@ public class TrackManager {
     private final EventBroadcaster eventBroadcaster;
     private final TrackPartDao trackPartDao;
     private final ConstructionDao constructionDao;
+    private final GridPositionDao gridPositionDao;
     private final TrackPartDataMapper trackPartDataMapper;
     private final TrackBlockDao trackBlockDao;
+    private final Provider<EntityManager> entityManager;
     private final DataMapper<TrackBlock, TrackBlockEntity> trackBlockDataMapper = new DataMapper<>(TrackBlock.class,
             TrackBlockEntity.class);
     private final TrackBlockRegistry trackBlockRegistry;
     private final SignalBlockRegistry signalBlockRegistry;
 
     /**
-     * Cached track of current {@link Construction}.
+     * Cached track entities of current {@link Construction}.
      */
-    private final Collection<AbstractTrackPart> cachedData = Lists.newArrayList();
+    private final Collection<AbstractTrackPartEntity> cachedData = Lists.newArrayList();
     /**
      * Cached {@link TrackBlock}s of current {@link Construction}.
      */
@@ -84,14 +89,18 @@ public class TrackManager {
 
     @Inject
     public TrackManager(DeviceManager deviceManager, EventBroadcaster eventBroadcaster, TrackPartDao trackPartDao,
-            ConstructionDao constructionDao, TrackPartDataMapper trackPartDataMapper, TrackBlockDao trackBlockDao,
-            TrackBlockRegistry trackBlockRegistry, SignalBlockRegistry signalBlockRegistry) {
+            ConstructionDao constructionDao, GridPositionDao gridPositionDao, TrackPartDataMapper trackPartDataMapper,
+            TrackBlockDao trackBlockDao,
+            Provider<EntityManager> entityManager, TrackBlockRegistry trackBlockRegistry,
+            SignalBlockRegistry signalBlockRegistry) {
         this.eventBroadcaster = eventBroadcaster;
         this.deviceManager = deviceManager;
         this.trackPartDao = trackPartDao;
         this.constructionDao = constructionDao;
+        this.gridPositionDao = gridPositionDao;
         this.trackPartDataMapper = trackPartDataMapper;
         this.trackBlockDao = trackBlockDao;
+        this.entityManager = entityManager;
         this.trackBlockRegistry = trackBlockRegistry;
         this.signalBlockRegistry = signalBlockRegistry;
 
@@ -154,8 +163,16 @@ public class TrackManager {
         }
     }
 
-    @Transactional
+    // @Transactional
     public void saveTrack(Collection<AbstractTrackPart> trackParts) {
+        performSave(trackParts);
+
+        // reload track and register for connected device
+        loadData();
+    }
+
+    @Transactional
+    public void performSave(Collection<AbstractTrackPart> trackParts) {
         ConstructionEntity constructionEntity = getCurrentConstruction();
 
         // load all existing to detect deleted track parts
@@ -180,13 +197,28 @@ public class TrackManager {
                 }
             }
             if (!found) {
+                Long gridPosId = null;
+                if (abstractTrackPartEntity.getGridPosition() != null) {
+                    gridPosId = abstractTrackPartEntity.getGridPosition().getId();
+                    abstractTrackPartEntity.setGridPosition(null);
+                    gridPositionDao.delete(gridPosId);
+                }
+                // entityManager.get().flush();
+                // TODO not working for relation to gridpos
                 trackPartDao.delete(abstractTrackPartEntity);
+                // if (gridPosId != null) {
+                // }
             }
         }
 
-        // reload track and register for connected device
-        loadData();
     }
+
+    // /**
+    // * Clear the cache and reload the track data from database.
+    // */
+    // public void reloadData() {
+    // loadData();
+    // }
 
     private ConstructionEntity getCurrentConstruction() {
         return constructionDao.findById(currentConstruction.getId());
@@ -225,7 +257,7 @@ public class TrackManager {
     }
 
     public Collection<AbstractTrackPart> getTrack() {
-        return cachedData;
+        return trackPartDataMapper.transformTrackPartEntities(cachedData);
     }
 
     public Collection<TrackBlock> loadTrackBlocks() {
@@ -245,7 +277,7 @@ public class TrackManager {
             List<AbstractTrackPartEntity> result = trackPartDao.findByConstructionId(currentConstruction.getId());
             if (!result.isEmpty()) {
                 log.info("return track parts");
-                cachedData.addAll(trackPartDataMapper.transformTrackPartEntities(result));
+                cachedData.addAll(result);
 
                 if (deviceManager.isConnected()) {
                     registerConsumersByConnectedDeviceForTrackParts();
@@ -291,7 +323,7 @@ public class TrackManager {
 
         log.info("create consumers of track parts");
         busAddressListenersOfTheCurrentTrack.clear();
-        Collection<AbstractTrackPart> trackParts = cachedData;
+        Collection<AbstractTrackPart> trackParts = getTrack();
         if (trackParts.size() == 0) {
             log.info("track is empty, skip register consumers");
             return;

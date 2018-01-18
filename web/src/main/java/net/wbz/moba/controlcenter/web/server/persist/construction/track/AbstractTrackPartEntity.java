@@ -18,6 +18,8 @@ import com.googlecode.jmapper.annotations.JMap;
 import net.wbz.moba.controlcenter.web.server.persist.AbstractEntity;
 import net.wbz.moba.controlcenter.web.server.persist.construction.ConstructionEntity;
 import net.wbz.moba.controlcenter.web.shared.track.model.AbstractTrackPart;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 /**
  * Model for a part of the track.
@@ -40,8 +42,8 @@ public abstract class AbstractTrackPartEntity extends AbstractEntity {
      * Position of the track part in the grid system of the construction.
      */
     @JMap
-    @NotNull
-    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private GridPositionEntity gridPosition;
 
     @JMap

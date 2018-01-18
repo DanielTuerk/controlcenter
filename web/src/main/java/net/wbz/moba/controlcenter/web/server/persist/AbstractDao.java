@@ -1,6 +1,5 @@
 package net.wbz.moba.controlcenter.web.server.persist;
 
-import java.util.List;
 import javax.inject.Provider;
 import javax.persistence.EntityManager;
 
@@ -68,4 +67,5 @@ public abstract class AbstractDao<T extends Identity> {
     public void flush() {
         getEntityManager().flush();
     }
+
 }

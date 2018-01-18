@@ -17,4 +17,12 @@ public class GridPositionDao extends AbstractDao<GridPositionEntity> {
     public GridPositionDao(Provider<EntityManager> entityManager) {
         super(entityManager, GridPositionEntity.class);
     }
+
+    public GridPositionEntity findByGridPositionCopy(GridPositionEntity input) {
+        return getEntityManager().createQuery("SELECT g FROM GRID_POSITION g"
+                + " WHERE g.x = :x AND g.y = :y", GridPositionEntity.class)
+                .setParameter("x", input.getX())
+                .setParameter("y", input.getY())
+                .getSingleResult();
+    }
 }

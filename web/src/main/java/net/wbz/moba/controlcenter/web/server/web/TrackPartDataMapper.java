@@ -2,7 +2,6 @@ package net.wbz.moba.controlcenter.web.server.web;
 
 import java.lang.reflect.Modifier;
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -70,7 +69,7 @@ public class TrackPartDataMapper {
         return (AbstractTrackPart) entityMappers.get(trackPart.getClass()).transformSource(trackPart);
     }
 
-    public Collection<AbstractTrackPart> transformTrackPartEntities(List<AbstractTrackPartEntity> entities) {
+    public Collection<AbstractTrackPart> transformTrackPartEntities(Collection<AbstractTrackPartEntity> entities) {
         return Lists.newArrayList(Iterables.transform(entities,
                 new Function<AbstractTrackPartEntity, AbstractTrackPart>() {
                     @Override

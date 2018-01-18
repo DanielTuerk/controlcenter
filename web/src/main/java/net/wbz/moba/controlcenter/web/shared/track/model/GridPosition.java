@@ -38,6 +38,11 @@ public class GridPosition extends AbstractDto {
     }
 
     @Override
+    public int hashCode() {
+        return Objects.hashCode(x, y);
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) {
             return true;
@@ -45,17 +50,9 @@ public class GridPosition extends AbstractDto {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        if (!super.equals(o)) {
-            return false;
-        }
         GridPosition that = (GridPosition) o;
         return x == that.x &&
                 y == that.y;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hashCode(super.hashCode(), x, y);
     }
 
     @Override

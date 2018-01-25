@@ -166,7 +166,7 @@ public class ScenarioManager {
         stationDao.delete(stationDao.findById(stationId));
     }
 
-    public Collection<Route> getRoutes() {
+    public synchronized Collection<Route> getRoutes() {
         if (routes.isEmpty()) {
             loadRoutesFromDatabase();
         }

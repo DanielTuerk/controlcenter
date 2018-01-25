@@ -1,5 +1,7 @@
 package net.wbz.moba.controlcenter.web.client.viewer.track.svg;
 
+import com.google.common.collect.Collections2;
+import com.google.gwt.user.client.rpc.core.java.util.Collections;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -203,8 +205,7 @@ public class TrackViewerPanel extends AbstractTrackViewerPanel {
             @Override
             public void onSuccess(Train result) {
                 BusDataConfiguration configAsIdentifier = new BusDataConfiguration(1, address, block, true);
-                if (trackWidgetsOfConfiguration.containsKey(configAsIdentifier)) {
-                    for (AbstractSvgTrackWidget svgTrackWidget : trackWidgetsOfConfiguration.get(configAsIdentifier)) {
+                for (AbstractSvgTrackWidget svgTrackWidget : getTrackWidgetsByConfig(configAsIdentifier)) {
                         if (svgTrackWidget instanceof AbstractBlockSvgTrackWidget) {
                             switch (state) {
                                 case ENTER:
@@ -216,9 +217,17 @@ public class TrackViewerPanel extends AbstractTrackViewerPanel {
                             }
                         }
                     }
-                }
             }
         });
+    }
+
+    private List<AbstractSvgTrackWidget> getTrackWidgetsByConfig(BusDataConfiguration config) {
+        for (BusDataConfiguration busDataConfiguration : trackWidgetsOfConfiguration.keySet()) {
+            if (busDataConfiguration.isSameConfig(config)) {
+                return trackWidgetsOfConfiguration.get(busDataConfiguration);
+            }
+        }
+        return new ArrayList<>();
     }
 
     @Override

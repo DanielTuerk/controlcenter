@@ -54,9 +54,7 @@ public class ScenarioViewerPanel extends
                     @Override
                     public void onSuccess(Collection<Scenario> result) {
                         for (Scenario scenario : result) {
-                            ScenarioItemPanel panel = new ScenarioItemPanel(scenario);
-                            addItemPanel(panel);
-                            scenarioIdItemPanels.put(scenario.getId(), panel);
+                            addItemPanel(new ScenarioItemPanel(scenario));
                         }
                     }
                 });

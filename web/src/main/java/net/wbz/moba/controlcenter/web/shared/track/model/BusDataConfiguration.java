@@ -83,9 +83,6 @@ public class BusDataConfiguration extends AbstractDto {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        if (!super.equals(o)) {
-            return false;
-        }
         BusDataConfiguration that = (BusDataConfiguration) o;
         return isSameConfig(that) &&
                 Objects.equal(getBitState(), that.getBitState());
@@ -93,14 +90,14 @@ public class BusDataConfiguration extends AbstractDto {
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(super.hashCode(), bus, address, bit, bitState);
+        return Objects.hashCode(bus, address, bit, bitState);
     }
 
     /**
      * Check that the given object has the same configuration for bus, address and bit.
      *
-     * @param that {@link BusDataConfiguration}
-     * @return {@link com.google.common.base.Optional}
+     * @param that {@link BusDataConfiguration} to compare
+     * @return {@code true} for same config on bus, address and bit
      */
     public boolean isSameConfig(BusDataConfiguration that) {
         return Objects.equal(getBus(), that.getBus()) &&

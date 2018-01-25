@@ -2,11 +2,9 @@ package net.wbz.moba.controlcenter.web.client.model.track;
 
 import java.util.Map;
 
-import net.wbz.moba.controlcenter.web.client.components.TrackBlockSelect;
 import org.gwtbootstrap3.client.ui.FieldSet;
 import org.gwtbootstrap3.client.ui.FormGroup;
 import org.gwtbootstrap3.client.ui.FormLabel;
-import org.gwtbootstrap3.extras.select.client.ui.Option;
 import org.vectomatic.dom.svg.OMSVGElement;
 import org.vectomatic.dom.svg.OMSVGTextElement;
 import org.vectomatic.dom.svg.utils.SVGConstants;
@@ -14,6 +12,7 @@ import org.vectomatic.dom.svg.utils.SVGConstants;
 import com.google.common.collect.Maps;
 import com.google.gwt.user.client.ui.Widget;
 
+import net.wbz.moba.controlcenter.web.client.components.TrackBlockSelect;
 import net.wbz.moba.controlcenter.web.client.editor.track.EditTrackWidgetHandler;
 import net.wbz.moba.controlcenter.web.shared.track.model.AbstractTrackPart;
 import net.wbz.moba.controlcenter.web.shared.track.model.BusDataConfiguration;
@@ -96,48 +95,11 @@ abstract public class AbstractBlockSvgTrackWidget<T extends AbstractTrackPart> e
         return dialogContent;
     }
 
-    // private void loadTrackBlocks() {
-    // RequestUtils.getInstance().getTrackEditorService().loadTrackBlocks(new AsyncCallback<Collection<TrackBlock>>() {
-    // @Override
-    // public void onFailure(Throwable throwable) {
-    //
-    // }
-    //
-    // @Override
-    // public void onSuccess(Collection<TrackBlock> trackBlocks) {
-    // selectBlock.add(new DeleteOption());
-    //
-    // for (TrackBlock trackBlock : trackBlocks) {
-    //
-    // if (trackBlock.getId() != null) {
-    // Option option = new Option();
-    // String value = String.valueOf(trackBlock.getId());
-    // option.setValue(value);
-    // option.setText(trackBlock.getDisplayValue());
-    // selectBlock.add(option);
-    // trackBlockSelectOptions.put(value, trackBlock);
-    //
-    // if (getTrackPart().getTrackBlock() != null) {
-    // if (getTrackPart().getTrackBlock().getId().equals(trackBlock.getId())) {
-    // selectBlock.setValue(value);
-    // }
-    // }
-    // }
-    // }
-    // selectBlock.refresh();
-    // }
-    // });
-    //
-    // }
-
     @Override
     public void onConfirmCallback() {
         super.onConfirmCallback();
         // save block config
         TrackBlock trackBlock = selectBlock.getSelectedTrackBlockValue();
-        // if (!Strings.isNullOrEmpty(selectBlock.getValue())) {
-        // trackBlock = trackBlockSelectOptions.get(selectBlock.getValue());
-        // }
         getTrackPart().setTrackBlock(trackBlock);
     }
 
@@ -148,10 +110,13 @@ abstract public class AbstractBlockSvgTrackWidget<T extends AbstractTrackPart> e
      * @param train {@link net.wbz.moba.controlcenter.web.shared.train.Train}
      */
     public void showTrainOnBlock(Train train) {
-        OMSVGTextElement trainTextElement = getSvgDocument().createSVGTextElement(1f, 24f, (short) 1, train.getName());
-        trainTextElement.getStyle().setSVGProperty(SVGConstants.CSS_FONT_SIZE_PROPERTY, "8pt");
-        trainElements.put(train, trainTextElement);
-        getSvgRootElement().appendChild(trainTextElement);
+        if (!trainElements.containsKey(train)) {
+            OMSVGTextElement trainTextElement = getSvgDocument().createSVGTextElement(1f, 24f, (short) 1,
+                    train.getName());
+            trainTextElement.getStyle().setSVGProperty(SVGConstants.CSS_FONT_SIZE_PROPERTY, "8pt");
+            trainElements.put(train, trainTextElement);
+            getSvgRootElement().appendChild(trainTextElement);
+        }
     }
 
     /**
@@ -183,10 +148,16 @@ abstract public class AbstractBlockSvgTrackWidget<T extends AbstractTrackPart> e
         }
     }
 
-    private class DeleteOption extends Option {
-        public DeleteOption() {
-            setValue(null);
-            setText("-- none --");
+    /**
+     * Reset the block to unknown state without train information.
+     */
+    public void resetBlock() {
+        // TODO activate asap the block state is reloaded on server side for railvoltage toggle
+        // unknownBlock();
+
+        for (Train train : trainElements.keySet()) {
+            removeTrainOnBlock(train);
         }
     }
+
 }

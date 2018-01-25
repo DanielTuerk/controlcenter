@@ -5,10 +5,10 @@ package net.wbz.moba.controlcenter.web.client.model.track;
  */
 public interface BlockPart {
 
-    public void freeBlock();
+    void freeBlock();
 
-    public void unknownBlock();
+    void unknownBlock();
 
-    public void usedBlock();
+    void usedBlock();
 
 }

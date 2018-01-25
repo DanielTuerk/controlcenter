@@ -1,7 +1,5 @@
 package net.wbz.moba.controlcenter.web.client.viewer.track.svg;
 
-import com.google.common.collect.Collections2;
-import com.google.gwt.user.client.rpc.core.java.util.Collections;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -185,6 +183,17 @@ public class TrackViewerPanel extends AbstractTrackViewerPanel {
         }
     }
 
+    @Override
+    protected void resetTrackForRailVoltage(boolean railVoltageOn) {
+        if (!railVoltageOn) {
+            for (AbstractSvgTrackWidget trackWidget : trackWidgets) {
+                if (trackWidget instanceof AbstractBlockSvgTrackWidget) {
+                    ((AbstractBlockSvgTrackWidget) trackWidget).resetBlock();
+                }
+            }
+        }
+    }
+
     /**
      * Show train label on the given block.
      *
@@ -206,17 +215,17 @@ public class TrackViewerPanel extends AbstractTrackViewerPanel {
             public void onSuccess(Train result) {
                 BusDataConfiguration configAsIdentifier = new BusDataConfiguration(1, address, block, true);
                 for (AbstractSvgTrackWidget svgTrackWidget : getTrackWidgetsByConfig(configAsIdentifier)) {
-                        if (svgTrackWidget instanceof AbstractBlockSvgTrackWidget) {
-                            switch (state) {
-                                case ENTER:
-                                    ((AbstractBlockSvgTrackWidget) svgTrackWidget).showTrainOnBlock(result);
-                                    break;
-                                case EXIT:
-                                    ((AbstractBlockSvgTrackWidget) svgTrackWidget).removeTrainOnBlock(result);
-                                    break;
-                            }
+                    if (svgTrackWidget instanceof AbstractBlockSvgTrackWidget) {
+                        switch (state) {
+                            case ENTER:
+                                ((AbstractBlockSvgTrackWidget) svgTrackWidget).showTrainOnBlock(result);
+                                break;
+                            case EXIT:
+                                ((AbstractBlockSvgTrackWidget) svgTrackWidget).removeTrainOnBlock(result);
+                                break;
                         }
                     }
+                }
             }
         });
     }

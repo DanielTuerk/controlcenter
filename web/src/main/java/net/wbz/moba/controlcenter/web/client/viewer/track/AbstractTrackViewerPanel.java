@@ -7,6 +7,7 @@ import net.wbz.moba.controlcenter.web.client.editor.track.AbstractTrackPanel;
 import net.wbz.moba.controlcenter.web.shared.bus.DeviceInfoEvent;
 import net.wbz.moba.controlcenter.web.shared.bus.FeedbackBlockEvent;
 import net.wbz.moba.controlcenter.web.shared.track.model.BusDataConfiguration;
+import net.wbz.moba.controlcenter.web.shared.viewer.RailVoltageEvent;
 import net.wbz.moba.controlcenter.web.shared.viewer.SignalFunctionStateEvent;
 import net.wbz.moba.controlcenter.web.shared.viewer.TrackPartBlockEvent;
 import net.wbz.moba.controlcenter.web.shared.viewer.TrackPartStateEvent;
@@ -26,6 +27,7 @@ abstract public class AbstractTrackViewerPanel extends AbstractTrackPanel {
     private final RemoteEventListener deviceConnectionEventListener;
     private final RemoteEventListener blockEventListener;
     private final RemoteEventListener feedbackBlockEventListener;
+    private final RemoteEventListener railVoltageEventListener;
 
     public AbstractTrackViewerPanel() {
         signalFunctionStateEventListener = new RemoteEventListener() {
@@ -72,7 +74,19 @@ abstract public class AbstractTrackViewerPanel extends AbstractTrackPanel {
                 }
             }
         };
+        railVoltageEventListener = new RemoteEventListener() {
+            public void apply(Event anEvent) {
+                if (anEvent instanceof RailVoltageEvent) {
+                    RailVoltageEvent event = (RailVoltageEvent) anEvent;
+                    resetTrackForRailVoltage(event.isState());
+                }
+            }
+        };
         getElement().setId(ID);
+    }
+
+    protected void resetTrackForRailVoltage(boolean railVoltageOn) {
+
     }
 
     protected void updateSignalState(SignalFunctionStateEvent signalFunctionStateEvent) {
@@ -87,6 +101,7 @@ abstract public class AbstractTrackViewerPanel extends AbstractTrackPanel {
         EventReceiver.getInstance().addListener(DeviceInfoEvent.class, deviceConnectionEventListener);
         EventReceiver.getInstance().addListener(TrackPartBlockEvent.class, blockEventListener);
         EventReceiver.getInstance().addListener(FeedbackBlockEvent.class, feedbackBlockEventListener);
+        EventReceiver.getInstance().addListener(RailVoltageEvent.class, railVoltageEventListener);
     }
 
     @Override
@@ -97,6 +112,7 @@ abstract public class AbstractTrackViewerPanel extends AbstractTrackPanel {
         EventReceiver.getInstance().removeListener(DeviceInfoEvent.class, deviceConnectionEventListener);
         EventReceiver.getInstance().removeListener(TrackPartBlockEvent.class, blockEventListener);
         EventReceiver.getInstance().removeListener(FeedbackBlockEvent.class, feedbackBlockEventListener);
+        EventReceiver.getInstance().removeListener(RailVoltageEvent.class, railVoltageEventListener);
     }
 
     protected void updateTrackPartState(BusDataConfiguration configuration, boolean state) {

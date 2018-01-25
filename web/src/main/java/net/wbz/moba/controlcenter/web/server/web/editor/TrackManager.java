@@ -6,8 +6,6 @@ import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
-import javax.inject.Provider;
-import javax.persistence.EntityManager;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -68,7 +66,6 @@ public class TrackManager {
     private final GridPositionDao gridPositionDao;
     private final TrackPartDataMapper trackPartDataMapper;
     private final TrackBlockDao trackBlockDao;
-    private final Provider<EntityManager> entityManager;
     private final DataMapper<TrackBlock, TrackBlockEntity> trackBlockDataMapper = new DataMapper<>(TrackBlock.class,
             TrackBlockEntity.class);
     private final TrackBlockRegistry trackBlockRegistry;
@@ -90,8 +87,7 @@ public class TrackManager {
     @Inject
     public TrackManager(DeviceManager deviceManager, EventBroadcaster eventBroadcaster, TrackPartDao trackPartDao,
             ConstructionDao constructionDao, GridPositionDao gridPositionDao, TrackPartDataMapper trackPartDataMapper,
-            TrackBlockDao trackBlockDao,
-            Provider<EntityManager> entityManager, TrackBlockRegistry trackBlockRegistry,
+            TrackBlockDao trackBlockDao, TrackBlockRegistry trackBlockRegistry,
             SignalBlockRegistry signalBlockRegistry) {
         this.eventBroadcaster = eventBroadcaster;
         this.deviceManager = deviceManager;
@@ -100,7 +96,6 @@ public class TrackManager {
         this.gridPositionDao = gridPositionDao;
         this.trackPartDataMapper = trackPartDataMapper;
         this.trackBlockDao = trackBlockDao;
-        this.entityManager = entityManager;
         this.trackBlockRegistry = trackBlockRegistry;
         this.signalBlockRegistry = signalBlockRegistry;
 

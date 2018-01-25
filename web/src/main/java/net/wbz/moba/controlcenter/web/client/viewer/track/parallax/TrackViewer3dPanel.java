@@ -19,8 +19,10 @@ import thothbot.parallax.core.client.RenderingPanel;
 /**
  * Viewer panel for the 3D scene.
  *
+ * @deprecated not used, was just a research
  * @author Daniel Tuerk
  */
+@Deprecated
 public class TrackViewer3dPanel extends AbstractTrackViewerPanel {
 
     private TrackViewerScene animatedScene;

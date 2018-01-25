@@ -8,6 +8,7 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
 
+import net.wbz.selectrix4java.device.RailVoltageListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -93,23 +94,16 @@ public class BusServiceImpl extends RemoteServiceServlet implements BusService {
             public void connected(Device device) {
                 final DeviceInfo deviceInfo = getDeviceInfo(device);
                 deviceInfo.setConnected(true);
+                // fire initial rail voltage state
                 BusServiceImpl.this.eventBroadcaster.fireEvent(new DeviceInfoEvent(deviceInfo,
                         DeviceInfoEvent.TYPE.CONNECTED));
-                // receive actual state of rail voltage -> no consumer available for addresses > 112
-                try {
-                    eventBroadcaster.fireEvent(new RailVoltageEvent(device.getRailVoltage()));
-
-                    device.getRailVoltageAddress().addListener(new BusAddressBitListener(
-                            AbstractDevice.RAILVOLTAGE_BIT) {
-                        @Override
-                        public void bitChanged(boolean oldValue, boolean newValue) {
-                            eventBroadcaster.fireEvent(new RailVoltageEvent(newValue));
-                        }
-                    });
-
-                } catch (DeviceAccessException e) {
-                    e.printStackTrace();
-                }
+                // add listener to receive state change
+                device.addRailVoltageListener(new RailVoltageListener() {
+                    @Override
+                    public void changed(boolean isOn) {
+                        eventBroadcaster.fireEvent(new RailVoltageEvent(isOn));
+                    }
+                });
             }
 
             @Override

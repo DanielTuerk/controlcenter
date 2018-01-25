@@ -143,8 +143,6 @@ public class TrackManager {
             log.error("can't register signal block listeners to active device", e);
         }
 
-        // init state of all feedback modules
-        device.requestCurrentFeedbackStateOfAllRegisteredFeedbackModules();
     }
 
     private void removeBusAddressListeners(Device device) {

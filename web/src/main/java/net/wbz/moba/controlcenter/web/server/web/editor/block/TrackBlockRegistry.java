@@ -154,22 +154,4 @@ public class TrackBlockRegistry extends AbstractBlockRegistry<TrackBlock> {
                 blockNumber, trainAddress, forward));
     }
 
-    public void addFeedbackListener(Device device, TrackBlock trackBlock, FeedbackBlockListener listener) {
-        try {
-            getFeedbackBlockModule(device, getBusAddressIdentifier(trackBlock.getBlockFunction()))
-                    .addFeedbackBlockListener(listener);
-        } catch (DeviceAccessException e) {
-            log.error("can't add feedback listener");
-        }
-    }
-
-    public void removeFeedbackListener(Device device, TrackBlock trackBlock, FeedbackBlockListener listener) {
-        try {
-            getFeedbackBlockModule(device, getBusAddressIdentifier(trackBlock.getBlockFunction()))
-                    .removeFeedbackBlockListener(listener);
-        } catch (DeviceAccessException e) {
-            log.error("can't add feedback listener");
-        }
-    }
-
 }

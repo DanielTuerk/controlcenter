@@ -33,6 +33,10 @@
         <level value="debug" />
     </logger>
 
+    <logger name="net.wbz.selectrix4java.block">
+        <level value="trace"/>
+    </logger>
+
     <root level="info">
         <appender-ref ref="STDOUT" />
         <appender-ref ref="FILE" />

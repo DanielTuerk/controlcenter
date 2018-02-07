@@ -72,36 +72,35 @@ public class ScenarioItemPanel extends AbstractItemPanel<Scenario, ScenarioState
                     + " (" + routeSequenceFromId.get().getPosition() + 1 + "/"
                     + getModel().getRouteSequences().size() + ")";
             getLblStateDetails().setText(text);
-        }
 
-        listGroupItem.setType(ListGroupItemType.DEFAULT);
-        // remove icon
-        for (int i = 0; i < listGroupItem.getWidgetCount(); i++) {
-            if (listGroupItem.getWidget(i) instanceof Icon) {
-                listGroupItem.remove(i);
-                break;
+            listGroupItem.setType(ListGroupItemType.DEFAULT);
+            // remove icon
+            for (int i = 0; i < listGroupItem.getWidgetCount(); i++) {
+                if (listGroupItem.getWidget(i) instanceof Icon) {
+                    listGroupItem.remove(i);
+                    break;
+                }
+            }
+            switch (event.getState()) {
+                case WAITING:
+                    listGroupItem.setType(ListGroupItemType.WARNING);
+                    listGroupItem.add(new Icon(IconType.PAUSE_CIRCLE));
+                    break;
+                case RUNNING:
+                    listGroupItem.setType(ListGroupItemType.INFO);
+                    listGroupItem.add(new Icon(IconType.PLAY_CIRCLE));
+                    break;
+                case FINISHED:
+                    listGroupItem.setType(ListGroupItemType.SUCCESS);
+                    listGroupItem.add(new Icon(IconType.CHECK_CIRCLE));
+                    break;
+                case FAILED:
+                    listGroupItem.setType(ListGroupItemType.DANGER);
+                    listGroupItem.add(new Icon(IconType.WARNING));
+                    listGroupItem.setText(listGroupItem.getText() + " " + event.getMessage());
+                    break;
             }
         }
-        switch (event.getState()) {
-            case WAITING:
-                listGroupItem.setType(ListGroupItemType.WARNING);
-                listGroupItem.add(new Icon(IconType.PAUSE_CIRCLE));
-                break;
-            case RUNNING:
-                listGroupItem.setType(ListGroupItemType.INFO);
-                listGroupItem.add(new Icon(IconType.PLAY_CIRCLE));
-                break;
-            case FINISHED:
-                listGroupItem.setType(ListGroupItemType.SUCCESS);
-                listGroupItem.add(new Icon(IconType.CHECK_CIRCLE));
-                break;
-            case FAILED:
-                listGroupItem.setType(ListGroupItemType.DANGER);
-                listGroupItem.add(new Icon(IconType.WARNING));
-                listGroupItem.setText(listGroupItem.getText() + " " + event.getMessage());
-                break;
-        }
-
     }
 
     @Override

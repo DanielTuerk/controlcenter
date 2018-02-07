@@ -58,8 +58,10 @@ public class TrackBuilder {
         Preconditions.checkNotNull(route.getStart(), "no route start");
         Preconditions.checkNotNull(route.getEnd(), "no route end");
 
+        Long trackBuildId = System.nanoTime();
+
         LOG.debug("start build track: {} ({})", route.getName(), route.getId());
-        routeStartTimeMillis.put(route.getId(), System.currentTimeMillis());
+        routeStartTimeMillis.put(trackBuildId, System.currentTimeMillis());
         Map<GridPosition, AbstractTrackPart> positions = new HashMap<>();
         GridPosition startPosition = null;
         GridPosition endPosition = null;
@@ -74,7 +76,7 @@ public class TrackBuilder {
             }
         }
 
-        Track track = buildTrack(positions, startPosition, endPosition, route.getWaypoints(), route.getId());
+        Track track = buildTrack(positions, startPosition, endPosition, route.getWaypoints(), trackBuildId);
 
         for (int i = 0; i < track.getGridPositions().size(); i++) {
             GridPosition gridPosition = track.getGridPositions().get(i);
@@ -96,23 +98,23 @@ public class TrackBuilder {
             }
         }
         LOG.debug("finished build track: {} ({}) in {} ms", new Object[] { route.getName(), route.getId(),
-                currentExecutionTime(route.getId()) });
+                currentExecutionTime(trackBuildId) });
         return track;
     }
 
     private Track buildTrack(Map<GridPosition, AbstractTrackPart> positions, GridPosition startPosition,
-            GridPosition endPosition, List<GridPosition> waypoints, Long routeId) throws TrackNotFoundException {
+            GridPosition endPosition, List<GridPosition> waypoints, Long trackBuildId) throws TrackNotFoundException {
         if (startPosition != null && endPosition != null) {
             AbstractTrackPart abstractTrackPart = positions.get(startPosition);
             LOG.trace("search forward routed tracks");
             Set<Track> forwardRoutedTrack = searchPath(new Track(), Maps.newHashMap(positions), startPosition,
                     endPosition,
-                    abstractTrackPart.getNextGridPositions(null), routeId);
+                    abstractTrackPart.getNextGridPositions(null), trackBuildId);
             LOG.trace("finished forward routed tracks ({})", forwardRoutedTrack.size());
             LOG.trace("search backward routed tracks");
             Set<Track> backwardRoutedTrack = searchPath(new Track(), Maps.newHashMap(positions), startPosition,
                     endPosition,
-                    abstractTrackPart.getLastGridPositions(), routeId);
+                    abstractTrackPart.getLastGridPositions(), trackBuildId);
             LOG.trace("finished backward routed tracks ({})", backwardRoutedTrack.size());
 
             LOG.trace("search shortest track");
@@ -178,17 +180,11 @@ public class TrackBuilder {
 
     private Set<Track> searchPath(Track track, Map<GridPosition, AbstractTrackPart> positions,
             GridPosition startPosition, GridPosition endPosition, Collection<GridPosition> nextGridPositions,
-            long routeId) throws TrackNotFoundException {
+            long trackBuildId) throws TrackNotFoundException {
         Set<Track> tracks = Sets.newHashSet();
         if (positions.containsKey(startPosition)) {
             for (GridPosition nextPosition : nextGridPositions) {
-
-                Map<GridPosition, AbstractTrackPart> positionsCopy = Maps
-                        .newHashMap(positions);
-                // for (GridPosition gridPosition : positionsCopy.keySet()) {
-                // gridPosition.setId(null);
-                // }
-
+                Map<GridPosition, AbstractTrackPart> positionsCopy = Maps.newHashMap(positions);
                 if (positionsCopy.containsKey(nextPosition)) {
                     AbstractTrackPart trackPartOfNextPos = positionsCopy.get(nextPosition);
                     Collection<GridPosition> lastGridPositions = trackPartOfNextPos.getLastGridPositions();
@@ -200,7 +196,7 @@ public class TrackBuilder {
 
                             // new track for possible branch
                             Set<Track> apply = apply(new Track(track), positionsCopy, startPosition, endPosition,
-                                    nextPosition, routeId);
+                                    nextPosition, trackBuildId);
                             if (apply != null) {
                                 tracks.addAll(apply);
                                 positionsCopy.remove(nextPosition);
@@ -223,9 +219,9 @@ public class TrackBuilder {
     }
 
     private Set<Track> apply(Track track, Map<GridPosition, AbstractTrackPart> positions, GridPosition startPosition,
-            GridPosition endPosition, GridPosition nextPosition, long routeId) throws TrackNotFoundException {
+            GridPosition endPosition, GridPosition nextPosition, long trackBuildId) throws TrackNotFoundException {
 
-        if (timeoutReached(routeId)) {
+        if (timeoutReached(trackBuildId)) {
             throw new TrackNotFoundException("timeout");
         }
 
@@ -244,16 +240,17 @@ public class TrackBuilder {
             }
 
             return searchPath(track, positions, nextPosition, endPosition,
-                    getNextGridPositions(positions, nextPosition, startPosition), routeId);
+                    getNextGridPositions(positions, nextPosition, startPosition), trackBuildId);
         }
     }
 
-    private boolean timeoutReached(long routeId) {
-        return !routeStartTimeMillis.containsKey(routeId) || currentExecutionTime(routeId) > TIMEOUT_IN_MILLIS;
+    private boolean timeoutReached(long trackBuildId) {
+        return !routeStartTimeMillis.containsKey(trackBuildId) || currentExecutionTime(
+                trackBuildId) > TIMEOUT_IN_MILLIS;
     }
 
-    private long currentExecutionTime(long routeId) {
-        return System.currentTimeMillis() - routeStartTimeMillis.get(routeId);
+    private long currentExecutionTime(long trackBuildId) {
+        return System.currentTimeMillis() - routeStartTimeMillis.get(trackBuildId);
     }
 
     public class TrackNotFoundException extends Exception {

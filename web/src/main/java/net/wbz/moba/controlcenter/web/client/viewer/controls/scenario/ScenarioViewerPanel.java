@@ -69,12 +69,13 @@ public class ScenarioViewerPanel extends
             public void apply(Event anEvent) {
                 if (anEvent instanceof RouteStateEvent) {
                     Long scenarioId = ((RouteStateEvent) anEvent).getScenarioId();
-                    scenarioIdItemPanels.get(scenarioId).updateRouteState((RouteStateEvent) anEvent);
+                    if (scenarioIdItemPanels.containsKey(scenarioId)) {
+                        scenarioIdItemPanels.get(scenarioId).updateRouteState((RouteStateEvent) anEvent);
+                    }
                 }
             }
         };
         EventReceiver.getInstance().addListener(RouteStateEvent.class, routeStateListener);
-
     }
 
     @Override

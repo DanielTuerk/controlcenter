@@ -29,6 +29,8 @@ import net.wbz.moba.controlcenter.web.shared.scenario.Scenario;
 import net.wbz.moba.controlcenter.web.shared.scenario.ScenarioStateEvent;
 
 /**
+ * Panel for the {@link Scenario}.
+ *
  * @author Daniel Tuerk
  */
 public class ScenarioItemPanel extends AbstractItemPanel<Scenario, ScenarioStateEvent> {
@@ -69,7 +71,7 @@ public class ScenarioItemPanel extends AbstractItemPanel<Scenario, ScenarioState
             listGroupItem.setText(routeSequenceFromId.get().getRoute().getName());
             // detail label text
             String text = event.getState().name()
-                    + " (" + routeSequenceFromId.get().getPosition() + 1 + "/"
+                    + " (" + routeSequenceFromId.get().getPosition() + "/"
                     + getModel().getRouteSequences().size() + ")";
             getLblStateDetails().setText(text);
 
@@ -116,7 +118,6 @@ public class ScenarioItemPanel extends AbstractItemPanel<Scenario, ScenarioState
                 for (ListGroupItem widgets : routeSequenceListGroupItemMap.values()) {
                     widgets.setType(ListGroupItemType.DEFAULT);
                 }
-
                 break;
             case IDLE:
                 btnSchedule.setEnabled(true);
@@ -136,7 +137,6 @@ public class ScenarioItemPanel extends AbstractItemPanel<Scenario, ScenarioState
                 btnStop.setEnabled(false);
                 break;
         }
-
         getLblState().setText(event.getState().name());
     }
 

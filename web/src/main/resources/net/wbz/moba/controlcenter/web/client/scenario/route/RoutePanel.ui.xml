@@ -5,7 +5,7 @@
   <b:Container fluid="true" ui:field="container">
     <b:Button type="PRIMARY" icon="PLUS" ui:field="btnCreateRoute"/>
     <b-gwt:CellTable ui:field="routeTable" bordered="true" condensed="true" striped="true" hover="true"
-      height="100%" width="90%"/>
+      height="100%" width="100%"/>
   </b:Container>
 
 </ui:UiBinder>

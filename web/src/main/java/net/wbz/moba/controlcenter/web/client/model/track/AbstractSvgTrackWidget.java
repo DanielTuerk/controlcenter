@@ -29,6 +29,8 @@ abstract public class AbstractSvgTrackWidget<T extends AbstractTrackPart> extend
         EditTrackWidgetHandler {
 
     public static final String CSS_WIDGET_DISABLED = "widget-disabled";
+    public static final int WIDGET_WIDTH = 25;
+    public static final int WIDGET_HEIGHT = 25;
     private final OMSVGDocument svgDocument = OMSVGParser.currentDocument();
     private final OMSVGSVGElement svgRootElement;
     /**
@@ -50,8 +52,8 @@ abstract public class AbstractSvgTrackWidget<T extends AbstractTrackPart> extend
 
         // Create the root svg element
         svgRootElement = svgDocument.createSVGSVGElement();
-        svgRootElement.setWidth(Style.Unit.PX, 25);
-        svgRootElement.setHeight(Style.Unit.PX, 25);
+        svgRootElement.setWidth(Style.Unit.PX, WIDGET_WIDTH);
+        svgRootElement.setHeight(Style.Unit.PX, WIDGET_HEIGHT);
 
         setEnabled(false);
     }

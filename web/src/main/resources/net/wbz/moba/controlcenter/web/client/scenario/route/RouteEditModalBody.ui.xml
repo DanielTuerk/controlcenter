@@ -50,8 +50,8 @@
           </b:Column>
         </b:Row>
 
-        <g:ScrollPanel height="400px" ui:field="trackPanelContainer">
-        </g:ScrollPanel>
+        <g:FlowPanel ui:field="trackPanelContainer">
+        </g:FlowPanel>
       </b:PanelBody>
     </b:Panel>
 

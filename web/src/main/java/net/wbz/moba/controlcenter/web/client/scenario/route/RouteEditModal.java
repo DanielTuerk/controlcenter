@@ -17,7 +17,6 @@ public class RouteEditModal extends AbstractEditModal<Route> {
     public RouteEditModal(Route route) {
         super("Edit Route", "Save", "Cancel", route);
         setWidth("80%");
-        setHeight("80%");
     }
 
     @Override

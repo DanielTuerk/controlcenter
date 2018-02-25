@@ -34,33 +34,46 @@ abstract class AppMenu extends Composite {
         initWidget(uiBinder.createAndBindUi(this));
     }
 
+    private void setAllInactive() {
+        linkViewer.setActive(false);
+        linkEditor.setActive(false);
+        linkBusMonitor.setActive(false);
+        linkScenarioEditor.setActive(false);
+        linkConfiguration.setActive(false);
+    }
+
     @UiHandler("linkViewer")
     void clickLinkViewer(ClickEvent event) {
         showViewer();
+        setAllInactive();
         linkViewer.setActive(true);
     }
 
     @UiHandler("linkEditor")
     void clickLinkEditor(ClickEvent event) {
         showEditor();
+        setAllInactive();
         linkEditor.setActive(true);
     }
 
     @UiHandler("linkBusMonitor")
     void clickLinkBusMonitor(ClickEvent event) {
         showBusMonitor();
+        setAllInactive();
         linkBusMonitor.setActive(true);
     }
 
     @UiHandler("linkScenarioEditor")
     void clickLinkScenarioEditor(ClickEvent event) {
         showScenarioEditor();
+        setAllInactive();
         linkScenarioEditor.setActive(true);
     }
 
     @UiHandler("linkConfiguration")
     void clickLinkConfiguration(ClickEvent event) {
         showConfiguration();
+        setAllInactive();
         linkConfiguration.setActive(true);
     }
 

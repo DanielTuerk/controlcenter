@@ -1,11 +1,14 @@
 package net.wbz.moba.controlcenter.web.client.scenario.route;
 
+import com.google.gwt.user.client.ui.Panel;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import org.gwtbootstrap3.client.ui.Container;
 import org.gwtbootstrap3.client.ui.InlineCheckBox;
 import org.gwtbootstrap3.client.ui.ListItem;
+import org.gwtbootstrap3.client.ui.Row;
 import org.gwtbootstrap3.client.ui.TextBox;
 import org.gwtbootstrap3.client.ui.html.UnorderedList;
 import org.vectomatic.dom.svg.utils.SVGConstants;
@@ -46,7 +49,7 @@ public class RouteEditModalBody extends Composite {
     private final List<HandlerRegistration> trackPartClickHandlers = new ArrayList<>();
     private final SimpleTrackPanel trackPanel;
     @UiField
-    ScrollPanel trackPanelContainer;
+    Panel trackPanelContainer;
     @UiField
     RouteEditTrackToolbar trackToolbar;
     @UiField

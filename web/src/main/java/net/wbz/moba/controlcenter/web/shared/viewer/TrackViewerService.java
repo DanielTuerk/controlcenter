@@ -1,9 +1,10 @@
 package net.wbz.moba.controlcenter.web.shared.viewer;
 
+import java.util.Map;
+
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
-import java.util.Map;
 import net.wbz.moba.controlcenter.web.guice.MyGuiceServletConfig;
 import net.wbz.moba.controlcenter.web.shared.track.model.BusDataConfiguration;
 import net.wbz.moba.controlcenter.web.shared.track.model.Signal;
@@ -14,6 +15,12 @@ import net.wbz.moba.controlcenter.web.shared.track.model.Signal;
 @RemoteServiceRelativePath(MyGuiceServletConfig.SERVICE_TRACK)
 public interface TrackViewerService extends RemoteService {
 
+    /**
+     * Toggle the trackpart of the given {@link BusDataConfiguration} to the given state.
+     *
+     * @param configuration {@link BusDataConfiguration} to change
+     * @param state new state
+     */
     void toggleTrackPart(BusDataConfiguration configuration, boolean state);
 
     /**
@@ -31,5 +38,11 @@ public interface TrackViewerService extends RemoteService {
      */
     void switchSignal(Signal signal, Signal.FUNCTION signalFunction);
 
+    /**
+     * Toggle state for each given {@link BusDataConfiguration}.
+     * 
+     * @see #toggleTrackPart(BusDataConfiguration, boolean)
+     * @param trackPartStates map of config with new state
+     */
     void toggleTrackParts(Map<BusDataConfiguration, Boolean> trackPartStates);
 }

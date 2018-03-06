@@ -84,8 +84,6 @@ abstract public class AbstractItemViewerPanel<ItemPanel extends AbstractItemPane
     }
 
     protected void addContent() {
-
-        // TODO: scrollable container
         add(itemsContainerPanel);
     }
 
@@ -120,7 +118,7 @@ abstract public class AbstractItemViewerPanel<ItemPanel extends AbstractItemPane
         loadItems();
     }
 
-    private void resetItems() {
+    protected void resetItems() {
         itemsContainerPanel.clear();
     }
 

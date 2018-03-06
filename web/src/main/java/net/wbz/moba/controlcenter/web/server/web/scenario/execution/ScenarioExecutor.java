@@ -3,13 +3,11 @@ package net.wbz.moba.controlcenter.web.server.web.scenario.execution;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 
-import net.wbz.moba.controlcenter.web.server.web.scenario.RouteListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,7 +18,7 @@ import com.google.inject.Singleton;
 import net.wbz.moba.controlcenter.web.server.EventBroadcaster;
 import net.wbz.moba.controlcenter.web.server.persist.scenario.TrackBuilder;
 import net.wbz.moba.controlcenter.web.server.web.editor.block.SignalBlockRegistry;
-import net.wbz.moba.controlcenter.web.server.web.scenario.ScenarioManager;
+import net.wbz.moba.controlcenter.web.server.web.scenario.RouteListener;
 import net.wbz.moba.controlcenter.web.server.web.scenario.ScenarioStateListener;
 import net.wbz.moba.controlcenter.web.server.web.train.TrainManager;
 import net.wbz.moba.controlcenter.web.server.web.train.TrainServiceImpl;
@@ -48,27 +46,30 @@ public class ScenarioExecutor {
     private final TrainManager trainManager;
     private final DeviceManager deviceManager;
     private final TrackBuilder trackBuilder;
-
-    /**
-     * Running executions of each scenario by id.
-     */
-    private final Map<Long, ScenarioExecution> executionsByScenarioId = new ConcurrentHashMap<>();
+    private final RouteExecutionObserver routeExecutionObserver;
     /**
      * Broadcaster for client side event handling of state changes.
      */
     private final EventBroadcaster eventBroadcaster;
     /**
+     * Running executions of each scenario by id.
+     */
+    private final Map<Long, ScenarioExecution> executionsByScenarioId = new ConcurrentHashMap<>();
+    /**
      * Server side listeners for state changes.
      */
     private final List<ScenarioStateListener> listeners = new ArrayList<>();
-    private final ScenarioManager scenarioManager;
+    /**
+     * Server side listeners for route run state changes.
+     */
     private final List<RouteListener> routeListeners = new ArrayList<>();
 
     @Inject
-    public ScenarioExecutor(TrackViewerServiceImpl trackViewerService, TrainServiceImpl trainService,
+    ScenarioExecutor(TrackViewerServiceImpl trackViewerService, TrainServiceImpl trainService,
             SignalBlockRegistry signalBlockRegistry, TrainManager trainManager, DeviceManager deviceManager,
-            TrackBuilder trackBuilder, EventBroadcaster eventBroadcaster, ScenarioManager scenarioManager,
-            ScenarioRouteEventBroadcaster scenarioRouteEventBroadcaster) {
+            TrackBuilder trackBuilder, EventBroadcaster eventBroadcaster,
+            ScenarioRouteEventBroadcaster scenarioRouteEventBroadcaster,
+            RouteExecutionObserver routeExecutionObserver) {
         this.trackViewerService = trackViewerService;
         this.trainService = trainService;
         this.signalBlockRegistry = signalBlockRegistry;
@@ -76,7 +77,7 @@ public class ScenarioExecutor {
         this.deviceManager = deviceManager;
         this.trackBuilder = trackBuilder;
         this.eventBroadcaster = eventBroadcaster;
-        this.scenarioManager = scenarioManager;
+        this.routeExecutionObserver = routeExecutionObserver;
 
         ThreadFactory namedThreadFactory = new ThreadFactoryBuilder().setNameFormat(getClass().getSimpleName() + "-%d")
                 .build();
@@ -94,8 +95,8 @@ public class ScenarioExecutor {
     public synchronized void startScenario(Scenario scenario) {
         if (!executionsByScenarioId.containsKey(scenario.getId())) {
             final ScenarioExecution scenarioExecution = new ScenarioExecution(scenario, trackViewerService,
-                    trainService, signalBlockRegistry, deviceManager, trainManager, trackBuilder, scenarioManager,
-                    routeListeners) {
+                    trainService, signalBlockRegistry, deviceManager, trainManager, trackBuilder,
+                    routeListeners, routeExecutionObserver) {
                 @Override
                 protected void fireScenarioStateChangeEvent(Scenario scenario) {
                     if (scenario.getRunState() == RUN_STATE.FINISHED) {
@@ -104,13 +105,7 @@ public class ScenarioExecutor {
                 }
             };
             executionsByScenarioId.put(scenario.getId(), scenarioExecution);
-            taskExecutor.submit(new Callable<Void>() {
-                @Override
-                public Void call() throws Exception {
-                    scenarioExecution.start();
-                    return null;
-                }
-            });
+            taskExecutor.submit(new ScenarioCallable(scenarioExecution));
         } else {
             LOG.error("scenario {} already running!", scenario);
         }

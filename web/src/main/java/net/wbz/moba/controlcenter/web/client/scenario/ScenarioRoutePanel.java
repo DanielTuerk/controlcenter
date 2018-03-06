@@ -34,30 +34,34 @@ abstract class ScenarioRoutePanel extends Composite {
     protected void onLoad() {
         super.onLoad();
 
-        name.setText(routeSequence.getRoute().getName());
+        name.setText(routeSequence.getRoute().getName() + " (pos: " + routeSequence.getPosition() + ")");
     }
 
     @UiHandler("btnMoveUp")
     void onClickMoveUp(ClickEvent ignored) {
-        movePosition(-1);
+        movePosition(true);
     }
 
     @UiHandler("btnMoveDown")
     void onClickMoveDown(ClickEvent ignored) {
-        movePosition(1);
+        movePosition(false);
     }
 
-    private void movePosition(int positionChange) {
-        int newPos = routeSequence.getPosition() + positionChange;
+    private void movePosition(boolean moveToTop) {
+        int positionChange = moveToTop ? -1 : 1;
+        int currentPos = routeSequence.getPosition();
+        int newPos = currentPos + positionChange;
 
-        for (RouteSequence sequence : scenario.getRouteSequences()) {
-            if (sequence.getPosition() == newPos) {
-                sequence.setPosition(sequence.getPosition() + (positionChange * -1));
+        if (newPos >= 0 && newPos < scenario.getRouteSequences().size()) {
+            for (RouteSequence sequence : scenario.getRouteSequences()) {
+                if (sequence.getPosition() == newPos) {
+                    // swap position
+                    sequence.setPosition(routeSequence.getPosition());
+                    routeSequence.setPosition(newPos);
+                }
             }
+            positionChanged();
         }
-        routeSequence.setPosition(newPos);
-
-        positionChanged();
     }
 
     @UiHandler("btnDelete")

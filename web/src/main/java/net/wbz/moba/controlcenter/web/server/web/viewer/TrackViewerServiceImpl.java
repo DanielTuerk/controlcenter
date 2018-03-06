@@ -75,37 +75,6 @@ public class TrackViewerServiceImpl extends RemoteServiceServlet implements Trac
             }
         }
         sendTrackPartStates(busAddressBits);
-        //
-        // try {
-        // if (deviceManager.getConnectedDevice() != null) {
-        // Device device = deviceManager.getConnectedDevice();
-        //
-        // Map<Integer, BusAddress> busAddresses = new HashMap<>();
-        // for (Entry<BusDataConfiguration, Boolean> entry : trackPartStates.entrySet()) {
-        // BusDataConfiguration busDataConfiguration = entry.getKey();
-        // if (busDataConfiguration != null && busDataConfiguration.isValid()) {
-        // assert busDataConfiguration.getBus() == 1;
-        // Integer address = busDataConfiguration.getAddress();
-        // if (!busAddresses.containsKey(address)) {
-        // busAddresses.put(address, device.getBusAddress(busDataConfiguration.getBus(),
-        // address));
-        // }
-        // BusAddress busAddress = busAddresses.get(address);
-        // if (entry.getValue()) {
-        // busAddress.setBit(busDataConfiguration.getBit());
-        // } else {
-        // busAddress.clearBit(busDataConfiguration.getBit());
-        // }
-        // }
-        // }
-        // // send data
-        // for (BusAddress busAddress : busAddresses.values()) {
-        // busAddress.send();
-        // }
-        // }
-        // } catch (DeviceAccessException e) {
-        // LOG.error("can't toggle track parts", e);
-        // }
     }
 
     @Override

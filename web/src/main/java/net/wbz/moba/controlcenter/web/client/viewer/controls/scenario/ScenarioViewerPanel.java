@@ -63,6 +63,12 @@ public class ScenarioViewerPanel extends
     }
 
     @Override
+    protected void resetItems() {
+        scenarioIdItemPanels.clear();
+        super.resetItems();
+    }
+
+    @Override
     protected void addListeners() {
         super.addListeners();
         routeStateListener = new RemoteEventListener() {

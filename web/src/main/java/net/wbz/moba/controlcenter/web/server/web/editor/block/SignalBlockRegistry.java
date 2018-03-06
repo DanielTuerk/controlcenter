@@ -86,7 +86,7 @@ public class SignalBlockRegistry extends AbstractBlockRegistry<Signal> {
 
             // set initial to HP0
             // TODO
-            trackViewerService.switchSignal(signal, FUNCTION.HP0);
+            // trackViewerService.switchSignal(signal, FUNCTION.HP0);
 
             if (checkBlockFunction(signal.getMonitoringBlock()) && checkBlockFunction(signal.getStopBlock())) {
 
@@ -108,22 +108,23 @@ public class SignalBlockRegistry extends AbstractBlockRegistry<Signal> {
                 addFeedbackBlockListener(new SignalMonitoringBlockListener(signalBlock, trackViewerService,
                         getTrainManager()));
 
-                /*
-                 * Only react for breaking and stop only be non exit signals.
-                 */
-                if (signal.getType() != TYPE.EXIT) {
-                    // stop block
-                    addFeedbackBlockListener(new SignalStopBlockListener(signalBlock, getTrainManager(),
-                            getTrainService()));
-                    // breaking block
-                    if (checkBlockFunction(signal.getBreakingBlock())) {
-                        addFeedbackBlockListener(new SignalBreakingBlockListener(signalBlock, getTrainManager()));
-                    }
-                    // entering block
-                    if (checkBlockFunction(signal.getEnteringBlock())) {
-                        addFeedbackBlockListener(new SignalEnteringBlockListener(signalBlock, getTrainManager()));
-                    }
-                }
+                // TODO disabled until needed, but also wrong behaviors for train feedback
+                // /*
+                // * Only react for breaking and stop only be non exit signals.
+                // */
+                // if (signal.getType() != TYPE.EXIT) {
+                // // stop block
+                // addFeedbackBlockListener(new SignalStopBlockListener(signalBlock, getTrainManager(),
+                // getTrainService()));
+                // // breaking block
+                // if (checkBlockFunction(signal.getBreakingBlock())) {
+                // addFeedbackBlockListener(new SignalBreakingBlockListener(signalBlock, getTrainManager()));
+                // }
+                // // entering block
+                // if (checkBlockFunction(signal.getEnteringBlock())) {
+                // addFeedbackBlockListener(new SignalEnteringBlockListener(signalBlock, getTrainManager()));
+                // }
+                // }
             }
         }
     }

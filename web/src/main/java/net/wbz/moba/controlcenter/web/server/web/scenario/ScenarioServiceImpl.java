@@ -1,7 +1,8 @@
 package net.wbz.moba.controlcenter.web.server.web.scenario;
 
-import org.apache.commons.lang.NotImplementedException;
-import org.apache.commons.lang.NotImplementedException;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.quartz.CronScheduleBuilder;
 import org.quartz.JobBuilder;
 import org.quartz.JobDetail;
@@ -49,9 +50,7 @@ public class ScenarioServiceImpl extends RemoteServiceServlet implements Scenari
      * TODO REMOVE this ugly hack.
      */
     private static ScenarioServiceImpl INSTANCE;
-    /**
-     * Manager for the scenario data.
-     */
+
     private final ScenarioManager scenarioManager;
 
     private final DeviceManager deviceManager;
@@ -66,6 +65,10 @@ public class ScenarioServiceImpl extends RemoteServiceServlet implements Scenari
      * Broadcaster for client side event handling of state changes.
      */
     private final EventBroadcaster eventBroadcaster;
+    /**
+     * Mapping of scenario id to {@link TriggerKey}s to unschedule running jobs.
+     */
+    private Map<Long, TriggerKey> scenarioTriggerKeys = new HashMap<>();
 
     @Inject
     public ScenarioServiceImpl(ScenarioManager scenarioManager, DeviceManager deviceManager,
@@ -91,7 +94,7 @@ public class ScenarioServiceImpl extends RemoteServiceServlet implements Scenari
 
     /**
      * TODO refactor
-     * 
+     *
      * @return
      */
     public static ScenarioServiceImpl getInstance() {
@@ -117,9 +120,7 @@ public class ScenarioServiceImpl extends RemoteServiceServlet implements Scenari
     @Override
     public void schedule(long scenarioId) {
         final Scenario scenarioById = scenarioManager.getScenarioById(scenarioId);
-
         if (scenarioById.getRunState() != RUN_STATE.RUNNING) {
-
             String cron = scenarioById.getCron();
             if (!Strings.isNullOrEmpty(cron)) {
 
@@ -128,8 +129,11 @@ public class ScenarioServiceImpl extends RemoteServiceServlet implements Scenari
                         .usingJobData("scenario", scenarioId)
                         .build();
 
+                TriggerKey triggerKey = TriggerKey.triggerKey(TRIGGER_SCENARIO_PREFIX + scenarioId);
+                scenarioTriggerKeys.put(scenarioId, triggerKey);
+
                 Trigger trigger = TriggerBuilder.newTrigger()
-                        .withIdentity(TriggerKey.triggerKey(TRIGGER_SCENARIO_PREFIX + scenarioId))
+                        .withIdentity(triggerKey)
                         .withSchedule(CronScheduleBuilder.cronSchedule(cron))
                         .forJob(job)
                         .build();
@@ -137,12 +141,12 @@ public class ScenarioServiceImpl extends RemoteServiceServlet implements Scenari
                 scenarioById.setRunState(RUN_STATE.IDLE);
                 scenarioById.setMode(MODE.AUTOMATIC);
 
-                // TODO
                 fireScenarioStateChangeEvent(scenarioById);
 
                 // Tell quartz to schedule the job using our trigger
                 try {
                     scheduler.scheduleJob(job, trigger);
+                    LOG.info("scenario (" + scenarioById + ") scheduled: " + cron);
                 } catch (SchedulerException e) {
                     LOG.error("error by schedule job", e);
                 }
@@ -151,8 +155,8 @@ public class ScenarioServiceImpl extends RemoteServiceServlet implements Scenari
                 LOG.error("no cron expression");
             }
         } else {
-            LOG.warn("Can't schedule scenario: {} - not in IDLE state (actual {})", scenarioById, scenarioById
-                    .getRunState());
+            LOG.warn("Can't schedule scenario: {} - not in IDLE state (actual {})", scenarioById,
+                    scenarioById.getRunState());
         }
     }
 
@@ -163,12 +167,6 @@ public class ScenarioServiceImpl extends RemoteServiceServlet implements Scenari
     @Override
     public void stop(long scenarioId) {
         stopScenario(scenarioId);
-    }
-
-    @Override
-    public void pause(long scenarioId) {
-        // TODO
-        throw new NotImplementedException("");
     }
 
     /**
@@ -210,17 +208,9 @@ public class ScenarioServiceImpl extends RemoteServiceServlet implements Scenari
         Scenario scenario = scenarioManager.getScenarioById(scenarioId);
         LOG.info("Start scheduled scenario: {}", scenario);
         if (scenario.getMode() != MODE.AUTOMATIC) {
-
-            LOG.error("Scenario ({" + scenario + "}) not in {"
-                    + MODE.AUTOMATIC.name() + "} mode to schedule!");
-
+            LOG.error("Scenario ({" + scenario + "}) not in {" + MODE.AUTOMATIC.name() + "} mode to schedule!");
             // stop execution if scenario not anymore in automatic mode
-            String triggerKey = TRIGGER_SCENARIO_PREFIX + scenarioId;
-            try {
-                scheduler.unscheduleJob(TriggerKey.triggerKey(triggerKey));
-            } catch (SchedulerException e) {
-                LOG.error("unschedule job by trigger: " + triggerKey, e);
-            }
+            unscheduleScenario(scenarioId);
         }
         startScenario(scenario);
     }
@@ -237,8 +227,20 @@ public class ScenarioServiceImpl extends RemoteServiceServlet implements Scenari
 
     private void stopScenario(long scenarioId) {
         LOG.debug("stop scenario: {}", scenarioId);
+        unscheduleScenario(scenarioId);
         Scenario scenario = scenarioManager.getScenarioById(scenarioId);
         scenarioExecutor.stopScenario(scenario);
+        scenario.setMode(MODE.OFF);
+    }
+
+    private void unscheduleScenario(long scenarioId) {
+        if (scenarioTriggerKeys.containsKey(scenarioId)) {
+            try {
+                scheduler.unscheduleJob(scenarioTriggerKeys.get(scenarioId));
+            } catch (SchedulerException e) {
+                LOG.error("can't unschedule job for trigger key of scenario id: " + scenarioId);
+            }
+        }
     }
 
 }

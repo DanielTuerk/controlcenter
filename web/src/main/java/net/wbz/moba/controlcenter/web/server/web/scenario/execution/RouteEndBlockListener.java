@@ -10,7 +10,8 @@ import net.wbz.selectrix4java.block.FeedbackBlockListener;
  * There could be any train to trigger the occupied state but the block is reserved for the train of the
  * {@link net.wbz.moba.controlcenter.web.shared.scenario.Scenario} and there should be no other one during the
  * execution.
- * The {@link FeedbackBlockListener} isn't used because the information is received too late to stop the train.
+ * The {@link FeedbackBlockListener} isn't used because the information is received too late by the delay to stop the
+ * train in the end block.
  * 
  * @author Daniel Tuerk
  */

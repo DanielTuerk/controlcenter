@@ -1,6 +1,8 @@
 package net.wbz.moba.controlcenter.web.shared.scenario;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import com.google.common.base.Objects;
 import com.googlecode.jmapper.annotations.JMap;
@@ -13,21 +15,20 @@ import net.wbz.moba.controlcenter.web.shared.track.model.TrackBlock;
  * @author Daniel Tuerk
  */
 public class Route extends AbstractDto {
-
     @JMap
     private String name;
-
     @JMap
     private TrackBlock start;
     @JMap
     private TrackBlock end;
-
     @JMap
     private Boolean oneway;
-
     @JMap
     private List<GridPosition> waypoints;
-
+    /**
+     * Current state for the execution.
+     */
+    private ROUTE_RUN_STATE runState;
     /**
      * {@link Track} for this route.
      */
@@ -85,11 +86,57 @@ public class Route extends AbstractDto {
         this.track = track;
     }
 
+    public ROUTE_RUN_STATE getRunState() {
+        return runState;
+    }
+
+    public void setRunState(ROUTE_RUN_STATE runState) {
+        this.runState = runState;
+    }
+
+    /**
+     * Return all {@link TrackBlock}s on the {@link Track} with end block.
+     * It represents all blocks to drive from start till end.
+     * 
+     * @return {@link TrackBlock}s
+     */
+    public Set<TrackBlock> getAllTrackBlocksToDrive() {
+        Set<TrackBlock> trackBlocks = new HashSet<>();
+        Track track = getTrack();
+        if (track != null) {
+            trackBlocks.addAll(track.getTrackBlocks());
+        }
+        trackBlocks.add(getEnd());
+        return trackBlocks;
+    }
+
     @Override
     public String toString() {
         return Objects.toStringHelper(this)
                 .add("id", getId())
                 .add("name", name)
                 .toString();
+    }
+
+    /**
+     * Run state of a route.
+     */
+    public enum ROUTE_RUN_STATE {
+        /**
+         * Prepared to start.
+         */
+        PREPARED,
+        /**
+         * Reserved for start after successful preparation.
+         */
+        RESERVED,
+        /**
+         * Currently running.
+         */
+        RUNNING,
+        /**
+         * Execution finished.
+         */
+        FINISHED
     }
 }

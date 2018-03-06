@@ -35,11 +35,4 @@ public interface ScenarioService extends RemoteService {
      */
     void stop(long scenarioId);
 
-    /**
-     * Pause the {@link Scenario} for the given id.
-     *
-     * @param scenarioId id of {@link Scenario} to pause
-     */
-    void pause(long scenarioId);
-
 }

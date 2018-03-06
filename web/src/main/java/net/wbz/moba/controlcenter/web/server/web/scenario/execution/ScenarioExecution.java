@@ -6,6 +6,8 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.slf4j.Logger;
@@ -19,9 +21,9 @@ import net.wbz.moba.controlcenter.web.server.persist.scenario.TrackBuilder.Track
 import net.wbz.moba.controlcenter.web.server.web.editor.block.BusAddressIdentifier;
 import net.wbz.moba.controlcenter.web.server.web.editor.block.SignalBlockRegistry;
 import net.wbz.moba.controlcenter.web.server.web.scenario.RouteListener;
-import net.wbz.moba.controlcenter.web.server.web.scenario.ScenarioManager;
 import net.wbz.moba.controlcenter.web.server.web.train.TrainManager;
 import net.wbz.moba.controlcenter.web.shared.scenario.Route;
+import net.wbz.moba.controlcenter.web.shared.scenario.Route.ROUTE_RUN_STATE;
 import net.wbz.moba.controlcenter.web.shared.scenario.RouteSequence;
 import net.wbz.moba.controlcenter.web.shared.scenario.Scenario;
 import net.wbz.moba.controlcenter.web.shared.scenario.Scenario.MODE;
@@ -30,6 +32,7 @@ import net.wbz.moba.controlcenter.web.shared.scenario.Track;
 import net.wbz.moba.controlcenter.web.shared.track.model.BusDataConfiguration;
 import net.wbz.moba.controlcenter.web.shared.track.model.Signal;
 import net.wbz.moba.controlcenter.web.shared.track.model.Signal.FUNCTION;
+import net.wbz.moba.controlcenter.web.shared.track.model.TrackBlock;
 import net.wbz.moba.controlcenter.web.shared.train.Train;
 import net.wbz.moba.controlcenter.web.shared.train.Train.DRIVING_DIRECTION;
 import net.wbz.moba.controlcenter.web.shared.train.TrainService;
@@ -47,10 +50,12 @@ import net.wbz.selectrix4java.device.DeviceManager;
  * 
  * @author Daniel Tuerk
  */
-public abstract class ScenarioExecution {
+abstract class ScenarioExecution implements Callable<Void> {
+
     private static final Logger LOG = LoggerFactory.getLogger(ScenarioExecution.class);
     private static final int START_DELAY_MILLIS = 3000;
-    private static final int DEFAULT_START_DRIVING_LEVEL = 4;
+    private static final int DEFAULT_START_DRIVING_LEVEL = 8;
+    private static final long MILLIS_TO_WAIT_IN_BLOCK_RUN = 200L;
 
     private final Scenario scenario;
     private final TrackViewerService trackViewerService;
@@ -61,8 +66,9 @@ public abstract class ScenarioExecution {
             new ConcurrentHashMap<>();
     private final TrainManager trainManager;
     private final TrackBuilder trackBuilder;
-    private final ScenarioManager scenarioManager;
     private final List<RouteListener> routeListeners;
+    private final RouteExecutionObserver routeExecutionObserver;
+
     /**
      * Flag for stop called to scenario.
      */
@@ -72,9 +78,10 @@ public abstract class ScenarioExecution {
      */
     private volatile boolean blockRunning = false;
 
-    public ScenarioExecution(Scenario scenario, TrackViewerService trackViewerService, TrainService trainService,
+    ScenarioExecution(Scenario scenario, TrackViewerService trackViewerService, TrainService trainService,
             SignalBlockRegistry signalBlockRegistry, DeviceManager deviceManager, TrainManager trainManager,
-            TrackBuilder trackBuilder, ScenarioManager scenarioManager, List<RouteListener> routeListeners) {
+            TrackBuilder trackBuilder, List<RouteListener> routeListeners,
+            RouteExecutionObserver routeExecutionObserver) {
         this.scenario = scenario;
         this.trackViewerService = trackViewerService;
         this.trainService = trainService;
@@ -82,79 +89,158 @@ public abstract class ScenarioExecution {
         this.deviceManager = deviceManager;
         this.trainManager = trainManager;
         this.trackBuilder = trackBuilder;
-        this.scenarioManager = scenarioManager;
         this.routeListeners = routeListeners;
+        this.routeExecutionObserver = routeExecutionObserver;
+    }
+
+    @Override
+    public Void call() throws Exception {
+        start();
+        return null;
     }
 
     /**
      * Start the scenario and run all route sequence one after another by the order of the position.
      */
-    public void start() throws InterruptedException {
+    void start() {
+        try {
+            scenario.setRunState(RUN_STATE.RUNNING);
+            fireScenarioStateChangeEvent(scenario);
 
-        scenario.setRunState(RUN_STATE.RUNNING);
-        fireScenarioStateChangeEvent(scenario);
+            stopped = false;
 
-        stopped = false;
-        List<RouteSequence> routeSequences = scenario.getRouteSequences();
-        Collections.sort(routeSequences, new Comparator<RouteSequence>() {
-            @Override
-            public int compare(RouteSequence o1, RouteSequence o2) {
-                return Integer.compare(o1.getPosition(), o2.getPosition());
-            }
-        });
+            // sort routes by position
+            List<RouteSequence> routeSequences = scenario.getRouteSequences();
+            Collections.sort(routeSequences, new Comparator<RouteSequence>() {
+                @Override
+                public int compare(RouteSequence o1, RouteSequence o2) {
+                    return Integer.compare(o1.getPosition(), o2.getPosition());
+                }
+            });
 
-        LOG.info("start scenario {}", scenario);
-
-        buildTracks();
-        boolean isFirstRoute = true;
-        for (RouteSequence routeSequence : routeSequences) {
-            if (stopped) {
-                LOG.info("stop scenario {}", scenario);
-                finishScenarioExecution(RUN_STATE.STOPPED);
-                return;
-            }
-            scenarioManager.routeStarted(routeSequence);
-            LOG.info("start route sequence {}", routeSequence);
-
-            for (RouteListener routeListener : routeListeners) {
-                routeListener.routeWaitingToStart(scenario, routeSequence);
-            }
-
-            blockRunning = true;
-            boolean success;
-            try {
-                success = prepare(routeSequence, isFirstRoute);
-            } catch (InterruptedException e) {
-                success = false;
-                String msg = "execution error of route sequence at pos: " + routeSequence.getPosition();
-                LOG.error(msg, e);
-                fireRouteErrorState(routeSequence, msg);
-            } catch (DeviceAccessException e) {
-                success = false;
-                String msg = "no device";
-                LOG.error(msg, e);
-                fireRouteErrorState(routeSequence, msg);
-            }
-            if (success) {
-                for (RouteListener routeListener : routeListeners) {
-                    routeListener.routeStarted(scenario, routeSequence);
+            LOG.info("start scenario {}", scenario);
+            // TODO darf hier nicht sein
+            buildTracks();
+            // flag for the first route to try to start
+            boolean isFirstRoute = true;
+            // indicate that just a single route started for execution
+            boolean isAnyRouteRunning = false;
+            // previous executed route
+            RouteSequence previousRouteSequence = null;
+            for (RouteSequence routeSequence : routeSequences) {
+                if (stopped) {
+                    LOG.info("stop scenario {}", scenario);
+                    finishScenarioExecution(RUN_STATE.STOPPED);
+                    cleanupRunningRouteInSequence(previousRouteSequence);
+                    return;
                 }
 
-                // wait for next route block action and check the stop flag
-                while (!stopped && blockRunning) {
-                    Thread.sleep(200L);
+                LOG.info("start route sequence {}", routeSequence);
 
+                blockRunning = true;
+                try {
+                    RouteExecution routeExecution = prepare(routeSequence, previousRouteSequence, isFirstRoute,
+                            isAnyRouteRunning);
+
+                    previousRouteSequence = routeSequence;
+
+                    // check track for running scenarios and wait for the free track
+                    waitForFreeTrack(routeExecution);
+
+                    // check all track blocks are free for the route, also by manual drive or lost wagons
+                    checkForFreeBlocks(routeSequence.getRoute().getAllTrackBlocksToDrive());
+
+                    startRoute(routeExecution);
+
+                    // execution started with any route
+                    isAnyRouteRunning = true;
+
+                    // wait until the route is running and check the scenario stop flag
+                    try {
+                        while (!stopped && blockRunning) {
+                            Thread.sleep(MILLIS_TO_WAIT_IN_BLOCK_RUN);
+                        }
+                    } catch (InterruptedException e) {
+                        throw new RouteExecutionInterruptException("block run interrupted", e);
+                    }
+
+                    finishRoute(routeSequence);
+                } catch (ScenarioExecutionInterruptException e) {
+                    String msg = "execution error of route sequence at pos: " + routeSequence.getPosition();
+                    LOG.error(msg, e);
+                    fireRouteErrorState(routeSequence, e.getMessage());
+                    // scenario can't be executed and will be stopped
+                    stop();
+                } catch (RouteExecutionInterruptException e) {
+                    LOG.info(e.getMessage());
+                    fireRouteErrorState(routeSequence, e.getMessage());
+                    cleanupRunningRouteInSequence(routeSequence);
+                    // route interrupted but try to execute next route
+                } finally {
+                    tearDownRouteExecution();
                 }
                 LOG.info("finished route sequence {}", routeSequence);
 
-                for (RouteListener routeListener : routeListeners) {
-                    routeListener.routeFinished(scenario, routeSequence);
-                }
+                isFirstRoute = false;
             }
-            scenarioManager.routeFinished(routeSequence);
-            isFirstRoute = false;
+            /**
+             * Remove the last running for the end of the scenario sequence.
+             * Otherwise it will be only removed for the start of next route in the sequence which is'nt available for
+             * the
+             * last route.
+             */
+            cleanupRunningRouteInSequence(previousRouteSequence);
+
+        } catch (Exception e) {
+            // catch unexpected errors and stop the scenario to also stop the trains
+            LOG.error("error in by scenario execution of: " + scenario, e);
+            stop();
+        } finally {
+            // do it for success or error to be able to restart the scenario
+            finishScenarioExecution(RUN_STATE.FINISHED);
         }
-        finishScenarioExecution(RUN_STATE.FINISHED);
+    }
+
+    private void cleanupRunningRouteInSequence(RouteSequence previousRouteSequence) {
+        routeExecutionObserver.removeRunningRouteSequence(previousRouteSequence);
+    }
+
+    /**
+     * Stop the execution by the next route block in the route sequence.
+     */
+    void stop() {
+        stopped = true;
+        stopTrain();
+    }
+
+    private void startRoute(RouteExecution routeExecution)
+            throws ScenarioExecutionInterruptException, RouteExecutionInterruptException {
+        RouteSequence routeSequence = routeExecution.getRouteSequence();
+
+        try {
+            initRouteEndListener(routeExecution.getRouteSequence().getRoute());
+        } catch (DeviceAccessException e) {
+            throw new ScenarioExecutionInterruptException("no device connection", e);
+        }
+
+        updateTrack(scenario, routeSequence.getRoute());
+        switchSignalToDrive(routeExecution.getSignal());
+        try {
+            startTrain(routeExecution.getTrain(), scenario.getStartDrivingLevel());
+        } catch (InterruptedException e) {
+            throw new RouteExecutionInterruptException("start route interrupted", e);
+        }
+
+        for (RouteListener routeListener : routeListeners) {
+            routeListener.routeStarted(scenario, routeSequence);
+        }
+    }
+
+    private void finishRoute(RouteSequence routeSequence) {
+        routeSequence.getRoute().setRunState(ROUTE_RUN_STATE.FINISHED);
+        for (RouteListener routeListener : routeListeners) {
+            routeListener.routeFinished(scenario, routeSequence);
+        }
     }
 
     private void fireRouteErrorState(RouteSequence routeSequence, String msg) {
@@ -164,15 +250,8 @@ public abstract class ScenarioExecution {
     }
 
     /**
-     * Stop the execution by the next route block in the route sequence.
+     * Build all {@link Track}s of the {@link Scenario}.
      */
-    public void stop() {
-        stopped = true;
-        stopTrain();
-
-        tearDown();
-    }
-
     private void buildTracks() {
         LOG.info("build track for routes");
         for (RouteSequence routeSequence : scenario.getRouteSequences()) {
@@ -189,7 +268,6 @@ public abstract class ScenarioExecution {
     private void finishScenarioExecution(RUN_STATE runState) {
         LOG.info("finished scenario {}", scenario);
 
-        scenario.setMode(MODE.OFF);
         scenario.setRunState(runState);
 
         fireScenarioStateChangeEvent(scenario);
@@ -206,63 +284,74 @@ public abstract class ScenarioExecution {
      * Prepare the {@link Route} for drive.
      * 
      * @param routeSequence {@link RouteSequence}
+     * @param previousRouteSequence previous executed {@link RouteSequence}
      * @param isFirstRoute {@code true} if this is the check for the first route in the execution
-     * @return {@code true} for successful preparation to start
-     * @throws InterruptedException
-     * @throws DeviceAccessException
+     * @param isAnyRouteRunning {@code false} until any route was successful prepared
+     * @throws ScenarioExecutionInterruptException interrupt of scenario
+     * @throws RouteExecutionInterruptException interrupt of the current route in the sequence
      */
-    private boolean prepare(final RouteSequence routeSequence, boolean isFirstRoute) throws InterruptedException,
-            DeviceAccessException {
+    private RouteExecution prepare(final RouteSequence routeSequence, final RouteSequence previousRouteSequence,
+            boolean isFirstRoute, boolean isAnyRouteRunning) throws ScenarioExecutionInterruptException,
+            RouteExecutionInterruptException {
         Route route = routeSequence.getRoute();
-        /*
-         * Check for available train in the first route block. Others are saved by the execution. An explicit check
-         * can't be performed because the feedback could be too late.
-         */
+
         Train train = getTrain();
 
         // detect train
-        if (isFirstRoute && !train.isCurrentlyInBlock(route.getStart())) {
-            String msg = String.format("train %s not in start block %s!", train, route.getStart());
-            handlePrepareError(routeSequence, route, msg);
-            return false;
+        if ((isFirstRoute || !isAnyRouteRunning) && !train.isCurrentlyInBlock(route.getStart())) {
+            /*
+             * Check for available train in the first route block to be executed. Others are saved by the execution.
+             * An explicit check of each route block can't be performed because the feedback could be too late.
+             */
+            throw new NoTrainInStartBlockException(train, route.getStart());
         }
 
         // find start position on signal
         Optional<Signal> signal = findStartSignal(route);
         if (!signal.isPresent()) {
-            String msg = String.format("no signal found for start block %s!", route.getStart());
-            handlePrepareError(routeSequence, route, msg);
-            return false;
+            throw new NoStartSignalAvailableException(String.format("no signal found for start block %s!",
+                    route.getStart()));
         }
 
         // TODO init route start; on leave start block; grab block before end block -> track free, than move forward and
         // don't stop
-        // TODO how to handle next train comming meanwhile and allocate the track?
-
-        initRouteEndListener(route, train);
 
         prepareTrainToStart(train);
 
-        requestFreeTrack(route, signal.get(), train);
-        return true;
+        routeSequence.getRoute().setRunState(ROUTE_RUN_STATE.PREPARED);
+
+        return new RouteExecution(routeSequence, previousRouteSequence, train, signal.get());
     }
 
-    private void handlePrepareError(RouteSequence routeSequence, Route route, String msg) {
-        LOG.error(msg);
-        stop();
-        fireRouteErrorState(routeSequence, msg);
+    /**
+     * Check that all given {@link TrackBlock}s are free.
+     * If not a exception is thrown.
+     *
+     * @param trackBlocks {@link TrackBlock}s to check
+     * @throws ScenarioExecutionInterruptException no connection
+     * @throws RouteExecutionInterruptException blocks not free
+     */
+    private void checkForFreeBlocks(Set<TrackBlock> trackBlocks)
+            throws RouteExecutionInterruptException, ScenarioExecutionInterruptException {
+        try {
+            Device device = deviceManager.getConnectedDevice();
+            for (TrackBlock trackBlock : trackBlocks) {
+                BusDataConfiguration blockFunction = trackBlock.getBlockFunction();
+                BusAddressIdentifier entry = new BusAddressIdentifier(blockFunction);
+                if (SelectrixHelper.getFeedbackBlockModule(device, entry).getLastReceivedBlockState(
+                        blockFunction.getBit())) {
+                    throw new RouteExecutionInterruptException(
+                            String.format("track not free at block: %d (%d) ", entry.getAddress(), blockFunction
+                                    .getBit()));
+                }
+            }
+        } catch (DeviceAccessException e) {
+            throw new ScenarioExecutionInterruptException("no connected device", e);
+        }
     }
 
     private Train getTrain() {
         return trainManager.getTrain(scenario.getTrain().getId());
-    }
-
-    private void execute(Route route, Train train, Signal signal) throws InterruptedException {
-        updateTrackForRoute(route);
-
-        switchSignalToDrive(signal);
-
-        startTrain(train, scenario.getStartDrivingLevel());
     }
 
     private Optional<Signal> findStartSignal(Route route) {
@@ -277,7 +366,14 @@ public abstract class ScenarioExecution {
         return Optional.absent();
     }
 
-    private void initRouteEndListener(final Route route, Train train) throws DeviceAccessException {
+    /**
+     * Add the {@link RouteEndBlockListener} to indicate the end of the route and throw the state for the finished
+     * execution.
+     * 
+     * @param route {@link Route} to detect the end of execution
+     * @throws DeviceAccessException
+     */
+    private void initRouteEndListener(final Route route) throws DeviceAccessException {
         Device device = deviceManager.getConnectedDevice();
 
         FeedbackBlockModule feedbackBlockModule = SelectrixHelper.getFeedbackBlockModule(device,
@@ -285,15 +381,16 @@ public abstract class ScenarioExecution {
 
         blockListeners.put(feedbackBlockModule, new ArrayList<BlockListener>());
 
-        BlockListener feedbackBlockListener = new RouteEndBlockListener(route) {
+        BlockListener blockListener = new RouteEndBlockListener(route) {
             @Override
             protected void trainEnterRouteEnd() {
+                LOG.info("route finished {}", route);
                 routeFinished();
             }
         };
-        blockListeners.get(feedbackBlockModule).add(feedbackBlockListener);
+        blockListeners.get(feedbackBlockModule).add(blockListener);
 
-        feedbackBlockModule.addBlockListener(feedbackBlockListener);
+        feedbackBlockModule.addBlockListener(blockListener);
     }
 
     private void prepareTrainToStart(Train train) {
@@ -302,34 +399,54 @@ public abstract class ScenarioExecution {
         trainService.toggleLight(train.getId(), true);
     }
 
-    private void requestFreeTrack(final Route route, final Signal signal, final Train train)
-            throws DeviceAccessException, InterruptedException {
-        LOG.info("train ({}) request free track: {}", train, route);
-        // TODO implement stop
+    private void waitForFreeTrack(RouteExecution routeExecution) throws ScenarioExecutionInterruptException {
+        for (RouteListener routeListener : routeListeners) {
+            routeListener.routeWaitingToStart(scenario, routeExecution.getRouteSequence());
+        }
 
-        FreeTrackListener freeTrackListener = new FreeTrackListener(scenario, route, deviceManager.getConnectedDevice(),
-                scenarioManager) {
-            @Override
-            void ready() {
-                LOG.info("track ({}) free for train: ", route, train);
+        Route route = routeExecution.getRouteSequence().getRoute();
+        LOG.info("train ({}) request free track: {}", routeExecution.getTrain(), route);
+
+        // TODO refactor to listeners
+        boolean wait = true;
+        while (wait && scenario.getRunState() != RUN_STATE.STOPPED) {
+            if (routeExecutionObserver.checkAndReserveNextRunningRoute(routeExecution.getRouteSequence(),
+                    routeExecution.getPreviousRouteSequence())) {
+                // no dependent route running, stop check
+                wait = false;
+            } else {
+                // dependency running, wait and recheck
                 try {
-                    execute(route, train, signal);
+                    Thread.sleep(500L);
                 } catch (InterruptedException e) {
-                    LOG.error("can't execute", e);
+                    throw new ScenarioExecutionInterruptException("wait for free track interrupted", e);
                 }
             }
-        };
-        freeTrackListener.listen();
+        }
     }
 
-    private void updateTrackForRoute(Route route) {
-        // TODO allocate route or track necessary?
-        updateTrack(scenario, route);
-    }
-
-    private void switchSignalToDrive(Signal signal) {
+    private void switchSignalToDrive(final Signal signal) {
         LOG.info("switch signal to HP1 {}", signal);
         trackViewerService.switchSignal(signal, FUNCTION.HP1);
+
+        if (signal.getMonitoringBlock() == null || signal.getMonitoringBlock().getBlockFunction() == null) {
+            // signal have no monitoring block and will never get the HP0 after drive
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        /*
+                         * Set to HP0 after delay to simulate a occupied monitoring block to switch the signal after the
+                         * train passed.
+                         */
+                        Thread.sleep(10000L);
+                        trackViewerService.switchSignal(signal, FUNCTION.HP0);
+                    } catch (InterruptedException e) {
+                        LOG.error("error during delayed HP0 switch", e);
+                    }
+                }
+            }).start();
+        }
     }
 
     private void startTrain(Train train, Integer startDrivingLevel) throws InterruptedException {
@@ -343,9 +460,6 @@ public abstract class ScenarioExecution {
 
     private void routeFinished() {
         stopTrain();
-
-        tearDown();
-
         blockRunning = false;
     }
 
@@ -353,7 +467,7 @@ public abstract class ScenarioExecution {
         trainService.updateDrivingLevel(getTrain(), 0);
     }
 
-    private void tearDown() {
+    private void tearDownRouteExecution() {
         for (FeedbackBlockModule feedbackBlockModule : blockListeners.keySet()) {
             for (BlockListener feedbackBlockListener : blockListeners.get(feedbackBlockModule)) {
                 feedbackBlockModule.removeBlockListener(feedbackBlockListener);
@@ -375,4 +489,5 @@ public abstract class ScenarioExecution {
         }
         trackViewerService.toggleTrackParts(trackPartStates);
     }
+
 }

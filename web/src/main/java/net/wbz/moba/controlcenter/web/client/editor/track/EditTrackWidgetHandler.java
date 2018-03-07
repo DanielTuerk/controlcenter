@@ -7,7 +7,7 @@ import com.google.gwt.user.client.ui.Widget;
  */
 public interface EditTrackWidgetHandler {
 
-    public Widget getDialogContent();
+    Widget getDialogContent();
 
-    public void onConfirmCallback();
+    void onConfirmCallback();
 }

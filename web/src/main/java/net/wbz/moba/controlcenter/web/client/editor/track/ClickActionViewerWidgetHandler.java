@@ -5,6 +5,6 @@ package net.wbz.moba.controlcenter.web.client.editor.track;
  */
 public interface ClickActionViewerWidgetHandler {
 
-    public void onClick();
+    void onClick();
 
 }

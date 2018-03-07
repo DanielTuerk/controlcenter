@@ -18,10 +18,8 @@ abstract public class AbstractIdModel implements IsSerializable {
 
         AbstractIdModel that = (AbstractIdModel) o;
 
-        if (getId() != that.getId())
-            return false;
+        return getId() == that.getId();
 
-        return true;
     }
 
     @Override

@@ -74,7 +74,7 @@ public class DataMapper<Target extends AbstractDto, Source extends AbstractEntit
      */
     @SuppressWarnings("unchecked")
     public Target transformSource(Source source) {
-        return (Target) sourceMapper.getDestination(source);
+        return sourceMapper.getDestination(source);
     }
 
     /**
@@ -100,7 +100,7 @@ public class DataMapper<Target extends AbstractDto, Source extends AbstractEntit
      */
     @SuppressWarnings("unchecked")
     public Source transformTarget(Target target) {
-        return (Source) targetMapper.getDestination(target);
+        return targetMapper.getDestination(target);
     }
 
 }

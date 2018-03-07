@@ -87,10 +87,8 @@ public class TrackPartFunctionEntity extends AbstractEntity {
 
         TrackPartFunctionEntity that = (TrackPartFunctionEntity) o;
 
-        if (functionKey != null ? !functionKey.equals(that.functionKey) : that.functionKey != null)
-            return false;
+        return functionKey != null ? functionKey.equals(that.functionKey) : that.functionKey == null;
 
-        return true;
     }
 
     @Override

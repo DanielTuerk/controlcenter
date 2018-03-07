@@ -15,8 +15,8 @@ public class EditorPaletteWidget extends PaletteWidget {
         /**
          * TODO clean code
          */
-        DoubleClickHandler cc = (DoubleClickHandler) new EditWidgetDoubleClickHandler(
-                (EditTrackWidgetHandler) getWidget());
+        DoubleClickHandler cc = new EditWidgetDoubleClickHandler(
+                getWidget());
         getWidget().addDomHandler(cc, DoubleClickEvent.getType());
     }
 

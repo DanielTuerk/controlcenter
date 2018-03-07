@@ -45,10 +45,8 @@ public class BusAddressIdentifier {
 
         if (address != that.address)
             return false;
-        if (bus != that.bus)
-            return false;
+        return bus == that.bus;
 
-        return true;
     }
 
     @Override

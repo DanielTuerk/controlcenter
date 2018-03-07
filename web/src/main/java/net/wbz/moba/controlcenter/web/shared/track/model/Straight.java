@@ -11,7 +11,7 @@ import com.googlecode.jmapper.annotations.JMap;
 public class Straight extends AbstractTrackPart {
 
     @JMap
-    private Straight.DIRECTION direction;;
+    private Straight.DIRECTION direction;
 
     public DIRECTION getDirection() {
         return direction;
@@ -58,6 +58,6 @@ public class Straight extends AbstractTrackPart {
     }
 
     public enum DIRECTION {
-        HORIZONTAL, VERTICAL;
+        HORIZONTAL, VERTICAL
     }
 }

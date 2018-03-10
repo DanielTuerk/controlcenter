@@ -13,6 +13,7 @@ class RouteExecution {
 
     private final RouteSequence routeSequence;
     private final RouteSequence previousRouteSequence;
+    private final RouteSequence nextRouteSequence;
     /**
      * {@link Train} for the route to drive.
      */
@@ -22,9 +23,11 @@ class RouteExecution {
      */
     private final Signal signal;
 
-    RouteExecution(RouteSequence routeSequence, RouteSequence previousRouteSequence, Train train, Signal signal) {
+    RouteExecution(RouteSequence routeSequence, RouteSequence previousRouteSequence, RouteSequence nextRouteSequence,
+            Train train, Signal signal) {
         this.routeSequence = routeSequence;
         this.previousRouteSequence = previousRouteSequence;
+        this.nextRouteSequence = nextRouteSequence;
         this.train = train;
         this.signal = signal;
     }
@@ -43,5 +46,9 @@ class RouteExecution {
 
     RouteSequence getPreviousRouteSequence() {
         return previousRouteSequence;
+    }
+
+    RouteSequence getNextRouteSequence() {
+        return nextRouteSequence;
     }
 }

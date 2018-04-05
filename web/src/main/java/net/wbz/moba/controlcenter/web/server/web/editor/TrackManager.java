@@ -72,9 +72,10 @@ public class TrackManager {
     private final SignalBlockRegistry signalBlockRegistry;
 
     /**
-     * Cached track entities of current {@link Construction}.
+     * Cached and transformed entities for track of current {@link Construction}.
      */
-    private final Collection<AbstractTrackPartEntity> cachedData = Lists.newArrayList();
+    private final Collection<AbstractTrackPart> cachedEntities = Lists.newArrayList();
+
     /**
      * Cached {@link TrackBlock}s of current {@link Construction}.
      */
@@ -250,7 +251,7 @@ public class TrackManager {
     }
 
     public Collection<AbstractTrackPart> getTrack() {
-        return trackPartDataMapper.transformTrackPartEntities(cachedData);
+        return cachedEntities;
     }
 
     public Collection<TrackBlock> loadTrackBlocks() {
@@ -263,14 +264,14 @@ public class TrackManager {
     }
 
     private void loadTrackPartData() {
-        cachedData.clear();
+        cachedEntities.clear();
 
         log.info("load track parts from db");
         if (currentConstruction != null) {
             List<AbstractTrackPartEntity> result = trackPartDao.findByConstructionId(currentConstruction.getId());
             if (!result.isEmpty()) {
                 log.info("return track parts");
-                cachedData.addAll(result);
+                cachedEntities.addAll(trackPartDataMapper.transformTrackPartEntities(result));
 
                 if (deviceManager.isConnected()) {
                     registerConsumersByConnectedDeviceForTrackParts();

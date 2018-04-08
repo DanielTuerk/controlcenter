@@ -6,14 +6,21 @@
 //
 //## Gray and brand colors for use across Bootstrap.
 
-@gray-base: #000;
+@colful1: #24b7fd;
+@colful2: #3ad7fc;
+@colful3: #5df9f3;
+@colful4: #6cffe0;
+@colful5: #6cffb6;
+@colful6: #52c5c0;
+
+@gray-base: #171724;
 @gray-darker: lighten(@gray-base, 13.5%); // #222
 @gray-dark: lighten(@gray-base, 20%); // #333
 @gray: lighten(@gray-base, 33.5%); // #555
-@gray-light: #4E5D6C; // #999
-@gray-lighter: #EBEBEB; // #eee
+@gray-light: #222a44; // #999
+@gray-lighter: #818091; // #eee
 
-@brand-primary: #DF691A;
+@brand-primary: @colful1;
 @brand-success: #5cb85c;
 @brand-info: #5bc0de;
 @brand-warning: #f0ad4e;
@@ -24,9 +31,10 @@
 //## Settings for some of the most global styles.
 
 //** Background color for `<body>`.
-@body-bg: #2B3E50;
+@body-bg: #171724;
 //** Global text color on `<body>`.
 @text-color: @gray-lighter;
+@text-color-bright: #ffffff;
 
 //** Global textual link color.
 @link-color: @brand-primary;
@@ -46,8 +54,8 @@
 @font-family-base: @font-family-sans-serif;
 
 @font-size-base: 15px;
-@font-size-large: ceil((@font-size-base * 1.25)); // ~18px
-@font-size-small: 12px;
+@font-size-large: 17px; // ~18px
+@font-size-small: 13px;
 
 @font-size-h1: floor((@font-size-base * 2.6)); // ~36px
 @font-size-h2: floor((@font-size-base * 2.15)); // ~30px
@@ -97,9 +105,9 @@
 @line-height-large: 1.3333333; // extra decimals for Win 8.1 Chrome
 @line-height-small: 1.5;
 
-@border-radius-base: 0;
-@border-radius-large: 0;
-@border-radius-small: 0;
+@border-radius-base: 2;
+@border-radius-large: 3;
+@border-radius-small: 1;
 
 //** Global color for active items (e.g., navs or dropdowns).
 @component-active-color: #fff;
@@ -138,11 +146,11 @@
 @btn-font-weight: normal;
 
 @btn-default-color: #fff;
-@btn-default-bg: @gray-light;
-@btn-default-border: transparent;
+@btn-default-bg: @gray-darker;
+@btn-default-border: @gray-dark;
 
 @btn-primary-color: #fff;
-@btn-primary-bg: @brand-primary;
+@btn-primary-bg: @colful1;
 @btn-primary-border: transparent;
 
 @btn-success-color: #fff;
@@ -164,6 +172,7 @@
 @btn-link-disabled-color: @gray-light;
 
 // Allows for customizing button radius independently from global border radius
+@btn-border-color: @colful6;
 @btn-border-radius-base: @border-radius-base;
 @btn-border-radius-large: @border-radius-large;
 @btn-border-radius-small: @border-radius-small;
@@ -173,12 +182,12 @@
 //##
 
 //** `<input>` background color
-@input-bg: #fff;
+@input-bg: @gray-dark;
 //** `<input disabled>` background color
-@input-bg-disabled: @gray-lighter;
+@input-bg-disabled: @gray-darker;
 
 //** Text color for `<input>`s
-@input-color: @body-bg;
+@input-color: @text-color-bright;
 //** `<input>` border color
 @input-border: transparent;
 
@@ -343,16 +352,16 @@
 //##
 
 // Basics of a navbar
-@navbar-height: 40px;
+@navbar-height: 50px;
 @navbar-margin-bottom: @line-height-computed;
 @navbar-border-radius: @border-radius-base;
 @navbar-padding-horizontal: floor((@grid-gutter-width / 2));
 @navbar-padding-vertical: ((@navbar-height - @line-height-computed) / 2);
 @navbar-collapse-max-height: 340px;
 
-@navbar-default-color: @text-color;
+@navbar-default-color: @text-color-bright;
 @navbar-default-bg: @gray-light;
-@navbar-default-border: transparent;
+@navbar-default-border: @gray-darker;
 
 // Navbar links
 @navbar-default-link-color: @text-color;
@@ -410,13 +419,13 @@
 @nav-disabled-link-hover-color: @gray-light;
 
 //== Tabs
-@nav-tabs-border-color: transparent;
+@nav-tabs-border-color: @colful6;
 
-@nav-tabs-link-hover-border-color: @gray-light;
+@nav-tabs-link-hover-border-color: @colful1;
 
-@nav-tabs-active-link-hover-bg: @body-bg;
+@nav-tabs-active-link-hover-bg: @colful6;
 @nav-tabs-active-link-hover-color: @text-color;
-@nav-tabs-active-link-hover-border-color: @gray-light;
+@nav-tabs-active-link-hover-border-color: @colful1;
 
 @nav-tabs-justified-link-border-color: @gray-light;
 @nav-tabs-justified-active-link-border-color: @gray-light;
@@ -430,20 +439,20 @@
 //
 //##
 
-@pagination-color: @text-color;
-@pagination-bg: @gray-light;
+@pagination-color: @text-color-bright;
+@pagination-bg: @gray-darker;
 @pagination-border: transparent;
 
-@pagination-hover-color: @text-color;
+@pagination-hover-color: @text-color-bright;
 @pagination-hover-bg: @table-bg-hover;
 @pagination-hover-border: transparent;
 
-@pagination-active-color: @text-color;
-@pagination-active-bg: @brand-primary;
+@pagination-active-color: @text-color-bright;
+@pagination-active-bg: @colful1;
 @pagination-active-border: transparent;
 
 @pagination-disabled-color: darken(@table-bg-hover, 10%);
-@pagination-disabled-bg: @gray-light;
+@pagination-disabled-bg: @gray-lighter;
 @pagination-disabled-border: transparent;
 
 //== Pager
@@ -685,7 +694,7 @@
 @panel-footer-bg: @table-bg-hover;
 
 @panel-default-text: @gray-dark;
-@panel-default-border: transparent;
+@panel-default-border: @colful6;
 @panel-default-heading-bg: #f5f5f5;
 
 @panel-primary-text: #fff;

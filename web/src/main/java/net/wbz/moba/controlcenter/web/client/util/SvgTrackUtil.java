@@ -18,7 +18,7 @@ public class SvgTrackUtil {
     /**
      * Default color for the track part widgets.
      */
-    public final static String DEFAULT_TRACK_COLOR = SVGConstants.CSS_BLACK_VALUE;
+    public final static String DEFAULT_TRACK_COLOR = SVGConstants.CSS_WHITE_VALUE;
 
     /**
      * Create a rectangle.

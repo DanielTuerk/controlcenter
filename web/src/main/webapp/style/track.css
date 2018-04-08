@@ -1,7 +1,7 @@
 .widget_track {
   width: 25px;
   height: 25px;
-  background-color: white;
+  background-color: transparent;
 }
 
 /* TODO refactor image to div */
@@ -97,15 +97,15 @@
 }
 
 .unknownBlock {
-  background-color: goldenrod;
+  background-color: transparent;
 }
 
 .usedBlock {
-  background-color: rgba(174, 0, 0, 0.50);
+  background-color: rgb(172, 0, 26);
 }
 
 .freeBlock {
-  background-color: limegreen;
+  background-color: #197619;
 }
 
 .svgContainer {

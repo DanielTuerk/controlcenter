@@ -51,6 +51,8 @@
   <!--<set-property name="gwt.logging.popupHandler" value="DISABLED" />-->
   <set-property name="gwt.logging.developmentModeHandler" value="ENABLED"/>
 
+  <inherits name="com.google.gwt.precompress.Precompress"/>
+
   <!-- Google Guave -->
   <inherits name="com.google.common.base.Base"/>
   <inherits name="com.google.common.collect.Collect"/>
@@ -68,6 +70,11 @@
   <inherits name="org.gwtbootstrap3.extras.slider.Slider"/>
   <inherits name="org.gwtbootstrap3.extras.notify.Notify"/>
 
+  <!-- include modified superhero theme from bootswatch -->
+  <public path='theme'>
+    <include name='css/*.css'/>
+  </public>
+  <stylesheet src='css/bootswatch.css'/>
 
   <inherits name="com.google.web.bindery.requestfactory.RequestFactory"/>
 

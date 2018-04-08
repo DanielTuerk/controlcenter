@@ -2,3 +2,4 @@
 .idea
 *.log
 web/target/
+/web/src/main/resources/net/wbz/moba/controlcenter/web/theme/css/bootswatch.css

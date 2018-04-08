@@ -278,6 +278,28 @@
         </configuration>
       </plugin>
 
+      <!-- Compile LESS for theme -->
+      <plugin>
+        <groupId>org.lesscss</groupId>
+        <artifactId>lesscss-maven-plugin</artifactId>
+        <version>1.7.0.1.1</version>
+        <configuration>
+          <sourceDirectory>${project.basedir}/src/main/resources/net/wbz/moba/controlcenter/web/theme/</sourceDirectory>
+          <outputDirectory>${project.basedir}/src/main/resources/net/wbz/moba/controlcenter/web/theme/css
+          </outputDirectory>
+          <compress>true</compress>
+          <includes>
+            <include>bootswatch.less</include>
+          </includes>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>compile</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
 
       <plugin>
         <groupId>org.simplericity.jettyconsole</groupId>

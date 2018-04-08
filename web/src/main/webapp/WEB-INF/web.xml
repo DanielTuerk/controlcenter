@@ -31,6 +31,16 @@
     <url-pattern>/ControlCenterApp/gwteventservice</url-pattern>
   </servlet-mapping>
 
+  <servlet>
+    <servlet-name>remoteLoggingServiceImpl</servlet-name>
+    <servlet-class>com.google.gwt.libideas.logging.server.RemoteLoggingServiceImpl</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>remoteLoggingServiceImpl</servlet-name>
+    <url-pattern>/ControlCenterApp/logging</url-pattern>
+  </servlet-mapping>
+
+
   <welcome-file-list>
     <welcome-file>ControlCenterApp.html</welcome-file>
   </welcome-file-list>

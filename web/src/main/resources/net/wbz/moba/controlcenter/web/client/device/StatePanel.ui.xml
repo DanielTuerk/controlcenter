@@ -4,8 +4,7 @@
   xmlns:device="urn:import:net.wbz.moba.controlcenter.web.client.device"
   xmlns:ui='urn:ui:com.google.gwt.uibinder'>
 
-  <b:Panel styleName="statePanel">
-    <b:PanelFooter>
+    <b:Container styleName="statePanel background-panel">
 
 
       <!--<g:FlowPanel styleName="statePanel">-->
@@ -20,8 +19,7 @@
       <b:Button text="Player" ui:field="btnPlayerStart"/>
       <b:Button text="Stop Player" ui:field="btnPlayerStop"/>
       <b:Label text="version"/>
-    </b:PanelFooter>
-  </b:Panel>
+  </b:Container>
   <!--</g:FlowPanel>-->
 
 </ui:UiBinder>

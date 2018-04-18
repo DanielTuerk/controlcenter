@@ -45,6 +45,12 @@
     </dependency>
 
     <dependency>
+      <groupId>net.wbz.bootstrap</groupId>
+      <artifactId>theme</artifactId>
+      <version>0.1-SNAHPSHOT</version>
+    </dependency>
+
+    <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <version>4.7</version>
@@ -278,28 +284,6 @@
         </configuration>
       </plugin>
 
-      <!-- Compile LESS for theme -->
-      <plugin>
-        <groupId>org.lesscss</groupId>
-        <artifactId>lesscss-maven-plugin</artifactId>
-        <version>1.7.0.1.1</version>
-        <configuration>
-          <sourceDirectory>${project.basedir}/src/main/resources/net/wbz/moba/controlcenter/web/theme/</sourceDirectory>
-          <outputDirectory>${project.basedir}/src/main/resources/net/wbz/moba/controlcenter/web/theme/css
-          </outputDirectory>
-          <compress>true</compress>
-          <includes>
-            <include>bootswatch.less</include>
-          </includes>
-        </configuration>
-        <executions>
-          <execution>
-            <goals>
-              <goal>compile</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
 
       <plugin>
         <groupId>org.simplericity.jettyconsole</groupId>
@@ -398,6 +382,30 @@
               <version>2.6.1</version>
             </dependency>
           </dependencies>
+        </plugin>
+
+
+        <plugin>
+          <artifactId>maven-resources-plugin</artifactId>
+          <version>3.0.1</version>
+          <executions>
+            <execution>
+              <id>copy-resources</id>
+              <phase>validate</phase>
+              <goals>
+                <goal>copy-resources</goal>
+              </goals>
+              <configuration>
+                <outputDirectory>${project.build.directory}/controlcenter</outputDirectory>
+                <resources>
+                  <resource>
+                    <directory>src/main/webapp</directory>
+                    <filtering>true</filtering>
+                  </resource>
+                </resources>
+              </configuration>
+            </execution>
+          </executions>
         </plugin>
 
       </plugins>

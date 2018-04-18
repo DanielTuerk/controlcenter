@@ -30,7 +30,7 @@ abstract public class AbstractItemViewerPanel<ItemPanel extends AbstractItemPane
 
     public AbstractItemViewerPanel() {
 
-        addStyleName("contentPanel");
+        addStyleName("abstract-item-viewer-panel");
 
         addContent();
 

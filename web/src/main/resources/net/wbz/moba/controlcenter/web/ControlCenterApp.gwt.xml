@@ -70,15 +70,11 @@
   <inherits name="org.gwtbootstrap3.extras.slider.Slider"/>
   <inherits name="org.gwtbootstrap3.extras.notify.Notify"/>
 
-  <!-- include modified superhero theme from bootswatch -->
-  <public path='theme'>
-    <include name='css/*.css'/>
-  </public>
-  <stylesheet src='css/bootswatch.css'/>
-
   <inherits name="com.google.web.bindery.requestfactory.RequestFactory"/>
 
   <inherits name="de.novanic.eventservice.GWTEventService"/>
+
+  <inherits name="net.wbz.bootstrap.theme.Theme"/>
 
   <entry-point class='net.wbz.moba.controlcenter.web.client.ControlCenterApp'/>
 

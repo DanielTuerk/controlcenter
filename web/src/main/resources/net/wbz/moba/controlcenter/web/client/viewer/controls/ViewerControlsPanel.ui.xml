@@ -1,0 +1,73 @@
+<ui:UiBinder xmlns:b="urn:import:org.gwtbootstrap3.client.ui"
+  xmlns:ui='urn:ui:com.google.gwt.uibinder'
+  xmlns:g="urn:import:com.google.gwt.user.client.ui">
+
+  <b:Panel>
+    <b:PanelBody styleName="viewerControls">
+      <b:NavTabs>
+        <b:TabListItem active="true" dataTarget="#train" icon="TRAIN">Train</b:TabListItem>
+        <b:TabListItem dataTarget="#scenario" icon="MAP_SIGNS">Scenario</b:TabListItem>
+      </b:NavTabs>
+
+      <b:TabContent>
+        <!--<b:TabContent styleName="viewerControls_tabContent">-->
+        <b:TabPane active="true" b:id="train" ui:field="trainTab">
+        </b:TabPane>
+        <b:TabPane b:id="scenario" ui:field="scenarioTab">
+          <b:Label>b
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>ccc
+          </b:Label>
+        </b:TabPane>
+      </b:TabContent>
+
+    </b:PanelBody>
+  </b:Panel>
+
+</ui:UiBinder>

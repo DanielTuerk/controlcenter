@@ -121,9 +121,6 @@ h1 {
 
 .abstract-item-viewer-panel {
   padding: 10px 2px;
-  height: 100%;
-  overflow-y: scroll;
-  overflow-x: hidden;
 }
 
 .trainPanel_slider {
@@ -170,4 +167,9 @@ h1 {
   padding-top: 3px !important;
   padding-left: 6px !important;
   padding-right: 6px !important;
+}
+
+.scrollContent {
+height: 100%;
+    overflow: scroll;
 }

@@ -20,29 +20,21 @@ import net.wbz.moba.controlcenter.web.client.viewer.controls.train.TrainViewerPa
  */
 public class ViewerControlsPanel extends Composite {
     private static Binder uiBinder = GWT.create(Binder.class);
-    private static final String TAB_ID_TRAIN = "train";
-    private static final String TAB_ID_SCENARIO = "scenario";
 
     @UiField
     TabPane trainTab;
     @UiField
     TabPane scenarioTab;
+    @UiField
+    TabContent tabContent;
 
     public ViewerControlsPanel() {
         initWidget(uiBinder.createAndBindUi(this));
 
         trainTab.add(new TrainViewerPanel());
-        // scenarioTab.add(new ScenarioViewerPanel());
-    }
+        scenarioTab.add(new ScenarioViewerPanel());
 
-    @Override
-    protected void onLoad() {
-        super.onLoad();
-        // tabContent.setHeight("100%");
-        // tabContent.getElement().getStyle().setOverflowY(Style.Overflow.SCROLL);
-        // tabContent.getElement().getStyle().setOverflowX(Style.Overflow.HIDDEN);
-
-        // navTrainTab.showTab();
+        tabContent.addStyleName("scrollContent");
     }
 
     interface Binder extends UiBinder<com.google.gwt.user.client.ui.Widget, ViewerControlsPanel> {

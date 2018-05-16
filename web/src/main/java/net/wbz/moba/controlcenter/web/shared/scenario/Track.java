@@ -2,7 +2,6 @@ package net.wbz.moba.controlcenter.web.shared.scenario;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Sets;
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;

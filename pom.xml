@@ -40,30 +40,6 @@
   </build>
 
   <dependencies>
-    <!-- Logging -->
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-api</artifactId>
-      <version>${org.slf4j.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>jcl-over-slf4j</artifactId>
-      <version>${org.slf4j.version}</version>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
-      <groupId>ch.qos.logback</groupId>
-      <artifactId>logback-classic</artifactId>
-      <version>${logback.version}</version>
-      <scope>runtime</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>ch.qos.logback</groupId>
-      <artifactId>logback-core</artifactId>
-      <version>${logback.version}</version>
-    </dependency>
 
     <!-- Joda Time -->
     <dependency>
@@ -105,6 +81,12 @@
       <groupId>com.googlecode.jmapper-framework</groupId>
       <artifactId>jmapper-core</artifactId>
       <version>1.6.1.CR1</version>
+        <exclusions>
+            <exclusion>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+            </exclusion>
+        </exclusions>
     </dependency>
 
     <!-- Testing -->
@@ -144,9 +126,10 @@
     <logback.version>0.9.15</logback.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <googlecollections.version>1.0</googlecollections.version>
-    <jcloverslf4j.version>1.5.10</jcloverslf4j.version>
 
-    <org.slf4j.version>1.5.10</org.slf4j.version>
+      <logback.version>1.0.9</logback.version>
+      <org.slf4j.version>1.7.2</org.slf4j.version>
+
     <joda.time.version>2.1</joda.time.version>
     <joda.time.jsptags.version>1.0.2</joda.time.jsptags.version>
     <com.google.collections.version>1.0</com.google.collections.version>

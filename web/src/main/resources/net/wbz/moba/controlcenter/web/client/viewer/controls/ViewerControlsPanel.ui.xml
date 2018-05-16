@@ -9,61 +9,10 @@
         <b:TabListItem dataTarget="#scenario" icon="MAP_SIGNS">Scenario</b:TabListItem>
       </b:NavTabs>
 
-      <b:TabContent>
-        <!--<b:TabContent styleName="viewerControls_tabContent">-->
+      <b:TabContent ui:field="tabContent">
         <b:TabPane active="true" b:id="train" ui:field="trainTab">
         </b:TabPane>
         <b:TabPane b:id="scenario" ui:field="scenarioTab">
-          <b:Label>b
-            <br/>
-            <br/>
-            <br/>
-            <br/>
-            <br/>
-            <br/>
-            <br/>
-            <br/>
-            <br/>
-            <br/>
-            <br/>
-            <br/>
-            <br/>
-            <br/>
-            <br/>
-            <br/>
-            <br/>
-            <br/>
-            <br/>
-            <br/>
-            <br/>
-            <br/>
-            <br/>
-            <br/>
-            <br/>
-            <br/>
-            <br/>
-            <br/>
-            <br/>
-            <br/>
-            <br/>
-            <br/>
-            <br/>
-            <br/>
-            <br/>
-            <br/>
-            <br/>
-            <br/>
-            <br/>
-            <br/>
-            <br/>
-            <br/>
-            <br/>
-            <br/>
-            <br/>
-            <br/>
-            <br/>
-            <br/>ccc
-          </b:Label>
         </b:TabPane>
       </b:TabContent>
 

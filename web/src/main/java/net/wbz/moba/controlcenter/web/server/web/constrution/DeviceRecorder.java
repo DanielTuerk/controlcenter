@@ -1,5 +1,7 @@
 package net.wbz.moba.controlcenter.web.server.web.constrution;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -33,11 +35,18 @@ public class DeviceRecorder {
     public DeviceRecorder(@Named("homePath") String homeDir, EventBroadcaster eventBroadcaster) {
         this.eventBroadcaster = eventBroadcaster;
         this.destinationFolder = Paths.get(homeDir + FOLDER);
+        if(!Files.exists(destinationFolder)) {
+            try {
+                Files.createDirectories(destinationFolder);
+            } catch (IOException e) {
+                LOGGER.error("can't create recorder output folder: " + destinationFolder);
+            }
+        }
     }
 
     public void startRecording(Device device, String fileName) {
         // TODO file name
-        if (device != null && device instanceof IsRecordable) {
+        if (device instanceof IsRecordable) {
             this.recordable = (IsRecordable) device;
         } else {
             throw new RuntimeException("device is no instance of " + IsRecordable.class.getName());

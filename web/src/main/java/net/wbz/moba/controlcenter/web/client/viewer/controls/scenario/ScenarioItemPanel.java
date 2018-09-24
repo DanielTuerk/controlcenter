@@ -1,11 +1,19 @@
 package net.wbz.moba.controlcenter.web.client.viewer.controls.scenario;
 
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
+import java.util.Optional;
+import net.wbz.moba.controlcenter.web.client.RequestUtils;
+import net.wbz.moba.controlcenter.web.client.viewer.controls.AbstractItemPanel;
+import net.wbz.moba.controlcenter.web.shared.scenario.RouteSequence;
+import net.wbz.moba.controlcenter.web.shared.scenario.RouteStateEvent;
+import net.wbz.moba.controlcenter.web.shared.scenario.Scenario;
+import net.wbz.moba.controlcenter.web.shared.scenario.ScenarioStateEvent;
 import org.gwtbootstrap3.client.ui.Button;
 import org.gwtbootstrap3.client.ui.Column;
 import org.gwtbootstrap3.client.ui.Icon;
@@ -16,17 +24,6 @@ import org.gwtbootstrap3.client.ui.Row;
 import org.gwtbootstrap3.client.ui.constants.ColumnSize;
 import org.gwtbootstrap3.client.ui.constants.IconType;
 import org.gwtbootstrap3.client.ui.constants.ListGroupItemType;
-
-import com.google.common.base.Optional;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
-
-import net.wbz.moba.controlcenter.web.client.RequestUtils;
-import net.wbz.moba.controlcenter.web.client.viewer.controls.AbstractItemPanel;
-import net.wbz.moba.controlcenter.web.shared.scenario.RouteSequence;
-import net.wbz.moba.controlcenter.web.shared.scenario.RouteStateEvent;
-import net.wbz.moba.controlcenter.web.shared.scenario.Scenario;
-import net.wbz.moba.controlcenter.web.shared.scenario.ScenarioStateEvent;
 
 /**
  * Panel for the {@link Scenario}.
@@ -60,7 +57,7 @@ public class ScenarioItemPanel extends AbstractItemPanel<Scenario, ScenarioState
                 return Optional.of(routeSequence);
             }
         }
-        return Optional.absent();
+        return Optional.empty();
     }
 
     public void updateRouteState(RouteStateEvent event) {
@@ -70,9 +67,8 @@ public class ScenarioItemPanel extends AbstractItemPanel<Scenario, ScenarioState
         if (routeSequenceFromId.isPresent()) {
             listGroupItem.setText(routeSequenceFromId.get().getRoute().getName());
             // detail label text
-            String text = event.getState().name()
-                    + " (" + routeSequenceFromId.get().getPosition() + "/"
-                    + getModel().getRouteSequences().size() + ")";
+            String text = event.getState().name() + " (" + routeSequenceFromId.get().getPosition() + "/" + getModel()
+                .getRouteSequences().size() + ")";
             getLblStateDetails().setText(text);
 
             listGroupItem.setType(ListGroupItemType.DEFAULT);
@@ -153,22 +149,22 @@ public class ScenarioItemPanel extends AbstractItemPanel<Scenario, ScenarioState
         btnSchedule = new Button("Schedule", new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                RequestUtils.getInstance().getScenarioService().schedule(
-                        getModel().getId(), RequestUtils.VOID_ASYNC_CALLBACK);
+                RequestUtils.getInstance().getScenarioService()
+                    .schedule(getModel().getId(), RequestUtils.VOID_ASYNC_CALLBACK);
             }
         });
         btnStart = new Button("Start", new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                RequestUtils.getInstance().getScenarioService().start(
-                        getModel().getId(), RequestUtils.VOID_ASYNC_CALLBACK);
+                RequestUtils.getInstance().getScenarioService()
+                    .start(getModel().getId(), RequestUtils.VOID_ASYNC_CALLBACK);
             }
         });
         btnStop = new Button("Stop", new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                RequestUtils.getInstance().getScenarioService().stop(
-                        getModel().getId(), RequestUtils.VOID_ASYNC_CALLBACK);
+                RequestUtils.getInstance().getScenarioService()
+                    .stop(getModel().getId(), RequestUtils.VOID_ASYNC_CALLBACK);
             }
         });
         rowDrivingFunctions.add(new Column(ColumnSize.MD_12, btnSchedule, btnStart, btnStop));

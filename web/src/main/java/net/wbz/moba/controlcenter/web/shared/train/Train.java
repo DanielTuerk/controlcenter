@@ -1,11 +1,8 @@
 package net.wbz.moba.controlcenter.web.shared.train;
 
+import com.googlecode.jmapper.annotations.JMap;
 import java.util.HashSet;
 import java.util.Set;
-
-import com.google.common.base.Objects;
-import com.googlecode.jmapper.annotations.JMap;
-
 import net.wbz.moba.controlcenter.web.shared.track.model.AbstractDto;
 import net.wbz.moba.controlcenter.web.shared.track.model.TrackBlock;
 
@@ -18,18 +15,13 @@ public class Train extends AbstractDto {
      * Set of {@link TrackBlock}s which the train is actual located.
      */
     private Set<TrackBlock> currentBlocks = new HashSet<>();
-
     @JMap
     private Integer address;
-
     @JMap
     private String name;
-
     @JMap
     private Set<TrainFunction> functions;
-
     private int drivingLevel = 0;
-
     private boolean forward;
 
     public Integer getAddress() {
@@ -98,11 +90,15 @@ public class Train extends AbstractDto {
 
     @Override
     public String toString() {
-        return Objects.toStringHelper(this)
-                .add("name", name)
-                .add("address", address)
-                .add("currentBlocks", currentBlocks)
-                .toString();
+        final StringBuffer sb = new StringBuffer("Train{");
+        sb.append("currentBlocks=").append(currentBlocks);
+        sb.append(", address=").append(address);
+        sb.append(", name='").append(name).append('\'');
+        sb.append(", functions=").append(functions);
+        sb.append(", drivingLevel=").append(drivingLevel);
+        sb.append(", forward=").append(forward);
+        sb.append('}');
+        return sb.toString();
     }
 
     /**

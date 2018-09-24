@@ -1,7 +1,5 @@
 package net.wbz.moba.controlcenter.web.shared;
 
-import com.google.common.base.Objects;
-
 import de.novanic.eventservice.client.event.Event;
 
 /**
@@ -36,13 +34,12 @@ public class AbstractStateEvent implements Event {
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(itemId);
+
+        return java.util.Objects.hash(itemId);
     }
 
     @Override
     public String toString() {
-        return "AbstractStateEvent{" +
-                "itemId=" + itemId +
-                '}';
+        return "AbstractStateEvent{" + "itemId=" + itemId + '}';
     }
 }

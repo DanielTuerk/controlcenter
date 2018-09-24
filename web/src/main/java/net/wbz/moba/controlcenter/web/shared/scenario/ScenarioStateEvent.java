@@ -1,7 +1,5 @@
 package net.wbz.moba.controlcenter.web.shared.scenario;
 
-import com.google.common.base.Objects;
-
 import net.wbz.moba.controlcenter.web.shared.AbstractStateEvent;
 import net.wbz.moba.controlcenter.web.shared.scenario.Scenario.RUN_STATE;
 
@@ -26,8 +24,10 @@ public class ScenarioStateEvent extends AbstractStateEvent {
 
     @Override
     public String toString() {
-        return Objects.toStringHelper(this)
-                .add("state", state)
-                .toString();
+        final StringBuffer sb = new StringBuffer("ScenarioStateEvent{");
+        sb.append("state=").append(state);
+        sb.append(", itemId=").append(itemId);
+        sb.append('}');
+        return sb.toString();
     }
 }

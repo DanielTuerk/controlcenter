@@ -1,17 +1,16 @@
 package net.wbz.moba.controlcenter.web.server.web.editor.block;
 
+import net.wbz.moba.controlcenter.web.server.web.train.TrainManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import net.wbz.moba.controlcenter.web.server.web.train.TrainManager;
-
 /**
- * TODO detect enter to switch signal for free or occupied route
- * TODO necessary to have extra block?
- * 
+ * TODO detect enter to switch signal for free or occupied route TODO necessary to have extra block?
+ *
  * @author Daniel Tuerk
  */
 public class SignalEnteringBlockListener extends AbstractSignalBlockListener {
+
     private static final Logger log = LoggerFactory.getLogger(SignalEnteringBlockListener.class);
 
     private final SignalBlock signalBlock;
@@ -34,8 +33,8 @@ public class SignalEnteringBlockListener extends AbstractSignalBlockListener {
     @Override
     public void trainEnterBlock(int blockNumber, int trainAddress, boolean forward) {
         if (blockNumber == getTrackBlock().getBlockFunction().getBit()) {
-            log.debug("signal entering block {} - train enter {} (signal {})", new Object[] { blockNumber, trainAddress,
-                    signalBlock.getSignal().getSignalConfigRed1() });
+            log.debug("signal entering block {} - train enter {} (signal {})", blockNumber, trainAddress,
+                signalBlock.getSignal().getSignalConfigRed1());
             //
             // Train train = getTrain(trainAddress);
             // if (!signalBlock.isTrainInAnyBlock()) {
@@ -48,8 +47,8 @@ public class SignalEnteringBlockListener extends AbstractSignalBlockListener {
     @Override
     public void trainLeaveBlock(int blockNumber, int trainAddress, boolean forward) {
         if (blockNumber == getTrackBlock().getBlockFunction().getBit()) {
-            log.debug("signal entering block {} - train leave {} (signal {})", new Object[] { blockNumber, trainAddress,
-                    signalBlock.getSignal().getSignalConfigRed1() });
+            log.debug("signal entering block {} - train leave {} (signal {})", blockNumber, trainAddress,
+                signalBlock.getSignal().getSignalConfigRed1());
             // signalBlock.setTrainInEnteringBlock(null);
         }
     }

@@ -1,8 +1,22 @@
 package net.wbz.moba.controlcenter.web.server.web.scenario;
 
+import com.google.common.base.Strings;
+import com.google.gwt.user.server.rpc.RemoteServiceServlet;
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import java.util.HashMap;
 import java.util.Map;
-
+import java.util.Optional;
+import java.util.stream.Collectors;
+import net.wbz.moba.controlcenter.web.server.EventBroadcaster;
+import net.wbz.moba.controlcenter.web.server.web.scenario.execution.ScenarioExecutor;
+import net.wbz.moba.controlcenter.web.shared.scenario.Scenario;
+import net.wbz.moba.controlcenter.web.shared.scenario.Scenario.MODE;
+import net.wbz.moba.controlcenter.web.shared.scenario.Scenario.RUN_STATE;
+import net.wbz.moba.controlcenter.web.shared.scenario.ScenarioService;
+import net.wbz.moba.controlcenter.web.shared.scenario.ScenarioStateEvent;
+import net.wbz.moba.controlcenter.web.shared.train.Train;
+import net.wbz.selectrix4java.device.DeviceManager;
 import org.quartz.CronScheduleBuilder;
 import org.quartz.JobBuilder;
 import org.quartz.JobDetail;
@@ -16,27 +30,9 @@ import org.quartz.impl.StdSchedulerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Optional;
-import com.google.common.base.Predicate;
-import com.google.common.base.Strings;
-import com.google.common.collect.Iterables;
-import com.google.gwt.user.server.rpc.RemoteServiceServlet;
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
-
-import net.wbz.moba.controlcenter.web.server.EventBroadcaster;
-import net.wbz.moba.controlcenter.web.server.web.scenario.execution.ScenarioExecutor;
-import net.wbz.moba.controlcenter.web.shared.scenario.Scenario;
-import net.wbz.moba.controlcenter.web.shared.scenario.Scenario.MODE;
-import net.wbz.moba.controlcenter.web.shared.scenario.Scenario.RUN_STATE;
-import net.wbz.moba.controlcenter.web.shared.scenario.ScenarioService;
-import net.wbz.moba.controlcenter.web.shared.scenario.ScenarioStateEvent;
-import net.wbz.moba.controlcenter.web.shared.train.Train;
-import net.wbz.selectrix4java.device.DeviceManager;
-
 /**
  * Implementation of {@link ScenarioService}.
- * 
+ *
  * @author Daniel Tuerk
  */
 @Singleton
@@ -72,8 +68,8 @@ public class ScenarioServiceImpl extends RemoteServiceServlet implements Scenari
 
     @Inject
     public ScenarioServiceImpl(ScenarioManager scenarioManager, DeviceManager deviceManager,
-            ScenarioHistoryService scenarioHistoryService, ScenarioExecutor scenarioExecutor,
-            EventBroadcaster eventBroadcaster) {
+        ScenarioHistoryService scenarioHistoryService, ScenarioExecutor scenarioExecutor,
+        EventBroadcaster eventBroadcaster) {
         this.scenarioManager = scenarioManager;
         this.deviceManager = deviceManager;
         this.scenarioExecutor = scenarioExecutor;
@@ -92,12 +88,8 @@ public class ScenarioServiceImpl extends RemoteServiceServlet implements Scenari
         INSTANCE = this;
     }
 
-    /**
-     * TODO refactor
-     *
-     * @return
-     */
     public static ScenarioServiceImpl getInstance() {
+        //TODO refactor
         return INSTANCE;
     }
 
@@ -125,18 +117,14 @@ public class ScenarioServiceImpl extends RemoteServiceServlet implements Scenari
             if (!Strings.isNullOrEmpty(cron)) {
 
                 JobDetail job = JobBuilder.newJob(ScheduleScenarioJob.class)
-                        .withIdentity(JobKey.jobKey(JOB_SCENARIO_PREFIX + scenarioId))
-                        .usingJobData("scenario", scenarioId)
-                        .build();
+                    .withIdentity(JobKey.jobKey(JOB_SCENARIO_PREFIX + scenarioId))
+                    .usingJobData("scenario", scenarioId).build();
 
                 TriggerKey triggerKey = TriggerKey.triggerKey(TRIGGER_SCENARIO_PREFIX + scenarioId);
                 scenarioTriggerKeys.put(scenarioId, triggerKey);
 
-                Trigger trigger = TriggerBuilder.newTrigger()
-                        .withIdentity(triggerKey)
-                        .withSchedule(CronScheduleBuilder.cronSchedule(cron))
-                        .forJob(job)
-                        .build();
+                Trigger trigger = TriggerBuilder.newTrigger().withIdentity(triggerKey)
+                    .withSchedule(CronScheduleBuilder.cronSchedule(cron)).forJob(job).build();
 
                 scenarioById.setRunState(RUN_STATE.IDLE);
                 scenarioById.setMode(MODE.AUTOMATIC);
@@ -156,7 +144,7 @@ public class ScenarioServiceImpl extends RemoteServiceServlet implements Scenari
             }
         } else {
             LOG.warn("Can't schedule scenario: {} - not in IDLE state (actual {})", scenarioById,
-                    scenarioById.getRunState());
+                scenarioById.getRunState());
         }
     }
 
@@ -176,12 +164,8 @@ public class ScenarioServiceImpl extends RemoteServiceServlet implements Scenari
      * @return {@link Scenario}s
      */
     public Iterable<Scenario> getScenariosOfTrain(final Train train) {
-        return Iterables.filter(scenarioManager.getScenarios(), new Predicate<Scenario>() {
-            @Override
-            public boolean apply(Scenario input) {
-                return input.getTrain().equals(train);
-            }
-        });
+        return scenarioManager.getScenarios().stream().filter(input -> input.getTrain().equals(train))
+            .collect(Collectors.toList());
     }
 
     /**
@@ -190,18 +174,18 @@ public class ScenarioServiceImpl extends RemoteServiceServlet implements Scenari
      * @param train {@link Train}
      * @return {@link Optional} for {@link Scenario}
      */
-    public Optional<Scenario> getRunningScenarioOfTrain(Train train) {
+    public java.util.Optional<Scenario> getRunningScenarioOfTrain(Train train) {
         for (Scenario scenario : getScenariosOfTrain(train)) {
             if (scenario.getRunState() == RUN_STATE.RUNNING) {
-                return Optional.of(scenario);
+                return java.util.Optional.of(scenario);
             }
         }
-        return Optional.absent();
+        return java.util.Optional.empty();
     }
 
     /**
      * TODO refactor to job
-     * 
+     *
      * @param scenarioId id of {@link Scenario}
      */
     public synchronized void foobarStartScheduledScenario(long scenarioId) {

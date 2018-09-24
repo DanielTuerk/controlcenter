@@ -2,7 +2,6 @@ package net.wbz.moba.controlcenter.web.client.model.track;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import net.wbz.moba.controlcenter.web.client.model.track.signal.SignalHorizontalWidget;
 import net.wbz.moba.controlcenter.web.client.model.track.signal.SignalVerticalWidget;
 import net.wbz.moba.controlcenter.web.shared.track.model.AbstractTrackPart;
@@ -13,6 +12,7 @@ import net.wbz.moba.controlcenter.web.shared.track.model.AbstractTrackPart;
 public class ModelManager {
 
     private final static ModelManager instance = new ModelManager();
+    private final List<AbstractSvgTrackWidget> widgets = new ArrayList<>();
 
     private ModelManager() {
     }
@@ -20,8 +20,6 @@ public class ModelManager {
     public static ModelManager getInstance() {
         return instance;
     }
-
-    private final List<AbstractSvgTrackWidget> widgets = new ArrayList<AbstractSvgTrackWidget>();
 
     public void registerModel(AbstractSvgTrackWidget widgetClass) {
         widgetClass.initFromTrackPart(widgetClass.getNewTrackPart());
@@ -42,8 +40,8 @@ public class ModelManager {
                 // ignore to search for the next widget which match the {@link AbstractTrackPart} type
             }
         }
-        throw new RuntimeException("no widget found for AbstractTrackPart class '" + trackPart.getClass().getName()
-                + "'");
+        throw new RuntimeException(
+            "no widget found for AbstractTrackPart class '" + trackPart.getClass().getName() + "'");
     }
 
     public void init() {

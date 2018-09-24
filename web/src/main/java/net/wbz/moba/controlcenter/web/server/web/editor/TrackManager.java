@@ -1,20 +1,14 @@
 package net.wbz.moba.controlcenter.web.server.web.editor;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-
-import javax.inject.Inject;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.inject.Singleton;
 import com.google.inject.persist.Transactional;
-
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import javax.inject.Inject;
 import net.wbz.moba.controlcenter.web.server.EventBroadcaster;
 import net.wbz.moba.controlcenter.web.server.persist.construction.ConstructionDao;
 import net.wbz.moba.controlcenter.web.server.persist.construction.ConstructionEntity;
@@ -43,6 +37,8 @@ import net.wbz.selectrix4java.device.Device;
 import net.wbz.selectrix4java.device.DeviceAccessException;
 import net.wbz.selectrix4java.device.DeviceConnectionListener;
 import net.wbz.selectrix4java.device.DeviceManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Daniel Tuerk
@@ -57,7 +53,7 @@ public class TrackManager {
      * register and to call from {@link net.wbz.selectrix4java.data.BusDataChannel}.
      */
     private final Map<BusAddressIdentifier, List<BusListener>> busAddressListenersOfTheCurrentTrack = Maps
-            .newConcurrentMap();
+        .newConcurrentMap();
 
     private final DeviceManager deviceManager;
     private final EventBroadcaster eventBroadcaster;
@@ -67,19 +63,19 @@ public class TrackManager {
     private final TrackPartDataMapper trackPartDataMapper;
     private final TrackBlockDao trackBlockDao;
     private final DataMapper<TrackBlock, TrackBlockEntity> trackBlockDataMapper = new DataMapper<>(TrackBlock.class,
-            TrackBlockEntity.class);
+        TrackBlockEntity.class);
     private final TrackBlockRegistry trackBlockRegistry;
     private final SignalBlockRegistry signalBlockRegistry;
 
     /**
      * Cached and transformed entities for track of current {@link Construction}.
      */
-    private final Collection<AbstractTrackPart> cachedEntities = Lists.newArrayList();
+    private final Collection<AbstractTrackPart> cachedEntities = new ArrayList<>();
 
     /**
      * Cached {@link TrackBlock}s of current {@link Construction}.
      */
-    private final Collection<TrackBlock> cachedTrackBlocks = Lists.newArrayList();
+    private final Collection<TrackBlock> cachedTrackBlocks = new ArrayList<>();
     /**
      * The current {@link Construction}.
      */
@@ -87,9 +83,9 @@ public class TrackManager {
 
     @Inject
     public TrackManager(DeviceManager deviceManager, EventBroadcaster eventBroadcaster, TrackPartDao trackPartDao,
-            ConstructionDao constructionDao, GridPositionDao gridPositionDao, TrackPartDataMapper trackPartDataMapper,
-            TrackBlockDao trackBlockDao, TrackBlockRegistry trackBlockRegistry,
-            SignalBlockRegistry signalBlockRegistry) {
+        ConstructionDao constructionDao, GridPositionDao gridPositionDao, TrackPartDataMapper trackPartDataMapper,
+        TrackBlockDao trackBlockDao, TrackBlockRegistry trackBlockRegistry,
+        SignalBlockRegistry signalBlockRegistry) {
         this.eventBroadcaster = eventBroadcaster;
         this.deviceManager = deviceManager;
         this.trackPartDao = trackPartDao;
@@ -119,9 +115,9 @@ public class TrackManager {
     private void addBusAddressListeners(Device device) {
         try {
             for (Map.Entry<BusAddressIdentifier, List<BusListener>> entry : busAddressListenersOfTheCurrentTrack
-                    .entrySet()) {
-                device.getBusAddress(entry.getKey().getBus(),
-                        (byte) entry.getKey().getAddress()).addListeners(entry.getValue());
+                .entrySet()) {
+                device.getBusAddress(entry.getKey().getBus(), (byte) entry.getKey().getAddress())
+                    .addListeners(entry.getValue());
             }
         } catch (DeviceAccessException e) {
             log.error("can't register listeners to active device", e);
@@ -144,9 +140,9 @@ public class TrackManager {
     private void removeBusAddressListeners(Device device) {
         try {
             for (Map.Entry<BusAddressIdentifier, List<BusListener>> entry : busAddressListenersOfTheCurrentTrack
-                    .entrySet()) {
-                device.getBusAddress(entry.getKey().getBus(),
-                        (byte) entry.getKey().getAddress()).removeListeners(entry.getValue());
+                .entrySet()) {
+                device.getBusAddress(entry.getKey().getBus(), (byte) entry.getKey().getAddress())
+                    .removeListeners(entry.getValue());
             }
 
             trackBlockRegistry.removeListeners(device);
@@ -170,8 +166,8 @@ public class TrackManager {
         ConstructionEntity constructionEntity = getCurrentConstruction();
 
         // load all existing to detect deleted track parts
-        List<AbstractTrackPartEntity> existingTrackParts = Lists.newArrayList(trackPartDao.findByConstructionId(
-                constructionEntity.getId()));
+        List<AbstractTrackPartEntity> existingTrackParts = Lists
+            .newArrayList(trackPartDao.findByConstructionId(constructionEntity.getId()));
 
         for (AbstractTrackPart trackPart : trackParts) {
             AbstractTrackPartEntity entity = trackPartDataMapper.transformTrackPart(trackPart);
@@ -295,10 +291,8 @@ public class TrackManager {
 
     /**
      * Register the {@link net.wbz.selectrix4java.bus.consumption.BusAddressDataConsumer}s for each address of the given
-     * {@link AbstractTrackPartEntity}s.
-     * <p/>
-     * TODO auto register for trackpart of current track
-     * TODO re-register by changed trackparts (event by track editor service?, or better by manager/trackPartDao)
+     * {@link AbstractTrackPartEntity}s. TODO auto register for trackpart of current track TODO re-register by changed
+     * trackparts (event by track editor service?, or better by manager/trackPartDao)
      */
     private void registerConsumersByConnectedDeviceForTrackParts() {
 
@@ -323,7 +317,7 @@ public class TrackManager {
             return;
         }
 
-        List<Signal> signals = Lists.newArrayList();
+        List<Signal> signals = new ArrayList<>();
         // create consumers for the configuration of the track parts
         for (final AbstractTrackPart trackPart : trackParts) {
             registerToggleFunctionOfTrackPart(trackPart);
@@ -345,11 +339,11 @@ public class TrackManager {
     }
 
     private void registerSignalFunction(Signal signal) {
-        Map<BusAddressIdentifier, List<BusAddressBitListener>> busAddressListeners = new SignalFunctionReceiver(
-                signal, eventBroadcaster).getBusAddressListeners();
+        Map<BusAddressIdentifier, List<BusAddressBitListener>> busAddressListeners = new SignalFunctionReceiver(signal,
+            eventBroadcaster).getBusAddressListeners();
         for (Map.Entry<BusAddressIdentifier, List<BusAddressBitListener>> entry : busAddressListeners.entrySet()) {
             if (!busAddressListenersOfTheCurrentTrack.containsKey(entry.getKey())) {
-                busAddressListenersOfTheCurrentTrack.put(entry.getKey(), new ArrayList<BusListener>());
+                busAddressListenersOfTheCurrentTrack.put(entry.getKey(), new ArrayList<>());
             }
             busAddressListenersOfTheCurrentTrack.get(entry.getKey()).addAll(entry.getValue());
         }
@@ -373,9 +367,9 @@ public class TrackManager {
 
     private void addBusListener(BusDataConfiguration trackPartConfiguration, BusListener listener) {
         BusAddressIdentifier busAddressIdentifier = new BusAddressIdentifier(trackPartConfiguration.getBus(),
-                trackPartConfiguration.getAddress());
+            trackPartConfiguration.getAddress());
         if (!busAddressListenersOfTheCurrentTrack.containsKey(busAddressIdentifier)) {
-            busAddressListenersOfTheCurrentTrack.put(busAddressIdentifier, new ArrayList<BusListener>());
+            busAddressListenersOfTheCurrentTrack.put(busAddressIdentifier, new ArrayList<>());
         }
         busAddressListenersOfTheCurrentTrack.get(busAddressIdentifier).add(listener);
     }
@@ -390,8 +384,7 @@ public class TrackManager {
                 addBusListener(stateOnConfig, new BusAddressBitListener(stateOnConfig.getBit()) {
                     @Override
                     public void bitChanged(boolean oldValue, boolean newValue) {
-                        if ((newValue && stateOnConfig.getBitState())
-                                || (!newValue && !stateOnConfig.getBitState())) {
+                        if ((newValue && stateOnConfig.getBitState()) || (!newValue && !stateOnConfig.getBitState())) {
                             try {
                                 switchToggleFunction(toggleFunctionEntity, true);
                             } catch (DeviceAccessException e) {
@@ -408,8 +401,8 @@ public class TrackManager {
                 addBusListener(stateOffConfig, new BusAddressBitListener(stateOffConfig.getBit()) {
                     @Override
                     public void bitChanged(boolean oldValue, boolean newValue) {
-                        if ((newValue && stateOffConfig.getBitState())
-                                || (!newValue && !stateOffConfig.getBitState())) {
+                        if ((newValue && stateOffConfig.getBitState()) || (!newValue && !stateOffConfig
+                            .getBitState())) {
                             try {
                                 switchToggleFunction(toggleFunctionEntity, false);
                             } catch (DeviceAccessException e) {
@@ -422,12 +415,12 @@ public class TrackManager {
         }
     }
 
-    private void switchToggleFunction(HasToggleFunction toggleFunctionEntity, boolean stateOn)
-            throws DeviceAccessException {
+    private void switchToggleFunction(HasToggleFunction toggleFunctionEntity, boolean stateOn) throws
+        DeviceAccessException {
         BusDataConfiguration trackPartConfig = toggleFunctionEntity.getToggleFunction();
         if (trackPartConfig != null && trackPartConfig.isValid()) {
-            BusAddress busAddress = deviceManager.getConnectedDevice().getBusAddress(trackPartConfig.getBus(),
-                    trackPartConfig.getAddress().byteValue());
+            BusAddress busAddress = deviceManager.getConnectedDevice()
+                .getBusAddress(trackPartConfig.getBus(), trackPartConfig.getAddress().byteValue());
             if (stateOn) {
                 busAddress.setBit(trackPartConfig.getBit());
             } else {
@@ -439,7 +432,7 @@ public class TrackManager {
 
     /**
      * TODO refactor to listener
-     * 
+     *
      * @param construction {@link Construction}
      */
     public void constructionChanged(Construction construction) {

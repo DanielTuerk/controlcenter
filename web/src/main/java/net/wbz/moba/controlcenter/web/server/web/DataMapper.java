@@ -1,14 +1,9 @@
 package net.wbz.moba.controlcenter.web.server.web;
 
-import java.util.Collection;
-
-import javax.annotation.Nullable;
-
-import com.google.common.base.Function;
-import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.googlecode.jmapper.JMapper;
-
+import java.util.Collection;
+import java.util.stream.Collectors;
 import net.wbz.moba.controlcenter.web.server.persist.AbstractEntity;
 import net.wbz.moba.controlcenter.web.shared.track.model.AbstractDto;
 
@@ -57,13 +52,7 @@ public class DataMapper<Target extends AbstractDto, Source extends AbstractEntit
      * @return list of {@link Target} from given list of {@link Source}
      */
     public Collection<Target> transformSource(final Collection<Source> sourceEntities) {
-        return Lists.newArrayList(Iterables.transform(sourceEntities, new Function<Source, Target>() {
-            @Nullable
-            @Override
-            public Target apply(@Nullable Source source) {
-                return transformSource(source);
-            }
-        }));
+        return Lists.newArrayList(sourceEntities.stream().map(this::transformSource).collect(Collectors.toList()));
     }
 
     /**
@@ -84,12 +73,7 @@ public class DataMapper<Target extends AbstractDto, Source extends AbstractEntit
      * @return list of {@link Source} from given list of {@link Target}
      */
     public Collection<Source> transformTarget(final Collection<Target> targetDtos) {
-        return Lists.newArrayList(Iterables.transform(targetDtos, new Function<Target, Source>() {
-            @Override
-            public Source apply(Target source) {
-                return transformTarget(source);
-            }
-        }));
+        return Lists.newArrayList(targetDtos.stream().map(this::transformTarget).collect(Collectors.toList()));
     }
 
     /**

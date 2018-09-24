@@ -1,7 +1,5 @@
 package net.wbz.moba.controlcenter.web.shared.bus;
 
-import com.google.common.base.Objects;
-
 import de.novanic.eventservice.client.event.Event;
 
 /**
@@ -11,7 +9,6 @@ public class DeviceInfoEvent implements Event {
 
     private DeviceInfo deviceInfo;
     private TYPE eventType;
-
     public DeviceInfoEvent() {
     }
 
@@ -37,12 +34,13 @@ public class DeviceInfoEvent implements Event {
             return false;
         }
         DeviceInfoEvent that = (DeviceInfoEvent) o;
-        return Objects.equal(deviceInfo, that.deviceInfo);
+        return java.util.Objects.equals(deviceInfo, that.deviceInfo) && eventType == that.eventType;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(deviceInfo);
+
+        return java.util.Objects.hash(deviceInfo, eventType);
     }
 
     public enum TYPE {

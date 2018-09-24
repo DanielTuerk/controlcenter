@@ -1,13 +1,9 @@
 package net.wbz.moba.controlcenter.web.server.web.train;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.google.gwt.user.client.rpc.RpcTokenException;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-
 import net.wbz.moba.controlcenter.web.shared.track.model.BusDataConfiguration;
 import net.wbz.moba.controlcenter.web.shared.train.Train;
 import net.wbz.moba.controlcenter.web.shared.train.TrainFunction;
@@ -15,6 +11,8 @@ import net.wbz.moba.controlcenter.web.shared.train.TrainService;
 import net.wbz.selectrix4java.device.DeviceAccessException;
 import net.wbz.selectrix4java.device.DeviceManager;
 import net.wbz.selectrix4java.train.TrainModule;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Implementation of the {@link TrainService}.
@@ -65,7 +63,7 @@ public class TrainServiceImpl extends RemoteServiceServlet implements TrainServi
         int address = trainManager.getTrain(id).getAddress();
         try {
             deviceManager.getConnectedDevice().getTrainModule((byte) address).setDirection(
-                    forward ? TrainModule.DRIVING_DIRECTION.FORWARD : TrainModule.DRIVING_DIRECTION.BACKWARD);
+                forward ? TrainModule.DRIVING_DIRECTION.FORWARD : TrainModule.DRIVING_DIRECTION.BACKWARD);
         } catch (DeviceAccessException e) {
             String msg = "can't change level of train " + id;
             LOG.error(msg, e);
@@ -90,9 +88,9 @@ public class TrainServiceImpl extends RemoteServiceServlet implements TrainServi
     /**
      * TODO Avoid null pointer for non connected device
      *
-     * @param id
-     * @param additionalAddresses
-     * @return
+     * @param id id of train
+     * @param additionalAddresses additional addresses
+     * @return {@link TrainModule}
      */
     private TrainModule getTrainModule(long id, int... additionalAddresses) {
         int address = trainManager.getTrain(id).getAddress();
@@ -110,10 +108,9 @@ public class TrainServiceImpl extends RemoteServiceServlet implements TrainServi
             BusDataConfiguration functionConfiguration = function.getConfiguration();
             // TODO remove bus nr quick fix
             functionConfiguration.setBus(trainModule.getBus());
-            trainModule.setFunctionState(deviceManager.getConnectedDevice().getBusAddress(
-                    functionConfiguration.getBus(),
-                    functionConfiguration.getAddress()),
-                    functionConfiguration.getBit(), state);
+            trainModule.setFunctionState(deviceManager.getConnectedDevice()
+                    .getBusAddress(functionConfiguration.getBus(), functionConfiguration.getAddress()),
+                functionConfiguration.getBit(), state);
         } catch (DeviceAccessException e) {
             String msg = String.format("can't change state of function %s of train %d", function.getAlias(), id);
             LOG.error(msg, e);

@@ -1,7 +1,5 @@
 package net.wbz.moba.controlcenter.web.shared.scenario;
 
-import com.google.common.base.Objects;
-
 import de.novanic.eventservice.client.event.Event;
 
 /**
@@ -14,7 +12,8 @@ public class RoutesChangedEvent implements Event {
 
     @Override
     public String toString() {
-        return Objects.toStringHelper(this)
-                .toString();
+        final StringBuffer sb = new StringBuffer("RoutesChangedEvent{");
+        sb.append('}');
+        return sb.toString();
     }
 }

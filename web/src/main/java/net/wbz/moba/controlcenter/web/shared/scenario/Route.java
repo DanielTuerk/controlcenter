@@ -1,12 +1,9 @@
 package net.wbz.moba.controlcenter.web.shared.scenario;
 
+import com.googlecode.jmapper.annotations.JMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import com.google.common.base.Objects;
-import com.googlecode.jmapper.annotations.JMap;
-
 import net.wbz.moba.controlcenter.web.shared.track.model.AbstractDto;
 import net.wbz.moba.controlcenter.web.shared.track.model.GridPosition;
 import net.wbz.moba.controlcenter.web.shared.track.model.TrackBlock;
@@ -15,6 +12,7 @@ import net.wbz.moba.controlcenter.web.shared.track.model.TrackBlock;
  * @author Daniel Tuerk
  */
 public class Route extends AbstractDto {
+
     @JMap
     private String name;
     @JMap
@@ -95,9 +93,9 @@ public class Route extends AbstractDto {
     }
 
     /**
-     * Return all {@link TrackBlock}s on the {@link Track} with end block.
-     * It represents all blocks to drive from start till end.
-     * 
+     * Return all {@link TrackBlock}s on the {@link Track} with end block. It represents all blocks to drive from start
+     * till end.
+     *
      * @return {@link TrackBlock}s
      */
     public Set<TrackBlock> getAllTrackBlocksToDrive() {
@@ -112,10 +110,16 @@ public class Route extends AbstractDto {
 
     @Override
     public String toString() {
-        return Objects.toStringHelper(this)
-                .add("id", getId())
-                .add("name", name)
-                .toString();
+        final StringBuffer sb = new StringBuffer("Route{");
+        sb.append("name='").append(name).append('\'');
+        sb.append(", start=").append(start);
+        sb.append(", end=").append(end);
+        sb.append(", oneway=").append(oneway);
+        sb.append(", waypoints=").append(waypoints);
+        sb.append(", runState=").append(runState);
+        sb.append(", track=").append(track);
+        sb.append('}');
+        return sb.toString();
     }
 
     /**
@@ -125,16 +129,13 @@ public class Route extends AbstractDto {
         /**
          * Prepared to start.
          */
-        PREPARED,
-        /**
+        PREPARED, /**
          * Reserved for start after successful preparation.
          */
-        RESERVED,
-        /**
+        RESERVED, /**
          * Currently running.
          */
-        RUNNING,
-        /**
+        RUNNING, /**
          * Execution finished.
          */
         FINISHED

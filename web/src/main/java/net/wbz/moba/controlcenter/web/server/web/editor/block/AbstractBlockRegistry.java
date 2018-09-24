@@ -1,12 +1,8 @@
 package net.wbz.moba.controlcenter.web.server.web.editor.block;
 
 import java.util.Collection;
-
-import net.wbz.moba.controlcenter.web.server.SelectrixHelper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import net.wbz.moba.controlcenter.web.server.EventBroadcaster;
+import net.wbz.moba.controlcenter.web.server.SelectrixHelper;
 import net.wbz.moba.controlcenter.web.server.web.train.TrainManager;
 import net.wbz.moba.controlcenter.web.server.web.train.TrainServiceImpl;
 import net.wbz.moba.controlcenter.web.shared.track.model.AbstractDto;
@@ -15,10 +11,12 @@ import net.wbz.moba.controlcenter.web.shared.track.model.TrackBlock;
 import net.wbz.selectrix4java.block.FeedbackBlockModule;
 import net.wbz.selectrix4java.device.Device;
 import net.wbz.selectrix4java.device.DeviceAccessException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Abstract registry for blocks.
- * 
+ *
  * @author Daniel Tuerk
  */
 public abstract class AbstractBlockRegistry<T extends AbstractDto> {
@@ -37,7 +35,7 @@ public abstract class AbstractBlockRegistry<T extends AbstractDto> {
      * @param trainManager {@link TrainManager}
      */
     public AbstractBlockRegistry(EventBroadcaster eventBroadcaster, TrainServiceImpl trainService,
-            TrainManager trainManager) {
+        TrainManager trainManager) {
         this.eventBroadcaster = eventBroadcaster;
         this.trainService = trainService;
         this.trainManager = trainManager;
@@ -54,7 +52,7 @@ public abstract class AbstractBlockRegistry<T extends AbstractDto> {
      * Register the listeners of the registry to the given {@link Device}.
      *
      * @param device {@link Device}
-     * @throws DeviceAccessException
+     * @throws DeviceAccessException no access
      */
     public abstract void registerListeners(Device device) throws DeviceAccessException;
 
@@ -62,7 +60,7 @@ public abstract class AbstractBlockRegistry<T extends AbstractDto> {
      * Remove all listeners of registry from the given {@link Device}.
      *
      * @param device {@link Device}
-     * @throws DeviceAccessException
+     * @throws DeviceAccessException no access
      */
     public abstract void removeListeners(Device device) throws DeviceAccessException;
 
@@ -77,8 +75,8 @@ public abstract class AbstractBlockRegistry<T extends AbstractDto> {
         doInit(blocks);
     }
 
-    protected FeedbackBlockModule getFeedbackBlockModule(Device device,
-            BusAddressIdentifier entry) throws DeviceAccessException {
+    protected FeedbackBlockModule getFeedbackBlockModule(Device device, BusAddressIdentifier entry) throws
+        DeviceAccessException {
         return SelectrixHelper.getFeedbackBlockModule(device, entry);
     }
 

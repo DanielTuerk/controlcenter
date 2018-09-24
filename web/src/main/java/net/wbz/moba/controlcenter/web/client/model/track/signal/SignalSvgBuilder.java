@@ -1,19 +1,17 @@
 package net.wbz.moba.controlcenter.web.client.model.track.signal;
 
+import net.wbz.moba.controlcenter.web.client.util.SvgTrackUtil;
+import net.wbz.moba.controlcenter.web.shared.track.model.Signal;
+import net.wbz.moba.controlcenter.web.shared.track.model.Signal.FUNCTION;
+import net.wbz.moba.controlcenter.web.shared.track.model.Signal.TYPE;
 import org.vectomatic.dom.svg.OMSVGDocument;
 import org.vectomatic.dom.svg.OMSVGPointList;
 import org.vectomatic.dom.svg.OMSVGPolygonElement;
 import org.vectomatic.dom.svg.OMSVGSVGElement;
 import org.vectomatic.dom.svg.utils.SVGConstants;
 
-import net.wbz.moba.controlcenter.web.client.util.SvgTrackUtil;
-import net.wbz.moba.controlcenter.web.shared.track.model.Signal;
-import net.wbz.moba.controlcenter.web.shared.track.model.Signal.FUNCTION;
-import net.wbz.moba.controlcenter.web.shared.track.model.Signal.TYPE;
-
 /**
- * Create the SVG elements for the different types of an
- * {@link net.wbz.moba.controlcenter.web.shared.track.model.Signal}.
+ * Create the SVG elements for the different types of an {@link net.wbz.moba.controlcenter.web.shared.track.model.Signal}.
  *
  * @author Daniel Tuerk
  */
@@ -35,7 +33,6 @@ public class SignalSvgBuilder {
     private final static String YELLOW = SVGConstants.CSS_YELLOW_VALUE;
     private final static String WHITE = SVGConstants.CSS_WHITE_VALUE;
     private final static String GRAY = SVGConstants.CSS_GRAY_VALUE;
-
     private SignalSvgBuilder() {
     }
 
@@ -49,10 +46,11 @@ public class SignalSvgBuilder {
     }
 
     public void updateSvgContent(Signal.TYPE signalType, Signal.LIGHT light, boolean state, OMSVGDocument doc,
-            OMSVGSVGElement svg) {
+        OMSVGSVGElement svg) {
 
-        if (!state)
+        if (!state) {
             return;
+        }
 
         switch (signalType) {
             case BLOCK:
@@ -120,7 +118,7 @@ public class SignalSvgBuilder {
     }
 
     private void addLight(OMSVGDocument doc, OMSVGSVGElement svg, String color, WIDTH_LEVEL widthLevel,
-            HEIGHT_LEVEL heightLevel) {
+        HEIGHT_LEVEL heightLevel) {
         float y = widthLevel == WIDTH_LEVEL.W1 ? 6f : 20f;
         float x = 0f;
         switch (heightLevel) {
@@ -144,18 +142,18 @@ public class SignalSvgBuilder {
     }
 
     /**
-     * Add the svg for the given {@link net.wbz.moba.controlcenter.web.shared.track.model.Signal.FUNCTION} of the
-     * {@link net.wbz.moba.controlcenter.web.shared.track.model.Signal.TYPE} to the
-     * {@link org.vectomatic.dom.svg.OMSVGSVGElement}.
+     * Add the svg for the given {@link net.wbz.moba.controlcenter.web.shared.track.model.Signal.FUNCTION} of the {@link
+     * net.wbz.moba.controlcenter.web.shared.track.model.Signal.TYPE} to the {@link
+     * org.vectomatic.dom.svg.OMSVGSVGElement}.
      *
      * @param signalType {@link TYPE}
      * @param function {@link FUNCTION}
      * @param doc {@link OMSVGDocument}
      * @param svg {@link OMSVGSVGElement}
-     * @param color
+     * @param color color
      */
-    public void addSvgContent(TYPE signalType, FUNCTION function, OMSVGDocument doc,
-            OMSVGSVGElement svg, String color) {
+    public void addSvgContent(TYPE signalType, FUNCTION function, OMSVGDocument doc, OMSVGSVGElement svg,
+        String color) {
         addTrackRectangle(doc, svg, color);
 
         switch (signalType) {
@@ -234,7 +232,7 @@ public class SignalSvgBuilder {
      * @param rightLightColor color of the right light
      */
     private void addTwoLightsMiddle(OMSVGDocument doc, OMSVGSVGElement svg, String leftLightColor,
-            String rightLightColor) {
+        String rightLightColor) {
         addLightMiddleLeft(doc, svg, leftLightColor);
         addLightMiddleRight(doc, svg, rightLightColor);
 
@@ -258,7 +256,7 @@ public class SignalSvgBuilder {
      * @param left <code>true</code> to draw at the left, otherwise right
      */
     private void addTwoTopAndBottom(OMSVGDocument doc, OMSVGSVGElement svg, String topLightColor,
-            String bottomLightColor, boolean left) {
+        String bottomLightColor, boolean left) {
         svg.appendChild(SvgTrackUtil.createCircle(doc, 19f, left ? 6f : 19f, 5f, topLightColor));
         svg.appendChild(SvgTrackUtil.createCircle(doc, 6f, left ? 6f : 19f, 5f, bottomLightColor));
     }
@@ -268,7 +266,7 @@ public class SignalSvgBuilder {
      *
      * @param doc {@link org.vectomatic.dom.svg.OMSVGDocument}
      * @param svg {@link org.vectomatic.dom.svg.OMSVGSVGElement}
-     * @param color
+     * @param color color
      */
     public void addTrackRectangle(OMSVGDocument doc, OMSVGSVGElement svg, String color) {
         svg.appendChild(SvgTrackUtil.createRectangle(doc, 0f, 10f, 25f, 5f, color));
@@ -293,8 +291,8 @@ public class SignalSvgBuilder {
                 svg.appendChild(createPreviewPlatePolygon(doc, svg));
 
                 // red light
-                svg.appendChild(SvgTrackUtil.createCircle(doc, circleLeftX, 100f, circleWidth,
-                        SVGConstants.CSS_RED_VALUE));
+                svg.appendChild(
+                    SvgTrackUtil.createCircle(doc, circleLeftX, 100f, circleWidth, SVGConstants.CSS_RED_VALUE));
                 svg.appendChild(doc.createSVGTextElement(textLeftX, 105f, (short) 5, SHORTCUT_RED_1));
 
                 // green light
@@ -306,8 +304,8 @@ public class SignalSvgBuilder {
                 svg.appendChild(createPreviewPlatePolygon(doc, svg));
 
                 // red light
-                svg.appendChild(SvgTrackUtil.createCircle(doc, circleLeftX, 100f, circleWidth,
-                        SVGConstants.CSS_RED_VALUE));
+                svg.appendChild(
+                    SvgTrackUtil.createCircle(doc, circleLeftX, 100f, circleWidth, SVGConstants.CSS_RED_VALUE));
                 svg.appendChild(doc.createSVGTextElement(textLeftX, 105f, (short) 5, SHORTCUT_RED_1));
 
                 // yellow light
@@ -323,21 +321,21 @@ public class SignalSvgBuilder {
                 svg.appendChild(createPreviewPlatePolygon(doc, svg));
 
                 // red 1 light
-                svg.appendChild(SvgTrackUtil.createCircle(doc, circleLeftX, 40f, circleWidth,
-                        SVGConstants.CSS_RED_VALUE));
+                svg.appendChild(
+                    SvgTrackUtil.createCircle(doc, circleLeftX, 40f, circleWidth, SVGConstants.CSS_RED_VALUE));
                 svg.appendChild(doc.createSVGTextElement(textLeftX, 45f, (short) 5, SHORTCUT_RED_1));
                 // red 2 light
-                svg.appendChild(SvgTrackUtil.createCircle(doc, circleRightX, 40f, circleWidth,
-                        SVGConstants.CSS_RED_VALUE));
+                svg.appendChild(
+                    SvgTrackUtil.createCircle(doc, circleRightX, 40f, circleWidth, SVGConstants.CSS_RED_VALUE));
                 svg.appendChild(doc.createSVGTextElement(textRightX, 45f, (short) 5, SHORTCUT_RED_2));
 
                 // white light
-                svg.appendChild(SvgTrackUtil.createCircle(doc, circleRightX, 60f, circleWidth,
-                        SVGConstants.CSS_WHITE_VALUE));
+                svg.appendChild(
+                    SvgTrackUtil.createCircle(doc, circleRightX, 60f, circleWidth, SVGConstants.CSS_WHITE_VALUE));
                 svg.appendChild(doc.createSVGTextElement(textRightX, 65f, (short) 5, SHORTCUT_WHITE));
 
-                svg.appendChild(SvgTrackUtil.createCircle(doc, circleLeftX, 78f, circleWidth,
-                        SVGConstants.CSS_WHITE_VALUE));
+                svg.appendChild(
+                    SvgTrackUtil.createCircle(doc, circleLeftX, 78f, circleWidth, SVGConstants.CSS_WHITE_VALUE));
                 svg.appendChild(doc.createSVGTextElement(textLeftX, 84f, (short) 5, SHORTCUT_WHITE));
 
                 // yellow light
@@ -357,14 +355,15 @@ public class SignalSvgBuilder {
                 points.appendItem(svg.createSVGPoint(PREVIEW_PADDING_LEFT, beforePlateWidth));
                 points.appendItem(svg.createSVGPoint(PREVIEW_PADDING_LEFT + beforePlateWidth, 0));
                 points.appendItem(svg.createSVGPoint(PREVIEW_PADDING_LEFT + beforePlateWidth + beforePlateHeight, 0));
-                points.appendItem(svg.createSVGPoint(PREVIEW_PADDING_LEFT + beforePlateWidth + beforePlateHeight
-                        + beforePlateHeight, beforePlateHeight));
-                points.appendItem(svg.createSVGPoint(PREVIEW_PADDING_LEFT + beforePlateWidth + 2 * beforePlateHeight, 2
-                        * beforePlateHeight));
-                points.appendItem(svg.createSVGPoint(PREVIEW_PADDING_LEFT + 2 * beforePlateHeight, 2 * beforePlateHeight
-                        + beforePlateWidth));
-                points.appendItem(svg.createSVGPoint(PREVIEW_PADDING_LEFT + beforePlateHeight, 2 * beforePlateHeight
-                        + beforePlateWidth));
+                points.appendItem(svg.createSVGPoint(
+                    PREVIEW_PADDING_LEFT + beforePlateWidth + beforePlateHeight + beforePlateHeight,
+                    beforePlateHeight));
+                points.appendItem(svg.createSVGPoint(PREVIEW_PADDING_LEFT + beforePlateWidth + 2 * beforePlateHeight,
+                    2 * beforePlateHeight));
+                points.appendItem(svg.createSVGPoint(PREVIEW_PADDING_LEFT + 2 * beforePlateHeight,
+                    2 * beforePlateHeight + beforePlateWidth));
+                points.appendItem(svg.createSVGPoint(PREVIEW_PADDING_LEFT + beforePlateHeight,
+                    2 * beforePlateHeight + beforePlateWidth));
                 points.appendItem(svg.createSVGPoint(PREVIEW_PADDING_LEFT, beforePlateHeight + beforePlateWidth));
 
                 polygon.getStyle().setSVGProperty(SVGConstants.CSS_FILL_VALUE, GRAY);

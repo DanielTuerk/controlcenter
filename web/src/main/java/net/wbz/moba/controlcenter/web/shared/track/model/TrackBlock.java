@@ -3,7 +3,6 @@ package net.wbz.moba.controlcenter.web.shared.track.model;
 import com.google.common.base.Objects;
 import com.google.common.base.Strings;
 import com.googlecode.jmapper.annotations.JMap;
-
 import net.wbz.moba.controlcenter.web.shared.constrution.Construction;
 
 /**
@@ -75,30 +74,22 @@ public class TrackBlock extends AbstractDto {
         return drivingLevelAdjustType;
     }
 
-    public void setDrivingLevelAdjustType(
-            DRIVING_LEVEL_ADJUST_TYPE drivingLevelAdjustType) {
+    public void setDrivingLevelAdjustType(DRIVING_LEVEL_ADJUST_TYPE drivingLevelAdjustType) {
         this.drivingLevelAdjustType = drivingLevelAdjustType;
     }
 
     @Override
     public String toString() {
-        return "TrackBlock{" +
-                "blockFunction=" + blockFunction +
-                ", name='" + name + '\'' +
-                (drivingLevelAdjustType != DRIVING_LEVEL_ADJUST_TYPE.NONE ? (", drivingLevelAdjustType='"
-                        + drivingLevelAdjustType + '\'' +
-                        ", name='" + forwardTargetDrivingLevel + '\'' +
-                        ", name='" + backwardTargetDrivingLevel + '\'') : "") +
-                "} " + super.toString();
+        return "TrackBlock{" + "blockFunction=" + blockFunction + ", name='" + name + '\'' + (
+            drivingLevelAdjustType != DRIVING_LEVEL_ADJUST_TYPE.NONE ? (", drivingLevelAdjustType='"
+                + drivingLevelAdjustType + '\'' + ", name='" + forwardTargetDrivingLevel + '\'' + ", name='"
+                + backwardTargetDrivingLevel + '\'') : "") + "} " + super.toString();
     }
 
     public String getDisplayValue() {
-        return (Strings.isNullOrEmpty(name) ? "-" : name)
-                + " ("
-                + (blockFunction != null ? String.valueOf(blockFunction.getAddress()) : "-")
-                + ", "
-                + (blockFunction != null ? blockFunction.getBit() : "-")
-                + ")";
+        return (Strings.isNullOrEmpty(name) ? "-" : name) + " (" + (blockFunction != null ? String
+            .valueOf(blockFunction.getAddress()) : "-") + ", " + (blockFunction != null ? blockFunction.getBit()
+            : "-") + ")";
     }
 
     @Override
@@ -116,8 +107,7 @@ public class TrackBlock extends AbstractDto {
             return false;
         }
         TrackBlock that = (TrackBlock) o;
-        return Objects.equal(blockFunction, that.blockFunction) &&
-                Objects.equal(name, that.name);
+        return java.util.Objects.equals(blockFunction, that.blockFunction) && Objects.equal(name, that.name);
     }
 
     @Override
@@ -129,12 +119,10 @@ public class TrackBlock extends AbstractDto {
         /**
          * No adjustment.
          */
-        NONE,
-        /**
+        NONE, /**
          * Adjust on entering the block.
          */
-        ENTER,
-        /**
+        ENTER, /**
          * Adjust after leaving the block
          */
         EXIT

@@ -1,10 +1,9 @@
 package net.wbz.moba.controlcenter.web.shared.track.model;
 
-import java.util.Collection;
-import java.util.Set;
-
 import com.google.common.collect.Sets;
 import com.googlecode.jmapper.annotations.JMap;
+import java.util.Collection;
+import java.util.Set;
 
 /**
  * @author Daniel Tuerk
@@ -43,7 +42,7 @@ public abstract class AbstractTrackPart extends AbstractDto {
     /**
      * TODO maybe refactor
      *
-     * @return
+     * @return configurations for the functions
      */
     public Set<BusDataConfiguration> getConfigurationsOfFunctions() {
         // TODO
@@ -57,7 +56,7 @@ public abstract class AbstractTrackPart extends AbstractDto {
     /**
      * TODO drop?
      *
-     * @return
+     * @return {@link BusDataConfiguration}
      */
     public BusDataConfiguration getBlockFunction() {
         return trackBlock != null ? trackBlock.getBlockFunction() : null;

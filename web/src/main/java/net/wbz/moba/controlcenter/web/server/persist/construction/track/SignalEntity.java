@@ -1,19 +1,14 @@
 package net.wbz.moba.controlcenter.web.server.persist.construction.track;
 
-import java.util.List;
+import com.google.common.collect.Maps;
+import com.googlecode.jmapper.annotations.JMap;
 import java.util.Map;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-
-import com.google.common.collect.Maps;
-import com.googlecode.jmapper.annotations.JMap;
-
 import net.wbz.moba.controlcenter.web.shared.track.model.AbstractTrackPart;
 import net.wbz.moba.controlcenter.web.shared.track.model.Signal;
 import net.wbz.moba.controlcenter.web.shared.track.model.Signal.LIGHT;
@@ -22,8 +17,8 @@ import net.wbz.moba.controlcenter.web.shared.track.model.TrackModelConstants;
 
 /**
  * Widget to show and control a signal.
- * <p/>
- * s@author Daniel Tuerk
+ *
+ * @author Daniel Tuerk
  */
 @Entity
 @Table(name = "TRACKPART_SIGNAL")
@@ -63,8 +58,7 @@ public class SignalEntity extends StraightEntity {
     private TrackBlockEntity enteringBlock;
 
     /**
-     * Block to start breaking.
-     * If it's {@code null} than the breaking is used in the stop block.
+     * Block to start breaking. If it's {@code null} than the breaking is used in the stop block.
      */
     @JMap
     @ManyToOne(fetch = FetchType.EAGER)
@@ -96,8 +90,7 @@ public class SignalEntity extends StraightEntity {
     }
 
     /**
-     * Wrapper to access the function configuration by the
-     * {@link Signal.LIGHT} name.
+     * Wrapper to access the function configuration by the {@link Signal.LIGHT} name.
      *
      * @param light {@link Signal.LIGHT}
      * @return {@link BusDataConfigurationEntity} or <code>null</code>
@@ -112,8 +105,7 @@ public class SignalEntity extends StraightEntity {
     }
 
     /**
-     * Create or update the function configuration by the
-     * {@link Signal.LIGHT} name.
+     * Create or update the function configuration by the {@link Signal.LIGHT} name.
      *
      * @param light {@link Signal.LIGHT}
      * @param configuration {@link BusDataConfigurationEntity} or <code>null</code>
@@ -127,7 +119,7 @@ public class SignalEntity extends StraightEntity {
         for (TrackPartFunctionEntity functionConfig : getFunctionConfigs()) {
             // TODO: refactor to signal function prefix
             if (!TrackModelConstants.DEFAULT_TOGGLE_FUNCTION.equals(functionConfig.getFunctionKey())
-                    && !TrackModelConstants.DEFAULT_BLOCK_FUNCTION.equals(functionConfig.getFunctionKey())) {
+                && !TrackModelConstants.DEFAULT_BLOCK_FUNCTION.equals(functionConfig.getFunctionKey())) {
                 lightConfig.put(LIGHT.valueOf(functionConfig.getFunctionKey()), functionConfig.getConfiguration());
             }
         }
@@ -194,8 +186,7 @@ public class SignalEntity extends StraightEntity {
         return enteringBlock;
     }
 
-    public void setEnteringBlock(
-        TrackBlockEntity enteringBlock) {
+    public void setEnteringBlock(TrackBlockEntity enteringBlock) {
         this.enteringBlock = enteringBlock;
     }
 
@@ -203,8 +194,7 @@ public class SignalEntity extends StraightEntity {
         return breakingBlock;
     }
 
-    public void setBreakingBlock(
-        TrackBlockEntity breakingBlock) {
+    public void setBreakingBlock(TrackBlockEntity breakingBlock) {
         this.breakingBlock = breakingBlock;
     }
 
@@ -220,8 +210,7 @@ public class SignalEntity extends StraightEntity {
         return monitoringBlock;
     }
 
-    public void setMonitoringBlock(
-        TrackBlockEntity monitoringBlock) {
+    public void setMonitoringBlock(TrackBlockEntity monitoringBlock) {
         this.monitoringBlock = monitoringBlock;
     }
 

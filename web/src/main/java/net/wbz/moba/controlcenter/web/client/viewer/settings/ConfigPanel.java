@@ -1,10 +1,19 @@
 package net.wbz.moba.controlcenter.web.client.viewer.settings;
 
+import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.dom.client.Style;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.logical.shared.ResizeEvent;
+import com.google.gwt.event.logical.shared.ResizeHandler;
+import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.FlowPanel;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
+import net.wbz.moba.controlcenter.web.client.Settings;
 import org.gwtbootstrap3.client.ui.AnchorListItem;
 import org.gwtbootstrap3.client.ui.Button;
 import org.gwtbootstrap3.client.ui.FieldSet;
@@ -17,18 +26,6 @@ import org.gwtbootstrap3.client.ui.PanelHeader;
 import org.gwtbootstrap3.client.ui.constants.ButtonType;
 import org.gwtbootstrap3.client.ui.constants.Pull;
 import org.gwtbootstrap3.extras.notify.client.ui.Notify;
-
-import com.google.gwt.core.client.Scheduler;
-import com.google.gwt.dom.client.Style;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.logical.shared.ResizeEvent;
-import com.google.gwt.event.logical.shared.ResizeHandler;
-import com.google.gwt.event.shared.HandlerRegistration;
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.FlowPanel;
-
-import net.wbz.moba.controlcenter.web.client.Settings;
 
 /**
  * @author Daniel Tuerk
@@ -148,9 +145,9 @@ public class ConfigPanel extends Panel {
 
     /**
      * TODO: groups not supported yet
-     * 
-     * @param configEntry
-     * @return
+     *
+     * @param configEntry {@link AbstractConfigEntry}
+     * @return {@link Panel}
      */
     private Panel getPanelForGroup(AbstractConfigEntry configEntry) {
         Panel panel = new Panel();
@@ -184,19 +181,19 @@ public class ConfigPanel extends Panel {
 
             @Override
             public void onResize(ResizeEvent event) {
-                Scheduler.get().scheduleDeferred(
-                        new Scheduler.ScheduledCommand() {
-                            public void execute() {
-                                updatePanelHeight();
-                            }
-                        });
+                Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
+                    public void execute() {
+                        updatePanelHeight();
+                    }
+                });
             }
         });
     }
 
     private void updatePanelHeight() {
-        configBody.setHeight(getParent().getOffsetHeight() -
-                (configHeader.getOffsetHeight() + configFooter.getOffsetHeight()) + "px");
+        configBody.setHeight(
+            getParent().getOffsetHeight() - (configHeader.getOffsetHeight() + configFooter.getOffsetHeight())
+                + "px");
     }
 
     @Override

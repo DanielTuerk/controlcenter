@@ -7,6 +7,7 @@ import com.googlecode.jmapper.annotations.JMap;
  * @author Daniel Tuerk
  */
 public class BusDataConfiguration extends AbstractDto {
+
     @JMap
     private Integer bus;
 
@@ -67,12 +68,13 @@ public class BusDataConfiguration extends AbstractDto {
 
     @Override
     public String toString() {
-        return "BusDataConfiguration{" +
-                "bus=" + bus +
-                ", address=" + address +
-                ", bit=" + bit +
-                ", bitState=" + bitState +
-                '}';
+        final StringBuffer sb = new StringBuffer("BusDataConfiguration{");
+        sb.append("bus=").append(bus);
+        sb.append(", address=").append(address);
+        sb.append(", bit=").append(bit);
+        sb.append(", bitState=").append(bitState);
+        sb.append('}');
+        return sb.toString();
     }
 
     @Override
@@ -83,14 +85,18 @@ public class BusDataConfiguration extends AbstractDto {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
+        if (!super.equals(o)) {
+            return false;
+        }
         BusDataConfiguration that = (BusDataConfiguration) o;
-        return isSameConfig(that) &&
-                Objects.equal(getBitState(), that.getBitState());
+        return java.util.Objects.equals(bus, that.bus) && java.util.Objects.equals(address, that.address)
+            && java.util.Objects.equals(bit, that.bit) && java.util.Objects.equals(bitState, that.bitState);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(bus, address, bit, bitState);
+
+        return java.util.Objects.hash(super.hashCode(), bus, address, bit, bitState);
     }
 
     /**
@@ -100,8 +106,7 @@ public class BusDataConfiguration extends AbstractDto {
      * @return {@code true} for same config on bus, address and bit
      */
     public boolean isSameConfig(BusDataConfiguration that) {
-        return Objects.equal(getBus(), that.getBus()) &&
-                Objects.equal(getAddress(), that.getAddress()) &&
-                Objects.equal(getBit(), that.getBit());
+        return Objects.equal(getBus(), that.getBus()) && Objects.equal(getAddress(), that.getAddress()) && Objects
+            .equal(getBit(), that.getBit());
     }
 }

@@ -1,6 +1,7 @@
 package net.wbz.moba.controlcenter.web.shared.viewer;
 
 import de.novanic.eventservice.client.event.Event;
+import java.util.Objects;
 import net.wbz.moba.controlcenter.web.shared.track.model.Signal;
 
 /**
@@ -29,10 +30,11 @@ public class SignalFunctionStateEvent implements Event {
 
     @Override
     public String toString() {
-        return "SignalFunctionStateEvent{" +
-                "signalId=" + signalId +
-                ", signalFunction=" + signalFunction +
-                '}';
+        final StringBuffer sb = new StringBuffer("SignalFunctionStateEvent{");
+        sb.append("signalId=").append(signalId);
+        sb.append(", signalFunction=").append(signalFunction);
+        sb.append('}');
+        return sb.toString();
     }
 
     @Override
@@ -44,11 +46,12 @@ public class SignalFunctionStateEvent implements Event {
             return false;
         }
         SignalFunctionStateEvent that = (SignalFunctionStateEvent) o;
-        return com.google.common.base.Objects.equal(signalId, that.signalId);
+        return Objects.equals(signalId, that.signalId) && signalFunction == that.signalFunction;
     }
 
     @Override
     public int hashCode() {
-        return com.google.common.base.Objects.hashCode(signalId);
+
+        return Objects.hash(signalId, signalFunction);
     }
 }

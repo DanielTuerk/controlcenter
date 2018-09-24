@@ -1,20 +1,14 @@
 package net.wbz.moba.controlcenter.web.server.web.scenario.execution;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Optional;
-
 import net.wbz.moba.controlcenter.web.server.SelectrixHelper;
 import net.wbz.moba.controlcenter.web.server.persist.scenario.TrackBuilder;
 import net.wbz.moba.controlcenter.web.server.persist.scenario.TrackBuilder.TrackNotFoundException;
@@ -41,12 +35,13 @@ import net.wbz.selectrix4java.block.FeedbackBlockModule;
 import net.wbz.selectrix4java.device.Device;
 import net.wbz.selectrix4java.device.DeviceAccessException;
 import net.wbz.selectrix4java.device.DeviceManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * The execution of a {@link Scenario} started by the {@link ScenarioExecutor}.
- * Update the run state of the {@link Scenario} and start the {@link Route}s after each other.
- * The execution can be stopped between routes.
- * 
+ * The execution of a {@link Scenario} started by the {@link ScenarioExecutor}. Update the run state of the {@link
+ * Scenario} and start the {@link Route}s after each other. The execution can be stopped between routes.
+ *
  * @author Daniel Tuerk
  */
 abstract class ScenarioExecution implements Callable<Void> {
@@ -61,8 +56,7 @@ abstract class ScenarioExecution implements Callable<Void> {
     private final TrainService trainService;
     private final SignalBlockRegistry signalBlockRegistry;
     private final DeviceManager deviceManager;
-    private final Map<FeedbackBlockModule, List<BlockListener>> blockListeners =
-            new ConcurrentHashMap<>();
+    private final Map<FeedbackBlockModule, List<BlockListener>> blockListeners = new ConcurrentHashMap<>();
     private final TrainManager trainManager;
     private final TrackBuilder trackBuilder;
     private final List<RouteListener> routeListeners;
@@ -78,9 +72,9 @@ abstract class ScenarioExecution implements Callable<Void> {
     private volatile boolean blockRunning = false;
 
     ScenarioExecution(Scenario scenario, TrackViewerService trackViewerService, TrainService trainService,
-            SignalBlockRegistry signalBlockRegistry, DeviceManager deviceManager, TrainManager trainManager,
-            TrackBuilder trackBuilder, List<RouteListener> routeListeners,
-            RouteExecutionObserver routeExecutionObserver) {
+        SignalBlockRegistry signalBlockRegistry, DeviceManager deviceManager, TrainManager trainManager,
+        TrackBuilder trackBuilder, List<RouteListener> routeListeners,
+        RouteExecutionObserver routeExecutionObserver) {
         this.scenario = scenario;
         this.trackViewerService = trackViewerService;
         this.trainService = trainService;
@@ -110,12 +104,7 @@ abstract class ScenarioExecution implements Callable<Void> {
 
             // sort routes by position
             List<RouteSequence> routeSequences = scenario.getRouteSequences();
-            Collections.sort(routeSequences, new Comparator<RouteSequence>() {
-                @Override
-                public int compare(RouteSequence o1, RouteSequence o2) {
-                    return Integer.compare(o1.getPosition(), o2.getPosition());
-                }
-            });
+            routeSequences.sort(Comparator.comparingInt(RouteSequence::getPosition));
 
             LOG.info("start scenario {}", scenario);
             // TODO darf hier nicht sein
@@ -139,11 +128,11 @@ abstract class ScenarioExecution implements Callable<Void> {
                 blockRunning = true;
                 // get next route
                 int nextIndex = routeSequences.indexOf(routeSequence) + 1;
-                RouteSequence nextRouteSequence = nextIndex < routeSequences.size() ? routeSequences.get(nextIndex)
-                        : null;
+                RouteSequence nextRouteSequence =
+                    nextIndex < routeSequences.size() ? routeSequences.get(nextIndex) : null;
                 try {
                     RouteExecution routeExecution = prepare(routeSequence, previousRouteSequence, nextRouteSequence,
-                            isFirstRoute, isAnyRouteRunning);
+                        isFirstRoute, isAnyRouteRunning);
 
                     previousRouteSequence = routeSequence;
 
@@ -186,11 +175,11 @@ abstract class ScenarioExecution implements Callable<Void> {
 
                 isFirstRoute = false;
             }
-            /**
-             * Remove the last running for the end of the scenario sequence.
-             * Otherwise it will be only removed for the start of next route in the sequence which is'nt available for
-             * the
-             * last route.
+            /*
+              Remove the last running for the end of the scenario sequence.
+              Otherwise it will be only removed for the start of next route in the sequence which is'nt available for
+              the
+              last route.
              */
             cleanupRunningRouteInSequence(previousRouteSequence);
 
@@ -216,8 +205,8 @@ abstract class ScenarioExecution implements Callable<Void> {
         stopTrain();
     }
 
-    private void startRoute(final RouteExecution routeExecution)
-            throws ScenarioExecutionInterruptException, RouteExecutionInterruptException {
+    private void startRoute(final RouteExecution routeExecution) throws ScenarioExecutionInterruptException,
+        RouteExecutionInterruptException {
         RouteSequence routeSequence = routeExecution.getRouteSequence();
 
         try {
@@ -261,20 +250,18 @@ abstract class ScenarioExecution implements Callable<Void> {
     }
 
     /**
-     * Try to reserve next route.
-     * Switch start signal of next route also to HP1 to drive through from the end of the current route.
-     * 
+     * Try to reserve next route. Switch start signal of next route also to HP1 to drive through from the end of the
+     * current route.
+     *
      * @param routeExecution {@link RouteExecution}
      */
     private void reserveNextRouteForCurrentRoute(RouteExecution routeExecution) {
-        if (routeExecution.getNextRouteSequence() != null
-                && routeExecutionObserver.checkAndReserveNextRunningRoute(routeExecution.getNextRouteSequence(),
-                        routeExecution.getRouteSequence())) {
+        if (routeExecution.getNextRouteSequence() != null && routeExecutionObserver
+            .checkAndReserveNextRunningRoute(routeExecution.getNextRouteSequence(),
+                routeExecution.getRouteSequence())) {
 
             Optional<Signal> startSignal = findStartSignal(routeExecution.getNextRouteSequence().getRoute());
-            if (startSignal.isPresent()) {
-                trackViewerService.switchSignal(startSignal.get(), FUNCTION.HP1);
-            }
+            startSignal.ifPresent(signal -> trackViewerService.switchSignal(signal, FUNCTION.HP1));
         }
     }
 
@@ -324,18 +311,18 @@ abstract class ScenarioExecution implements Callable<Void> {
 
     /**
      * Prepare the {@link Route} for drive.
-     * 
+     *
      * @param routeSequence {@link RouteSequence}
      * @param previousRouteSequence previous executed {@link RouteSequence}
      * @param nextRouteSequence next {@link RouteSequence} in scenario
      * @param isFirstRoute {@code true} if this is the check for the first route in the execution
      * @param isAnyRouteRunning {@code false} until any route was successful prepared @throws
-     *            ScenarioExecutionInterruptException interrupt of scenario
+     * ScenarioExecutionInterruptException interrupt of scenario
      * @throws RouteExecutionInterruptException interrupt of the current route in the sequence
      */
     private RouteExecution prepare(final RouteSequence routeSequence, final RouteSequence previousRouteSequence,
-            RouteSequence nextRouteSequence, boolean isFirstRoute, boolean isAnyRouteRunning)
-            throws ScenarioExecutionInterruptException, RouteExecutionInterruptException {
+        RouteSequence nextRouteSequence, boolean isFirstRoute, boolean isAnyRouteRunning) throws
+        ScenarioExecutionInterruptException, RouteExecutionInterruptException {
         Route route = routeSequence.getRoute();
 
         Train train = getTrain();
@@ -352,8 +339,8 @@ abstract class ScenarioExecution implements Callable<Void> {
         // find start position on signal
         Optional<Signal> signal = findStartSignal(route);
         if (!signal.isPresent()) {
-            throw new NoStartSignalAvailableException(String.format("no signal found for start block %s!",
-                    route.getStart()));
+            throw new NoStartSignalAvailableException(
+                String.format("no signal found for start block %s!", route.getStart()));
         }
 
         prepareTrainToStart(train);
@@ -364,25 +351,24 @@ abstract class ScenarioExecution implements Callable<Void> {
     }
 
     /**
-     * Check that all given {@link TrackBlock}s are free.
-     * If not a exception is thrown.
+     * Check that all given {@link TrackBlock}s are free. If not a exception is thrown.
      *
      * @param trackBlocks {@link TrackBlock}s to check
      * @throws ScenarioExecutionInterruptException no connection
      * @throws RouteExecutionInterruptException blocks not free
      */
-    private void checkForFreeBlocks(Set<TrackBlock> trackBlocks)
-            throws RouteExecutionInterruptException, ScenarioExecutionInterruptException {
+    private void checkForFreeBlocks(Set<TrackBlock> trackBlocks) throws RouteExecutionInterruptException,
+        ScenarioExecutionInterruptException {
         try {
             Device device = deviceManager.getConnectedDevice();
             for (TrackBlock trackBlock : trackBlocks) {
                 BusDataConfiguration blockFunction = trackBlock.getBlockFunction();
                 BusAddressIdentifier entry = new BusAddressIdentifier(blockFunction);
-                if (SelectrixHelper.getFeedbackBlockModule(device, entry).getLastReceivedBlockState(
-                        blockFunction.getBit())) {
+                if (SelectrixHelper.getFeedbackBlockModule(device, entry)
+                    .getLastReceivedBlockState(blockFunction.getBit())) {
                     throw new RouteExecutionInterruptException(
-                            String.format("track not free at block: %d (%d) ", entry.getAddress(), blockFunction
-                                    .getBit()));
+                        String.format("track not free at block: %d (%d) ", entry.getAddress(),
+                            blockFunction.getBit()));
                 }
             }
         } catch (DeviceAccessException e) {
@@ -403,15 +389,15 @@ abstract class ScenarioExecution implements Callable<Void> {
                 }
             }
         }
-        return Optional.absent();
+        return Optional.empty();
     }
 
     /**
      * Add the {@link RouteEndBlockListener} to indicate the end of the route and throw the state for the finished
      * execution.
-     * 
+     *
      * @param routeExecution {@link Route} to detect the end of execution
-     * @throws DeviceAccessException
+     * @throws DeviceAccessException no access
      */
     private void initRouteEndListener(final RouteExecution routeExecution) throws DeviceAccessException {
         Route route = routeExecution.getRouteSequence().getRoute();
@@ -425,14 +411,14 @@ abstract class ScenarioExecution implements Callable<Void> {
         addBlockListener(blockListener, route.getEnd().getBlockFunction());
     }
 
-    private void addBlockListener(BlockListener listener, BusDataConfiguration busDataConfiguration)
-            throws DeviceAccessException {
+    private void addBlockListener(BlockListener listener, BusDataConfiguration busDataConfiguration) throws
+        DeviceAccessException {
         Device device = deviceManager.getConnectedDevice();
-        FeedbackBlockModule feedbackBlockModule = SelectrixHelper.getFeedbackBlockModule(device,
-                new BusAddressIdentifier(busDataConfiguration));
+        FeedbackBlockModule feedbackBlockModule = SelectrixHelper
+            .getFeedbackBlockModule(device, new BusAddressIdentifier(busDataConfiguration));
 
         if (!blockListeners.containsKey(feedbackBlockModule)) {
-            blockListeners.put(feedbackBlockModule, new ArrayList<BlockListener>());
+            blockListeners.put(feedbackBlockModule, new ArrayList<>());
         }
 
         blockListeners.get(feedbackBlockModule).add(listener);
@@ -442,7 +428,7 @@ abstract class ScenarioExecution implements Callable<Void> {
 
     private void prepareTrainToStart(Train train) {
         trainService.toggleDrivingDirection(train.getId(),
-                scenario.getTrainDrivingDirection() == DRIVING_DIRECTION.FORWARD);
+            scenario.getTrainDrivingDirection() == DRIVING_DIRECTION.FORWARD);
         trainService.toggleLight(train.getId(), true);
     }
 
@@ -458,7 +444,7 @@ abstract class ScenarioExecution implements Callable<Void> {
         boolean wait = true;
         while (wait && scenario.getRunState() != RUN_STATE.STOPPED) {
             if (routeExecutionObserver.checkAndReserveNextRunningRoute(routeExecution.getRouteSequence(),
-                    routeExecution.getPreviousRouteSequence())) {
+                routeExecution.getPreviousRouteSequence())) {
                 // no dependent route running, stop check
                 wait = false;
             } else {
@@ -478,19 +464,16 @@ abstract class ScenarioExecution implements Callable<Void> {
 
         if (signal.getMonitoringBlock() == null || signal.getMonitoringBlock().getBlockFunction() == null) {
             // signal have no monitoring block and will never get the HP0 after drive
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        /*
-                         * Set to HP0 after delay to simulate a occupied monitoring block to switch the signal after the
-                         * train passed.
-                         */
-                        Thread.sleep(10000L);
-                        trackViewerService.switchSignal(signal, FUNCTION.HP0);
-                    } catch (InterruptedException e) {
-                        LOG.error("error during delayed HP0 switch", e);
-                    }
+            new Thread(() -> {
+                try {
+                    /*
+                     * Set to HP0 after delay to simulate a occupied monitoring block to switch the signal after the
+                     * train passed.
+                     */
+                    Thread.sleep(10000L);
+                    trackViewerService.switchSignal(signal, FUNCTION.HP0);
+                } catch (InterruptedException e) {
+                    LOG.error("error during delayed HP0 switch", e);
                 }
             }).start();
         }
@@ -501,8 +484,8 @@ abstract class ScenarioExecution implements Callable<Void> {
         Thread.sleep(START_DELAY_MILLIS);
         // start train
         LOG.info("start train to drive {}", train);
-        trainService.updateDrivingLevel(train.getId(), startDrivingLevel != null ? startDrivingLevel
-                : DEFAULT_START_DRIVING_LEVEL);
+        trainService.updateDrivingLevel(train.getId(),
+            startDrivingLevel != null ? startDrivingLevel : DEFAULT_START_DRIVING_LEVEL);
     }
 
     private void routeFinished(RouteSequence nextRouteSequence) {

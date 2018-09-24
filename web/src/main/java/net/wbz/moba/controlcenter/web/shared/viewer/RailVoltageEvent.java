@@ -1,7 +1,5 @@
 package net.wbz.moba.controlcenter.web.shared.viewer;
 
-import com.google.common.base.Objects;
-
 import de.novanic.eventservice.client.event.Event;
 
 /**
@@ -30,8 +28,9 @@ public class RailVoltageEvent implements Event {
 
     @Override
     public String toString() {
-        return Objects.toStringHelper(this)
-                .add("state", state)
-                .toString();
+        final StringBuffer sb = new StringBuffer("RailVoltageEvent{");
+        sb.append("state=").append(state);
+        sb.append('}');
+        return sb.toString();
     }
 }

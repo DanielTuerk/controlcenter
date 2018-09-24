@@ -1,37 +1,32 @@
 package net.wbz.moba.controlcenter.web.server.web.editor.block;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 import net.wbz.moba.controlcenter.web.server.EventBroadcaster;
 import net.wbz.moba.controlcenter.web.server.web.train.TrainManager;
 import net.wbz.moba.controlcenter.web.server.web.train.TrainServiceImpl;
 import net.wbz.moba.controlcenter.web.server.web.viewer.TrackViewerServiceImpl;
 import net.wbz.moba.controlcenter.web.shared.track.model.BusDataConfiguration;
 import net.wbz.moba.controlcenter.web.shared.track.model.Signal;
-import net.wbz.moba.controlcenter.web.shared.track.model.Signal.FUNCTION;
-import net.wbz.moba.controlcenter.web.shared.track.model.Signal.TYPE;
 import net.wbz.moba.controlcenter.web.shared.train.Train;
 import net.wbz.moba.controlcenter.web.shared.viewer.TrackViewerService;
 import net.wbz.selectrix4java.block.FeedbackBlockListener;
 import net.wbz.selectrix4java.block.FeedbackBlockModule;
 import net.wbz.selectrix4java.device.Device;
 import net.wbz.selectrix4java.device.DeviceAccessException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>
- * Block registry for the {@link SignalBlock}s.
- * Register listeners for the blocks of the {@link SignalBlock} to update the actual state of the {@link SignalBlock}.
- * {@link Train} entering or exiting and occupied state of blocks are detected.
+ * Block registry for the {@link SignalBlock}s. Register listeners for the blocks of the {@link SignalBlock} to update
+ * the actual state of the {@link SignalBlock}. {@link Train} entering or exiting and occupied state of blocks are
+ * detected.
  * </p>
  * <p>
  * The registry reacts to free montioring blocks of the {@link SignalBlock} and will start waiting {@link Train}s.
@@ -46,11 +41,11 @@ public class SignalBlockRegistry extends AbstractBlockRegistry<Signal> {
     private static final Logger log = LoggerFactory.getLogger(SignalBlockRegistry.class);
 
     /**
-     * The unique {@link BusAddressIdentifier}s for the {@link FeedbackBlockModule}s which have to register the
-     * {@link AbstractSignalBlockListener}s by connected device.
+     * The unique {@link BusAddressIdentifier}s for the {@link FeedbackBlockModule}s which have to register the {@link
+     * AbstractSignalBlockListener}s by connected device.
      */
-    private final Map<BusAddressIdentifier, List<AbstractSignalBlockListener>> feedbackBlockListeners =
-            Maps.newConcurrentMap();
+    private final Map<BusAddressIdentifier, List<AbstractSignalBlockListener>> feedbackBlockListeners = Maps
+        .newConcurrentMap();
 
     /**
      * Mapping for all {@link SignalBlock}s which have the same monitoring blocks.
@@ -66,8 +61,7 @@ public class SignalBlockRegistry extends AbstractBlockRegistry<Signal> {
 
     @Inject
     public SignalBlockRegistry(EventBroadcaster eventBroadcaster, TrainServiceImpl trainService,
-            TrainManager trainManager,
-            TrackViewerServiceImpl trackViewerService) {
+        TrainManager trainManager, TrackViewerServiceImpl trackViewerService) {
         super(eventBroadcaster, trainService, trainManager);
         this.trackViewerService = trackViewerService;
     }
@@ -100,13 +94,13 @@ public class SignalBlockRegistry extends AbstractBlockRegistry<Signal> {
                  * blocks to equal monitoring block.
                  */
                 if (!monitoringBlockSignals.containsKey(monitoringBlockFunction)) {
-                    monitoringBlockSignals.put(monitoringBlockFunction, Lists.<SignalBlock> newArrayList());
+                    monitoringBlockSignals.put(monitoringBlockFunction, new ArrayList<>());
                 }
                 monitoringBlockSignals.get(monitoringBlockFunction).add(signalBlock);
 
                 // monitoring block
-                addFeedbackBlockListener(new SignalMonitoringBlockListener(signalBlock, trackViewerService,
-                        getTrainManager()));
+                addFeedbackBlockListener(
+                    new SignalMonitoringBlockListener(signalBlock, trackViewerService, getTrainManager()));
 
                 // TODO disabled until needed, but also wrong behaviors for train feedback
                 // /*
@@ -132,7 +126,7 @@ public class SignalBlockRegistry extends AbstractBlockRegistry<Signal> {
     @Override
     public void registerListeners(Device device) throws DeviceAccessException {
         for (Map.Entry<BusAddressIdentifier, List<AbstractSignalBlockListener>> entry : feedbackBlockListeners
-                .entrySet()) {
+            .entrySet()) {
             for (FeedbackBlockListener feedbackBlockListener : entry.getValue()) {
                 FeedbackBlockModule feedbackBlockModule = getFeedbackBlockModule(device, entry.getKey());
                 log.debug("Feedback Module ({}): register listener {}", feedbackBlockModule, feedbackBlockListener);
@@ -144,7 +138,7 @@ public class SignalBlockRegistry extends AbstractBlockRegistry<Signal> {
     @Override
     public void removeListeners(Device device) throws DeviceAccessException {
         for (Map.Entry<BusAddressIdentifier, List<AbstractSignalBlockListener>> entry : feedbackBlockListeners
-                .entrySet()) {
+            .entrySet()) {
             for (FeedbackBlockListener feedbackBlockListener : entry.getValue()) {
                 getFeedbackBlockModule(device, entry.getKey()).removeFeedbackBlockListener(feedbackBlockListener);
             }
@@ -152,10 +146,10 @@ public class SignalBlockRegistry extends AbstractBlockRegistry<Signal> {
     }
 
     protected void addFeedbackBlockListener(AbstractSignalBlockListener signalBlockListener) {
-        final BusAddressIdentifier busAddressIdentifier = getBusAddressIdentifier(signalBlockListener.getTrackBlock()
-                .getBlockFunction());
+        final BusAddressIdentifier busAddressIdentifier = getBusAddressIdentifier(
+            signalBlockListener.getTrackBlock().getBlockFunction());
         if (!feedbackBlockListeners.containsKey(busAddressIdentifier)) {
-            feedbackBlockListeners.put(busAddressIdentifier, Lists.<AbstractSignalBlockListener> newArrayList());
+            feedbackBlockListeners.put(busAddressIdentifier, new ArrayList<>());
         }
         feedbackBlockListeners.get(busAddressIdentifier).add(signalBlockListener);
     }

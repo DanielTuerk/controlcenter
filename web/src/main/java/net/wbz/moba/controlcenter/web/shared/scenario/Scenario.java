@@ -1,11 +1,8 @@
 package net.wbz.moba.controlcenter.web.shared.scenario;
 
+import com.googlecode.jmapper.annotations.JMap;
 import java.util.ArrayList;
 import java.util.List;
-
-import com.google.common.base.Objects;
-import com.googlecode.jmapper.annotations.JMap;
-
 import net.wbz.moba.controlcenter.web.shared.track.model.AbstractDto;
 import net.wbz.moba.controlcenter.web.shared.track.model.TrackBlock;
 import net.wbz.moba.controlcenter.web.shared.train.Train;
@@ -17,13 +14,11 @@ public class Scenario extends AbstractDto {
 
     @JMap
     private String name;
-
     @JMap
     private String cron;
-
     /**
-     * TODO also looking for position on track - drive to possible start point, or resume on actual pos
-     * TODO check existing on track
+     * TODO also looking for position on track - drive to possible start point, or resume on actual pos TODO check
+     * existing on track
      */
     @JMap
     private Train train;
@@ -31,12 +26,9 @@ public class Scenario extends AbstractDto {
     private Train.DRIVING_DIRECTION trainDrivingDirection;
     @JMap
     private Integer startDrivingLevel;
-
     @JMap
     private List<RouteSequence> routeSequences;
-
     private RUN_STATE runState = RUN_STATE.IDLE;
-
     private MODE mode = MODE.OFF;
 
     public String getName() {
@@ -108,10 +100,17 @@ public class Scenario extends AbstractDto {
 
     @Override
     public String toString() {
-        return Objects.toStringHelper(this)
-                .add("id", getId())
-                .add("name", name)
-                .toString();
+        final StringBuffer sb = new StringBuffer("Scenario{");
+        sb.append("name='").append(name).append('\'');
+        sb.append(", cron='").append(cron).append('\'');
+        sb.append(", train=").append(train);
+        sb.append(", trainDrivingDirection=").append(trainDrivingDirection);
+        sb.append(", startDrivingLevel=").append(startDrivingLevel);
+        sb.append(", routeSequences=").append(routeSequences);
+        sb.append(", runState=").append(runState);
+        sb.append(", mode=").append(mode);
+        sb.append('}');
+        return sb.toString();
     }
 
     /**
@@ -136,20 +135,16 @@ public class Scenario extends AbstractDto {
         /**
          * Scenario is currently running.
          */
-        RUNNING,
-        /**
+        RUNNING, /**
          * TODO
          */
-        IDLE,
-        /**
+        IDLE, /**
          * TODO
          */
-        PAUSED,
-        /**
+        PAUSED, /**
          * Scenario is stopped.
          */
-        STOPPED,
-        /**
+        STOPPED, /**
          * Scenario is finished.
          */
         FINISHED
@@ -162,12 +157,10 @@ public class Scenario extends AbstractDto {
         /**
          * Scenario is inactive.
          */
-        OFF,
-        /**
+        OFF, /**
          * Scenario started manually for a single execution.
          */
-        MANUAL,
-        /**
+        MANUAL, /**
          * Scenario is in automatic mode to execute on trigger by configured cron.
          */
         AUTOMATIC

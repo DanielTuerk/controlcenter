@@ -1,13 +1,13 @@
 package net.wbz.moba.controlcenter.web.shared.bus;
 
-import com.google.common.base.Objects;
-
 import de.novanic.eventservice.client.event.Event;
+import java.util.Objects;
 
 /**
  * @author Daniel Tuerk
  */
 public class BusDataEvent implements Event {
+
     private int bus;
     private int address;
     private int data;
@@ -42,22 +42,17 @@ public class BusDataEvent implements Event {
             return false;
         }
         BusDataEvent that = (BusDataEvent) o;
-        return super.equals(o) && getBus() == that.getBus() &&
-                getAddress() == that.getAddress() &&
-                getData() == that.getData();
+        return bus == that.bus && address == that.address && data == that.data;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(super.hashCode(), getBus(), getAddress(), getData());
+
+        return Objects.hash(bus, address, data);
     }
 
     @Override
     public String toString() {
-        return "BusDataEvent{" +
-                "bus=" + bus +
-                ", address=" + address +
-                ", data=" + data +
-                '}';
+        return "BusDataEvent{" + "bus=" + bus + ", address=" + address + ", data=" + data + '}';
     }
 }

@@ -1,7 +1,5 @@
 package net.wbz.moba.controlcenter.web.shared.bus;
 
-import com.google.common.base.Objects;
-
 import de.novanic.eventservice.client.event.Event;
 
 /**
@@ -11,7 +9,6 @@ public class RecordingEvent implements Event {
 
     private STATE state;
     private String filePath;
-
     public RecordingEvent() {
     }
 
@@ -41,13 +38,12 @@ public class RecordingEvent implements Event {
             return false;
         }
         RecordingEvent that = (RecordingEvent) o;
-        return super.equals(o) &&
-                Objects.equal(getFilePath(), that.getFilePath());
+        return super.equals(o) && java.util.Objects.equals(getFilePath(), that.getFilePath());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(super.hashCode(), getFilePath());
+        return java.util.Objects.hash(super.hashCode(), getFilePath());
     }
 
     public enum STATE {

@@ -1,6 +1,5 @@
 package net.wbz.moba.controlcenter.web.shared.track.model;
 
-import com.google.common.base.Objects;
 import com.googlecode.jmapper.annotations.JMap;
 
 /**
@@ -38,11 +37,6 @@ public class GridPosition extends AbstractDto {
     }
 
     @Override
-    public int hashCode() {
-        return Objects.hashCode(x, y);
-    }
-
-    @Override
     public boolean equals(Object o) {
         if (this == o) {
             return true;
@@ -50,17 +44,22 @@ public class GridPosition extends AbstractDto {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
+        if (!super.equals(o)) {
+            return false;
+        }
         GridPosition that = (GridPosition) o;
-        return x == that.x &&
-                y == that.y;
+        return x == that.x && y == that.y;
+    }
+
+    @Override
+    public int hashCode() {
+
+        return java.util.Objects.hash(super.hashCode(), x, y);
     }
 
     @Override
     public String toString() {
-        return Objects.toStringHelper(this)
-                .add("x", x)
-                .add("y", y)
-                .toString();
+        return "GridPosition{" + "x=" + x + ", y=" + y + '}';
     }
 
     public boolean isSame(GridPosition gridPosition) {

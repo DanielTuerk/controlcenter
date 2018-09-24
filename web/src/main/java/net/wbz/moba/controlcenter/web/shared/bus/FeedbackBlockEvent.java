@@ -1,7 +1,5 @@
 package net.wbz.moba.controlcenter.web.shared.bus;
 
-import com.google.common.base.Objects;
-
 import de.novanic.eventservice.client.event.Event;
 
 /**
@@ -17,7 +15,6 @@ public class FeedbackBlockEvent implements Event {
     private int train;
     private boolean direction;
     private STATE state;
-
     public FeedbackBlockEvent() {
     }
 
@@ -65,28 +62,26 @@ public class FeedbackBlockEvent implements Event {
             return false;
         }
         FeedbackBlockEvent that = (FeedbackBlockEvent) o;
-        return super.equals(o) && getBus() == that.getBus() &&
-                getAddress() == that.getAddress() &&
-                getBlock() == that.getBlock() &&
-                getTrain() == that.getTrain() &&
-                isDirection() == that.isDirection();
+        return super.equals(o) && getBus() == that.getBus() && getAddress() == that.getAddress() && getBlock() == that
+            .getBlock() && getTrain() == that.getTrain() && isDirection() == that.isDirection();
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(super.hashCode(), getBus(), getAddress(), getBlock(), getTrain(), isDirection());
+        return java.util.Objects.hash(super.hashCode(), getBus(), getAddress(), getBlock(), getTrain(), isDirection());
     }
 
     @Override
     public String toString() {
-        return Objects.toStringHelper(this)
-                .add("bus", bus)
-                .add("address", address)
-                .add("block", block)
-                .add("train", train)
-                .add("direction", direction)
-                .add("state", state)
-                .toString();
+        final StringBuffer sb = new StringBuffer("FeedbackBlockEvent{");
+        sb.append("bus=").append(bus);
+        sb.append(", address=").append(address);
+        sb.append(", block=").append(block);
+        sb.append(", train=").append(train);
+        sb.append(", direction=").append(direction);
+        sb.append(", state=").append(state);
+        sb.append('}');
+        return sb.toString();
     }
 
     public enum STATE {

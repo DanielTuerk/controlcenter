@@ -1,8 +1,7 @@
 package net.wbz.moba.controlcenter.web.shared.viewer;
 
-import java.util.Objects;
-
 import de.novanic.eventservice.client.event.Event;
+import java.util.Objects;
 import net.wbz.moba.controlcenter.web.shared.track.model.BusDataConfiguration;
 
 /**
@@ -12,7 +11,6 @@ public class TrackPartBlockEvent implements Event {
 
     private BusDataConfiguration config;
     private STATE state;
-
     public TrackPartBlockEvent() {
     }
 
@@ -46,20 +44,18 @@ public class TrackPartBlockEvent implements Event {
             return false;
         }
         TrackPartBlockEvent that = (TrackPartBlockEvent) o;
-        return com.google.common.base.Objects.equal(config, that.config);
+        return Objects.equals(config, that.config) && state == that.state;
     }
 
     @Override
     public int hashCode() {
-        return com.google.common.base.Objects.hashCode(config);
+
+        return Objects.hash(config, state);
     }
 
     @Override
     public String toString() {
-        return "TrackPartBlockEvent{" +
-                "config=" + config +
-                ", state=" + state +
-                '}';
+        return "TrackPartBlockEvent{" + "config=" + config + ", state=" + state + '}';
     }
 
     public enum STATE {

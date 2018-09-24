@@ -48,18 +48,11 @@
       <version>${joda.time.version}</version>
     </dependency>
 
-    <!-- Google Guava -->
-    <dependency>
-      <groupId>com.google.guava</groupId>
-      <artifactId>guava</artifactId>
-      <version>13.0.1</version>
-    </dependency>
-
     <!-- get nullable annotation -->
     <dependency>
       <groupId>com.google.code.findbugs</groupId>
       <artifactId>jsr305</artifactId>
-      <version>2.0.1</version>
+      <version>3.0.0</version>
     </dependency>
 
     <!--+++ Jakarta's Commons Lang +++ -->
@@ -81,12 +74,12 @@
       <groupId>com.googlecode.jmapper-framework</groupId>
       <artifactId>jmapper-core</artifactId>
       <version>1.6.1.CR1</version>
-        <exclusions>
-            <exclusion>
-                <groupId>org.slf4j</groupId>
-                <artifactId>slf4j-api</artifactId>
-            </exclusion>
-        </exclusions>
+      <exclusions>
+        <exclusion>
+          <groupId>org.slf4j</groupId>
+          <artifactId>slf4j-api</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
 
     <!-- Testing -->
@@ -115,8 +108,8 @@
 
   <properties>
 
-    <maven.compiler.source>1.7</maven.compiler.source>
-    <maven.compiler.target>1.7</maven.compiler.target>
+    <maven.compiler.source>1.8</maven.compiler.source>
+    <maven.compiler.target>1.8</maven.compiler.target>
 
     <selectrix.version>0.3.1-SNAPSHOT</selectrix.version>
 
@@ -127,8 +120,8 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <googlecollections.version>1.0</googlecollections.version>
 
-      <logback.version>1.0.9</logback.version>
-      <org.slf4j.version>1.7.2</org.slf4j.version>
+    <logback.version>1.0.9</logback.version>
+    <org.slf4j.version>1.7.2</org.slf4j.version>
 
     <joda.time.version>2.1</joda.time.version>
     <joda.time.jsptags.version>1.0.2</joda.time.jsptags.version>

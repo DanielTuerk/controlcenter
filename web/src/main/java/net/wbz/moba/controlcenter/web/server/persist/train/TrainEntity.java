@@ -1,20 +1,16 @@
 package net.wbz.moba.controlcenter.web.server.persist.train;
 
+import com.google.common.collect.Sets;
+import com.googlecode.jmapper.annotations.JMap;
 import java.util.Set;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
-
-import com.google.common.collect.Sets;
-import com.googlecode.jmapper.annotations.JMap;
-
 import net.wbz.moba.controlcenter.web.server.persist.AbstractEntity;
 
 /**
- * Model for the train.
- * Used for RPC calls and as persistence object.
+ * Model for the train. Used for RPC calls and as persistence object.
  *
  * @author Daniel Tuerk
  */
@@ -28,7 +24,7 @@ public class TrainEntity extends AbstractEntity {
     private String name;
 
     @JMap
-    @OneToMany(mappedBy = "train", cascade = { CascadeType.ALL }, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "train", cascade = {CascadeType.ALL}, fetch = FetchType.LAZY)
     private Set<TrainFunctionEntity> functions;
 
     public TrainEntity() {
@@ -55,7 +51,7 @@ public class TrainEntity extends AbstractEntity {
     }
 
     public Set<TrainFunctionEntity> getFunctions() {
-        return functions != null ? functions : Sets.<TrainFunctionEntity> newHashSet();
+        return functions != null ? functions : Sets.newHashSet();
     }
 
     public void setFunctions(Set<TrainFunctionEntity> functions) {

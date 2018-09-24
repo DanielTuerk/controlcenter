@@ -1,10 +1,8 @@
 package net.wbz.moba.controlcenter.web.client;
 
+import com.google.common.collect.Maps;
 import java.util.Collection;
 import java.util.Map;
-
-import com.google.common.collect.Maps;
-
 import net.wbz.moba.controlcenter.web.client.viewer.settings.AbstractConfigEntry;
 import net.wbz.moba.controlcenter.web.client.viewer.settings.BooleanConfigEntry;
 import net.wbz.moba.controlcenter.web.client.viewer.settings.ConstructionSelectionConfigEntry;
@@ -18,26 +16,23 @@ public class Settings {
     public static final String SHOW_WELCOME = "showWelcome";
     public static final String USE_3D_VIEWER = "use3dViewer";
     public static final String LAST_USED_CONSTRUCTION = "lastUsedConstruction";
-
-    public static Settings getInstance() {
-        return INSTANCE;
-    }
-
-    private static String GROUP_COMMON = "common";
-
-    private static String GROUP_CONSTRUCTION = "construction";
-
     private static final Settings INSTANCE = new Settings();
-
     private Map<String, AbstractConfigEntry<?>> configEntriesByKey = Maps.newConcurrentMap();
 
     private Settings() {
-        configEntriesByKey.put(LAST_USED_CONSTRUCTION, new ConstructionSelectionConfigEntry(
-                AbstractConfigEntry.STORAGE.LOCAL, GROUP_CONSTRUCTION, LAST_USED_CONSTRUCTION));
-        configEntriesByKey.put(SHOW_WELCOME, new BooleanConfigEntry(AbstractConfigEntry.STORAGE.LOCAL, GROUP_COMMON,
-                SHOW_WELCOME, true));
-        configEntriesByKey.put(USE_3D_VIEWER, new BooleanConfigEntry(AbstractConfigEntry.STORAGE.LOCAL, GROUP_COMMON,
-                USE_3D_VIEWER, false));
+        String GROUP_CONSTRUCTION = "construction";
+        configEntriesByKey.put(LAST_USED_CONSTRUCTION,
+            new ConstructionSelectionConfigEntry(AbstractConfigEntry.STORAGE.LOCAL, GROUP_CONSTRUCTION,
+                LAST_USED_CONSTRUCTION));
+        String GROUP_COMMON = "common";
+        configEntriesByKey.put(SHOW_WELCOME,
+            new BooleanConfigEntry(AbstractConfigEntry.STORAGE.LOCAL, GROUP_COMMON, SHOW_WELCOME, true));
+        configEntriesByKey.put(USE_3D_VIEWER,
+            new BooleanConfigEntry(AbstractConfigEntry.STORAGE.LOCAL, GROUP_COMMON, USE_3D_VIEWER, false));
+    }
+
+    public static Settings getInstance() {
+        return INSTANCE;
     }
 
     public Collection<AbstractConfigEntry<?>> getEntries() {

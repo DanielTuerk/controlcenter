@@ -1,52 +1,19 @@
 package net.wbz.moba.controlcenter.web.shared.track.model;
 
-import com.google.common.base.Objects;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.gwt.user.client.rpc.IsSerializable;
 import com.googlecode.jmapper.annotations.JMap;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * @author Daniel Tuerk
  */
 public class Signal extends Straight implements HasToggleFunction {
-    /**
-     * Available functions for the signal types.
-     */
-    public enum FUNCTION {
-        HP0, HP1, HP2, HP0_SH1
-    }
 
-    /**
-     * Types of signal with corresponding mapping of the lights.
-     */
-    public enum TYPE implements IsSerializable {
-        BLOCK(new LIGHT[] { LIGHT.RED1, LIGHT.GREEN1 }), ENTER(new LIGHT[] { LIGHT.RED1, LIGHT.GREEN1,
-                LIGHT.YELLOW1 }), EXIT(new LIGHT[] { LIGHT.RED1, LIGHT.RED2, LIGHT.GREEN1, LIGHT.YELLOW1,
-                        LIGHT.WHITE }), BEFORE(new LIGHT[] { LIGHT.GREEN1, LIGHT.GREEN2, LIGHT.YELLOW1,
-                                LIGHT.YELLOW2 });
-
-        private LIGHT[] lights;
-
-        TYPE(LIGHT[] lights) {
-            this.lights = lights;
-        }
-
-        public LIGHT[] getLights() {
-            return lights;
-        }
-    }
-
-    /**
-     * Available lights of the different signal types.
-     */
-    public enum LIGHT {
-        RED1, RED2, GREEN1, GREEN2, YELLOW1, YELLOW2, WHITE
-    }
     @JMap
     private TYPE type;
     @JMap
@@ -63,7 +30,6 @@ public class Signal extends Straight implements HasToggleFunction {
     private BusDataConfiguration signalConfigYellow2;
     @JMap
     private BusDataConfiguration signalConfigWhite;
-
     @JMap
     private TrackBlock enteringBlock;
     @JMap
@@ -163,11 +129,11 @@ public class Signal extends Straight implements HasToggleFunction {
 
     public List<BusDataConfiguration> getSignalConfigurations() {
         return Lists.newArrayList(signalConfigRed1, signalConfigRed2, signalConfigGreen1, signalConfigGreen2,
-                signalConfigYellow1, signalConfigYellow2, signalConfigWhite);
+            signalConfigYellow1, signalConfigYellow2, signalConfigWhite);
     }
 
     public List<BusDataConfiguration> getSignalConfigurations(TYPE type) {
-        List<BusDataConfiguration> configs = Lists.newArrayList();
+        List<BusDataConfiguration> configs = new ArrayList<>();
         for (LIGHT light : type.getLights()) {
             configs.add(getSignalConfiguration(light));
         }
@@ -230,10 +196,6 @@ public class Signal extends Straight implements HasToggleFunction {
         this.signalConfigWhite = signalConfigWhite;
     }
 
-    public void setEnteringBlock(TrackBlock enteringBlock) {
-        this.enteringBlock = enteringBlock;
-    }
-
     public TrackBlock getBreakingBlock() {
         return breakingBlock;
     }
@@ -262,6 +224,10 @@ public class Signal extends Straight implements HasToggleFunction {
         return enteringBlock;
     }
 
+    public void setEnteringBlock(TrackBlock enteringBlock) {
+        this.enteringBlock = enteringBlock;
+    }
+
     public Map<LIGHT, BusDataConfiguration> getSignalLightsConfigurations(TYPE type) {
         Map<LIGHT, BusDataConfiguration> lightConfigs = Maps.newHashMap();
         for (LIGHT light : type.getLights()) {
@@ -272,23 +238,46 @@ public class Signal extends Straight implements HasToggleFunction {
 
     @Override
     public String toString() {
-        return Objects.toStringHelper(this)
-                .add("type", type)
-                .add("signalConfigRed1", signalConfigRed1)
-                // .add("signalConfigRed2", signalConfigRed2)
-                // .add("signalConfigGreen1", signalConfigGreen1)
-                // .add("signalConfigGreen2", signalConfigGreen2)
-                // .add("signalConfigYellow1", signalConfigYellow1)
-                // .add("signalConfigYellow2", signalConfigYellow2)
-                // .add("signalConfigWhite", signalConfigWhite)
-                // .add("enteringBlock", enteringBlock)
-                // .add("breakingBlock", breakingBlock)
-                // .add("stopBlock", stopBlock)
-                // .add("monitoringBlock", monitoringBlock)
-                // .add("toggleFunction", getToggleFunction())
-                // .add("eventConfiguration", getEventConfiguration())
-                // .add("configurationsOfFunctions", getConfigurationsOfFunctions())
-                // .add("signalConfigurations", getSignalConfigurations())
-                .toString();
+        final StringBuffer sb = new StringBuffer("Signal{");
+        sb.append("type=").append(type);
+        sb.append(", enteringBlock=").append(enteringBlock);
+        sb.append(", breakingBlock=").append(breakingBlock);
+        sb.append(", stopBlock=").append(stopBlock);
+        sb.append(", monitoringBlock=").append(monitoringBlock);
+        sb.append('}');
+        return sb.toString();
+    }
+
+    /**
+     * Available functions for the signal types.
+     */
+    public enum FUNCTION {
+        HP0, HP1, HP2, HP0_SH1
+    }
+
+    /**
+     * Types of signal with corresponding mapping of the lights.
+     */
+    public enum TYPE implements IsSerializable {
+        BLOCK(new LIGHT[]{LIGHT.RED1, LIGHT.GREEN1}), ENTER(new LIGHT[]{LIGHT.RED1, LIGHT.GREEN1, LIGHT.YELLOW1}), EXIT(
+            new LIGHT[]{LIGHT.RED1, LIGHT.RED2, LIGHT.GREEN1, LIGHT.YELLOW1, LIGHT.WHITE}), BEFORE(
+            new LIGHT[]{LIGHT.GREEN1, LIGHT.GREEN2, LIGHT.YELLOW1, LIGHT.YELLOW2});
+
+        private LIGHT[] lights;
+
+        TYPE(LIGHT[] lights) {
+            this.lights = lights;
+        }
+
+        public LIGHT[] getLights() {
+            return lights;
+        }
+    }
+
+    /**
+     * Available lights of the different signal types.
+     */
+    public enum LIGHT {
+        RED1, RED2, GREEN1, GREEN2, YELLOW1, YELLOW2, WHITE
     }
 }

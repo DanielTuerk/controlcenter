@@ -1,24 +1,19 @@
 package net.wbz.moba.controlcenter.web.server.web.constrution;
 
-import java.io.IOException;
-import java.nio.file.DirectoryStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.List;
-import java.util.Map;
-
-import net.wbz.selectrix4java.device.RailVoltageListener;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.google.inject.persist.Transactional;
-
+import java.io.IOException;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import net.wbz.moba.controlcenter.web.server.EventBroadcaster;
 import net.wbz.moba.controlcenter.web.server.persist.device.DeviceInfoDao;
 import net.wbz.moba.controlcenter.web.server.persist.device.DeviceInfoEntity;
@@ -30,16 +25,16 @@ import net.wbz.moba.controlcenter.web.shared.bus.DeviceInfoEvent;
 import net.wbz.moba.controlcenter.web.shared.bus.DeviceInfoEvent.TYPE;
 import net.wbz.moba.controlcenter.web.shared.bus.PlayerEvent;
 import net.wbz.moba.controlcenter.web.shared.viewer.RailVoltageEvent;
-import net.wbz.selectrix4java.bus.BusAddressBitListener;
 import net.wbz.selectrix4java.bus.consumption.AllBusDataConsumer;
 import net.wbz.selectrix4java.data.recording.BusDataPlayer;
 import net.wbz.selectrix4java.data.recording.BusDataPlayerListener;
-import net.wbz.selectrix4java.device.AbstractDevice;
 import net.wbz.selectrix4java.device.Device;
 import net.wbz.selectrix4java.device.DeviceAccessException;
 import net.wbz.selectrix4java.device.DeviceConnectionListener;
 import net.wbz.selectrix4java.device.DeviceManager;
 import net.wbz.selectrix4java.device.serial.SerialDevice;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Daniel Tuerk
@@ -64,7 +59,7 @@ public class BusServiceImpl extends RemoteServiceServlet implements BusService {
 
     @Inject
     public BusServiceImpl(DeviceManager deviceManager, final EventBroadcaster eventBroadcaster,
-            DeviceRecorder deviceRecorder, DeviceInfoDao deviceInfoDao) {
+        DeviceRecorder deviceRecorder, DeviceInfoDao deviceInfoDao) {
         this.deviceManager = deviceManager;
         this.eventBroadcaster = eventBroadcaster;
         this.deviceRecorder = deviceRecorder;
@@ -95,32 +90,27 @@ public class BusServiceImpl extends RemoteServiceServlet implements BusService {
                 final DeviceInfo deviceInfo = getDeviceInfo(device);
                 deviceInfo.setConnected(true);
                 // fire initial rail voltage state
-                BusServiceImpl.this.eventBroadcaster.fireEvent(new DeviceInfoEvent(deviceInfo,
-                        DeviceInfoEvent.TYPE.CONNECTED));
+                BusServiceImpl.this.eventBroadcaster
+                    .fireEvent(new DeviceInfoEvent(deviceInfo, DeviceInfoEvent.TYPE.CONNECTED));
                 // add listener to receive state change
-                device.addRailVoltageListener(new RailVoltageListener() {
-                    @Override
-                    public void changed(boolean isOn) {
-                        eventBroadcaster.fireEvent(new RailVoltageEvent(isOn));
-                    }
-                });
+                device.addRailVoltageListener(isOn -> eventBroadcaster.fireEvent(new RailVoltageEvent(isOn)));
             }
 
             @Override
             public void disconnected(Device device) {
                 DeviceInfo deviceInfo = getDeviceInfo(device);
                 deviceInfo.setConnected(false);
-                BusServiceImpl.this.eventBroadcaster.fireEvent(new DeviceInfoEvent(deviceInfo,
-                        DeviceInfoEvent.TYPE.DISCONNECTED));
+                BusServiceImpl.this.eventBroadcaster
+                    .fireEvent(new DeviceInfoEvent(deviceInfo, DeviceInfoEvent.TYPE.DISCONNECTED));
                 device.getBusDataDispatcher().unregisterConsumer(allBusDataConsumer);
             }
         });
     }
 
     private void registerDevice(DeviceInfoEntity deviceInfo) {
-        storedDevices.put(dtoMapper.transformSource(deviceInfo), deviceManager.registerDevice(DeviceManager.DEVICE_TYPE
-                .valueOf(
-                        deviceInfo.getType().name()), deviceInfo.getKey(), SerialDevice.DEFAULT_BAUD_RATE_FCC));
+        storedDevices.put(dtoMapper.transformSource(deviceInfo), deviceManager
+            .registerDevice(DeviceManager.DEVICE_TYPE.valueOf(deviceInfo.getType().name()), deviceInfo.getKey(),
+                SerialDevice.DEFAULT_BAUD_RATE_FCC));
     }
 
     @Override
@@ -225,7 +215,7 @@ public class BusServiceImpl extends RemoteServiceServlet implements BusService {
                 activeDevice.getBusAddress(busNr, (byte) address).sendData((byte) data);
             } catch (DeviceAccessException e) {
                 LOGGER.error(String.format("can't send data (bus: %d, address: %d, data: %d)", busNr, address, data),
-                        e);
+                    e);
             }
         }
     }
@@ -265,7 +255,7 @@ public class BusServiceImpl extends RemoteServiceServlet implements BusService {
     }
 
     public List<String> getRecords() {
-        final List<String> recordsAbsoluteFilePath = Lists.newArrayList();
+        final List<String> recordsAbsoluteFilePath = new ArrayList<>();
         try {
             DirectoryStream<Path> directoryStream = Files.newDirectoryStream(deviceRecorder.getDestinationFolder());
             for (Path path : directoryStream) {

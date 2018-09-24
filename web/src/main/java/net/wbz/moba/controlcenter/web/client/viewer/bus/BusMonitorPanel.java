@@ -1,32 +1,29 @@
 package net.wbz.moba.controlcenter.web.client.viewer.bus;
 
+import com.google.common.collect.Maps;
+import com.google.gwt.dom.client.Style;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.Label;
+import de.novanic.eventservice.client.event.Event;
+import de.novanic.eventservice.client.event.listener.RemoteEventListener;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
+import net.wbz.moba.controlcenter.web.client.EventReceiver;
+import net.wbz.moba.controlcenter.web.client.RequestUtils;
+import net.wbz.moba.controlcenter.web.shared.bus.BusDataEvent;
+import net.wbz.moba.controlcenter.web.shared.bus.DeviceInfoEvent;
 import org.gwtbootstrap3.client.ui.Panel;
 import org.gwtbootstrap3.client.ui.PanelBody;
 import org.gwtbootstrap3.client.ui.PanelHeader;
 import org.gwtbootstrap3.client.ui.Well;
 import org.gwtbootstrap3.client.ui.constants.WellSize;
 
-import com.google.common.collect.Maps;
-import com.google.gwt.dom.client.Style;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.Label;
-
-import de.novanic.eventservice.client.event.Event;
-import de.novanic.eventservice.client.event.listener.RemoteEventListener;
-import net.wbz.moba.controlcenter.web.client.EventReceiver;
-import net.wbz.moba.controlcenter.web.client.RequestUtils;
-import net.wbz.moba.controlcenter.web.shared.bus.BusDataEvent;
-import net.wbz.moba.controlcenter.web.shared.bus.DeviceInfoEvent;
-
 /**
- * The BusMonitor shows the current data of each address for bus 0 and 1. The
- * monitor appears when it`s connected to the bus otherwise an information will
- * be shown.
+ * The BusMonitor shows the current data of each address for bus 0 and 1. The monitor appears when it`s connected to the
+ * bus otherwise an information will be shown.
  *
  * @author Daniel Tuerk
  */
@@ -39,7 +36,7 @@ public class BusMonitorPanel extends FlowPanel {
     /**
      * Store the {@link BusAddressItemPanel} for each address in bus.
      */
-    private final Map<Integer, Map<Integer, BusAddressItemPanel>> addressItemMapping = Maps.newHashMap();
+    private final Map<Integer, Map<Integer, BusAddressItemPanel>> addressItemMapping = new HashMap<>();
     private RemoteEventListener listener;
     private RemoteEventListener connectionListener;
     private List<Panel> busPanels = new ArrayList<>();
@@ -72,16 +69,12 @@ public class BusMonitorPanel extends FlowPanel {
             panel.add(panelBody);
             busPanels.add(panel);
 
-            Map<Integer, BusAddressItemPanel> addressItemPanelMap = Maps
-                    .newHashMap();
+            Map<Integer, BusAddressItemPanel> addressItemPanelMap = Maps.newHashMap();
             for (int j = 0; j < ADDRESSES_COUNT; j++) {
 
-                BusAddressItemPanel busAddressItemPanel = new BusAddressItemPanel(
-                        i, j);
-                busAddressItemPanel.getElement().getStyle()
-                        .setPaddingRight(5, Style.Unit.PX);
-                busAddressItemPanel.getElement().getStyle()
-                        .setPaddingBottom(5, Style.Unit.PX);
+                BusAddressItemPanel busAddressItemPanel = new BusAddressItemPanel(i, j);
+                busAddressItemPanel.getElement().getStyle().setPaddingRight(5, Style.Unit.PX);
+                busAddressItemPanel.getElement().getStyle().setPaddingBottom(5, Style.Unit.PX);
                 panelBody.add(busAddressItemPanel);
 
                 addressItemPanelMap.put(j, busAddressItemPanel);
@@ -92,11 +85,9 @@ public class BusMonitorPanel extends FlowPanel {
         listener = new RemoteEventListener() {
             public void apply(Event anEvent) {
                 BusDataEvent busDataEvent = (BusDataEvent) anEvent;
-                Map<Integer, BusAddressItemPanel> busMapping = addressItemMapping
-                        .get(busDataEvent.getBus());
+                Map<Integer, BusAddressItemPanel> busMapping = addressItemMapping.get(busDataEvent.getBus());
                 if (busMapping.containsKey(busDataEvent.getAddress())) {
-                    busMapping.get(busDataEvent.getAddress())
-                            .updateData(busDataEvent.getData());
+                    busMapping.get(busDataEvent.getAddress()).updateData(busDataEvent.getData());
                 }
 
             }
@@ -151,8 +142,8 @@ public class BusMonitorPanel extends FlowPanel {
         RequestUtils.getInstance().getBusService().startTrackingBus(RequestUtils.VOID_ASYNC_CALLBACK);
         EventReceiver.getInstance().addListener(BusDataEvent.class, listener);
 
-        wellConnectionState.getElement().getStyle().setMarginLeft(getParent().getOffsetWidth() / 2 - 130,
-                Style.Unit.PX);
+        wellConnectionState.getElement().getStyle()
+            .setMarginLeft(getParent().getOffsetWidth() / 2 - 130, Style.Unit.PX);
         wellConnectionState.getElement().getStyle().setMarginTop(getParent().getOffsetHeight() / 2 - 50, Style.Unit.PX);
     }
 

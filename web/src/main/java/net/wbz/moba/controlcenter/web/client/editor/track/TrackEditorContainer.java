@@ -1,19 +1,5 @@
 package net.wbz.moba.controlcenter.web.client.editor.track;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import org.gwtbootstrap3.client.shared.event.ModalHiddenEvent;
-import org.gwtbootstrap3.client.shared.event.ModalHiddenHandler;
-import org.gwtbootstrap3.client.ui.AnchorListItem;
-import org.gwtbootstrap3.client.ui.Divider;
-import org.gwtbootstrap3.client.ui.NavPills;
-import org.gwtbootstrap3.client.ui.constants.IconType;
-import org.gwtbootstrap3.extras.notify.client.ui.Notify;
-
 import com.allen_sauer.gwt.dnd.client.PickupDragController;
 import com.allen_sauer.gwt.dnd.client.drop.GridConstrainedDropController;
 import com.google.gwt.dom.client.Style;
@@ -24,12 +10,23 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.Widget;
-
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import net.wbz.moba.controlcenter.web.client.RequestUtils;
 import net.wbz.moba.controlcenter.web.client.model.track.AbstractSvgTrackWidget;
 import net.wbz.moba.controlcenter.web.client.model.track.ModelManager;
 import net.wbz.moba.controlcenter.web.client.util.modal.DeleteModal;
 import net.wbz.moba.controlcenter.web.shared.track.model.AbstractTrackPart;
+import org.gwtbootstrap3.client.shared.event.ModalHiddenEvent;
+import org.gwtbootstrap3.client.shared.event.ModalHiddenHandler;
+import org.gwtbootstrap3.client.ui.AnchorListItem;
+import org.gwtbootstrap3.client.ui.Divider;
+import org.gwtbootstrap3.client.ui.NavPills;
+import org.gwtbootstrap3.client.ui.constants.IconType;
+import org.gwtbootstrap3.extras.notify.client.ui.Notify;
 
 /**
  * @author Daniel Tuerk
@@ -71,7 +68,7 @@ public class TrackEditorContainer extends FlowPanel {
         };
 
         GridConstrainedDropController dropController = new GridConstrainedDropController(trackEditorPanel,
-                draggableOffsetWidth, draggableOffsetHeight);
+            draggableOffsetWidth, draggableOffsetHeight);
 
         dragController = new PickupDragController(trackEditorPanel, true);
         dragController.setBehaviorMultipleSelection(true);
@@ -120,8 +117,8 @@ public class TrackEditorContainer extends FlowPanel {
     }
 
     private AnchorListItem createMenuEditAnchor() {
-        /**
-         * TODO clean code
+        /*
+          TODO clean code
          */
         AnchorListItem editAnchorListItem = new AnchorListItem("Edit");
         editAnchorListItem.setIcon(IconType.PENCIL);
@@ -131,8 +128,8 @@ public class TrackEditorContainer extends FlowPanel {
             public void onClick(ClickEvent event) {
                 for (Widget selectedWidget : dragController.getSelectedWidgets()) {
 
-                    new EditWidgetDoubleClickHandler(((EditorPaletteWidget) selectedWidget)
-                            .getWidget()).onDoubleClick(null);
+                    new EditWidgetDoubleClickHandler(((EditorPaletteWidget) selectedWidget).getWidget())
+                        .onDoubleClick(null);
                     // trackEditorPanel.remove(selectedWidget);
                     break;
                 }
@@ -154,11 +151,12 @@ public class TrackEditorContainer extends FlowPanel {
                         Widget w = ((PaletteWidget) paletteWidget).getPaletteWidgetItem();
                         if (w instanceof AbstractSvgTrackWidget) {
                             try {
-                                trackParts.add(((AbstractSvgTrackWidget) w).getTrackPart(getTrackEditorPanel(),
-                                        getTrackEditorPanel().getZoomLevel()));
+                                trackParts.add(((AbstractSvgTrackWidget) w)
+                                    .getTrackPart(getTrackEditorPanel(), getTrackEditorPanel().getZoomLevel()));
                             } catch (Exception e) {
-                                String msg = "ignore widget (can't save): " + ((AbstractSvgTrackWidget) w)
-                                        .getPaletteTitle() + " - " + e.getMessage();
+                                String msg =
+                                    "ignore widget (can't save): " + ((AbstractSvgTrackWidget) w).getPaletteTitle()
+                                        + " - " + e.getMessage();
                                 Notify.notify("", msg, IconType.WARNING);
                                 logger.log(Level.SEVERE, msg, e);
                                 e.printStackTrace();

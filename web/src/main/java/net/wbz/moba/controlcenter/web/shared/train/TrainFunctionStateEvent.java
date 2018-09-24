@@ -6,6 +6,7 @@ import java.util.Objects;
  * @author Daniel Tuerk
  */
 public class TrainFunctionStateEvent extends TrainStateEvent {
+
     private TrainFunction function;
     private boolean active;
 
@@ -38,20 +39,17 @@ public class TrainFunctionStateEvent extends TrainStateEvent {
             return false;
         }
         TrainFunctionStateEvent that = (TrainFunctionStateEvent) o;
-        return super.equals(o) &&
-                Objects.equals(function, that.function);
+        return active == that.active && Objects.equals(function, that.function);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), function);
+
+        return Objects.hash(super.hashCode(), function, active);
     }
 
     @Override
     public String toString() {
-        return "TrainFunctionStateEvent{" +
-                "function=" + function +
-                ", active=" + active +
-                "} " + super.toString();
+        return "TrainFunctionStateEvent{" + "function=" + function + ", active=" + active + "} " + super.toString();
     }
 }

@@ -50,8 +50,7 @@ public class Basic3dTrackWidget<T extends AbstractTrackPart> extends Mesh implem
     private final Mesh railwayMeshRight;
 
     /**
-     * Type of {@link AbstractTrackPartEntity} which will be presented of the
-     * extending 3D widget.
+     * Type of {@link AbstractTrackPartEntity} which will be presented of the extending 3D widget.
      */
     private final T trackPart;
     private final MeshLambertMaterial railwayMaterial;
@@ -64,8 +63,8 @@ public class Basic3dTrackWidget<T extends AbstractTrackPart> extends Mesh implem
     public Basic3dTrackWidget(T trackPart) {
         this.trackPart = trackPart;
 
-        /**
-         * Initialize as an unknown trackpart which is override by the material of the implementing track widget.
+        /*
+          Initialize as an unknown trackpart which is override by the material of the implementing track widget.
          */
         MeshBasicMaterial unknownTrackPartMaterial = new MeshBasicMaterial();
         unknownTrackPartMaterial.setColor(new Color(0xff0000));
@@ -73,8 +72,8 @@ public class Basic3dTrackWidget<T extends AbstractTrackPart> extends Mesh implem
         unknownTrackPartMaterial.setTransparent(true);
         setMaterial(unknownTrackPartMaterial);
 
-        /**
-         * Common track part geometry for the grid.
+        /*
+          Common track part geometry for the grid.
          */
         railwayMaterial = new MeshLambertMaterial();
         railwayMaterial.setColor(new Color(DEFAULT_RAILWAY_COLOR));

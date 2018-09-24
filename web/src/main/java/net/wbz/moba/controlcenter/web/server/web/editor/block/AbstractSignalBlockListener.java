@@ -1,6 +1,5 @@
 package net.wbz.moba.controlcenter.web.server.web.editor.block;
 
-import com.google.common.base.Objects;
 import net.wbz.moba.controlcenter.web.server.web.train.TrainManager;
 import net.wbz.moba.controlcenter.web.shared.track.model.TrackBlock;
 import net.wbz.moba.controlcenter.web.shared.train.Train;
@@ -27,9 +26,10 @@ abstract class AbstractSignalBlockListener implements FeedbackBlockListener {
 
     @Override
     public String toString() {
-        return Objects.toStringHelper(this)
-                .add("trackBlock", trackBlock)
-                .toString();
+        final StringBuffer sb = new StringBuffer("AbstractSignalBlockListener{");
+        sb.append("trackBlock=").append(trackBlock);
+        sb.append('}');
+        return sb.toString();
     }
 
     protected Train getTrain(int trainAddress) {

@@ -1,17 +1,12 @@
 package net.wbz.moba.controlcenter.web.server.web.scenario;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.google.inject.persist.Transactional;
-
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import net.wbz.moba.controlcenter.web.server.EventBroadcaster;
 import net.wbz.moba.controlcenter.web.server.persist.scenario.RouteDao;
 import net.wbz.moba.controlcenter.web.server.persist.scenario.RouteDataMapper;
@@ -32,12 +27,12 @@ import net.wbz.moba.controlcenter.web.shared.scenario.RoutesChangedEvent;
 import net.wbz.moba.controlcenter.web.shared.scenario.Scenario;
 import net.wbz.moba.controlcenter.web.shared.scenario.ScenariosChangedEvent;
 import net.wbz.moba.controlcenter.web.shared.scenario.Station;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * Manager to access the {@link Scenario}s from database.
- * The data is cached.
- * TODO cache Stations
- * 
+ * Manager to access the {@link Scenario}s from database. The data is cached. TODO cache Stations
+ *
  * @author Daniel Tuerk
  */
 @Singleton
@@ -48,11 +43,11 @@ public class ScenarioManager {
     /**
      * Cached scenarios from persistence.
      */
-    private final List<Scenario> scenarios = Lists.newArrayList();
+    private final List<Scenario> scenarios = new ArrayList<>();
     /**
      * Cached routes from persistence.
      */
-    private final List<Route> routes = Lists.newArrayList();
+    private final List<Route> routes = new ArrayList<>();
 
     private final ScenarioDao scenarioDao;
     private final StationDao stationDao;
@@ -67,9 +62,9 @@ public class ScenarioManager {
 
     @Inject
     public ScenarioManager(ScenarioDao scenarioDao, StationDao stationDao, RouteDao routeDao,
-            RouteSequenceDao routeSequenceDao, EventBroadcaster eventBroadcaster,
-            RouteDataMapper routeDataMapper, ScenarioDataMapper dataMapper, StationDataMapper stationDataMapper,
-            RouteSequenceDataMapper routeSequenceDataMapper, TrackBuilder trackBuilder) {
+        RouteSequenceDao routeSequenceDao, EventBroadcaster eventBroadcaster, RouteDataMapper routeDataMapper,
+        ScenarioDataMapper dataMapper, StationDataMapper stationDataMapper,
+        RouteSequenceDataMapper routeSequenceDataMapper, TrackBuilder trackBuilder) {
         this.scenarioDao = scenarioDao;
         this.stationDao = stationDao;
         this.routeDao = routeDao;
@@ -202,14 +197,13 @@ public class ScenarioManager {
             try {
                 route.setTrack(trackBuilder.build(route));
             } catch (TrackNotFoundException e) {
-                LOG.error("can't build track of route: {} ({})", new Object[] { route, e.getMessage() });
+                LOG.error("can't build track of route: {} ({})", new Object[]{route, e.getMessage()});
             }
         }
         LOG.debug("tracks finished");
     }
 
-    private void createOrUpdateRouteSequences(List<RouteSequence> routeSequences,
-            ScenarioEntity scenarioEntity) {
+    private void createOrUpdateRouteSequences(List<RouteSequence> routeSequences, ScenarioEntity scenarioEntity) {
         // create or update route sequences
         List<RouteSequenceEntity> entities = new ArrayList<>();
         for (RouteSequence routeBlockPart : routeSequences) {
@@ -224,7 +218,7 @@ public class ScenarioManager {
         }
         // delete removed route sequences
         List<RouteSequenceEntity> routeSequenceEntities = new ArrayList<>(
-                routeSequenceDao.findByScenario(scenarioEntity.getId()));
+            routeSequenceDao.findByScenario(scenarioEntity.getId()));
         routeSequenceEntities.removeAll(entities);
         for (RouteSequenceEntity routeSequenceEntity : routeSequenceEntities) {
             routeSequenceDao.delete(routeSequenceEntity);

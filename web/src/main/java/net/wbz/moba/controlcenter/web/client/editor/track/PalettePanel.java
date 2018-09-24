@@ -1,19 +1,16 @@
 package net.wbz.moba.controlcenter.web.client.editor.track;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import org.gwtbootstrap3.client.ui.PanelBody;
-import org.gwtbootstrap3.client.ui.PanelHeader;
-import org.gwtbootstrap3.client.ui.html.ClearFix;
-import org.gwtbootstrap3.client.ui.html.Text;
-
 import com.allen_sauer.gwt.dnd.client.PickupDragController;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Widget;
-
+import java.util.HashMap;
+import java.util.Map;
 import net.wbz.moba.controlcenter.web.client.model.track.AbstractSvgTrackWidget;
+import org.gwtbootstrap3.client.ui.PanelBody;
+import org.gwtbootstrap3.client.ui.PanelHeader;
+import org.gwtbootstrap3.client.ui.html.ClearFix;
+import org.gwtbootstrap3.client.ui.html.Text;
 
 /**
  * @author Daniel Tuerk
@@ -22,7 +19,7 @@ public class PalettePanel extends org.gwtbootstrap3.client.ui.Panel {
 
     private final PickupDragController dragController;
 
-    private final Map<String, FlowPanel> paletteGroupMapping = new HashMap<String, FlowPanel>();
+    private final Map<String, FlowPanel> paletteGroupMapping = new HashMap<>();
     private final PanelBody panelBody;
 
     public PalettePanel(PickupDragController dragController) {

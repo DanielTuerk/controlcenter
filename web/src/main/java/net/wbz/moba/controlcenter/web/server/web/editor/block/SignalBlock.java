@@ -1,22 +1,18 @@
 package net.wbz.moba.controlcenter.web.server.web.editor.block;
 
-import com.google.common.base.Objects;
-
 import net.wbz.moba.controlcenter.web.shared.track.model.Signal;
 import net.wbz.moba.controlcenter.web.shared.train.Train;
 
 /**
  * <p>
- * The signal block describe the {@link Signal} which monitors a
- * {@link net.wbz.moba.controlcenter.web.shared.track.model.TrackBlock}.
+ * The signal block describe the {@link Signal} which monitors a {@link net.wbz.moba.controlcenter.web.shared.track.model.TrackBlock}.
  * </p>
  * <p>
- * The {@link Signal} itself can have a stop, entering and a breaking block.
- * In each block can be a {@link Train}. Only the stop and montioring block is mandatory. The breaking and entering
- * block is optional and will always have {@code null} as {@link Train} if none of this blocks are configured in the
- * {@link Signal}.
+ * The {@link Signal} itself can have a stop, entering and a breaking block. In each block can be a {@link Train}. Only
+ * the stop and montioring block is mandatory. The breaking and entering block is optional and will always have {@code
+ * null} as {@link Train} if none of this blocks are configured in the {@link Signal}.
  * </p>
- * 
+ *
  * @author Daniel Tuerk
  */
 class SignalBlock {
@@ -76,11 +72,12 @@ class SignalBlock {
 
     @Override
     public String toString() {
-        return Objects.toStringHelper(this)
-                .add("monitoringBlockFree", monitoringBlockFree)
-                .add("waitingTrain", waitingTrain)
-                .add("signal", signal)
-                .toString();
+        final StringBuffer sb = new StringBuffer("SignalBlock{");
+        sb.append("signal=").append(signal);
+        sb.append(", monitoringBlockFree=").append(monitoringBlockFree);
+        sb.append(", waitingTrain=").append(waitingTrain);
+        sb.append('}');
+        return sb.toString();
     }
 
     public Train getTrainInMonitoringBlock() {
@@ -88,8 +85,7 @@ class SignalBlock {
     }
 
     public void setTrainInMonitoringBlock(Train trainInMonitoringBlock) {
-        if ((trainInMonitoringBlock != null && waitingTrain != null)
-                && trainInMonitoringBlock.equals(waitingTrain)) {
+        if ((trainInMonitoringBlock != null && waitingTrain != null) && trainInMonitoringBlock.equals(waitingTrain)) {
             // same train entered the monitoring block, remove as waiting train, if not until happen
             setWaitingTrain(null);
         }
@@ -121,9 +117,7 @@ class SignalBlock {
     }
 
     public boolean isTrainInAnyBlock() {
-        return trainInStopBlock != null
-                || trainInMonitoringBlock != null
-                || trainInEnteringBlock != null
-                || trainInBreakingBlock != null;
+        return trainInStopBlock != null || trainInMonitoringBlock != null || trainInEnteringBlock != null
+            || trainInBreakingBlock != null;
     }
 }

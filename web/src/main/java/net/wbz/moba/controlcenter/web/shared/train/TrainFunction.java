@@ -1,11 +1,8 @@
 package net.wbz.moba.controlcenter.web.shared.train;
 
-import java.io.Serializable;
-
-import com.google.common.base.Objects;
 import com.google.gwt.user.client.rpc.IsSerializable;
 import com.googlecode.jmapper.annotations.JMap;
-
+import java.io.Serializable;
 import net.wbz.moba.controlcenter.web.shared.track.model.AbstractDto;
 import net.wbz.moba.controlcenter.web.shared.track.model.BusDataConfiguration;
 
@@ -13,6 +10,7 @@ import net.wbz.moba.controlcenter.web.shared.track.model.BusDataConfiguration;
  * @author Daniel Tuerk
  */
 public class TrainFunction extends AbstractDto {
+
     @JMap
     private String alias;
     @JMap
@@ -55,14 +53,14 @@ public class TrainFunction extends AbstractDto {
             return false;
         }
         TrainFunction that = (TrainFunction) o;
-        return isActive() == that.isActive() &&
-                Objects.equal(getAlias(), that.getAlias()) &&
-                Objects.equal(getConfiguration(), that.getConfiguration());
+        return active == that.active && java.util.Objects.equals(alias, that.alias) && java.util.Objects
+            .equals(configuration, that.configuration);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(super.hashCode(), getAlias(), getConfiguration(), isActive());
+
+        return java.util.Objects.hash(super.hashCode(), alias, configuration, active);
     }
 
     /**

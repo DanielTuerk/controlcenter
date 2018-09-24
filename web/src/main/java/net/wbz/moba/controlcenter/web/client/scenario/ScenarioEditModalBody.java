@@ -1,11 +1,5 @@
 package net.wbz.moba.controlcenter.web.client.scenario;
 
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-
-import org.gwtbootstrap3.client.ui.TextBox;
-
 import com.google.common.base.Strings;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -16,13 +10,15 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.Widget;
-
+import java.util.Comparator;
+import java.util.List;
 import net.wbz.moba.controlcenter.web.client.components.AbstractEditModal;
 import net.wbz.moba.controlcenter.web.client.components.RouteSelect;
 import net.wbz.moba.controlcenter.web.client.components.TrainDrivingDirectionSelect;
 import net.wbz.moba.controlcenter.web.client.components.TrainSelect;
 import net.wbz.moba.controlcenter.web.shared.scenario.RouteSequence;
 import net.wbz.moba.controlcenter.web.shared.scenario.Scenario;
+import org.gwtbootstrap3.client.ui.TextBox;
 
 /**
  * @author Daniel Tuerk
@@ -46,7 +42,7 @@ public class ScenarioEditModalBody extends Composite {
     @UiField
     Panel routesPanel;
 
-    public ScenarioEditModalBody(Scenario scenario) {
+    ScenarioEditModalBody(Scenario scenario) {
         this.scenario = scenario;
         initWidget(uiBinder.createAndBindUi(this));
 
@@ -75,13 +71,7 @@ public class ScenarioEditModalBody extends Composite {
         routesPanel.clear();
 
         List<RouteSequence> routeSequences = scenario.getRouteSequences();
-        Collections.sort(routeSequences,
-                new Comparator<RouteSequence>() {
-                    @Override
-                    public int compare(RouteSequence o1, RouteSequence o2) {
-                        return Integer.compare(o1.getPosition(), o2.getPosition());
-                    }
-                });
+        routeSequences.sort(Comparator.comparingInt(RouteSequence::getPosition));
 
         for (RouteSequence routeSequence : routeSequences) {
             routesPanel.add(new ScenarioRoutePanel(scenario, routeSequence) {
@@ -118,7 +108,7 @@ public class ScenarioEditModalBody extends Composite {
             protected void onConfirm(RouteSequence model) {
                 RouteSequence routeSequence = new RouteSequence();
                 routeSequence.setPosition(scenario.getRouteSequences().size());
-                routeSequence.setRoute(routeSelect.getSelected().orNull());
+                routeSequence.setRoute(routeSelect.getSelected().orElse(null));
                 scenario.getRouteSequences().add(routeSequence);
 
                 hide();
@@ -128,11 +118,11 @@ public class ScenarioEditModalBody extends Composite {
         }.show();
     }
 
-    public Scenario getUpdatedModel() {
+    Scenario getUpdatedModel() {
         scenario.setName(txtName.getText());
         scenario.setCron(txtCron.getText());
-        scenario.setTrain(selectTrain.getSelected().orNull());
-        scenario.setTrainDrivingDirection(selectTrainDrivingDirection.getSelected().orNull());
+        scenario.setTrain(selectTrain.getSelected().orElse(null));
+        scenario.setTrainDrivingDirection(selectTrainDrivingDirection.getSelected().orElse(null));
         String txtStartDrivingLevelText = txtStartDrivingLevel.getText();
         if (Strings.isNullOrEmpty(txtStartDrivingLevelText)) {
             scenario.setStartDrivingLevel(null);
@@ -143,5 +133,6 @@ public class ScenarioEditModalBody extends Composite {
     }
 
     interface Binder extends UiBinder<Widget, ScenarioEditModalBody> {
+
     }
 }

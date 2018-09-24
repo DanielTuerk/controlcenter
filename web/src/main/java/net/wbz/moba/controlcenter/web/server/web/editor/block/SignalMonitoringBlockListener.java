@@ -1,21 +1,18 @@
 package net.wbz.moba.controlcenter.web.server.web.editor.block;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Objects;
-
 import net.wbz.moba.controlcenter.web.server.web.train.TrainManager;
 import net.wbz.moba.controlcenter.web.shared.track.model.BusDataConfiguration;
 import net.wbz.moba.controlcenter.web.shared.track.model.Signal.FUNCTION;
 import net.wbz.moba.controlcenter.web.shared.viewer.TrackViewerService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>
  * React to a occupied monitoring block and switch the {@link net.wbz.moba.controlcenter.web.shared.track.model.Signal}
  * to {@link FUNCTION#HP0}.
  * </p>
- * 
+ *
  * @author Daniel Tuerk
  */
 class SignalMonitoringBlockListener extends AbstractSignalBlockListener {
@@ -26,7 +23,7 @@ class SignalMonitoringBlockListener extends AbstractSignalBlockListener {
     private Integer blockNrToMonitore;
 
     SignalMonitoringBlockListener(SignalBlock signalBlock, TrackViewerService trackViewerService,
-            TrainManager trainManager) {
+        TrainManager trainManager) {
         super(signalBlock.getSignal().getMonitoringBlock(), trainManager);
         this.signalBlock = signalBlock;
         this.trackViewerService = trackViewerService;
@@ -54,9 +51,11 @@ class SignalMonitoringBlockListener extends AbstractSignalBlockListener {
 
     @Override
     public String toString() {
-        return Objects.toStringHelper(this)
-                .add("signalBlock", signalBlock)
-                .toString();
+        final StringBuffer sb = new StringBuffer("SignalMonitoringBlockListener{");
+        sb.append("signalBlock=").append(signalBlock);
+        sb.append(", blockNrToMonitore=").append(blockNrToMonitore);
+        sb.append('}');
+        return sb.toString();
     }
 
     private BusDataConfiguration getMonitoringBlockFunction() {

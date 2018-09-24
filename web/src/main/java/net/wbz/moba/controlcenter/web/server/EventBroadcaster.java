@@ -1,25 +1,22 @@
 package net.wbz.moba.controlcenter.web.server;
 
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import com.google.inject.Singleton;
+import de.novanic.eventservice.client.event.Event;
+import de.novanic.eventservice.client.event.domain.DomainFactory;
+import de.novanic.eventservice.service.EventExecutorService;
+import de.novanic.eventservice.service.EventExecutorServiceFactory;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
-
+import net.wbz.moba.controlcenter.web.shared.bus.BusDataEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
-import com.google.inject.Singleton;
-
-import de.novanic.eventservice.client.event.Event;
-import de.novanic.eventservice.client.event.domain.DomainFactory;
-import de.novanic.eventservice.service.EventExecutorService;
-import de.novanic.eventservice.service.EventExecutorServiceFactory;
-import net.wbz.moba.controlcenter.web.shared.bus.BusDataEvent;
 
 /**
  * Broadcaster for the events to throw by the {@link EventExecutorService}.
@@ -44,7 +41,7 @@ public class EventBroadcaster {
         eventExecutorService = theSF.getEventExecutorService("event");
 
         ThreadFactory namedThreadFactory = new ThreadFactoryBuilder().setNameFormat(getClass().getSimpleName() + "-%d")
-                .build();
+            .build();
         // TODO shutdown
         taskExecutor = Executors.newCachedThreadPool(namedThreadFactory);
     }
@@ -56,6 +53,7 @@ public class EventBroadcaster {
      */
     public synchronized void fireEvent(Event event) {
         if (event.getClass() != BusDataEvent.class) {
+            // avoid log spam
             LOG.debug("fire Event: " + event.toString());
         }
         sendEvent(event);
@@ -72,7 +70,7 @@ public class EventBroadcaster {
 
         if (lastSendEvents.containsKey(eventClazzName)) {
             taskExecutor.submit(new ResendEventRunnable(eventClazzName,
-                    Sets.newHashSet(lastSendEvents.get(eventClazzName))));
+                Sets.newHashSet(lastSendEvents.get(eventClazzName))));
         }
     }
 
@@ -83,7 +81,7 @@ public class EventBroadcaster {
     private synchronized void saveLastSendEvent(Event event) {
         String key = getKey(event);
         if (!lastSendEvents.containsKey(key)) {
-            lastSendEvents.put(key, new HashSet<Event>());
+            lastSendEvents.put(key, new HashSet<>());
         }
         lastSendEvents.get(key).remove(event);
         lastSendEvents.get(key).add(event);

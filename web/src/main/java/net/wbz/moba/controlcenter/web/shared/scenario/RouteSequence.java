@@ -1,6 +1,5 @@
 package net.wbz.moba.controlcenter.web.shared.scenario;
 
-import com.google.common.base.Objects;
 import com.googlecode.jmapper.annotations.JMap;
 import net.wbz.moba.controlcenter.web.shared.track.model.AbstractDto;
 
@@ -45,9 +44,11 @@ public class RouteSequence extends AbstractDto {
 
     @Override
     public String toString() {
-        return Objects.toStringHelper(this)
-                .add("position", position)
-                .add("route", route)
-                .toString();
+        final StringBuffer sb = new StringBuffer("RouteSequence{");
+        sb.append("position=").append(position);
+        sb.append(", route=").append(route);
+        sb.append(", endDelayInSeconds=").append(endDelayInSeconds);
+        sb.append('}');
+        return sb.toString();
     }
 }

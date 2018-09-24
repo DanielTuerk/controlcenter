@@ -1,12 +1,5 @@
 package net.wbz.moba.controlcenter.web.client;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
-import org.gwtbootstrap3.client.ui.constants.IconType;
-import org.gwtbootstrap3.extras.notify.client.ui.Notify;
-
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -14,9 +7,11 @@ import com.google.gwt.user.client.ui.DockLayoutPanel;
 import com.google.gwt.user.client.ui.RootLayoutPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
-
 import de.novanic.eventservice.client.event.Event;
 import de.novanic.eventservice.client.event.listener.RemoteEventListener;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import net.wbz.moba.controlcenter.web.client.Callbacks.OnlySuccessAsyncCallback;
 import net.wbz.moba.controlcenter.web.client.device.StatePanel;
 import net.wbz.moba.controlcenter.web.client.editor.track.TrackEditorContainer;
@@ -27,6 +22,8 @@ import net.wbz.moba.controlcenter.web.client.viewer.settings.ConfigPanel;
 import net.wbz.moba.controlcenter.web.client.viewer.track.TrackViewerContainer;
 import net.wbz.moba.controlcenter.web.shared.constrution.Construction;
 import net.wbz.moba.controlcenter.web.shared.constrution.CurrentConstructionChangeEvent;
+import org.gwtbootstrap3.client.ui.constants.IconType;
+import org.gwtbootstrap3.extras.notify.client.ui.Notify;
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
@@ -44,7 +41,6 @@ public class ControlCenterApp implements EntryPoint {
     private WelcomeContainer welcomeContainerContainer;
 
     private List<Widget> containerPanels = new ArrayList<>();
-    private RemoteEventListener constructionListener;
     private DockLayoutPanel dockLayoutPanel;
 
     public ControlCenterApp() {
@@ -58,24 +54,24 @@ public class ControlCenterApp implements EntryPoint {
         ModelManager.getInstance().init();
 
         // check existing construction on server
-        RequestUtils.getInstance().getConstructionService().getCurrentConstruction(
-                new OnlySuccessAsyncCallback<Construction>() {
-                    @Override
-                    public void onSuccess(Construction result) {
-                        if (result != null) {
-                            loadControlCenter();
+        RequestUtils.getInstance().getConstructionService()
+            .getCurrentConstruction(new OnlySuccessAsyncCallback<Construction>() {
+                @Override
+                public void onSuccess(Construction result) {
+                    if (result != null) {
+                        loadControlCenter();
+                    } else {
+                        // construction on server, set construction
+                        if (Settings.getInstance().getShowWelcome().getValue()) {
+                            loadWelcomePage();
                         } else {
-                            // construction on server, set construction
-                            if (Settings.getInstance().getShowWelcome().getValue()) {
-                                loadWelcomePage();
-                            } else {
-                                loadLastUsedConstruction();
-                            }
+                            loadLastUsedConstruction();
                         }
                     }
-                });
+                }
+            });
 
-        constructionListener = new RemoteEventListener() {
+        RemoteEventListener constructionListener = new RemoteEventListener() {
             @Override
             public void apply(Event anEvent) {
                 if (anEvent instanceof CurrentConstructionChangeEvent) {
@@ -97,38 +93,38 @@ public class ControlCenterApp implements EntryPoint {
     }
 
     private void loadLastUsedConstruction() {
-        RequestUtils.getInstance().getConstructionService().loadConstructions(
-                new OnlySuccessAsyncCallback<Collection<Construction>>() {
-                    @Override
-                    public void onSuccess(Collection<Construction> result) {
+        RequestUtils.getInstance().getConstructionService()
+            .loadConstructions(new OnlySuccessAsyncCallback<Collection<Construction>>() {
+                @Override
+                public void onSuccess(Collection<Construction> result) {
 
-                        String lastUsedConstruction = Settings.getInstance().getLastUsedConstruction().getValue();
-                        Construction constructionToLoad = null;
-                        for (Construction construction : result) {
-                            if (construction.getName().equals(lastUsedConstruction)) {
-                                constructionToLoad = construction;
-                                break;
-                            }
-                        }
-                        if (constructionToLoad != null) {
-                            RequestUtils.getInstance().getConstructionService().setCurrentConstruction(
-                                    constructionToLoad, new AsyncCallback<Void>() {
-                                        @Override
-                                        public void onFailure(Throwable caught) {
-                                        }
-
-                                        @Override
-                                        public void onSuccess(Void result) {
-                                            loadControlCenter();
-                                        }
-                                    });
-                        } else {
-                            Notify.notify("", "can't load last used construction", IconType.WARNING);
-
-                            loadWelcomePage();
+                    String lastUsedConstruction = Settings.getInstance().getLastUsedConstruction().getValue();
+                    Construction constructionToLoad = null;
+                    for (Construction construction : result) {
+                        if (construction.getName().equals(lastUsedConstruction)) {
+                            constructionToLoad = construction;
+                            break;
                         }
                     }
-                });
+                    if (constructionToLoad != null) {
+                        RequestUtils.getInstance().getConstructionService()
+                            .setCurrentConstruction(constructionToLoad, new AsyncCallback<Void>() {
+                                @Override
+                                public void onFailure(Throwable caught) {
+                                }
+
+                                @Override
+                                public void onSuccess(Void result) {
+                                    loadControlCenter();
+                                }
+                            });
+                    } else {
+                        Notify.notify("", "can't load last used construction", IconType.WARNING);
+
+                        loadWelcomePage();
+                    }
+                }
+            });
     }
 
     private void loadWelcomePage() {

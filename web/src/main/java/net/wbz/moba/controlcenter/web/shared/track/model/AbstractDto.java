@@ -1,10 +1,7 @@
 package net.wbz.moba.controlcenter.web.shared.track.model;
 
-import java.io.Serializable;
-
-import com.google.common.base.Objects;
 import com.googlecode.jmapper.annotations.JMap;
-
+import java.io.Serializable;
 import net.wbz.moba.controlcenter.web.shared.Identity;
 
 /**
@@ -32,24 +29,28 @@ public abstract class AbstractDto implements Serializable, Identity {
     }
 
     @Override
+    public String toString() {
+        final StringBuffer sb = new StringBuffer("AbstractDto{");
+        sb.append("id=").append(id);
+        sb.append('}');
+        return sb.toString();
+    }
+
+    @Override
     public boolean equals(Object o) {
-        if (this == o)
+        if (this == o) {
             return true;
-        if (o == null || getClass() != o.getClass())
+        }
+        if (o == null || getClass() != o.getClass()) {
             return false;
+        }
         AbstractDto that = (AbstractDto) o;
-        return Objects.equal(id, that.id);
+        return java.util.Objects.equals(id, that.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(id);
-    }
 
-    @Override
-    public String toString() {
-        return Objects.toStringHelper(this)
-                .add("id", id)
-                .toString();
+        return java.util.Objects.hash(id);
     }
 }

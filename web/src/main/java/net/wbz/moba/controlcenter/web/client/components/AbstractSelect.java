@@ -3,11 +3,9 @@ package net.wbz.moba.controlcenter.web.client.components;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
+import java.util.Optional;
 import org.gwtbootstrap3.extras.select.client.ui.Option;
 import org.gwtbootstrap3.extras.select.client.ui.Select;
-
-import com.google.common.base.Optional;
 
 /**
  * Select component for the model parameter.
@@ -34,7 +32,7 @@ abstract public class AbstractSelect<T> extends Select {
 
     /**
      * Set the initial selected item.
-     * 
+     *
      * @param selectedItem {@link T}
      */
     public void setSelectedItem(T selectedItem) {
@@ -47,7 +45,7 @@ abstract public class AbstractSelect<T> extends Select {
                 return Optional.of(deviceInfo);
             }
         }
-        return Optional.absent();
+        return Optional.empty();
     }
 
     /**
@@ -60,7 +58,7 @@ abstract public class AbstractSelect<T> extends Select {
 
     /**
      * Returns the available choices.
-     * 
+     *
      * @return choices
      */
     abstract Collection<T> getChoices();

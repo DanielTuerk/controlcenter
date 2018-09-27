@@ -77,6 +77,8 @@ abstract public class AbstractItemViewerPanel<ItemPanel extends AbstractItemPane
                     } else {
                         net.wbz.moba.controlcenter.web.client.util.Log.info("event: can't find item " + eventType
                                 .getItemId());
+                        // reload all if no specific entry was updated
+                        loadData();
                     }
                 }
             });

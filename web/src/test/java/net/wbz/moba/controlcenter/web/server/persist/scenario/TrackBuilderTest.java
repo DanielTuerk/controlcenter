@@ -5,7 +5,6 @@ import org.testng.annotations.Test;
 import com.google.common.collect.Lists;
 
 import junit.framework.Assert;
-import net.wbz.moba.controlcenter.web.server.persist.scenario.TrackBuilder.TrackNotFoundException;
 import net.wbz.moba.controlcenter.web.shared.scenario.Route;
 import net.wbz.moba.controlcenter.web.shared.scenario.Track;
 import net.wbz.moba.controlcenter.web.shared.track.model.BusDataConfiguration;
@@ -21,19 +20,19 @@ import net.wbz.moba.controlcenter.web.shared.track.model.TrackBlock;
  */
 public class TrackBuilderTest extends AbstractTrackBuilderTest {
 
-    @Test(expectedExceptions = NullPointerException.class, expectedExceptionsMessageRegExp = "no route")
+    @Test(expectedExceptions = TrackNotFoundException.class, expectedExceptionsMessageRegExp = "no route given")
     public void testNoRoute() throws TrackNotFoundException {
         getTrackBuilder().build(null);
     }
 
-    @Test(expectedExceptions = NullPointerException.class, expectedExceptionsMessageRegExp = "no route start")
+    @Test(expectedExceptions = TrackNotFoundException.class, expectedExceptionsMessageRegExp = "no route start defined")
     public void testNoRouteStart() throws TrackNotFoundException {
         Route route = mockRoute();
         route.setEnd(new TrackBlock());
         getTrackBuilder().build(route);
     }
 
-    @Test(expectedExceptions = NullPointerException.class, expectedExceptionsMessageRegExp = "no route end")
+    @Test(expectedExceptions = TrackNotFoundException.class, expectedExceptionsMessageRegExp = "no route end defined")
     public void testNoRouteEnd() throws TrackNotFoundException {
         Route route = mockRoute();
         route.setStart(new TrackBlock());

@@ -2,6 +2,7 @@ package net.wbz.moba.controlcenter.web.shared.track.model;
 
 import com.google.common.base.Objects;
 import com.googlecode.jmapper.annotations.JMap;
+import java.util.Optional;
 
 /**
  * @author Daniel Tuerk
@@ -85,18 +86,14 @@ public class BusDataConfiguration extends AbstractDto {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        if (!super.equals(o)) {
-            return false;
-        }
         BusDataConfiguration that = (BusDataConfiguration) o;
         return java.util.Objects.equals(bus, that.bus) && java.util.Objects.equals(address, that.address)
-            && java.util.Objects.equals(bit, that.bit) && java.util.Objects.equals(bitState, that.bitState);
+            && java.util.Objects.equals(bit, that.bit);
     }
 
     @Override
     public int hashCode() {
-
-        return java.util.Objects.hash(super.hashCode(), bus, address, bit, bitState);
+        return java.util.Objects.hash(super.hashCode(), bus, address, bit);
     }
 
     /**

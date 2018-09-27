@@ -1,6 +1,5 @@
 package net.wbz.moba.controlcenter.web.server.persist.scenario;
 
-import com.google.common.base.Preconditions;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -50,9 +49,15 @@ public class TrackBuilder {
      * @throws TrackNotFoundException no track
      */
     public Track build(final Route route) throws TrackNotFoundException {
-        Preconditions.checkNotNull(route, "no route");
-        Preconditions.checkNotNull(route.getStart(), "no route start");
-        Preconditions.checkNotNull(route.getEnd(), "no route end");
+        if (route == null) {
+            throw new TrackNotFoundException("no route given");
+        }
+        if (route.getStart() == null) {
+            throw new TrackNotFoundException("no route start defined");
+        }
+        if (route.getEnd() == null) {
+            throw new TrackNotFoundException("no route end defined");
+        }
 
         Long trackBuildId = System.nanoTime();
 
@@ -245,15 +250,4 @@ public class TrackBuilder {
         return System.currentTimeMillis() - routeStartTimeMillis.get(trackBuildId);
     }
 
-    public class TrackNotFoundException extends Exception {
-
-        public TrackNotFoundException() {
-            this("no track found!");
-        }
-
-        public TrackNotFoundException(String message) {
-            super(message);
-        }
-
-    }
 }

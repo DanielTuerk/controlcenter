@@ -20,7 +20,7 @@ import net.wbz.moba.controlcenter.web.server.persist.scenario.ScenarioEntity;
 import net.wbz.moba.controlcenter.web.server.persist.scenario.StationDao;
 import net.wbz.moba.controlcenter.web.server.persist.scenario.StationDataMapper;
 import net.wbz.moba.controlcenter.web.server.persist.scenario.TrackBuilder;
-import net.wbz.moba.controlcenter.web.server.persist.scenario.TrackBuilder.TrackNotFoundException;
+import net.wbz.moba.controlcenter.web.server.persist.scenario.TrackNotFoundException;
 import net.wbz.moba.controlcenter.web.shared.scenario.Route;
 import net.wbz.moba.controlcenter.web.shared.scenario.RouteSequence;
 import net.wbz.moba.controlcenter.web.shared.scenario.RoutesChangedEvent;
@@ -77,18 +77,18 @@ public class ScenarioManager {
         this.trackBuilder = trackBuilder;
     }
 
-    public synchronized List<Scenario> getScenarios() {
+    synchronized List<Scenario> getScenarios() {
         if (scenarios.isEmpty()) {
             loadScenariosFromDatabase();
         }
         return scenarios;
     }
 
-    public List<Station> getStations() {
+    List<Station> getStations() {
         return Lists.newArrayList(stationDataMapper.transformSource(stationDao.listAll()));
     }
 
-    public Scenario getScenarioById(long scenarioId) {
+    Scenario getScenarioById(long scenarioId) {
         for (Scenario scenario : scenarios) {
             if (scenarioId == scenario.getId()) {
                 return scenario;
@@ -98,7 +98,7 @@ public class ScenarioManager {
     }
 
     @Transactional
-    public ScenarioEntity createScenario(Scenario scenario) {
+    void createScenario(Scenario scenario) {
         // save scenario without route mapping
         ScenarioEntity transformedEntity = dataMapper.transformTarget(scenario);
         transformedEntity.getRouteSequences().clear();
@@ -110,7 +110,6 @@ public class ScenarioManager {
 
         loadScenariosFromDatabase();
         fireScenariosChanged();
-        return createdEntity;
     }
 
     /**
@@ -119,7 +118,7 @@ public class ScenarioManager {
      * @param scenarioId id of {@link Scenario} to delete
      */
     @Transactional
-    public void deleteScenario(long scenarioId) {
+    void deleteScenario(long scenarioId) {
         routeSequenceDao.deleteByScenario(scenarioId);
         scenarioDao.delete(scenarioId);
         loadScenariosFromDatabase();
@@ -132,7 +131,7 @@ public class ScenarioManager {
      * @param scenario {@link Scenario} to update in database
      */
     @Transactional
-    public void updateScenario(Scenario scenario) {
+    void updateScenario(Scenario scenario) {
         ScenarioEntity scenarioEntity = dataMapper.transformTarget(scenario);
 
         createOrUpdateRouteSequences(scenario.getRouteSequences(), scenarioEntity);
@@ -143,21 +142,21 @@ public class ScenarioManager {
     }
 
     @Transactional
-    public void createStation(Station station) {
+    void createStation(Station station) {
         stationDao.create(stationDataMapper.transformTarget(station));
     }
 
     @Transactional
-    public void updateStation(Station station) {
+    void updateStation(Station station) {
         stationDao.update(stationDataMapper.transformTarget(station));
     }
 
     @Transactional
-    public void deleteStation(long stationId) {
+    void deleteStation(long stationId) {
         stationDao.delete(stationDao.findById(stationId));
     }
 
-    public synchronized Collection<Route> getRoutes() {
+    synchronized Collection<Route> getRoutes() {
         if (routes.isEmpty()) {
             loadRoutesFromDatabase();
         }
@@ -165,7 +164,7 @@ public class ScenarioManager {
     }
 
     @Transactional
-    public void updateRoute(Route route) {
+    void updateRoute(Route route) {
         RouteEntity entity = routeDataMapper.transformTarget(route);
         routeDao.update(entity);
         loadRoutesFromDatabase();
@@ -173,7 +172,7 @@ public class ScenarioManager {
     }
 
     @Transactional
-    public void createRoute(Route route) {
+    void createRoute(Route route) {
         RouteEntity entity = routeDataMapper.transformTarget(route);
         routeDao.create(entity);
         loadRoutesFromDatabase();

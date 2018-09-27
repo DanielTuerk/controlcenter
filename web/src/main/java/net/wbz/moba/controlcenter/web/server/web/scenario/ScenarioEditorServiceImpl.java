@@ -1,29 +1,27 @@
 package net.wbz.moba.controlcenter.web.server.web.scenario;
 
-import java.util.Collection;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-
+import java.util.Collection;
 import net.wbz.moba.controlcenter.web.server.EventBroadcaster;
 import net.wbz.moba.controlcenter.web.server.persist.scenario.TrackBuilder;
-import net.wbz.moba.controlcenter.web.server.persist.scenario.TrackBuilder.TrackNotFoundException;
+import net.wbz.moba.controlcenter.web.server.persist.scenario.TrackNotFoundException;
 import net.wbz.moba.controlcenter.web.shared.scenario.Route;
 import net.wbz.moba.controlcenter.web.shared.scenario.Scenario;
 import net.wbz.moba.controlcenter.web.shared.scenario.ScenarioEditorService;
 import net.wbz.moba.controlcenter.web.shared.scenario.ScenariosChangedEvent;
 import net.wbz.moba.controlcenter.web.shared.scenario.Station;
 import net.wbz.moba.controlcenter.web.shared.scenario.Track;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Daniel Tuerk
  */
 @Singleton
 public class ScenarioEditorServiceImpl extends RemoteServiceServlet implements ScenarioEditorService {
+
     private static final Logger LOG = LoggerFactory.getLogger(ScenarioEditorServiceImpl.class);
 
     private final ScenarioManager scenarioManager;
@@ -36,7 +34,7 @@ public class ScenarioEditorServiceImpl extends RemoteServiceServlet implements S
 
     @Inject
     public ScenarioEditorServiceImpl(ScenarioManager scenarioManager, TrackBuilder trackBuilder,
-            EventBroadcaster eventBroadcaster) {
+        EventBroadcaster eventBroadcaster) {
         this.scenarioManager = scenarioManager;
         this.trackBuilder = trackBuilder;
         this.eventBroadcaster = eventBroadcaster;

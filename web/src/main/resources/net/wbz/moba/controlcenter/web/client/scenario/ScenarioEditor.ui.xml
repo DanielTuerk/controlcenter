@@ -4,36 +4,29 @@
   <b:Container fluid="true" paddingTop="20" paddingBottom="20" height="100%">
     <b:Row>
       <b:Column size="SM_12">
-        <b:Panel>
-          <b:PanelHeader>
-            <b:Heading size="H4" text="Scenario"/>
-          </b:PanelHeader>
-          <b:PanelBody ui:field="scenarioBody">
-          </b:PanelBody>
-        </b:Panel>
+        <b:PageHeader text="Scenario"/>
+        <!--<b:Panel>-->
+        <!--<b:PanelHeader>-->
+        <!--<b:Heading size="H4" text="Scenario"/>-->
+        <!--</b:PanelHeader>-->
+        <b:Container ui:field="scenarioBody"/>
+        <!--</b:PanelBody>-->
+        <!--</b:Panel>-->
       </b:Column>
     </b:Row>
 
     <b:Row>
       <b:Column size="SM_3">
-        <b:Panel>
-          <b:PanelHeader>
-            <b:Heading size="H4" text="Stations"/>
-          </b:PanelHeader>
-          <b:PanelBody ui:field="stationBody">
-          </b:PanelBody>
-        </b:Panel>
+        <b:PageHeader text="Stations"/>
+        <b:Container ui:field="stationBody">
+        </b:Container>
       </b:Column>
 
 
       <b:Column size="SM_9">
-        <b:Panel>
-          <b:PanelHeader>
-            <b:Heading size="H4" text="Route"/>
-          </b:PanelHeader>
-          <b:PanelBody ui:field="routeBody">
-          </b:PanelBody>
-        </b:Panel>
+        <b:PageHeader text="Route"/>
+        <b:Container ui:field="routeBody">
+        </b:Container>
       </b:Column>
 
     </b:Row>

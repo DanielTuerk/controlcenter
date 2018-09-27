@@ -7,6 +7,7 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
 import net.wbz.moba.controlcenter.web.client.scenario.route.RoutePanel;
+import org.gwtbootstrap3.client.ui.Container;
 import org.gwtbootstrap3.client.ui.PanelBody;
 
 /**
@@ -19,11 +20,11 @@ public class ScenarioEditor extends Composite {
     }
 
     @UiField
-    PanelBody scenarioBody;
+    Container scenarioBody;
     @UiField
-    PanelBody stationBody;
+    Container stationBody;
     @UiField
-    PanelBody routeBody;
+    Container routeBody;
 
     public ScenarioEditor() {
         initWidget(uiBinder.createAndBindUi(this));

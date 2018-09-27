@@ -7,7 +7,6 @@ import org.testng.annotations.Test;
 
 import com.google.common.collect.Lists;
 
-import net.wbz.moba.controlcenter.web.server.persist.scenario.TrackBuilder.TrackNotFoundException;
 import net.wbz.moba.controlcenter.web.shared.track.model.AbstractTrackPart;
 import net.wbz.moba.controlcenter.web.shared.track.model.Curve;
 import net.wbz.moba.controlcenter.web.shared.track.model.Curve.DIRECTION;

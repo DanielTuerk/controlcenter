@@ -1,16 +1,5 @@
 package net.wbz.moba.controlcenter.web.client.scenario.route;
 
-import java.util.ArrayList;
-import java.util.Collection;
-
-import org.gwtbootstrap3.client.ui.Container;
-import org.gwtbootstrap3.client.ui.Pagination;
-import org.gwtbootstrap3.client.ui.constants.ButtonType;
-import org.gwtbootstrap3.client.ui.constants.IconType;
-import org.gwtbootstrap3.client.ui.constants.PaginationSize;
-import org.gwtbootstrap3.client.ui.gwt.ButtonCell;
-import org.gwtbootstrap3.client.ui.gwt.CellTable;
-
 import com.google.common.collect.Lists;
 import com.google.gwt.cell.client.FieldUpdater;
 import com.google.gwt.core.client.GWT;
@@ -25,17 +14,28 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.ListDataProvider;
 import com.google.gwt.view.client.RangeChangeEvent;
-
 import de.novanic.eventservice.client.event.Event;
 import de.novanic.eventservice.client.event.listener.RemoteEventListener;
+import java.util.ArrayList;
+import java.util.Collection;
 import net.wbz.moba.controlcenter.web.client.Callbacks.OnlySuccessAsyncCallback;
 import net.wbz.moba.controlcenter.web.client.EventReceiver;
 import net.wbz.moba.controlcenter.web.client.RequestUtils;
+import net.wbz.moba.controlcenter.web.client.components.table.DeleteButtonColumn;
+import net.wbz.moba.controlcenter.web.client.components.table.EditButtonColumn;
+import net.wbz.moba.controlcenter.web.client.util.modal.DeleteModal;
 import net.wbz.moba.controlcenter.web.shared.scenario.Route;
 import net.wbz.moba.controlcenter.web.shared.scenario.ScenariosChangedEvent;
 import net.wbz.moba.controlcenter.web.shared.scenario.Station;
 import net.wbz.moba.controlcenter.web.shared.scenario.StationRail;
 import net.wbz.moba.controlcenter.web.shared.track.model.GridPosition;
+import org.gwtbootstrap3.client.ui.Container;
+import org.gwtbootstrap3.client.ui.Pagination;
+import org.gwtbootstrap3.client.ui.constants.ButtonType;
+import org.gwtbootstrap3.client.ui.constants.IconType;
+import org.gwtbootstrap3.client.ui.constants.PaginationSize;
+import org.gwtbootstrap3.client.ui.gwt.ButtonCell;
+import org.gwtbootstrap3.client.ui.gwt.CellTable;
 
 /**
  * @author Daniel Tuerk
@@ -56,12 +56,9 @@ public class RoutePanel extends Composite {
     public RoutePanel() {
         initWidget(uiBinder.createAndBindUi(this));
 
-        scenarioEventListener = new RemoteEventListener() {
-            @Override
-            public void apply(Event anEvent) {
-                if (anEvent instanceof ScenariosChangedEvent) {
-                    loadRoutes();
-                }
+        scenarioEventListener = anEvent -> {
+            if (anEvent instanceof ScenariosChangedEvent) {
+                loadRoutes();
             }
         };
 
@@ -75,14 +72,14 @@ public class RoutePanel extends Composite {
         TextColumn<Route> colStart = new TextColumn<Route>() {
             @Override
             public String getValue(Route route) {
-                return route.getStart().getDisplayValue();
+                return route.getStart() != null ? route.getStart().getDisplayValue() : "";
             }
         };
         routeTable.addColumn(colStart, "Start");
         TextColumn<Route> colEnd = new TextColumn<Route>() {
             @Override
             public String getValue(Route route) {
-                return route.getEnd().getDisplayValue();
+                return route.getEnd() != null ? route.getEnd().getDisplayValue() : "";
             }
         };
         routeTable.addColumn(colEnd, "End");
@@ -97,32 +94,24 @@ public class RoutePanel extends Composite {
             public String getValue(Route route) {
                 return route.getTrack() != null && route.getTrack().getLength() > 0 ? "Ok" : "Error";
             }
-        }, "Route");
+        }, "Track");
 
-        final Column<Route, String> colEdit = new Column<Route, String>(new ButtonCell(ButtonType.DEFAULT,
-                IconType.EDIT)) {
+        routeTable.addColumn(new EditButtonColumn<Route>() {
             @Override
-            public String getValue(Route object) {
-                return "";
-            }
-        };
-        colEdit.setFieldUpdater(new FieldUpdater<Route, String>() {
-            @Override
-            public void update(int index, Route object, String value) {
+            public void onAction(Route object) {
                 showEdit(object);
             }
-        });
-        routeTable.addColumn(colEdit, "Edit");
+        }, "Edit");
+        routeTable.addColumn(new DeleteButtonColumn<Route>() {
+            @Override
+            public void onAction(Route object) {
+                showDelete(object);
+            }
+        }, "Delete");
 
         container.add(pagination);
 
-        routeTable.addRangeChangeHandler(new RangeChangeEvent.Handler() {
-
-            @Override
-            public void onRangeChange(final RangeChangeEvent event) {
-                pagination.rebuild(simplePager);
-            }
-        });
+        routeTable.addRangeChangeHandler(event -> pagination.rebuild(simplePager));
 
         simplePager.setDisplay(routeTable);
         pagination.clear();
@@ -141,6 +130,18 @@ public class RoutePanel extends Composite {
         new RouteEditModal(route).show();
     }
 
+    private void showDelete(final Route route) {
+        new DeleteModal("Delete route " + route.getName() + "?") {
+
+            @Override
+            public void onConfirm() {
+                RequestUtils.getInstance().getScenarioEditorService().deleteRoute(route.getId(),
+                    RequestUtils.VOID_ASYNC_CALLBACK);
+                hide();
+            }
+        }.show();
+    }
+
     @Override
     protected void onLoad() {
         super.onLoad();
@@ -148,15 +149,15 @@ public class RoutePanel extends Composite {
         EventReceiver.getInstance().addListener(ScenariosChangedEvent.class, scenarioEventListener);
 
         RequestUtils.getInstance().getScenarioEditorService().getStations(
-                new OnlySuccessAsyncCallback<Collection<Station>>() {
-                    @Override
-                    public void onSuccess(Collection<Station> result) {
-                        stations.clear();
-                        stations.addAll(result);
+            new OnlySuccessAsyncCallback<Collection<Station>>() {
+                @Override
+                public void onSuccess(Collection<Station> result) {
+                    stations.clear();
+                    stations.addAll(result);
 
-                        loadRoutes();
-                    }
-                });
+                    loadRoutes();
+                }
+            });
     }
 
     @Override
@@ -178,17 +179,18 @@ public class RoutePanel extends Composite {
 
     private void loadRoutes() {
         RequestUtils.getInstance().getScenarioEditorService().getRoutes(
-                new OnlySuccessAsyncCallback<Collection<Route>>() {
-                    @Override
-                    public void onSuccess(Collection<Route> result) {
-                        dataProvider.setList(Lists.newArrayList(result));
-                        dataProvider.flush();
-                        dataProvider.refresh();
-                        pagination.rebuild(simplePager);
-                    }
-                });
+            new OnlySuccessAsyncCallback<Collection<Route>>() {
+                @Override
+                public void onSuccess(Collection<Route> result) {
+                    dataProvider.setList(Lists.newArrayList(result));
+                    dataProvider.flush();
+                    dataProvider.refresh();
+                    pagination.rebuild(simplePager);
+                }
+            });
     }
 
     interface Binder extends UiBinder<Widget, RoutePanel> {
+
     }
 }

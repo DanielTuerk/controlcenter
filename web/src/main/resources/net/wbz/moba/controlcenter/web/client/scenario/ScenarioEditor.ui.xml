@@ -1,34 +1,28 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
   xmlns:b="urn:import:org.gwtbootstrap3.client.ui">
 
-  <b:Container fluid="true" paddingTop="20" paddingBottom="20" height="100%">
+  <b:Container fluid="true" paddingBottom="20" height="100%">
     <b:Row>
       <b:Column size="SM_12">
         <b:PageHeader text="Scenario"/>
-        <!--<b:Panel>-->
-        <!--<b:PanelHeader>-->
-        <!--<b:Heading size="H4" text="Scenario"/>-->
-        <!--</b:PanelHeader>-->
         <b:Container ui:field="scenarioBody"/>
-        <!--</b:PanelBody>-->
-        <!--</b:Panel>-->
       </b:Column>
     </b:Row>
 
     <b:Row>
-      <b:Column size="SM_3">
-        <b:PageHeader text="Stations"/>
-        <b:Container ui:field="stationBody">
-        </b:Container>
-      </b:Column>
-
-
-      <b:Column size="SM_9">
+      <b:Column size="SM_12">
         <b:PageHeader text="Route"/>
         <b:Container ui:field="routeBody">
         </b:Container>
       </b:Column>
+    </b:Row>
 
+    <b:Row>
+    <b:Column size="SM_12">
+      <b:PageHeader text="Stations"/>
+      <b:Container ui:field="stationBody">
+      </b:Container>
+    </b:Column>
     </b:Row>
 
   </b:Container>

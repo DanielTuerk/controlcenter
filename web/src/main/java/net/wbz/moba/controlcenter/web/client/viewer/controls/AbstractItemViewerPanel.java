@@ -57,12 +57,7 @@ abstract public class AbstractItemViewerPanel<ItemPanel extends AbstractItemPane
     }
 
     private void registerDataListener() {
-        dataChangeEventListener = new RemoteEventListener() {
-            @Override
-            public void apply(Event event) {
-                loadData();
-            }
-        };
+        dataChangeEventListener = event -> loadData();
     }
 
     private void registerItemEventListeners() {

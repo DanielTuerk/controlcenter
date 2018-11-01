@@ -4,7 +4,7 @@
   xmlns:device="urn:import:net.wbz.moba.controlcenter.web.client.device"
   xmlns:ui='urn:ui:com.google.gwt.uibinder'>
 
-    <b:Container styleName="statePanel background-panel">
+    <b:Container styleName="statePanel">
 
 
       <!--<g:FlowPanel styleName="statePanel">-->

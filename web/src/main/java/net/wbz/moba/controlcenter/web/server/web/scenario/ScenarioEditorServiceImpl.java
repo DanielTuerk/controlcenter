@@ -98,6 +98,11 @@ public class ScenarioEditorServiceImpl extends RemoteServiceServlet implements S
     }
 
     @Override
+    public void deleteRoute(long routeId) {
+        scenarioManager.deleteRoute(routeId);
+    }
+
+    @Override
     public Track buildTrack(Route route) {
         try {
             return trackBuilder.build(route);

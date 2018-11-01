@@ -179,6 +179,22 @@ public class ScenarioManager {
         fireRoutesChanged();
     }
 
+    /**
+     * Delete the {@link Route} for the given id and reload the cached data.
+     *
+     * @param routeId id of {@link Route} to delete
+     */
+    @Transactional
+    void deleteRoute(long routeId) {
+        if (!routeSequenceDao.routeUsedInScenario(routeId)) {
+            routeSequenceDao.delete(routeId);
+            loadRoutesFromDatabase();
+            fireRoutesChanged();
+        } else {
+            LOG.error("can't delete route, still in use of scenario");
+        }
+    }
+
     private void loadScenariosFromDatabase() {
         LOG.debug("load scenarios from database");
         scenarios.clear();

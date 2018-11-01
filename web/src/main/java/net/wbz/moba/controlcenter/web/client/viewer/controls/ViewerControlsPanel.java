@@ -4,6 +4,8 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.ScrollPanel;
+import org.gwtbootstrap3.client.ui.Container;
 import org.gwtbootstrap3.client.ui.NavTabs;
 import org.gwtbootstrap3.client.ui.TabContent;
 import org.gwtbootstrap3.client.ui.TabListItem;
@@ -30,11 +32,11 @@ public class ViewerControlsPanel extends Composite {
 
     public ViewerControlsPanel() {
         initWidget(uiBinder.createAndBindUi(this));
-
         trainTab.add(new TrainViewerPanel());
+
         scenarioTab.add(new ScenarioViewerPanel());
 
-        tabContent.addStyleName("scrollContent");
+//        trainTab.addStyleName("scrollContent");
     }
 
     interface Binder extends UiBinder<com.google.gwt.user.client.ui.Widget, ViewerControlsPanel> {

@@ -1,45 +1,38 @@
 package net.wbz.moba.controlcenter.web.client.scenario;
 
-import com.google.gwt.cell.client.CompositeCell;
-import java.util.ArrayList;
-import java.util.Collection;
-
-import org.gwtbootstrap3.client.ui.Container;
-import org.gwtbootstrap3.client.ui.ListGroup;
-import org.gwtbootstrap3.client.ui.ListGroupItem;
-import org.gwtbootstrap3.client.ui.Pagination;
-import org.gwtbootstrap3.client.ui.constants.ButtonType;
-import org.gwtbootstrap3.client.ui.constants.IconType;
-import org.gwtbootstrap3.client.ui.constants.PaginationSize;
-import org.gwtbootstrap3.client.ui.gwt.ButtonCell;
-import org.gwtbootstrap3.client.ui.gwt.CellTable;
-
 import com.google.common.collect.Lists;
-import com.google.gwt.cell.client.FieldUpdater;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.SimplePager;
 import com.google.gwt.user.cellview.client.TextColumn;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.ListDataProvider;
-import com.google.gwt.view.client.RangeChangeEvent;
-
 import de.novanic.eventservice.client.event.Event;
 import de.novanic.eventservice.client.event.listener.RemoteEventListener;
+import java.util.ArrayList;
+import java.util.Collection;
 import net.wbz.moba.controlcenter.web.client.Callbacks.OnlySuccessAsyncCallback;
 import net.wbz.moba.controlcenter.web.client.EventReceiver;
 import net.wbz.moba.controlcenter.web.client.RequestUtils;
+import net.wbz.moba.controlcenter.web.client.components.table.ButtonColumn;
+import net.wbz.moba.controlcenter.web.client.components.table.DeleteButtonColumn;
+import net.wbz.moba.controlcenter.web.client.components.table.EditButtonColumn;
 import net.wbz.moba.controlcenter.web.client.util.modal.DeleteModal;
 import net.wbz.moba.controlcenter.web.shared.scenario.Route;
 import net.wbz.moba.controlcenter.web.shared.scenario.RouteSequence;
 import net.wbz.moba.controlcenter.web.shared.scenario.Scenario;
 import net.wbz.moba.controlcenter.web.shared.scenario.ScenariosChangedEvent;
 import net.wbz.moba.controlcenter.web.shared.scenario.Station;
+import org.gwtbootstrap3.client.ui.Container;
+import org.gwtbootstrap3.client.ui.Pagination;
+import org.gwtbootstrap3.client.ui.constants.ButtonType;
+import org.gwtbootstrap3.client.ui.constants.IconType;
+import org.gwtbootstrap3.client.ui.constants.PaginationSize;
+import org.gwtbootstrap3.client.ui.gwt.CellTable;
 
 /**
  * @author Daniel Tuerk
@@ -85,10 +78,10 @@ public class ScenarioPanel extends Composite {
             @Override
             public String getValue(Scenario object) {
                 String trainDisplayValue =
-                        object.getTrain() != null ? object.getTrain().getName() + "(" + object.getTrain().getAddress()
-                                + ")" : "unknown";
+                    object.getTrain() != null ? object.getTrain().getName() + "(" + object.getTrain().getAddress()
+                        + ")" : "unknown";
                 return trainDisplayValue + " direction: "
-                        + (object.getTrainDrivingDirection() != null ? object.getTrainDrivingDirection().name() : "");
+                    + (object.getTrainDrivingDirection() != null ? object.getTrainDrivingDirection().name() : "");
             }
         }, "Train");
         scenarioTable.addColumn(new TextColumn<Scenario>() {
@@ -139,44 +132,23 @@ public class ScenarioPanel extends Composite {
             }
         }, "Route");
 
-        final Column<Scenario, String> colEdit = new Column<Scenario, String>(new ButtonCell(ButtonType.DEFAULT,
-                IconType.EDIT)) {
+        scenarioTable.addColumn(new EditButtonColumn<Scenario>() {
             @Override
-            public String getValue(Scenario object) {
-                return "";
-            }
-        };
-        colEdit.setFieldUpdater(new FieldUpdater<Scenario, String>() {
-            @Override
-            public void update(int index, Scenario object, String value) {
+            public void onAction(Scenario object) {
                 showEdit(object);
             }
-        });
-        scenarioTable.addColumn(colEdit, "Edit");
-        final Column<Scenario, String> colDelete = new Column<Scenario, String>(new ButtonCell(ButtonType.DANGER,
-                IconType.TRASH)) {
+        }, "Edit");
+
+        scenarioTable.addColumn(new DeleteButtonColumn<Scenario>() {
             @Override
-            public String getValue(Scenario object) {
-                return "";
-            }
-        };
-        colDelete.setFieldUpdater(new FieldUpdater<Scenario, String>() {
-            @Override
-            public void update(int index, Scenario object, String value) {
+            public void onAction(Scenario object) {
                 showDelete(object);
             }
-        });
-        scenarioTable.addColumn(colDelete, "Delete");
+        }, "Delete");
 
         container.add(pagination);
 
-        scenarioTable.addRangeChangeHandler(new RangeChangeEvent.Handler() {
-
-            @Override
-            public void onRangeChange(final RangeChangeEvent event) {
-                pagination.rebuild(simplePager);
-            }
-        });
+        scenarioTable.addRangeChangeHandler(event -> pagination.rebuild(simplePager));
 
         simplePager.setDisplay(scenarioTable);
         pagination.clear();
@@ -188,19 +160,10 @@ public class ScenarioPanel extends Composite {
     @Override
     protected void onLoad() {
         super.onLoad();
-
         EventReceiver.getInstance().addListener(ScenariosChangedEvent.class, scenarioEventListener);
 
-        RequestUtils.getInstance().getScenarioEditorService().getStations(
-                new OnlySuccessAsyncCallback<Collection<Station>>() {
-                    @Override
-                    public void onSuccess(Collection<Station> result) {
-                        stations.clear();
-                        stations.addAll(result);
-
-                        loadScenarios();
-                    }
-                });
+        loadStations();
+        loadScenarios();
     }
 
     @Override
@@ -215,7 +178,7 @@ public class ScenarioPanel extends Composite {
             @Override
             public void onConfirm() {
                 RequestUtils.getInstance().getScenarioEditorService().deleteScenario(scenario.getId(),
-                        RequestUtils.VOID_ASYNC_CALLBACK);
+                    RequestUtils.VOID_ASYNC_CALLBACK);
                 hide();
             }
         }.show();
@@ -228,15 +191,28 @@ public class ScenarioPanel extends Composite {
 
     private void loadScenarios() {
         RequestUtils.getInstance().getScenarioEditorService().getScenarios(
-                new OnlySuccessAsyncCallback<Collection<Scenario>>() {
-                    @Override
-                    public void onSuccess(Collection<Scenario> result) {
-                        dataProvider.setList(Lists.newArrayList(result));
-                        dataProvider.flush();
-                        dataProvider.refresh();
-                        pagination.rebuild(simplePager);
-                    }
-                });
+            new OnlySuccessAsyncCallback<Collection<Scenario>>() {
+                @Override
+                public void onSuccess(Collection<Scenario> result) {
+                    dataProvider.setList(Lists.newArrayList(result));
+                    dataProvider.flush();
+                    dataProvider.refresh();
+                    pagination.rebuild(simplePager);
+                }
+            });
+    }
+
+    private void loadStations() {
+        RequestUtils.getInstance().getScenarioEditorService().getStations(
+            new OnlySuccessAsyncCallback<Collection<Station>>() {
+                @Override
+                public void onSuccess(Collection<Station> result) {
+                    stations.clear();
+                    stations.addAll(result);
+
+
+                }
+            });
     }
 
     private void showEdit(Scenario scenario) {
@@ -244,6 +220,7 @@ public class ScenarioPanel extends Composite {
     }
 
     interface Binder extends UiBinder<Widget, ScenarioPanel> {
+
     }
 
 }

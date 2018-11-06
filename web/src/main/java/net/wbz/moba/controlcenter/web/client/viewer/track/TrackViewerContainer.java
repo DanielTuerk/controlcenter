@@ -25,8 +25,15 @@ public class TrackViewerContainer extends Composite {
     @UiField
     HTMLPanel container;
 
+     @UiField
+    HTMLPanel trackContainer;
+
+     @UiField
+    HTMLPanel controlsContainer;
+
     public TrackViewerContainer() {
         initWidget(uiBinder.createAndBindUi(this));
+        controlsContainer.add(new ViewerControlsPanel());
     }
 
     @Override
@@ -39,14 +46,15 @@ public class TrackViewerContainer extends Composite {
         } else {
             trackViewer = new TrackViewerPanel();
         }
-        container.add(trackViewer);
-        container.add(new ViewerControlsPanel());
+        trackContainer.add(trackViewer);
     }
 
     @Override
     protected void onUnload() {
         super.onUnload();
-        container.clear();
+        trackContainer.clear();
+//         TODO needed?
+//        controlsContainer.clear();
     }
 
     interface Binder extends UiBinder<Widget, TrackViewerContainer> {

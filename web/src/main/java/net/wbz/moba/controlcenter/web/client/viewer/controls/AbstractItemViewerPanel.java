@@ -1,14 +1,12 @@
 package net.wbz.moba.controlcenter.web.client.viewer.controls;
 
+import com.google.common.collect.Maps;
+import com.google.gwt.user.client.ui.FlowPanel;
+import de.novanic.eventservice.client.event.Event;
+import de.novanic.eventservice.client.event.listener.RemoteEventListener;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import com.google.common.collect.Maps;
-import com.google.gwt.user.client.ui.FlowPanel;
-
-import de.novanic.eventservice.client.event.Event;
-import de.novanic.eventservice.client.event.listener.RemoteEventListener;
 import net.wbz.moba.controlcenter.web.client.EventReceiver;
 import net.wbz.moba.controlcenter.web.shared.AbstractStateEvent;
 import net.wbz.moba.controlcenter.web.shared.bus.DeviceInfoEvent;

@@ -7,8 +7,19 @@
       height: 100%
     }
 
+    .controlsContainer {
+      width: 400px;
+    }
+
+    .trackContainer {
+      /*width: calc(100% - 400px);*/
+      flex-grow: 1;
+    }
+
   </ui:style>
 
   <g:HTMLPanel ui:field="container" styleName="{style.flexContainer}">
+    <g:HTMLPanel ui:field="trackContainer" styleName="{style.trackContainer}"/>
+    <g:HTMLPanel ui:field="controlsContainer" styleName="{style.controlsContainer}"/>
   </g:HTMLPanel>
 </ui:UiBinder>

@@ -1,21 +1,17 @@
 <ui:UiBinder xmlns:b="urn:import:org.gwtbootstrap3.client.ui"
-  xmlns:ui='urn:ui:com.google.gwt.uibinder'
+  xmlns:ui='urn:ui:com.google.gwt.uibinder' xmlns:g="urn:import:com.google.gwt.user.client.ui"
 >
 
-  <b:Panel>
-    <b:PanelBody styleName="viewerControls">
-      <b:NavTabs>
-        <b:TabListItem active="true" dataTarget="#train" icon="TRAIN">Train</b:TabListItem>
-        <b:TabListItem dataTarget="#scenario" icon="MAP_SIGNS">Scenario</b:TabListItem>
-      </b:NavTabs>
-
-      <b:TabContent ui:field="tabContent">
-        <b:TabPane active="true" b:id="train" ui:field="trainTab">
-        </b:TabPane>
-        <b:TabPane b:id="scenario" ui:field="scenarioTab">
-        </b:TabPane>
-      </b:TabContent>
-
+  <b:Panel height="100%">
+    <b:PanelHeader>
+      <b:ButtonGroup dataToggle="BUTTONS" justified="true">
+        <b:RadioButton ui:field="btnTrain" name="groupName" active="true" icon="TRAIN">Trains</b:RadioButton>
+        <b:RadioButton ui:field="btnScenario" name="groupName" icon="MAP_SIGNS">Scenarios</b:RadioButton>
+      </b:ButtonGroup>
+    </b:PanelHeader>
+    <b:PanelBody styleName="viewerControls-panelBody">
+      <g:FlowPanel ui:field="panelBody">
+      </g:FlowPanel>
     </b:PanelBody>
   </b:Panel>
 

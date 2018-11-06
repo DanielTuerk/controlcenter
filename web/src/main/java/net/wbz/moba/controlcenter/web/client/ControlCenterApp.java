@@ -23,6 +23,7 @@ import net.wbz.moba.controlcenter.web.client.viewer.track.TrackViewerContainer;
 import net.wbz.moba.controlcenter.web.shared.constrution.Construction;
 import net.wbz.moba.controlcenter.web.shared.constrution.CurrentConstructionChangeEvent;
 import org.gwtbootstrap3.client.ui.constants.IconType;
+import org.gwtbootstrap3.client.ui.gwt.FlowPanel;
 import org.gwtbootstrap3.extras.notify.client.ui.Notify;
 
 /**
@@ -36,12 +37,12 @@ public class ControlCenterApp implements EntryPoint {
     private ScenarioEditor trackScenarioEditorPanel;
     private ConfigPanel configPanel;
 
-    private SimplePanel contentContainerPanel;
+    private FlowPanel contentContainerPanel;
 
     private WelcomeContainer welcomeContainerContainer;
 
     private List<Widget> containerPanels = new ArrayList<>();
-    private DockLayoutPanel dockLayoutPanel;
+    private ControlCenterContainer dockLayoutPanel;
 
     public ControlCenterApp() {
     }
@@ -153,52 +154,52 @@ public class ControlCenterApp implements EntryPoint {
         configPanel = new ConfigPanel();
         containerPanels.add(configPanel);
 
-        final AppMenu appMenu = createAppMenu();
+//        final AppMenu appMenu = createAppMenu();
 
-        dockLayoutPanel = new DockLayoutPanel(Style.Unit.PX);
-        dockLayoutPanel.addNorth(appMenu, 50);
+        dockLayoutPanel = new ControlCenterContainer(createAppMenu());
+//        dockLayoutPanel.addNorth(appMenu, 50);
 
         StatePanel statePanel = new StatePanel();
-        dockLayoutPanel.addSouth(statePanel, 50);
+//        dockLayoutPanel.addSouth(statePanel, 50);
 
         // allow elements to overlap the max height of the south container (e.g. device select)
-        dockLayoutPanel.getWidgetContainerElement(statePanel).getStyle().setOverflow(Style.Overflow.VISIBLE);
+//        dockLayoutPanel.getWidgetContainerElement(statePanel).getStyle().setOverflow(Style.Overflow.VISIBLE);
 
         // load the track viewer
-        contentContainerPanel = new SimplePanel();
+        contentContainerPanel = new FlowPanel();
         contentContainerPanel.setStyleName("contentContainerPanel");
-        dockLayoutPanel.add(contentContainerPanel);
+        dockLayoutPanel.setContent(contentContainerPanel);
 
         show(trackViewerContainer);
 
         RootLayoutPanel.get().add(dockLayoutPanel);
     }
 
-    private AppMenu createAppMenu() {
-        return new AppMenu() {
+    private AppMenu.AppMenuCallback createAppMenu() {
+        return new AppMenu.AppMenuCallback() {
 
             @Override
-            void showViewer() {
+           public void showViewer() {
                 show(trackViewerContainer);
             }
 
             @Override
-            void showEditor() {
+            public  void showEditor() {
                 show(trackEditorContainer);
             }
 
             @Override
-            void showBusMonitor() {
+            public void showBusMonitor() {
                 show(busMonitorPanel);
             }
 
             @Override
-            void showScenarioEditor() {
+            public void showScenarioEditor() {
                 show(trackScenarioEditorPanel);
             }
 
             @Override
-            void showConfiguration() {
+            public void showConfiguration() {
                 show(configPanel);
             }
         };

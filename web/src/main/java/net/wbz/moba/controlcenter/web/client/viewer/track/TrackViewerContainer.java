@@ -1,9 +1,12 @@
 package net.wbz.moba.controlcenter.web.client.viewer.track;
 
-import com.google.gwt.dom.client.Style;
-import com.google.gwt.user.client.ui.DockLayoutPanel;
-import com.google.gwt.user.client.ui.Widget;
 
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.uibinder.client.UiBinder;
+import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.Widget;
 import net.wbz.moba.controlcenter.web.client.Settings;
 import net.wbz.moba.controlcenter.web.client.viewer.controls.ViewerControlsPanel;
 import net.wbz.moba.controlcenter.web.client.viewer.track.parallax.TrackViewer3dPanel;
@@ -15,18 +18,20 @@ import net.wbz.moba.controlcenter.web.client.viewer.track.svg.TrackViewerPanel;
  *
  * @author Daniel Tuerk
  */
-public class TrackViewerContainer extends DockLayoutPanel {
+public class TrackViewerContainer extends Composite {
+
+    private static Binder uiBinder = GWT.create(Binder.class);
+
+    @UiField
+    HTMLPanel container;
 
     public TrackViewerContainer() {
-        super(Style.Unit.PX);
-        setHeight("100%");
+        initWidget(uiBinder.createAndBindUi(this));
     }
 
     @Override
     protected void onLoad() {
         super.onLoad();
-
-        addEast(new ViewerControlsPanel(), 400);
 
         Widget trackViewer;
         if (Settings.getInstance().getUse3dViewer().getValue()) {
@@ -34,12 +39,17 @@ public class TrackViewerContainer extends DockLayoutPanel {
         } else {
             trackViewer = new TrackViewerPanel();
         }
-        add(trackViewer);
+        container.add(trackViewer);
+        container.add(new ViewerControlsPanel());
     }
 
     @Override
     protected void onUnload() {
         super.onUnload();
-        clear();
+        container.clear();
+    }
+
+    interface Binder extends UiBinder<Widget, TrackViewerContainer> {
+
     }
 }

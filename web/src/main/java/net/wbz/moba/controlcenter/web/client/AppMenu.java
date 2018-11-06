@@ -1,7 +1,5 @@
 package net.wbz.moba.controlcenter.web.client;
 
-import org.gwtbootstrap3.client.ui.AnchorListItem;
-
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -9,6 +7,7 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
+import org.gwtbootstrap3.client.ui.AnchorListItem;
 
 /**
  * Menu bar on the top of the application.
@@ -16,7 +15,7 @@ import com.google.gwt.user.client.ui.Widget;
  *
  * @author Daniel Tuerk
  */
-abstract class AppMenu extends Composite {
+class AppMenu extends Composite {
 
     private static AppMenuBinder uiBinder = GWT.create(AppMenuBinder.class);
     @UiField
@@ -29,9 +28,14 @@ abstract class AppMenu extends Composite {
     AnchorListItem linkScenarioEditor;
     @UiField
     AnchorListItem linkConfiguration;
+    private AppMenuCallback callback;
 
     public AppMenu() {
         initWidget(uiBinder.createAndBindUi(this));
+    }
+
+    public void setCallback(AppMenuCallback callback) {
+        this.callback = callback;
     }
 
     private void setAllInactive() {
@@ -44,50 +48,54 @@ abstract class AppMenu extends Composite {
 
     @UiHandler("linkViewer")
     void clickLinkViewer(ClickEvent event) {
-        showViewer();
+        callback.showViewer();
         setAllInactive();
         linkViewer.setActive(true);
     }
 
     @UiHandler("linkEditor")
     void clickLinkEditor(ClickEvent event) {
-        showEditor();
+        callback.showEditor();
         setAllInactive();
         linkEditor.setActive(true);
     }
 
     @UiHandler("linkBusMonitor")
     void clickLinkBusMonitor(ClickEvent event) {
-        showBusMonitor();
+        callback.showBusMonitor();
         setAllInactive();
         linkBusMonitor.setActive(true);
     }
 
     @UiHandler("linkScenarioEditor")
     void clickLinkScenarioEditor(ClickEvent event) {
-        showScenarioEditor();
+        callback.showScenarioEditor();
         setAllInactive();
         linkScenarioEditor.setActive(true);
     }
 
     @UiHandler("linkConfiguration")
     void clickLinkConfiguration(ClickEvent event) {
-        showConfiguration();
+        callback.showConfiguration();
         setAllInactive();
         linkConfiguration.setActive(true);
     }
 
-    abstract void showViewer();
 
-    abstract void showEditor();
-
-    abstract void showBusMonitor();
-
-    abstract void showScenarioEditor();
-
-    abstract void showConfiguration();
 
     interface AppMenuBinder extends UiBinder<Widget, AppMenu> {
     }
 
+    interface AppMenuCallback {
+
+        void showViewer();
+
+        void showEditor();
+
+        void showBusMonitor();
+
+        void showScenarioEditor();
+
+        void showConfiguration();
+    }
 }

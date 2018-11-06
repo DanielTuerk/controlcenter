@@ -112,13 +112,13 @@ h1 {
   height: 100%;
 }
 
-.viewerControls_tabContent {
-  padding-top: 10px;
-  padding-bottom: 10px;
-  height: 100%;
-  overflow-y: scroll;
-  overflow-x: hidden;
-}
+/*.viewerControls_tabContent {*/
+  /*padding-top: 10px;*/
+  /*padding-bottom: 10px;*/
+  /*height: 100%;*/
+  /*overflow-y: scroll;*/
+  /*overflow-x: hidden;*/
+/*}*/
 
 .abstract-item-viewer-panel {
   padding: 10px 2px;
@@ -171,6 +171,10 @@ h1 {
 }
 
 .scrollContent {
-height: 100%;
-    overflow: scroll;
+/*height: 100%;*/
+    /*overflow: scroll;*/
+}
+
+.controlCenterContent {
+  height: calc(100vh - 100px);
 }

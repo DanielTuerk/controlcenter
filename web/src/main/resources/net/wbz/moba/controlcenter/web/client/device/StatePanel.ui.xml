@@ -3,12 +3,21 @@
   xmlns:cc="urn:import:net.wbz.moba.controlcenter.web.client.components"
   xmlns:device="urn:import:net.wbz.moba.controlcenter.web.client.device"
   xmlns:ui='urn:ui:com.google.gwt.uibinder'>
+<ui:style>
 
-    <b:Container styleName="statePanel">
+  .state-panel {
+    padding-top: 5px;
+    padding-left: 20px;
+    padding-right: 20px;
+    background-color: #4E5D6C;
+  }
 
+  .state-panel > * {
+    margin-right: 4px;
+  }
 
-      <!--<g:FlowPanel styleName="statePanel">-->
-
+</ui:style>
+    <b:Container styleName="{style.state-panel}">
       <device:BusConnectionToggleButton ui:field="busConnectionToggleButton"/>
       <device:DeviceListBox ui:field="deviceListBox"/>
       <b:Button text="Config" ui:field="btnDeviceConfig"/>
@@ -20,6 +29,5 @@
       <b:Button text="Stop Player" ui:field="btnPlayerStop"/>
       <b:Label text="version"/>
   </b:Container>
-  <!--</g:FlowPanel>-->
 
 </ui:UiBinder>

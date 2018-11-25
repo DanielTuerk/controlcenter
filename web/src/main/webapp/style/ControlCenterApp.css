@@ -103,17 +103,6 @@ h1 {
   background-color: #90ee90;
 }
 
-.statePanel {
-  padding-top: 5px;
-  padding-left: 20px;
-  padding-right: 20px;
-  background-color: #4E5D6C;
-}
-
-.statePanel > * {
-  margin-right: 4px;
-}
-
 .abstractItemPanelHeaderContent {
   float: left;
   width: calc(100% - 80px);

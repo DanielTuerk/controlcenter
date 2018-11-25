@@ -1,9 +1,10 @@
 package net.wbz.moba.controlcenter.web.client.device;
 
-import com.google.gwt.user.client.rpc.AsyncCallback;
+import de.novanic.eventservice.client.event.listener.RemoteEventListener;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import net.wbz.moba.controlcenter.web.client.Callbacks.OnlySuccessAsyncCallback;
 import net.wbz.moba.controlcenter.web.client.EventReceiver;
 import net.wbz.moba.controlcenter.web.client.RequestUtils;
 import net.wbz.moba.controlcenter.web.shared.bus.DeviceInfo;
@@ -12,24 +13,32 @@ import org.gwtbootstrap3.extras.select.client.ui.Option;
 import org.gwtbootstrap3.extras.select.client.ui.Select;
 
 /**
+ * Select for the {@link DeviceInfo}.
+ *
  * @author Daniel Tuerk
  */
-public class DeviceListBox extends Select {
+class DeviceListBox extends Select {
 
     private final List<DeviceInfo> devices = new ArrayList<>();
+    private final RemoteEventListener remoteEventListener = event -> reload();
 
-    public DeviceListBox() {
+    DeviceListBox() {
         setWidth("180px");
-
-        EventReceiver.getInstance().addListener(DeviceInfoEvent.class, event -> reload());
-
     }
 
     @Override
     protected void onLoad() {
         super.onLoad();
 
+        EventReceiver.getInstance().addListener(DeviceInfoEvent.class, remoteEventListener);
+
         reload();
+    }
+
+    @Override
+    protected void onUnload() {
+        super.onUnload();
+        EventReceiver.getInstance().removeListener(DeviceInfoEvent.class, remoteEventListener);
     }
 
     private DeviceInfo getDevice(String value) {
@@ -41,14 +50,8 @@ public class DeviceListBox extends Select {
         return null;
     }
 
-    public void reload() {
-
-        RequestUtils.getInstance().getBusService().getDevices(new AsyncCallback<Collection<DeviceInfo>>() {
-            @Override
-            public void onFailure(Throwable caught) {
-
-            }
-
+    private void reload() {
+        RequestUtils.getInstance().getBusService().getDevices(new OnlySuccessAsyncCallback<Collection<DeviceInfo>>() {
             @Override
             public void onSuccess(Collection<DeviceInfo> result) {
                 devices.clear();
@@ -66,15 +69,11 @@ public class DeviceListBox extends Select {
         });
     }
 
-    public List<DeviceInfo> getDevices() {
-        return devices;
-    }
-
-    public DeviceInfo getSelectedDevice() {
+    DeviceInfo getSelectedDevice() {
         return getDevice(getValue());
     }
 
-    public void setConnectedDevice(DeviceInfo deviceInfo) {
+    void setConnectedDevice(DeviceInfo deviceInfo) {
         if (deviceInfo != null) {
             setValue(deviceInfo.getKey(), false);
             refresh();

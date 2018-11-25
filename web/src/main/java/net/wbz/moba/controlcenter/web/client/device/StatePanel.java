@@ -64,37 +64,28 @@ public class StatePanel extends Composite {
         initWidget(uiBinder.createAndBindUi(this));
 
         // add event receiver for the device connection state
-        deviceInfoEventListener = new RemoteEventListener() {
-            public void apply(Event anEvent) {
-                if (anEvent instanceof DeviceInfoEvent) {
-                    DeviceInfoEvent event = (DeviceInfoEvent) anEvent;
-                    if (event.getEventType() == DeviceInfoEvent.TYPE.CONNECTED) {
-                        updateDeviceConnectionState(event.getDeviceInfo(), true);
-                    } else if (event.getEventType() == DeviceInfoEvent.TYPE.DISCONNECTED) {
-                        updateDeviceConnectionState(event.getDeviceInfo(), false);
-                    }
+        deviceInfoEventListener = anEvent -> {
+            if (anEvent instanceof DeviceInfoEvent) {
+                DeviceInfoEvent event = (DeviceInfoEvent) anEvent;
+                if (event.getEventType() == DeviceInfoEvent.TYPE.CONNECTED) {
+                    updateDeviceConnectionState(event.getDeviceInfo(), true);
+                } else if (event.getEventType() == DeviceInfoEvent.TYPE.DISCONNECTED) {
+                    updateDeviceConnectionState(event.getDeviceInfo(), false);
                 }
             }
         };
         // add event receiver for the device connection state
-        busDataPlayerEventListener = new RemoteEventListener() {
-            public void apply(Event anEvent) {
-                if (anEvent instanceof PlayerEvent) {
-                    PlayerEvent event = (PlayerEvent) anEvent;
-                    updatePlayerState(event.getState() == PlayerEvent.STATE.START);
+        busDataPlayerEventListener = anEvent -> {
+            if (anEvent instanceof PlayerEvent) {
+                PlayerEvent event = (PlayerEvent) anEvent;
+                updatePlayerState(event.getState() == PlayerEvent.STATE.START);
 
-                    Notify.notify("Player " + event.getState().name() + "!");
-                }
+                Notify.notify("Player " + event.getState().name() + "!");
             }
         };
 
         busConnectionToggleButton.addValueChangeHandler(deviceListBox);
-        toggleRailVoltage.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
-            @Override
-            public void onValueChange(ValueChangeEvent<Boolean> booleanValueChangeEvent) {
-                toggleRailVoltageState();
-            }
-        });
+        toggleRailVoltage.addValueChangeHandler(booleanValueChangeEvent -> toggleRailVoltageState());
         voltageEventListener = new RemoteEventListener() {
             public void apply(Event anEvent) {
                 if (anEvent instanceof RailVoltageEvent) {
@@ -102,24 +93,19 @@ public class StatePanel extends Composite {
                 }
             }
         };
-        toggleRecording.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
-            @Override
-            public void onValueChange(ValueChangeEvent<Boolean> booleanValueChangeEvent) {
-                if (booleanValueChangeEvent.getValue()) {
-                    RequestUtils.getInstance().getBusService().startRecording("", RequestUtils.VOID_ASYNC_CALLBACK);
-                } else {
-                    RequestUtils.getInstance().getBusService().stopRecording(RequestUtils.VOID_ASYNC_CALLBACK);
-                }
+        toggleRecording.addValueChangeHandler(booleanValueChangeEvent -> {
+            if (booleanValueChangeEvent.getValue()) {
+                RequestUtils.getInstance().getBusService().startRecording("", RequestUtils.VOID_ASYNC_CALLBACK);
+            } else {
+                RequestUtils.getInstance().getBusService().stopRecording(RequestUtils.VOID_ASYNC_CALLBACK);
             }
         });
-        recordingEventListener = new RemoteEventListener() {
-            public void apply(Event anEvent) {
-                if (anEvent instanceof RecordingEvent) {
-                    RecordingEvent recordingEvent = (RecordingEvent) anEvent;
-                    if (recordingEvent.getState() == RecordingEvent.STATE.STOP) {
-                        toggleRecording.setValue(false, false);
-                        recordingModal.show(recordingEvent);
-                    }
+        recordingEventListener = anEvent -> {
+            if (anEvent instanceof RecordingEvent) {
+                RecordingEvent recordingEvent = (RecordingEvent) anEvent;
+                if (recordingEvent.getState() == RecordingEvent.STATE.STOP) {
+                    toggleRecording.setValue(false, false);
+                    recordingModal.show(recordingEvent);
                 }
             }
         };

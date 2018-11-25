@@ -92,6 +92,9 @@ h1 {
 .boundary {
   width: 100%;
   height: 100%;
+
+  background-size: 26px 26px;
+  background-image: linear-gradient(to right, grey 1px, transparent 1px), linear-gradient(to bottom, grey 1px, transparent 1px);
 }
 
 .loadingBar {

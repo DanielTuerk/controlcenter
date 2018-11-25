@@ -25,6 +25,9 @@
 
     .trackContainer {
       flex: 2;
+      overflow: scroll;
+      /*hack to reduce viewport to show scrolling on the side*/
+      width: 100px;
     }
 
     .paletteContainer {

@@ -1,14 +1,12 @@
 package net.wbz.moba.controlcenter.web.client.editor.track;
 
+import com.google.gwt.gen2.logging.shared.Log;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.Widget;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-
-import com.google.gwt.gen2.logging.shared.Log;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.Widget;
-
 import net.wbz.moba.controlcenter.web.client.RequestUtils;
 import net.wbz.moba.controlcenter.web.client.model.track.AbsoluteTrackPosition;
 import net.wbz.moba.controlcenter.web.client.model.track.AbstractSvgTrackWidget;
@@ -22,11 +20,20 @@ public class SimpleTrackPanel extends AbstractTrackPanel {
 
     public static final int TRACK_PANEL_PADDING_IN_PX = 2 * AbstractSvgTrackWidget.WIDGET_HEIGHT;
 
+    public SimpleTrackPanel() {
+        super();
+    }
+
+    public SimpleTrackPanel(boolean fixedSize) {
+        super(fixedSize);
+    }
+
     @Override
     protected void onLoad() {
-        addStyleName("boundary");
-        setWidth("100%");
-
+        super.onLoad();
+        if (!isFixedSize()) {
+            setWidth("100%");
+        }
         loadTrack();
     }
 
@@ -64,9 +71,9 @@ public class SimpleTrackPanel extends AbstractTrackPanel {
                             add(initTrackWidget(trackWidget), trackPosition.getLeft(), trackPosition.getTop());
                         }
                         Log.info("load track done " + new Date().toString());
-
-                        setHeight(String.valueOf(maxTop + TRACK_PANEL_PADDING_IN_PX) + "px");
-
+                        if (!isFixedSize()) {
+                            setHeight(String.valueOf(maxTop + TRACK_PANEL_PADDING_IN_PX) + "px");
+                        }
                         trackLoaded();
                     }
                 });

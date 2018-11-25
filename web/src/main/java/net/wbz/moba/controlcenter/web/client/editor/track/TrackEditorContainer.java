@@ -32,7 +32,7 @@ public class TrackEditorContainer extends Composite {
 
     public static int ZOOM_STEP = 10;
     private static Binder uiBinder = GWT.create(Binder.class);
-    private static int DRAGGABLE_OFFSET_PADDING = 2;
+    private static int DRAGGABLE_OFFSET_PADDING = 1;
     public static int DRAGGABLE_OFFSET_HEIGHT = SIZE + DRAGGABLE_OFFSET_PADDING;
     public static int DRAGGABLE_OFFSET_WIDTH = SIZE + DRAGGABLE_OFFSET_PADDING;
     @UiField
@@ -50,7 +50,7 @@ public class TrackEditorContainer extends Composite {
         blockEditModal = new BlockEditModal();
         blockEditModal.addHiddenHandler(modalHiddenEvent -> trackEditorPanel.loadTrack());
 
-        trackEditorPanel = new SimpleTrackPanel() {
+        trackEditorPanel = new SimpleTrackPanel(true) {
             @Override
             protected Widget initTrackWidget(AbstractSvgTrackWidget trackWidget) {
                 PaletteWidget paletteWidget = new EditorPaletteWidget(trackWidget);
@@ -58,6 +58,8 @@ public class TrackEditorContainer extends Composite {
                 return paletteWidget;
             }
         };
+        trackEditorPanel.setWidth("4000px");
+        trackEditorPanel.setHeight("4000px");
 
         GridConstrainedDropController dropController = new GridConstrainedDropController(trackEditorPanel,
             DRAGGABLE_OFFSET_WIDTH, DRAGGABLE_OFFSET_HEIGHT);

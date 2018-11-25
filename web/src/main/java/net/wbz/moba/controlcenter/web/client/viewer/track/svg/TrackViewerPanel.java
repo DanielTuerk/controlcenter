@@ -55,7 +55,6 @@ public class TrackViewerPanel extends AbstractTrackViewerPanel {
     @Override
     protected void onLoad() {
         super.onLoad();
-        addStyleName("boundary");
 
         for (int i = getWidgetCount() - 1; i >= 0; i--) {
             remove(i);

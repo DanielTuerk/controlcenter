@@ -4,8 +4,11 @@
 
   <ui:style>
     .viewer-controls {
-      /*quick fix adapt header height*/
-      height: calc(100% - 60px);
+      /*quick fix adapt header menu height*/
+      height: literal("calc(100% - 60px)");
+      height: literal("-moz-calc(100% - 60px)");
+      height: literal("-webkit-calc(100% - 60px)");
+
       overflow-y: scroll;
       overflow-x: hidden;
     }

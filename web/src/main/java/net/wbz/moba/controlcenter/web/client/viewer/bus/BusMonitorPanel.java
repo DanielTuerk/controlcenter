@@ -5,7 +5,6 @@ import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
-import de.novanic.eventservice.client.event.Event;
 import de.novanic.eventservice.client.event.listener.RemoteEventListener;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -31,8 +30,7 @@ public class BusMonitorPanel extends FlowPanel {
 
     private static final int ADDRESSES_COUNT = 112;
     private static final int BUS_COUNT = 2;
-    final Well wellConnectionState = new Well();
-    final Label lblConnectionState = new Label();
+    private final Well wellConnectionState = new Well();
     /**
      * Store the {@link BusAddressItemPanel} for each address in bus.
      */
@@ -48,7 +46,9 @@ public class BusMonitorPanel extends FlowPanel {
         super();
 
         getElement().getStyle().setOverflowY(Style.Overflow.SCROLL);
+        setWidth("100%");
 
+        Label lblConnectionState = new Label();
         lblConnectionState.setText("Sorry, there is no connection. Please connect.");
         lblConnectionState.addStyleName("lbl-well");
         wellConnectionState.setSize(WellSize.LARGE);
@@ -82,35 +82,30 @@ public class BusMonitorPanel extends FlowPanel {
             addressItemMapping.put(i, addressItemPanelMap);
         }
         // listener processes events on user side of busData
-        listener = new RemoteEventListener() {
-            public void apply(Event anEvent) {
-                BusDataEvent busDataEvent = (BusDataEvent) anEvent;
-                Map<Integer, BusAddressItemPanel> busMapping = addressItemMapping.get(busDataEvent.getBus());
-                if (busMapping.containsKey(busDataEvent.getAddress())) {
-                    busMapping.get(busDataEvent.getAddress()).updateData(busDataEvent.getData());
-                }
-
+        listener = anEvent -> {
+            BusDataEvent busDataEvent = (BusDataEvent) anEvent;
+            Map<Integer, BusAddressItemPanel> busMapping = addressItemMapping.get(busDataEvent.getBus());
+            if (busMapping.containsKey(busDataEvent.getAddress())) {
+                busMapping.get(busDataEvent.getAddress()).updateData(busDataEvent.getData());
             }
         };
-        // connectionListener processes events on user side of deviceInfo
-        connectionListener = new RemoteEventListener() {
-            // checks incoming event if device is connected or not
-            // and handle another methods depending on connection
-            @Override
-            public void apply(Event event) {
-                DeviceInfoEvent deviceInfoEvent = (DeviceInfoEvent) event;
+        /*
+         * ConnectionListener processes events on user side of deviceInfo checks incoming event if device is connected
+         * or not and handle another methods depending on connection.
+         */
+        connectionListener = event -> {
+            DeviceInfoEvent deviceInfoEvent = (DeviceInfoEvent) event;
 
-                if (deviceInfoEvent.getEventType() == DeviceInfoEvent.TYPE.CONNECTED) {
+            if (deviceInfoEvent.getEventType() == DeviceInfoEvent.TYPE.CONNECTED) {
 
-                    RequestUtils.getInstance().getBusService().startTrackingBus(RequestUtils.VOID_ASYNC_CALLBACK);
-                    remove(wellConnectionState);
-                    addBusPanels();
+                RequestUtils.getInstance().getBusService().startTrackingBus(RequestUtils.VOID_ASYNC_CALLBACK);
+                remove(wellConnectionState);
+                addBusPanels();
 
-                } else if (deviceInfoEvent.getEventType() == DeviceInfoEvent.TYPE.DISCONNECTED) {
-                    RequestUtils.getInstance().getBusService().stopTrackingBus(RequestUtils.VOID_ASYNC_CALLBACK);
-                    removeBusPanels();
-                    add(wellConnectionState);
-                }
+            } else if (deviceInfoEvent.getEventType() == DeviceInfoEvent.TYPE.DISCONNECTED) {
+                RequestUtils.getInstance().getBusService().stopTrackingBus(RequestUtils.VOID_ASYNC_CALLBACK);
+                removeBusPanels();
+                add(wellConnectionState);
             }
         };
     }
@@ -159,7 +154,7 @@ public class BusMonitorPanel extends FlowPanel {
     /**
      * Removes busPanels from BusMonitor.
      */
-    public void removeBusPanels() {
+    private void removeBusPanels() {
         for (Panel busPanel : busPanels) {
             remove(busPanel);
         }
@@ -168,7 +163,7 @@ public class BusMonitorPanel extends FlowPanel {
     /**
      * Adds busPanels to BusMonitor.
      */
-    public void addBusPanels() {
+    private void addBusPanels() {
         for (Panel busPanel : busPanels) {
             add(busPanel);
         }

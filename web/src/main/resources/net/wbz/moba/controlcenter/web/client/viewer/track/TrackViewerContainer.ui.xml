@@ -1,25 +1,14 @@
-<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+<ui:UiBinder
+  xmlns:ui='urn:ui:com.google.gwt.uibinder'
   xmlns:g='urn:import:com.google.gwt.user.client.ui'
 >
   <ui:style>
-    .flexContainer {
-      display: flex;
-      height: 100%
-    }
-
-    .controlsContainer {
-      width: 400px;
-    }
-
     .trackContainer {
-      /*width: calc(100% - 400px);*/
-      flex-grow: 1;
+     flex: 2;
     }
-
   </ui:style>
-
-  <g:HTMLPanel ui:field="container" styleName="{style.flexContainer}">
-    <g:HTMLPanel ui:field="trackContainer" styleName="{style.trackContainer}"/>
-    <g:HTMLPanel ui:field="controlsContainer" styleName="{style.controlsContainer}"/>
+  <g:HTMLPanel styleName="fill-area flexbox-item-grow">
+  <g:HTMLPanel ui:field="trackContainer" styleName="fill-area-content {style.trackContainer} "/>
+  <g:HTMLPanel ui:field="controlsContainer" styleName="flexbox-item-grow"/>
   </g:HTMLPanel>
 </ui:UiBinder>

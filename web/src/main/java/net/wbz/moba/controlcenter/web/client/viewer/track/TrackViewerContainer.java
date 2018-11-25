@@ -23,12 +23,9 @@ public class TrackViewerContainer extends Composite {
     private static Binder uiBinder = GWT.create(Binder.class);
 
     @UiField
-    HTMLPanel container;
-
-     @UiField
     HTMLPanel trackContainer;
 
-     @UiField
+    @UiField
     HTMLPanel controlsContainer;
 
     public TrackViewerContainer() {

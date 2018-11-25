@@ -1,28 +1,25 @@
 package net.wbz.moba.controlcenter.web.client.viewer.bus;
 
-import java.math.BigInteger;
-import java.util.HashMap;
-import java.util.Map;
-
-import org.gwtbootstrap3.client.ui.Label;
-
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.FlowPanel;
-
+import java.math.BigInteger;
+import java.util.HashMap;
+import java.util.Map;
 import net.wbz.moba.controlcenter.web.client.RequestUtils;
+import org.gwtbootstrap3.client.ui.Label;
 
 /**
  * This panel represents the data of a single bus address in the
  * {@link BusMonitorPanel}. The bus address data can be manipulated by changing
  * the state of bits.
- * <p/>
  * Responding of incoming data by graphical behaviour.
  *
  * @author Daniel Tuerk
  */
-public class BusAddressItemPanel extends FlowPanel {
+class BusAddressItemPanel extends FlowPanel {
+
     /**
      * Represents the address value as 8 bits.
      */
@@ -34,7 +31,7 @@ public class BusAddressItemPanel extends FlowPanel {
      * @param busNr number of the bus
      * @param address an address of the bus
      */
-    public BusAddressItemPanel(final int busNr, final int address) {
+    BusAddressItemPanel(final int busNr, final int address) {
         getElement().getStyle().setFloat(Style.Float.LEFT);
         Label lblAddress = new Label(String.valueOf(address));
         lblAddress.addStyleName("busMonitor-address-lbl");
@@ -65,7 +62,7 @@ public class BusAddressItemPanel extends FlowPanel {
                 @Override
                 public void onClick(ClickEvent event) {
                     RequestUtils.getInstance().getBusService().sendBusData(busNr, address,
-                            bitNr, "0".equals(itemPanelButton.getText()), RequestUtils.VOID_ASYNC_CALLBACK);
+                        bitNr, "0".equals(itemPanelButton.getText()), RequestUtils.VOID_ASYNC_CALLBACK);
 
                 }
             });
@@ -77,13 +74,13 @@ public class BusAddressItemPanel extends FlowPanel {
      *
      * @param data the actual data
      */
-    public void updateData(int data) {
+    void updateData(int data) {
         BigInteger bits = new BigInteger(String.valueOf(data));
         // check the bits of each address and show it in revert order for the widgets
         for (int i = 1; i <= 8; i++) {
             String dataBtn = bitButtons.get(i).getText();
             bitButtons.get(i).setText(
-                    String.valueOf(bits.testBit(i - 1) ? 1 : 0));
+                String.valueOf(bits.testBit(i - 1) ? 1 : 0));
             if (!dataBtn.equals(bitButtons.get(i).getText())) {
 
                 bitButtons.get(i).flashLight();

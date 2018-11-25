@@ -2,6 +2,14 @@
   xmlns:ui='urn:ui:com.google.gwt.uibinder' xmlns:g="urn:import:com.google.gwt.user.client.ui"
 >
 
+  <ui:style>
+    .viewer-controls {
+      /*quick fix adapt header height*/
+      height: calc(100% - 60px);
+      overflow-y: scroll;
+      overflow-x: hidden;
+    }
+  </ui:style>
   <b:Panel height="100%">
     <b:PanelHeader>
       <b:ButtonGroup dataToggle="BUTTONS" justified="true">
@@ -9,7 +17,7 @@
         <b:RadioButton ui:field="btnScenario" name="groupName" icon="MAP_SIGNS">Scenarios</b:RadioButton>
       </b:ButtonGroup>
     </b:PanelHeader>
-    <b:PanelBody styleName="viewerControls-panelBody">
+    <b:PanelBody addStyleNames='{style.viewer-controls}'>
       <g:FlowPanel ui:field="panelBody">
       </g:FlowPanel>
     </b:PanelBody>

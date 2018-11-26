@@ -8,12 +8,15 @@
       height: literal("calc(100% - 60px)");
       height: literal("-moz-calc(100% - 60px)");
       height: literal("-webkit-calc(100% - 60px)");
-
       overflow-y: scroll;
       overflow-x: hidden;
     }
+
+    .panel {
+      margin-left: 10px;
+    }
   </ui:style>
-  <b:Panel height="100%">
+  <b:Panel height="100%" addStyleNames="{style.panel}">
     <b:PanelHeader>
       <b:ButtonGroup dataToggle="BUTTONS" justified="true">
         <b:RadioButton ui:field="btnTrain" name="groupName" active="true" icon="TRAIN">Trains</b:RadioButton>

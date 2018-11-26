@@ -1,5 +1,10 @@
 package net.wbz.moba.controlcenter.web.client.device;
 
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.uibinder.client.UiBinder;
+import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.Widget;
 import de.novanic.eventservice.client.event.listener.RemoteEventListener;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -9,21 +14,27 @@ import net.wbz.moba.controlcenter.web.client.EventReceiver;
 import net.wbz.moba.controlcenter.web.client.RequestUtils;
 import net.wbz.moba.controlcenter.web.shared.bus.DeviceInfo;
 import net.wbz.moba.controlcenter.web.shared.bus.DeviceInfoEvent;
-import org.gwtbootstrap3.extras.select.client.ui.Option;
-import org.gwtbootstrap3.extras.select.client.ui.Select;
+import org.gwtbootstrap3.client.ui.AnchorListItem;
+import org.gwtbootstrap3.client.ui.Button;
+import org.gwtbootstrap3.client.ui.DropDownMenu;
 
 /**
  * Select for the {@link DeviceInfo}.
  *
  * @author Daniel Tuerk
  */
-class DeviceListBox extends Select {
+class DeviceListBox extends Composite {
 
+    private static Binder UI_BINDER = GWT.create(Binder.class);
     private final List<DeviceInfo> devices = new ArrayList<>();
+    @UiField
+    Button btnDropup;
+    @UiField
+    DropDownMenu dropDownMenu;
     private final RemoteEventListener remoteEventListener = event -> reload();
 
     DeviceListBox() {
-        setWidth("180px");
+        initWidget(UI_BINDER.createAndBindUi(this));
     }
 
     @Override
@@ -41,13 +52,23 @@ class DeviceListBox extends Select {
         EventReceiver.getInstance().removeListener(DeviceInfoEvent.class, remoteEventListener);
     }
 
-    private DeviceInfo getDevice(String value) {
-        for (DeviceInfo deviceInfo : devices) {
-            if (deviceInfo.getKey().endsWith(value)) {
-                return deviceInfo;
+
+    DeviceInfo getSelectedDevice() {
+        return getDevice(btnDropup.getText());
+    }
+
+    void setSelectedDevice(DeviceInfo deviceInfo) {
+        if (deviceInfo != null) {
+            DeviceInfo device = getDevice(deviceInfo.getKey());
+            if (device != null) {
+                btnDropup.setText(device.getKey());
             }
         }
-        return null;
+    }
+
+
+    void setEnabled(boolean b) {
+        btnDropup.setEnabled(b);
     }
 
     private void reload() {
@@ -57,26 +78,33 @@ class DeviceListBox extends Select {
                 devices.clear();
                 devices.addAll(result);
 
-                DeviceListBox.this.clear();
+                // re-create item list
+                dropDownMenu.clear();
                 for (DeviceInfo device : result) {
-                    Option child = new Option();
-                    child.setValue(device.getKey());
-                    child.setText(device.getKey());
-                    add(child);
+                    String deviceKey = device.getKey();
+                    AnchorListItem child = new AnchorListItem(deviceKey);
+                    child.addClickHandler(clickEvent -> btnDropup.setText(deviceKey));
+                    dropDownMenu.add(child);
                 }
-                DeviceListBox.this.refresh();
+                // select first as default
+                if (!result.isEmpty()) {
+                    setSelectedDevice(result.iterator().next());
+                }
             }
         });
     }
 
-    DeviceInfo getSelectedDevice() {
-        return getDevice(getValue());
+    private DeviceInfo getDevice(String value) {
+        for (DeviceInfo deviceInfo : devices) {
+            if (deviceInfo.getKey().endsWith(value)) {
+                return deviceInfo;
+            }
+        }
+        return null;
     }
 
-    void setConnectedDevice(DeviceInfo deviceInfo) {
-        if (deviceInfo != null) {
-            setValue(deviceInfo.getKey(), false);
-            refresh();
-        }
+    interface Binder extends UiBinder<Widget, DeviceListBox> {
+
     }
 }
+

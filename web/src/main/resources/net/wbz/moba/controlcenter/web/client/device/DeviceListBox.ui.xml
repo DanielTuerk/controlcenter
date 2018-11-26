@@ -1,0 +1,16 @@
+<ui:UiBinder
+  xmlns:b="urn:import:org.gwtbootstrap3.client.ui"
+  xmlns:ui='urn:ui:com.google.gwt.uibinder'>
+  <ui:style>
+    .device-list {
+      min-width: 150px;
+    }
+  </ui:style>
+  <b:ButtonGroup dropUp="true">
+    <b:Button dataToggle="DROPDOWN" ui:field="btnDropup" addStyleNames="{style.device-list}">
+      no device available
+    </b:Button>
+    <b:DropDownMenu ui:field="dropDownMenu">
+    </b:DropDownMenu>
+  </b:ButtonGroup>
+</ui:UiBinder>

@@ -9,8 +9,6 @@ import org.gwtbootstrap3.extras.toggleswitch.client.ui.ToggleSwitch;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.logical.shared.ValueChangeEvent;
-import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -159,7 +157,7 @@ public class StatePanel extends Composite {
 
     private void updateDeviceConnectionState(@Nullable DeviceInfo deviceInfo, boolean connected) {
         toggleRailVoltage.setEnabled(connected);
-        deviceListBox.setConnectedDevice(deviceInfo != null && deviceInfo.isConnected() ? deviceInfo : null);
+        deviceListBox.setSelectedDevice(deviceInfo != null && deviceInfo.isConnected() ? deviceInfo : null);
         // TODO non visual feedback if disabled
         deviceListBox.setEnabled(!connected);
         btnDeviceConfig.setEnabled(!connected);

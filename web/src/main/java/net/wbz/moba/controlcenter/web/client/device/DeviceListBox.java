@@ -23,7 +23,7 @@ import org.gwtbootstrap3.client.ui.DropDownMenu;
  *
  * @author Daniel Tuerk
  */
-class DeviceListBox extends Composite {
+public class DeviceListBox extends Composite {
 
     private static Binder UI_BINDER = GWT.create(Binder.class);
     private final List<DeviceInfo> devices = new ArrayList<>();
@@ -33,7 +33,7 @@ class DeviceListBox extends Composite {
     DropDownMenu dropDownMenu;
     private final RemoteEventListener remoteEventListener = event -> reload();
 
-    DeviceListBox() {
+    public DeviceListBox() {
         initWidget(UI_BINDER.createAndBindUi(this));
     }
 
@@ -53,11 +53,11 @@ class DeviceListBox extends Composite {
     }
 
 
-    DeviceInfo getSelectedDevice() {
+    public DeviceInfo getSelectedDevice() {
         return getDevice(btnDropup.getText());
     }
 
-    void setSelectedDevice(DeviceInfo deviceInfo) {
+    public void setSelectedDevice(DeviceInfo deviceInfo) {
         if (deviceInfo != null) {
             DeviceInfo device = getDevice(deviceInfo.getKey());
             if (device != null) {
@@ -67,7 +67,7 @@ class DeviceListBox extends Composite {
     }
 
 
-    void setEnabled(boolean b) {
+    public void setEnabled(boolean b) {
         btnDropup.setEnabled(b);
     }
 

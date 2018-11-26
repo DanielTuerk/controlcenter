@@ -1,7 +1,12 @@
-package net.wbz.moba.controlcenter.web.client.device;
+package net.wbz.moba.controlcenter.web.client;
 
 import javax.annotation.Nullable;
 
+import net.wbz.moba.controlcenter.web.client.device.BusConnectionToggleButton;
+import net.wbz.moba.controlcenter.web.client.device.DeviceListBox;
+import net.wbz.moba.controlcenter.web.client.device.PlayerModal;
+import net.wbz.moba.controlcenter.web.client.device.RecordingModal;
+import net.wbz.moba.controlcenter.web.client.device.SendDataModal;
 import net.wbz.moba.controlcenter.web.client.device.config.DeviceConfigModal;
 import org.gwtbootstrap3.client.ui.Button;
 import org.gwtbootstrap3.extras.notify.client.ui.Notify;
@@ -17,8 +22,6 @@ import com.google.gwt.user.client.ui.Widget;
 
 import de.novanic.eventservice.client.event.Event;
 import de.novanic.eventservice.client.event.listener.RemoteEventListener;
-import net.wbz.moba.controlcenter.web.client.EventReceiver;
-import net.wbz.moba.controlcenter.web.client.RequestUtils;
 import net.wbz.moba.controlcenter.web.shared.bus.DeviceInfo;
 import net.wbz.moba.controlcenter.web.shared.bus.DeviceInfoEvent;
 import net.wbz.moba.controlcenter.web.shared.bus.PlayerEvent;

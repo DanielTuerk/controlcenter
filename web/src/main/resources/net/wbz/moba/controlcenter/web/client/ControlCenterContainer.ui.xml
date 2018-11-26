@@ -10,7 +10,7 @@
     <g:HTMLPanel ui:field="contentContainer" styleName="contentContainer fill-area flexbox-item-grow">
     </g:HTMLPanel>
     <div class="flexbox-item">
-      <cc.device:StatePanel />
+      <cc:StatePanel />
     </div>
   </g:HTMLPanel>
 </ui:UiBinder>

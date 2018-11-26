@@ -2,6 +2,8 @@ package net.wbz.moba.controlcenter.web.client.viewer.controls.train;
 
 import java.util.Map;
 
+import net.wbz.moba.controlcenter.web.client.train.TrainEditModal;
+import net.wbz.moba.controlcenter.web.client.train.TrainEditModalBody;
 import org.gwtbootstrap3.client.ui.Button;
 import org.gwtbootstrap3.client.ui.ButtonGroup;
 import org.gwtbootstrap3.client.ui.Column;
@@ -122,7 +124,7 @@ public class TrainItemPanel extends AbstractItemPanel<Train, TrainStateEvent> {
         btnEditTrain.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                Modal editDialog = new TrainItemEditModal(getModel());
+                Modal editDialog = new TrainEditModal(getModel());
                 editDialog.show();
             }
         });

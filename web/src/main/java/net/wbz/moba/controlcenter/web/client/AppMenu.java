@@ -27,6 +27,8 @@ class AppMenu extends Composite {
     @UiField
     AnchorListItem linkScenarioEditor;
     @UiField
+    AnchorListItem linkTrainEditor;
+    @UiField
     AnchorListItem linkConfiguration;
     private AppMenuCallback callback;
 
@@ -43,6 +45,7 @@ class AppMenu extends Composite {
         linkEditor.setActive(false);
         linkBusMonitor.setActive(false);
         linkScenarioEditor.setActive(false);
+        linkTrainEditor.setActive(false);
         linkConfiguration.setActive(false);
     }
 
@@ -74,6 +77,13 @@ class AppMenu extends Composite {
         linkScenarioEditor.setActive(true);
     }
 
+    @UiHandler("linkTrainEditor")
+    void clickLinkTrainEditor(ClickEvent event) {
+        callback.showTrainEditor();
+        setAllInactive();
+        linkTrainEditor.setActive(true);
+    }
+
     @UiHandler("linkConfiguration")
     void clickLinkConfiguration(ClickEvent event) {
         callback.showConfiguration();
@@ -81,9 +91,8 @@ class AppMenu extends Composite {
         linkConfiguration.setActive(true);
     }
 
-
-
     interface AppMenuBinder extends UiBinder<Widget, AppMenu> {
+
     }
 
     interface AppMenuCallback {
@@ -95,6 +104,8 @@ class AppMenu extends Composite {
         void showBusMonitor();
 
         void showScenarioEditor();
+
+        void showTrainEditor();
 
         void showConfiguration();
     }

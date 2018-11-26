@@ -37,6 +37,7 @@ abstract public class AbstractSelect<T> extends Select {
      */
     public void setSelectedItem(T selectedItem) {
         this.selectedItem = selectedItem;
+        super.setSelectedValue(getKey(selectedItem));
     }
 
     public Optional<T> getSelected() {

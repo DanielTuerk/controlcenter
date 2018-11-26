@@ -34,23 +34,6 @@ import net.wbz.moba.controlcenter.web.shared.train.TrainStateEvent;
 public class TrainViewerPanel extends AbstractItemViewerPanel<TrainItemPanel, TrainStateEvent, TrainDataChangedEvent> {
 
     @Override
-    protected void addContent() {
-        InputGroup inputCreate = new InputGroup();
-        inputCreate.getElement().getStyle().setPaddingBottom(10, Style.Unit.PX);
-        final TextBox txtName = new TextBox();
-        inputCreate.add(txtName);
-        InputGroupButton groupButton = new InputGroupButton();
-        Button btnNew = new Button("new");
-        btnNew.addClickHandler(getBtnNewClickHandler(txtName));
-        groupButton.add(btnNew);
-        inputCreate.add(groupButton);
-
-        add(inputCreate);
-
-        super.addContent();
-    }
-
-    @Override
     protected List<Class<? extends TrainStateEvent>> getStateEventClasses() {
         List<Class<? extends TrainStateEvent>> classes = new ArrayList<>();
         classes.add(TrainHornStateEvent.class);
@@ -64,28 +47,6 @@ public class TrainViewerPanel extends AbstractItemViewerPanel<TrainItemPanel, Tr
     @Override
     protected Class<TrainDataChangedEvent> getDataEventClass() {
         return TrainDataChangedEvent.class;
-    }
-
-    protected ClickHandler getBtnNewClickHandler(final TextBox name) {
-        return new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-                Train train = new Train();
-                train.setName(name.getText());
-                RequestUtils.getInstance().getTrainEditorService().createTrain(train, new AsyncCallback<Void>() {
-                    @Override
-                    public void onFailure(Throwable caught) {
-
-                    }
-
-                    @Override
-                    public void onSuccess(Void result) {
-                        name.setText("");
-                        // loadData();
-                    }
-                });
-            }
-        };
     }
 
     @Override

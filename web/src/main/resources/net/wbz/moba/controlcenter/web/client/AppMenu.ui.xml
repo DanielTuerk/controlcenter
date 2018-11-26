@@ -8,14 +8,15 @@
 
         <b:NavbarCollapse>
             <b:NavbarNav>
-                <b:AnchorListItem ui:field="linkViewer" active="true">Viewer</b:AnchorListItem>
-                <b:AnchorListItem ui:field="linkEditor">Editor</b:AnchorListItem>
-                <b:AnchorListItem ui:field="linkBusMonitor">Bus Monitor</b:AnchorListItem>
-                <b:AnchorListItem ui:field="linkScenarioEditor">Scenario Editor</b:AnchorListItem>
+                <b:AnchorListItem ui:field="linkViewer" active="true" icon="EYE">Viewer</b:AnchorListItem>
+                <b:AnchorListItem ui:field="linkEditor" icon="PENCIL_SQUARE">Editor</b:AnchorListItem>
+                <b:AnchorListItem ui:field="linkBusMonitor" icon="DESKTOP">Bus Monitor</b:AnchorListItem>
+                <b:AnchorListItem ui:field="linkScenarioEditor" icon="MAP_SIGNS">Scenario Editor</b:AnchorListItem>
+                <b:AnchorListItem ui:field="linkTrainEditor" icon="TRAIN">Train Editor</b:AnchorListItem>
             </b:NavbarNav>
 
             <b:NavbarNav pull="RIGHT">
-                <b:AnchorListItem ui:field="linkConfiguration">Configuration</b:AnchorListItem>
+                <b:AnchorListItem ui:field="linkConfiguration" icon="COGS">Configuration</b:AnchorListItem>
             </b:NavbarNav>
         </b:NavbarCollapse>
     </b:Navbar>

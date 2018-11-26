@@ -1,0 +1,33 @@
+<ui:UiBinder xmlns:b="urn:import:org.gwtbootstrap3.client.ui"
+  xmlns:cc="urn:import:net.wbz.moba.controlcenter.web.client.components"
+  xmlns:g="urn:import:com.google.gwt.user.client.ui" xmlns:ui='urn:ui:com.google.gwt.uibinder'
+  xmlns:select="urn:import:org.gwtbootstrap3.extras.select.client.ui">
+
+    <b:FieldSet>
+
+      <b:FormGroup>
+        <b:FormLabel addStyleNames="col-lg-2" for="formAlias">Alias</b:FormLabel>
+        <g:FlowPanel addStyleNames="col-lg-10">
+          <b:TextBox ui:field="txtAlias"/>
+        </g:FlowPanel>
+      </b:FormGroup>
+
+      <b:FormGroup>
+        <b:FormLabel addStyleNames="col-lg-2" for="formAddress">Address</b:FormLabel>
+        <g:FlowPanel addStyleNames="col-lg-10">
+          <b:IntegerBox ui:field="txtAddress"/>
+        </g:FlowPanel>
+      </b:FormGroup>
+   <b:FormGroup>
+        <b:FormLabel addStyleNames="col-lg-2" for="formAddress">Bit</b:FormLabel>
+        <g:FlowPanel addStyleNames="col-lg-10">
+          <cc:BitSelect ui:field="selectBit">
+          </cc:BitSelect>
+        </g:FlowPanel>
+      </b:FormGroup>
+
+      <b:Button ui:field="btnDelete" text="" icon="TRASH" type="WARNING"/>
+
+
+    </b:FieldSet>
+</ui:UiBinder>

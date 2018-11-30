@@ -1,16 +1,17 @@
 package net.wbz.moba.controlcenter.web.server.persist.construction.track;
 
+import com.googlecode.jmapper.annotations.JMap;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-
-import com.googlecode.jmapper.annotations.JMap;
-
+import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 import net.wbz.moba.controlcenter.web.server.persist.AbstractEntity;
 
 /**
  * @author Daniel Tuerk
  */
 @Entity(name = "GRID_POSITION")
+@Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"x", "y"})})
 public class GridPositionEntity extends AbstractEntity {
 
     @JMap

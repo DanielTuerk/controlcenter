@@ -10,6 +10,7 @@ import javax.persistence.FetchType;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.validation.constraints.NotNull;
 
 import com.google.common.collect.Sets;
@@ -42,7 +43,7 @@ public abstract class AbstractTrackPartEntity extends AbstractEntity {
      * Position of the track part in the grid system of the construction.
      */
     @JMap
-    @ManyToOne(fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
+    @OneToOne(fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
     @OnDelete(action = OnDeleteAction.CASCADE)
     private GridPositionEntity gridPosition;
 

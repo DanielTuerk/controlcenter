@@ -134,6 +134,12 @@ public class TrackViewerServiceImpl extends RemoteServiceServlet implements Trac
         return null;
     }
 
+    /**
+     * TODO refactor to signal function handling to provide different light schemata.
+     *
+     * @param signal {@link Signal}
+     * @param signalFunction {@link Signal.FUNCTION}
+     */
     @Override
     public void switchSignal(Signal signal, Signal.FUNCTION signalFunction) {
         LOG.debug("switch signal {} to {}", signal, signalFunction);

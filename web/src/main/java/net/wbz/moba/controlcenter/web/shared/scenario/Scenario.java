@@ -12,6 +12,48 @@ import net.wbz.moba.controlcenter.web.shared.train.Train;
  */
 public class Scenario extends AbstractDto {
 
+    /**
+     * State of the actual execution.
+     */
+    public enum RUN_STATE {
+        /**
+         * Scenario is currently running.
+         */
+        RUNNING,
+        /**
+         * TODO
+         */
+        IDLE,
+        /**
+         * TODO
+         */
+        PAUSED,
+        /**
+         * Scenario is stopped.
+         */
+        STOPPED,
+        /**
+         * Scenario is finished.
+         */
+        FINISHED
+    }
+    /**
+     * Mode of the scenario execution.
+     */
+    public enum MODE {
+        /**
+         * Scenario is inactive.
+         */
+        OFF,
+        /**
+         * Scenario started manually for a single execution.
+         */
+        MANUAL,
+        /**
+         * Scenario is in automatic mode to execute on trigger by configured cron.
+         */
+        AUTOMATIC
+    }
     @JMap
     private String name;
     @JMap
@@ -126,44 +168,6 @@ public class Scenario extends AbstractDto {
             }
         }
         throw new RuntimeException("scenario has no valid endpoint");
-    }
-
-    /**
-     * State of the actual execution.
-     */
-    public enum RUN_STATE {
-        /**
-         * Scenario is currently running.
-         */
-        RUNNING, /**
-         * TODO
-         */
-        IDLE, /**
-         * TODO
-         */
-        PAUSED, /**
-         * Scenario is stopped.
-         */
-        STOPPED, /**
-         * Scenario is finished.
-         */
-        FINISHED
-    }
-
-    /**
-     * Mode of the scenario execution.
-     */
-    public enum MODE {
-        /**
-         * Scenario is inactive.
-         */
-        OFF, /**
-         * Scenario started manually for a single execution.
-         */
-        MANUAL, /**
-         * Scenario is in automatic mode to execute on trigger by configured cron.
-         */
-        AUTOMATIC
     }
 
 }

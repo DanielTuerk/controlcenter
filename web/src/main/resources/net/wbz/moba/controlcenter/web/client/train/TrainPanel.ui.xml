@@ -3,7 +3,7 @@
   xmlns:b-gwt="urn:import:org.gwtbootstrap3.client.ui.gwt">
 
   <b:Container fluid="true" width="100%">
-    <b:Button type="PRIMARY" icon="PLUS" text="Create Scenario" ui:field="btnCreateTrain"/>
+    <b:Button type="PRIMARY" icon="PLUS" text="Create Train" ui:field="btnCreateTrain"/>
     <b-gwt:CellTable ui:field="trainTable" bordered="true" condensed="true" striped="true" hover="true"
        width="100%"/>
     <b:Pagination ui:field="pagination" paginationSize="SMALL"/>

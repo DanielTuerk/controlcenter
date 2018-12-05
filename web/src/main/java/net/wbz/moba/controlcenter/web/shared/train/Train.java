@@ -61,7 +61,7 @@ public class Train extends AbstractDto {
     }
 
     public Set<TrainFunction> getFunctions() {
-        return functions;
+        return functions != null ? functions : new HashSet<>();
     }
 
     public void setFunctions(Set<TrainFunction> functions) {

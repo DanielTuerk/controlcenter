@@ -77,7 +77,7 @@ public class TrainEditModalBody extends Composite {
 
     Train getUpdatedModel() {
         train.setName(txtName.getText());
-        train.setAddress(Integer.parseInt(txtAddress.getText()));
+        train.setAddress(txtAddress.getValue());
 
         for (TrainFunctionFieldSet trainFunctionFieldSet : trainFunctionFormGroups.values()) {
             trainFunctionFieldSet.applyChanges();

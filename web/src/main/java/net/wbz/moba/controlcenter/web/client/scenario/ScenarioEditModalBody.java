@@ -45,9 +45,6 @@ public class ScenarioEditModalBody extends Composite {
     ScenarioEditModalBody(Scenario scenario) {
         this.scenario = scenario;
         initWidget(uiBinder.createAndBindUi(this));
-
-        selectTrain.setSelectedItem(scenario.getTrain());
-        selectTrainDrivingDirection.setSelectedItem(scenario.getTrainDrivingDirection());
     }
 
     @Override
@@ -56,6 +53,9 @@ public class ScenarioEditModalBody extends Composite {
 
         txtName.setText(scenario.getName());
         txtCron.setText(scenario.getCron());
+
+        selectTrain.setSelectedItem(scenario.getTrain());
+        selectTrainDrivingDirection.setSelectedItem(scenario.getTrainDrivingDirection());
 
         Integer startDrivingLevel = scenario.getStartDrivingLevel();
         if (startDrivingLevel != null) {

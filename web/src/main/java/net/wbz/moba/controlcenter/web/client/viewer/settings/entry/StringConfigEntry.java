@@ -1,29 +1,26 @@
-package net.wbz.moba.controlcenter.web.client.viewer.settings;
+package net.wbz.moba.controlcenter.web.client.viewer.settings.entry;
 
+import com.google.gwt.user.client.ui.Widget;
+import net.wbz.moba.controlcenter.web.client.Settings.GROUP;
+import net.wbz.moba.controlcenter.web.client.Settings.STORAGE;
 import org.gwtbootstrap3.client.ui.FormGroup;
 import org.gwtbootstrap3.client.ui.FormLabel;
 import org.gwtbootstrap3.client.ui.TextBox;
 
-import com.google.gwt.user.client.ui.Widget;
-
 /**
  * @author Daniel Tuerk
  */
-public class StringConfigEntry extends AbstractConfigEntry<String> {
+ class StringConfigEntry extends AbstractConfigEntry<String> {
 
     private TextBox txt;
 
-    public StringConfigEntry(STORAGE storageType, String group, String name, String defaultValue) {
+     StringConfigEntry(STORAGE storageType, GROUP group, String name, String defaultValue) {
         super(storageType, group, name, defaultValue);
     }
 
     @Override
     protected void valueChanged() {
         txt.setText(getValue());
-    }
-
-    public StringConfigEntry(STORAGE storageType, String group, String name) {
-        super(storageType, group, name, "");
     }
 
     @Override
@@ -37,20 +34,13 @@ public class StringConfigEntry extends AbstractConfigEntry<String> {
     }
 
     @Override
-    protected Widget createConfigEntryWidget() {
+    public Widget createConfigEntryWidget() {
         String textFieldId = "txt" + getName();
-        FormGroup group = new FormGroup();
-
-        FormLabel lbl = new FormLabel();
-        lbl.setText(getName());
-        lbl.setFor(textFieldId);
-        group.add(lbl);
 
         txt = new TextBox();
         txt.setId(textFieldId);
-        group.add(txt);
 
-        return group;
+        return txt;
     }
 
     @Override

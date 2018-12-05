@@ -1,10 +1,10 @@
-package net.wbz.moba.controlcenter.web.client.viewer.settings;
-
-import java.util.Collection;
+package net.wbz.moba.controlcenter.web.client.viewer.settings.entry;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
-
+import java.util.Collection;
 import net.wbz.moba.controlcenter.web.client.RequestUtils;
+import net.wbz.moba.controlcenter.web.client.Settings.GROUP;
+import net.wbz.moba.controlcenter.web.client.Settings.STORAGE;
 import net.wbz.moba.controlcenter.web.shared.constrution.Construction;
 
 /**
@@ -14,7 +14,7 @@ import net.wbz.moba.controlcenter.web.shared.constrution.Construction;
  */
 public class ConstructionSelectionConfigEntry extends SelectionConfigEntry {
 
-    public ConstructionSelectionConfigEntry(STORAGE storageType, String group, String name) {
+    public ConstructionSelectionConfigEntry(STORAGE storageType, GROUP group, String name) {
         super(storageType, group, name);
     }
 
@@ -40,19 +40,5 @@ public class ConstructionSelectionConfigEntry extends SelectionConfigEntry {
                     }
                 });
 
-        // new AsyncCallback<Construction[]>() {
-        // @Override
-        // public void onFailure(Throwable caught) {
-        // }
-        //
-        // @Override
-        // public void onSuccess(Construction[] result) {
-        // addOption(NOTHING_SELECTED);
-        // for (Construction construction : result) {
-        // addOption(construction.getName());
-        // }
-        //
-        // }
-        // });
     }
 }

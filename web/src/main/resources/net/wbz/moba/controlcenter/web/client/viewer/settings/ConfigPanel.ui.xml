@@ -1,0 +1,23 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+  xmlns:g="urn:import:com.google.gwt.user.client.ui"
+  xmlns:b="urn:import:org.gwtbootstrap3.client.ui">
+
+  <ui:style>
+    .button-panel {
+      padding-bottom: 10px;
+    }
+
+    /*.foo > * {*/
+      /*padding: 10px;*/
+    /*}*/
+  </ui:style>
+  <b:Container fluid="true">
+    <g:FlowPanel addStyleNames="{style.button-panel}">
+      <b:Button ui:field="btnReset" type="DEFAULT" text="Reset"/>
+      <b:Button ui:field="btnApply" type="PRIMARY" text="Apply Changes" pull="RIGHT"/>
+    </g:FlowPanel>
+
+    <b:Form type="HORIZONTAL" ui:field="contentContainer">
+    </b:Form>
+  </b:Container>
+</ui:UiBinder>

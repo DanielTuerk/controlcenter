@@ -1,8 +1,9 @@
-package net.wbz.moba.controlcenter.web.client.viewer.settings;
-
-import org.gwtbootstrap3.client.ui.TextBox;
+package net.wbz.moba.controlcenter.web.client.viewer.settings.entry;
 
 import com.google.gwt.user.client.ui.Widget;
+import net.wbz.moba.controlcenter.web.client.Settings.GROUP;
+import net.wbz.moba.controlcenter.web.client.Settings.STORAGE;
+import org.gwtbootstrap3.client.ui.TextBox;
 
 /**
  * @author Daniel Tuerk
@@ -11,7 +12,7 @@ public class DoubleConfigEntry extends AbstractConfigEntry<Double> {
 
     private TextBox txt;
 
-    public DoubleConfigEntry(STORAGE storageType, String group, String name, Double defaultValue) {
+    public DoubleConfigEntry(STORAGE storageType, GROUP group, String name, Double defaultValue) {
         super(storageType, group, name, defaultValue);
     }
 
@@ -31,7 +32,7 @@ public class DoubleConfigEntry extends AbstractConfigEntry<Double> {
     }
 
     @Override
-    protected Widget createConfigEntryWidget() {
+    public Widget createConfigEntryWidget() {
         txt = new TextBox();
         return txt;
     }

@@ -5,10 +5,12 @@
   <ui:style>
     .trackContainer {
      flex: 2;
+      /* Needed for when the area gets squished too far and there is content that can't be displayed */
+      overflow: auto;
     }
   </ui:style>
   <g:HTMLPanel styleName="fill-area flexbox-item-grow">
-  <g:HTMLPanel ui:field="trackContainer" styleName="fill-area-content {style.trackContainer} "/>
+    <g:HTMLPanel ui:field="trackContainer" styleName="{style.trackContainer} "/>
   <g:HTMLPanel ui:field="controlsContainer" styleName="flexbox-item-grow"/>
   </g:HTMLPanel>
 </ui:UiBinder>

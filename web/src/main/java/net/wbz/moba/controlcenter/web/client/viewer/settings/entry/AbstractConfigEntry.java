@@ -1,10 +1,11 @@
-package net.wbz.moba.controlcenter.web.client.viewer.settings;
+package net.wbz.moba.controlcenter.web.client.viewer.settings.entry;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Widget;
-
 import net.wbz.moba.controlcenter.web.client.LocalStorage;
 import net.wbz.moba.controlcenter.web.client.RequestUtils;
+import net.wbz.moba.controlcenter.web.client.Settings.GROUP;
+import net.wbz.moba.controlcenter.web.client.Settings.STORAGE;
 
 /**
  * TODO: text for key as name from template
@@ -13,7 +14,7 @@ import net.wbz.moba.controlcenter.web.client.RequestUtils;
  */
 abstract public class AbstractConfigEntry<T> {
 
-    private final String group;
+    private final GROUP group;
     private final String name;
     private final Widget widget;
     private final STORAGE storageType;
@@ -21,7 +22,7 @@ abstract public class AbstractConfigEntry<T> {
     private T originalValue;
     private T defaultValue;
 
-    public AbstractConfigEntry(STORAGE storageType, String group, String name, T defaultValue) {
+    AbstractConfigEntry(STORAGE storageType, GROUP group, String name, T defaultValue) {
         this.storageType = storageType;
         this.group = group;
         this.name = name;
@@ -45,9 +46,6 @@ abstract public class AbstractConfigEntry<T> {
                         handleStorageRead(result);
                     }
                 });
-                // } catch (ConfigNotAvailableException e) {
-                // Log.error(e.getMessage());
-                // }
                 break;
         }
     }
@@ -67,7 +65,7 @@ abstract public class AbstractConfigEntry<T> {
 
     abstract protected String convertValueToString(T input);
 
-    abstract protected Widget createConfigEntryWidget();
+    public abstract Widget createConfigEntryWidget();
 
     private String getConfigKey() {
         return group + "." + name;
@@ -91,7 +89,7 @@ abstract public class AbstractConfigEntry<T> {
         return widget;
     }
 
-    public String getGroup() {
+    public GROUP getGroup() {
         return group;
     }
 
@@ -115,6 +113,7 @@ abstract public class AbstractConfigEntry<T> {
                         RequestUtils.VOID_ASYNC_CALLBACK);
                 break;
         }
+        originalValue = value;
     }
 
     protected abstract T getInputValue();
@@ -123,7 +122,4 @@ abstract public class AbstractConfigEntry<T> {
         setValue(originalValue);
     }
 
-    public enum STORAGE {
-        LOCAL, REMOTE
-    }
 }

@@ -3,11 +3,17 @@
   xmlns:cc.device="urn:import:net.wbz.moba.controlcenter.web.client.device"
   xmlns:g="urn:import:com.google.gwt.user.client.ui"
 >
+  <ui:style>
+    .contentContainer {
+      padding-bottom: 8px;
+    }
+  </ui:style>
+
   <g:HTMLPanel styleName="flexbox-parent">
     <div class="flexbox-item">
     <cc:AppMenu ui:field="appMenu"/>
     </div>
-    <g:HTMLPanel ui:field="contentContainer" styleName="contentContainer fill-area flexbox-item-grow">
+    <g:HTMLPanel ui:field="contentContainer" styleName="{style.contentContainer} fill-area flexbox-item-grow">
     </g:HTMLPanel>
     <div class="flexbox-item">
       <cc:StatePanel />

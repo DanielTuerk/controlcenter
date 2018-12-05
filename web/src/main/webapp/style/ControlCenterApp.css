@@ -33,14 +33,10 @@ html, body {
   align-content: stretch; /* Extra space in Cross Axis */
 }
 
-.fill-area-content {
-  /* Needed for when the area gets squished too far and there is content that can't be displayed */
-  overflow: auto;
-}
-
-.contentContainer {
-  padding-bottom: 8px;
-}
+/*.fill-area-content {*/
+   /*Needed for when the area gets squished too far and there is content that can't be displayed */
+  /*overflow: auto;*/
+/*}*/
 
 /** Example rules used by the template application (remove for your app) */
 h1 {
@@ -51,43 +47,43 @@ h1 {
   text-align: center;
 }
 
-.sendButton {
-  display: block;
-  font-size: 16pt;
-}
+/*.sendButton {*/
+  /*display: block;*/
+  /*font-size: 16pt;*/
+/*}*/
 
 /** Most GWT widgets already have a style name defined */
-.gwt-DialogBox {
-  width: 400px;
-}
+/*.gwt-DialogBox {*/
+  /*width: 400px;*/
+/*}*/
 
-.dialogVPanel {
-  margin: 5px;
-}
+/*.dialogVPanel {*/
+  /*margin: 5px;*/
+/*}*/
 
-.serverResponseLabelError {
-  color: red;
-}
+/*.serverResponseLabelError {*/
+  /*color: red;*/
+/*}*/
 
 /** Set ids using widget.getElement().setId("idOfElement") */
-#closeButton {
-  margin: 15px 6px 6px;
-}
+/*#closeButton {*/
+  /*margin: 15px 6px 6px;*/
+/*}*/
 
 /** TODO: DnD */
-.getting-started-label {
-  border: 1px solid #99AACC;
-  background-color: #AACCFF;
-  padding: 0.1em;
-}
+/*.getting-started-label {*/
+  /*border: 1px solid #99AACC;*/
+  /*background-color: #AACCFF;*/
+  /*padding: 0.1em;*/
+/*}*/
 
-.getting-started-blue {
-  border: 1px solid blue;
-}
+/*.getting-started-blue {*/
+  /*border: 1px solid blue;*/
+/*}*/
 
-.getting-started-green {
-  border: 1px solid green;
-}
+/*.getting-started-green {*/
+  /*border: 1px solid green;*/
+/*}*/
 
 .boundary {
   width: 100%;
@@ -97,12 +93,13 @@ h1 {
   background-image: linear-gradient(to right, grey 1px, transparent 1px), linear-gradient(to bottom, grey 1px, transparent 1px);
 }
 
-.loadingBar {
-  height: 20px;
-  width: 0;
-  background-color: #90ee90;
-}
+/*.loadingBar {*/
+  /*height: 20px;*/
+  /*width: 0;*/
+  /*background-color: #90ee90;*/
+/*}*/
 
+/*TODO*/
 .abstractItemPanelHeaderContent {
   float: left;
   width: calc(100% - 80px);
@@ -110,37 +107,33 @@ h1 {
   padding-right: 5px;
 }
 
-.fillParent {
-  -webkit-box-sizing: border-box;
-  -moz-box-sizing: border-box;
-  box-sizing: border-box;
-}
+/*.fillParent {*/
+  /*-webkit-box-sizing: border-box;*/
+  /*-moz-box-sizing: border-box;*/
+  /*box-sizing: border-box;*/
+/*}*/
 
-.appMenu {
-  height: 49px;
-  padding-right: 20px;
-}
+/*.appMenu {*/
+  /*height: 49px;*/
+  /*padding-right: 20px;*/
+/*}*/
 
-.configPanel {
-  margin-top: 1px;
-}
-
-.configPanel_entry {
-  padding-left: 20px;
-  float: left;
-}
+/*.configPanel_entry {*/
+  /*padding-left: 20px;*/
+  /*float: left;*/
+/*}*/
 
 .abstract-item-viewer-panel {
   padding: 10px 2px;
 }
 
-.trainPanel_slider {
-  margin-left: 20px;
-}
+/*.trainPanel_slider {*/
+  /*margin-left: 20px;*/
+/*}*/
 
-.green-btn {
-  background-color: green;
-}
+/*.green-btn {*/
+  /*background-color: green;*/
+/*}*/
 
 .well-conn {
   height: 70px;
@@ -170,21 +163,21 @@ h1 {
   padding: 3px 6px !important;
 }
 
-.controlCenterContainer {
-  display: flex;
-  flex-flow: column;
-  height: 100%;
-}
+/*.controlCenterContainer {*/
+  /*display: flex;*/
+  /*flex-flow: column;*/
+  /*height: 100%;*/
+/*}*/
 
-.controlCenterContainer .header {
-  flex: 0 1 auto;
-}
+/*.controlCenterContainer .header {*/
+  /*flex: 0 1 auto;*/
+/*}*/
 
-.controlCenterContainer .content {
-  flex: 1 1 auto;
-  min-height: 0;
-}
+/*.controlCenterContainer .content {*/
+  /*flex: 1 1 auto;*/
+  /*min-height: 0;*/
+/*}*/
 
-.controlCenterContainer .footer {
-  flex: 0 1 auto;
-}
+/*.controlCenterContainer .footer {*/
+  /*flex: 0 1 auto;*/
+/*}*/

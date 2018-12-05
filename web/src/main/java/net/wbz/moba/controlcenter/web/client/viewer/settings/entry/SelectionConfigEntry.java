@@ -1,15 +1,13 @@
-package net.wbz.moba.controlcenter.web.client.viewer.settings;
+package net.wbz.moba.controlcenter.web.client.viewer.settings.entry;
 
-import org.gwtbootstrap3.client.ui.FormGroup;
-import org.gwtbootstrap3.client.ui.FormLabel;
+import com.google.gwt.user.client.ui.Widget;
+import net.wbz.moba.controlcenter.web.client.Settings.GROUP;
+import net.wbz.moba.controlcenter.web.client.Settings.STORAGE;
 import org.gwtbootstrap3.extras.select.client.ui.Option;
 import org.gwtbootstrap3.extras.select.client.ui.Select;
 
-import com.google.gwt.user.client.ui.Widget;
-
 /**
  * Select the text value from dropdown box.
- * <p/>
  * Values of the dropdown are loaded at start.
  *
  * @author Daniel Tuerk
@@ -17,9 +15,9 @@ import com.google.gwt.user.client.ui.Widget;
 abstract public class SelectionConfigEntry extends StringConfigEntry {
 
     private Select select;
-    public static String NOTHING_SELECTED = "--";
+    static String NOTHING_SELECTED = "--";
 
-    public SelectionConfigEntry(STORAGE storageType, String group, String name) {
+    SelectionConfigEntry(STORAGE storageType, GROUP group, String name) {
         super(storageType, group, name, null);
     }
 
@@ -29,7 +27,7 @@ abstract public class SelectionConfigEntry extends StringConfigEntry {
         select.refresh();
     }
 
-    public void addOption(String value) {
+    void addOption(String value) {
         Option child = new Option();
         child.setValue(value);
         child.setText(value);
@@ -38,20 +36,11 @@ abstract public class SelectionConfigEntry extends StringConfigEntry {
     }
 
     @Override
-    protected Widget createConfigEntryWidget() {
+    public Widget createConfigEntryWidget() {
         String textFieldId = "select" + getName();
-        FormGroup group = new FormGroup();
-
-        FormLabel lbl = new FormLabel();
-        lbl.setText(getName());
-        lbl.setFor(textFieldId);
-        group.add(lbl);
-
         select = new Select();
         select.setId(textFieldId);
-        group.add(select);
-
-        return group;
+        return select;
     }
 
     @Override

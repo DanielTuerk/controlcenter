@@ -1,8 +1,9 @@
-package net.wbz.moba.controlcenter.web.client.viewer.settings;
-
-import org.gwtbootstrap3.client.ui.TextBox;
+package net.wbz.moba.controlcenter.web.client.viewer.settings.entry;
 
 import com.google.gwt.user.client.ui.Widget;
+import net.wbz.moba.controlcenter.web.client.Settings.GROUP;
+import net.wbz.moba.controlcenter.web.client.Settings.STORAGE;
+import org.gwtbootstrap3.client.ui.TextBox;
 
 /**
  * @author Daniel Tuerk
@@ -10,7 +11,7 @@ import com.google.gwt.user.client.ui.Widget;
 public class IntegerConfigEntry extends AbstractConfigEntry<Integer> {
     private TextBox txt;
 
-    public IntegerConfigEntry(STORAGE storageType, String group, String name, Integer defaultValue) {
+    public IntegerConfigEntry(STORAGE storageType, GROUP group, String name, Integer defaultValue) {
         super(storageType, group, name, defaultValue);
     }
 
@@ -30,7 +31,7 @@ public class IntegerConfigEntry extends AbstractConfigEntry<Integer> {
     }
 
     @Override
-    protected Widget createConfigEntryWidget() {
+    public Widget createConfigEntryWidget() {
         txt = new TextBox();
         return txt;
     }

@@ -1,8 +1,7 @@
 package net.wbz.moba.controlcenter.web.client.components;
 
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import java.util.Collection;
-
-import net.wbz.moba.controlcenter.web.client.Callbacks.OnlySuccessAsyncCallback;
 import net.wbz.moba.controlcenter.web.client.RequestUtils;
 import net.wbz.moba.controlcenter.web.shared.scenario.Route;
 
@@ -19,7 +18,7 @@ public class RouteSelect extends AbstractLoadableSelect<Route> {
     }
 
     @Override
-    protected void loadChoices(OnlySuccessAsyncCallback<Collection<Route>> callback) {
+    protected void loadChoices(AsyncCallback<Collection<Route>> callback) {
         RequestUtils.getInstance().getScenarioEditorService().getRoutes(callback);
     }
 

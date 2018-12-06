@@ -71,15 +71,11 @@ public class ScenarioViewerPanel extends
     @Override
     protected void addListeners() {
         super.addListeners();
-        routeStateListener = new RemoteEventListener() {
-
-            @Override
-            public void apply(Event anEvent) {
-                if (anEvent instanceof RouteStateEvent) {
-                    Long scenarioId = ((RouteStateEvent) anEvent).getScenarioId();
-                    if (scenarioIdItemPanels.containsKey(scenarioId)) {
-                        scenarioIdItemPanels.get(scenarioId).updateRouteState((RouteStateEvent) anEvent);
-                    }
+        routeStateListener = anEvent -> {
+            if (anEvent instanceof RouteStateEvent) {
+                Long scenarioId = ((RouteStateEvent) anEvent).getScenarioId();
+                if (scenarioIdItemPanels.containsKey(scenarioId)) {
+                    scenarioIdItemPanels.get(scenarioId).updateRouteState((RouteStateEvent) anEvent);
                 }
             }
         };

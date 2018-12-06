@@ -71,7 +71,7 @@ abstract public class AbstractItemViewerPanel<ItemPanel extends AbstractItemPane
                         net.wbz.moba.controlcenter.web.client.util.Log.info("event: can't find item " + eventType
                                 .getItemId());
                         // reload all if no specific entry was updated
-                        loadData();
+//                        loadData();
                     }
                 }
             });
@@ -90,8 +90,6 @@ abstract public class AbstractItemViewerPanel<ItemPanel extends AbstractItemPane
     protected void onLoad() {
         super.onLoad();
 
-        EventReceiver.getInstance().removeListener(DeviceInfoEvent.class, deviceInfoEventListener);
-
         EventReceiver.getInstance().addListener(getDataEventClass(), dataChangeEventListener);
 
         addListeners();
@@ -99,6 +97,17 @@ abstract public class AbstractItemViewerPanel<ItemPanel extends AbstractItemPane
         loadData();
 
         EventReceiver.getInstance().addListener(DeviceInfoEvent.class, deviceInfoEventListener);
+    }
+
+    @Override
+    protected void onUnload() {
+        super.onUnload();
+        EventReceiver.getInstance().removeListener(getDataEventClass(), dataChangeEventListener);
+        EventReceiver.getInstance().removeListener(DeviceInfoEvent.class, deviceInfoEventListener);
+
+        removeListeners();
+
+        resetItems();
     }
 
     protected void addListeners() {
@@ -117,22 +126,11 @@ abstract public class AbstractItemViewerPanel<ItemPanel extends AbstractItemPane
         itemsContainerPanel.clear();
     }
 
-    @Override
-    protected void onUnload() {
-        super.onUnload();
-
-        removeListeners();
-
-        resetItems();
-    }
-
     protected void removeListeners() {
         for (Map.Entry<Class<? extends EventType>, RemoteEventListener> eventListenerEntry : eventListeners
                 .entrySet()) {
             EventReceiver.getInstance().removeListener(eventListenerEntry.getKey(), eventListenerEntry.getValue());
         }
-
-        EventReceiver.getInstance().removeListener(TrainDataChangedEvent.class, dataChangeEventListener);
     }
 
     protected abstract void loadItems();

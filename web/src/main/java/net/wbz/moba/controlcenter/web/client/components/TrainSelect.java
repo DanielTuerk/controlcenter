@@ -1,5 +1,6 @@
 package net.wbz.moba.controlcenter.web.client.components;
 
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import java.util.Collection;
 
 import net.wbz.moba.controlcenter.web.client.Callbacks.OnlySuccessAsyncCallback;
@@ -19,7 +20,7 @@ public class TrainSelect extends AbstractLoadableSelect<Train> {
     }
 
     @Override
-    protected void loadChoices(OnlySuccessAsyncCallback<Collection<Train>> callback) {
+    protected void loadChoices(AsyncCallback<Collection<Train>> callback) {
         RequestUtils.getInstance().getTrainEditorService().getTrains(callback);
     }
 

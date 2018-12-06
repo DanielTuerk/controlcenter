@@ -82,7 +82,7 @@ abstract public class AbstractSelect<T> extends Select {
      *
      * @param result choices
      */
-    protected void initOptions(Collection<T> result) {
+    void initOptions(Collection<T> result) {
         choices.clear();
         clear();
         choices.addAll(result);

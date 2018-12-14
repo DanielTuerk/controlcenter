@@ -4,8 +4,8 @@ import com.google.common.base.Strings;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
-import net.wbz.moba.controlcenter.web.client.TrackUtils;
 import net.wbz.moba.controlcenter.web.client.editor.track.EditTrackWidgetHandler;
+import net.wbz.moba.controlcenter.web.client.editor.track.TrackEditorContainer;
 import net.wbz.moba.controlcenter.web.client.util.SvgTrackUtil;
 import net.wbz.moba.controlcenter.web.shared.track.model.AbstractTrackPart;
 import net.wbz.moba.controlcenter.web.shared.track.model.GridPosition;
@@ -26,8 +26,8 @@ import org.vectomatic.dom.svg.utils.OMSVGParser;
 abstract public class AbstractSvgTrackWidget<T extends AbstractTrackPart> extends SimplePanel
     implements EditTrackWidgetHandler {
 
-    public static final String CSS_WIDGET_DISABLED = "widget-disabled";
-    public static final int WIDGET_WIDTH = 25;
+    private static final String CSS_WIDGET_DISABLED = "widget-disabled";
+    private static final int WIDGET_WIDTH = 25;
     public static final int WIDGET_HEIGHT = 25;
     private final OMSVGDocument svgDocument = OMSVGParser.currentDocument();
     private final OMSVGSVGElement svgRootElement;
@@ -118,7 +118,7 @@ abstract public class AbstractSvgTrackWidget<T extends AbstractTrackPart> extend
         this.trackPart = trackPart;
     }
 
-    protected void addDialogContentTab(String title, Widget content) {
+    void addDialogContentTab(String title, Widget content) {
         TabPane tabPane = new TabPane();
         tabPane.setActive(dialogContentTabContent.getWidgetCount() == 0);
 
@@ -168,7 +168,7 @@ abstract public class AbstractSvgTrackWidget<T extends AbstractTrackPart> extend
     /**
      * Return the {@link AbstractTrackPart} of the widget with actual grid position.
      *
-     * @param containerWidget {@link com.google.gwt.user.client.ui.Widget} parent container
+     * @param containerWidget {@link Widget} parent container
      * @param zoomLevel level of zoom
      * @return {@link AbstractTrackPart}
      * @see #getGridPosition
@@ -216,26 +216,15 @@ abstract public class AbstractSvgTrackWidget<T extends AbstractTrackPart> extend
      */
     protected abstract AbstractSvgTrackWidget<T> getClone();
 
-    public AbsoluteTrackPosition getTrackPosition(GridPosition gridPosition, int zoomLevel) {
-        return new AbsoluteTrackPosition(TrackUtils.getLeftPositionFromX(gridPosition.getX(), zoomLevel),
-            TrackUtils.getTopPositionFromY(gridPosition.getY(), zoomLevel));
+    private static int getTopPositionFromY(int y, int zoomLevel) {
+        return (TrackEditorContainer.DRAGGABLE_OFFSET_HEIGHT + (zoomLevel * TrackEditorContainer.ZOOM_STEP)) * y;
     }
 
-    /**
-     * Create and return the {@link net.wbz.moba.controlcenter.web.shared.track.model.GridPosition} of this track part
-     * from the absolute position of the container.
-     *
-     * @param containerWidget {@link com.google.gwt.user.client.ui.Widget} parent container
-     * @param zoomLevel level of zoom
-     * @return {@link net.wbz.moba.controlcenter.web.shared.track.model.GridPosition}
-     */
-    public GridPosition getGridPosition(Widget containerWidget, int zoomLevel) {
-        return new GridPosition(
-            TrackUtils.getXFromLeftPosition(getAbsoluteLeft() - containerWidget.getAbsoluteLeft(), zoomLevel),
-            TrackUtils.getYFromTopPosition(getAbsoluteTop() - containerWidget.getAbsoluteTop(), zoomLevel));
+    private static int getLeftPositionFromX(int x, int zoomLevel) {
+        return (TrackEditorContainer.DRAGGABLE_OFFSET_WIDTH + (zoomLevel * TrackEditorContainer.ZOOM_STEP)) * x;
     }
 
-    public boolean isEnabled() {
+    protected boolean isEnabled() {
         return enabled;
     }
 
@@ -259,4 +248,30 @@ abstract public class AbstractSvgTrackWidget<T extends AbstractTrackPart> extend
         return "[ " + getTrackPart().getId() + " ]";
     }
 
+    private static int getYFromTopPosition(int topPos, int zoomLevel) {
+        return topPos / TrackEditorContainer.DRAGGABLE_OFFSET_HEIGHT + (zoomLevel * TrackEditorContainer.ZOOM_STEP);
+    }
+
+    private static int getXFromLeftPosition(int leftPos, int zoomLevel) {
+        return leftPos / (TrackEditorContainer.DRAGGABLE_OFFSET_WIDTH + (zoomLevel * TrackEditorContainer.ZOOM_STEP));
+    }
+
+    public AbsoluteTrackPosition getTrackPosition(GridPosition gridPosition, int zoomLevel) {
+        return new AbsoluteTrackPosition(getLeftPositionFromX(gridPosition.getX(), zoomLevel),
+            getTopPositionFromY(gridPosition.getY(), zoomLevel));
+    }
+
+    /**
+     * Create and return the {@link net.wbz.moba.controlcenter.web.shared.track.model.GridPosition} of this track part
+     * from the absolute position of the container.
+     *
+     * @param containerWidget {@link Widget} parent container
+     * @param zoomLevel level of zoom
+     * @return {@link net.wbz.moba.controlcenter.web.shared.track.model.GridPosition}
+     */
+    public GridPosition getGridPosition(Widget containerWidget, int zoomLevel) {
+        return new GridPosition(
+            getXFromLeftPosition(getAbsoluteLeft() - containerWidget.getAbsoluteLeft(), zoomLevel),
+            getYFromTopPosition(getAbsoluteTop() - containerWidget.getAbsoluteTop(), zoomLevel));
+    }
 }

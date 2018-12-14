@@ -2,8 +2,8 @@ package net.wbz.moba.controlcenter.web.client.scenario.route;
 
 import com.google.gwt.user.client.ui.IsWidget;
 
-import net.wbz.moba.controlcenter.web.client.Callbacks.OnlySuccessAsyncCallback;
-import net.wbz.moba.controlcenter.web.client.RequestUtils;
+import net.wbz.moba.controlcenter.web.client.request.Callbacks.OnlySuccessAsyncCallback;
+import net.wbz.moba.controlcenter.web.client.request.RequestUtils;
 import net.wbz.moba.controlcenter.web.client.components.AbstractEditModal;
 import net.wbz.moba.controlcenter.web.shared.scenario.Route;
 

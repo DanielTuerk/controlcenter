@@ -1,10 +1,10 @@
-package net.wbz.moba.controlcenter.web.client.viewer.settings.entry;
+package net.wbz.moba.controlcenter.web.client.settings.entry;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import java.util.Collection;
-import net.wbz.moba.controlcenter.web.client.RequestUtils;
-import net.wbz.moba.controlcenter.web.client.Settings.GROUP;
-import net.wbz.moba.controlcenter.web.client.Settings.STORAGE;
+import net.wbz.moba.controlcenter.web.client.request.RequestUtils;
+import net.wbz.moba.controlcenter.web.client.settings.Settings.GROUP;
+import net.wbz.moba.controlcenter.web.client.settings.Settings.STORAGE;
 import net.wbz.moba.controlcenter.web.shared.constrution.Construction;
 
 /**

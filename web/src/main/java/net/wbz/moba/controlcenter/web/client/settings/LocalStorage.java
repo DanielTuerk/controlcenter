@@ -1,4 +1,4 @@
-package net.wbz.moba.controlcenter.web.client;
+package net.wbz.moba.controlcenter.web.client.settings;
 
 import org.gwtbootstrap3.client.ui.constants.IconType;
 import org.gwtbootstrap3.extras.notify.client.ui.Notify;

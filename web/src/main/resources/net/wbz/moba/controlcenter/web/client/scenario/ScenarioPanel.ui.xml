@@ -2,7 +2,12 @@
   xmlns:b="urn:import:org.gwtbootstrap3.client.ui"
   xmlns:b-gwt="urn:import:org.gwtbootstrap3.client.ui.gwt">
 
-  <b:Container fluid="true" ui:field="container">
+  <ui:style>
+    .scenarioContainer {
+      min-width: 80%;
+    }
+  </ui:style>
+  <b:Container fluid="true" ui:field="container" addStyleNames="{style.scenarioContainer}">
     <b:Button type="PRIMARY" icon="PLUS" text="Create Scenario" ui:field="btnCreateScenario"/>
     <b-gwt:CellTable ui:field="scenarioTable" bordered="true" condensed="true" striped="true" hover="true"
       height="100%" width="100%"/>

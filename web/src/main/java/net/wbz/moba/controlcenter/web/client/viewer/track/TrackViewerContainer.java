@@ -7,7 +7,7 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Widget;
-import net.wbz.moba.controlcenter.web.client.Settings;
+import net.wbz.moba.controlcenter.web.client.settings.Settings;
 import net.wbz.moba.controlcenter.web.client.viewer.controls.ViewerControlsPanel;
 import net.wbz.moba.controlcenter.web.client.viewer.track.parallax.TrackViewer3dPanel;
 import net.wbz.moba.controlcenter.web.client.viewer.track.svg.TrackViewerPanel;

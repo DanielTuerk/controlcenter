@@ -3,7 +3,6 @@ package net.wbz.moba.controlcenter.web.client.viewer.controls.train;
 import java.util.Map;
 
 import net.wbz.moba.controlcenter.web.client.train.TrainEditModal;
-import net.wbz.moba.controlcenter.web.client.train.TrainEditModalBody;
 import org.gwtbootstrap3.client.ui.Button;
 import org.gwtbootstrap3.client.ui.ButtonGroup;
 import org.gwtbootstrap3.client.ui.Column;
@@ -22,7 +21,7 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 
-import net.wbz.moba.controlcenter.web.client.RequestUtils;
+import net.wbz.moba.controlcenter.web.client.request.RequestUtils;
 import net.wbz.moba.controlcenter.web.client.components.OnOffToggleButton;
 import net.wbz.moba.controlcenter.web.client.viewer.controls.AbstractItemPanel;
 import net.wbz.moba.controlcenter.web.shared.train.Train;

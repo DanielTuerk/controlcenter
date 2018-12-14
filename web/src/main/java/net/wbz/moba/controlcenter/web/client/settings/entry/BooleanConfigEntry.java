@@ -1,9 +1,9 @@
-package net.wbz.moba.controlcenter.web.client.viewer.settings.entry;
+package net.wbz.moba.controlcenter.web.client.settings.entry;
 
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Widget;
-import net.wbz.moba.controlcenter.web.client.Settings.GROUP;
-import net.wbz.moba.controlcenter.web.client.Settings.STORAGE;
+import net.wbz.moba.controlcenter.web.client.settings.Settings.GROUP;
+import net.wbz.moba.controlcenter.web.client.settings.Settings.STORAGE;
 
 /**
  * @author Daniel Tuerk

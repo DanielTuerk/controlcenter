@@ -3,8 +3,8 @@ package net.wbz.moba.controlcenter.web.client.device;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 
-import net.wbz.moba.controlcenter.web.client.Callbacks.OnlySuccessAsyncCallback;
-import net.wbz.moba.controlcenter.web.client.RequestUtils;
+import net.wbz.moba.controlcenter.web.client.request.Callbacks.OnlySuccessAsyncCallback;
+import net.wbz.moba.controlcenter.web.client.request.RequestUtils;
 import net.wbz.moba.controlcenter.web.client.components.OnOffToggleButton;
 
 /**

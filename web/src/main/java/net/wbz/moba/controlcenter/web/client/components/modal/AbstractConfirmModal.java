@@ -1,4 +1,4 @@
-package net.wbz.moba.controlcenter.web.client.util.modal;
+package net.wbz.moba.controlcenter.web.client.components.modal;
 
 import org.gwtbootstrap3.client.ui.Button;
 import org.gwtbootstrap3.client.ui.Modal;

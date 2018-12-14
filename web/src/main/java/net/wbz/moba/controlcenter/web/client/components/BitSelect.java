@@ -2,6 +2,7 @@ package net.wbz.moba.controlcenter.web.client.components;
 
 import java.util.Arrays;
 import java.util.Collection;
+import javax.validation.constraints.NotNull;
 
 /**
  * Select component for a bit (1 to 8 numeric value).
@@ -11,7 +12,7 @@ import java.util.Collection;
 public class BitSelect extends AbstractSelect<Integer> {
 
     @Override
-    protected String getKey(Integer object) {
+    protected String getKey(@NotNull Integer object) {
         return String.valueOf(object);
     }
 

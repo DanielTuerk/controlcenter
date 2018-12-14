@@ -1,11 +1,12 @@
-package net.wbz.moba.controlcenter.web.client;
+package net.wbz.moba.controlcenter.web.client.event;
 
 import de.novanic.eventservice.client.event.Event;
 import de.novanic.eventservice.client.event.RemoteEventService;
 import de.novanic.eventservice.client.event.RemoteEventServiceFactory;
 import de.novanic.eventservice.client.event.domain.DomainFactory;
 import de.novanic.eventservice.client.event.listener.RemoteEventListener;
-import net.wbz.moba.controlcenter.web.client.Callbacks.VoidAsyncCallback;
+import net.wbz.moba.controlcenter.web.client.request.Callbacks.VoidAsyncCallback;
+import net.wbz.moba.controlcenter.web.client.request.RequestUtils;
 
 /**
  * Util to register {@link RemoteEventListener} to receiving {@link Event}s from server.
@@ -24,6 +25,13 @@ public class EventReceiver {
 
     public static EventReceiver getInstance() {
         return instance;
+    }
+
+    public void addListener(net.wbz.moba.controlcenter.web.client.event.RemoteEventListener listener) {
+        addListener(listener.getRemoteClass(), listener);
+    }
+    public void removeListener(net.wbz.moba.controlcenter.web.client.event.RemoteEventListener listener) {
+        removeListener(listener.getRemoteClass(), listener);
     }
 
     public void addListener(final Class<? extends Event> eventClazz, RemoteEventListener listener) {

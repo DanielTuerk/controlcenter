@@ -8,6 +8,8 @@ import net.wbz.moba.controlcenter.web.client.device.PlayerModal;
 import net.wbz.moba.controlcenter.web.client.device.RecordingModal;
 import net.wbz.moba.controlcenter.web.client.device.SendDataModal;
 import net.wbz.moba.controlcenter.web.client.device.config.DeviceConfigModal;
+import net.wbz.moba.controlcenter.web.client.event.EventReceiver;
+import net.wbz.moba.controlcenter.web.client.request.RequestUtils;
 import org.gwtbootstrap3.client.ui.Button;
 import org.gwtbootstrap3.extras.notify.client.ui.Notify;
 import org.gwtbootstrap3.extras.toggleswitch.client.ui.ToggleSwitch;
@@ -87,11 +89,9 @@ public class StatePanel extends Composite {
 
         busConnectionToggleButton.addValueChangeHandler(deviceListBox);
         toggleRailVoltage.addValueChangeHandler(booleanValueChangeEvent -> toggleRailVoltageState());
-        voltageEventListener = new RemoteEventListener() {
-            public void apply(Event anEvent) {
-                if (anEvent instanceof RailVoltageEvent) {
-                    toggleRailVoltage.setValue(((RailVoltageEvent) anEvent).isState(), false);
-                }
+        voltageEventListener = anEvent -> {
+            if (anEvent instanceof RailVoltageEvent) {
+                toggleRailVoltage.setValue(((RailVoltageEvent) anEvent).isState(), false);
             }
         };
         toggleRecording.addValueChangeHandler(booleanValueChangeEvent -> {

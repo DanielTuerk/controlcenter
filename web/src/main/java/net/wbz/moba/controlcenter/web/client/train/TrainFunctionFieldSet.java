@@ -65,7 +65,7 @@ abstract class TrainFunctionFieldSet extends Composite {
         trainFunction.setAlias(txtAlias.getText());
         trainFunction.getConfiguration().setAddress(txtAddress.getValue());
 
-        trainFunction.getConfiguration().setBit(selectBit.getSelected().get());
+        trainFunction.getConfiguration().setBit(selectBit.getSelected().orElse(null));
     }
 
     interface Binder extends UiBinder<Widget, TrainFunctionFieldSet> {

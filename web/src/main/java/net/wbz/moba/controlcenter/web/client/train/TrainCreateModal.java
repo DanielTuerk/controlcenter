@@ -1,6 +1,6 @@
 package net.wbz.moba.controlcenter.web.client.train;
 
-import net.wbz.moba.controlcenter.web.client.RequestUtils;
+import net.wbz.moba.controlcenter.web.client.request.RequestUtils;
 import net.wbz.moba.controlcenter.web.shared.train.Train;
 
 /**

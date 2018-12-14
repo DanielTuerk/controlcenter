@@ -2,9 +2,8 @@ package net.wbz.moba.controlcenter.web.client.components;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import java.util.Collection;
-
-import net.wbz.moba.controlcenter.web.client.Callbacks.OnlySuccessAsyncCallback;
-import net.wbz.moba.controlcenter.web.client.RequestUtils;
+import javax.validation.constraints.NotNull;
+import net.wbz.moba.controlcenter.web.client.request.RequestUtils;
 import net.wbz.moba.controlcenter.web.shared.train.Train;
 
 /**
@@ -15,7 +14,7 @@ import net.wbz.moba.controlcenter.web.shared.train.Train;
 public class TrainSelect extends AbstractLoadableSelect<Train> {
 
     @Override
-    protected String getKey(Train object) {
+    protected String getKey(@NotNull Train object) {
         return String.valueOf(object.getId());
     }
 

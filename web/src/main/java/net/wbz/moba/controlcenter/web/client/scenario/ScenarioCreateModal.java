@@ -1,6 +1,6 @@
 package net.wbz.moba.controlcenter.web.client.scenario;
 
-import net.wbz.moba.controlcenter.web.client.RequestUtils;
+import net.wbz.moba.controlcenter.web.client.request.RequestUtils;
 import net.wbz.moba.controlcenter.web.shared.scenario.Scenario;
 
 /**

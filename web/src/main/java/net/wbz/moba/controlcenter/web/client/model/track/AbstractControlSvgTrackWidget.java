@@ -15,7 +15,7 @@ import org.vectomatic.dom.svg.OMSVGSVGElement;
 import com.google.common.base.Strings;
 import com.google.gwt.user.client.ui.Widget;
 
-import net.wbz.moba.controlcenter.web.client.RequestUtils;
+import net.wbz.moba.controlcenter.web.client.request.RequestUtils;
 import net.wbz.moba.controlcenter.web.client.editor.track.ClickActionViewerWidgetHandler;
 import net.wbz.moba.controlcenter.web.client.components.BitStateToggleButton;
 import net.wbz.moba.controlcenter.web.client.util.Log;

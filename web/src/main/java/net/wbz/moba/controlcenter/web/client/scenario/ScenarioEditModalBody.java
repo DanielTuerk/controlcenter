@@ -45,6 +45,8 @@ public class ScenarioEditModalBody extends Composite {
     ScenarioEditModalBody(Scenario scenario) {
         this.scenario = scenario;
         initWidget(uiBinder.createAndBindUi(this));
+
+        selectTrain.setNullableOption(true);
     }
 
     @Override

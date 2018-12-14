@@ -1,13 +1,13 @@
-package net.wbz.moba.controlcenter.web.client;
+package net.wbz.moba.controlcenter.web.client.settings;
 
 import com.google.common.collect.Maps;
 import java.util.Collection;
 import java.util.Map;
 import java.util.stream.Collectors;
-import net.wbz.moba.controlcenter.web.client.viewer.settings.entry.AbstractConfigEntry;
-import net.wbz.moba.controlcenter.web.client.viewer.settings.entry.BooleanConfigEntry;
-import net.wbz.moba.controlcenter.web.client.viewer.settings.entry.ConstructionSelectionConfigEntry;
-import net.wbz.moba.controlcenter.web.client.viewer.settings.entry.SelectionConfigEntry;
+import net.wbz.moba.controlcenter.web.client.settings.entry.AbstractConfigEntry;
+import net.wbz.moba.controlcenter.web.client.settings.entry.BooleanConfigEntry;
+import net.wbz.moba.controlcenter.web.client.settings.entry.ConstructionSelectionConfigEntry;
+import net.wbz.moba.controlcenter.web.client.settings.entry.SelectionConfigEntry;
 
 /**
  * @author Daniel Tuerk
@@ -44,7 +44,7 @@ public class Settings {
     }
 
     public Collection<AbstractConfigEntry<?>> getGroupEntries(GROUP group) {
-        return configEntriesByKey.values().stream().filter(x -> x.getGroup().equals(group))
+        return getEntries().stream().filter(x -> x.getGroup().equals(group))
             .collect(Collectors.toList());
     }
 

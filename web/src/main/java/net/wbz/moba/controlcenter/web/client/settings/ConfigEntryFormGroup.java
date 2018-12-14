@@ -1,4 +1,4 @@
-package net.wbz.moba.controlcenter.web.client.viewer.settings;
+package net.wbz.moba.controlcenter.web.client.settings;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -6,7 +6,7 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Widget;
-import net.wbz.moba.controlcenter.web.client.viewer.settings.entry.AbstractConfigEntry;
+import net.wbz.moba.controlcenter.web.client.settings.entry.AbstractConfigEntry;
 import org.gwtbootstrap3.client.ui.FormLabel;
 
 /**

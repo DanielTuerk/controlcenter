@@ -81,7 +81,7 @@ public class EventBroadcaster {
     private synchronized void saveLastSendEvent(Event event) {
         String key = getKey(event);
         if (!lastSendEvents.containsKey(key)) {
-            lastSendEvents.put(key, new HashSet<>());
+            lastSendEvents.put(key, Sets.newConcurrentHashSet());
         }
         lastSendEvents.get(key).remove(event);
         lastSendEvents.get(key).add(event);

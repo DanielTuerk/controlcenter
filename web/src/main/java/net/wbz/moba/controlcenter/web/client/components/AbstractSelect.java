@@ -3,7 +3,10 @@ package net.wbz.moba.controlcenter.web.client.components;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
+import javax.annotation.Nullable;
+import javax.validation.constraints.NotNull;
 import org.gwtbootstrap3.extras.select.client.ui.Option;
 import org.gwtbootstrap3.extras.select.client.ui.Select;
 
@@ -14,6 +17,10 @@ import org.gwtbootstrap3.extras.select.client.ui.Select;
  */
 abstract public class AbstractSelect<T> extends Select {
 
+    private static final String NOTHING_SELECTED = " ---- ";
+
+    private boolean nullableOption = false;
+
     /**
      * Available choices to select.
      */
@@ -23,6 +30,10 @@ abstract public class AbstractSelect<T> extends Select {
      * Initial selected item.
      */
     private T selectedItem = null;
+
+    public void setNullableOption(boolean nullableOption) {
+        this.nullableOption = nullableOption;
+    }
 
     @Override
     protected void onLoad() {
@@ -37,17 +48,20 @@ abstract public class AbstractSelect<T> extends Select {
      */
     public void setSelectedItem(T selectedItem) {
         this.selectedItem = selectedItem;
-        String key = selectedItem != null ? getKey(selectedItem) : null;
-        super.setSelectedValue(key);
+        super.setSelectedValue(getKeyFromNullable(selectedItem));
     }
 
     public Optional<T> getSelected() {
-        for (T deviceInfo : choices) {
-            if (getKey(deviceInfo).equals(getValue())) {
-                return Optional.of(deviceInfo);
+        for (T choice : choices) {
+            if (Objects.equals(getKeyFromNullable(choice), getValue())) {
+                return Optional.of(choice);
             }
         }
         return Optional.empty();
+    }
+
+    private String getKeyFromNullable(@Nullable T object) {
+        return object == null ? null : getKey(object);
     }
 
     /**
@@ -56,7 +70,7 @@ abstract public class AbstractSelect<T> extends Select {
      * @param object object to get key from.
      * @return key
      */
-    abstract protected String getKey(T object);
+    abstract protected String getKey(@NotNull T object);
 
     /**
      * Returns the available choices.
@@ -74,7 +88,7 @@ abstract public class AbstractSelect<T> extends Select {
     abstract protected String getDisplayValue(T choice);
 
     protected boolean isSelected(T choice) {
-        return choice.equals(selectedItem);
+        return choice == selectedItem || choice.equals(selectedItem);
     }
 
     /**
@@ -85,11 +99,14 @@ abstract public class AbstractSelect<T> extends Select {
     void initOptions(Collection<T> result) {
         choices.clear();
         clear();
+        if (nullableOption) {
+            choices.add(null);
+        }
         choices.addAll(result);
         for (T choice : choices) {
             Option child = new Option();
-            child.setValue(getKey(choice));
-            child.setText(getDisplayValue(choice));
+            child.setValue(getKeyFromNullable(choice));
+            child.setText(choice == null ? NOTHING_SELECTED : getDisplayValue(choice));
 
             child.setSelected(isSelected(choice));
 

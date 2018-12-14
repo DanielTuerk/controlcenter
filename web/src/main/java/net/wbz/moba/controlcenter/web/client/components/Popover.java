@@ -1,4 +1,4 @@
-package net.wbz.moba.controlcenter.web.client;
+package net.wbz.moba.controlcenter.web.client.components;
 
 import org.gwtbootstrap3.client.ui.Heading;
 import org.gwtbootstrap3.client.ui.constants.HeadingSize;
@@ -16,6 +16,7 @@ import com.google.gwt.user.client.ui.Widget;
  * Custom popover implementation to show widgets in the content of the popover.
  * Only the style classes are used from the {@link org.gwtbootstrap3.client.ui.Popover}.
  *
+ * TODO refactor to UI binder and add deleted styles from css
  * @author Daniel Tuerk
  */
 public class Popover extends FlowPanel {

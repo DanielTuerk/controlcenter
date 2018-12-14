@@ -1,9 +1,8 @@
-package net.wbz.moba.controlcenter.web.client;
+package net.wbz.moba.controlcenter.web.client.request;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-
-import net.wbz.moba.controlcenter.web.client.Callbacks.VoidAsyncCallback;
+import net.wbz.moba.controlcenter.web.client.request.Callbacks.VoidAsyncCallback;
 import net.wbz.moba.controlcenter.web.shared.bus.BusService;
 import net.wbz.moba.controlcenter.web.shared.bus.BusServiceAsync;
 import net.wbz.moba.controlcenter.web.shared.config.ConfigService;
@@ -24,7 +23,7 @@ import net.wbz.moba.controlcenter.web.shared.viewer.TrackViewerService;
 import net.wbz.moba.controlcenter.web.shared.viewer.TrackViewerServiceAsync;
 
 /**
- * Utils to access the requests from the {@link com.google.web.bindery.requestfactory.shared.RequestFactory}.
+ * Utils to access the services.
  *
  * @author Daniel Tuerk
  */

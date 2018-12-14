@@ -1,6 +1,6 @@
 package net.wbz.moba.controlcenter.web.client.components;
 
-import net.wbz.moba.controlcenter.web.shared.train.Train;
+import javax.validation.constraints.NotNull;
 
 /**
  * Abstract select component for enumerations.
@@ -10,7 +10,7 @@ import net.wbz.moba.controlcenter.web.shared.train.Train;
 public abstract class AbstractEnumSelect<T extends Enum> extends AbstractSelect<T> {
 
     @Override
-    protected String getKey(T object) {
+    protected String getKey(@NotNull T object) {
         return object.name();
     }
 

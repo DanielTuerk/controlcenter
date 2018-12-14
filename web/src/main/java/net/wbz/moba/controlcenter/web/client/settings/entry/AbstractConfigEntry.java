@@ -1,11 +1,11 @@
-package net.wbz.moba.controlcenter.web.client.viewer.settings.entry;
+package net.wbz.moba.controlcenter.web.client.settings.entry;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Widget;
-import net.wbz.moba.controlcenter.web.client.LocalStorage;
-import net.wbz.moba.controlcenter.web.client.RequestUtils;
-import net.wbz.moba.controlcenter.web.client.Settings.GROUP;
-import net.wbz.moba.controlcenter.web.client.Settings.STORAGE;
+import net.wbz.moba.controlcenter.web.client.settings.LocalStorage;
+import net.wbz.moba.controlcenter.web.client.request.RequestUtils;
+import net.wbz.moba.controlcenter.web.client.settings.Settings.GROUP;
+import net.wbz.moba.controlcenter.web.client.settings.Settings.STORAGE;
 
 /**
  * TODO: text for key as name from template

@@ -2,10 +2,7 @@ package net.wbz.moba.controlcenter.web.client.scenario;
 
 import com.google.gwt.user.client.ui.IsWidget;
 
-import com.google.inject.Inject;
-import net.wbz.moba.controlcenter.web.client.RequestUtils;
 import net.wbz.moba.controlcenter.web.client.components.AbstractEditModal;
-import net.wbz.moba.controlcenter.web.server.web.scenario.ScenarioManager;
 import net.wbz.moba.controlcenter.web.shared.scenario.Scenario;
 
 /**

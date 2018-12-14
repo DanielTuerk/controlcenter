@@ -2,7 +2,7 @@ package net.wbz.moba.controlcenter.web.client.components;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import java.util.Collection;
-import net.wbz.moba.controlcenter.web.client.Callbacks.OnlySuccessAsyncCallback;
+import net.wbz.moba.controlcenter.web.client.request.Callbacks.OnlySuccessAsyncCallback;
 
 /**
  * Select component for the model parameter.

@@ -2,7 +2,8 @@ package net.wbz.moba.controlcenter.web.client.components;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import java.util.Collection;
-import net.wbz.moba.controlcenter.web.client.RequestUtils;
+import javax.validation.constraints.NotNull;
+import net.wbz.moba.controlcenter.web.client.request.RequestUtils;
 import net.wbz.moba.controlcenter.web.shared.scenario.Route;
 
 /**
@@ -13,7 +14,7 @@ import net.wbz.moba.controlcenter.web.shared.scenario.Route;
 public class RouteSelect extends AbstractLoadableSelect<Route> {
 
     @Override
-    protected String getKey(Route object) {
+    protected String getKey(@NotNull Route object) {
         return String.valueOf(object.getId());
     }
 

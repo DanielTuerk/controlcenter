@@ -15,13 +15,12 @@ import de.novanic.eventservice.client.event.Event;
 import de.novanic.eventservice.client.event.listener.RemoteEventListener;
 import java.util.ArrayList;
 import java.util.Collection;
-import net.wbz.moba.controlcenter.web.client.Callbacks.OnlySuccessAsyncCallback;
-import net.wbz.moba.controlcenter.web.client.EventReceiver;
-import net.wbz.moba.controlcenter.web.client.RequestUtils;
-import net.wbz.moba.controlcenter.web.client.components.table.ButtonColumn;
+import net.wbz.moba.controlcenter.web.client.request.Callbacks.OnlySuccessAsyncCallback;
+import net.wbz.moba.controlcenter.web.client.event.EventReceiver;
+import net.wbz.moba.controlcenter.web.client.request.RequestUtils;
 import net.wbz.moba.controlcenter.web.client.components.table.DeleteButtonColumn;
 import net.wbz.moba.controlcenter.web.client.components.table.EditButtonColumn;
-import net.wbz.moba.controlcenter.web.client.util.modal.DeleteModal;
+import net.wbz.moba.controlcenter.web.client.components.modal.DeleteModal;
 import net.wbz.moba.controlcenter.web.shared.scenario.Route;
 import net.wbz.moba.controlcenter.web.shared.scenario.RouteSequence;
 import net.wbz.moba.controlcenter.web.shared.scenario.Scenario;
@@ -29,8 +28,6 @@ import net.wbz.moba.controlcenter.web.shared.scenario.ScenariosChangedEvent;
 import net.wbz.moba.controlcenter.web.shared.scenario.Station;
 import org.gwtbootstrap3.client.ui.Container;
 import org.gwtbootstrap3.client.ui.Pagination;
-import org.gwtbootstrap3.client.ui.constants.ButtonType;
-import org.gwtbootstrap3.client.ui.constants.IconType;
 import org.gwtbootstrap3.client.ui.constants.PaginationSize;
 import org.gwtbootstrap3.client.ui.gwt.CellTable;
 
@@ -77,11 +74,8 @@ public class ScenarioPanel extends Composite {
         scenarioTable.addColumn(new TextColumn<Scenario>() {
             @Override
             public String getValue(Scenario object) {
-                String trainDisplayValue =
-                    object.getTrain() != null ? object.getTrain().getName() + "(" + object.getTrain().getAddress()
-                        + ")" : "unknown";
-                return trainDisplayValue + " direction: "
-                    + (object.getTrainDrivingDirection() != null ? object.getTrainDrivingDirection().name() : "");
+                return object.getTrain() != null ? object.getTrain().getName() + "(" + object.getTrain().getAddress()
+                    + ")" : " no train selected";
             }
         }, "Train");
         scenarioTable.addColumn(new TextColumn<Scenario>() {

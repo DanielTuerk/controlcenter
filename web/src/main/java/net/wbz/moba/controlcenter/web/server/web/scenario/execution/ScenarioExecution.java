@@ -50,6 +50,7 @@ abstract class ScenarioExecution implements Callable<Void> {
     private static final int START_DELAY_MILLIS = 3000;
     private static final int DEFAULT_START_DRIVING_LEVEL = 8;
     private static final long MILLIS_TO_WAIT_IN_BLOCK_RUN = 200L;
+    private static final long HP0_AFTER_TRAIN_PASS_DELAY_IN_MILLIS = 10000L;
 
     private final Scenario scenario;
     private final TrackViewerService trackViewerService;
@@ -217,10 +218,14 @@ abstract class ScenarioExecution implements Callable<Void> {
 
         updateTrack(scenario, routeSequence.getRoute());
         switchSignalToDrive(routeExecution.getSignal());
-        try {
-            startTrain(routeExecution.getTrain(), scenario.getStartDrivingLevel());
-        } catch (InterruptedException e) {
-            throw new RouteExecutionInterruptException("start route interrupted", e);
+
+        final Train train = routeExecution.getTrain();
+        if (train.getDrivingLevel() <= 0) {
+            try {
+                startTrain(train, scenario.getStartDrivingLevel());
+            } catch (InterruptedException e) {
+                throw new RouteExecutionInterruptException("start route interrupted", e);
+            }
         }
 
         reserveNextRouteForCurrentRoute(routeExecution);
@@ -470,7 +475,7 @@ abstract class ScenarioExecution implements Callable<Void> {
                      * Set to HP0 after delay to simulate a occupied monitoring block to switch the signal after the
                      * train passed.
                      */
-                    Thread.sleep(10000L);
+                    Thread.sleep(HP0_AFTER_TRAIN_PASS_DELAY_IN_MILLIS);
                     trackViewerService.switchSignal(signal, FUNCTION.HP0);
                 } catch (InterruptedException e) {
                     LOG.error("error during delayed HP0 switch", e);

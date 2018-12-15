@@ -19,6 +19,7 @@ import net.wbz.moba.controlcenter.web.server.persist.construction.track.TrackBlo
 import net.wbz.moba.controlcenter.web.server.persist.construction.track.TrackPartDao;
 import net.wbz.moba.controlcenter.web.server.web.DataMapper;
 import net.wbz.moba.controlcenter.web.server.web.TrackPartDataMapper;
+import net.wbz.moba.controlcenter.web.server.web.constrution.ConstructionChangeListener;
 import net.wbz.moba.controlcenter.web.server.web.editor.block.BusAddressIdentifier;
 import net.wbz.moba.controlcenter.web.server.web.editor.block.SignalBlockRegistry;
 import net.wbz.moba.controlcenter.web.server.web.editor.block.TrackBlockRegistry;
@@ -44,7 +45,7 @@ import org.slf4j.LoggerFactory;
  * @author Daniel Tuerk
  */
 @Singleton
-public class TrackManager {
+public class TrackManager implements ConstructionChangeListener {
 
     private static final Logger log = LoggerFactory.getLogger(TrackManager.class);
 
@@ -153,8 +154,7 @@ public class TrackManager {
         }
     }
 
-    // @Transactional
-    public void saveTrack(Collection<AbstractTrackPart> trackParts) {
+    void saveTrack(Collection<AbstractTrackPart> trackParts) {
         performSave(trackParts);
 
         // reload track and register for connected device
@@ -162,7 +162,7 @@ public class TrackManager {
     }
 
     @Transactional
-    public void performSave(Collection<AbstractTrackPart> trackParts) {
+    private void performSave(Collection<AbstractTrackPart> trackParts) {
         ConstructionEntity constructionEntity = getCurrentConstruction();
 
         // load all existing to detect deleted track parts
@@ -193,29 +193,17 @@ public class TrackManager {
                     abstractTrackPartEntity.setGridPosition(null);
                     gridPositionDao.delete(gridPosId);
                 }
-                // entityManager.get().flush();
-                // TODO not working for relation to gridpos
                 trackPartDao.delete(abstractTrackPartEntity);
-                // if (gridPosId != null) {
-                // }
             }
         }
-
     }
-
-    // /**
-    // * Clear the cache and reload the track data from database.
-    // */
-    // public void reloadData() {
-    // loadData();
-    // }
 
     private ConstructionEntity getCurrentConstruction() {
         return constructionDao.findById(currentConstruction.getId());
     }
 
     @Transactional
-    public void deleteTrackBlock(TrackBlock trackBlock) {
+    void deleteTrackBlock(TrackBlock trackBlock) {
         List<AbstractTrackPartEntity> byBlockId = trackPartDao.findByBlockId(trackBlock.getId());
         if (!byBlockId.isEmpty()) {
             for (AbstractTrackPartEntity trackPartEntity : byBlockId) {
@@ -232,7 +220,7 @@ public class TrackManager {
     }
 
     @Transactional
-    public void saveTrackBlocks(Collection<TrackBlock> trackBlocks) {
+    void saveTrackBlocks(Collection<TrackBlock> trackBlocks) {
         for (TrackBlock trackBlock : trackBlocks) {
             trackBlock.setConstruction(currentConstruction);
             TrackBlockEntity entity = trackBlockDataMapper.transformTarget(trackBlock);
@@ -250,7 +238,7 @@ public class TrackManager {
         return cachedEntities;
     }
 
-    public Collection<TrackBlock> loadTrackBlocks() {
+    Collection<TrackBlock> loadTrackBlocks() {
         return cachedTrackBlocks;
     }
 
@@ -388,7 +376,7 @@ public class TrackManager {
                             try {
                                 switchToggleFunction(toggleFunctionEntity, true);
                             } catch (DeviceAccessException e) {
-                                e.printStackTrace();
+                                log.error("can't toggle the 'on' state", e);
                             }
                         }
                     }
@@ -406,7 +394,7 @@ public class TrackManager {
                             try {
                                 switchToggleFunction(toggleFunctionEntity, false);
                             } catch (DeviceAccessException e) {
-                                e.printStackTrace();
+                                log.error("can't toggle the 'off' state", e);
                             }
                         }
                     }
@@ -430,14 +418,9 @@ public class TrackManager {
         }
     }
 
-    /**
-     * TODO refactor to listener
-     *
-     * @param construction {@link Construction}
-     */
-    public void constructionChanged(Construction construction) {
+    @Override
+    public void currentConstructionChanged(Construction construction) {
         currentConstruction = construction;
         loadData();
     }
-
 }

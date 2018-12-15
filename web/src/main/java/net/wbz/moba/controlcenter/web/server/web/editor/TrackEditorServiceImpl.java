@@ -32,7 +32,6 @@ public class TrackEditorServiceImpl extends RemoteServiceServlet implements Trac
     @Override
     public void saveTrack(Collection<AbstractTrackPart> trackParts) {
         trackManager.saveTrack(trackParts);
-        // trackManager.reloadData();
     }
 
     @Override

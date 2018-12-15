@@ -21,21 +21,18 @@ public class BusConnectionToggleButton extends OnOffToggleButton {
     }
 
     public void addValueChangeHandler(final DeviceListBox deviceListBox) {
-        addValueChangeHandler(new ValueChangeHandler<Boolean>() {
-            @Override
-            public void onValueChange(ValueChangeEvent<Boolean> booleanValueChangeEvent) {
-                if (booleanValueChangeEvent.getValue()) {
-                    RequestUtils.getInstance().getBusService().changeDevice(deviceListBox.getSelectedDevice(),
-                            new OnlySuccessAsyncCallback<Void>("Editor", "error connect device") {
-                                @Override
-                                public void onSuccess(Void result) {
-                                    RequestUtils.getInstance().getBusService().connectBus(
-                                            RequestUtils.VOID_ASYNC_CALLBACK);
-                                }
-                            });
-                } else {
-                    RequestUtils.getInstance().getBusService().disconnectBus(RequestUtils.VOID_ASYNC_CALLBACK);
-                }
+        addValueChangeHandler(event -> {
+            if (event.getValue()) {
+                RequestUtils.getInstance().getBusService().changeDevice(deviceListBox.getSelectedDevice(),
+                        new OnlySuccessAsyncCallback<Void>("Editor", "error connect device") {
+                            @Override
+                            public void onSuccess(Void result) {
+                                RequestUtils.getInstance().getBusService().connectBus(
+                                        RequestUtils.VOID_ASYNC_CALLBACK);
+                            }
+                        });
+            } else {
+                RequestUtils.getInstance().getBusService().disconnectBus(RequestUtils.VOID_ASYNC_CALLBACK);
             }
         });
     }

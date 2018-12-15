@@ -1,4 +1,4 @@
-package net.wbz.moba.controlcenter.web.client.viewer.bus;
+package net.wbz.moba.controlcenter.web.client.monitor;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;

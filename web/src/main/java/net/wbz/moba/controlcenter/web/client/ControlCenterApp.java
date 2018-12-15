@@ -14,7 +14,7 @@ import net.wbz.moba.controlcenter.web.client.request.RequestUtils;
 import net.wbz.moba.controlcenter.web.client.scenario.ScenarioEditor;
 import net.wbz.moba.controlcenter.web.client.settings.Settings;
 import net.wbz.moba.controlcenter.web.client.train.TrainPanel;
-import net.wbz.moba.controlcenter.web.client.viewer.bus.BusMonitorPanel;
+import net.wbz.moba.controlcenter.web.client.monitor.BusMonitorPanel;
 import net.wbz.moba.controlcenter.web.client.settings.ConfigPanel;
 import net.wbz.moba.controlcenter.web.client.viewer.track.TrackViewerContainer;
 import net.wbz.moba.controlcenter.web.shared.constrution.Construction;

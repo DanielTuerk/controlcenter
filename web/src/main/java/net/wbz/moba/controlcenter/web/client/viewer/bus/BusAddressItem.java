@@ -110,7 +110,7 @@ class BusAddressItem extends Composite {
          * @param state new state
          */
         void updateFlashLight(boolean state) {
-            setValue(state, false);
+            setActive(state);
             if (state != oldState) {
                 flashLight();
             }

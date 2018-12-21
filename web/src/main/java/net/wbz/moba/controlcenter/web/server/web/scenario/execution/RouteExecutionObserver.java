@@ -34,12 +34,7 @@ public class RouteExecutionObserver {
      */
     private final Collection<RouteSequence> runningRouteSequences = Collections.synchronizedSet(new HashSet<>());
 
-    /**
-     * TODO doc (name?)
-     *
-     * @param routeSequence {@link RouteSequence}
-     */
-    public void removeRunningRouteSequence(RouteSequence routeSequence) {
+    void removeRunningRouteSequence(RouteSequence routeSequence) {
         LOG.debug("removeRunningRouteSequence: {}" + routeSequence);
         runningRouteSequences.remove(routeSequence);
     }
@@ -51,7 +46,7 @@ public class RouteExecutionObserver {
      * @param previousRouteSequence the previous executed {@link RouteSequence}
      * @return {@code true} if the track was free and the given route is reserved.
      */
-    public synchronized boolean checkAndReserveNextRunningRoute(RouteSequence routeSequence,
+    synchronized boolean checkAndReserveNextRunningRoute(RouteSequence routeSequence,
         RouteSequence previousRouteSequence) {
         Route route = routeSequence.getRoute();
         Collection<RouteSequence> dependingRunningRoutes = getDependingRunningRoutes(route);

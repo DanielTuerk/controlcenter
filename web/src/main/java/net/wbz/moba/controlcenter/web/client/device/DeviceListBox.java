@@ -5,15 +5,14 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
-import de.novanic.eventservice.client.event.listener.RemoteEventListener;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import net.wbz.moba.controlcenter.web.client.request.Callbacks.OnlySuccessAsyncCallback;
 import net.wbz.moba.controlcenter.web.client.event.EventReceiver;
+import net.wbz.moba.controlcenter.web.client.event.device.RemoteConnectionListener;
+import net.wbz.moba.controlcenter.web.client.request.Callbacks.OnlySuccessAsyncCallback;
 import net.wbz.moba.controlcenter.web.client.request.RequestUtils;
 import net.wbz.moba.controlcenter.web.shared.bus.DeviceInfo;
-import net.wbz.moba.controlcenter.web.shared.bus.DeviceInfoEvent;
 import org.gwtbootstrap3.client.ui.AnchorListItem;
 import org.gwtbootstrap3.client.ui.Button;
 import org.gwtbootstrap3.client.ui.DropDownMenu;
@@ -27,21 +26,33 @@ public class DeviceListBox extends Composite {
 
     private static Binder UI_BINDER = GWT.create(Binder.class);
     private final List<DeviceInfo> devices = new ArrayList<>();
+    private final RemoteConnectionListener remoteConnectionListener;
     @UiField
     Button btnDropup;
     @UiField
     DropDownMenu dropDownMenu;
-    private final RemoteEventListener remoteEventListener = event -> reload();
 
     public DeviceListBox() {
         initWidget(UI_BINDER.createAndBindUi(this));
+
+        remoteConnectionListener = new RemoteConnectionListener() {
+            @Override
+            public void connected(DeviceInfo deviceInfoEvent) {
+                reload();
+            }
+
+            @Override
+            public void disconnected(DeviceInfo deviceInfoEvent) {
+                reload();
+            }
+        };
     }
 
     @Override
     protected void onLoad() {
         super.onLoad();
 
-        EventReceiver.getInstance().addListener(DeviceInfoEvent.class, remoteEventListener);
+        EventReceiver.getInstance().addListener(remoteConnectionListener);
 
         reload();
     }
@@ -49,11 +60,11 @@ public class DeviceListBox extends Composite {
     @Override
     protected void onUnload() {
         super.onUnload();
-        EventReceiver.getInstance().removeListener(DeviceInfoEvent.class, remoteEventListener);
+        EventReceiver.getInstance().removeListener(remoteConnectionListener);
     }
 
 
-    public DeviceInfo getSelectedDevice() {
+    DeviceInfo getSelectedDevice() {
         return getDevice(btnDropup.getText());
     }
 

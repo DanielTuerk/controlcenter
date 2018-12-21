@@ -5,11 +5,10 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import de.novanic.eventservice.client.event.listener.RemoteEventListener;
-import net.wbz.moba.controlcenter.web.client.request.Callbacks.OnlySuccessAsyncCallback;
 import net.wbz.moba.controlcenter.web.client.event.EventReceiver;
+import net.wbz.moba.controlcenter.web.client.request.Callbacks.OnlySuccessAsyncCallback;
 import net.wbz.moba.controlcenter.web.client.request.RequestUtils;
+import net.wbz.moba.controlcenter.web.client.event.scenario.RouteStateRemoteListener;
 import net.wbz.moba.controlcenter.web.client.viewer.controls.AbstractItemViewerPanel;
 import net.wbz.moba.controlcenter.web.shared.scenario.RouteStateEvent;
 import net.wbz.moba.controlcenter.web.shared.scenario.Scenario;
@@ -27,11 +26,21 @@ public class ScenarioViewerPanel extends
     /**
      * Listener for the {@link RouteStateEvent}s to delegate to update the route state of the {@link ScenarioItemPanel}.
      */
-    private RemoteEventListener routeStateListener;
+    private RouteStateRemoteListener routeStateListener;
     /**
      * Mapping of scenario ids to the {@link ScenarioItemPanel}s.
      */
     private Map<Long, ScenarioItemPanel> scenarioIdItemPanels = new HashMap<>();
+
+    public ScenarioViewerPanel() {
+        super();
+        routeStateListener = anEvent -> {
+            Long scenarioId = anEvent.getScenarioId();
+            if (scenarioIdItemPanels.containsKey(scenarioId)) {
+                scenarioIdItemPanels.get(scenarioId).updateRouteState(anEvent);
+            }
+        };
+    }
 
     @Override
     protected List<Class<? extends ScenarioStateEvent>> getStateEventClasses() {
@@ -70,20 +79,13 @@ public class ScenarioViewerPanel extends
     @Override
     protected void addListeners() {
         super.addListeners();
-        routeStateListener = anEvent -> {
-            if (anEvent instanceof RouteStateEvent) {
-                Long scenarioId = ((RouteStateEvent) anEvent).getScenarioId();
-                if (scenarioIdItemPanels.containsKey(scenarioId)) {
-                    scenarioIdItemPanels.get(scenarioId).updateRouteState((RouteStateEvent) anEvent);
-                }
-            }
-        };
-        EventReceiver.getInstance().addListener(RouteStateEvent.class, routeStateListener);
+
+        EventReceiver.getInstance().addListener(routeStateListener);
     }
 
     @Override
     protected void removeListeners() {
         super.removeListeners();
-        EventReceiver.getInstance().removeListener(RouteStateEvent.class, routeStateListener);
+        EventReceiver.getInstance().removeListener(routeStateListener);
     }
 }

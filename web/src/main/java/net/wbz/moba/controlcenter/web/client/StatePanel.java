@@ -1,19 +1,5 @@
 package net.wbz.moba.controlcenter.web.client;
 
-import javax.annotation.Nullable;
-
-import net.wbz.moba.controlcenter.web.client.device.BusConnectionToggleButton;
-import net.wbz.moba.controlcenter.web.client.device.DeviceListBox;
-import net.wbz.moba.controlcenter.web.client.device.PlayerModal;
-import net.wbz.moba.controlcenter.web.client.device.RecordingModal;
-import net.wbz.moba.controlcenter.web.client.device.SendDataModal;
-import net.wbz.moba.controlcenter.web.client.device.config.DeviceConfigModal;
-import net.wbz.moba.controlcenter.web.client.event.EventReceiver;
-import net.wbz.moba.controlcenter.web.client.request.RequestUtils;
-import org.gwtbootstrap3.client.ui.Button;
-import org.gwtbootstrap3.extras.notify.client.ui.Notify;
-import org.gwtbootstrap3.extras.toggleswitch.client.ui.ToggleSwitch;
-
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -21,14 +7,25 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
-
-import de.novanic.eventservice.client.event.Event;
-import de.novanic.eventservice.client.event.listener.RemoteEventListener;
+import javax.annotation.Nullable;
+import net.wbz.moba.controlcenter.web.client.device.BusConnectionToggleButton;
+import net.wbz.moba.controlcenter.web.client.device.DeviceListBox;
+import net.wbz.moba.controlcenter.web.client.device.PlayerModal;
+import net.wbz.moba.controlcenter.web.client.device.RecordingModal;
+import net.wbz.moba.controlcenter.web.client.device.SendDataModal;
+import net.wbz.moba.controlcenter.web.client.device.config.DeviceConfigModal;
+import net.wbz.moba.controlcenter.web.client.event.bus.BusPlayerRemoteListener;
+import net.wbz.moba.controlcenter.web.client.event.bus.BusRecordingRemoteListener;
+import net.wbz.moba.controlcenter.web.client.event.EventReceiver;
+import net.wbz.moba.controlcenter.web.client.event.device.RailVoltageRemoteListener;
+import net.wbz.moba.controlcenter.web.client.event.device.RemoteConnectionListener;
+import net.wbz.moba.controlcenter.web.client.request.RequestUtils;
 import net.wbz.moba.controlcenter.web.shared.bus.DeviceInfo;
-import net.wbz.moba.controlcenter.web.shared.bus.DeviceInfoEvent;
 import net.wbz.moba.controlcenter.web.shared.bus.PlayerEvent;
 import net.wbz.moba.controlcenter.web.shared.bus.RecordingEvent;
-import net.wbz.moba.controlcenter.web.shared.viewer.RailVoltageEvent;
+import org.gwtbootstrap3.client.ui.Button;
+import org.gwtbootstrap3.extras.notify.client.ui.Notify;
+import org.gwtbootstrap3.extras.toggleswitch.client.ui.ToggleSwitch;
 
 /**
  * Panel for the state of the bus.
@@ -42,10 +39,10 @@ public class StatePanel extends Composite {
     private final SendDataModal sendDataModal = new SendDataModal();
     private final RecordingModal recordingModal = new RecordingModal();
     private final PlayerModal playerModal = new PlayerModal();
-    private final RemoteEventListener deviceInfoEventListener;
-    private final RemoteEventListener busDataPlayerEventListener;
-    private final RemoteEventListener voltageEventListener;
-    private final RemoteEventListener recordingEventListener;
+    private final RemoteConnectionListener deviceInfoEventListener;
+    private final BusPlayerRemoteListener busDataPlayerEventListener;
+    private final RailVoltageRemoteListener voltageEventListener;
+    private final BusRecordingRemoteListener recordingEventListener;
     @UiField
     Button btnSendData;
     @UiField
@@ -66,32 +63,43 @@ public class StatePanel extends Composite {
     public StatePanel() {
         initWidget(uiBinder.createAndBindUi(this));
 
-        // add event receiver for the device connection state
-        deviceInfoEventListener = anEvent -> {
-            if (anEvent instanceof DeviceInfoEvent) {
-                DeviceInfoEvent event = (DeviceInfoEvent) anEvent;
-                if (event.getEventType() == DeviceInfoEvent.TYPE.CONNECTED) {
-                    updateDeviceConnectionState(event.getDeviceInfo(), true);
-                } else if (event.getEventType() == DeviceInfoEvent.TYPE.DISCONNECTED) {
-                    updateDeviceConnectionState(event.getDeviceInfo(), false);
-                }
+        deviceInfoEventListener = new RemoteConnectionListener() {
+            @Override
+            public void connected(DeviceInfo deviceInfoEvent) {
+                updateDeviceConnectionState(deviceInfoEvent, true);
+            }
+
+            @Override
+            public void disconnected(DeviceInfo deviceInfoEvent) {
+                updateDeviceConnectionState(deviceInfoEvent, false);
             }
         };
         // add event receiver for the device connection state
-        busDataPlayerEventListener = anEvent -> {
-            if (anEvent instanceof PlayerEvent) {
-                PlayerEvent event = (PlayerEvent) anEvent;
-                updatePlayerState(event.getState() == PlayerEvent.STATE.START);
+        busDataPlayerEventListener = new BusPlayerRemoteListener() {
+            @Override
+            public void start(PlayerEvent event) {
+                updatePlayerState(true);
+                Notify.notify("Player started!");
+            }
 
-                Notify.notify("Player " + event.getState().name() + "!");
+            @Override
+            public void stop(PlayerEvent event) {
+                updatePlayerState(false);
+                Notify.notify("Player stopped!");
             }
         };
 
         busConnectionToggleButton.addValueChangeHandler(deviceListBox);
         toggleRailVoltage.addValueChangeHandler(booleanValueChangeEvent -> toggleRailVoltageState());
-        voltageEventListener = anEvent -> {
-            if (anEvent instanceof RailVoltageEvent) {
-                toggleRailVoltage.setValue(((RailVoltageEvent) anEvent).isState(), false);
+        voltageEventListener = new RailVoltageRemoteListener() {
+            @Override
+            public void on() {
+                toggleRailVoltage.setValue(true, false);
+            }
+
+            @Override
+            public void off() {
+                toggleRailVoltage.setValue(false, false);
             }
         };
         toggleRecording.addValueChangeHandler(booleanValueChangeEvent -> {
@@ -101,13 +109,15 @@ public class StatePanel extends Composite {
                 RequestUtils.getInstance().getBusService().stopRecording(RequestUtils.VOID_ASYNC_CALLBACK);
             }
         });
-        recordingEventListener = anEvent -> {
-            if (anEvent instanceof RecordingEvent) {
-                RecordingEvent recordingEvent = (RecordingEvent) anEvent;
-                if (recordingEvent.getState() == RecordingEvent.STATE.STOP) {
-                    toggleRecording.setValue(false, false);
-                    recordingModal.show(recordingEvent);
-                }
+        recordingEventListener = new BusRecordingRemoteListener() {
+            @Override
+            public void start(RecordingEvent event) {
+            }
+
+            @Override
+            public void stop(RecordingEvent event) {
+                toggleRecording.setValue(false, false);
+                recordingModal.show(event);
             }
         };
     }
@@ -134,19 +144,19 @@ public class StatePanel extends Composite {
 
     @Override
     protected void onLoad() {
-        EventReceiver.getInstance().addListener(DeviceInfoEvent.class, deviceInfoEventListener);
-        EventReceiver.getInstance().addListener(PlayerEvent.class, busDataPlayerEventListener);
-        EventReceiver.getInstance().addListener(RailVoltageEvent.class, voltageEventListener);
-        EventReceiver.getInstance().addListener(RecordingEvent.class, recordingEventListener);
+        EventReceiver.getInstance().addListener(deviceInfoEventListener);
+        EventReceiver.getInstance().addListener(busDataPlayerEventListener);
+        EventReceiver.getInstance().addListener(voltageEventListener);
+        EventReceiver.getInstance().addListener(recordingEventListener);
     }
 
     @Override
     protected void onUnload() {
         super.onUnload();
-        EventReceiver.getInstance().removeListener(DeviceInfoEvent.class, deviceInfoEventListener);
-        EventReceiver.getInstance().removeListener(DeviceInfoEvent.class, busDataPlayerEventListener);
-        EventReceiver.getInstance().removeListener(RailVoltageEvent.class, voltageEventListener);
-        EventReceiver.getInstance().removeListener(RecordingEvent.class, recordingEventListener);
+        EventReceiver.getInstance().removeListener(deviceInfoEventListener);
+        EventReceiver.getInstance().removeListener(busDataPlayerEventListener);
+        EventReceiver.getInstance().removeListener(voltageEventListener);
+        EventReceiver.getInstance().removeListener(recordingEventListener);
     }
 
     private void updatePlayerState(boolean playing) {

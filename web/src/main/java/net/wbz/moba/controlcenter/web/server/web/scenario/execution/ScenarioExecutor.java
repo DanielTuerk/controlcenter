@@ -81,7 +81,6 @@ public class ScenarioExecutor {
 
         ThreadFactory namedThreadFactory = new ThreadFactoryBuilder().setNameFormat(getClass().getSimpleName() + "-%d")
                 .build();
-        // TODO shutdown
         taskExecutor = Executors.newCachedThreadPool(namedThreadFactory);
 
         routeListeners.add(scenarioRouteEventBroadcaster);

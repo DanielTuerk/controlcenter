@@ -6,10 +6,11 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Widget;
-import net.wbz.moba.controlcenter.web.client.device.RemoteConnectionListener;
+import net.wbz.moba.controlcenter.web.client.event.device.RemoteConnectionListener;
 import net.wbz.moba.controlcenter.web.client.event.EventReceiver;
 import net.wbz.moba.controlcenter.web.client.request.Callbacks.OnlySuccessAsyncCallback;
 import net.wbz.moba.controlcenter.web.client.request.RequestUtils;
+import net.wbz.moba.controlcenter.web.shared.bus.DeviceInfo;
 import org.gwtbootstrap3.client.ui.Well;
 
 /**
@@ -38,12 +39,12 @@ public class BusMonitorPanel extends Composite {
         busMonitorContainer = new BusMonitorContainer();
         connectionListener = new RemoteConnectionListener() {
             @Override
-            public void connected() {
+            public void connected(DeviceInfo deviceInfoEvent) {
                 addMonitor();
             }
 
             @Override
-            public void disconnected() {
+            public void disconnected(DeviceInfo deviceInfoEvent) {
                 removeMonitor();
             }
         };

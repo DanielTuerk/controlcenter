@@ -15,12 +15,12 @@ import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.ListDataProvider;
 import java.util.Collection;
 import java.util.Map;
+import net.wbz.moba.controlcenter.web.client.event.device.RemoteConnectionListener;
 import net.wbz.moba.controlcenter.web.client.event.EventReceiver;
 import net.wbz.moba.controlcenter.web.client.request.RequestUtils;
 import net.wbz.moba.controlcenter.web.client.util.Log;
 import net.wbz.moba.controlcenter.web.server.persist.device.DeviceInfoEntity;
 import net.wbz.moba.controlcenter.web.shared.bus.DeviceInfo;
-import net.wbz.moba.controlcenter.web.shared.bus.DeviceInfoEvent;
 import org.gwtbootstrap3.client.ui.constants.ButtonType;
 import org.gwtbootstrap3.client.ui.constants.IconType;
 import org.gwtbootstrap3.client.ui.gwt.ButtonCell;
@@ -43,19 +43,37 @@ class DeviceOverviewPanel extends Composite {
     @UiField
     CellTable<DeviceInfo> table;
     private ListDataProvider<DeviceInfo> dataProvider;
+    private final RemoteConnectionListener remoteConnectionListener;
 
     DeviceOverviewPanel() {
         initWidget(UI_BINDER.createAndBindUi(this));
         initDeviceTable();
 
-        EventReceiver.getInstance().addListener(DeviceInfoEvent.class, event -> reloadDeviceList());
+        remoteConnectionListener = new RemoteConnectionListener() {
+            @Override
+            public void connected(DeviceInfo deviceInfoEvent) {
+                reloadDeviceList();
+            }
+
+            @Override
+            public void disconnected(DeviceInfo deviceInfoEvent) {
+                reloadDeviceList();
+            }
+        };
+
     }
 
     @Override
     protected void onLoad() {
         super.onLoad();
-
         reloadDeviceList();
+        EventReceiver.getInstance().addListener(remoteConnectionListener);
+    }
+
+    @Override
+    protected void onUnload() {
+        super.onUnload();
+        EventReceiver.getInstance().removeListener(remoteConnectionListener);
     }
 
     private void initDeviceTable() {

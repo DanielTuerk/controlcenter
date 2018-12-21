@@ -1,8 +1,24 @@
 package net.wbz.moba.controlcenter.web.client.viewer.controls.train;
 
+import com.google.common.collect.Maps;
+import com.google.gwt.dom.client.Style;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import java.util.Map;
-
+import net.wbz.moba.controlcenter.web.client.components.OnOffToggleButton;
+import net.wbz.moba.controlcenter.web.client.request.RequestUtils;
 import net.wbz.moba.controlcenter.web.client.train.TrainEditModal;
+import net.wbz.moba.controlcenter.web.client.viewer.controls.AbstractItemPanel;
+import net.wbz.moba.controlcenter.web.shared.train.Train;
+import net.wbz.moba.controlcenter.web.shared.train.TrainDrivingDirectionEvent;
+import net.wbz.moba.controlcenter.web.shared.train.TrainDrivingLevelEvent;
+import net.wbz.moba.controlcenter.web.shared.train.TrainFunction;
+import net.wbz.moba.controlcenter.web.shared.train.TrainFunctionStateEvent;
+import net.wbz.moba.controlcenter.web.shared.train.TrainHornStateEvent;
+import net.wbz.moba.controlcenter.web.shared.train.TrainLightStateEvent;
+import net.wbz.moba.controlcenter.web.shared.train.TrainStateEvent;
 import org.gwtbootstrap3.client.ui.Button;
 import org.gwtbootstrap3.client.ui.ButtonGroup;
 import org.gwtbootstrap3.client.ui.Column;
@@ -13,25 +29,6 @@ import org.gwtbootstrap3.client.ui.Row;
 import org.gwtbootstrap3.client.ui.constants.ColumnSize;
 import org.gwtbootstrap3.client.ui.constants.IconType;
 import org.gwtbootstrap3.extras.slider.client.ui.Slider;
-
-import com.google.common.collect.Maps;
-import com.google.gwt.dom.client.Style;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.logical.shared.ValueChangeEvent;
-import com.google.gwt.event.logical.shared.ValueChangeHandler;
-
-import net.wbz.moba.controlcenter.web.client.request.RequestUtils;
-import net.wbz.moba.controlcenter.web.client.components.OnOffToggleButton;
-import net.wbz.moba.controlcenter.web.client.viewer.controls.AbstractItemPanel;
-import net.wbz.moba.controlcenter.web.shared.train.Train;
-import net.wbz.moba.controlcenter.web.shared.train.TrainDrivingDirectionEvent;
-import net.wbz.moba.controlcenter.web.shared.train.TrainDrivingLevelEvent;
-import net.wbz.moba.controlcenter.web.shared.train.TrainFunction;
-import net.wbz.moba.controlcenter.web.shared.train.TrainFunctionStateEvent;
-import net.wbz.moba.controlcenter.web.shared.train.TrainHornStateEvent;
-import net.wbz.moba.controlcenter.web.shared.train.TrainLightStateEvent;
-import net.wbz.moba.controlcenter.web.shared.train.TrainStateEvent;
 
 /**
  * @author Daniel Tuerk
@@ -69,14 +66,15 @@ public class TrainItemPanel extends AbstractItemPanel<Train, TrainStateEvent> {
 
     @Override
     protected void deviceConnectionChanged(boolean connected) {
+        boolean state = getModel().getAddress() != null && connected;
         for (OnOffToggleButton button : functionButtons.values()) {
-            button.setEnabled(connected);
+            button.setEnabled(state);
         }
-        btnHorn.setEnabled(connected);
-        btnLight.setEnabled(connected);
-        btnDirectionBackward.setEnabled(connected);
-        btnDirectionForward.setEnabled(connected);
-        btnStop.setEnabled(connected);
+        btnHorn.setEnabled(state);
+        btnLight.setEnabled(state);
+        btnDirectionBackward.setEnabled(state);
+        btnDirectionForward.setEnabled(state);
+        btnStop.setEnabled(state);
     }
 
     @Override

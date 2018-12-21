@@ -4,21 +4,20 @@ import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.RootLayoutPanel;
 import com.google.gwt.user.client.ui.Widget;
-import de.novanic.eventservice.client.event.listener.RemoteEventListener;
 import java.util.Collection;
-import net.wbz.moba.controlcenter.web.client.request.Callbacks.OnlySuccessAsyncCallback;
 import net.wbz.moba.controlcenter.web.client.editor.track.TrackEditorContainer;
+import net.wbz.moba.controlcenter.web.client.event.ConstructionRemoteListener;
 import net.wbz.moba.controlcenter.web.client.event.EventReceiver;
 import net.wbz.moba.controlcenter.web.client.model.track.ModelManager;
+import net.wbz.moba.controlcenter.web.client.monitor.BusMonitorPanel;
+import net.wbz.moba.controlcenter.web.client.request.Callbacks.OnlySuccessAsyncCallback;
 import net.wbz.moba.controlcenter.web.client.request.RequestUtils;
 import net.wbz.moba.controlcenter.web.client.scenario.ScenarioEditor;
+import net.wbz.moba.controlcenter.web.client.settings.ConfigPanel;
 import net.wbz.moba.controlcenter.web.client.settings.Settings;
 import net.wbz.moba.controlcenter.web.client.train.TrainPanel;
-import net.wbz.moba.controlcenter.web.client.monitor.BusMonitorPanel;
-import net.wbz.moba.controlcenter.web.client.settings.ConfigPanel;
 import net.wbz.moba.controlcenter.web.client.viewer.track.TrackViewerContainer;
 import net.wbz.moba.controlcenter.web.shared.constrution.Construction;
-import net.wbz.moba.controlcenter.web.shared.constrution.CurrentConstructionChangeEvent;
 import org.gwtbootstrap3.client.ui.constants.IconType;
 import org.gwtbootstrap3.extras.notify.client.ui.Notify;
 
@@ -66,12 +65,8 @@ public class ControlCenterApp implements EntryPoint {
                 }
             });
 
-        RemoteEventListener constructionListener = anEvent -> {
-            if (anEvent instanceof CurrentConstructionChangeEvent) {
-                reloadControlCenter();
-            }
-        };
-        EventReceiver.getInstance().addListener(CurrentConstructionChangeEvent.class, constructionListener);
+        ConstructionRemoteListener constructionListener = anEvent -> reloadControlCenter();
+        EventReceiver.getInstance().addListener(constructionListener);
     }
 
     private void reloadControlCenter() {

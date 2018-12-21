@@ -65,7 +65,7 @@ public class EventBroadcaster {
      *
      * @param eventClazzName name of the event class
      */
-    public void refireEvent(final String eventClazzName) {
+    public synchronized void refireEvent(final String eventClazzName) {
         // TODO fire each event by equals (multiple to send for each event class)
 
         if (lastSendEvents.containsKey(eventClazzName)) {

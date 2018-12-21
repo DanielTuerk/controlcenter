@@ -9,6 +9,10 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import net.wbz.moba.controlcenter.web.server.SelectrixHelper;
 import net.wbz.moba.controlcenter.web.server.persist.scenario.TrackBuilder;
 import net.wbz.moba.controlcenter.web.server.persist.scenario.TrackNotFoundException;
@@ -62,7 +66,7 @@ abstract class ScenarioExecution implements Callable<Void> {
     private final TrackBuilder trackBuilder;
     private final List<RouteListener> routeListeners;
     private final RouteExecutionObserver routeExecutionObserver;
-
+    private final ExecutorService executor;
     /**
      * Flag for stop called to scenario.
      */
@@ -85,6 +89,8 @@ abstract class ScenarioExecution implements Callable<Void> {
         this.trackBuilder = trackBuilder;
         this.routeListeners = routeListeners;
         this.routeExecutionObserver = routeExecutionObserver;
+
+        executor = Executors.newCachedThreadPool();
     }
 
     @Override
@@ -442,24 +448,12 @@ abstract class ScenarioExecution implements Callable<Void> {
             routeListener.routeWaitingToStart(scenario, routeExecution.getRouteSequence());
         }
 
-        Route route = routeExecution.getRouteSequence().getRoute();
-        LOG.info("train ({}) request free track: {}", routeExecution.getTrain(), route);
-
-        // TODO refactor to listeners
-        boolean wait = true;
-        while (wait && scenario.getRunState() != RUN_STATE.STOPPED) {
-            if (routeExecutionObserver.checkAndReserveNextRunningRoute(routeExecution.getRouteSequence(),
-                routeExecution.getPreviousRouteSequence())) {
-                // no dependent route running, stop check
-                wait = false;
-            } else {
-                // dependency running, wait and recheck
-                try {
-                    Thread.sleep(500L);
-                } catch (InterruptedException e) {
-                    throw new ScenarioExecutionInterruptException("wait for free track interrupted", e);
-                }
-            }
+        Future<Void> future = executor
+            .submit(new WaitForFreeTrackCallable(routeExecutionObserver, scenario, routeExecution));
+        try {
+            future.get();
+        } catch (InterruptedException | ExecutionException e) {
+            throw new ScenarioExecutionInterruptException("wait for free track interrupted", e);
         }
     }
 

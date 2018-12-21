@@ -7,9 +7,10 @@ import de.novanic.eventservice.client.event.listener.RemoteEventListener;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import net.wbz.moba.controlcenter.web.client.event.device.RemoteConnectionListener;
 import net.wbz.moba.controlcenter.web.client.event.EventReceiver;
 import net.wbz.moba.controlcenter.web.shared.AbstractStateEvent;
-import net.wbz.moba.controlcenter.web.shared.bus.DeviceInfoEvent;
+import net.wbz.moba.controlcenter.web.shared.bus.DeviceInfo;
 
 /**
  * Abstract viewer panel for the items.
@@ -22,7 +23,7 @@ abstract public class AbstractItemViewerPanel<ItemPanel extends AbstractItemPane
     private final Map<Long, ItemPanel> itemPanelByIdMap = Maps.newHashMap();
     private final FlowPanel itemsContainerPanel = new FlowPanel();
     private final Map<Class<? extends EventType>, RemoteEventListener> eventListeners = new HashMap<>();
-    private final RemoteEventListener deviceInfoEventListener;
+    private final RemoteConnectionListener deviceInfoEventListener;
     private RemoteEventListener dataChangeEventListener;
 
     public AbstractItemViewerPanel() {
@@ -36,19 +37,17 @@ abstract public class AbstractItemViewerPanel<ItemPanel extends AbstractItemPane
         registerDataListener();
 
         // add event receiver for the device connection state
-        deviceInfoEventListener = new RemoteEventListener() {
-            public void apply(Event anEvent) {
-                if (anEvent instanceof DeviceInfoEvent) {
-                    DeviceInfoEvent event = (DeviceInfoEvent) anEvent;
-                    for (ItemPanel itemPanel : itemPanelByIdMap.values()) {
-                        if (event.getEventType() == DeviceInfoEvent.TYPE.CONNECTED) {
-                            itemPanel.deviceConnectionChanged(true);
-                        } else if (event.getEventType() == DeviceInfoEvent.TYPE.DISCONNECTED) {
-                            itemPanel.deviceConnectionChanged(false);
-                        }
-                    }
-                }
+        deviceInfoEventListener = new RemoteConnectionListener() {
+            @Override
+            public void connected(DeviceInfo deviceInfoEvent) {
+                itemPanelByIdMap.values().forEach(connected -> connected.deviceConnectionChanged(true));
             }
+
+            @Override
+            public void disconnected(DeviceInfo deviceInfoEvent) {
+                itemPanelByIdMap.values().forEach(connected -> connected.deviceConnectionChanged(false));
+            }
+
         };
 
     }
@@ -95,14 +94,14 @@ abstract public class AbstractItemViewerPanel<ItemPanel extends AbstractItemPane
 
         loadData();
 
-        EventReceiver.getInstance().addListener(DeviceInfoEvent.class, deviceInfoEventListener);
+        EventReceiver.getInstance().addListener(deviceInfoEventListener);
     }
 
     @Override
     protected void onUnload() {
         super.onUnload();
         EventReceiver.getInstance().removeListener(getDataEventClass(), dataChangeEventListener);
-        EventReceiver.getInstance().removeListener(DeviceInfoEvent.class, deviceInfoEventListener);
+        EventReceiver.getInstance().removeListener(deviceInfoEventListener);
 
         removeListeners();
 

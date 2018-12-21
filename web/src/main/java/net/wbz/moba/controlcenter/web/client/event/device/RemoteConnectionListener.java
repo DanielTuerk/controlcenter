@@ -1,6 +1,7 @@
-package net.wbz.moba.controlcenter.web.client.device;
+package net.wbz.moba.controlcenter.web.client.event.device;
 
 import net.wbz.moba.controlcenter.web.client.event.RemoteEventListener;
+import net.wbz.moba.controlcenter.web.shared.bus.DeviceInfo;
 import net.wbz.moba.controlcenter.web.shared.bus.DeviceInfoEvent;
 
 /**
@@ -13,9 +14,9 @@ public interface RemoteConnectionListener extends RemoteEventListener<DeviceInfo
     @Override
     default void applyEvent(DeviceInfoEvent deviceInfoEvent) {
         if (deviceInfoEvent.getEventType() == DeviceInfoEvent.TYPE.CONNECTED) {
-            connected();
+            connected(deviceInfoEvent.getDeviceInfo());
         } else if (deviceInfoEvent.getEventType() == DeviceInfoEvent.TYPE.DISCONNECTED) {
-            disconnected();
+            disconnected(deviceInfoEvent.getDeviceInfo());
         }
     }
 
@@ -24,7 +25,7 @@ public interface RemoteConnectionListener extends RemoteEventListener<DeviceInfo
         return DeviceInfoEvent.class;
     }
 
-    void connected();
+    void connected(DeviceInfo deviceInfoEvent);
 
-    void disconnected();
+    void disconnected(DeviceInfo deviceInfoEvent);
 }

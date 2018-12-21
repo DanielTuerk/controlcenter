@@ -66,6 +66,8 @@ abstract public class AbstractItemPanel<Model extends AbstractDto, StateEvent ex
         collapseContentPanel.setId(collapseContainerId);
         panelBody.add(collapseContentPanel);
 
+        deviceConnectionChanged(false);
+
     }
 
     protected Panel createHeaderPanel() {

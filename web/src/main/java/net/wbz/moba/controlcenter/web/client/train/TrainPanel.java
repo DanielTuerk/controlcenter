@@ -11,17 +11,16 @@ import com.google.gwt.user.cellview.client.TextColumn;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.ListDataProvider;
-import de.novanic.eventservice.client.event.listener.RemoteEventListener;
 import java.util.Collection;
-import net.wbz.moba.controlcenter.web.client.request.Callbacks.OnlySuccessAsyncCallback;
-import net.wbz.moba.controlcenter.web.client.event.EventReceiver;
-import net.wbz.moba.controlcenter.web.client.request.RequestUtils;
+import net.wbz.moba.controlcenter.web.client.components.modal.DeleteModal;
 import net.wbz.moba.controlcenter.web.client.components.table.DeleteButtonColumn;
 import net.wbz.moba.controlcenter.web.client.components.table.EditButtonColumn;
-import net.wbz.moba.controlcenter.web.client.components.modal.DeleteModal;
+import net.wbz.moba.controlcenter.web.client.event.EventReceiver;
+import net.wbz.moba.controlcenter.web.client.event.train.TrainDataChangedRemoteListener;
+import net.wbz.moba.controlcenter.web.client.request.Callbacks.OnlySuccessAsyncCallback;
+import net.wbz.moba.controlcenter.web.client.request.RequestUtils;
 import net.wbz.moba.controlcenter.web.shared.track.model.BusDataConfiguration;
 import net.wbz.moba.controlcenter.web.shared.train.Train;
-import net.wbz.moba.controlcenter.web.shared.train.TrainDataChangedEvent;
 import net.wbz.moba.controlcenter.web.shared.train.TrainFunction;
 import org.gwtbootstrap3.client.ui.Pagination;
 import org.gwtbootstrap3.client.ui.gwt.CellTable;
@@ -32,7 +31,7 @@ import org.gwtbootstrap3.client.ui.gwt.CellTable;
 public class TrainPanel extends Composite {
 
     private static Binder uiBinder = GWT.create(Binder.class);
-    private final RemoteEventListener scenarioEventListener;
+    private final TrainDataChangedRemoteListener trainDataChangedRemoteListener;
     @UiField
     Pagination pagination;
     @UiField
@@ -43,11 +42,7 @@ public class TrainPanel extends Composite {
     public TrainPanel() {
         initWidget(uiBinder.createAndBindUi(this));
 
-        scenarioEventListener = anEvent -> {
-            if (anEvent instanceof TrainDataChangedEvent) {
-                loadTrains();
-            }
-        };
+        trainDataChangedRemoteListener = anEvent -> loadTrains();
 
         trainTable.addColumn(new TextColumn<Train>() {
             @Override
@@ -107,7 +102,7 @@ public class TrainPanel extends Composite {
     @Override
     protected void onLoad() {
         super.onLoad();
-        EventReceiver.getInstance().addListener(TrainDataChangedEvent.class, scenarioEventListener);
+        EventReceiver.getInstance().addListener(trainDataChangedRemoteListener);
 
         loadTrains();
     }
@@ -115,7 +110,7 @@ public class TrainPanel extends Composite {
     @Override
     protected void onUnload() {
         super.onUnload();
-        EventReceiver.getInstance().removeListener(TrainDataChangedEvent.class, scenarioEventListener);
+        EventReceiver.getInstance().removeListener(trainDataChangedRemoteListener);
     }
 
     private void showDelete(final Train train) {

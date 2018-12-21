@@ -35,7 +35,6 @@ public class EventReceiver {
     }
 
     public void addListener(final Class<? extends Event> eventClazz, RemoteEventListener listener) {
-        // TODO try EventFilter
         theRemoteEventService.addListener(DomainFactory.getDomain(eventClazz.getName()), listener);
 
         // trigger to fire last event from cache

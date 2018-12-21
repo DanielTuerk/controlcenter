@@ -11,20 +11,18 @@ import com.google.gwt.user.cellview.client.TextColumn;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.ListDataProvider;
-import de.novanic.eventservice.client.event.listener.RemoteEventListener;
 import java.util.ArrayList;
 import java.util.Collection;
-import net.wbz.moba.controlcenter.web.client.request.Callbacks.OnlySuccessAsyncCallback;
-import net.wbz.moba.controlcenter.web.client.event.EventReceiver;
-import net.wbz.moba.controlcenter.web.client.request.RequestUtils;
+import net.wbz.moba.controlcenter.web.client.components.modal.DeleteModal;
 import net.wbz.moba.controlcenter.web.client.components.table.DeleteButtonColumn;
 import net.wbz.moba.controlcenter.web.client.components.table.EditButtonColumn;
-import net.wbz.moba.controlcenter.web.client.components.modal.DeleteModal;
+import net.wbz.moba.controlcenter.web.client.event.EventReceiver;
+import net.wbz.moba.controlcenter.web.client.request.Callbacks.OnlySuccessAsyncCallback;
+import net.wbz.moba.controlcenter.web.client.request.RequestUtils;
+import net.wbz.moba.controlcenter.web.client.event.scenario.ScenarioRemoteListener;
 import net.wbz.moba.controlcenter.web.shared.scenario.Route;
-import net.wbz.moba.controlcenter.web.shared.scenario.ScenariosChangedEvent;
 import net.wbz.moba.controlcenter.web.shared.scenario.Station;
 import net.wbz.moba.controlcenter.web.shared.scenario.StationRail;
-import net.wbz.moba.controlcenter.web.shared.track.model.GridPosition;
 import org.gwtbootstrap3.client.ui.Container;
 import org.gwtbootstrap3.client.ui.Pagination;
 import org.gwtbootstrap3.client.ui.constants.PaginationSize;
@@ -36,7 +34,7 @@ import org.gwtbootstrap3.client.ui.gwt.CellTable;
 public class RoutePanel extends Composite {
 
     private static Binder uiBinder = GWT.create(Binder.class);
-    private final RemoteEventListener scenarioEventListener;
+    private final ScenarioRemoteListener scenarioRemoteListener;
     @UiField
     Container container;
     @UiField
@@ -49,10 +47,8 @@ public class RoutePanel extends Composite {
     public RoutePanel() {
         initWidget(uiBinder.createAndBindUi(this));
 
-        scenarioEventListener = anEvent -> {
-            if (anEvent instanceof ScenariosChangedEvent) {
+        scenarioRemoteListener = anEvent -> {
                 loadRoutes();
-            }
         };
 
         TextColumn<Route> colName = new TextColumn<Route>() {
@@ -115,7 +111,7 @@ public class RoutePanel extends Composite {
     @UiHandler("btnCreateRoute")
     void onClick(ClickEvent ignored) {
         Route route = new Route();
-        route.setWaypoints(new ArrayList<GridPosition>());
+        route.setWaypoints(new ArrayList<>());
         showEdit(route);
     }
 
@@ -139,7 +135,7 @@ public class RoutePanel extends Composite {
     protected void onLoad() {
         super.onLoad();
 
-        EventReceiver.getInstance().addListener(ScenariosChangedEvent.class, scenarioEventListener);
+        EventReceiver.getInstance().addListener(scenarioRemoteListener);
 
         RequestUtils.getInstance().getScenarioEditorService().getStations(
             new OnlySuccessAsyncCallback<Collection<Station>>() {
@@ -156,7 +152,7 @@ public class RoutePanel extends Composite {
     @Override
     protected void onUnload() {
         super.onUnload();
-        EventReceiver.getInstance().removeListener(ScenariosChangedEvent.class, scenarioEventListener);
+        EventReceiver.getInstance().removeListener(scenarioRemoteListener);
     }
 
     private String getStationRailDisplayName(StationRail stationRail) {

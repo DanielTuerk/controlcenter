@@ -8,12 +8,11 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.Widget;
-import de.novanic.eventservice.client.event.listener.RemoteEventListener;
 import java.util.HashMap;
 import java.util.Map;
+import net.wbz.moba.controlcenter.web.client.event.bus.BusDataRemoteListener;
 import net.wbz.moba.controlcenter.web.client.event.EventReceiver;
 import net.wbz.moba.controlcenter.web.client.request.RequestUtils;
-import net.wbz.moba.controlcenter.web.shared.bus.BusDataEvent;
 
 /**
  * @author Daniel Tuerk
@@ -26,7 +25,7 @@ import net.wbz.moba.controlcenter.web.shared.bus.BusDataEvent;
      * Store the {@link BusAddressItem} for each address in bus.
      */
     private final Map<Integer, Map<Integer, BusAddressItem>> addressItemMapping = new HashMap<>();
-    private final RemoteEventListener listener;
+    private final BusDataRemoteListener listener;
     @UiField
     HTMLPanel bus0;
     @UiField
@@ -36,8 +35,7 @@ import net.wbz.moba.controlcenter.web.shared.bus.BusDataEvent;
         initWidget(uiBinder.createAndBindUi(this));
 
         // listener processes events on user side of busData
-        listener = anEvent -> {
-            BusDataEvent busDataEvent = (BusDataEvent) anEvent;
+         listener = busDataEvent -> {
             Map<Integer, BusAddressItem> busMapping = addressItemMapping.get(busDataEvent.getBus());
             if (busMapping.containsKey(busDataEvent.getAddress())) {
                 busMapping.get(busDataEvent.getAddress()).updateData(busDataEvent.getData());
@@ -52,14 +50,14 @@ import net.wbz.moba.controlcenter.web.shared.bus.BusDataEvent;
         addBus(1, bus1);
 
         RequestUtils.getInstance().getBusService().startTrackingBus(RequestUtils.VOID_ASYNC_CALLBACK);
-        EventReceiver.getInstance().addListener(BusDataEvent.class, listener);
+        EventReceiver.getInstance().addListener(listener);
     }
 
     @Override
     protected void onUnload() {
         super.onUnload();
         RequestUtils.getInstance().getBusService().stopTrackingBus(RequestUtils.VOID_ASYNC_CALLBACK);
-        EventReceiver.getInstance().removeListener(BusDataEvent.class, listener);
+        EventReceiver.getInstance().removeListener(listener);
     }
 
     private void addBus(int i, HasWidgets panelBody) {

@@ -11,20 +11,18 @@ import com.google.gwt.user.cellview.client.TextColumn;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.ListDataProvider;
-import de.novanic.eventservice.client.event.Event;
-import de.novanic.eventservice.client.event.listener.RemoteEventListener;
 import java.util.ArrayList;
 import java.util.Collection;
-import net.wbz.moba.controlcenter.web.client.request.Callbacks.OnlySuccessAsyncCallback;
-import net.wbz.moba.controlcenter.web.client.event.EventReceiver;
-import net.wbz.moba.controlcenter.web.client.request.RequestUtils;
+import net.wbz.moba.controlcenter.web.client.components.modal.DeleteModal;
 import net.wbz.moba.controlcenter.web.client.components.table.DeleteButtonColumn;
 import net.wbz.moba.controlcenter.web.client.components.table.EditButtonColumn;
-import net.wbz.moba.controlcenter.web.client.components.modal.DeleteModal;
+import net.wbz.moba.controlcenter.web.client.event.EventReceiver;
+import net.wbz.moba.controlcenter.web.client.event.scenario.ScenarioRemoteListener;
+import net.wbz.moba.controlcenter.web.client.request.Callbacks.OnlySuccessAsyncCallback;
+import net.wbz.moba.controlcenter.web.client.request.RequestUtils;
 import net.wbz.moba.controlcenter.web.shared.scenario.Route;
 import net.wbz.moba.controlcenter.web.shared.scenario.RouteSequence;
 import net.wbz.moba.controlcenter.web.shared.scenario.Scenario;
-import net.wbz.moba.controlcenter.web.shared.scenario.ScenariosChangedEvent;
 import net.wbz.moba.controlcenter.web.shared.scenario.Station;
 import org.gwtbootstrap3.client.ui.Container;
 import org.gwtbootstrap3.client.ui.Pagination;
@@ -37,7 +35,7 @@ import org.gwtbootstrap3.client.ui.gwt.CellTable;
 public class ScenarioPanel extends Composite {
 
     private static Binder uiBinder = GWT.create(Binder.class);
-    private final RemoteEventListener scenarioEventListener;
+    private final ScenarioRemoteListener scenarioRemoteListener;
     @UiField
     Container container;
     @UiField
@@ -50,14 +48,7 @@ public class ScenarioPanel extends Composite {
     public ScenarioPanel() {
         initWidget(uiBinder.createAndBindUi(this));
 
-        scenarioEventListener = new RemoteEventListener() {
-            @Override
-            public void apply(Event anEvent) {
-                if (anEvent instanceof ScenariosChangedEvent) {
-                    loadScenarios();
-                }
-            }
-        };
+        scenarioRemoteListener = anEvent -> loadScenarios();
 
         scenarioTable.addColumn(new TextColumn<Scenario>() {
             @Override
@@ -154,7 +145,7 @@ public class ScenarioPanel extends Composite {
     @Override
     protected void onLoad() {
         super.onLoad();
-        EventReceiver.getInstance().addListener(ScenariosChangedEvent.class, scenarioEventListener);
+        EventReceiver.getInstance().addListener(scenarioRemoteListener);
 
         loadStations();
         loadScenarios();
@@ -163,7 +154,7 @@ public class ScenarioPanel extends Composite {
     @Override
     protected void onUnload() {
         super.onUnload();
-        EventReceiver.getInstance().removeListener(ScenariosChangedEvent.class, scenarioEventListener);
+        EventReceiver.getInstance().removeListener(scenarioRemoteListener);
     }
 
     private void showDelete(final Scenario scenario) {

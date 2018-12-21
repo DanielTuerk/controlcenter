@@ -45,9 +45,6 @@ public class BusServiceImpl extends RemoteServiceServlet implements BusService {
     private static final Logger LOGGER = LoggerFactory.getLogger(BusServiceImpl.class);
     private final DeviceManager deviceManager;
     private final EventBroadcaster eventBroadcaster;
-    /**
-     * TODO really needed?
-     */
     private final AllBusDataConsumer allBusDataConsumer;
     private final DeviceRecorder deviceRecorder;
     private final Map<DeviceInfo, Device> storedDevices = Maps.newHashMap();

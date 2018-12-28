@@ -43,6 +43,13 @@ public class DeviceInfoEvent implements Event {
         return java.util.Objects.hash(deviceInfo, eventType);
     }
 
+    @Override
+    public String toString() {
+        return "DeviceInfoEvent{" + "deviceInfo=" + deviceInfo
+            + ", eventType=" + eventType
+            + '}';
+    }
+
     public enum TYPE {
         CREATE, REMOVE, MODIFY, CONNECTED, DISCONNECTED
     }

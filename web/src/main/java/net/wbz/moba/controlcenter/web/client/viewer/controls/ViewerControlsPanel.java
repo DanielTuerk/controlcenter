@@ -6,18 +6,20 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Widget;
-import net.wbz.moba.controlcenter.web.client.viewer.controls.scenario.ScenarioViewerPanel;
-import net.wbz.moba.controlcenter.web.client.viewer.controls.train.TrainViewerPanel;
+import net.wbz.moba.controlcenter.web.client.viewer.controls.scenario.ScenarioViewerControlsPanel;
+import net.wbz.moba.controlcenter.web.client.viewer.controls.train.TrainViewerControlsPanel;
 import org.gwtbootstrap3.client.ui.RadioButton;
 
 /**
+ * Controls panel at the track viewer to switch between trains and scenarios.
+ *
  * @author Daniel Tuerk
  */
 public class ViewerControlsPanel extends Composite {
 
     private static Binder uiBinder = GWT.create(Binder.class);
-    private final TrainViewerPanel trainViewerPanel;
-    private final ScenarioViewerPanel scenarioViewerPanel;
+    private final TrainViewerControlsPanel trainViewerControlsPanel;
+    private final Widget scenarioViewerPanel;
     @UiField
     RadioButton btnScenario;
     @UiField
@@ -28,17 +30,17 @@ public class ViewerControlsPanel extends Composite {
     public ViewerControlsPanel() {
         initWidget(uiBinder.createAndBindUi(this));
 
-        trainViewerPanel = new TrainViewerPanel();
-        scenarioViewerPanel = new ScenarioViewerPanel();
+        trainViewerControlsPanel = new TrainViewerControlsPanel();
+        scenarioViewerPanel = new ScenarioViewerControlsPanel();
 
-        btnTrain.addValueChangeHandler(event -> showWidget(trainViewerPanel));
+        btnTrain.addValueChangeHandler(event -> showWidget(trainViewerControlsPanel));
         btnScenario.addValueChangeHandler(event -> showWidget(scenarioViewerPanel));
     }
 
     @Override
     protected void onLoad() {
         super.onLoad();
-        showWidget(trainViewerPanel);
+        showWidget(trainViewerControlsPanel);
     }
 
     private void showWidget(Widget widget) {

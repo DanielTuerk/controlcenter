@@ -22,7 +22,6 @@ import net.wbz.moba.controlcenter.web.shared.bus.BusDataEvent;
 import net.wbz.moba.controlcenter.web.shared.bus.BusService;
 import net.wbz.moba.controlcenter.web.shared.bus.DeviceInfo;
 import net.wbz.moba.controlcenter.web.shared.bus.DeviceInfoEvent;
-import net.wbz.moba.controlcenter.web.shared.bus.DeviceInfoEvent.TYPE;
 import net.wbz.moba.controlcenter.web.shared.bus.PlayerEvent;
 import net.wbz.moba.controlcenter.web.shared.viewer.RailVoltageEvent;
 import net.wbz.selectrix4java.bus.consumption.AllBusDataConsumer;
@@ -270,18 +269,17 @@ public class BusServiceImpl extends RemoteServiceServlet implements BusService {
     }
 
     public void connectBus() {
-        if (activeDevice != null) {
+        if (activeDevice != null && !activeDevice.isConnected()) {
             try {
                 activeDevice.connect();
             } catch (DeviceAccessException e) {
                 LOGGER.error(String.format("can't connect active device: %s", activeDevice.getClass().getName()), e);
-                eventBroadcaster.fireEvent(new DeviceInfoEvent(null, TYPE.DISCONNECTED));
             }
         }
     }
 
     public void disconnectBus() {
-        if (activeDevice != null) {
+        if (activeDevice != null && activeDevice.isConnected()) {
             try {
                 activeDevice.disconnect();
             } catch (DeviceAccessException e) {

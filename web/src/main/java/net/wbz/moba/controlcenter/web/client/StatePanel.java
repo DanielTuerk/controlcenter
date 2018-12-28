@@ -14,9 +14,9 @@ import net.wbz.moba.controlcenter.web.client.device.PlayerModal;
 import net.wbz.moba.controlcenter.web.client.device.RecordingModal;
 import net.wbz.moba.controlcenter.web.client.device.SendDataModal;
 import net.wbz.moba.controlcenter.web.client.device.config.DeviceConfigModal;
+import net.wbz.moba.controlcenter.web.client.event.EventReceiver;
 import net.wbz.moba.controlcenter.web.client.event.bus.BusPlayerRemoteListener;
 import net.wbz.moba.controlcenter.web.client.event.bus.BusRecordingRemoteListener;
-import net.wbz.moba.controlcenter.web.client.event.EventReceiver;
 import net.wbz.moba.controlcenter.web.client.event.device.RailVoltageRemoteListener;
 import net.wbz.moba.controlcenter.web.client.event.device.RemoteConnectionListener;
 import net.wbz.moba.controlcenter.web.client.request.RequestUtils;
@@ -144,19 +144,17 @@ public class StatePanel extends Composite {
 
     @Override
     protected void onLoad() {
-        EventReceiver.getInstance().addListener(deviceInfoEventListener);
-        EventReceiver.getInstance().addListener(busDataPlayerEventListener);
-        EventReceiver.getInstance().addListener(voltageEventListener);
-        EventReceiver.getInstance().addListener(recordingEventListener);
+        EventReceiver.getInstance()
+            .addListener(deviceInfoEventListener, busDataPlayerEventListener, voltageEventListener,
+                recordingEventListener);
     }
 
     @Override
     protected void onUnload() {
         super.onUnload();
-        EventReceiver.getInstance().removeListener(deviceInfoEventListener);
-        EventReceiver.getInstance().removeListener(busDataPlayerEventListener);
-        EventReceiver.getInstance().removeListener(voltageEventListener);
-        EventReceiver.getInstance().removeListener(recordingEventListener);
+        EventReceiver.getInstance()
+            .removeListener(deviceInfoEventListener, busDataPlayerEventListener, voltageEventListener,
+                recordingEventListener);
     }
 
     private void updatePlayerState(boolean playing) {
@@ -170,9 +168,9 @@ public class StatePanel extends Composite {
 
     private void updateDeviceConnectionState(@Nullable DeviceInfo deviceInfo, boolean connected) {
         toggleRailVoltage.setEnabled(connected);
-        deviceListBox.setSelectedDevice(deviceInfo != null && deviceInfo.isConnected() ? deviceInfo : null);
         // TODO non visual feedback if disabled
         deviceListBox.setEnabled(!connected);
+        deviceListBox.setSelectedDevice(deviceInfo != null && deviceInfo.isConnected() ? deviceInfo : null);
         btnDeviceConfig.setEnabled(!connected);
         busConnectionToggleButton.updateValue(connected);
         btnSendData.setEnabled(connected);

@@ -9,8 +9,8 @@ import net.wbz.moba.controlcenter.web.server.persist.scenario.TrackBuilder;
 import net.wbz.moba.controlcenter.web.server.persist.scenario.TrackNotFoundException;
 import net.wbz.moba.controlcenter.web.shared.scenario.Route;
 import net.wbz.moba.controlcenter.web.shared.scenario.Scenario;
+import net.wbz.moba.controlcenter.web.shared.scenario.ScenarioDataChangedEvent;
 import net.wbz.moba.controlcenter.web.shared.scenario.ScenarioEditorService;
-import net.wbz.moba.controlcenter.web.shared.scenario.ScenariosChangedEvent;
 import net.wbz.moba.controlcenter.web.shared.scenario.Station;
 import net.wbz.moba.controlcenter.web.shared.scenario.Track;
 import org.slf4j.Logger;
@@ -113,6 +113,6 @@ public class ScenarioEditorServiceImpl extends RemoteServiceServlet implements S
     }
 
     private void fireChangeEvent() {
-        eventBroadcaster.fireEvent(new ScenariosChangedEvent());
+        eventBroadcaster.fireEvent(new ScenarioDataChangedEvent());
     }
 }

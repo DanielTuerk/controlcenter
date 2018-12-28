@@ -1,45 +1,86 @@
 package net.wbz.moba.controlcenter.web.client.viewer.controls.scenario;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
-import java.util.Collections;
+import com.google.gwt.uibinder.client.UiBinder;
+import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.user.client.ui.Widget;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import net.wbz.moba.controlcenter.web.client.event.EventReceiver;
+import net.wbz.moba.controlcenter.web.client.event.scenario.ScenarioStateRemoteListener;
 import net.wbz.moba.controlcenter.web.client.request.RequestUtils;
-import net.wbz.moba.controlcenter.web.client.viewer.controls.AbstractItemPanel;
+import net.wbz.moba.controlcenter.web.client.viewer.controls.AbstractViewerItemControlsComposite;
 import net.wbz.moba.controlcenter.web.shared.scenario.RouteSequence;
 import net.wbz.moba.controlcenter.web.shared.scenario.RouteStateEvent;
 import net.wbz.moba.controlcenter.web.shared.scenario.Scenario;
 import net.wbz.moba.controlcenter.web.shared.scenario.ScenarioStateEvent;
 import org.gwtbootstrap3.client.ui.Button;
-import org.gwtbootstrap3.client.ui.Column;
 import org.gwtbootstrap3.client.ui.Icon;
 import org.gwtbootstrap3.client.ui.ListGroup;
 import org.gwtbootstrap3.client.ui.ListGroupItem;
-import org.gwtbootstrap3.client.ui.PanelCollapse;
-import org.gwtbootstrap3.client.ui.Row;
-import org.gwtbootstrap3.client.ui.constants.ColumnSize;
 import org.gwtbootstrap3.client.ui.constants.IconType;
 import org.gwtbootstrap3.client.ui.constants.ListGroupItemType;
 
 /**
- * Panel for the {@link Scenario}.
- *
  * @author Daniel Tuerk
  */
-public class ScenarioItemPanel extends AbstractItemPanel<Scenario, ScenarioStateEvent> {
+public class ScenarioItemControlsPanel extends AbstractViewerItemControlsComposite<Scenario> {
 
+    private static Binder uiBinder = GWT.create(Binder.class);
     private final Map<Long, ListGroupItem> routeSequenceListGroupItemMap = new HashMap<>();
-    private Button btnSchedule;
-    private Button btnStart;
-    private Button btnStop;
+    private final ScenarioStateRemoteListener scenarioStateRemoteListener;
+    @UiField
+    Button btnSchedule;
+    @UiField
+    Button btnStart;
+    @UiField
+    Button btnStop;
+    @UiField
+    ListGroup groupRoutes;
 
-    public ScenarioItemPanel(Scenario scenario) {
-        super(scenario, scenario.getName());
-        assert getModel() != null;
+    ScenarioItemControlsPanel(Scenario scenario) {
+        super(scenario);
+        initWidget(uiBinder.createAndBindUi(this));
+
+        scenarioStateRemoteListener = this::updateScenarioState;
+
+        createRouteProgress();
+    }
+
+    @UiHandler("btnSchedule")
+    void btnScheduleClicked(ClickEvent event) {
+        RequestUtils.getInstance().getScenarioService()
+            .schedule(getModel().getId(), RequestUtils.VOID_ASYNC_CALLBACK);
+    }
+
+    @UiHandler("btnStart")
+    void btnStartClicked(ClickEvent event) {
+        RequestUtils.getInstance().getScenarioService()
+            .start(getModel().getId(), RequestUtils.VOID_ASYNC_CALLBACK);
+    }
+
+    @UiHandler("btnStop")
+    void btnStopClicked(ClickEvent event) {
+        RequestUtils.getInstance().getScenarioService()
+            .stop(getModel().getId(), RequestUtils.VOID_ASYNC_CALLBACK);
+    }
+
+    private void createRouteProgress() {
+        Scenario scenario = getModel();
+        List<RouteSequence> routeSequences = scenario.getRouteSequences();
+        routeSequences.sort(Comparator.comparingLong(RouteSequence::getPosition));
+
+        for (RouteSequence routeSequence : routeSequences) {
+            ListGroupItem groupItem = new ListGroupItem();
+            groupItem.setText(routeSequence.getRoute().getName());
+            groupRoutes.add(groupItem);
+            routeSequenceListGroupItemMap.put(routeSequence.getId(), groupItem);
+        }
     }
 
     @Override
@@ -47,29 +88,33 @@ public class ScenarioItemPanel extends AbstractItemPanel<Scenario, ScenarioState
         btnSchedule.setEnabled(connected);
         btnStart.setEnabled(connected);
         btnStop.setEnabled(connected);
-
-        getLblState().setText(getModel().getRunState().name());
+        /*
+         * Only react to run state changed for a connected device to avoid override button state for last send state
+         * event.
+         */
+        if (connected) {
+            EventReceiver.getInstance().addListener(scenarioStateRemoteListener);
+        } else {
+            EventReceiver.getInstance().removeListener(scenarioStateRemoteListener);
+        }
     }
 
-    private Optional<RouteSequence> getRouteSequenceFromId(Long routeSequenceId) {
+    Optional<RouteSequence> getRouteSequenceFromId(Long routeSequenceId) {
         for (RouteSequence routeSequence : getModel().getRouteSequences()) {
-            if (Long.compare(routeSequence.getId(), routeSequenceId) == 0) {
+            if (routeSequence.getId().equals(routeSequenceId)) {
                 return Optional.of(routeSequence);
             }
         }
         return Optional.empty();
     }
 
-    public void updateRouteState(RouteStateEvent event) {
+    void updateRouteState(RouteStateEvent event) {
         // reset for next state
         ListGroupItem listGroupItem = routeSequenceListGroupItemMap.get(event.getRouteSequenceId());
         Optional<RouteSequence> routeSequenceFromId = getRouteSequenceFromId(event.getRouteSequenceId());
         if (routeSequenceFromId.isPresent()) {
             listGroupItem.setText(routeSequenceFromId.get().getRoute().getName());
             // detail label text
-            String text = event.getState().name() + " (" + routeSequenceFromId.get().getPosition() + "/" + getModel()
-                .getRouteSequences().size() + ")";
-            getLblStateDetails().setText(text);
 
             listGroupItem.setType(ListGroupItemType.DEFAULT);
             // remove icon
@@ -101,8 +146,7 @@ public class ScenarioItemPanel extends AbstractItemPanel<Scenario, ScenarioState
         }
     }
 
-    @Override
-    public void updateItemData(ScenarioStateEvent event) {
+    private void updateScenarioState(ScenarioStateEvent event) {
         switch (event.getState()) {
             case RUNNING:
                 btnSchedule.setEnabled(false);
@@ -133,61 +177,10 @@ public class ScenarioItemPanel extends AbstractItemPanel<Scenario, ScenarioState
                 btnStop.setEnabled(false);
                 break;
         }
-        getLblState().setText(event.getState().name());
     }
 
-    @Override
-    public PanelCollapse createCollapseContentPanel() {
-        PanelCollapse contentPanel = new PanelCollapse();
-        contentPanel.add(createFunctions());
-        contentPanel.add(createRouteProgress());
-        return contentPanel;
-    }
+    interface Binder extends UiBinder<Widget, ScenarioItemControlsPanel> {
 
-    private Row createFunctions() {
-        Row rowDrivingFunctions = new Row();
-        btnSchedule = new Button("Schedule", new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-                RequestUtils.getInstance().getScenarioService()
-                    .schedule(getModel().getId(), RequestUtils.VOID_ASYNC_CALLBACK);
-            }
-        });
-        btnStart = new Button("Start", new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-                RequestUtils.getInstance().getScenarioService()
-                    .start(getModel().getId(), RequestUtils.VOID_ASYNC_CALLBACK);
-            }
-        });
-        btnStop = new Button("Stop", new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-                RequestUtils.getInstance().getScenarioService()
-                    .stop(getModel().getId(), RequestUtils.VOID_ASYNC_CALLBACK);
-            }
-        });
-        rowDrivingFunctions.add(new Column(ColumnSize.MD_12, btnSchedule, btnStart, btnStop));
-        return rowDrivingFunctions;
-    }
-
-    private ListGroup createRouteProgress() {
-        ListGroup listGroup = new ListGroup();
-        Scenario scenario = getModel();
-        List<RouteSequence> routeSequences = scenario.getRouteSequences();
-        Collections.sort(routeSequences, new Comparator<RouteSequence>() {
-            @Override
-            public int compare(RouteSequence o1, RouteSequence o2) {
-                return Long.compare(o1.getPosition(), o2.getPosition());
-            }
-        });
-        for (RouteSequence routeSequence : routeSequences) {
-            ListGroupItem groupItem = new ListGroupItem();
-            groupItem.setText(routeSequence.getRoute().getName());
-            listGroup.add(groupItem);
-            routeSequenceListGroupItemMap.put(routeSequence.getId(), groupItem);
-        }
-        return listGroup;
     }
 
 }

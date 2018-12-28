@@ -12,6 +12,7 @@ import net.wbz.moba.controlcenter.web.client.request.RequestUtils;
  * Util to register {@link RemoteEventListener} to receiving {@link Event}s from server.
  * Running a single {@link RemoteEventService}.
  *
+ * TODO create delegator to only register one listener for each event and delegate the calls to the listeners of the event
  * @author Daniel Tuerk
  */
 public class EventReceiver {
@@ -27,11 +28,16 @@ public class EventReceiver {
         return instance;
     }
 
-    public void addListener(net.wbz.moba.controlcenter.web.client.event.RemoteEventListener listener) {
-        addListener(listener.getRemoteClass(), listener);
+    public void addListener(net.wbz.moba.controlcenter.web.client.event.RemoteEventListener... listeners) {
+        for (net.wbz.moba.controlcenter.web.client.event.RemoteEventListener listener : listeners) {
+            addListener(listener.getRemoteClass(), listener);
+        }
     }
-    public void removeListener(net.wbz.moba.controlcenter.web.client.event.RemoteEventListener listener) {
-        removeListener(listener.getRemoteClass(), listener);
+
+    public void removeListener(net.wbz.moba.controlcenter.web.client.event.RemoteEventListener... listeners) {
+        for (net.wbz.moba.controlcenter.web.client.event.RemoteEventListener listener : listeners) {
+            removeListener(listener.getRemoteClass(), listener);
+        }
     }
 
     public void addListener(final Class<? extends Event> eventClazz, RemoteEventListener listener) {

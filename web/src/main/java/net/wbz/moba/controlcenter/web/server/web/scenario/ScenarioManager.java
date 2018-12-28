@@ -25,7 +25,7 @@ import net.wbz.moba.controlcenter.web.shared.scenario.Route;
 import net.wbz.moba.controlcenter.web.shared.scenario.RouteSequence;
 import net.wbz.moba.controlcenter.web.shared.scenario.RoutesChangedEvent;
 import net.wbz.moba.controlcenter.web.shared.scenario.Scenario;
-import net.wbz.moba.controlcenter.web.shared.scenario.ScenariosChangedEvent;
+import net.wbz.moba.controlcenter.web.shared.scenario.ScenarioDataChangedEvent;
 import net.wbz.moba.controlcenter.web.shared.scenario.Station;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -244,7 +244,7 @@ public class ScenarioManager {
     }
 
     private void fireScenariosChanged() {
-        eventBroadcaster.fireEvent(new ScenariosChangedEvent());
+        eventBroadcaster.fireEvent(new ScenarioDataChangedEvent());
     }
 
     private void fireRoutesChanged() {

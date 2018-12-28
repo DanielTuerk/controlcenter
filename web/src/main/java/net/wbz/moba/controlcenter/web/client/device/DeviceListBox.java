@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import net.wbz.moba.controlcenter.web.client.event.EventReceiver;
-import net.wbz.moba.controlcenter.web.client.event.device.RemoteConnectionListener;
+import net.wbz.moba.controlcenter.web.client.event.device.RemoteDeviceListener;
 import net.wbz.moba.controlcenter.web.client.request.Callbacks.OnlySuccessAsyncCallback;
 import net.wbz.moba.controlcenter.web.client.request.RequestUtils;
 import net.wbz.moba.controlcenter.web.shared.bus.DeviceInfo;
@@ -26,7 +26,7 @@ public class DeviceListBox extends Composite {
 
     private static Binder UI_BINDER = GWT.create(Binder.class);
     private final List<DeviceInfo> devices = new ArrayList<>();
-    private final RemoteConnectionListener remoteConnectionListener;
+    private final RemoteDeviceListener remoteDeviceListener;
     @UiField
     Button btnDropup;
     @UiField
@@ -35,14 +35,19 @@ public class DeviceListBox extends Composite {
     public DeviceListBox() {
         initWidget(UI_BINDER.createAndBindUi(this));
 
-        remoteConnectionListener = new RemoteConnectionListener() {
+        remoteDeviceListener = new RemoteDeviceListener() {
             @Override
-            public void connected(DeviceInfo deviceInfoEvent) {
+            public void devicesModified(DeviceInfo deviceInfo) {
                 reload();
             }
 
             @Override
-            public void disconnected(DeviceInfo deviceInfoEvent) {
+            public void deviceCreated(DeviceInfo deviceInfoEvent) {
+                reload();
+            }
+
+            @Override
+            public void deviceRemoved(DeviceInfo deviceInfoEvent) {
                 reload();
             }
         };
@@ -52,7 +57,7 @@ public class DeviceListBox extends Composite {
     protected void onLoad() {
         super.onLoad();
 
-        EventReceiver.getInstance().addListener(remoteConnectionListener);
+        EventReceiver.getInstance().addListener(remoteDeviceListener);
 
         reload();
     }
@@ -60,7 +65,7 @@ public class DeviceListBox extends Composite {
     @Override
     protected void onUnload() {
         super.onUnload();
-        EventReceiver.getInstance().removeListener(remoteConnectionListener);
+        EventReceiver.getInstance().removeListener(remoteDeviceListener);
     }
 
 

@@ -5,13 +5,13 @@ import de.novanic.eventservice.client.event.Event;
 /**
  * @author Daniel Tuerk
  */
-public class ScenariosChangedEvent implements Event {
+public class ScenarioDataChangedEvent implements Event {
 
-    public ScenariosChangedEvent() {
+    public ScenarioDataChangedEvent() {
     }
 
     @Override
     public String toString() {
-        return "ScenariosChangedEvent{}";
+        return "ScenarioDataChangedEvent{}";
     }
 }

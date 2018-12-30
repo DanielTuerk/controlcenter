@@ -74,7 +74,7 @@ public class TrackViewer3dPanel extends AbstractTrackViewerPanel {
                                         if (configuration.isValid()) {
                                             if (!trackWidgetsOfConfiguration.containsKey(configuration)) {
                                                 trackWidgetsOfConfiguration.put(configuration,
-                                                        new ArrayList<Basic3dTrackWidget>());
+                                                    new ArrayList<>());
                                             }
                                             // avoid same widget for equal bit state configuration
                                             if (!trackWidgetsOfConfiguration.get(configuration).contains(trackWidget)) {

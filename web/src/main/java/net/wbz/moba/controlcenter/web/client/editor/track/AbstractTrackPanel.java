@@ -5,24 +5,25 @@ import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
- * TODO refactoring, track is build in 2  implementations
+ * Panel for the track.
+ *
  * @author Daniel Tuerk
  */
 abstract public class AbstractTrackPanel extends AbsolutePanel {
 
     private final boolean fixedSize;
 
-    public AbstractTrackPanel() {
+    protected AbstractTrackPanel() {
         this(false);
     }
 
-    public AbstractTrackPanel(boolean fixedSize) {
+    AbstractTrackPanel(boolean fixedSize) {
         this.fixedSize = fixedSize;
         addStyleName("boundary");
         getElement().getStyle().setOverflow(Style.Overflow.AUTO);
     }
 
-    protected boolean isFixedSize() {
+    boolean isFixedSize() {
         return fixedSize;
     }
 

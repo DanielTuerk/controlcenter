@@ -14,17 +14,20 @@ import net.wbz.moba.controlcenter.web.client.model.track.ModelManager;
 import net.wbz.moba.controlcenter.web.shared.track.model.AbstractTrackPart;
 
 /**
+ * Panel to display the track in read only mode.
+ * No events or state changes are recognized.
+ *
  * @author Daniel Tuerk
  */
 public class SimpleTrackPanel extends AbstractTrackPanel {
 
-    public static final int TRACK_PANEL_PADDING_IN_PX = 2 * AbstractSvgTrackWidget.WIDGET_HEIGHT;
+    private static final int TRACK_PANEL_PADDING_IN_PX = 2 * AbstractSvgTrackWidget.WIDGET_HEIGHT;
 
-    public SimpleTrackPanel() {
+    protected SimpleTrackPanel() {
         super();
     }
 
-    public SimpleTrackPanel(boolean fixedSize) {
+    SimpleTrackPanel(boolean fixedSize) {
         super(fixedSize);
     }
 
@@ -42,7 +45,7 @@ public class SimpleTrackPanel extends AbstractTrackPanel {
         add(widget, left, top);
     }
 
-    public void loadTrack() {
+    void loadTrack() {
         for (int i = getWidgetCount() - 1; i >= 0; i--) {
             remove(i);
         }
@@ -72,7 +75,7 @@ public class SimpleTrackPanel extends AbstractTrackPanel {
                         }
                         Log.info("load track done " + new Date().toString());
                         if (!isFixedSize()) {
-                            setHeight(String.valueOf(maxTop + TRACK_PANEL_PADDING_IN_PX) + "px");
+                            setHeight((maxTop + TRACK_PANEL_PADDING_IN_PX) + "px");
                         }
                         trackLoaded();
                     }

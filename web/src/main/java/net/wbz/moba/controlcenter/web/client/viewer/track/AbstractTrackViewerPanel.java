@@ -2,9 +2,9 @@ package net.wbz.moba.controlcenter.web.client.viewer.track;
 
 import net.wbz.moba.controlcenter.web.client.editor.track.AbstractTrackPanel;
 import net.wbz.moba.controlcenter.web.client.event.EventReceiver;
-import net.wbz.moba.controlcenter.web.client.event.track.FeedbackTrackBlockRemoteListener;
 import net.wbz.moba.controlcenter.web.client.event.device.RailVoltageRemoteListener;
 import net.wbz.moba.controlcenter.web.client.event.device.RemoteConnectionListener;
+import net.wbz.moba.controlcenter.web.client.event.track.FeedbackTrackBlockRemoteListener;
 import net.wbz.moba.controlcenter.web.client.event.track.SignalFunctionRemoteListener;
 import net.wbz.moba.controlcenter.web.client.event.track.TrackBlockRemoteListener;
 import net.wbz.moba.controlcenter.web.client.event.track.TrackPartStateRemoteListener;
@@ -15,6 +15,10 @@ import net.wbz.moba.controlcenter.web.shared.viewer.SignalFunctionStateEvent;
 import net.wbz.moba.controlcenter.web.shared.viewer.TrackPartBlockEvent.STATE;
 
 /**
+ * Abstract viewer panel for the track.
+ * Initialize the events for state changes.
+ * The implementation takes care about the presentation of the track.
+ *
  * @author Daniel Tuerk
  */
 abstract public class AbstractTrackViewerPanel extends AbstractTrackPanel {

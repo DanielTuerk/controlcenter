@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
  * detected.
  * </p>
  * <p>
- * The registry reacts to free montioring blocks of the {@link SignalBlock} and will start waiting {@link Train}s.
+ * The registry reacts to free monitoring blocks of the {@link SignalBlock} and will start waiting {@link Train}s.
  * </p>
  * TODO wie mit re-register umgehen?
  *
@@ -77,10 +77,6 @@ public class SignalBlockRegistry extends AbstractBlockRegistry<Signal> {
 
         this.signals = signals;
         for (final Signal signal : signals) {
-
-            // set initial to HP0
-            // TODO
-            // trackViewerService.switchSignal(signal, FUNCTION.HP0);
 
             if (checkBlockFunction(signal.getMonitoringBlock()) && checkBlockFunction(signal.getStopBlock())) {
 
@@ -145,7 +141,7 @@ public class SignalBlockRegistry extends AbstractBlockRegistry<Signal> {
         }
     }
 
-    protected void addFeedbackBlockListener(AbstractSignalBlockListener signalBlockListener) {
+    private void addFeedbackBlockListener(AbstractSignalBlockListener signalBlockListener) {
         final BusAddressIdentifier busAddressIdentifier = getBusAddressIdentifier(
             signalBlockListener.getTrackBlock().getBlockFunction());
         if (!feedbackBlockListeners.containsKey(busAddressIdentifier)) {

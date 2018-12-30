@@ -1,24 +1,27 @@
 package net.wbz.moba.controlcenter.web.client.event;
 
+import com.google.common.collect.Maps;
 import de.novanic.eventservice.client.event.Event;
 import de.novanic.eventservice.client.event.RemoteEventService;
 import de.novanic.eventservice.client.event.RemoteEventServiceFactory;
 import de.novanic.eventservice.client.event.domain.DomainFactory;
 import de.novanic.eventservice.client.event.listener.RemoteEventListener;
+import java.util.Map;
 import net.wbz.moba.controlcenter.web.client.request.Callbacks.VoidAsyncCallback;
 import net.wbz.moba.controlcenter.web.client.request.RequestUtils;
+import net.wbz.moba.controlcenter.web.client.util.Log;
 
 /**
  * Util to register {@link RemoteEventListener} to receiving {@link Event}s from server.
  * Running a single {@link RemoteEventService}.
  *
- * TODO create delegator to only register one listener for each event and delegate the calls to the listeners of the event
  * @author Daniel Tuerk
  */
 public class EventReceiver {
 
     private final static EventReceiver instance = new EventReceiver();
     private final RemoteEventService theRemoteEventService;
+    private final Map<Class<? extends Event>, ListenerDelegate> listenersByEvent = Maps.newConcurrentMap();
 
     private EventReceiver() {
         theRemoteEventService = RemoteEventServiceFactory.getInstance().getRemoteEventService();
@@ -41,15 +44,37 @@ public class EventReceiver {
     }
 
     public void addListener(final Class<? extends Event> eventClazz, RemoteEventListener listener) {
-        theRemoteEventService.addListener(DomainFactory.getDomain(eventClazz.getName()), listener);
+        if (!listenersByEvent.containsKey(eventClazz)) {
 
-        // trigger to fire last event from cache
-        RequestUtils.getInstance().getBusService().requestResendLastEvent(eventClazz.getName(),
+            final ListenerDelegate delegate = new ListenerDelegate();
+            delegate.addListener(listener);
+            listenersByEvent.put(eventClazz, delegate);
+
+            // register only the delegate
+            theRemoteEventService.addListener(DomainFactory.getDomain(eventClazz.getName()), delegate);
+
+            // trigger to fire last event from cache
+            RequestUtils.getInstance().getBusService().requestResendLastEvent(eventClazz.getName(),
                 new VoidAsyncCallback());
+
+        } else {
+            listenersByEvent.get(eventClazz).addListener(listener);
+        }
     }
 
     public void removeListener(Class<? extends Event> eventClazz, RemoteEventListener listener) {
-        theRemoteEventService.removeListener(DomainFactory.getDomain(eventClazz.getName()), listener);
+        if (listenersByEvent.containsKey(eventClazz)) {
+            ListenerDelegate delegate = listenersByEvent.get(eventClazz);
+            delegate.removeListener(listener);
+
+            if (delegate.isEmpty()) {
+                // remove the delegate then no more listeners are registered
+                theRemoteEventService.removeListener(DomainFactory.getDomain(eventClazz.getName()), delegate);
+                listenersByEvent.remove(eventClazz);
+            }
+        } else {
+            Log.error("no listener registered for " + eventClazz.getSimpleName());
+        }
     }
 
 }

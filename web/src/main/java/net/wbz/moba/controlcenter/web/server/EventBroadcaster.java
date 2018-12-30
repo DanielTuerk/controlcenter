@@ -8,7 +8,6 @@ import de.novanic.eventservice.client.event.Event;
 import de.novanic.eventservice.client.event.domain.DomainFactory;
 import de.novanic.eventservice.service.EventExecutorService;
 import de.novanic.eventservice.service.EventExecutorServiceFactory;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
@@ -93,6 +92,7 @@ public class EventBroadcaster {
 
     private class ResendEventRunnable implements Runnable {
 
+        private static final long SLEEP_IN_MILLIS = 1000L;
         private final String eventClazzName;
         private final Set<Event> events;
 
@@ -106,14 +106,14 @@ public class EventBroadcaster {
             try {
                 LOG.debug("wait to resend last events of " + eventClazzName);
                 // TODO delay needed or wrong time to call?
-                Thread.sleep(1000L);
-                LOG.debug("request refire last events of " + eventClazzName);
+                Thread.sleep(SLEEP_IN_MILLIS);
+                LOG.debug("request resend last events of " + eventClazzName);
 
                 for (Event event : events) {
                     sendEvent(event);
                 }
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                LOG.error("error wait to resend", e);
             }
         }
     }

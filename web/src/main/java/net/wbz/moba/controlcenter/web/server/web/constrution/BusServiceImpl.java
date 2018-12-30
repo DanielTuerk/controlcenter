@@ -265,7 +265,7 @@ public class BusServiceImpl extends RemoteServiceServlet implements BusService {
 
     @Override
     public void requestResendLastEvent(final String eventClazzName) {
-        eventBroadcaster.refireEvent(eventClazzName);
+        eventBroadcaster.resendEvent(eventClazzName);
     }
 
     public void connectBus() {

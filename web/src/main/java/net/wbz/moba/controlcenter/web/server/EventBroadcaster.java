@@ -64,9 +64,7 @@ public class EventBroadcaster {
      *
      * @param eventClazzName name of the event class
      */
-    public synchronized void refireEvent(final String eventClazzName) {
-        // TODO fire each event by equals (multiple to send for each event class)
-
+    public synchronized void resendEvent(final String eventClazzName) {
         if (lastSendEvents.containsKey(eventClazzName)) {
             taskExecutor.submit(new ResendEventRunnable(eventClazzName,
                 Sets.newHashSet(lastSendEvents.get(eventClazzName))));

@@ -19,7 +19,7 @@ import net.wbz.moba.controlcenter.web.client.util.Log;
  */
 public class EventReceiver {
 
-    private final static EventReceiver instance = new EventReceiver();
+    private final static EventReceiver INSTANCE = new EventReceiver();
     private final RemoteEventService theRemoteEventService;
     private final Map<Class<? extends Event>, ListenerDelegate> listenersByEvent = Maps.newConcurrentMap();
 
@@ -28,7 +28,7 @@ public class EventReceiver {
     }
 
     public static EventReceiver getInstance() {
-        return instance;
+        return INSTANCE;
     }
 
     public void addListener(net.wbz.moba.controlcenter.web.client.event.RemoteEventListener... listeners) {
@@ -53,7 +53,7 @@ public class EventReceiver {
             // register only the delegate
             theRemoteEventService.addListener(DomainFactory.getDomain(eventClazz.getName()), delegate);
 
-            // trigger to fire last event from cache
+            // trigger to fire last event from server cache
             RequestUtils.getInstance().getBusService().requestResendLastEvent(eventClazz.getName(),
                 new VoidAsyncCallback());
 

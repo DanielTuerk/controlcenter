@@ -17,9 +17,9 @@ import net.wbz.moba.controlcenter.web.client.components.modal.DeleteModal;
 import net.wbz.moba.controlcenter.web.client.components.table.DeleteButtonColumn;
 import net.wbz.moba.controlcenter.web.client.components.table.EditButtonColumn;
 import net.wbz.moba.controlcenter.web.client.event.EventReceiver;
+import net.wbz.moba.controlcenter.web.client.event.scenario.RouteRemoteListener;
 import net.wbz.moba.controlcenter.web.client.request.Callbacks.OnlySuccessAsyncCallback;
 import net.wbz.moba.controlcenter.web.client.request.RequestUtils;
-import net.wbz.moba.controlcenter.web.client.event.scenario.ScenarioRemoteListener;
 import net.wbz.moba.controlcenter.web.shared.scenario.Route;
 import net.wbz.moba.controlcenter.web.shared.scenario.Station;
 import net.wbz.moba.controlcenter.web.shared.scenario.StationRail;
@@ -34,7 +34,7 @@ import org.gwtbootstrap3.client.ui.gwt.CellTable;
 public class RoutePanel extends Composite {
 
     private static Binder uiBinder = GWT.create(Binder.class);
-    private final ScenarioRemoteListener scenarioRemoteListener;
+    private final RouteRemoteListener routeRemoteListener;
     @UiField
     Container container;
     @UiField
@@ -47,7 +47,7 @@ public class RoutePanel extends Composite {
     public RoutePanel() {
         initWidget(uiBinder.createAndBindUi(this));
 
-        scenarioRemoteListener = anEvent -> {
+        routeRemoteListener = anEvent -> {
                 loadRoutes();
         };
 
@@ -135,7 +135,7 @@ public class RoutePanel extends Composite {
     protected void onLoad() {
         super.onLoad();
 
-        EventReceiver.getInstance().addListener(scenarioRemoteListener);
+        EventReceiver.getInstance().addListener(routeRemoteListener);
 
         RequestUtils.getInstance().getScenarioEditorService().getStations(
             new OnlySuccessAsyncCallback<Collection<Station>>() {
@@ -152,7 +152,7 @@ public class RoutePanel extends Composite {
     @Override
     protected void onUnload() {
         super.onUnload();
-        EventReceiver.getInstance().removeListener(scenarioRemoteListener);
+        EventReceiver.getInstance().removeListener(routeRemoteListener);
     }
 
     private String getStationRailDisplayName(StationRail stationRail) {

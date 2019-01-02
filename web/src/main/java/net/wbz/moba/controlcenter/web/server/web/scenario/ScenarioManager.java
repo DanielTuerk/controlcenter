@@ -17,8 +17,6 @@ import net.wbz.moba.controlcenter.web.server.persist.scenario.RouteSequenceEntit
 import net.wbz.moba.controlcenter.web.server.persist.scenario.ScenarioDao;
 import net.wbz.moba.controlcenter.web.server.persist.scenario.ScenarioDataMapper;
 import net.wbz.moba.controlcenter.web.server.persist.scenario.ScenarioEntity;
-import net.wbz.moba.controlcenter.web.server.persist.scenario.StationDao;
-import net.wbz.moba.controlcenter.web.server.persist.scenario.StationDataMapper;
 import net.wbz.moba.controlcenter.web.server.persist.scenario.TrackBuilder;
 import net.wbz.moba.controlcenter.web.server.persist.scenario.TrackNotFoundException;
 import net.wbz.moba.controlcenter.web.shared.scenario.Route;
@@ -50,29 +48,24 @@ public class ScenarioManager {
     private final List<Route> routes = new ArrayList<>();
 
     private final ScenarioDao scenarioDao;
-    private final StationDao stationDao;
     private final RouteDao routeDao;
     private final RouteSequenceDao routeSequenceDao;
     private final EventBroadcaster eventBroadcaster;
     private final ScenarioDataMapper dataMapper;
     private final RouteDataMapper routeDataMapper;
-    private final StationDataMapper stationDataMapper;
     private final RouteSequenceDataMapper routeSequenceDataMapper;
     private final TrackBuilder trackBuilder;
 
     @Inject
-    public ScenarioManager(ScenarioDao scenarioDao, StationDao stationDao, RouteDao routeDao,
-        RouteSequenceDao routeSequenceDao, EventBroadcaster eventBroadcaster, RouteDataMapper routeDataMapper,
-        ScenarioDataMapper dataMapper, StationDataMapper stationDataMapper,
+    public ScenarioManager(ScenarioDao scenarioDao, RouteDao routeDao, RouteSequenceDao routeSequenceDao,
+        EventBroadcaster eventBroadcaster, RouteDataMapper routeDataMapper, ScenarioDataMapper dataMapper,
         RouteSequenceDataMapper routeSequenceDataMapper, TrackBuilder trackBuilder) {
         this.scenarioDao = scenarioDao;
-        this.stationDao = stationDao;
         this.routeDao = routeDao;
         this.routeSequenceDao = routeSequenceDao;
         this.eventBroadcaster = eventBroadcaster;
         this.routeDataMapper = routeDataMapper;
         this.dataMapper = dataMapper;
-        this.stationDataMapper = stationDataMapper;
         this.routeSequenceDataMapper = routeSequenceDataMapper;
         this.trackBuilder = trackBuilder;
     }
@@ -82,10 +75,6 @@ public class ScenarioManager {
             loadScenariosFromDatabase();
         }
         return scenarios;
-    }
-
-    List<Station> getStations() {
-        return Lists.newArrayList(stationDataMapper.transformSource(stationDao.listAll()));
     }
 
     Scenario getScenarioById(long scenarioId) {
@@ -139,21 +128,7 @@ public class ScenarioManager {
         scenarioDao.update(scenarioEntity);
         loadScenariosFromDatabase();
         fireScenariosChanged();
-    }
-
-    @Transactional
-    void createStation(Station station) {
-        stationDao.create(stationDataMapper.transformTarget(station));
-    }
-
-    @Transactional
-    void updateStation(Station station) {
-        stationDao.update(stationDataMapper.transformTarget(station));
-    }
-
-    @Transactional
-    void deleteStation(long stationId) {
-        stationDao.delete(stationDao.findById(stationId));
+        fireRoutesChanged();
     }
 
     synchronized Collection<Route> getRoutes() {

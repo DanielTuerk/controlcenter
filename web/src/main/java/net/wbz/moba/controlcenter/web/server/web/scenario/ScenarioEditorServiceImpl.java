@@ -4,12 +4,10 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import java.util.Collection;
-import net.wbz.moba.controlcenter.web.server.EventBroadcaster;
 import net.wbz.moba.controlcenter.web.server.persist.scenario.TrackBuilder;
 import net.wbz.moba.controlcenter.web.server.persist.scenario.TrackNotFoundException;
 import net.wbz.moba.controlcenter.web.shared.scenario.Route;
 import net.wbz.moba.controlcenter.web.shared.scenario.Scenario;
-import net.wbz.moba.controlcenter.web.shared.scenario.ScenarioDataChangedEvent;
 import net.wbz.moba.controlcenter.web.shared.scenario.ScenarioEditorService;
 import net.wbz.moba.controlcenter.web.shared.scenario.Station;
 import net.wbz.moba.controlcenter.web.shared.scenario.Track;
@@ -26,18 +24,14 @@ public class ScenarioEditorServiceImpl extends RemoteServiceServlet implements S
 
     private final ScenarioManager scenarioManager;
     private final TrackBuilder trackBuilder;
-
-    /**
-     * Broadcaster for client side event handling of state changes.
-     */
-    private final EventBroadcaster eventBroadcaster;
+    private final StationManager stationManager;
 
     @Inject
     public ScenarioEditorServiceImpl(ScenarioManager scenarioManager, TrackBuilder trackBuilder,
-        EventBroadcaster eventBroadcaster) {
+        StationManager stationManager) {
         this.scenarioManager = scenarioManager;
         this.trackBuilder = trackBuilder;
-        this.eventBroadcaster = eventBroadcaster;
+        this.stationManager = stationManager;
     }
 
     @Override
@@ -62,22 +56,22 @@ public class ScenarioEditorServiceImpl extends RemoteServiceServlet implements S
 
     @Override
     public Collection<Station> getStations() {
-        return scenarioManager.getStations();
+        return stationManager.getStations();
     }
 
     @Override
     public void createStation(Station station) {
-        scenarioManager.createStation(station);
+        stationManager.createStation(station);
     }
 
     @Override
     public void updateStation(Station station) {
-        scenarioManager.updateStation(station);
+        stationManager.updateStation(station);
     }
 
     @Override
     public void deleteStation(long stationId) {
-        scenarioManager.deleteStation(stationId);
+        stationManager.deleteStation(stationId);
     }
 
     @Override
@@ -88,13 +82,11 @@ public class ScenarioEditorServiceImpl extends RemoteServiceServlet implements S
     @Override
     public void createRoute(Route route) {
         scenarioManager.createRoute(route);
-        fireChangeEvent();
     }
 
     @Override
     public void updateRoute(Route route) {
         scenarioManager.updateRoute(route);
-        fireChangeEvent();
     }
 
     @Override
@@ -112,7 +104,4 @@ public class ScenarioEditorServiceImpl extends RemoteServiceServlet implements S
         return null;
     }
 
-    private void fireChangeEvent() {
-        eventBroadcaster.fireEvent(new ScenarioDataChangedEvent());
-    }
 }

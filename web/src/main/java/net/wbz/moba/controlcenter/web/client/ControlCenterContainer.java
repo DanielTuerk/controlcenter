@@ -27,11 +27,7 @@ public class ControlCenterContainer extends Composite {
     }
 
     void setContent(Widget widget) {
-        for (Widget container : contentContainer) {
-            if (contentContainer.getElement().isOrHasChild(container.getElement())) {
-                contentContainer.remove(container);
-            }
-        }
+        contentContainer.getElement().removeAllChildren();
         contentContainer.add(widget);
     }
 

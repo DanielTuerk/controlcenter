@@ -1,7 +1,6 @@
 package net.wbz.moba.controlcenter.web.client.model.track;
 
 import com.google.common.base.Strings;
-import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
 import net.wbz.moba.controlcenter.web.client.editor.track.EditTrackWidgetHandler;
@@ -21,15 +20,17 @@ import org.vectomatic.dom.svg.OMSVGSVGElement;
 import org.vectomatic.dom.svg.utils.OMSVGParser;
 
 /**
+ * TODO EditTrackWidgetHandler nur fuer widget mit edit content
+ *
  * @author Daniel Tuerk
  */
 abstract public class AbstractSvgTrackWidget<T extends AbstractTrackPart> extends SimplePanel
     implements EditTrackWidgetHandler {
 
     private static final String CSS_WIDGET_DISABLED = "widget-disabled";
-    private static final int WIDGET_WIDTH = 25;
+    public static final int WIDGET_WIDTH = 25;
     public static final int WIDGET_HEIGHT = 25;
-    private final OMSVGDocument svgDocument = OMSVGParser.currentDocument();
+    private final OMSVGDocument svgDocument;
     private final OMSVGSVGElement svgRootElement;
     /**
      * Model for the widget.
@@ -48,10 +49,9 @@ abstract public class AbstractSvgTrackWidget<T extends AbstractTrackPart> extend
             addStyleName(additionalStyle);
         }
 
+        svgDocument = OMSVGParser.currentDocument();
         // Create the root svg element
         svgRootElement = svgDocument.createSVGSVGElement();
-        svgRootElement.setWidth(Style.Unit.PX, WIDGET_WIDTH);
-        svgRootElement.setHeight(Style.Unit.PX, WIDGET_HEIGHT);
 
         setEnabled(false);
     }
@@ -77,6 +77,9 @@ abstract public class AbstractSvgTrackWidget<T extends AbstractTrackPart> extend
         super.onLoad();
         addSvgContent(svgDocument, svgRootElement, color);
         getElement().appendChild(svgRootElement.getElement());
+
+        setWidth(getWidgetWidth() + "px");
+        setHeight(getWidgetHeight() + "px");
     }
 
     @Override
@@ -87,12 +90,19 @@ abstract public class AbstractSvgTrackWidget<T extends AbstractTrackPart> extend
 
     /**
      * Add the SVG content for the track part to the given {@link org.vectomatic.dom.svg.OMSVGSVGElement}.
-     *
-     * @param doc {@link OMSVGDocument}
+     *  @param doc {@link OMSVGDocument}
      * @param svg {@link OMSVGSVGElement}
      * @param color SVG color for content
      */
-    abstract protected void addSvgContent(OMSVGDocument doc, OMSVGSVGElement svg, String color);
+    abstract protected void addSvgContent(OMSVGDocument doc, OMSVGSVGElement svg, String color );
+
+    protected int getWidgetWidth() {
+        return AbstractSvgTrackWidget.WIDGET_WIDTH;
+    }
+
+    protected int getWidgetHeight() {
+        return AbstractSvgTrackWidget.WIDGET_HEIGHT;
+    }
 
     /**
      * Clear the SVG content from the widget.

@@ -118,7 +118,6 @@ public class TrainManager {
     }
 
     private TrainModule getTrainModule(Train train, DeviceManager deviceManager) throws DeviceAccessException {
-
         Set<Integer> additionalAddresses = Sets.newHashSet();
         for (TrainFunction trainFunction : train.getFunctions()) {
             if (trainFunction != null && trainFunction.getConfiguration() != null) {
@@ -126,7 +125,7 @@ public class TrainManager {
             }
         }
         return deviceManager.getConnectedDevice().getTrainModule(train.getAddressByte(),
-            ArrayUtils.toPrimitive(additionalAddresses.toArray(new Integer[additionalAddresses.size()])));
+            ArrayUtils.toPrimitive(additionalAddresses.toArray(new Integer[0])));
     }
 
     private synchronized void reloadTrains() {
@@ -144,7 +143,7 @@ public class TrainManager {
     }
 
     @Transactional
-    public void createTrain(Train train) {
+    void createTrain(Train train) {
         TrainEntity entity = new TrainEntity();
         entity.setName(train.getName());
         entity.setAddress(train.getAddress());
@@ -154,7 +153,7 @@ public class TrainManager {
     }
 
     @Transactional
-    public void updateTrain(Train train) {
+    void updateTrain(Train train) {
         TrainEntity entity = dataMapper.transformTarget(train);
         dao.update(entity);
 
@@ -162,12 +161,12 @@ public class TrainManager {
     }
 
     @Transactional
-    public void deleteTrain(long trainId) {
+    void deleteTrain(long trainId) {
         dao.delete(dao.findById(trainId));
         reloadTrains();
     }
 
-    public Collection<Train> getTrains() {
+    Collection<Train> getTrains() {
         if (cachedTrains.isEmpty()) {
             cachedTrains.addAll(dataMapper.transformSource(dao.getTrains()));
         }

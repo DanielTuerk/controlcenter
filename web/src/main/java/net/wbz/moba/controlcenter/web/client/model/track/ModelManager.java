@@ -53,6 +53,9 @@ public class ModelManager {
         registerModel(new UncouplerHorizontalWidget());
         registerModel(new UncouplerVerticalWidget());
 
+        registerModel(new BlockStraightHorizontalWidget());
+        registerModel(new BlockStraightVerticalWidget());
+
         // straight after signal because signal extends straight
         registerModel(new StraightVerticalWidget());
         registerModel(new StraightHorizontalWidget());

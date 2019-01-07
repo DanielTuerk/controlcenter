@@ -32,7 +32,7 @@ import net.wbz.moba.controlcenter.web.shared.track.model.HasToggleFunction;
  * @author Daniel Tuerk
  */
 abstract public class AbstractControlSvgTrackWidget<T extends AbstractTrackPart & HasToggleFunction> extends
-        AbstractBlockSvgTrackWidget<T>
+    AbstractSvgTrackWidget<T>
         implements ClickActionViewerWidgetHandler {
 
     private static final String ID_FORM_ADDRESS = "formAddress_control";

@@ -11,14 +11,14 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import net.wbz.moba.controlcenter.web.client.request.RequestUtils;
 import net.wbz.moba.controlcenter.web.client.editor.track.ViewerPaletteWidget;
 import net.wbz.moba.controlcenter.web.client.model.track.AbsoluteTrackPosition;
-import net.wbz.moba.controlcenter.web.client.model.track.AbstractBlockSvgTrackWidget;
+import net.wbz.moba.controlcenter.web.client.model.track.AbstractBlockStraightWidget;
 import net.wbz.moba.controlcenter.web.client.model.track.AbstractControlSvgTrackWidget;
 import net.wbz.moba.controlcenter.web.client.model.track.AbstractSvgTrackWidget;
 import net.wbz.moba.controlcenter.web.client.model.track.ModelManager;
 import net.wbz.moba.controlcenter.web.client.model.track.signal.AbstractSignalWidget;
+import net.wbz.moba.controlcenter.web.client.request.RequestUtils;
 import net.wbz.moba.controlcenter.web.client.viewer.track.AbstractTrackViewerPanel;
 import net.wbz.moba.controlcenter.web.server.persist.construction.track.AbstractTrackPartEntity;
 import net.wbz.moba.controlcenter.web.shared.bus.FeedbackBlockEvent;
@@ -31,7 +31,6 @@ import org.gwtbootstrap3.client.ui.constants.LabelType;
 
 /**
  * Panel for the track viewer.
- * <p/>
  * Loading the track and add all {@link AbstractTrackPartEntity}s to the panel. Register the event listener to receive
  * state changes of all added {@link AbstractTrackPartEntity}s.
  *
@@ -104,8 +103,8 @@ public class TrackViewerPanel extends AbstractTrackViewerPanel {
 
                                 trackWidgets.add(trackWidget);
 
-                                if (trackWidget instanceof AbstractBlockSvgTrackWidget) {
-                                    ((AbstractBlockSvgTrackWidget) trackWidget).unknownBlock();
+                                if (trackWidget instanceof AbstractBlockStraightWidget) {
+                                    ((AbstractBlockStraightWidget) trackWidget).unknownBlock();
                                 }
                                 if (trackWidget instanceof AbstractSignalWidget) {
                                     signalTrackWidgets.add((AbstractSignalWidget) trackWidget);
@@ -171,8 +170,17 @@ public class TrackViewerPanel extends AbstractTrackViewerPanel {
     protected void updateTrackPartBlockState(BusDataConfiguration configuration, boolean state) {
         if (trackWidgetsOfConfiguration.containsKey(configuration)) {
             for (AbstractSvgTrackWidget controlSvgTrackWidget : trackWidgetsOfConfiguration.get(configuration)) {
-                if (controlSvgTrackWidget instanceof AbstractBlockSvgTrackWidget) {
-                    ((AbstractBlockSvgTrackWidget) controlSvgTrackWidget).updateBlockState(configuration, state);
+                if (controlSvgTrackWidget instanceof AbstractBlockStraightWidget) {
+
+                    AbstractBlockStraightWidget blockStraightWidget = (AbstractBlockStraightWidget) controlSvgTrackWidget;
+                    BusDataConfiguration blockFunctionConfig = blockStraightWidget.getTrackPart().getBlockFunction();
+                    if (blockFunctionConfig != null && blockFunctionConfig.equals(configuration)) {
+                        if (state == blockFunctionConfig.getBitState()) {
+                            blockStraightWidget.usedBlock();
+                        } else {
+                            blockStraightWidget.freeBlock();
+                        }
+                    }
                 }
             }
         }
@@ -182,8 +190,8 @@ public class TrackViewerPanel extends AbstractTrackViewerPanel {
     protected void resetTrackForRailVoltage(boolean railVoltageOn) {
         if (!railVoltageOn) {
             for (AbstractSvgTrackWidget trackWidget : trackWidgets) {
-                if (trackWidget instanceof AbstractBlockSvgTrackWidget) {
-                    ((AbstractBlockSvgTrackWidget) trackWidget).resetBlock();
+                if (trackWidget instanceof AbstractBlockStraightWidget) {
+                    ((AbstractBlockStraightWidget) trackWidget).resetBlock();
                 }
             }
         }
@@ -211,13 +219,13 @@ public class TrackViewerPanel extends AbstractTrackViewerPanel {
             public void onSuccess(Train result) {
                 BusDataConfiguration configAsIdentifier = new BusDataConfiguration(1, address, block, true);
                 for (AbstractSvgTrackWidget svgTrackWidget : getTrackWidgetsByConfig(configAsIdentifier)) {
-                    if (svgTrackWidget instanceof AbstractBlockSvgTrackWidget) {
+                    if (svgTrackWidget instanceof AbstractBlockStraightWidget) {
                         switch (state) {
                             case ENTER:
-                                ((AbstractBlockSvgTrackWidget) svgTrackWidget).showTrainOnBlock(result);
+                                ((AbstractBlockStraightWidget) svgTrackWidget).showTrainOnBlock(result);
                                 break;
                             case EXIT:
-                                ((AbstractBlockSvgTrackWidget) svgTrackWidget).removeTrainOnBlock(result);
+                                ((AbstractBlockStraightWidget) svgTrackWidget).removeTrainOnBlock(result);
                                 break;
                         }
                     }

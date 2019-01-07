@@ -9,7 +9,7 @@ import net.wbz.moba.controlcenter.web.shared.track.model.Curve;
 /**
  * @author Daniel Tuerk
  */
-abstract public class AbstractCurveWidget extends AbstractBlockSvgTrackWidget<Curve> {
+abstract public class AbstractCurveWidget extends AbstractSvgTrackWidget<Curve> {
 
     @Override
     protected void addSvgContent(OMSVGDocument doc, OMSVGSVGElement svg, String color) {

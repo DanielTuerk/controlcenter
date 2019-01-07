@@ -31,6 +31,7 @@
     <class>net.wbz.moba.controlcenter.web.server.persist.construction.track.SignalEntity</class>
     <class>net.wbz.moba.controlcenter.web.server.persist.construction.track.SwitchEntity</class>
     <class>net.wbz.moba.controlcenter.web.server.persist.construction.track.UncouplerEntity</class>
+    <class>net.wbz.moba.controlcenter.web.server.persist.construction.track.BlockStraightEntity</class>
 
     <!-- scenario models -->
     <class>net.wbz.moba.controlcenter.web.server.persist.scenario.StationRailEntity</class>

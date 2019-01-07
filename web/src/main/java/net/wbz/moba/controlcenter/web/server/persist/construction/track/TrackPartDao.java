@@ -18,9 +18,8 @@ public class TrackPartDao extends AbstractDao<AbstractTrackPartEntity> {
     private static final Logger LOG = LoggerFactory.getLogger(TrackPartDao.class);
 
     @Inject
-    public TrackPartDao(Provider<EntityManager> entityManager, GridPositionDao gridPositionDao) {
+    public TrackPartDao(Provider<EntityManager> entityManager) {
         super(entityManager, AbstractTrackPartEntity.class);
-        GridPositionDao gridPositionDao1 = gridPositionDao;
     }
 
     public List<AbstractTrackPartEntity> findByConstructionId(Long constructionId) {

@@ -1,34 +1,28 @@
 package net.wbz.moba.controlcenter.web.shared.track.model;
 
-import java.util.Collection;
-
 import com.google.common.collect.Lists;
 import com.googlecode.jmapper.annotations.JMap;
+import java.util.Collection;
 
 /**
+ * Trackpart which is a {@link Straight} in a custom blockLength to display a {@link TrackBlock} with information about the
+ * train on the block.
+ *
  * @author Daniel Tuerk
  */
-public class Straight extends AbstractTrackPart {
+public class BlockStraight extends Straight {
 
     @JMap
-    private Straight.DIRECTION direction;
-
-    public DIRECTION getDirection() {
-        return direction;
-    }
-
-    public void setDirection(DIRECTION direction) {
-        this.direction = direction;
-    }
+    private int blockLength;
 
     @Override
     public Collection<GridPosition> getNextGridPositions(GridPosition previousPosition) {
         int x = getGridPosition().getX();
         int y = getGridPosition().getY();
         if (isVertical()) {
-            y++;
+            y += blockLength;
         } else {
-            x++;
+            x += blockLength;
         }
         return Lists.newArrayList(new GridPosition(x, y));
     }
@@ -38,26 +32,18 @@ public class Straight extends AbstractTrackPart {
         int x = getGridPosition().getX();
         int y = getGridPosition().getY();
         if (isVertical()) {
-            y--;
+            y -= blockLength;
         } else {
-            x--;
+            x -= blockLength;
         }
         return Lists.newArrayList(new GridPosition(x, y));
     }
 
-    @Override
-    public double getRotationAngle() {
-        if (isVertical()) {
-            return 90d;
-        }
-        return 0d;
+    public int getBlockLength() {
+        return blockLength;
     }
 
-    boolean isVertical() {
-        return getDirection() == DIRECTION.VERTICAL;
-    }
-
-    public enum DIRECTION {
-        HORIZONTAL, VERTICAL
+    public void setBlockLength(int blockLength) {
+        this.blockLength = blockLength;
     }
 }

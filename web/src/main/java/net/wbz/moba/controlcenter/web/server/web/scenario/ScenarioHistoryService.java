@@ -44,6 +44,7 @@ public class ScenarioHistoryService implements ScenarioStateListener {
     }
 
     @Override
+    @Transactional
     public void scenarioFinished(Scenario scenario) {
         Long scenarioId = scenario.getId();
         if (scenarioStartDateTimes.containsKey(scenarioId)) {
@@ -60,7 +61,6 @@ public class ScenarioHistoryService implements ScenarioStateListener {
     public void scenarioPaused(Scenario scenario) {
     }
 
-    @Transactional
     private void createHistoryEntry(Scenario scenario, DateTime startDate) {
         ScenarioHistoryEntity entity = new ScenarioHistoryEntity();
         entity.setScenario(scenarioEntityDataMapper.transformTarget(scenario));

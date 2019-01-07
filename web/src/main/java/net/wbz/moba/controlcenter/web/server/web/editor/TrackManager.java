@@ -154,6 +154,7 @@ public class TrackManager implements ConstructionChangeListener {
         }
     }
 
+    @Transactional
     void saveTrack(Collection<AbstractTrackPart> trackParts) {
         performSave(trackParts);
 
@@ -161,7 +162,6 @@ public class TrackManager implements ConstructionChangeListener {
         loadData();
     }
 
-    @Transactional
     private void performSave(Collection<AbstractTrackPart> trackParts) {
         ConstructionEntity constructionEntity = getCurrentConstruction();
 

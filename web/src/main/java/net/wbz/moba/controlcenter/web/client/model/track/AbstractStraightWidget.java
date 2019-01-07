@@ -9,7 +9,7 @@ import net.wbz.moba.controlcenter.web.shared.track.model.Straight;
 /**
  * @author Daniel Tuerk
  */
-abstract public class AbstractStraightWidget extends AbstractBlockSvgTrackWidget<Straight> {
+abstract public class AbstractStraightWidget extends AbstractSvgTrackWidget<Straight> {
 
     @Override
     protected void addSvgContent(OMSVGDocument doc, OMSVGSVGElement svg, String color) {

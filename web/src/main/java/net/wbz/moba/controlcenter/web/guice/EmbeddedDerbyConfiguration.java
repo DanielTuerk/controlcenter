@@ -9,7 +9,7 @@ public class EmbeddedDerbyConfiguration implements DatabaseConfiguration {
 
     private final Properties properties;
 
-    public EmbeddedDerbyConfiguration(String homePath, String databaseFolderName) {
+    EmbeddedDerbyConfiguration(String homePath, String databaseFolderName) {
         properties = new Properties();
         // derby
         properties.put("hibernate.connection.driver_class", "org.apache.derby.jdbc.EmbeddedDriver");

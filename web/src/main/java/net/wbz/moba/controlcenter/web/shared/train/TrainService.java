@@ -3,6 +3,7 @@ package net.wbz.moba.controlcenter.web.shared.train;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
+import net.wbz.moba.controlcenter.web.guice.MyGuiceServletConfig;
 import net.wbz.moba.controlcenter.web.server.persist.train.TrainEntity;
 import net.wbz.moba.controlcenter.web.server.web.train.TrainManager;
 
@@ -11,7 +12,7 @@ import net.wbz.moba.controlcenter.web.server.web.train.TrainManager;
  *
  * @author Daniel Tuerk
  */
-@RemoteServiceRelativePath("train")
+@RemoteServiceRelativePath(MyGuiceServletConfig.SERVICE_TRAIN)
 public interface TrainService extends RemoteService {
 
     /**

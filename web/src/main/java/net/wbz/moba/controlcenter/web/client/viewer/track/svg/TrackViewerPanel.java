@@ -103,9 +103,6 @@ public class TrackViewerPanel extends AbstractTrackViewerPanel {
 
                                 trackWidgets.add(trackWidget);
 
-                                if (trackWidget instanceof AbstractBlockStraightWidget) {
-                                    ((AbstractBlockStraightWidget) trackWidget).unknownBlock();
-                                }
                                 if (trackWidget instanceof AbstractSignalWidget) {
                                     signalTrackWidgets.add((AbstractSignalWidget) trackWidget);
                                 }
@@ -139,6 +136,10 @@ public class TrackViewerPanel extends AbstractTrackViewerPanel {
                                     }
                                 });
                                 addTrackWidget(widget, trackPosition.getLeft(), trackPosition.getTop());
+
+                                if (trackWidget instanceof AbstractBlockStraightWidget) {
+                                    ((AbstractBlockStraightWidget) trackWidget).unknownBlock();
+                                }
                             }
                         }
                     });

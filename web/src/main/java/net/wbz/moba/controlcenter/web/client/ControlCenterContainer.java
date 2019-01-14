@@ -27,6 +27,13 @@ public class ControlCenterContainer extends Composite {
     }
 
     void setContent(Widget widget) {
+        // first remove all children from the entries which are also parents, otherwise the removal will be blocked
+        for (Widget container : contentContainer) {
+            if (contentContainer.getElement().isOrHasChild(container.getElement())) {
+                contentContainer.remove(container);
+            }
+        }
+        // remove the first level elements
         contentContainer.getElement().removeAllChildren();
         contentContainer.add(widget);
     }

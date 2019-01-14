@@ -52,13 +52,15 @@ abstract public class AbstractBlockStraightWidget extends AbstractSvgTrackWidget
     AbstractBlockStraightWidget() {
         selectBlock = new TrackBlockSelect();
         selectBlock.setId(ID_FORM_BLOCK);
+
+        txtLength = new IntegerBox();
+        txtLength.setId(ID_BLOCK_LENGTH);
     }
 
     @Override
     protected void onLoad() {
         super.onLoad();
-        txtLength = new IntegerBox();
-        txtLength.setId(ID_BLOCK_LENGTH);
+
     }
 
     @Override
@@ -206,6 +208,8 @@ abstract public class AbstractBlockStraightWidget extends AbstractSvgTrackWidget
     }
 
     private void updateBlockColor(String color) {
-        lastPaintBlockSvg.getStyle().setSVGProperty(SVGConstants.CSS_FILL_PROPERTY, color);
+        if (lastPaintBlockSvg != null) {
+            lastPaintBlockSvg.getStyle().setSVGProperty(SVGConstants.CSS_FILL_PROPERTY, color);
+        }
     }
 }

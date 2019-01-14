@@ -20,7 +20,7 @@ import org.vectomatic.dom.svg.OMSVGSVGElement;
 import org.vectomatic.dom.svg.utils.OMSVGParser;
 
 /**
- * TODO EditTrackWidgetHandler nur fuer widget mit edit content
+ * TODO EditTrackWidgetHandler nur fuer widget mit edit content. Der basis dialog wird hier erstellt, aber interface nur an die widgets, die es brauchen
  *
  * @author Daniel Tuerk
  */

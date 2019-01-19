@@ -10,9 +10,11 @@ import net.wbz.moba.controlcenter.web.client.AppMenu.AppMenuCallback;
 import org.gwtbootstrap3.client.ui.Container;
 
 /**
+ * Main container to switch the content over {@link AppMenu}.
+ *
  * @author Daniel Tuerk
  */
-public class ControlCenterContainer extends Composite {
+class ControlCenterContainer extends Composite {
 
     private static Binder uiBinder = GWT.create(Binder.class);
 

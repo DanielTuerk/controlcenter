@@ -29,7 +29,7 @@ import net.wbz.selectrix4java.device.DeviceAccessException;
  * and to adjust driving levels of trains entering or exiting the blocks.
  * Also the current position of the train is set.
  * 
- * @see Train#currentBlocks
+ * @see Train#getCurrentBlocks()
  * @author Daniel Tuerk
  */
 @Singleton
@@ -99,8 +99,8 @@ public class TrackBlockRegistry extends AbstractBlockRegistry<TrackBlock> {
         }
     }
 
-    protected void addFeedbackBlockListener(TrackBlock trackBlock,
-            FeedbackBlockListener feedbackBlockListener) {
+    private void addFeedbackBlockListener(TrackBlock trackBlock,
+        FeedbackBlockListener feedbackBlockListener) {
         if (!feedbackBlockListeners.containsKey(trackBlock)) {
             feedbackBlockListeners.put(trackBlock, feedbackBlockListener);
         }

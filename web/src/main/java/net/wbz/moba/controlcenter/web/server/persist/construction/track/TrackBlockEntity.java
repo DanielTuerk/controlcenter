@@ -15,11 +15,17 @@ import net.wbz.moba.controlcenter.web.server.persist.construction.ConstructionEn
 import net.wbz.moba.controlcenter.web.shared.track.model.TrackBlock.DRIVING_LEVEL_ADJUST_TYPE;
 
 /**
+ * Block on track as state receiver for a track detector.
+ * Detect trains on the {@link BusDataConfigurationEntity}.
+ *
  * @author Daniel Tuerk
  */
 @Entity(name = "TRACK_BLOCK")
 public class TrackBlockEntity extends AbstractEntity {
 
+    /**
+     * Configuration of the detector.
+     */
     @JMap
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private BusDataConfigurationEntity blockFunction;
@@ -28,6 +34,9 @@ public class TrackBlockEntity extends AbstractEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     private ConstructionEntity construction;
 
+    /**
+     * Display name for the block.
+     */
     @JMap
     @Column
     private String name;
@@ -47,6 +56,9 @@ public class TrackBlockEntity extends AbstractEntity {
     @Column
     private Integer backwardTargetDrivingLevel;
 
+    /**
+     * Type of the driving level adjustment.
+     */
     @JMap
     @Column(nullable = false, columnDefinition = "int default 0")
     @Enumerated(EnumType.ORDINAL)

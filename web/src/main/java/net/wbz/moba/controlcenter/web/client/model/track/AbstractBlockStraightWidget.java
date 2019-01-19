@@ -31,6 +31,9 @@ import org.vectomatic.dom.svg.utils.SVGConstants;
  * </ul>
  * Blocks have dynamic width defined by the length of the block.
  *
+ * TODO multiple blocks in one element (enter/break/stop) ; in both directions? how to handle?
+ * TODO oder das alles nur visuell "mergen" wenn die blocks an der nächsten grid position sind und dafür die einstellungen über einzelne blocks? (wie soll man das unterscheiden, wenn 2 aneinander liegen?)
+ *
  * @author Daniel Tuerk
  */
 abstract public class AbstractBlockStraightWidget extends AbstractSvgTrackWidget<BlockStraight> implements

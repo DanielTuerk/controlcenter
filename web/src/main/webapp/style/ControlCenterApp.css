@@ -62,6 +62,7 @@ h1 {
 
   background-size: 26px 26px;
   background-image: linear-gradient(to right, grey 1px, transparent 1px), linear-gradient(to bottom, grey 1px, transparent 1px);
+  background-attachment: local;
 }
 
 .well-conn {

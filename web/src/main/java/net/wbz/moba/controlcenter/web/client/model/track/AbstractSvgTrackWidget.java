@@ -1,6 +1,7 @@
 package net.wbz.moba.controlcenter.web.client.model.track;
 
 import com.google.common.base.Strings;
+import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
 import net.wbz.moba.controlcenter.web.client.editor.track.EditTrackWidgetHandler;
@@ -39,15 +40,13 @@ abstract public class AbstractSvgTrackWidget<T extends AbstractTrackPart> extend
     private boolean enabled;
     private TabContent dialogContentTabContent;
     private NavTabs dialogContentNavTabs;
+    /**
+     * Color of the widget.
+     */
     private String color = SvgTrackUtil.DEFAULT_TRACK_COLOR;
 
     public AbstractSvgTrackWidget() {
         addStyleName("widget_track");
-
-        String additionalStyle = getTrackWidgetStyleName();
-        if (!Strings.isNullOrEmpty(additionalStyle)) {
-            addStyleName(additionalStyle);
-        }
 
         svgDocument = OMSVGParser.currentDocument();
         // Create the root svg element
@@ -75,11 +74,17 @@ abstract public class AbstractSvgTrackWidget<T extends AbstractTrackPart> extend
     @Override
     protected void onLoad() {
         super.onLoad();
+        int widgetWidth = getWidgetWidth();
+        int widgetHeight = getWidgetHeight();
+
+        svgRootElement.setWidth(Unit.PX, widgetWidth);
+        svgRootElement.setHeight(Unit.PX, widgetHeight);
+
         addSvgContent(svgDocument, svgRootElement, color);
         getElement().appendChild(svgRootElement.getElement());
 
-        setWidth(getWidgetWidth() + "px");
-        setHeight(getWidgetHeight() + "px");
+        setWidth(widgetWidth + "px");
+        setHeight(widgetHeight + "px");
     }
 
     @Override
@@ -96,10 +101,16 @@ abstract public class AbstractSvgTrackWidget<T extends AbstractTrackPart> extend
      */
     abstract protected void addSvgContent(OMSVGDocument doc, OMSVGSVGElement svg, String color );
 
+    /**
+     * @return width in pixel for the widget
+     */
     protected int getWidgetWidth() {
         return AbstractSvgTrackWidget.WIDGET_WIDTH;
     }
 
+    /**
+     * @return height in pixel for the widget
+     */
     protected int getWidgetHeight() {
         return AbstractSvgTrackWidget.WIDGET_HEIGHT;
     }
@@ -128,19 +139,6 @@ abstract public class AbstractSvgTrackWidget<T extends AbstractTrackPart> extend
         this.trackPart = trackPart;
     }
 
-    void addDialogContentTab(String title, Widget content) {
-        TabPane tabPane = new TabPane();
-        tabPane.setActive(dialogContentTabContent.getWidgetCount() == 0);
-
-        TabListItem tabListItem = new TabListItem(title);
-        tabListItem.setDataTargetWidget(tabPane);
-        tabListItem.setActive(dialogContentTabContent.getWidgetCount() == 0);
-
-        tabPane.add(content);
-        dialogContentTabContent.add(tabPane);
-        dialogContentNavTabs.add(tabListItem);
-    }
-
     @Override
     public Widget getDialogContent() {
         TabPanel tabPanel = new TabPanel();
@@ -156,8 +154,29 @@ abstract public class AbstractSvgTrackWidget<T extends AbstractTrackPart> extend
         return form;
     }
 
+    /**
+     * Create and add a new tab for the edit mode.
+     *
+     * @param title {@link String} title of tab
+     * @param content {@link Widget} content for the tab
+     */
+    protected void addDialogContentTab(String title, Widget content) {
+        TabPane tabPane = new TabPane();
+        tabPane.setActive(dialogContentTabContent.getWidgetCount() == 0);
+
+        TabListItem tabListItem = new TabListItem(title);
+        tabListItem.setDataTargetWidget(tabPane);
+        tabListItem.setActive(dialogContentTabContent.getWidgetCount() == 0);
+
+        tabPane.add(content);
+        dialogContentTabContent.add(tabPane);
+        dialogContentNavTabs.add(tabListItem);
+    }
+
     @Override
     public void onConfirmCallback() {
+        // TODO edit container needed for every widget? since no more track block for every one
+        // default callback to do nothing
     }
 
     /**

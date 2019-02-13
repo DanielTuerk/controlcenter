@@ -13,6 +13,7 @@ import net.wbz.moba.controlcenter.web.server.EventBroadcaster;
 import net.wbz.moba.controlcenter.web.server.persist.construction.ConstructionDao;
 import net.wbz.moba.controlcenter.web.server.persist.construction.ConstructionEntity;
 import net.wbz.moba.controlcenter.web.server.persist.construction.track.AbstractTrackPartEntity;
+import net.wbz.moba.controlcenter.web.server.persist.construction.track.BlockStraightDao;
 import net.wbz.moba.controlcenter.web.server.persist.construction.track.GridPositionDao;
 import net.wbz.moba.controlcenter.web.server.persist.construction.track.TrackBlockDao;
 import net.wbz.moba.controlcenter.web.server.persist.construction.track.TrackBlockEntity;
@@ -67,6 +68,7 @@ public class TrackManager implements ConstructionChangeListener {
         TrackBlockEntity.class);
     private final TrackBlockRegistry trackBlockRegistry;
     private final SignalBlockRegistry signalBlockRegistry;
+    private final BlockStraightDao blockStraightDao;
 
     /**
      * Cached and transformed entities for track of current {@link Construction}.
@@ -86,7 +88,8 @@ public class TrackManager implements ConstructionChangeListener {
     public TrackManager(DeviceManager deviceManager, EventBroadcaster eventBroadcaster, TrackPartDao trackPartDao,
         ConstructionDao constructionDao, GridPositionDao gridPositionDao, TrackPartDataMapper trackPartDataMapper,
         TrackBlockDao trackBlockDao, TrackBlockRegistry trackBlockRegistry,
-        SignalBlockRegistry signalBlockRegistry) {
+        SignalBlockRegistry signalBlockRegistry,
+        BlockStraightDao blockStraightDao) {
         this.eventBroadcaster = eventBroadcaster;
         this.deviceManager = deviceManager;
         this.trackPartDao = trackPartDao;
@@ -96,6 +99,7 @@ public class TrackManager implements ConstructionChangeListener {
         this.trackBlockDao = trackBlockDao;
         this.trackBlockRegistry = trackBlockRegistry;
         this.signalBlockRegistry = signalBlockRegistry;
+        this.blockStraightDao = blockStraightDao;
 
         deviceManager.addDeviceConnectionListener(new DeviceConnectionListener() {
             @Override
@@ -204,14 +208,17 @@ public class TrackManager implements ConstructionChangeListener {
 
     @Transactional
     void deleteTrackBlock(TrackBlock trackBlock) {
-        List<AbstractTrackPartEntity> byBlockId = trackPartDao.findByBlockId(trackBlock.getId());
-        if (!byBlockId.isEmpty()) {
-            for (AbstractTrackPartEntity trackPartEntity : byBlockId) {
-                trackPartEntity.setTrackBlock(null);
-                trackPartDao.update(trackPartEntity);
-            }
-            trackPartDao.flush();
-        }
+        blockStraightDao.deleteTrackBlock(trackBlock);
+        blockStraightDao.flush();
+//        List<AbstractTrackPartEntity> byBlockId = trackPartDao.findByBlockId(trackBlock.getId());
+//        if (!byBlockId.isEmpty()) {
+//
+//            for (AbstractTrackPartEntity trackPartEntity : byBlockId) {
+//                trackPartEntity.setTrackBlock(null);
+//                trackPartDao.update(trackPartEntity);
+//            }
+//            trackPartDao.flush();
+//        }
         trackBlockDao.delete(trackBlockDataMapper.transformTarget(trackBlock));
         trackBlockDao.flush();
         // reload data
@@ -279,7 +286,9 @@ public class TrackManager implements ConstructionChangeListener {
 
     /**
      * Register the {@link net.wbz.selectrix4java.bus.consumption.BusAddressDataConsumer}s for each address of the given
-     * {@link AbstractTrackPartEntity}s. TODO auto register for trackpart of current track TODO re-register by changed
+     * {@link AbstractTrackPartEntity}s.
+     * TODO auto register for trackpart of current track
+     * TODO re-register by changed
      * trackparts (event by track editor service?, or better by manager/trackPartDao)
      */
     private void registerConsumersByConnectedDeviceForTrackParts() {

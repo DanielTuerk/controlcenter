@@ -58,13 +58,7 @@ public class RoutePanel extends Composite {
             }
         };
         routeTable.addColumn(colName, "Name");
-        TextColumn<Route> colStart = new TextColumn<Route>() {
-            @Override
-            public String getValue(Route route) {
-                return route.getStart() != null ? route.getStart().getDisplayValue() : "";
-            }
-        };
-        routeTable.addColumn(colStart, "Start");
+        routeTable.addColumn(new RouteStartColumn(), "Start");
         TextColumn<Route> colEnd = new TextColumn<Route>() {
             @Override
             public String getValue(Route route) {
@@ -159,7 +153,7 @@ public class RoutePanel extends Composite {
         for (Station station : stations) {
             for (StationRail rail : station.getRails()) {
                 if (rail.equals(stationRail)) {
-                    return String.valueOf(station.getName() + " - " + rail.getRailNumber());
+                    return station.getName() + " - " + rail.getRailNumber();
                 }
             }
         }

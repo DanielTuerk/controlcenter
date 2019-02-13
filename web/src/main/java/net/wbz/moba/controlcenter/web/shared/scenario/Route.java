@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import net.wbz.moba.controlcenter.web.shared.track.model.AbstractDto;
+import net.wbz.moba.controlcenter.web.shared.track.model.BlockStraight;
 import net.wbz.moba.controlcenter.web.shared.track.model.GridPosition;
 import net.wbz.moba.controlcenter.web.shared.track.model.TrackBlock;
 
@@ -16,7 +17,7 @@ public class Route extends AbstractDto {
     @JMap
     private String name;
     @JMap
-    private TrackBlock start;
+    private BlockStraight start;
     @JMap
     private TrackBlock end;
     @JMap
@@ -40,11 +41,11 @@ public class Route extends AbstractDto {
         this.name = name;
     }
 
-    public TrackBlock getStart() {
+    public BlockStraight getStart() {
         return start;
     }
 
-    public void setStart(TrackBlock start) {
+    public void setStart(BlockStraight start) {
         this.start = start;
     }
 
@@ -110,16 +111,14 @@ public class Route extends AbstractDto {
 
     @Override
     public String toString() {
-        final StringBuffer sb = new StringBuffer("Route{");
-        sb.append("name='").append(name).append('\'');
-        sb.append(", start=").append(start);
-        sb.append(", end=").append(end);
-        sb.append(", oneway=").append(oneway);
-        sb.append(", waypoints=").append(waypoints);
-        sb.append(", runState=").append(runState);
-        sb.append(", track=").append(track);
-        sb.append('}');
-        return sb.toString();
+        return "Route{" + "name='" + name + '\''
+            + ", start=" + start
+            + ", end=" + end
+            + ", oneway=" + oneway
+            + ", waypoints=" + waypoints
+            + ", runState=" + runState
+            + ", track=" + track
+            + '}';
     }
 
     /**

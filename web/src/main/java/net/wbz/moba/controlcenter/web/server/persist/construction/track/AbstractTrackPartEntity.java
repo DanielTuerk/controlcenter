@@ -47,10 +47,6 @@ public abstract class AbstractTrackPartEntity extends AbstractEntity {
     @OnDelete(action = OnDeleteAction.CASCADE)
     private GridPositionEntity gridPosition;
 
-    @JMap
-    @ManyToOne(fetch = FetchType.EAGER)
-    private TrackBlockEntity trackBlock;
-
     public AbstractTrackPartEntity() {
     }
 
@@ -62,33 +58,12 @@ public abstract class AbstractTrackPartEntity extends AbstractEntity {
         this.construction = construction;
     }
 
-    public List<TrackPartFunctionEntity> getFunctionConfigs() {
-        // TODO drop?
-        return Collections.emptyList();
-    }
-
-    public Set<BusDataConfigurationEntity> getConfigurationsOfFunctions() {
-        Set<BusDataConfigurationEntity> configurations = Sets.newHashSet();
-        for (TrackPartFunctionEntity function : getFunctionConfigs()) {
-            configurations.add(function.getConfiguration());
-        }
-        return configurations;
-    }
-
     public GridPositionEntity getGridPosition() {
         return gridPosition;
     }
 
     public void setGridPosition(GridPositionEntity gridPositionEntity) {
         this.gridPosition = gridPositionEntity;
-    }
-
-    public TrackBlockEntity getTrackBlock() {
-        return trackBlock;
-    }
-
-    public void setTrackBlock(TrackBlockEntity trackBlock) {
-        this.trackBlock = trackBlock;
     }
 
     public abstract Class<? extends AbstractTrackPart> getDefaultDtoClass();

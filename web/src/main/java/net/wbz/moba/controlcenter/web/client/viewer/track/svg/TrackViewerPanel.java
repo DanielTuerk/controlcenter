@@ -1,31 +1,20 @@
 package net.wbz.moba.controlcenter.web.client.viewer.track.svg;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.gwt.event.dom.client.MouseOverEvent;
-import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Widget;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 import net.wbz.moba.controlcenter.web.client.editor.track.ViewerPaletteWidget;
 import net.wbz.moba.controlcenter.web.client.model.track.AbsoluteTrackPosition;
-import net.wbz.moba.controlcenter.web.client.model.track.AbstractBlockStraightWidget;
-import net.wbz.moba.controlcenter.web.client.model.track.AbstractControlSvgTrackWidget;
 import net.wbz.moba.controlcenter.web.client.model.track.AbstractSvgTrackWidget;
 import net.wbz.moba.controlcenter.web.client.model.track.ModelManager;
-import net.wbz.moba.controlcenter.web.client.model.track.signal.AbstractSignalWidget;
+import net.wbz.moba.controlcenter.web.client.model.track.block.AbstractBlockStraightWidget;
 import net.wbz.moba.controlcenter.web.client.request.RequestUtils;
 import net.wbz.moba.controlcenter.web.client.viewer.track.AbstractTrackViewerPanel;
 import net.wbz.moba.controlcenter.web.server.persist.construction.track.AbstractTrackPartEntity;
-import net.wbz.moba.controlcenter.web.shared.bus.FeedbackBlockEvent;
 import net.wbz.moba.controlcenter.web.shared.track.model.AbstractTrackPart;
-import net.wbz.moba.controlcenter.web.shared.track.model.BusDataConfiguration;
-import net.wbz.moba.controlcenter.web.shared.train.Train;
-import net.wbz.moba.controlcenter.web.shared.viewer.SignalFunctionStateEvent;
 import org.gwtbootstrap3.client.ui.Label;
 import org.gwtbootstrap3.client.ui.constants.LabelType;
 
@@ -40,15 +29,11 @@ public class TrackViewerPanel extends AbstractTrackViewerPanel {
 
     private Label lblTrackPartConfig = new Label();
 
-    private Map<BusDataConfiguration, List<AbstractSvgTrackWidget>> trackWidgetsOfConfiguration = Maps
-        .newConcurrentMap();
     private List<AbstractSvgTrackWidget> trackWidgets = new ArrayList<>();
-    private List<AbstractSignalWidget> signalTrackWidgets = new ArrayList<>();
 
     private List<AbstractTrackPart> loadedTrackParts;
 
     public TrackViewerPanel() {
-
     }
 
     @Override
@@ -70,7 +55,7 @@ public class TrackViewerPanel extends AbstractTrackViewerPanel {
             }
 
             @Override
-            public void onSuccess(final Boolean response) {
+            public void onSuccess(final Boolean connected) {
 
                 RequestUtils.getInstance().getTrackEditorService()
                     .loadTrack(new AsyncCallback<Collection<AbstractTrackPart>>() {
@@ -82,8 +67,6 @@ public class TrackViewerPanel extends AbstractTrackViewerPanel {
                         @Override
                         public void onSuccess(Collection<AbstractTrackPart> trackParts) {
                             loadedTrackParts = Lists.newArrayList(trackParts);
-                            trackWidgetsOfConfiguration.clear();
-                            signalTrackWidgets.clear();
 
                             int maxTop = 0;
                             int maxLeft = 0;
@@ -99,27 +82,10 @@ public class TrackViewerPanel extends AbstractTrackViewerPanel {
 
                                 final AbstractSvgTrackWidget trackWidget = ModelManager.getInstance()
                                     .getWidgetOf(trackPart);
-                                trackWidget.setEnabled(response);
+                                trackWidget.setEnabled(connected);
 
                                 trackWidgets.add(trackWidget);
 
-                                if (trackWidget instanceof AbstractSignalWidget) {
-                                    signalTrackWidgets.add((AbstractSignalWidget) trackWidget);
-                                }
-                                for (BusDataConfiguration configuration : trackPart
-                                    .getConfigurationsOfFunctions()) {
-                                    // ignore default configs of track widget to register event handler
-                                    if (configuration != null && configuration.isValid()) {
-                                        if (!trackWidgetsOfConfiguration.containsKey(configuration)) {
-                                            trackWidgetsOfConfiguration
-                                                .put(configuration, new ArrayList<AbstractSvgTrackWidget>());
-                                        }
-                                        // avoid same widget for equal bit state configuration
-                                        if (!trackWidgetsOfConfiguration.get(configuration).contains(trackWidget)) {
-                                            trackWidgetsOfConfiguration.get(configuration).add(trackWidget);
-                                        }
-                                    }
-                                }
                                 AbsoluteTrackPosition trackPosition = trackWidget
                                     .getTrackPosition(trackPart.getGridPosition(), getZoomLevel());
                                 if (maxTop < trackPosition.getTop()) {
@@ -128,13 +94,10 @@ public class TrackViewerPanel extends AbstractTrackViewerPanel {
                                 if (maxLeft < trackPosition.getLeft()) {
                                     maxLeft = trackPosition.getLeft();
                                 }
+
                                 ViewerPaletteWidget widget = new ViewerPaletteWidget(trackWidget);
-                                widget.addMouseOverHandler(new MouseOverHandler() {
-                                    @Override
-                                    public void onMouseOver(MouseOverEvent event) {
-                                        lblTrackPartConfig.setText(trackWidget.getConfigurationInfo());
-                                    }
-                                });
+                                widget.addMouseOverHandler(
+                                    event -> lblTrackPartConfig.setText(trackWidget.getConfigurationInfo()));
                                 addTrackWidget(widget, trackPosition.getLeft(), trackPosition.getTop());
 
                                 if (trackWidget instanceof AbstractBlockStraightWidget) {
@@ -148,46 +111,6 @@ public class TrackViewerPanel extends AbstractTrackViewerPanel {
     }
 
     @Override
-    protected void updateSignalState(SignalFunctionStateEvent signalFunctionStateEvent) {
-        for (AbstractSignalWidget signalTrackWidget : signalTrackWidgets) {
-            if (Objects.equals(signalTrackWidget.getTrackPart().getId(), signalFunctionStateEvent.getSignalId())) {
-                signalTrackWidget.showSignalFunction(signalFunctionStateEvent.getSignalFunction());
-            }
-        }
-    }
-
-    @Override
-    protected void updateTrackPartState(BusDataConfiguration configuration, boolean state) {
-        if (trackWidgetsOfConfiguration.containsKey(configuration)) {
-            for (AbstractSvgTrackWidget controlSvgTrackWidget : trackWidgetsOfConfiguration.get(configuration)) {
-                if (controlSvgTrackWidget instanceof AbstractControlSvgTrackWidget) {
-                    ((AbstractControlSvgTrackWidget) controlSvgTrackWidget).updateFunctionState(configuration, state);
-                }
-            }
-        }
-    }
-
-    @Override
-    protected void updateTrackPartBlockState(BusDataConfiguration configuration, boolean state) {
-        if (trackWidgetsOfConfiguration.containsKey(configuration)) {
-            for (AbstractSvgTrackWidget controlSvgTrackWidget : trackWidgetsOfConfiguration.get(configuration)) {
-                if (controlSvgTrackWidget instanceof AbstractBlockStraightWidget) {
-
-                    AbstractBlockStraightWidget blockStraightWidget = (AbstractBlockStraightWidget) controlSvgTrackWidget;
-                    BusDataConfiguration blockFunctionConfig = blockStraightWidget.getTrackPart().getBlockFunction();
-                    if (blockFunctionConfig != null && blockFunctionConfig.equals(configuration)) {
-                        if (state == blockFunctionConfig.getBitState()) {
-                            blockStraightWidget.usedBlock();
-                        } else {
-                            blockStraightWidget.freeBlock();
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    @Override
     protected void resetTrackForRailVoltage(boolean railVoltageOn) {
         if (!railVoltageOn) {
             for (AbstractSvgTrackWidget trackWidget : trackWidgets) {
@@ -196,52 +119,6 @@ public class TrackViewerPanel extends AbstractTrackViewerPanel {
                 }
             }
         }
-    }
-
-    /**
-     * Show train label on the given block.
-     *
-     * @param address address of the block
-     * @param block number of the block
-     * @param train address of the train
-     * @param state {@link net.wbz.moba.controlcenter.web.shared.bus.FeedbackBlockEvent.STATE} enter or exit the
-     * block
-     */
-    @Override
-    protected void updateTrainOnTrack(final int address, final int block, final int train,
-        final FeedbackBlockEvent.STATE state) {
-        RequestUtils.getInstance().getTrainEditorService().getTrain(train, new AsyncCallback<Train>() {
-            @Override
-            public void onFailure(Throwable caught) {
-
-            }
-
-            @Override
-            public void onSuccess(Train result) {
-                BusDataConfiguration configAsIdentifier = new BusDataConfiguration(1, address, block, true);
-                for (AbstractSvgTrackWidget svgTrackWidget : getTrackWidgetsByConfig(configAsIdentifier)) {
-                    if (svgTrackWidget instanceof AbstractBlockStraightWidget) {
-                        switch (state) {
-                            case ENTER:
-                                ((AbstractBlockStraightWidget) svgTrackWidget).showTrainOnBlock(result);
-                                break;
-                            case EXIT:
-                                ((AbstractBlockStraightWidget) svgTrackWidget).removeTrainOnBlock(result);
-                                break;
-                        }
-                    }
-                }
-            }
-        });
-    }
-
-    private List<AbstractSvgTrackWidget> getTrackWidgetsByConfig(BusDataConfiguration config) {
-        for (BusDataConfiguration busDataConfiguration : trackWidgetsOfConfiguration.keySet()) {
-            if (busDataConfiguration.isSameConfig(config)) {
-                return trackWidgetsOfConfiguration.get(busDataConfiguration);
-            }
-        }
-        return new ArrayList<>();
     }
 
     @Override
@@ -254,15 +131,15 @@ public class TrackViewerPanel extends AbstractTrackViewerPanel {
         updateTrackWidgetsState(false);
     }
 
+    @Override
+    public void addTrackWidget(Widget widget, int left, int top) {
+        add(widget, left, top);
+    }
+
     private void updateTrackWidgetsState(boolean state) {
         for (AbstractSvgTrackWidget trackWidget : trackWidgets) {
             trackWidget.setEnabled(state);
         }
-    }
-
-    @Override
-    public void addTrackWidget(Widget widget, int left, int top) {
-        add(widget, left, top);
     }
 
 }

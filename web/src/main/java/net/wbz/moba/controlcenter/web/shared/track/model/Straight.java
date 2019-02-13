@@ -1,9 +1,8 @@
 package net.wbz.moba.controlcenter.web.shared.track.model;
 
-import java.util.Collection;
-
 import com.google.common.collect.Lists;
 import com.googlecode.jmapper.annotations.JMap;
+import java.util.Collection;
 
 /**
  * @author Daniel Tuerk
@@ -55,6 +54,11 @@ public class Straight extends AbstractTrackPart {
 
     boolean isVertical() {
         return getDirection() == DIRECTION.VERTICAL;
+    }
+
+    @Override
+    public String toString() {
+        return "Straight{" + "direction=" + direction + "} " + super.toString();
     }
 
     public enum DIRECTION {

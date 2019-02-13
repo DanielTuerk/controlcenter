@@ -36,5 +36,5 @@ public interface ScenarioEditorService extends RemoteService {
 
     void deleteRoute(long routeId);
 
-    Track buildTrack(Route route);
+    Track buildTrack(Route route) throws TrackNotFoundException;
 }

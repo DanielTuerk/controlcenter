@@ -1,14 +1,18 @@
-package net.wbz.moba.controlcenter.web.client.model.track;
+package net.wbz.moba.controlcenter.web.client.model.track.block;
 
 import com.google.common.collect.Maps;
 import com.google.gwt.user.client.ui.Widget;
 import java.util.Map;
-import net.wbz.moba.controlcenter.web.client.components.TrackBlockSelect;
+import java.util.Objects;
+import java.util.stream.Stream;
 import net.wbz.moba.controlcenter.web.client.editor.track.EditTrackWidgetHandler;
+import net.wbz.moba.controlcenter.web.client.event.EventReceiver;
+import net.wbz.moba.controlcenter.web.client.event.track.TrackBlockRemoteListener;
+import net.wbz.moba.controlcenter.web.client.model.track.AbstractSvgTrackWidget;
 import net.wbz.moba.controlcenter.web.client.util.SvgTrackUtil;
 import net.wbz.moba.controlcenter.web.shared.track.model.BlockStraight;
+import net.wbz.moba.controlcenter.web.shared.track.model.BusDataConfiguration;
 import net.wbz.moba.controlcenter.web.shared.track.model.Straight;
-import net.wbz.moba.controlcenter.web.shared.track.model.TrackBlock;
 import net.wbz.moba.controlcenter.web.shared.train.Train;
 import org.gwtbootstrap3.client.ui.FieldSet;
 import org.gwtbootstrap3.client.ui.FormGroup;
@@ -31,54 +35,63 @@ import org.vectomatic.dom.svg.utils.SVGConstants;
  * </ul>
  * Blocks have dynamic width defined by the length of the block.
  *
- * TODO multiple blocks in one element (enter/break/stop) ; in both directions? how to handle?
- * TODO oder das alles nur visuell "mergen" wenn die blocks an der nächsten grid position sind und dafür die einstellungen über einzelne blocks? (wie soll man das unterscheiden, wenn 2 aneinander liegen?)
- *
  * @author Daniel Tuerk
  */
 abstract public class AbstractBlockStraightWidget extends AbstractSvgTrackWidget<BlockStraight> implements
-    BlockPart, EditTrackWidgetHandler {
+    BlockPart<BlockStraight>, EditTrackWidgetHandler, Feedbackable {
 
-    private static final float BOX_PADDING = 5f;
+    static final float BOX_PADDING = 5f;
     private static final String ID_BLOCK_LENGTH = "blockLengthBox";
-    private static final String ID_FORM_BLOCK = "formBit_block";
     private static final String FEEDBACK_FONT_SIZE = "8pt";
-    private IntegerBox txtLength;
+    private final IntegerBox txtLength;
     /**
      * Mapping of elements on the track part by each train. Used to add or remove an element for entering and exiting
      * the block of a train called by the {@link net.wbz.moba.controlcenter.web.shared.bus.FeedbackBlockEvent}.
      */
     private Map<Train, OMSVGElement> trainElements = Maps.newConcurrentMap();
-    private TrackBlockSelect selectBlock;
+    private final TrackBlockRemoteListener blockEventListener;
+    /**
+     * Last painted SVG for the block to change the color for the actual occupied state.
+     */
     private OMSVGRectElement lastPaintBlockSvg;
+    private BlockStraightEditBlockFieldSet blockFieldSet;
 
     AbstractBlockStraightWidget() {
-        selectBlock = new TrackBlockSelect();
-        selectBlock.setId(ID_FORM_BLOCK);
-
         txtLength = new IntegerBox();
         txtLength.setId(ID_BLOCK_LENGTH);
+
+        blockEventListener = new BlockStateRemoteListener(this);
     }
 
     @Override
     protected void onLoad() {
         super.onLoad();
-
+        EventReceiver.getInstance().addListener(blockEventListener);
     }
 
     @Override
+    protected void onUnload() {
+        super.onUnload();
+        EventReceiver.getInstance().removeListener(blockEventListener);
+    }
+
+    abstract public Straight.DIRECTION getStraightDirection();
+
+    abstract protected BlockStraightEditBlockFieldSet createBlockFieldSet();
+
+    @Override
     protected void addSvgContent(OMSVGDocument doc, OMSVGSVGElement svg, String color) {
-        float width = getWidgetWidth();
+        int width = getWidgetWidth();
+
         svg.appendChild(SvgTrackUtil.createRectangle(getSvgDocument(), 0f, 10f, width, 5f, color));
+
         lastPaintBlockSvg = SvgTrackUtil
             .createRectangle(getSvgDocument(), BOX_PADDING, 2f, width - 2 * BOX_PADDING, 21f, color);
         svg.appendChild(lastPaintBlockSvg);
     }
 
-    @Override
-    protected int getWidgetWidth() {
-        int blockLength = getTrackPart().getBlockLength();
-        return AbstractSvgTrackWidget.WIDGET_WIDTH * (blockLength > 0 ? blockLength : 1);
+    void setLastPaintBlockSvg(OMSVGRectElement lastPaintBlockSvg) {
+        this.lastPaintBlockSvg = lastPaintBlockSvg;
     }
 
     @Override
@@ -86,9 +99,27 @@ abstract public class AbstractBlockStraightWidget extends AbstractSvgTrackWidget
         Widget dialogContent = super.getDialogContent();
 
         addDialogContentTab("Length", createLengthFieldSet());
-        addDialogContentTab("Block", createBlockFieldSet());
+        blockFieldSet = createBlockFieldSet();
+        addDialogContentTab("Block", blockFieldSet);
 
         return dialogContent;
+    }
+
+    @Override
+    public void onConfirmCallback() {
+        super.onConfirmCallback();
+        // save block config
+        getTrackPart().setLeftTrackBlock(blockFieldSet.getSelectedLeftBlock());
+        getTrackPart().setMiddleTrackBlock(blockFieldSet.getSelecteMiddleBlock());
+        getTrackPart().setRightTrackBlock(blockFieldSet.getSelectedRightBlock());
+
+        getTrackPart().setBlockLength(txtLength.getValue());
+        repaint();
+    }
+
+    @Override
+    public String getTrackWidgetStyleName() {
+        return null;
     }
 
     private FieldSet createLengthFieldSet() {
@@ -100,39 +131,11 @@ abstract public class AbstractBlockStraightWidget extends AbstractSvgTrackWidget
         lblBit.setText("Length");
         groupBit.add(lblBit);
 
-        txtLength.setValue(getTrackPart().getBlockLength());
+        txtLength.setValue(getTrackPart().getGridLength());
 
         groupBit.add(txtLength);
         fieldSet.add(groupBit);
         return fieldSet;
-    }
-
-    private FieldSet createBlockFieldSet() {
-        FieldSet fieldSet = new FieldSet();
-        FormGroup groupBit = new FormGroup();
-        FormLabel lblBit = new FormLabel();
-        lblBit.setFor(ID_FORM_BLOCK);
-        lblBit.setText("Block");
-        groupBit.add(lblBit);
-
-        // TODO to early?
-        selectBlock.setSelectedTrackBlockValue(getTrackPart().getTrackBlock());
-        // selectBlock.refresh();
-        // loadTrackBlocks();
-        groupBit.add(selectBlock);
-        fieldSet.add(groupBit);
-        return fieldSet;
-    }
-
-    @Override
-    public void onConfirmCallback() {
-        super.onConfirmCallback();
-        // save block config
-        TrackBlock trackBlock = selectBlock.getSelectedTrackBlockValue();
-        getTrackPart().setTrackBlock(trackBlock);
-
-        getTrackPart().setBlockLength(txtLength.getValue());
-        repaint();
     }
 
     @Override
@@ -145,8 +148,6 @@ abstract public class AbstractBlockStraightWidget extends AbstractSvgTrackWidget
         return "Block";
     }
 
-    abstract public Straight.DIRECTION getStraightDirection();
-
     @Override
     public BlockStraight getNewTrackPart() {
         BlockStraight blockStraight = new BlockStraight();
@@ -154,12 +155,14 @@ abstract public class AbstractBlockStraightWidget extends AbstractSvgTrackWidget
         return blockStraight;
     }
 
-    /**
-     * Show the information of the given {@link net.wbz.moba.controlcenter.web.shared.train.Train} on this block
-     * element.
-     *
-     * @param train {@link net.wbz.moba.controlcenter.web.shared.train.Train}
-     */
+    @Override
+    public boolean hasBlock(BusDataConfiguration configAsIdentifier) {
+        return Stream.of(getTrackPart().getLeftTrackBlock(), getTrackPart().getMiddleTrackBlock(),
+            getTrackPart().getRightTrackBlock())
+            .filter(Objects::nonNull).anyMatch(x -> configAsIdentifier.equals(x.getBlockFunction()));
+    }
+
+    @Override
     public void showTrainOnBlock(Train train) {
         if (!trainElements.containsKey(train)) {
             OMSVGTextElement trainTextElement = getSvgDocument()
@@ -171,11 +174,7 @@ abstract public class AbstractBlockStraightWidget extends AbstractSvgTrackWidget
         }
     }
 
-    /**
-     * Remove the element for the given {@link net.wbz.moba.controlcenter.web.shared.train.Train} from this block.
-     *
-     * @param train {@link net.wbz.moba.controlcenter.web.shared.train.Train}
-     */
+    @Override
     public void removeTrainOnBlock(Train train) {
         if (trainElements.containsKey(train)) {
             getSvgRootElement().removeChild(trainElements.get(train));
@@ -215,4 +214,5 @@ abstract public class AbstractBlockStraightWidget extends AbstractSvgTrackWidget
             lastPaintBlockSvg.getStyle().setSVGProperty(SVGConstants.CSS_FILL_PROPERTY, color);
         }
     }
+
 }

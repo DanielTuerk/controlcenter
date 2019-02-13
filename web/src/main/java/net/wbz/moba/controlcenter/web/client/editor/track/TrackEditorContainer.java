@@ -127,10 +127,8 @@ public class TrackEditorContainer extends Composite {
     @UiHandler("menuEdit")
     public void editAction(ClickEvent event) {
         for (Widget selectedWidget : dragController.getSelectedWidgets()) {
-            //TODO
             new EditWidgetDoubleClickHandler(((EditorPaletteWidget) selectedWidget).getWidget())
                 .onDoubleClick(null);
-            // trackEditorPanel.remove(selectedWidget);
             break;
         }
     }

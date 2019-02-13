@@ -10,20 +10,25 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import net.wbz.moba.controlcenter.web.server.web.editor.TrackManager;
 import net.wbz.moba.controlcenter.web.shared.scenario.Route;
 import net.wbz.moba.controlcenter.web.shared.scenario.Track;
+import net.wbz.moba.controlcenter.web.shared.scenario.TrackNotFoundException;
 import net.wbz.moba.controlcenter.web.shared.track.model.AbstractTrackPart;
+import net.wbz.moba.controlcenter.web.shared.track.model.BlockStraight;
 import net.wbz.moba.controlcenter.web.shared.track.model.BusDataConfiguration;
 import net.wbz.moba.controlcenter.web.shared.track.model.GridPosition;
+import net.wbz.moba.controlcenter.web.shared.track.model.MultipleGridPosition;
 import net.wbz.moba.controlcenter.web.shared.track.model.Switch;
 import net.wbz.moba.controlcenter.web.shared.track.model.TrackBlock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * TODO doc
+ * Builder to create a track from a start to an endpoint.
  *
  * @author Daniel Tuerk
  */
@@ -31,14 +36,35 @@ import org.slf4j.LoggerFactory;
 public class TrackBuilder {
 
     private static final Logger LOG = LoggerFactory.getLogger(TrackBuilder.class);
+
+    /**
+     * Timeout to build the track.
+     */
     private static final long TIMEOUT_IN_MILLIS = 5000L;
 
-    private final TrackManager trackManager;
+    /**
+     * Start times for building the track of the route.
+     */
     private final Map<Long, Long> routeStartTimeMillis = Maps.newConcurrentMap();
+
+    /**
+     * Flag to enable the timeout by {@link #TIMEOUT_IN_MILLIS}.
+     */
+    private boolean timeoutEnabled = true;
+
+    private final TrackManager trackManager;
 
     @Inject
     public TrackBuilder(TrackManager trackManager) {
         this.trackManager = trackManager;
+    }
+
+    private static Optional<TrackBlock> getValidTrackBlock(TrackBlock trackBlock) {
+        if (trackBlock != null && trackBlock.getBlockFunction().isValid()) {
+            return Optional.of(trackBlock);
+        } else {
+            return Optional.empty();
+        }
     }
 
     /**
@@ -54,12 +80,22 @@ public class TrackBuilder {
         }
         if (route.getStart() == null) {
             throw new TrackNotFoundException("no route start defined");
+        } else {
+            for (TrackBlock trackBlock : route.getStart().getAllTrackBlocks()) {
+                if (trackBlock.getBlockFunction() == null || !trackBlock.getBlockFunction().isValid()) {
+                    throw new TrackNotFoundException(
+                        "invalid start: invalid block function: " + trackBlock.getBlockFunction());
+                }
+            }
         }
         if (route.getEnd() == null) {
             throw new TrackNotFoundException("no route end defined");
+        } else if (route.getEnd().getBlockFunction() == null || !route.getEnd().getBlockFunction().isValid()) {
+            throw new TrackNotFoundException(
+                "invalid end: invalid block function: " + route.getEnd().getBlockFunction());
         }
 
-        Long trackBuildId = System.nanoTime();
+        final long trackBuildId = System.nanoTime();
 
         LOG.debug("start build track: {} ({})", route.getName(), route.getId());
         routeStartTimeMillis.put(trackBuildId, System.currentTimeMillis());
@@ -67,30 +103,45 @@ public class TrackBuilder {
         GridPosition startPosition = null;
         GridPosition endPosition = null;
 
-        Collection<AbstractTrackPart> loadedTrack = trackManager.getTrack();
+        final Collection<AbstractTrackPart> loadedTrack = trackManager.getTrack();
+
+        // prepare start, end and all grid positions of the construction
         for (AbstractTrackPart trackPart : loadedTrack) {
+
+            // collect all available grid positions to create the route from point to point
             positions.put(trackPart.getGridPosition(), trackPart);
-            if (route.getStart().equals(trackPart.getTrackBlock())) {
-                startPosition = trackPart.getGridPosition();
-            } else if (route.getEnd().equals(trackPart.getTrackBlock())) {
-                endPosition = trackPart.getGridPosition();
+
+            if (trackPart instanceof MultipleGridPosition) {
+                positions.put(((MultipleGridPosition) trackPart).getEndGridPosition(), trackPart);
+            }
+
+            if (trackPart instanceof BlockStraight) {
+                BlockStraight blockStraight = (BlockStraight) trackPart;
+                if (isOneTrackBlockTheSame(route.getStart(), blockStraight)) {
+                    startPosition = trackPart.getGridPosition();
+                } else if (isBlockPresent(route.getEnd(), blockStraight)) {
+                    endPosition = trackPart.getGridPosition();
+                }
             }
         }
 
+        // build the track from start to end
         Track track = buildTrack(positions, startPosition, endPosition, route.getWaypoints(), trackBuildId);
 
         for (int i = 0; i < track.getGridPositions().size(); i++) {
             GridPosition gridPosition = track.getGridPositions().get(i);
             AbstractTrackPart abstractTrackPart = positions.get(gridPosition);
 
-            if ((i > 0 && i < loadedTrack.size() - 1) && abstractTrackPart instanceof Switch) {
+            if ((i > 0 && i < loadedTrack.size() - 1)
+                && abstractTrackPart instanceof Switch) {
+
                 Switch switchTrackPart = (Switch) abstractTrackPart;
 
                 GridPosition nextPosition = track.getGridPositions().get(i + 1);
                 GridPosition previousPosition = track.getGridPositions().get(i - 1);
                 boolean state =
-                    switchTrackPart.getNextGridPositionForStateBranch().equals(nextPosition) || switchTrackPart
-                        .getNextGridPositionForStateBranch().equals(previousPosition);
+                    switchTrackPart.getNextGridPositionForStateBranch().equals(nextPosition)
+                        || switchTrackPart.getNextGridPositionForStateBranch().equals(previousPosition);
 
                 BusDataConfiguration toggleFunction = switchTrackPart.getToggleFunction();
                 if (toggleFunction != null) {
@@ -103,6 +154,35 @@ public class TrackBuilder {
         LOG.debug("finished build track: {} ({}) in {} ms", route.getName(), route.getId(),
             currentExecutionTime(trackBuildId));
         return track;
+    }
+
+    /**
+     * State for the active timout to build a {@link Track}.
+     *
+     * @return {@code false} if disabled
+     */
+    public boolean isTimeoutEnabled() {
+        return timeoutEnabled;
+    }
+
+    /**
+     * Enable or disable the timeout to build a {@link Track}
+     *
+     * @param timeoutEnabled {@code false} to disable
+     */
+    public void setTimeoutEnabled(boolean timeoutEnabled) {
+        this.timeoutEnabled = timeoutEnabled;
+    }
+
+    /**
+     * Check that at least one {@link TrackBlock} for both {@link BlockStraight}s is the same one.
+     *
+     * @param left {@link BlockStraight}
+     * @param right {@link BlockStraight}
+     * @return {@code true} if one {@link TrackBlock} is present in both {@link BlockStraight}s
+     */
+    private boolean isOneTrackBlockTheSame(BlockStraight left, BlockStraight right) {
+        return left.getAllTrackBlocks().stream().anyMatch(x -> isBlockPresent(x, right));
     }
 
     private Track buildTrack(Map<GridPosition, AbstractTrackPart> positions, GridPosition startPosition,
@@ -132,6 +212,14 @@ public class TrackBuilder {
         throw new TrackNotFoundException("no start or end");
     }
 
+    /**
+     * Check for the shortest track of the given ones. All tracks will first filter by the waypoints.
+     *
+     * @param forwardRoutedTracks tracks for the forward direction
+     * @param backwardRoutedTracks tracks for the backward direction
+     * @param waypoints {@link List} of {@link GridPosition}s for the waypoint on the {@link Route}.
+     * @return the shortest {@link Track} of the given ones
+     */
     private Track shortestTrack(Set<Track> forwardRoutedTracks, Set<Track> backwardRoutedTracks,
         final List<GridPosition> waypoints) throws TrackNotFoundException {
         // waypoints
@@ -162,7 +250,8 @@ public class TrackBuilder {
 
     private Set<Track> filterByWaypoints(Collection<Track> tracks, final Collection<GridPosition> waypoints) {
         return Sets.newHashSet(Collections2.filter(tracks,
-            input -> waypoints == null || waypoints.isEmpty() || input.getGridPositions().containsAll(waypoints)));
+            input -> waypoints == null || waypoints.isEmpty() || Objects.requireNonNull(input).getGridPositions()
+                .containsAll(waypoints)));
     }
 
     private Track findShortestTrack(Set<Track> forwardRoutedTracks) {
@@ -187,16 +276,27 @@ public class TrackBuilder {
                     Collection<GridPosition> lastGridPositions = trackPartOfNextPos.getLastGridPositions();
                     lastGridPositions.addAll(trackPartOfNextPos.getNextGridPositions(startPosition));
                     for (GridPosition lastGridPosition : lastGridPositions) {
-                        if (startPosition.equals(lastGridPosition)) {
-
+                        if (checkLastPositionIsStartPosition(positions, startPosition, lastGridPosition)) {
+                            LOG.trace("apply pos: " + startPosition);
                             positionsCopy.remove(startPosition);
+
+                            // next pos of track or replace the fake pos from the block length with the original one
+                            GridPosition nextPositionCopy;
+                            AbstractTrackPart abstractTrackPart = positions.get(nextPosition);
+                            if (abstractTrackPart instanceof BlockStraight) {
+                                nextPositionCopy = abstractTrackPart.getGridPosition();
+                            } else {
+                                nextPositionCopy = nextPosition;
+                            }
 
                             // new track for possible branch
                             Set<Track> apply = apply(new Track(track), positionsCopy, startPosition, endPosition,
-                                nextPosition, trackBuildId);
+                                nextPositionCopy, trackBuildId);
                             if (apply != null) {
                                 tracks.addAll(apply);
+
                                 positionsCopy.remove(nextPosition);
+                                positionsCopy.remove(nextPositionCopy);
                                 break;
                             }
                         }
@@ -207,12 +307,32 @@ public class TrackBuilder {
         return tracks;
     }
 
+    private boolean checkLastPositionIsStartPosition(
+        Map<GridPosition, AbstractTrackPart> positions,
+        GridPosition startPosition, GridPosition lastGridPosition) {
+
+        AbstractTrackPart trackPartOfStartPos = positions.get(startPosition);
+        if (trackPartOfStartPos instanceof MultipleGridPosition) {
+            GridPosition endGridPosition = ((MultipleGridPosition) trackPartOfStartPos).getEndGridPosition();
+            return endGridPosition.equals(lastGridPosition)
+                || trackPartOfStartPos.getGridPosition().equals(startPosition);
+        } else {
+            return startPosition.equals(lastGridPosition);
+        }
+    }
+
     private Collection<GridPosition> getNextGridPositions(Map<GridPosition, AbstractTrackPart> positions,
         GridPosition startPosition, GridPosition previousPosition) {
         AbstractTrackPart abstractTrackPart = positions.get(startPosition);
         Collection<GridPosition> nextGridPositions = abstractTrackPart.getNextGridPositions(previousPosition);
         nextGridPositions.addAll(abstractTrackPart.getLastGridPositions());
         return nextGridPositions;
+    }
+
+    private boolean isBlockPresent(TrackBlock trackBlock, BlockStraight blockStraight) {
+        return trackBlock.equals(blockStraight.getLeftTrackBlock())
+            || trackBlock.equals(blockStraight.getMiddleTrackBlock())
+            || trackBlock.equals(blockStraight.getRightTrackBlock());
     }
 
     private Set<Track> apply(Track track, Map<GridPosition, AbstractTrackPart> positions, GridPosition startPosition,
@@ -227,14 +347,17 @@ public class TrackBuilder {
         } else if (!positions.containsKey(nextPosition)) {
             return null;
         } else {
+            AbstractTrackPart abstractTrackPart = positions.get(nextPosition);
+            // add blocks
+            if (abstractTrackPart instanceof BlockStraight) {
+                BlockStraight blockStraight = (BlockStraight) abstractTrackPart;
+                getValidTrackBlock(blockStraight.getLeftTrackBlock()).ifPresent(x -> track.getTrackBlocks().add(x));
+                getValidTrackBlock(blockStraight.getMiddleTrackBlock()).ifPresent(x -> track.getTrackBlocks().add(x));
+                getValidTrackBlock(blockStraight.getRightTrackBlock()).ifPresent(x -> track.getTrackBlocks().add(x));
+            }
+
             // add grid positions
             track.getGridPositions().add(nextPosition);
-
-            // add blocks
-            TrackBlock trackBlock = positions.get(nextPosition).getTrackBlock();
-            if (trackBlock != null && trackBlock.getBlockFunction().isValid()) {
-                track.getTrackBlocks().add(trackBlock);
-            }
 
             return searchPath(track, positions, nextPosition, endPosition,
                 getNextGridPositions(positions, nextPosition, startPosition), trackBuildId);
@@ -243,7 +366,7 @@ public class TrackBuilder {
 
     private boolean timeoutReached(long trackBuildId) {
         return !routeStartTimeMillis.containsKey(trackBuildId)
-            || currentExecutionTime(trackBuildId) > TIMEOUT_IN_MILLIS;
+            || (timeoutEnabled && currentExecutionTime(trackBuildId) > TIMEOUT_IN_MILLIS);
     }
 
     private long currentExecutionTime(long trackBuildId) {

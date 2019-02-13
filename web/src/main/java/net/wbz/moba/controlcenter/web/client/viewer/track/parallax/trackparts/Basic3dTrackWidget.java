@@ -1,9 +1,8 @@
 package net.wbz.moba.controlcenter.web.client.viewer.track.parallax.trackparts;
 
-import net.wbz.moba.controlcenter.web.client.model.track.BlockPart;
+import net.wbz.moba.controlcenter.web.client.model.track.block.BlockPart;
 import net.wbz.moba.controlcenter.web.server.persist.construction.track.AbstractTrackPartEntity;
 import net.wbz.moba.controlcenter.web.shared.track.model.AbstractTrackPart;
-import net.wbz.moba.controlcenter.web.shared.track.model.BusDataConfiguration;
 import thothbot.parallax.core.client.textures.Texture;
 import thothbot.parallax.core.shared.geometries.BoxGeometry;
 import thothbot.parallax.core.shared.materials.Material;
@@ -15,9 +14,8 @@ import thothbot.parallax.core.shared.objects.Mesh;
 
 /**
  * Basic widget for the 3D representation of a {@link AbstractTrackPartEntity}.
- * <p/>
  * Mesh to show a box in the grid system with an material texture. The railway are two mesh for the left and right side.
- * As implementation of {@link net.wbz.moba.controlcenter.web.client.model.track.BlockPart} the railway meshes are
+ * As implementation of {@link BlockPart} the railway meshes are
  * colored by the states of the block.
  *
  * @author Daniel Tuerk
@@ -35,7 +33,7 @@ public class Basic3dTrackWidget<T extends AbstractTrackPart> extends Mesh implem
     public static final int GEOM_DEPTH = 5;
 
     /**
-     * Default color of the initial state from the {@link net.wbz.moba.controlcenter.web.client.model.track.BlockPart}.
+     * Default color of the initial state from the {@link BlockPart}.
      */
     public static final int DEFAULT_RAILWAY_COLOR = 0xededed;
 
@@ -146,17 +144,6 @@ public class Basic3dTrackWidget<T extends AbstractTrackPart> extends Mesh implem
      */
     private void updateColorOfRailway(int color) {
         railwayMaterial.setColor(new Color(color));
-    }
-
-    public void updateFunctionState(BusDataConfiguration configuration, boolean state) {
-        BusDataConfiguration blockFunctionConfig = trackPart.getBlockFunction();
-        if (blockFunctionConfig != null && blockFunctionConfig.equals(configuration)) {
-            if (state == blockFunctionConfig.getBitState()) {
-                usedBlock();
-            } else {
-                freeBlock();
-            }
-        }
     }
 
 }

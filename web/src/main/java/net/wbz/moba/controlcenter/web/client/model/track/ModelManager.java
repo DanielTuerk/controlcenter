@@ -2,6 +2,8 @@ package net.wbz.moba.controlcenter.web.client.model.track;
 
 import java.util.ArrayList;
 import java.util.List;
+import net.wbz.moba.controlcenter.web.client.model.track.block.BlockStraightHorizontalWidget;
+import net.wbz.moba.controlcenter.web.client.model.track.block.BlockStraightVerticalWidget;
 import net.wbz.moba.controlcenter.web.client.model.track.signal.SignalHorizontalWidget;
 import net.wbz.moba.controlcenter.web.client.model.track.signal.SignalVerticalWidget;
 import net.wbz.moba.controlcenter.web.shared.track.model.AbstractTrackPart;

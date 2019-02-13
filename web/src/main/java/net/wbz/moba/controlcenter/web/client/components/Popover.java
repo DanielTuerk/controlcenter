@@ -1,37 +1,43 @@
 package net.wbz.moba.controlcenter.web.client.components;
 
-import org.gwtbootstrap3.client.ui.Heading;
-import org.gwtbootstrap3.client.ui.constants.HeadingSize;
-import org.gwtbootstrap3.client.ui.gwt.FlowPanel;
-
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style;
+import com.google.gwt.uibinder.client.UiBinder;
+import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
+import org.gwtbootstrap3.client.ui.Heading;
+import org.gwtbootstrap3.client.ui.gwt.FlowPanel;
 
 /**
- * Custom popover implementation to show widgets in the content of the popover.
- * Only the style classes are used from the {@link org.gwtbootstrap3.client.ui.Popover}.
+ * Custom popover implementation to show widgets in the content of the popover. Only the style classes are used from the
+ * {@link org.gwtbootstrap3.client.ui.Popover}.
  *
- * TODO refactor to UI binder and add deleted styles from css
  * @author Daniel Tuerk
  */
-public class Popover extends FlowPanel {
+public class Popover extends Composite {
 
+    private static Binder UI_BINDER = GWT.create(Binder.class);
+    private final String parentContainerId;
     private final Widget targetWidget;
-    private final FlowPanel contentPanel;
-    private SimplePanel arrowPanel;
-
-    private Element trackViewerPanelElement = null;
-    private String parentContainerId;
+    @UiField
+    FlowPanel contentPanel;
+    @UiField
+    SimplePanel arrowPanel;
+    @UiField
+    Heading heading;
+    private Element parentContainerElement = null;
 
     /**
      * Create a new instance for the given target widget.
      *
-     * @param targetWidget {@link com.google.gwt.user.client.ui.Widget} to center the position of the popover
+     * @param parentContainerId id of the parent in which the popover should be displayed
+     * @param targetWidget {@link Widget} to center the position of the popover
      */
     public Popover(String parentContainerId, Widget targetWidget) {
         this(parentContainerId, targetWidget, null);
@@ -40,35 +46,103 @@ public class Popover extends FlowPanel {
     /**
      * Create a new instance for the given target widget.
      *
-     * @param targetWidget {@link com.google.gwt.user.client.ui.Widget} to center the position of the popover
+     * @param parentContainerId id of the parent in which the popover should be displayed
+     * @param targetWidget {@link Widget} to center the position of the popover
      * @param title {@link java.lang.String} additional title in the popover
      */
     public Popover(String parentContainerId, Widget targetWidget, String title) {
+        initWidget(UI_BINDER.createAndBindUi(this));
+
         this.parentContainerId = parentContainerId;
         this.targetWidget = targetWidget;
 
-        addStyleName("popover fade in");
-        getElement().getStyle().setDisplay(Style.Display.BLOCK);
-
-        arrowPanel = new SimplePanel();
-        arrowPanel.addStyleName("arrow");
-        add(arrowPanel);
-
         if (title != null) {
-            Heading heading = new Heading(HeadingSize.H3);
-            heading.addStyleName("popover-title");
             heading.setText(title);
-            add(heading);
+        } else {
+            heading.setVisible(false);
         }
-
-        contentPanel = new FlowPanel();
-        contentPanel.addStyleName("popover-content");
-        contentPanel.getElement().getStyle().setPadding(5, Style.Unit.PX);
-        add(contentPanel);
     }
 
     /**
-     * Adding the {@link com.google.gwt.user.client.ui.Widget}s as content to the popover.
+     * Open the popover besides of the target widget. As default is't displayed at the left side if there is enough
+     * space left. Otherwise it will be displayed at the right side.
+     */
+    public void show() {
+        if (!isShowing()) {
+
+            DOM.sinkEvents(this.getElement(), Event.ONCLICK);
+            parentContainerElement = DOM.getElementById(parentContainerId);
+            Panel parentContainerWidget = getWidget(parentContainerElement);
+            if (parentContainerWidget != null) {
+                parentContainerWidget.add(this);
+
+                arrowPanel.getElement().getStyle().setTop(50, Style.Unit.PCT);
+
+                int left = calcLeft();
+                getElement().getStyle().setLeft((double) left, Style.Unit.PX);
+
+                double top = calcTop();
+                getElement().getStyle().setTop(top, Style.Unit.PX);
+            }
+        }
+    }
+
+    /**
+     * Calculation top position of popover.
+     *
+     * @return top position
+     */
+    private double calcTop() {
+        double top = targetWidget.getElement().getOffsetTop() - (this.getOffsetHeight() / 2d);
+        if (top < 0) {
+            top = 0;
+        } else if (top + getOffsetHeight() > parentContainerElement.getOffsetHeight()) {
+            top -= top + getOffsetHeight() - parentContainerElement.getOffsetHeight();
+        }
+
+        // TODO now not working for signals
+//        // correct top by overlapping the container and adjust the arrow to the target widget
+//        if (top < parentContainerElement.getAbsoluteTop()) {
+//            top = parentContainerElement.getOffsetTop();
+//
+//            arrowPanel.getElement().getStyle().setTop(
+//                targetWidget.getAbsoluteTop() - parentContainerElement.getAbsoluteTop()
+//                    + targetWidgetHalfHeight, Style.Unit.PX);
+//        } else if (top + getOffsetHeight() > trackViewerPanelElementOffsetHeight) {
+//            top = targetWidgetTop + targetWidget.getOffsetHeight() + parentContainerElement.getScrollTop() -
+//                getOffsetHeight();
+//
+//            arrowPanel.getElement().getStyle()
+//                .setTop(targetWidget.getAbsoluteTop() + targetWidgetHalfHeight + 25
+//                    - top, Style.Unit.PX);
+//        }
+        return top;
+    }
+
+    /**
+     * Calculate left position of popover.
+     *
+     * @return left position
+     */
+    private int calcLeft() {
+        int targetWidgetLeft = parentContainerElement.getScrollLeft() + targetWidget.getAbsoluteLeft();
+        int trackViewerPanelElementAbsoluteLeft = parentContainerElement.getAbsoluteLeft();
+        int left = targetWidgetLeft - trackViewerPanelElementAbsoluteLeft + targetWidget.getOffsetWidth();
+
+        // correct left by overlapping the container
+        if (left + getOffsetWidth() > parentContainerElement.getClientWidth()) {
+            removeStyleName("right");
+            addStyleName("left");
+            left = targetWidgetLeft - parentContainerElement.getAbsoluteLeft() - getOffsetWidth();
+        } else {
+            removeStyleName("left");
+            addStyleName("right");
+        }
+        return left;
+    }
+
+    /**
+     * Adding the {@link Widget}s as content to the popover.
      *
      * @param widgets components as content
      */
@@ -86,8 +160,7 @@ public class Popover extends FlowPanel {
 
     private Panel getWidget(Element element) {
         com.google.gwt.user.client.EventListener listener = DOM.getEventListener(element);
-        // No listener attached to the element, so no widget exist for this
-        // element
+        // No listener attached to the element, so no widget exist for this element
         if (listener == null) {
             return null;
         }
@@ -99,58 +172,15 @@ public class Popover extends FlowPanel {
     }
 
     /**
-     * Open the popover on the left of the target widget.
+     * Hide the popover.
      */
-    public void show() {
-        if (!isShowing()) {
-
-            DOM.sinkEvents(this.getElement(), Event.ONCLICK);
-            trackViewerPanelElement = DOM.getElementById(parentContainerId);
-            getWidget(trackViewerPanelElement).add(this);
-
-            arrowPanel.getElement().getStyle().setTop(50, Style.Unit.PCT);
-
-            // calc left position of popover
-            int targetWidgetLeft = trackViewerPanelElement.getScrollLeft() + targetWidget.getAbsoluteLeft();
-            int trackViewerPanelElementAbsoluteLeft = trackViewerPanelElement.getAbsoluteLeft();
-            int offsetWidth = targetWidget.getOffsetWidth();
-            int left = targetWidgetLeft - trackViewerPanelElementAbsoluteLeft + offsetWidth;
-
-            // correct left by overlapping the container
-            if (left + getOffsetWidth() > trackViewerPanelElement.getClientWidth()) {
-                removeStyleName("right");
-                addStyleName("left");
-                left = targetWidgetLeft - trackViewerPanelElement.getAbsoluteLeft() - getOffsetWidth();
-            } else {
-                removeStyleName("left");
-                addStyleName("right");
+    public void hide() {
+        if (isShowing()) {
+            Panel widget = getWidget(parentContainerElement);
+            if (widget != null) {
+                widget.remove(this);
             }
-            getElement().getStyle().setLeft((double) left, Style.Unit.PX);
-
-            // calc top position of popover
-            int targetWidgetTop = targetWidget.getAbsoluteTop() - trackViewerPanelElement.getAbsoluteTop();
-            int trackViewerPanelElementOffsetHeight = trackViewerPanelElement.getOffsetHeight();
-
-            int targetWidgetHalfHeight = targetWidget.getOffsetHeight() / 2;
-            double top = targetWidgetTop + targetWidgetHalfHeight -
-                    (getOffsetHeight() / 2);
-
-            // correct top by overlapping the container and adjust the arrow to the target widget
-            if (top < trackViewerPanelElement.getAbsoluteTop()) {
-                top = trackViewerPanelElement.getOffsetTop();
-
-                arrowPanel.getElement().getStyle().setTop(
-                        targetWidget.getAbsoluteTop() - trackViewerPanelElement.getAbsoluteTop()
-                                + targetWidgetHalfHeight, Style.Unit.PX);
-            } else if (top + getOffsetHeight() > trackViewerPanelElementOffsetHeight) {
-                top = targetWidgetTop + targetWidget.getOffsetHeight() + trackViewerPanelElement.getScrollTop() -
-                        getOffsetHeight();
-
-                arrowPanel.getElement().getStyle().setTop(targetWidget.getAbsoluteTop() + targetWidgetHalfHeight + 25
-                        - top, Style.Unit.PX);
-            }
-            getElement().getStyle().setTop(top, Style.Unit.PX);
-
+            parentContainerElement = null;
         }
     }
 
@@ -158,17 +188,7 @@ public class Popover extends FlowPanel {
      * @return <code>true</code> if it's showing
      */
     public boolean isShowing() {
-        return trackViewerPanelElement != null;
-    }
-
-    /**
-     * Hide the popover.
-     */
-    public void hide() {
-        if (isShowing()) {
-            getWidget(trackViewerPanelElement).remove(this);
-            trackViewerPanelElement = null;
-        }
+        return parentContainerElement != null;
     }
 
     /**
@@ -180,5 +200,9 @@ public class Popover extends FlowPanel {
         } else {
             show();
         }
+    }
+
+    interface Binder extends UiBinder<Widget, Popover> {
+
     }
 }

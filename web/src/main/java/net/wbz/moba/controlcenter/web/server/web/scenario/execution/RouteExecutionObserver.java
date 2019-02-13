@@ -93,15 +93,15 @@ public class RouteExecutionObserver {
      */
     private boolean containsSameTrackBlock(Route left, Route right) {
         // collect all track blocks of left route
-        List<TrackBlock> runningTrackBlocks = new ArrayList<>();
-        runningTrackBlocks.add(left.getStart());
+        List<TrackBlock> runningTrackBlocks = new ArrayList<>(left.getStart().getAllTrackBlocks());
         if (left.getTrack() != null) {
             runningTrackBlocks.addAll(left.getTrack().getTrackBlocks());
         }
         runningTrackBlocks.add(left.getEnd());
 
         // check for same track blocks from left route in right route
-        if (runningTrackBlocks.contains(right.getStart()) || runningTrackBlocks.contains(right.getEnd())) {
+        if (runningTrackBlocks.stream().anyMatch(x -> right.getStart().getAllTrackBlocks().contains(x))
+            || runningTrackBlocks.contains(right.getEnd())) {
             return true;
         }
         for (TrackBlock blockToCheck : right.getTrack().getTrackBlocks()) {

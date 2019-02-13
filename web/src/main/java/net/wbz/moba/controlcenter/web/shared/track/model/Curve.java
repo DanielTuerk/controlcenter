@@ -87,6 +87,11 @@ public class Curve extends AbstractTrackPart {
         }
     }
 
+    @Override
+    public String toString() {
+        return "Curve{" + "direction=" + direction+ "} "  +super.toString();
+    }
+
     public enum DIRECTION {
         BOTTOM_RIGHT, BOTTOM_LEFT, TOP_LEFT, TOP_RIGHT
     }

@@ -1,4 +1,6 @@
-package net.wbz.moba.controlcenter.web.server.persist.scenario;
+package net.wbz.moba.controlcenter.web.shared.scenario;
+
+import java.io.Serializable;
 
 /**
  * Exception if there is no {@link net.wbz.moba.controlcenter.web.shared.scenario.Track} for a
@@ -6,13 +8,13 @@ package net.wbz.moba.controlcenter.web.server.persist.scenario;
  *
  * @author Daniel Tuerk
  */
-public class TrackNotFoundException extends Exception {
+public class TrackNotFoundException extends Exception implements Serializable {
 
-    TrackNotFoundException() {
+    public TrackNotFoundException() {
         this("no track found!");
     }
 
-    TrackNotFoundException(String message) {
+    public TrackNotFoundException(String message) {
         super(message);
     }
 

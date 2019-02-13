@@ -1,20 +1,20 @@
 package net.wbz.moba.controlcenter.web.server.persist.scenario;
 
-import java.util.Collection;
-import java.util.List;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
 
-import net.wbz.moba.controlcenter.web.shared.scenario.Track;
-import org.mockito.Mockito;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Guice;
-
+import com.google.common.collect.Lists;
 import com.google.inject.AbstractModule;
 import com.google.inject.Inject;
-
+import java.util.List;
 import junit.framework.Assert;
 import net.wbz.moba.controlcenter.web.server.web.editor.TrackManager;
 import net.wbz.moba.controlcenter.web.shared.scenario.Route;
+import net.wbz.moba.controlcenter.web.shared.scenario.Track;
+import net.wbz.moba.controlcenter.web.shared.scenario.TrackNotFoundException;
 import net.wbz.moba.controlcenter.web.shared.track.model.AbstractTrackPart;
+import net.wbz.moba.controlcenter.web.shared.track.model.BlockStraight;
 import net.wbz.moba.controlcenter.web.shared.track.model.BusDataConfiguration;
 import net.wbz.moba.controlcenter.web.shared.track.model.Curve;
 import net.wbz.moba.controlcenter.web.shared.track.model.GridPosition;
@@ -23,11 +23,9 @@ import net.wbz.moba.controlcenter.web.shared.track.model.Straight.DIRECTION;
 import net.wbz.moba.controlcenter.web.shared.track.model.Switch;
 import net.wbz.moba.controlcenter.web.shared.track.model.Switch.PRESENTATION;
 import net.wbz.moba.controlcenter.web.shared.track.model.TrackBlock;
-
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.when;
-import static org.testng.Assert.assertFalse;
+import org.mockito.Mockito;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Guice;
 
 /**
  * Test the {@link TrackBuilder} with different track layouts.
@@ -50,6 +48,7 @@ abstract class AbstractTrackBuilderTest {
     @BeforeMethod
     public void beforeMethod() {
         Mockito.reset(trackManager);
+        trackBuilder.setTimeoutEnabled(false);
     }
 
     protected Route mockRoute() {
@@ -64,7 +63,7 @@ abstract class AbstractTrackBuilderTest {
         mockTrack(trackParts);
 
         Route route = mockRoute();
-        route.setStart(createTrackBlock(startAddress, startBit, true));
+        route.setStart(createBlockStraight(startAddress, startBit, true));
         route.setEnd(createTrackBlock(endAddress, endBit, true));
 
         Track track = trackBuilder.build(route);
@@ -76,7 +75,7 @@ abstract class AbstractTrackBuilderTest {
     void testSwitch(int startAddress, int startBit, int endAddress, int endBit, int switchAddress,
             int switchBit, boolean switchTargetBitState, int expectedTrackLength) throws TrackNotFoundException {
         Route route = mockRoute();
-        route.setStart(createTrackBlock(startAddress, startBit, true));
+        route.setStart(createBlockStraight(startAddress, startBit, true));
         route.setEnd(createTrackBlock(endAddress, endBit, true));
 
         Track track = trackBuilder.build(route);
@@ -91,16 +90,20 @@ abstract class AbstractTrackBuilderTest {
         return createStraight(x, y, DIRECTION.HORIZONTAL);
     }
 
-    Straight createHorizontalStraight(int x, int y, int address, int bit, boolean bitState) {
-        Straight straight = createHorizontalStraight(x, y);
-        initTrackPart(x, y, address, bit, bitState, straight);
-        return straight;
+    Straight createHorizontalBlockStraight(int x, int y, int address, int bit, boolean bitState) {
+        return createHorizontalBlockStraight(x, y, address, bit, bitState, 0);
     }
 
-    Straight createVerticalStraight(int x, int y, int address, int bit, boolean bitState) {
-        Straight straight = createVerticalStraight(x, y);
-        initTrackPart(x, y, address, bit, bitState, straight);
-        return straight;
+    Straight createHorizontalBlockStraight(int x, int y, int address, int bit, boolean bitState, int blockLength) {
+        return createBlockStraight(x, y, DIRECTION.HORIZONTAL, address, bit, bitState, blockLength);
+    }
+
+    Straight createVerticalBlockStraight(int x, int y, int address, int bit, boolean bitState) {
+        return createVerticalBlockStraight(x, y, address, bit, bitState, 0);
+    }
+
+    Straight createVerticalBlockStraight(int x, int y, int address, int bit, boolean bitState, int blockLength) {
+        return createBlockStraight(x, y, DIRECTION.VERTICAL, address, bit, bitState, blockLength);
     }
 
     Straight createVerticalStraight(int x, int y) {
@@ -111,6 +114,16 @@ abstract class AbstractTrackBuilderTest {
         Straight straight = new Straight();
         straight.setDirection(direction);
         straight.setGridPosition(new GridPosition(x, y));
+        return straight;
+    }
+
+    BlockStraight createBlockStraight(int x, int y, DIRECTION direction, int address, int bit, boolean bitState,
+        int blockLength) {
+        BlockStraight straight = new BlockStraight();
+        straight.setDirection(direction);
+        straight.setGridPosition(new GridPosition(x, y));
+        straight.setMiddleTrackBlock(createTrackBlock(address, bit, bitState));
+        straight.setBlockLength(blockLength);
         return straight;
     }
 
@@ -131,18 +144,20 @@ abstract class AbstractTrackBuilderTest {
         return curve;
     }
 
-    void initTrackPart(int x, int y, int address, int bit, boolean bitState, AbstractTrackPart trackPart) {
-        trackPart.setTrackBlock(createTrackBlock(address, bit, bitState));
-    }
-
     TrackBlock createTrackBlock(int address, int bit, boolean bitState) {
         TrackBlock trackBlock = new TrackBlock();
         trackBlock.setBlockFunction(new BusDataConfiguration(1, address, bit, bitState));
         return trackBlock;
     }
 
+    BlockStraight createBlockStraight(int startAddress, int startBit, boolean state) {
+        BlockStraight blockStraight = new BlockStraight();
+        blockStraight.setMiddleTrackBlock(createTrackBlock(startAddress, startBit, state));
+        return blockStraight;
+    }
+
     void mockTrack(List<? extends AbstractTrackPart> trackParts) {
-        when(trackManager.getTrack()).thenReturn((Collection<AbstractTrackPart>) trackParts);
+        when(trackManager.getTrack()).thenReturn(Lists.newArrayList(trackParts));
     }
 
     TrackBuilder getTrackBuilder() {

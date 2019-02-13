@@ -7,13 +7,10 @@ import net.wbz.moba.controlcenter.web.client.model.track.AbstractSvgTrackWidget;
 /**
  * Widget wrapper class used by {@link net.wbz.moba.controlcenter.web.client.editor.track.PalettePanel}.
  */
-public class EditorPaletteWidget extends PaletteWidget {
+class EditorPaletteWidget extends PaletteWidget {
 
-    public EditorPaletteWidget(AbstractSvgTrackWidget widget) {
+    EditorPaletteWidget(AbstractSvgTrackWidget widget) {
         super(widget);
-        /*
-          TODO clean code
-         */
         DoubleClickHandler cc = new EditWidgetDoubleClickHandler(getWidget());
         getWidget().addDomHandler(cc, DoubleClickEvent.getType());
     }

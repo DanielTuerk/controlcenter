@@ -3,6 +3,9 @@ package net.wbz.moba.controlcenter.web.shared.track.model;
 import com.google.common.collect.Lists;
 import com.googlecode.jmapper.annotations.JMap;
 import java.util.Collection;
+import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Trackpart which is a {@link Straight} in a custom blockLength to display a {@link TrackBlock} with information about the
@@ -10,15 +13,25 @@ import java.util.Collection;
  *
  * @author Daniel Tuerk
  */
-public class BlockStraight extends Straight {
+public class BlockStraight extends Straight implements MultipleGridPosition {
 
     @JMap
     private int blockLength;
+
+    @JMap
+    private TrackBlock leftTrackBlock;
+
+    @JMap
+    private TrackBlock middleTrackBlock;
+
+    @JMap
+    private TrackBlock rightTrackBlock;
 
     @Override
     public Collection<GridPosition> getNextGridPositions(GridPosition previousPosition) {
         int x = getGridPosition().getX();
         int y = getGridPosition().getY();
+        int blockLength = getGridLength();
         if (isVertical()) {
             y += blockLength;
         } else {
@@ -28,22 +41,86 @@ public class BlockStraight extends Straight {
     }
 
     @Override
-    public Collection<GridPosition> getLastGridPositions() {
+    public GridPosition getEndGridPosition() {
         int x = getGridPosition().getX();
         int y = getGridPosition().getY();
+        int blockLength = getGridLength() - 1;
         if (isVertical()) {
-            y -= blockLength;
+            y += blockLength;
         } else {
-            x -= blockLength;
+            x += blockLength;
         }
-        return Lists.newArrayList(new GridPosition(x, y));
+        return new GridPosition(x, y);
     }
 
-    public int getBlockLength() {
-        return blockLength;
+    /**
+     * Return the block length which can be set as value or calculated. The length depends on the blocks. Each block
+     * will increase the min length by 1.
+     *
+     * @return length or min 1
+     */
+    public int getGridLength() {
+        int minLength = 0;
+        if (getLeftTrackBlock() != null) {
+            minLength++;
+        }
+        if (getMiddleTrackBlock() != null) {
+            minLength++;
+        }
+        if (getRightTrackBlock() != null) {
+            minLength++;
+        }
+        if (minLength == 0) {
+            minLength = 1;
+        }
+        return blockLength < minLength ? minLength : blockLength;
     }
 
     public void setBlockLength(int blockLength) {
         this.blockLength = blockLength;
+    }
+
+    public int getBlockLength() {
+        // needed for jmapper
+        return blockLength;
+    }
+
+    public TrackBlock getLeftTrackBlock() {
+        return leftTrackBlock;
+    }
+
+    public void setLeftTrackBlock(TrackBlock leftTrackBlock) {
+        this.leftTrackBlock = leftTrackBlock;
+    }
+
+    public TrackBlock getMiddleTrackBlock() {
+        return middleTrackBlock;
+    }
+
+    public void setMiddleTrackBlock(TrackBlock middleTrackBlock) {
+        this.middleTrackBlock = middleTrackBlock;
+    }
+
+    public TrackBlock getRightTrackBlock() {
+        return rightTrackBlock;
+    }
+
+    public void setRightTrackBlock(TrackBlock rightTrackBlock) {
+        this.rightTrackBlock = rightTrackBlock;
+    }
+
+    public Collection<TrackBlock> getAllTrackBlocks() {
+        return Stream.of(leftTrackBlock, middleTrackBlock, rightTrackBlock).filter(Objects::nonNull)
+            .collect(Collectors.toList());
+    }
+
+    @Override
+    public String toString() {
+        return "BlockStraight{" + "blockLength=" + blockLength
+            + ", leftTrackBlock=" + leftTrackBlock
+            + ", middleTrackBlock=" + middleTrackBlock
+            + ", rightTrackBlock=" + rightTrackBlock
+            + '}'
+            + super.toString();
     }
 }

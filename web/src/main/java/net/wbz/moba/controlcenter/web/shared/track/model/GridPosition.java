@@ -44,17 +44,13 @@ public class GridPosition extends AbstractDto {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        if (!super.equals(o)) {
-            return false;
-        }
         GridPosition that = (GridPosition) o;
         return x == that.x && y == that.y;
     }
 
     @Override
     public int hashCode() {
-
-        return java.util.Objects.hash(super.hashCode(), x, y);
+        return java.util.Objects.hash(x, y);
     }
 
     @Override

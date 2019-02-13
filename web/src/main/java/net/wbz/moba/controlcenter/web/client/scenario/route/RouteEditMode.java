@@ -7,7 +7,7 @@ import com.google.gwt.dom.client.Style.HasCssName;
  *
  * @author Daniel Tuerk
  */
-enum RouteEditMode implements HasCssName {
+public enum RouteEditMode implements HasCssName {
 
     /**
      * Start point of the route.

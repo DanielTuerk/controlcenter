@@ -1,5 +1,16 @@
 package net.wbz.moba.controlcenter.web.client.model.track;
 
+import com.google.common.base.Strings;
+import com.google.gwt.user.client.ui.Widget;
+import net.wbz.moba.controlcenter.web.client.components.BitStateToggleButton;
+import net.wbz.moba.controlcenter.web.client.editor.track.ClickActionViewerWidgetHandler;
+import net.wbz.moba.controlcenter.web.client.event.EventReceiver;
+import net.wbz.moba.controlcenter.web.client.event.track.TrackPartStateRemoteListener;
+import net.wbz.moba.controlcenter.web.client.request.RequestUtils;
+import net.wbz.moba.controlcenter.web.shared.track.model.AbstractTrackPart;
+import net.wbz.moba.controlcenter.web.shared.track.model.BusDataConfiguration;
+import net.wbz.moba.controlcenter.web.shared.track.model.EventConfiguration;
+import net.wbz.moba.controlcenter.web.shared.track.model.HasToggleFunction;
 import org.gwtbootstrap3.client.ui.Button;
 import org.gwtbootstrap3.client.ui.FieldSet;
 import org.gwtbootstrap3.client.ui.FormGroup;
@@ -12,22 +23,9 @@ import org.gwtbootstrap3.extras.select.client.ui.Select;
 import org.vectomatic.dom.svg.OMSVGDocument;
 import org.vectomatic.dom.svg.OMSVGSVGElement;
 
-import com.google.common.base.Strings;
-import com.google.gwt.user.client.ui.Widget;
-
-import net.wbz.moba.controlcenter.web.client.request.RequestUtils;
-import net.wbz.moba.controlcenter.web.client.editor.track.ClickActionViewerWidgetHandler;
-import net.wbz.moba.controlcenter.web.client.components.BitStateToggleButton;
-import net.wbz.moba.controlcenter.web.client.util.Log;
-import net.wbz.moba.controlcenter.web.shared.track.model.AbstractTrackPart;
-import net.wbz.moba.controlcenter.web.shared.track.model.BusDataConfiguration;
-import net.wbz.moba.controlcenter.web.shared.track.model.EventConfiguration;
-import net.wbz.moba.controlcenter.web.shared.track.model.HasToggleFunction;
-
 /**
  * A {@link AbstractSvgTrackWidget} with click control
  * to toggle the state of the {@link AbstractTrackPart}.
- * <p/>
  *
  * @author Daniel Tuerk
  */
@@ -50,6 +48,13 @@ abstract public class AbstractControlSvgTrackWidget<T extends AbstractTrackPart 
     private Select selectBit;
     private TextBox txtAddress;
 
+    private final TrackPartStateRemoteListener trackPartStateEventListener;
+
+    protected AbstractControlSvgTrackWidget() {
+        super();
+        trackPartStateEventListener = event -> updateFunctionState(event.getConfiguration(), event.isOn());
+    }
+
     /**
      * Add the svg items to the element which represents the active state of the widget.
      * 
@@ -60,14 +65,34 @@ abstract public class AbstractControlSvgTrackWidget<T extends AbstractTrackPart 
     abstract protected void addActiveStateSvgContent(OMSVGDocument doc, OMSVGSVGElement svg, String color);
 
     @Override
+    protected void onLoad() {
+        super.onLoad();
+
+        EventReceiver.getInstance().addListener(trackPartStateEventListener);
+    }
+
+    @Override
+    protected void onUnload() {
+        super.onUnload();
+
+        EventReceiver.getInstance().removeListener(trackPartStateEventListener);
+    }
+
+    @Override
     public void onClick() {
         if (isEnabled()) {
             BusDataConfiguration toggleFunctionConfig = getTrackPart().getToggleFunction();
             RequestUtils.getInstance().getTrackViewerService().toggleTrackPart(toggleFunctionConfig, !trackPartState,
-                    RequestUtils.VOID_ASYNC_CALLBACK);
+                RequestUtils.VOID_ASYNC_CALLBACK);
         }
     }
 
+    /**
+     * Update the state of the function for given {@link BusDataConfiguration}.
+     *
+     * @param configuration {@link BusDataConfiguration}
+     * @param state new state
+     */
     public void updateFunctionState(BusDataConfiguration configuration, boolean state) {
         // update the SVG for the state of the {@link AbstractTrackPart#DEFAULT_TOGGLE_FUNCTION}
         BusDataConfiguration toggleFunctionConfig = getTrackPart().getToggleFunction();
@@ -79,8 +104,6 @@ abstract public class AbstractControlSvgTrackWidget<T extends AbstractTrackPart 
             } else {
                 addSvgContent(getSvgDocument(), getSvgRootElement(), getColor());
             }
-        } else {
-            Log.warn("received unknown configuration for track widget: " + getClass().getName());
         }
     }
 

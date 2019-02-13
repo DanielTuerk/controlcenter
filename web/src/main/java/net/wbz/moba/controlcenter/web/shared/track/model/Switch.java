@@ -1,12 +1,10 @@
 package net.wbz.moba.controlcenter.web.shared.track.model;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Set;
-
 import com.google.common.collect.Lists;
 import com.google.gwt.user.client.rpc.IsSerializable;
 import com.googlecode.jmapper.annotations.JMap;
+import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * @author Daniel Tuerk
@@ -171,13 +169,6 @@ public class Switch extends AbstractTrackPart implements HasToggleFunction {
                 break;
         }
         return new GridPosition(x, y);
-    }
-
-    @Override
-    public Set<BusDataConfiguration> getConfigurationsOfFunctions() {
-        Set<BusDataConfiguration> functions = super.getConfigurationsOfFunctions();
-        functions.add(toggleFunction);
-        return functions;
     }
 
     /**

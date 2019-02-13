@@ -7,7 +7,6 @@ import com.googlecode.jmapper.annotations.JMap;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * @author Daniel Tuerk
@@ -64,14 +63,6 @@ public class Signal extends Straight implements HasToggleFunction {
     @Override
     public void setEventConfiguration(EventConfiguration eventConfiguration) {
 
-    }
-
-    @Override
-    public Set<BusDataConfiguration> getConfigurationsOfFunctions() {
-        Set<BusDataConfiguration> functions = super.getConfigurationsOfFunctions();
-        // TODO update to common usage by track editor to register consumers?
-        // functions.addAll(getSignalConfigurations());
-        return functions;
     }
 
     /**

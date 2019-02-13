@@ -1,5 +1,6 @@
 package net.wbz.moba.controlcenter.web.shared.train;
 
+import com.google.common.collect.Sets;
 import com.googlecode.jmapper.annotations.JMap;
 import java.util.HashSet;
 import java.util.Set;
@@ -76,8 +77,8 @@ public class Train extends AbstractDto {
         currentBlocks.remove(trackBlock);
     }
 
-    public boolean isCurrentlyInBlock(TrackBlock trackBlock) {
-        return currentBlocks.contains(trackBlock);
+    public boolean isCurrentlyInBlock(TrackBlock... trackBlock) {
+        return currentBlocks.stream().anyMatch(Sets.newHashSet(trackBlock)::contains);
     }
 
     public boolean isPresentOnTrack() {

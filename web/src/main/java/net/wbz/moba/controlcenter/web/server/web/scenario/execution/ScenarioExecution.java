@@ -15,7 +15,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import net.wbz.moba.controlcenter.web.server.SelectrixHelper;
 import net.wbz.moba.controlcenter.web.server.persist.scenario.TrackBuilder;
-import net.wbz.moba.controlcenter.web.server.persist.scenario.TrackNotFoundException;
+import net.wbz.moba.controlcenter.web.shared.scenario.TrackNotFoundException;
 import net.wbz.moba.controlcenter.web.server.web.editor.block.BusAddressIdentifier;
 import net.wbz.moba.controlcenter.web.server.web.editor.block.SignalBlockRegistry;
 import net.wbz.moba.controlcenter.web.server.web.scenario.RouteListener;
@@ -339,7 +339,7 @@ abstract class ScenarioExecution implements Callable<Void> {
         Train train = getTrain();
 
         // detect train
-        if ((isFirstRoute || !isAnyRouteRunning) && !train.isCurrentlyInBlock(route.getStart())) {
+        if ((isFirstRoute || !isAnyRouteRunning) && trainIsNotInStartBlock(route, train)) {
             /*
              * Check for available train in the first route block to be executed. Others are saved by the execution.
              * An explicit check of each route block can't be performed because the feedback could be too late.
@@ -359,6 +359,11 @@ abstract class ScenarioExecution implements Callable<Void> {
             routeSequence.getRoute().setRunState(ROUTE_RUN_STATE.PREPARED);
         }
         return new RouteExecution(routeSequence, previousRouteSequence, nextRouteSequence, train, signal.get());
+    }
+
+    private boolean trainIsNotInStartBlock(Route route, Train train) {
+        return !train.isCurrentlyInBlock(route.getStart().getLeftTrackBlock(), route.getStart().getMiddleTrackBlock(),
+            route.getStart().getRightTrackBlock());
     }
 
     /**

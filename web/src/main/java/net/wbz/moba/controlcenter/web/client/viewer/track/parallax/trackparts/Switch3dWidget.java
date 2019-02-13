@@ -27,8 +27,13 @@ public class Switch3dWidget extends Basic3dTrackWidget<Switch> {
         setMaterial(createTrackPartTexture(texture));
     }
 
+    /**
+     * TODO call intern by  listener
+     * @param configuration
+     * @param state
+     */
     public void updateFunctionState(BusDataConfiguration configuration, boolean state) {
-        super.updateFunctionState(configuration, state);
+//        super.updateFunctionState(configuration, state);
 
         if (state) {
             // switch is in curve mode

@@ -23,7 +23,7 @@ class ListenerDelegate implements de.novanic.eventservice.client.event.listener.
     public synchronized void apply(Event event) {
         lastReceivedEvent = event;
         synchronized (listeners) {
-            listeners.forEach(x -> Scheduler.get().scheduleDeferred(new EventCommand(x, event)));
+            listeners.forEach(listener -> Scheduler.get().scheduleDeferred(new EventCommand(listener, event)));
         }
     }
 

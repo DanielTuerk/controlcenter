@@ -1,5 +1,6 @@
 package net.wbz.moba.controlcenter.web.client.editor.track;
 
+import com.google.common.base.Strings;
 import com.google.gwt.gen2.logging.shared.Log;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Widget;
@@ -71,6 +72,11 @@ public class SimpleTrackPanel extends AbstractTrackPanel {
                             if (maxTop < trackPosition.getTop()) {
                                 maxTop = trackPosition.getTop();
                             }
+
+                            String additionalStyle = trackWidget.getTrackWidgetStyleName();
+//                            if (!Strings.isNullOrEmpty(additionalStyle)) {
+//                                trackWidget.addStyleName(additionalStyle);
+//                            }
                             add(initTrackWidget(trackWidget), trackPosition.getLeft(), trackPosition.getTop());
                         }
                         Log.info("load track done " + new Date().toString());

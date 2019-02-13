@@ -5,12 +5,12 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import java.util.Collection;
 import net.wbz.moba.controlcenter.web.server.persist.scenario.TrackBuilder;
-import net.wbz.moba.controlcenter.web.server.persist.scenario.TrackNotFoundException;
 import net.wbz.moba.controlcenter.web.shared.scenario.Route;
 import net.wbz.moba.controlcenter.web.shared.scenario.Scenario;
 import net.wbz.moba.controlcenter.web.shared.scenario.ScenarioEditorService;
 import net.wbz.moba.controlcenter.web.shared.scenario.Station;
 import net.wbz.moba.controlcenter.web.shared.scenario.Track;
+import net.wbz.moba.controlcenter.web.shared.scenario.TrackNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -95,13 +95,13 @@ public class ScenarioEditorServiceImpl extends RemoteServiceServlet implements S
     }
 
     @Override
-    public Track buildTrack(Route route) {
+    public Track buildTrack(Route route) throws TrackNotFoundException {
         try {
             return trackBuilder.build(route);
         } catch (TrackNotFoundException e) {
-            LOG.error("can't build track of route:" + route, e);
+            LOG.error("can't build track for route {}", route, e);
+            throw e;
         }
-        return null;
     }
 
 }

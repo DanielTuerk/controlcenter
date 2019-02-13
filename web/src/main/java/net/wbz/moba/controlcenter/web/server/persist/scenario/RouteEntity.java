@@ -1,17 +1,14 @@
 package net.wbz.moba.controlcenter.web.server.persist.scenario;
 
+import com.googlecode.jmapper.annotations.JMap;
 import java.util.List;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
-
-import com.googlecode.jmapper.annotations.JMap;
-
-import javax.persistence.OneToMany;
 import net.wbz.moba.controlcenter.web.server.persist.AbstractEntity;
+import net.wbz.moba.controlcenter.web.server.persist.construction.track.BlockStraightEntity;
 import net.wbz.moba.controlcenter.web.server.persist.construction.track.GridPositionEntity;
 import net.wbz.moba.controlcenter.web.server.persist.construction.track.TrackBlockEntity;
 
@@ -32,7 +29,7 @@ public class RouteEntity extends AbstractEntity {
 
     @JMap
     @ManyToOne
-    private TrackBlockEntity start;
+    private BlockStraightEntity start;
 
     @JMap
     @ManyToOne
@@ -70,11 +67,11 @@ public class RouteEntity extends AbstractEntity {
         this.oneway = oneway;
     }
 
-    public TrackBlockEntity getStart() {
+    public BlockStraightEntity getStart() {
         return start;
     }
 
-    public void setStart(TrackBlockEntity start) {
+    public void setStart(BlockStraightEntity start) {
         this.start = start;
     }
 

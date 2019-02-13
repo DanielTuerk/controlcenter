@@ -1,19 +1,21 @@
 package net.wbz.moba.controlcenter.web.client.model.track.signal;
 
-import org.gwtbootstrap3.client.ui.Button;
-import org.vectomatic.dom.svg.OMSVGDocument;
-import org.vectomatic.dom.svg.OMSVGSVGElement;
-
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Widget;
-
+import java.util.Objects;
 import net.wbz.moba.controlcenter.web.client.components.Popover;
-import net.wbz.moba.controlcenter.web.client.request.RequestUtils;
+import net.wbz.moba.controlcenter.web.client.event.EventReceiver;
+import net.wbz.moba.controlcenter.web.client.event.track.SignalFunctionRemoteListener;
 import net.wbz.moba.controlcenter.web.client.model.track.AbstractControlSvgTrackWidget;
+import net.wbz.moba.controlcenter.web.client.request.RequestUtils;
 import net.wbz.moba.controlcenter.web.client.viewer.track.svg.TrackViewerPanel;
 import net.wbz.moba.controlcenter.web.shared.track.model.Signal;
 import net.wbz.moba.controlcenter.web.shared.track.model.Straight;
+import net.wbz.moba.controlcenter.web.shared.viewer.SignalFunctionStateEvent;
+import org.gwtbootstrap3.client.ui.Button;
+import org.vectomatic.dom.svg.OMSVGDocument;
+import org.vectomatic.dom.svg.OMSVGSVGElement;
 
 /**
  * Abstract widget for an signal.
@@ -35,8 +37,35 @@ abstract public class AbstractSignalWidget extends AbstractControlSvgTrackWidget
      */
     private Signal.FUNCTION activeFunction = null;
 
-    public AbstractSignalWidget() {
+    private final SignalFunctionRemoteListener signalFunctionStateEventListener;
+
+    AbstractSignalWidget() {
+        super();
         popover = new Popover(TrackViewerPanel.ID, this);
+        signalFunctionStateEventListener = this::updateSignalState;
+    }
+
+    private void updateSignalState(SignalFunctionStateEvent signalFunctionStateEvent) {
+        if (Objects.equals(getTrackPart().getId(), signalFunctionStateEvent.getSignalId())) {
+            showSignalFunction(signalFunctionStateEvent.getSignalFunction());
+        }
+    }
+
+    @Override
+    protected void onLoad() {
+        super.onLoad();
+        EventReceiver.getInstance().addListener(signalFunctionStateEventListener);
+    }
+
+    @Override
+    protected void onUnload() {
+        super.onUnload();
+
+        EventReceiver.getInstance().removeListener(signalFunctionStateEventListener);
+
+        if (popover.isShowing()) {
+            popover.hide();
+        }
     }
 
     @Override
@@ -69,46 +98,34 @@ abstract public class AbstractSignalWidget extends AbstractControlSvgTrackWidget
         dialogContent = new SignalEditDialogContent();
 
         Button btnDrive = new Button("drive");
-        btnDrive.addClickHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-                switchSignalFunction(Signal.FUNCTION.HP1);
-                popover.hide();
-            }
+        btnDrive.addClickHandler(event -> {
+            switchSignalFunction(Signal.FUNCTION.HP1);
+            popover.hide();
         });
         popover.addContent(btnDrive);
 
         if (signalType == Signal.TYPE.EXIT || signalType == Signal.TYPE.ENTER || signalType == Signal.TYPE.BEFORE) {
             Button btnSlowDrive = new Button("slow drive");
-            btnSlowDrive.addClickHandler(new ClickHandler() {
-                @Override
-                public void onClick(ClickEvent event) {
-                    switchSignalFunction(Signal.FUNCTION.HP2);
-                    popover.hide();
-                }
+            btnSlowDrive.addClickHandler(event -> {
+                switchSignalFunction(Signal.FUNCTION.HP2);
+                popover.hide();
             });
             popover.addContent(btnSlowDrive);
         }
 
         if (signalType == Signal.TYPE.EXIT) {
             Button btnRouting = new Button("routing");
-            btnRouting.addClickHandler(new ClickHandler() {
-                @Override
-                public void onClick(ClickEvent event) {
-                    switchSignalFunction(Signal.FUNCTION.HP0_SH1);
-                    popover.hide();
-                }
+            btnRouting.addClickHandler(event -> {
+                switchSignalFunction(Signal.FUNCTION.HP0_SH1);
+                popover.hide();
             });
             popover.addContent(btnRouting);
         }
 
         Button btnStop = new Button("stop");
-        btnStop.addClickHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-                switchSignalFunction(Signal.FUNCTION.HP0);
-                popover.hide();
-            }
+        btnStop.addClickHandler(event -> {
+            switchSignalFunction(Signal.FUNCTION.HP0);
+            popover.hide();
         });
         popover.addContent(btnStop);
     }
@@ -142,14 +159,6 @@ abstract public class AbstractSignalWidget extends AbstractControlSvgTrackWidget
             } else {
                 popover.toggle();
             }
-        }
-    }
-
-    @Override
-    protected void onUnload() {
-        super.onUnload();
-        if (popover.isShowing()) {
-            popover.hide();
         }
     }
 

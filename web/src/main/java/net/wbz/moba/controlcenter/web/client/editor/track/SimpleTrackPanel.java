@@ -73,10 +73,6 @@ public class SimpleTrackPanel extends AbstractTrackPanel {
                                 maxTop = trackPosition.getTop();
                             }
 
-                            String additionalStyle = trackWidget.getTrackWidgetStyleName();
-//                            if (!Strings.isNullOrEmpty(additionalStyle)) {
-//                                trackWidget.addStyleName(additionalStyle);
-//                            }
                             add(initTrackWidget(trackWidget), trackPosition.getLeft(), trackPosition.getTop());
                         }
                         Log.info("load track done " + new Date().toString());

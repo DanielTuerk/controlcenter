@@ -83,14 +83,6 @@ public class RouteEditModalBody extends Composite {
                 }
                 return super.initTrackWidget(trackWidget);
             }
-
-            //            @Override
-//            public void addTrackWidget(Widget widget, int left, int top) {
-//                super.addTrackWidget(widget, left, top);
-//                if(widget instanceof AbstractSvgTrackWidget){
-//                    widget.addStyleName(((AbstractSvgTrackWidget) widget).getTrackWidgetStyleName());
-//                }
-//            }
         };
         trackPanel.getElement().setId(TRACK_WIDGET_ID);
         trackPanelContainer.add(trackPanel);

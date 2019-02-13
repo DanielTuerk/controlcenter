@@ -210,15 +210,7 @@ public class TrackManager implements ConstructionChangeListener {
     void deleteTrackBlock(TrackBlock trackBlock) {
         blockStraightDao.deleteTrackBlock(trackBlock);
         blockStraightDao.flush();
-//        List<AbstractTrackPartEntity> byBlockId = trackPartDao.findByBlockId(trackBlock.getId());
-//        if (!byBlockId.isEmpty()) {
-//
-//            for (AbstractTrackPartEntity trackPartEntity : byBlockId) {
-//                trackPartEntity.setTrackBlock(null);
-//                trackPartDao.update(trackPartEntity);
-//            }
-//            trackPartDao.flush();
-//        }
+
         trackBlockDao.delete(trackBlockDataMapper.transformTarget(trackBlock));
         trackBlockDao.flush();
         // reload data

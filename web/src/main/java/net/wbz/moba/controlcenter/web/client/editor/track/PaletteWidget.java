@@ -38,13 +38,6 @@ public class PaletteWidget extends AbsolutePanel implements HasDragHandle {
         if (!Strings.isNullOrEmpty(additionalStyle)) {
             addStyleName(additionalStyle);
         }
-
-//        styleName = widget.getStyleName();
-//        if (!Strings.isNullOrEmpty(styleName)) {
-//            addStyleName(styleName);
-//            widget.removeStyleName(styleName);
-//            shim.addStyleName(styleName);
-//        }
     }
 
     public AbstractSvgTrackWidget getPaletteWidgetItem() {
@@ -55,7 +48,6 @@ public class PaletteWidget extends AbsolutePanel implements HasDragHandle {
         Widget clone = widget.getClone(widget.getNewTrackPart());
 
         // Copy a few obvious common widget properties
-//        clone.setStyleName(styleName);
         clone.setTitle(widget.getTitle());
 
         // Wrap the cloned widget in a new PaletteWidget instance

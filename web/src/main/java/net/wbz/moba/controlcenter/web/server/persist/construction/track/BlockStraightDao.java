@@ -25,6 +25,15 @@ public class BlockStraightDao extends AbstractDao<BlockStraightEntity> {
 
     public void deleteTrackBlock(TrackBlock trackBlock) {
         //TODO
+//        List<AbstractTrackPartEntity> byBlockId = trackPartDao.findByBlockId(trackBlock.getId());
+//        if (!byBlockId.isEmpty()) {
+//
+//            for (AbstractTrackPartEntity trackPartEntity : byBlockId) {
+//                trackPartEntity.setTrackBlock(null);
+//                trackPartDao.update(trackPartEntity);
+//            }
+//            trackPartDao.flush();
+//        }
         throw new RuntimeException("not implemented");
     }
 }

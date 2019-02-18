@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import javax.inject.Inject;
 import net.wbz.moba.controlcenter.web.server.EventBroadcaster;
 import net.wbz.moba.controlcenter.web.server.persist.construction.ConstructionDao;
@@ -173,15 +174,6 @@ public class TrackManager implements ConstructionChangeListener {
         List<AbstractTrackPartEntity> existingTrackParts = Lists
             .newArrayList(trackPartDao.findByConstructionId(constructionEntity.getId()));
 
-        for (AbstractTrackPart trackPart : trackParts) {
-            AbstractTrackPartEntity entity = trackPartDataMapper.transformTrackPart(trackPart);
-            entity.setConstruction(constructionEntity);
-            if (entity.getId() == null) {
-                trackPartDao.create(entity);
-            } else {
-                trackPartDao.update(entity);
-            }
-        }
         // delete track part which was not updated
         for (AbstractTrackPartEntity abstractTrackPartEntity : existingTrackParts) {
             boolean found = false;
@@ -196,10 +188,20 @@ public class TrackManager implements ConstructionChangeListener {
                     gridPosId = abstractTrackPartEntity.getGridPosition().getId();
                     abstractTrackPartEntity.setGridPosition(null);
                     gridPositionDao.delete(gridPosId);
+                    gridPositionDao.flush();
                 }
                 trackPartDao.delete(abstractTrackPartEntity);
+                trackPartDao.flush();
             }
         }
+
+        List<AbstractTrackPartEntity> trackPartEntities = trackParts.stream()
+            .map(trackPartDataMapper::transformTrackPart)
+            .collect(Collectors.toList());
+
+        trackPartEntities.stream().filter(x -> x.getId() == null).forEach(trackPartDao::update);
+        trackPartDao.flush();
+        trackPartEntities.stream().filter(x -> x.getId() != null).forEach(trackPartDao::create);
     }
 
     private ConstructionEntity getCurrentConstruction() {

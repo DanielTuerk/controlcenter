@@ -6,6 +6,9 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Widget;
+import java.util.ArrayList;
+import java.util.List;
+import net.wbz.moba.controlcenter.web.client.util.Log;
 
 /**
  * Abstract container for the viewer elements in the track viewer. Load and reload the items in the container.
@@ -18,18 +21,22 @@ public abstract class AbstractViewerContainer extends Composite {
 
     @UiField
     FlowPanel itemsContainer;
+    private final List<Widget> lastWidgets = new ArrayList<>();
 
     public AbstractViewerContainer() {
         initWidget(uiBinder.createAndBindUi(this));
     }
 
     public void addItemPanel(BaseViewerItemPanel<?> panel) {
+        Log.info(getClass().getName()+  " addItemPanel");
         itemsContainer.add(panel);
+        lastWidgets.add(panel);
     }
 
     abstract protected void loadItems();
 
     protected void reloadItems() {
+        Log.info(getClass().getName()+" abstract - reload");
         resetItems();
         loadItems();
     }
@@ -37,6 +44,7 @@ public abstract class AbstractViewerContainer extends Composite {
     @Override
     protected void onLoad() {
         super.onLoad();
+        Log.info(getClass().getName()+" abstract viewer - onload");
         loadItems();
     }
 
@@ -47,7 +55,8 @@ public abstract class AbstractViewerContainer extends Composite {
     }
 
     private void resetItems() {
-        itemsContainer.clear();
+        lastWidgets.forEach(Widget::removeFromParent);
+        lastWidgets.clear();
     }
 
     interface Binder extends UiBinder<Widget, AbstractViewerContainer> {

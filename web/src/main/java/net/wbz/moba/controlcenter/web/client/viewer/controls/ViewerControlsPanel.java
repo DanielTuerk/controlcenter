@@ -6,6 +6,7 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Widget;
+import net.wbz.moba.controlcenter.web.client.util.Log;
 import net.wbz.moba.controlcenter.web.client.viewer.controls.scenario.ScenarioViewerControlsPanel;
 import net.wbz.moba.controlcenter.web.client.viewer.controls.train.TrainViewerControlsPanel;
 import org.gwtbootstrap3.client.ui.RadioButton;
@@ -27,6 +28,8 @@ public class ViewerControlsPanel extends Composite {
     @UiField
     FlowPanel panelBody;
 
+    private Widget lastWidget = null;
+
     public ViewerControlsPanel() {
         initWidget(uiBinder.createAndBindUi(this));
 
@@ -39,13 +42,30 @@ public class ViewerControlsPanel extends Composite {
 
     @Override
     protected void onLoad() {
+        Log.info(getClass().getName() + " on load");
         super.onLoad();
         showWidget(trainViewerControlsPanel);
+        btnTrain.setActive(true);
+        btnScenario.setActive(false);
+    }
+
+    @Override
+    protected void onUnload() {
+        super.onUnload();
+        removeBody();
+        lastWidget = null;
     }
 
     private void showWidget(Widget widget) {
-        panelBody.clear();
+        removeBody();
         panelBody.add(widget);
+        lastWidget = widget;
+    }
+
+    private void removeBody() {
+        if (lastWidget != null) {
+            panelBody.remove(lastWidget);
+        }
     }
 
     interface Binder extends UiBinder<com.google.gwt.user.client.ui.Widget, ViewerControlsPanel> {

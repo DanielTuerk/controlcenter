@@ -5,13 +5,13 @@ import java.util.Collection;
 import net.wbz.moba.controlcenter.web.client.event.EventReceiver;
 import net.wbz.moba.controlcenter.web.client.event.train.TrainDataChangedRemoteListener;
 import net.wbz.moba.controlcenter.web.client.request.RequestUtils;
+import net.wbz.moba.controlcenter.web.client.util.Log;
 import net.wbz.moba.controlcenter.web.client.viewer.controls.AbstractViewerContainer;
 import net.wbz.moba.controlcenter.web.shared.train.Train;
 
 /**
  * Viewer for the {@link Train}s.
- * TODO: reload trains for configuration changes -> verify event thrown for address change
- * 
+ *
  * @author Daniel Tuerk
  */
 public class TrainViewerControlsPanel extends AbstractViewerContainer {
@@ -31,12 +31,13 @@ public class TrainViewerControlsPanel extends AbstractViewerContainer {
 
     @Override
     protected void onUnload() {
-        super.onUnload();
         EventReceiver.getInstance().removeListener(trainDataChangedRemoteListener);
+        super.onUnload();
     }
 
     @Override
     protected void loadItems() {
+        Log.info("load items");
         RequestUtils.getInstance().getTrainEditorService().getTrains(new AsyncCallback<Collection<Train>>() {
             @Override
             public void onFailure(Throwable caught) {

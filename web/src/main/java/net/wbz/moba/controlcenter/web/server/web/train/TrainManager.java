@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
-import net.wbz.moba.controlcenter.web.server.EventBroadcaster;
+import net.wbz.moba.controlcenter.web.server.event.EventBroadcaster;
 import net.wbz.moba.controlcenter.web.server.persist.train.TrainDao;
 import net.wbz.moba.controlcenter.web.server.persist.train.TrainEntity;
 import net.wbz.moba.controlcenter.web.server.web.DataMapper;
@@ -32,7 +32,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Manager to access the {@link TrainEntity}s from database. Each {@link TrainEntity} register an {@link
  * net.wbz.selectrix4java.train.TrainDataListener} and throw the state changes by the {@link
- * net.wbz.moba.controlcenter.web.server.EventBroadcaster} as train events to the client.
+ * EventBroadcaster} as train events to the client.
  *
  * @author Daniel Tuerk
  */

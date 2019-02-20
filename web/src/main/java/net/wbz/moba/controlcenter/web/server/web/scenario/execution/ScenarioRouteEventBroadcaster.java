@@ -3,7 +3,7 @@ package net.wbz.moba.controlcenter.web.server.web.scenario.execution;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import net.wbz.moba.controlcenter.web.server.EventBroadcaster;
+import net.wbz.moba.controlcenter.web.server.event.EventBroadcaster;
 import net.wbz.moba.controlcenter.web.server.web.scenario.RouteListener;
 import net.wbz.moba.controlcenter.web.shared.scenario.RouteSequence;
 import net.wbz.moba.controlcenter.web.shared.scenario.RouteStateEvent;

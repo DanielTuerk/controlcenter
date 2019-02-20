@@ -1,13 +1,13 @@
 package net.wbz.moba.controlcenter.web.shared.viewer;
 
-import de.novanic.eventservice.client.event.Event;
 import java.util.Objects;
+import net.wbz.moba.controlcenter.web.client.event.StateEvent;
 import net.wbz.moba.controlcenter.web.shared.track.model.BusDataConfiguration;
 
 /**
  * Created by Daniel on 18.04.2014.
  */
-public class TrackPartBlockEvent implements Event {
+public class TrackPartBlockEvent implements StateEvent {
 
     private BusDataConfiguration config;
     private STATE state;

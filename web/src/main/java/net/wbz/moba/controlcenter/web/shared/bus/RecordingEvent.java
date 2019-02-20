@@ -1,11 +1,11 @@
 package net.wbz.moba.controlcenter.web.shared.bus;
 
-import de.novanic.eventservice.client.event.Event;
+import net.wbz.moba.controlcenter.web.client.event.StateEvent;
 
 /**
  * @author Daniel Tuerk
  */
-public class RecordingEvent implements Event {
+public class RecordingEvent implements StateEvent {
 
     private STATE state;
     private String filePath;

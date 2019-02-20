@@ -1,4 +1,4 @@
-package net.wbz.moba.controlcenter.web.server;
+package net.wbz.moba.controlcenter.web.server.event;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -13,6 +13,7 @@ import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
+import net.wbz.moba.controlcenter.web.client.event.StateEvent;
 import net.wbz.moba.controlcenter.web.shared.bus.BusDataEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,7 +31,7 @@ public class EventBroadcaster {
     private final EventExecutorService eventExecutorService;
     private final ExecutorService taskExecutor;
 
-    private Map<String, Set<Event>> lastSendEvents = Maps.newConcurrentMap();
+    private Map<String, Set<StateEvent>> lastSendEvents = Maps.newConcurrentMap();
 
     /**
      * Create broadcaster with singleton {@link EventExecutorService}.
@@ -56,6 +57,7 @@ public class EventBroadcaster {
             LOG.debug("fire Event: " + event.toString());
         }
         sendEvent(event);
+
         saveLastSendEvent(event);
     }
 
@@ -67,7 +69,7 @@ public class EventBroadcaster {
     public synchronized void resendEvent(final String eventClazzName) {
         if (lastSendEvents.containsKey(eventClazzName)) {
             taskExecutor.submit(new ResendEventRunnable(eventClazzName,
-                Sets.newHashSet(lastSendEvents.get(eventClazzName))));
+                Sets.newHashSet(lastSendEvents.get(eventClazzName)), eventExecutorService));
         }
     }
 
@@ -76,43 +78,19 @@ public class EventBroadcaster {
     }
 
     private synchronized void saveLastSendEvent(Event event) {
-        String key = getKey(event);
-        if (!lastSendEvents.containsKey(key)) {
-            lastSendEvents.put(key, Sets.newConcurrentHashSet());
+        if (event instanceof StateEvent) {
+            StateEvent stateEvent = (StateEvent) event;
+            String key = getKey(stateEvent);
+            if (!lastSendEvents.containsKey(key)) {
+                lastSendEvents.put(key, Sets.newConcurrentHashSet());
+            }
+            lastSendEvents.get(key).remove(stateEvent);
+            lastSendEvents.get(key).add(stateEvent);
         }
-        lastSendEvents.get(key).remove(event);
-        lastSendEvents.get(key).add(event);
     }
 
     private String getKey(Event eventClazz) {
         return eventClazz.getClass().getName();
     }
 
-    private class ResendEventRunnable implements Runnable {
-
-        private static final long SLEEP_IN_MILLIS = 1000L;
-        private final String eventClazzName;
-        private final Set<Event> events;
-
-        private ResendEventRunnable(String eventClazzName, Set<Event> events) {
-            this.eventClazzName = eventClazzName;
-            this.events = events;
-        }
-
-        @Override
-        public void run() {
-            try {
-                LOG.debug("wait to resend last events of " + eventClazzName);
-                // TODO delay needed or wrong time to call?
-                Thread.sleep(SLEEP_IN_MILLIS);
-                LOG.debug("request resend last events of " + eventClazzName);
-
-                for (Event event : events) {
-                    sendEvent(event);
-                }
-            } catch (InterruptedException e) {
-                LOG.error("error wait to resend", e);
-            }
-        }
-    }
 }

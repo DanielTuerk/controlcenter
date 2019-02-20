@@ -4,7 +4,7 @@ import com.google.common.collect.Maps;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import net.wbz.moba.controlcenter.web.server.EventBroadcaster;
+import net.wbz.moba.controlcenter.web.server.event.EventBroadcaster;
 import net.wbz.moba.controlcenter.web.server.persist.construction.track.BusDataConfigurationEntity;
 import net.wbz.moba.controlcenter.web.server.web.editor.block.BusAddressIdentifier;
 import net.wbz.moba.controlcenter.web.shared.track.model.BusDataConfiguration;
@@ -15,7 +15,7 @@ import net.wbz.selectrix4java.bus.BusAddressBitListener;
 /**
  * Register busAddressListeners to update the current signal function by bus data. Each signal function change will
  * throw an new {@link net.wbz.moba.controlcenter.web.shared.viewer.SignalFunctionStateEvent} by the {@link
- * net.wbz.moba.controlcenter.web.server.EventBroadcaster}.
+ * EventBroadcaster}.
  *
  * @author Daniel Tuerk
  */

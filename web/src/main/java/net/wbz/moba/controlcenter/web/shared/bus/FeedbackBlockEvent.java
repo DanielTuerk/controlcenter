@@ -1,13 +1,13 @@
 package net.wbz.moba.controlcenter.web.shared.bus;
 
-import de.novanic.eventservice.client.event.Event;
+import net.wbz.moba.controlcenter.web.client.event.StateEvent;
 
 /**
  * Event for train state at {@link net.wbz.selectrix4java.block.FeedbackBlockModule}.
  *
  * @author Daniel Tuerk
  */
-public class FeedbackBlockEvent implements Event {
+public class FeedbackBlockEvent implements StateEvent {
 
     private int bus;
     private int address;

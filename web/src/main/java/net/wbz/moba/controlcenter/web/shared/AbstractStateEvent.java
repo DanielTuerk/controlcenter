@@ -1,11 +1,11 @@
 package net.wbz.moba.controlcenter.web.shared;
 
-import de.novanic.eventservice.client.event.Event;
+import net.wbz.moba.controlcenter.web.client.event.StateEvent;
 
 /**
  * @author Daniel Tuerk
  */
-public class AbstractStateEvent implements Event {
+public class AbstractStateEvent implements StateEvent {
 
     public long itemId = -1;
 

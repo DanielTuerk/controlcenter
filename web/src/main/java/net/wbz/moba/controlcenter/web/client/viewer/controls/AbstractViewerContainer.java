@@ -28,7 +28,6 @@ public abstract class AbstractViewerContainer extends Composite {
     }
 
     public void addItemPanel(BaseViewerItemPanel<?> panel) {
-        Log.info(getClass().getName()+  " addItemPanel");
         itemsContainer.add(panel);
         lastWidgets.add(panel);
     }
@@ -36,7 +35,6 @@ public abstract class AbstractViewerContainer extends Composite {
     abstract protected void loadItems();
 
     protected void reloadItems() {
-        Log.info(getClass().getName()+" abstract - reload");
         resetItems();
         loadItems();
     }
@@ -44,7 +42,6 @@ public abstract class AbstractViewerContainer extends Composite {
     @Override
     protected void onLoad() {
         super.onLoad();
-        Log.info(getClass().getName()+" abstract viewer - onload");
         loadItems();
     }
 

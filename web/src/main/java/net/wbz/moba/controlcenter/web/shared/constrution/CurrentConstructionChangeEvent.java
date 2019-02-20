@@ -1,11 +1,11 @@
 package net.wbz.moba.controlcenter.web.shared.constrution;
 
-import de.novanic.eventservice.client.event.Event;
+import net.wbz.moba.controlcenter.web.client.event.StateEvent;
 
 /**
  * @author Daniel Tuerk
  */
-public class CurrentConstructionChangeEvent implements Event {
+public class CurrentConstructionChangeEvent implements StateEvent {
 
     private Construction construction;
 

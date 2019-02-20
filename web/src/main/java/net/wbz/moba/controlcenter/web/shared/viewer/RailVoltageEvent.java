@@ -1,13 +1,13 @@
 package net.wbz.moba.controlcenter.web.shared.viewer;
 
-import de.novanic.eventservice.client.event.Event;
+import net.wbz.moba.controlcenter.web.client.event.StateEvent;
 
 /**
  * Event for the state change of the rail voltage.
  *
  * @author Daniel Tuerk
  */
-public class RailVoltageEvent implements Event {
+public class RailVoltageEvent implements StateEvent {
 
     private boolean state;
 

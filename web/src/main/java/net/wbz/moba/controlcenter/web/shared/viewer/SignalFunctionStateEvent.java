@@ -1,13 +1,13 @@
 package net.wbz.moba.controlcenter.web.shared.viewer;
 
-import de.novanic.eventservice.client.event.Event;
 import java.util.Objects;
+import net.wbz.moba.controlcenter.web.client.event.StateEvent;
 import net.wbz.moba.controlcenter.web.shared.track.model.Signal;
 
 /**
  * @author Daniel Tuerk
  */
-public class SignalFunctionStateEvent implements Event {
+public class SignalFunctionStateEvent implements StateEvent {
 
     private Long signalId;
     private Signal.FUNCTION signalFunction;

@@ -1,13 +1,13 @@
 package net.wbz.moba.controlcenter.web.shared.bus;
 
-import de.novanic.eventservice.client.event.Event;
+import net.wbz.moba.controlcenter.web.client.event.StateEvent;
 
 /**
  * Event for the state of the {@link net.wbz.selectrix4java.data.recording.BusDataPlayer}.
  *
  * @author Daniel Tuerk
  */
-public class PlayerEvent implements Event {
+public class PlayerEvent implements StateEvent {
 
     private STATE state;
 

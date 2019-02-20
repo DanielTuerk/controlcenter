@@ -1,12 +1,12 @@
 package net.wbz.moba.controlcenter.web.shared.bus;
 
-import de.novanic.eventservice.client.event.Event;
 import java.util.Objects;
+import net.wbz.moba.controlcenter.web.client.event.StateEvent;
 
 /**
  * @author Daniel Tuerk
  */
-public class BusDataEvent implements Event {
+public class BusDataEvent implements StateEvent {
 
     private int bus;
     private int address;

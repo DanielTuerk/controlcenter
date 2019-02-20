@@ -5,7 +5,7 @@ import com.google.inject.Singleton;
 import com.google.inject.persist.Transactional;
 import java.util.ArrayList;
 import java.util.List;
-import net.wbz.moba.controlcenter.web.server.EventBroadcaster;
+import net.wbz.moba.controlcenter.web.server.event.EventBroadcaster;
 import net.wbz.moba.controlcenter.web.server.persist.scenario.StationDao;
 import net.wbz.moba.controlcenter.web.server.persist.scenario.StationDataMapper;
 import net.wbz.moba.controlcenter.web.shared.scenario.Station;

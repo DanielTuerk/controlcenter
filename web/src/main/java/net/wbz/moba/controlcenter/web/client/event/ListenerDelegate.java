@@ -21,13 +21,16 @@ class ListenerDelegate implements de.novanic.eventservice.client.event.listener.
 
     @Override
     public synchronized void apply(Event event) {
-        lastReceivedEvent = event;
+        if (event instanceof StateEvent) {
+            lastReceivedEvent = event;
+        }
         synchronized (listeners) {
             listeners.forEach(listener -> Scheduler.get().scheduleDeferred(new EventCommand(listener, event)));
         }
     }
 
     void addListener(de.novanic.eventservice.client.event.listener.RemoteEventListener listener) {
+        Log.debug("add listener in delegate : " + listener.getClass().getName());
         synchronized (listeners) {
             listeners.add(listener);
         }
@@ -39,6 +42,7 @@ class ListenerDelegate implements de.novanic.eventservice.client.event.listener.
 
     void removeListener(de.novanic.eventservice.client.event.listener.RemoteEventListener listener) {
         synchronized (listeners) {
+            Log.debug("remove listener from delegate: " + listener.getClass().getName());
             listeners.remove(listener);
         }
     }

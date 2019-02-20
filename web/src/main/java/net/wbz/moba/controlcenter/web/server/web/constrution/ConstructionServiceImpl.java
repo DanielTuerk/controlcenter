@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import javax.inject.Singleton;
-import net.wbz.moba.controlcenter.web.server.EventBroadcaster;
+import net.wbz.moba.controlcenter.web.server.event.EventBroadcaster;
 import net.wbz.moba.controlcenter.web.server.persist.construction.ConstructionDao;
 import net.wbz.moba.controlcenter.web.server.persist.construction.ConstructionEntity;
 import net.wbz.moba.controlcenter.web.server.web.DataMapper;

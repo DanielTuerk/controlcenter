@@ -1,13 +1,13 @@
 package net.wbz.moba.controlcenter.web.shared.scenario;
 
-import de.novanic.eventservice.client.event.Event;
+import net.wbz.moba.controlcenter.web.client.event.StateEvent;
 
 /**
  * Event for the execution state of a {@link RouteSequence} in the {@link Scenario} execution.
  * 
  * @author Daniel Tuerk
  */
-public class RouteStateEvent implements Event {
+public class RouteStateEvent implements StateEvent {
 
     /**
      * Id of the {@link Scenario}.

@@ -1,7 +1,5 @@
 package net.wbz.moba.controlcenter.web.client.components;
 
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.IsWidget;
 import org.gwtbootstrap3.client.ui.Button;
 import org.gwtbootstrap3.client.ui.Modal;
@@ -49,24 +47,22 @@ abstract public class AbstractEditModal<T> extends Modal {
 
     protected abstract void onConfirm(T model);
 
+    @Override
+    public void hide() {
+        super.hide();
+        removeFromParent();
+    }
+
     private FlowPanel createFooter(String btnConfirmText, String btnCancelText) {
         FlowPanel panel = new FlowPanel();
-        Button btnSave = new Button(btnConfirmText, new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-                onConfirm(model);
-            }
-        });
-        btnSave.setType(ButtonType.PRIMARY);
-        btnSave.setPull(Pull.RIGHT);
-        panel.add(btnSave);
+        Button btnConfirm = new Button(btnConfirmText, event -> onConfirm(model));
+        btnConfirm.setType(ButtonType.PRIMARY);
+        btnConfirm.setPull(Pull.RIGHT);
+        panel.add(btnConfirm);
 
-        Button btnClose = new Button(btnCancelText, new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-                onCancel();
-                hide();
-            }
+        Button btnClose = new Button(btnCancelText, event -> {
+            onCancel();
+            hide();
         });
         btnClose.setType(ButtonType.DANGER);
         btnClose.setPull(Pull.LEFT);

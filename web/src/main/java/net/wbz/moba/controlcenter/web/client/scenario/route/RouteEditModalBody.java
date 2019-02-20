@@ -212,20 +212,18 @@ public class RouteEditModalBody extends Composite {
     }
 
     private void handleTrackPartClick(AbstractSvgTrackWidget trackWidget) {
-        if (trackToolbar.getCurrentMode() == RouteEditMode.WAYPOINT
-            || trackToolbar.getCurrentMode() == RouteEditMode.START) {
-            if (!(trackWidget instanceof AbstractBlockStraightWidget)) {
-                updateTrackPart(trackWidget, route);
-            } else {
-                route.setStart(((AbstractBlockStraightWidget) trackWidget).getTrackPart());
-            }
-        } else if (trackToolbar.getCurrentMode() == RouteEditMode.END) {
+        if (trackWidget instanceof AbstractBlockStraightWidget) {
             // for start or end a track block is needed
-            if (trackWidget instanceof AbstractBlockStraightWidget) {
-                AbstractBlockStraightWidget blockStraightWidget = (AbstractBlockStraightWidget) trackWidget;
+            AbstractBlockStraightWidget blockStraightWidget = (AbstractBlockStraightWidget) trackWidget;
+            if (trackToolbar.getCurrentMode() == RouteEditMode.START) {
+                route.setStart(blockStraightWidget.getTrackPart());
+            } else if (trackToolbar.getCurrentMode() == RouteEditMode.END) {
                 selectTrackBlock(route, blockStraightWidget);
             }
+        } else if (trackToolbar.getCurrentMode() == RouteEditMode.WAYPOINT) {
+            updateTrackPart(trackWidget, route);
         }
+
         loadRoute();
     }
 

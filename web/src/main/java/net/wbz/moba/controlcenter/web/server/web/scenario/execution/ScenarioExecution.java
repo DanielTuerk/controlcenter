@@ -13,6 +13,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import javax.validation.constraints.NotNull;
 import net.wbz.moba.controlcenter.web.server.SelectrixHelper;
 import net.wbz.moba.controlcenter.web.server.persist.scenario.TrackBuilder;
 import net.wbz.moba.controlcenter.web.shared.scenario.TrackNotFoundException;
@@ -223,7 +224,7 @@ abstract class ScenarioExecution implements Callable<Void> {
         }
 
         updateTrack(scenario, routeSequence.getRoute());
-        switchSignalToDrive(routeExecution.getSignal());
+        Optional.ofNullable(routeExecution.getSignal()).ifPresent(this::switchSignalToDrive);
 
         final Train train = routeExecution.getTrain();
         if (train.getDrivingLevel() <= 0) {
@@ -348,17 +349,13 @@ abstract class ScenarioExecution implements Callable<Void> {
         }
 
         // find start position on signal
-        Optional<Signal> signal = findStartSignal(route);
-        if (!signal.isPresent()) {
-            throw new NoStartSignalAvailableException(
-                String.format("no signal found for start block %s!", route.getStart()));
-        }
 
         prepareTrainToStart(train);
         if (routeSequence.getRoute().getRunState() != ROUTE_RUN_STATE.RESERVED) {
             routeSequence.getRoute().setRunState(ROUTE_RUN_STATE.PREPARED);
         }
-        return new RouteExecution(routeSequence, previousRouteSequence, nextRouteSequence, train, signal.get());
+        Optional<Signal> signal = findStartSignal(route);
+        return new RouteExecution(routeSequence, previousRouteSequence, nextRouteSequence, train, signal.orElse(null));
     }
 
     private boolean trainIsNotInStartBlock(Route route, Train train) {
@@ -399,8 +396,7 @@ abstract class ScenarioExecution implements Callable<Void> {
     private Optional<Signal> findStartSignal(Route route) {
         for (Signal availableSignal : signalBlockRegistry.getSignals()) {
             if (availableSignal.getStopBlock() != null && route.getStart() != null) {
-                // TODO check equals working?
-                if (availableSignal.getStopBlock().equals(route.getStart())) {
+                if (route.getStart().getAllTrackBlocks().contains(availableSignal.getStopBlock())) {
                     return Optional.of(availableSignal);
                 }
             }
@@ -462,7 +458,7 @@ abstract class ScenarioExecution implements Callable<Void> {
         }
     }
 
-    private void switchSignalToDrive(final Signal signal) {
+    private void switchSignalToDrive(@NotNull final Signal signal) {
         LOG.info("switch signal to HP1 {}", signal);
         trackViewerService.switchSignal(signal, FUNCTION.HP1);
 

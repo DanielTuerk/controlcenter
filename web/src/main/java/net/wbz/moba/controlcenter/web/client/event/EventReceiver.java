@@ -31,6 +31,10 @@ public class EventReceiver {
         return INSTANCE;
     }
 
+    public boolean isActive() {
+        return theRemoteEventService.isActive();
+    }
+
     public void addListener(net.wbz.moba.controlcenter.web.client.event.RemoteEventListener... listeners) {
         for (net.wbz.moba.controlcenter.web.client.event.RemoteEventListener listener : listeners) {
             addListener(listener.getRemoteClass(), listener);

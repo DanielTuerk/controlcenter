@@ -8,8 +8,8 @@
   <g:HTMLPanel>
     <b:Button ui:field="btnEditTrain" icon="PENCIL"/>
     <b:ButtonGroup>
-      <b:Button ui:field="btnDirectionBackward" icon="ARROW_LEFT"/>
-      <b:Button ui:field="btnDirectionForward" icon="ARROW_RIGHT"/>
+      <b:Button ui:field="btnDirectionForward" icon="ARROW_LEFT"/>
+      <b:Button ui:field="btnDirectionBackward" icon="ARROW_RIGHT"/>
     </b:ButtonGroup>
     <b:Label ui:field="lblSliderValue"/>
     <slider:Slider ui:field="sliderDrivingLevel" min="0" value="0" max="31" tooltip="ALWAYS" tooltipPosition="TOP"/>

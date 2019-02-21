@@ -7,6 +7,7 @@ import java.util.Objects;
 import java.util.stream.Stream;
 import net.wbz.moba.controlcenter.web.client.editor.track.EditTrackWidgetHandler;
 import net.wbz.moba.controlcenter.web.client.event.EventReceiver;
+import net.wbz.moba.controlcenter.web.client.event.track.FeedbackTrackBlockRemoteListener;
 import net.wbz.moba.controlcenter.web.client.event.track.TrackBlockRemoteListener;
 import net.wbz.moba.controlcenter.web.client.model.track.AbstractSvgTrackWidget;
 import net.wbz.moba.controlcenter.web.client.util.SvgTrackUtil;
@@ -49,6 +50,7 @@ abstract public class AbstractBlockStraightWidget extends AbstractSvgTrackWidget
      * the block of a train called by the {@link net.wbz.moba.controlcenter.web.shared.bus.FeedbackBlockEvent}.
      */
     private Map<Train, OMSVGElement> trainElements = Maps.newConcurrentMap();
+    private final FeedbackBlockRemoteListener feedbackBlockRemoteListener;
     private final TrackBlockRemoteListener blockEventListener;
     /**
      * Last painted SVG for the block to change the color for the actual occupied state.
@@ -61,18 +63,19 @@ abstract public class AbstractBlockStraightWidget extends AbstractSvgTrackWidget
         txtLength.setId(ID_BLOCK_LENGTH);
 
         blockEventListener = new BlockStateRemoteListener(this);
+        feedbackBlockRemoteListener = new FeedbackBlockRemoteListener(this);
     }
 
     @Override
     protected void onLoad() {
         super.onLoad();
-        EventReceiver.getInstance().addListener(blockEventListener);
+        EventReceiver.getInstance().addListener(blockEventListener, feedbackBlockRemoteListener);
     }
 
     @Override
     protected void onUnload() {
         super.onUnload();
-        EventReceiver.getInstance().removeListener(blockEventListener);
+        EventReceiver.getInstance().removeListener(blockEventListener, feedbackBlockRemoteListener);
     }
 
     abstract public Straight.DIRECTION getStraightDirection();

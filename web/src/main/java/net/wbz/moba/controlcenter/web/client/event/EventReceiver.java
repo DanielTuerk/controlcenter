@@ -10,6 +10,7 @@ import java.util.Map;
 import net.wbz.moba.controlcenter.web.client.request.Callbacks.VoidAsyncCallback;
 import net.wbz.moba.controlcenter.web.client.request.RequestUtils;
 import net.wbz.moba.controlcenter.web.client.util.Log;
+import net.wbz.moba.controlcenter.web.shared.EventCache;
 
 /**
  * Util to register {@link RemoteEventListener} to receiving {@link Event}s from server.
@@ -22,6 +23,12 @@ public class EventReceiver {
     private final static EventReceiver INSTANCE = GWT.create(EventReceiver.class);
     private final RemoteEventService theRemoteEventService;
     private final Map<Class<? extends Event>, ListenerDelegate> listenersByEvent = Maps.newConcurrentMap();
+
+    /**
+     * Client side {@link EventCache} to cache all received events from server side and delegate to new added
+     * listeners.
+     */
+    private final EventCache clientEventCache = GWT.create(EventCache.class);
 
     private EventReceiver() {
         theRemoteEventService = RemoteEventServiceFactory.getInstance().getRemoteEventService();
@@ -47,20 +54,10 @@ public class EventReceiver {
         }
     }
 
-    private static <T> boolean isInstanceOf(Class<T> type, Object object) {
-        try {
-            T objectAsType = (T) object;
-        } catch (ClassCastException exception) {
-            return false;
-        }
-        return true;
-    }
-
     public void addListener(final Class<? extends Event> eventClazz,
         net.wbz.moba.controlcenter.web.client.event.RemoteEventListener listener) {
         if (!listenersByEvent.containsKey(eventClazz)) {
-            Log.debug("add new listener delegate for listener: " + listener.getClass().getName());
-            final ListenerDelegate delegate = new ListenerDelegate();
+            final ListenerDelegate delegate = new ListenerDelegate(clientEventCache);
             delegate.addListener(listener);
             listenersByEvent.put(eventClazz, delegate);
 
@@ -86,7 +83,6 @@ public class EventReceiver {
             delegate.removeListener(listener);
 
             if (delegate.isEmpty()) {
-                Log.debug("remove listener delegate for listener: " + listener.getClass().getName());
                 // remove the delegate then no more listeners are registered
                 theRemoteEventService.removeListener(DomainFactory.getDomain(eventClazz.getName()), delegate);
                 listenersByEvent.remove(eventClazz);
@@ -94,6 +90,18 @@ public class EventReceiver {
         } else {
             Log.error("no listener registered for " + eventClazz.getSimpleName());
         }
+    }
+
+    /**
+     * I'm the ugly workaround for {@code Class.isAssignable()}.
+     */
+    private static <T> boolean isInstanceOf(Class<T> type, Object object) {
+        try {
+            T objectAsType = (T) object;
+        } catch (ClassCastException exception) {
+            return false;
+        }
+        return true;
     }
 
 }

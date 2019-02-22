@@ -1,11 +1,11 @@
 package net.wbz.moba.controlcenter.web.shared.train;
 
-import net.wbz.moba.controlcenter.web.shared.AbstractStateEvent;
+import net.wbz.moba.controlcenter.web.shared.AbstractItemStateEvent;
 
 /**
  * Created by Daniel on 08.03.14.
  */
-public class TrainStateEvent extends AbstractStateEvent {
+public class TrainStateEvent extends AbstractItemStateEvent {
 
     public TrainStateEvent(long itemId) {
         super(itemId);

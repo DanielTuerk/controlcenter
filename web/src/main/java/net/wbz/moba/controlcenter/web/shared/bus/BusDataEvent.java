@@ -34,6 +34,11 @@ public class BusDataEvent implements StateEvent {
     }
 
     @Override
+    public String getCacheKey() {
+        return getClass().getName() + ":" + bus + "-" + address;
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) {
             return true;

@@ -3,7 +3,7 @@ package net.wbz.moba.controlcenter.web.server.event;
 import de.novanic.eventservice.client.event.Event;
 import de.novanic.eventservice.client.event.domain.DomainFactory;
 import de.novanic.eventservice.service.EventExecutorService;
-import java.util.Set;
+import java.util.Collection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,10 +16,10 @@ class ResendEventRunnable implements Runnable {
 
     private static final long SLEEP_IN_MILLIS = 1000L;
     private final String eventClazzName;
-    private final Set<Event> events;
+    private final Collection<Event> events;
     private final EventExecutorService eventExecutorService;
 
-    ResendEventRunnable(String eventClazzName, Set<Event> events,
+    ResendEventRunnable(String eventClazzName, Collection<Event> events,
         EventExecutorService eventExecutorService) {
         this.eventClazzName = eventClazzName;
         this.events = events;

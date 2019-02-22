@@ -52,6 +52,11 @@ public class FeedbackBlockEvent implements StateEvent {
     }
 
     @Override
+    public String getCacheKey() {
+        return getClass().getName() + ":" + bus + "-" + address + "-" + block + "-" + train;
+    }
+
+    @Override
     public boolean equals(Object o) {
         // TODO check that not all states are in cache forever, becasue they will
         // only state is not checked

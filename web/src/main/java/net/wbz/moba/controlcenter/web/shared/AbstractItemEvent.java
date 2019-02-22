@@ -1,18 +1,20 @@
 package net.wbz.moba.controlcenter.web.shared;
 
-import net.wbz.moba.controlcenter.web.client.event.StateEvent;
+import de.novanic.eventservice.client.event.Event;
 
 /**
+ * Abstract {@link Event} for a item identified by the ID of the item.
+ *
  * @author Daniel Tuerk
  */
-public class AbstractStateEvent implements StateEvent {
+public class AbstractItemEvent implements Event {
 
     public long itemId = -1;
 
-    public AbstractStateEvent() {
+    public AbstractItemEvent() {
     }
 
-    public AbstractStateEvent(long itemId) {
+    public AbstractItemEvent(long itemId) {
         this.itemId = itemId;
     }
 
@@ -28,18 +30,17 @@ public class AbstractStateEvent implements StateEvent {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        AbstractStateEvent that = (AbstractStateEvent) o;
+        AbstractItemEvent that = (AbstractItemEvent) o;
         return itemId == that.itemId;
     }
 
     @Override
     public int hashCode() {
-
         return java.util.Objects.hash(itemId);
     }
 
     @Override
     public String toString() {
-        return "AbstractStateEvent{" + "itemId=" + itemId + '}';
+        return getClass().getSimpleName() + "{" + "itemId=" + itemId + '}';
     }
 }

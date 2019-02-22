@@ -1,12 +1,12 @@
 package net.wbz.moba.controlcenter.web.shared.scenario;
 
-import net.wbz.moba.controlcenter.web.shared.AbstractStateEvent;
+import net.wbz.moba.controlcenter.web.shared.AbstractItemStateEvent;
 import net.wbz.moba.controlcenter.web.shared.scenario.Scenario.RUN_STATE;
 
 /**
  * @author Daniel Tuerk
  */
-public class ScenarioStateEvent extends AbstractStateEvent {
+public class ScenarioStateEvent extends AbstractItemStateEvent {
 
     public RUN_STATE state;
 

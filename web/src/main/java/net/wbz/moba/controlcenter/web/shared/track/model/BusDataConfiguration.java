@@ -2,7 +2,6 @@ package net.wbz.moba.controlcenter.web.shared.track.model;
 
 import com.google.common.base.Objects;
 import com.googlecode.jmapper.annotations.JMap;
-import java.util.Optional;
 
 /**
  * @author Daniel Tuerk
@@ -65,6 +64,10 @@ public class BusDataConfiguration extends AbstractDto {
 
     public boolean isValid() {
         return (bus != null && address != null && bit != null) && address > 0 && bit > 0 && bus > -1;
+    }
+
+    public String getIdentifierKey() {
+        return address + "-" + bit;
     }
 
     @Override

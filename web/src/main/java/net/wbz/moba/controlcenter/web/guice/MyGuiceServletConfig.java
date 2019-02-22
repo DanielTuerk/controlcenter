@@ -1,8 +1,5 @@
 package net.wbz.moba.controlcenter.web.guice;
 
-import java.io.File;
-import java.util.Properties;
-
 import com.google.common.base.Strings;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
@@ -13,7 +10,8 @@ import com.google.inject.persist.PersistFilter;
 import com.google.inject.persist.jpa.JpaPersistModule;
 import com.google.inject.servlet.GuiceServletContextListener;
 import com.google.inject.servlet.ServletModule;
-
+import java.io.File;
+import java.util.Properties;
 import net.wbz.moba.controlcenter.web.server.web.config.ConfigServiceImpl;
 import net.wbz.moba.controlcenter.web.server.web.constrution.BusServiceImpl;
 import net.wbz.moba.controlcenter.web.server.web.constrution.ConstructionServiceImpl;
@@ -23,6 +21,7 @@ import net.wbz.moba.controlcenter.web.server.web.scenario.ScenarioServiceImpl;
 import net.wbz.moba.controlcenter.web.server.web.train.TrainEditorServiceImpl;
 import net.wbz.moba.controlcenter.web.server.web.train.TrainServiceImpl;
 import net.wbz.moba.controlcenter.web.server.web.viewer.TrackViewerServiceImpl;
+import net.wbz.moba.controlcenter.web.shared.EventCache;
 import net.wbz.selectrix4java.device.DeviceManager;
 
 /**
@@ -120,6 +119,18 @@ public class MyGuiceServletConfig extends GuiceServletContextListener {
             @Singleton
             public DeviceManager deviceManager() {
                 return new DeviceManager();
+            }
+
+            /**
+             * The {@link EventCache} for the server side. Cache all events which are thrown to the
+             * clients.
+             *
+             * @return {@link EventCache}
+             */
+            @Provides
+            @Singleton
+            public EventCache serverEventCache() {
+                return new EventCache();
             }
         });
     }

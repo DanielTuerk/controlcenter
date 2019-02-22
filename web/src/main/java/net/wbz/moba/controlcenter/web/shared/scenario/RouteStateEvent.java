@@ -61,6 +61,11 @@ public class RouteStateEvent implements StateEvent {
     }
 
     @Override
+    public String getCacheKey() {
+        return getClass().getName() + ":" + scenarioId + "-" + routeSequenceId;
+    }
+
+    @Override
     public String toString() {
         return "RouteStateEvent{" +
                 "scenarioId=" + scenarioId +

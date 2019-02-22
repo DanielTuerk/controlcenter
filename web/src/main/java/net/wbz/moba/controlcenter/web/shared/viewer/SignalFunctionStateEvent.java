@@ -38,6 +38,11 @@ public class SignalFunctionStateEvent implements StateEvent {
     }
 
     @Override
+    public String getCacheKey() {
+        return getClass().getName() + ":" + signalId;
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) {
             return true;
@@ -51,7 +56,6 @@ public class SignalFunctionStateEvent implements StateEvent {
 
     @Override
     public int hashCode() {
-
         return Objects.hash(signalId, signalFunction);
     }
 }

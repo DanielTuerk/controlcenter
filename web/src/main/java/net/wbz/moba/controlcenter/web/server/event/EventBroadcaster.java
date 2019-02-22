@@ -1,19 +1,18 @@
 package net.wbz.moba.controlcenter.web.server.event;
 
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.google.inject.Singleton;
 import de.novanic.eventservice.client.event.Event;
 import de.novanic.eventservice.client.event.domain.DomainFactory;
 import de.novanic.eventservice.service.EventExecutorService;
 import de.novanic.eventservice.service.EventExecutorServiceFactory;
-import java.util.Map;
-import java.util.Set;
+import java.util.Collection;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
+import javax.inject.Inject;
 import net.wbz.moba.controlcenter.web.client.event.StateEvent;
+import net.wbz.moba.controlcenter.web.shared.EventCache;
 import net.wbz.moba.controlcenter.web.shared.bus.BusDataEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,13 +29,15 @@ public class EventBroadcaster {
 
     private final EventExecutorService eventExecutorService;
     private final ExecutorService taskExecutor;
-
-    private Map<String, Set<StateEvent>> lastSendEvents = Maps.newConcurrentMap();
+    private final EventCache eventCache;
 
     /**
      * Create broadcaster with singleton {@link EventExecutorService}.
+     * @param eventCache {@link EventCache}
      */
-    public EventBroadcaster() {
+    @Inject
+    public EventBroadcaster(EventCache eventCache) {
+        this.eventCache = eventCache;
         EventExecutorServiceFactory theSF = EventExecutorServiceFactory.getInstance();
         eventExecutorService = theSF.getEventExecutorService("event");
 
@@ -67,9 +68,9 @@ public class EventBroadcaster {
      * @param eventClazzName name of the event class
      */
     public synchronized void resendEvent(final String eventClazzName) {
-        if (lastSendEvents.containsKey(eventClazzName)) {
-            taskExecutor.submit(new ResendEventRunnable(eventClazzName,
-                Sets.newHashSet(lastSendEvents.get(eventClazzName)), eventExecutorService));
+        Collection<Event> stateEvents = eventCache.getEvents(eventClazzName);
+        if (!stateEvents.isEmpty()) {
+            taskExecutor.submit(new ResendEventRunnable(eventClazzName, stateEvents, eventExecutorService));
         }
     }
 
@@ -79,18 +80,8 @@ public class EventBroadcaster {
 
     private synchronized void saveLastSendEvent(Event event) {
         if (event instanceof StateEvent) {
-            StateEvent stateEvent = (StateEvent) event;
-            String key = getKey(stateEvent);
-            if (!lastSendEvents.containsKey(key)) {
-                lastSendEvents.put(key, Sets.newConcurrentHashSet());
-            }
-            lastSendEvents.get(key).remove(stateEvent);
-            lastSendEvents.get(key).add(stateEvent);
+            eventCache.addEvent((StateEvent) event);
         }
-    }
-
-    private String getKey(Event eventClazz) {
-        return eventClazz.getClass().getName();
     }
 
 }

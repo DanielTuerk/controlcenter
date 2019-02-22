@@ -33,4 +33,5 @@ public class RailVoltageEvent implements StateEvent {
         sb.append('}');
         return sb.toString();
     }
+
 }

@@ -3,10 +3,10 @@ package net.wbz.moba.controlcenter.web.client.event;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import de.novanic.eventservice.client.event.Event;
-import de.novanic.eventservice.client.event.listener.RemoteEventListener;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
-import net.wbz.moba.controlcenter.web.client.util.Log;
+import net.wbz.moba.controlcenter.web.shared.EventCache;
 
 /**
  * Delegate for the client remote listeners. It's the only listener which is registered to the server and delegate the
@@ -16,30 +16,34 @@ import net.wbz.moba.controlcenter.web.client.util.Log;
  */
 class ListenerDelegate implements de.novanic.eventservice.client.event.listener.RemoteEventListener {
 
-    private final List<de.novanic.eventservice.client.event.listener.RemoteEventListener> listeners = new ArrayList<>();
-    private Event lastReceivedEvent;
+    private final List<RemoteEventListener> listeners = new ArrayList<>();
+    private final EventCache clientEventCache;
+
+    ListenerDelegate(EventCache clientEventCache) {
+        this.clientEventCache = clientEventCache;
+    }
 
     @Override
     public synchronized void apply(Event event) {
         if (event instanceof StateEvent) {
-            lastReceivedEvent = event;
+            clientEventCache.addEvent((StateEvent) event);
         }
         synchronized (listeners) {
             listeners.forEach(listener -> Scheduler.get().scheduleDeferred(new EventCommand(listener, event)));
         }
     }
 
-    void addListener(de.novanic.eventservice.client.event.listener.RemoteEventListener listener) {
+    void addListener(RemoteEventListener<?> listener) {
         synchronized (listeners) {
             listeners.add(listener);
         }
-        if (lastReceivedEvent != null) {
-            Log.info("resend last received event: " + lastReceivedEvent);
-            listener.apply(lastReceivedEvent);
+        Collection<Event> events = clientEventCache.getEvents(listener.getRemoteClass().getName());
+        if (!events.isEmpty()) {
+            events.forEach(listener::apply);
         }
     }
 
-    void removeListener(de.novanic.eventservice.client.event.listener.RemoteEventListener listener) {
+    void removeListener(RemoteEventListener<?> listener) {
         synchronized (listeners) {
             listeners.remove(listener);
         }

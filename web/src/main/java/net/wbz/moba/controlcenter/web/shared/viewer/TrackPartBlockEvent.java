@@ -36,6 +36,11 @@ public class TrackPartBlockEvent implements StateEvent {
     }
 
     @Override
+    public String getCacheKey() {
+        return getClass().getName() + ":" + config.getIdentifierKey();
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) {
             return true;

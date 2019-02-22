@@ -28,6 +28,10 @@ public class TrainFunctionStateEvent extends TrainStateEvent {
     }
 
     @Override
+    public String getCacheKey() {
+        return super.getCacheKey() + "-" + function.getConfiguration().getIdentifierKey();
+    }
+    @Override
     public boolean equals(Object o) {
         if (this == o) {
             return true;

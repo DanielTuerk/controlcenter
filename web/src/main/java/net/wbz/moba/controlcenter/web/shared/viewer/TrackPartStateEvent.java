@@ -29,6 +29,11 @@ public class TrackPartStateEvent implements StateEvent {
     }
 
     @Override
+    public String getCacheKey() {
+        return getClass().getName() + ":" + configuration.getIdentifierKey();
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) {
             return true;

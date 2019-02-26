@@ -16,7 +16,6 @@ import java.util.concurrent.Future;
 import javax.validation.constraints.NotNull;
 import net.wbz.moba.controlcenter.web.server.SelectrixHelper;
 import net.wbz.moba.controlcenter.web.server.persist.scenario.TrackBuilder;
-import net.wbz.moba.controlcenter.web.shared.scenario.TrackNotFoundException;
 import net.wbz.moba.controlcenter.web.server.web.editor.block.BusAddressIdentifier;
 import net.wbz.moba.controlcenter.web.server.web.editor.block.SignalBlockRegistry;
 import net.wbz.moba.controlcenter.web.server.web.scenario.RouteListener;
@@ -27,6 +26,7 @@ import net.wbz.moba.controlcenter.web.shared.scenario.RouteSequence;
 import net.wbz.moba.controlcenter.web.shared.scenario.Scenario;
 import net.wbz.moba.controlcenter.web.shared.scenario.Scenario.RUN_STATE;
 import net.wbz.moba.controlcenter.web.shared.scenario.Track;
+import net.wbz.moba.controlcenter.web.shared.scenario.TrackNotFoundException;
 import net.wbz.moba.controlcenter.web.shared.track.model.BusDataConfiguration;
 import net.wbz.moba.controlcenter.web.shared.track.model.Signal;
 import net.wbz.moba.controlcenter.web.shared.track.model.Signal.FUNCTION;
@@ -393,6 +393,16 @@ abstract class ScenarioExecution implements Callable<Void> {
         return trainManager.getTrain(scenario.getTrain().getId());
     }
 
+    /**
+     * Find start signal of {@link Route} start block.
+     *
+     * TODO
+     *
+     * @param route {@link Route}
+     * @return {@link Signal}
+     * @deprecated aktuell findet der 2 an beiden enden und gibt nur 1 zurück.
+     */
+    @Deprecated
     private Optional<Signal> findStartSignal(Route route) {
         for (Signal availableSignal : signalBlockRegistry.getSignals()) {
             if (availableSignal.getStopBlock() != null && route.getStart() != null) {

@@ -1,6 +1,5 @@
 package net.wbz.moba.controlcenter.web.client.model.track;
 
-import com.google.common.base.Strings;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -60,7 +59,7 @@ abstract public class AbstractSvgTrackWidget<T extends AbstractTrackPart> extend
      */
     public void repaint() {
         clearSvgContent();
-        addSvgContent(getSvgDocument(), getSvgRootElement(), color);
+        initSvg();
     }
 
     public String getColor() {
@@ -74,6 +73,13 @@ abstract public class AbstractSvgTrackWidget<T extends AbstractTrackPart> extend
     @Override
     protected void onLoad() {
         super.onLoad();
+
+        getElement().appendChild(svgRootElement.getElement());
+
+        initSvg();
+    }
+
+    private void initSvg() {
         int widgetWidth = getWidgetWidth();
         int widgetHeight = getWidgetHeight();
 
@@ -81,8 +87,6 @@ abstract public class AbstractSvgTrackWidget<T extends AbstractTrackPart> extend
         svgRootElement.setHeight(Unit.PX, widgetHeight);
 
         addSvgContent(svgDocument, svgRootElement, color);
-        getElement().appendChild(svgRootElement.getElement());
-
         setWidth(widgetWidth + "px");
         setHeight(widgetHeight + "px");
     }

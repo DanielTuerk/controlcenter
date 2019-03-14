@@ -2,21 +2,44 @@ package net.wbz.moba.controlcenter.web.shared.track.model;
 
 import com.googlecode.jmapper.annotations.JMap;
 import java.io.Serializable;
+import java.util.concurrent.atomic.AtomicLong;
 import net.wbz.moba.controlcenter.web.shared.Identity;
 
 /**
+ * DTO which represents a entity from persist layer.
+ *
  * @author Daniel Tuerk
  */
 public abstract class AbstractDto implements Serializable, Identity {
 
+    /**
+     * Counter for the temporary IDs which are used as default. This ids are negative.
+     */
+    private static AtomicLong TEMP_ID_COUNT = new AtomicLong(-1);
+
+    /**
+     * Temporary id which is used to detect non persisted instance. This id is set for {@code null} values of the {@link
+     * #id}. That add the support to use {@link #equals(Object)} and {@link #hashCode()} for non persisted instances.
+     */
+    private Long tempId;
+
+    /**
+     * ID from persisted entity or {@code null} for non persisted.
+     */
     @JMap
     private Long id;
 
     public AbstractDto() {
+        this(null);
     }
 
     public AbstractDto(Long id) {
         this.id = id;
+        if (id == null) {
+            this.tempId = TEMP_ID_COUNT.getAndDecrement();
+        } else {
+            this.tempId = null;
+        }
     }
 
     @Override
@@ -28,12 +51,13 @@ public abstract class AbstractDto implements Serializable, Identity {
         this.id = id;
     }
 
-    @Override
-    public String toString() {
-        final StringBuffer sb = new StringBuffer("AbstractDto{");
-        sb.append("id=").append(id);
-        sb.append('}');
-        return sb.toString();
+    /**
+     * Indicates a new created instance which isn't persisted.
+     *
+     * @return {@code true} if not persisted one
+     */
+    public boolean isNew() {
+        return id == null && tempId != null;
     }
 
     @Override
@@ -45,12 +69,20 @@ public abstract class AbstractDto implements Serializable, Identity {
             return false;
         }
         AbstractDto that = (AbstractDto) o;
-        return java.util.Objects.equals(id, that.id);
+        return java.util.Objects.equals(getInternalId(), that.getInternalId());
     }
 
     @Override
     public int hashCode() {
+        return java.util.Objects.hash(getInternalId());
+    }
 
-        return java.util.Objects.hash(id);
+    @Override
+    public String toString() {
+        return "AbstractDto{" + "id=" + id + '}';
+    }
+
+    private Long getInternalId() {
+        return isNew() ? tempId : id;
     }
 }

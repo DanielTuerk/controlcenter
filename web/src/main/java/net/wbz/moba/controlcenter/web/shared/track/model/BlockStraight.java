@@ -2,9 +2,14 @@ package net.wbz.moba.controlcenter.web.shared.track.model;
 
 import com.google.common.collect.Lists;
 import com.googlecode.jmapper.annotations.JMap;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 /**
@@ -52,6 +57,29 @@ public class BlockStraight extends Straight implements MultipleGridPosition {
         }
         return new GridPosition(x, y);
     }
+
+    public Collection<GridPosition> getAllGridPositions() {
+        final Set<GridPosition> positions = new HashSet<>();
+        GridPosition start = getGridPosition();
+        GridPosition end = getEndGridPosition();
+        if (getBlockLength() > 1) {
+            switch (getDirection()) {
+                case HORIZONTAL:
+                    IntStream.range(start.getX(), end.getX())
+                        .forEach(x -> positions.add(new GridPosition(x, start.getY())));
+                    break;
+                case VERTICAL:
+                    IntStream.range(start.getY(), end.getY())
+                        .forEach(y -> positions.add(new GridPosition(start.getX(), y)));
+                    break;
+            }
+            positions.add(end);
+        } else {
+            return Lists.newArrayList(start, end);
+        }
+        return positions;
+    }
+
 
     /**
      * Return the block length which can be set as value or calculated. The length depends on the blocks. Each block

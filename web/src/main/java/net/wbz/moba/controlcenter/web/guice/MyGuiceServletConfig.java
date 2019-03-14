@@ -12,6 +12,7 @@ import com.google.inject.servlet.GuiceServletContextListener;
 import com.google.inject.servlet.ServletModule;
 import java.io.File;
 import java.util.Properties;
+import net.wbz.moba.controlcenter.web.server.ServerModule;
 import net.wbz.moba.controlcenter.web.server.web.config.ConfigServiceImpl;
 import net.wbz.moba.controlcenter.web.server.web.constrution.BusServiceImpl;
 import net.wbz.moba.controlcenter.web.server.web.constrution.ConstructionServiceImpl;
@@ -108,6 +109,8 @@ public class MyGuiceServletConfig extends GuiceServletContextListener {
                 serve("/" + APP_NAME + "/" + SERVICE_TRAIN_EDITOR).with(TrainEditorServiceImpl.class);
                 serve("/" + APP_NAME + "/" + SERVICE_SCENARIO).with(ScenarioServiceImpl.class);
                 serve("/" + APP_NAME + "/" + SERVICE_SCENARIO_EDITOR).with(ScenarioEditorServiceImpl.class);
+
+                install(new ServerModule());
             }
 
             /**

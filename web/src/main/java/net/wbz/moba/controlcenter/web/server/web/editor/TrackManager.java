@@ -199,9 +199,11 @@ public class TrackManager implements ConstructionChangeListener {
             .map(trackPartDataMapper::transformTrackPart)
             .collect(Collectors.toList());
 
-        trackPartEntities.stream().filter(x -> x.getId() == null).forEach(trackPartDao::update);
+        trackPartEntities.forEach(x -> x.setConstruction(constructionEntity));
+
+        trackPartEntities.stream().filter(x -> x.getId() != null).forEach(trackPartDao::update);
         trackPartDao.flush();
-        trackPartEntities.stream().filter(x -> x.getId() != null).forEach(trackPartDao::create);
+        trackPartEntities.stream().filter(x -> x.getId() == null).forEach(trackPartDao::create);
     }
 
     private ConstructionEntity getCurrentConstruction() {

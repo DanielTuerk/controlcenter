@@ -92,29 +92,6 @@ public class TrackBlock extends AbstractDto {
             : "-") + ")";
     }
 
-    @Override
-    public boolean equals(Object o) {
-
-        // TODO remove? because only ID from abstract dto?!
-
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        if (!super.equals(o)) {
-            return false;
-        }
-        TrackBlock that = (TrackBlock) o;
-        return java.util.Objects.equals(blockFunction, that.blockFunction) && Objects.equal(name, that.name);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hashCode(super.hashCode(), blockFunction, name);
-    }
-
     public enum DRIVING_LEVEL_ADJUST_TYPE {
         /**
          * No adjustment.

@@ -57,14 +57,15 @@ abstract class AbstractTrackBuilderTest {
         return mock;
     }
 
-    void testSimpleTrack(List<? extends AbstractTrackPart> trackParts, int startAddress, int startBit,
-            int endAddress, int endBit, int expectedLength)
+    void testSimpleTrack(List<? extends AbstractTrackPart> trackParts, BlockStraight startBlockStraight,
+        TrackBlock endBlock,
+        int expectedLength)
             throws TrackNotFoundException {
         mockTrack(trackParts);
 
         Route route = mockRoute();
-        route.setStart(createBlockStraight(startAddress, startBit, true));
-        route.setEnd(createTrackBlock(endAddress, endBit, true));
+        route.setStart(startBlockStraight);
+        route.setEnd(endBlock);
 
         Track track = trackBuilder.build(route);
         Assert.assertEquals(expectedLength, track.getLength());
@@ -72,11 +73,12 @@ abstract class AbstractTrackBuilderTest {
         Assert.assertEquals(0, track.getTrackFunctions().size());
     }
 
-    void testSwitch(int startAddress, int startBit, int endAddress, int endBit, int switchAddress,
-            int switchBit, boolean switchTargetBitState, int expectedTrackLength) throws TrackNotFoundException {
+    void testSwitch(int switchAddress,
+        int switchBit, boolean switchTargetBitState, int expectedTrackLength,
+        BlockStraight startBlockStraight, TrackBlock endBlock) throws TrackNotFoundException {
         Route route = mockRoute();
-        route.setStart(createBlockStraight(startAddress, startBit, true));
-        route.setEnd(createTrackBlock(endAddress, endBit, true));
+        route.setStart(startBlockStraight);
+        route.setEnd(endBlock);
 
         Track track = trackBuilder.build(route);
         Assert.assertEquals(expectedTrackLength, track.getLength());
@@ -90,20 +92,20 @@ abstract class AbstractTrackBuilderTest {
         return createStraight(x, y, DIRECTION.HORIZONTAL);
     }
 
-    Straight createHorizontalBlockStraight(int x, int y, int address, int bit, boolean bitState) {
-        return createHorizontalBlockStraight(x, y, address, bit, bitState, 0);
+    BlockStraight createHorizontalBlockStraight(int x, int y, TrackBlock trackBlock) {
+        return createHorizontalBlockStraight(x, y, 0, trackBlock);
     }
 
-    Straight createHorizontalBlockStraight(int x, int y, int address, int bit, boolean bitState, int blockLength) {
-        return createBlockStraight(x, y, DIRECTION.HORIZONTAL, address, bit, bitState, blockLength);
+    BlockStraight createHorizontalBlockStraight(int x, int y, int blockLength, TrackBlock trackBlock) {
+        return createBlockStraight(x, y, DIRECTION.HORIZONTAL, blockLength, trackBlock);
     }
 
-    Straight createVerticalBlockStraight(int x, int y, int address, int bit, boolean bitState) {
-        return createVerticalBlockStraight(x, y, address, bit, bitState, 0);
+    BlockStraight createVerticalBlockStraight(int x, int y, TrackBlock trackBlock) {
+        return createVerticalBlockStraight(x, y, 0, trackBlock);
     }
 
-    Straight createVerticalBlockStraight(int x, int y, int address, int bit, boolean bitState, int blockLength) {
-        return createBlockStraight(x, y, DIRECTION.VERTICAL, address, bit, bitState, blockLength);
+    BlockStraight createVerticalBlockStraight(int x, int y, int blockLength, TrackBlock trackBlock) {
+        return createBlockStraight(x, y, DIRECTION.VERTICAL, blockLength, trackBlock);
     }
 
     Straight createVerticalStraight(int x, int y) {
@@ -117,12 +119,12 @@ abstract class AbstractTrackBuilderTest {
         return straight;
     }
 
-    BlockStraight createBlockStraight(int x, int y, DIRECTION direction, int address, int bit, boolean bitState,
-        int blockLength) {
+    BlockStraight createBlockStraight(int x, int y, DIRECTION direction,
+        int blockLength, TrackBlock trackBlock) {
         BlockStraight straight = new BlockStraight();
         straight.setDirection(direction);
         straight.setGridPosition(new GridPosition(x, y));
-        straight.setMiddleTrackBlock(createTrackBlock(address, bit, bitState));
+        straight.setMiddleTrackBlock(trackBlock);
         straight.setBlockLength(blockLength);
         return straight;
     }
@@ -142,6 +144,12 @@ abstract class AbstractTrackBuilderTest {
         curve.setDirection(direction);
         curve.setGridPosition(new GridPosition(x, y));
         return curve;
+    }
+
+    TrackBlock createTrackBlock(int address, int bit) {
+        TrackBlock trackBlock = new TrackBlock();
+        trackBlock.setBlockFunction(new BusDataConfiguration(1, address, bit, true));
+        return trackBlock;
     }
 
     TrackBlock createTrackBlock(int address, int bit, boolean bitState) {

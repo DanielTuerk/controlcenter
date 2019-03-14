@@ -15,10 +15,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import net.wbz.moba.controlcenter.web.client.request.RequestUtils;
+import net.wbz.moba.controlcenter.web.client.components.modal.DeleteModal;
 import net.wbz.moba.controlcenter.web.client.model.track.AbstractSvgTrackWidget;
 import net.wbz.moba.controlcenter.web.client.model.track.ModelManager;
-import net.wbz.moba.controlcenter.web.client.components.modal.DeleteModal;
+import net.wbz.moba.controlcenter.web.client.request.RequestUtils;
+import net.wbz.moba.controlcenter.web.shared.editor.ValidationException;
 import net.wbz.moba.controlcenter.web.shared.track.model.AbstractTrackPart;
 import org.gwtbootstrap3.client.ui.constants.IconType;
 import org.gwtbootstrap3.extras.notify.client.ui.Notify;
@@ -29,6 +30,7 @@ import org.gwtbootstrap3.extras.notify.client.ui.Notify;
 public class TrackEditorContainer extends Composite {
 
     private static final int SIZE = 25;
+    private static final String STYLE_TRACK_VALIDATION_ERROR = "track-validation-error";
 
     public static int ZOOM_STEP = 10;
     private static Binder uiBinder = GWT.create(Binder.class);
@@ -83,14 +85,17 @@ public class TrackEditorContainer extends Composite {
 
     @UiHandler("menuSave")
     public void saveAction(ClickEvent event) {
+        List<AbstractSvgTrackWidget> trackWidgets = new ArrayList<>();
+
         List<AbstractTrackPart> trackParts = new ArrayList<>();
+
         for (int i = 0; i < trackEditorPanel.getWidgetCount(); i++) {
             Widget paletteWidget = trackEditorPanel.getWidget(i);
             if (paletteWidget instanceof PaletteWidget) {
-                Widget w = ((PaletteWidget) paletteWidget).getPaletteWidgetItem();
-                if (w instanceof AbstractSvgTrackWidget) {
+                AbstractSvgTrackWidget w = ((PaletteWidget) paletteWidget).getPaletteWidgetItem();
+                trackWidgets.add(w);
                     try {
-                        trackParts.add(((AbstractSvgTrackWidget) w)
+                        trackParts.add(w
                             .getTrackPart(trackEditorPanel, trackEditorPanel.getZoomLevel()));
                     } catch (Exception e) {
                         String msg =
@@ -98,9 +103,7 @@ public class TrackEditorContainer extends Composite {
                                 + " - " + e.getMessage();
                         Notify.notify("", msg, IconType.WARNING);
                         logger.log(Level.SEVERE, msg, e);
-                        e.printStackTrace();
                     }
-                }
             }
         }
 
@@ -109,6 +112,19 @@ public class TrackEditorContainer extends Composite {
             public void onFailure(Throwable caught) {
                 Notify.notify("Editor", "error by save track: " + caught.getMessage(), IconType.WARNING);
 
+                if (caught instanceof ValidationException) {
+
+                    ((ValidationException) caught).getErrors().forEach((abstractTrackPart, message) -> {
+                        trackWidgets.forEach(widget -> {
+                            widget.removeStyleName(STYLE_TRACK_VALIDATION_ERROR);
+                            if (widget.getTrackPart().equals(abstractTrackPart)) {
+                                Notify.notify("Editor", message + " - " + abstractTrackPart.getGridPosition(),
+                                    IconType.WARNING);
+                                widget.addStyleName(STYLE_TRACK_VALIDATION_ERROR);
+                            }
+                        });
+                    });
+                }
             }
 
             @Override
@@ -117,7 +133,6 @@ public class TrackEditorContainer extends Composite {
             }
         });
     }
-
 
     @UiHandler("menuBlocks")
     public void blocksAction(ClickEvent event) {
@@ -132,7 +147,6 @@ public class TrackEditorContainer extends Composite {
             break;
         }
     }
-
 
     @UiHandler("menuDelete")
     public void deleteAction(ClickEvent event) {

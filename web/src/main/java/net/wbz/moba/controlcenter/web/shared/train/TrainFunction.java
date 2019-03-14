@@ -41,28 +41,6 @@ public class TrainFunction extends AbstractDto {
         this.alias = alias;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        if (!super.equals(o)) {
-            return false;
-        }
-        TrainFunction that = (TrainFunction) o;
-        return active == that.active && java.util.Objects.equals(alias, that.alias) && java.util.Objects
-            .equals(configuration, that.configuration);
-    }
-
-    @Override
-    public int hashCode() {
-
-        return java.util.Objects.hash(super.hashCode(), alias, configuration, active);
-    }
-
     /**
      * Available functions for the train.
      */

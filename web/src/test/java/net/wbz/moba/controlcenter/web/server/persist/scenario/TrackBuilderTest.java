@@ -73,11 +73,15 @@ public class TrackBuilderTest extends AbstractTrackBuilderTest {
         int endAddress = 30;
         int endBit = 3;
 
+        BlockStraight startBlock = createHorizontalBlockStraight(1, 1, createTrackBlock(startAddress, startBit, true));
+        TrackBlock endBlock = createTrackBlock(endAddress, endBit);
+
         testSimpleTrack(Lists.newArrayList(
-            createHorizontalBlockStraight(1, 1, startAddress, startBit, true),
-                createHorizontalStraight(2, 1),
-            createHorizontalBlockStraight(3, 1, endAddress, endBit, true)), startAddress, startBit, endAddress, endBit,
-                3);
+            startBlock,
+            createHorizontalStraight(2, 1),
+            createHorizontalBlockStraight(3, 1, endBlock)),
+            startBlock, endBlock,
+            3);
     }
 
     /**
@@ -92,11 +96,15 @@ public class TrackBuilderTest extends AbstractTrackBuilderTest {
         int endAddress = 30;
         int endBit = 3;
 
+        BlockStraight startBlockStraight = createHorizontalBlockStraight(3, 1,
+            createTrackBlock(startAddress, startBit));
+        TrackBlock endBlock = createTrackBlock(endAddress, endBit);
+
         testSimpleTrack(Lists.newArrayList(
-            createHorizontalBlockStraight(1, 1, endAddress, endBit, true),
-                createHorizontalStraight(2, 1),
-            createHorizontalBlockStraight(3, 1, startAddress, startBit, true)), startAddress, startBit, endAddress,
-                endBit, 3);
+            createHorizontalBlockStraight(1, 1, endBlock),
+            createHorizontalStraight(2, 1),
+            startBlockStraight),
+            startBlockStraight, endBlock, 3);
     }
 
     /**
@@ -113,17 +121,22 @@ public class TrackBuilderTest extends AbstractTrackBuilderTest {
         int endAddress = 30;
         int endBit = 3;
 
+        BlockStraight startBlockStraight = createHorizontalBlockStraight(3, 1,
+            createTrackBlock(startAddress, startBit));
+        TrackBlock endBlock = createTrackBlock(endAddress, endBit);
+
         testSimpleTrack(Lists.newArrayList(
                 createCurve(1, 1, Curve.DIRECTION.BOTTOM_RIGHT),
                 createHorizontalStraight(2, 1),
-            createHorizontalBlockStraight(3, 1, startAddress, startBit, true),
+            startBlockStraight,
                 createCurve(4, 1, Curve.DIRECTION.BOTTOM_LEFT),
                 createVerticalStraight(4, 2),
                 createCurve(4, 3, Curve.DIRECTION.TOP_LEFT),
-            createHorizontalBlockStraight(3, 3, endAddress, endBit, true),
+            createHorizontalBlockStraight(3, 3, endBlock),
                 createHorizontalStraight(2, 3),
                 createCurve(1, 3, Curve.DIRECTION.TOP_RIGHT),
-            createVerticalStraight(1, 2)), startAddress, startBit, endAddress, endBit, 5);
+            createVerticalStraight(1, 2)),
+            startBlockStraight, endBlock, 5);
     }
 
     /**
@@ -140,17 +153,22 @@ public class TrackBuilderTest extends AbstractTrackBuilderTest {
         int endAddress = 30;
         int endBit = 3;
 
+        BlockStraight startBlockStraight = createHorizontalBlockStraight(2, 1,
+            createTrackBlock(startAddress, startBit));
+        TrackBlock endBlock = createTrackBlock(endAddress, endBit);
+
         testSimpleTrack(Lists.newArrayList(
                 createCurve(1, 1, Curve.DIRECTION.BOTTOM_RIGHT),
-            createHorizontalBlockStraight(2, 1, startAddress, startBit, true),
+            startBlockStraight,
                 createHorizontalStraight(3, 1),
                 createCurve(4, 1, Curve.DIRECTION.BOTTOM_LEFT),
                 createVerticalStraight(4, 2),
                 createCurve(4, 3, Curve.DIRECTION.TOP_LEFT),
                 createHorizontalStraight(3, 3),
-            createHorizontalBlockStraight(2, 3, endAddress, endBit, true),
+            createHorizontalBlockStraight(2, 3, endBlock),
                 createCurve(1, 3, Curve.DIRECTION.TOP_RIGHT),
-                createVerticalStraight(1, 2)), startAddress, startBit, endAddress, endBit, 5);
+            createVerticalStraight(1, 2)),
+            startBlockStraight, endBlock, 5);
     }
 
     /**
@@ -173,21 +191,25 @@ public class TrackBuilderTest extends AbstractTrackBuilderTest {
         int waypointX = 1;
         int waypointY = 2;
 
+        BlockStraight startBlockStraight = createHorizontalBlockStraight(3, 1,
+            createTrackBlock(startAddress, startBit));
+        TrackBlock endBlock = createTrackBlock(endAddress, endBit);
+
         mockTrack(Lists.newArrayList(
                 createCurve(1, 1, Curve.DIRECTION.BOTTOM_RIGHT),
                 createHorizontalStraight(2, 1),
-            createHorizontalBlockStraight(3, 1, startAddress, startBit, true),
+            startBlockStraight,
                 createCurve(4, 1, Curve.DIRECTION.BOTTOM_LEFT),
-            createVerticalBlockStraight(4, 2, 40, 4, true),
+            createVerticalBlockStraight(4, 2, createTrackBlock(40, 4, true)),
                 createCurve(4, 3, Curve.DIRECTION.TOP_LEFT),
-            createHorizontalBlockStraight(3, 3, endAddress, endBit, true),
-            createHorizontalBlockStraight(2, 3, blockAddress, blockBit, true),
+            createHorizontalBlockStraight(3, 3, endBlock),
+            createHorizontalBlockStraight(2, 3, createTrackBlock(blockAddress, blockBit, true)),
                 createCurve(1, 3, Curve.DIRECTION.TOP_RIGHT),
                 createVerticalStraight(waypointX, waypointY)));
 
         Route route = mockRoute();
-        route.setStart(createBlockStraight(startAddress, startBit, true));
-        route.setEnd(createTrackBlock(endAddress, endBit, true));
+        route.setStart(startBlockStraight);
+        route.setEnd(endBlock);
         route.setWaypoints(Lists.newArrayList(new GridPosition(waypointX, waypointY)));
 
         Track track = getTrackBuilder().build(route);
@@ -218,21 +240,25 @@ public class TrackBuilderTest extends AbstractTrackBuilderTest {
         int waypointX = 1;
         int waypointY = 2;
 
+        BlockStraight startBlockStraight = createHorizontalBlockStraight(3, 3,
+            createTrackBlock(startAddress, startBit));
+        TrackBlock endBlock = createTrackBlock(endAddress, endBit);
+
         mockTrack(Lists.newArrayList(
                 createCurve(1, 1, Curve.DIRECTION.BOTTOM_RIGHT),
                 createHorizontalStraight(2, 1),
-            createHorizontalBlockStraight(3, 1, endAddress, endBit, true),
+            createHorizontalBlockStraight(3, 1, endBlock),
                 createCurve(4, 1, Curve.DIRECTION.BOTTOM_LEFT),
-            createVerticalBlockStraight(4, 2, 40, 4, true),
+            createVerticalBlockStraight(4, 2, createTrackBlock(40, 4, true)),
                 createCurve(4, 3, Curve.DIRECTION.TOP_LEFT),
-            createHorizontalBlockStraight(3, 3, startAddress, startBit, true),
-            createHorizontalBlockStraight(2, 3, blockAddress, blockBit, true),
+            startBlockStraight,
+            createHorizontalBlockStraight(2, 3, createTrackBlock(blockAddress, blockBit, true)),
                 createCurve(1, 3, Curve.DIRECTION.TOP_RIGHT),
                 createVerticalStraight(waypointX, waypointY)));
 
         Route route = mockRoute();
-        route.setStart(createBlockStraight(startAddress, startBit, true));
-        route.setEnd(createTrackBlock(endAddress, endBit, true));
+        route.setStart(startBlockStraight);
+        route.setEnd(endBlock);
         route.setWaypoints(Lists.newArrayList(new GridPosition(waypointX, waypointY)));
 
         Track track = getTrackBuilder().build(route);
@@ -254,14 +280,19 @@ public class TrackBuilderTest extends AbstractTrackBuilderTest {
         int startBit = 1;
         int endAddress = 30;
         int endBit = 3;
+
+        BlockStraight startBlockStraight = createHorizontalBlockStraight(2, 1,
+            createTrackBlock(startAddress, startBit));
+        TrackBlock endBlock = createTrackBlock(endAddress, endBit);
+
         mockTrack(Lists.newArrayList(
                 createCurve(1, 1, Curve.DIRECTION.BOTTOM_RIGHT),
-            createHorizontalBlockStraight(2, 1, startAddress, startBit, true),
+            startBlockStraight,
                 createHorizontalStraight(3, 1),
-            createHorizontalBlockStraight(5, 1, endAddress, endBit, true)));
+            createHorizontalBlockStraight(5, 1, endBlock)));
         Route route = mockRoute();
-        route.setStart(createBlockStraight(startAddress, startBit, true));
-        route.setEnd(createTrackBlock(endAddress, endBit, true));
+        route.setStart(startBlockStraight);
+        route.setEnd(endBlock);
         getTrackBuilder().build(route);
     }
 
@@ -276,13 +307,18 @@ public class TrackBuilderTest extends AbstractTrackBuilderTest {
         int startBit = 1;
         int endAddress = 30;
         int endBit = 3;
+
+        BlockStraight startBlockStraight = createHorizontalBlockStraight(2, 1,
+            createTrackBlock(startAddress, startBit));
+        TrackBlock endBlock = createTrackBlock(endAddress, endBit);
+
         mockTrack(Lists.newArrayList(
                 createCurve(1, 1, Curve.DIRECTION.BOTTOM_RIGHT),
-            createHorizontalBlockStraight(2, 1, startAddress, startBit, true),
-            createHorizontalBlockStraight(4, 1, endAddress, endBit, true)));
+            startBlockStraight,
+            createHorizontalBlockStraight(4, 1, endBlock)));
         Route route = mockRoute();
-        route.setStart(createBlockStraight(startAddress, startBit, true));
-        route.setEnd(createTrackBlock(endAddress, endBit, true));
+        route.setStart(startBlockStraight);
+        route.setEnd(endBlock);
         getTrackBuilder().build(route);
     }
 
@@ -299,15 +335,20 @@ public class TrackBuilderTest extends AbstractTrackBuilderTest {
         int endBit = 3;
         int waypointX = 1;
         int waypointY = 1;
+
+        BlockStraight startBlockStraight = createHorizontalBlockStraight(3, 1,
+            createTrackBlock(startAddress, startBit));
+        TrackBlock endBlock = createTrackBlock(endAddress, endBit);
+
         mockTrack(Lists.newArrayList(
                 createHorizontalStraight(waypointX, waypointY),
                 createHorizontalStraight(2, 1),
-            createHorizontalBlockStraight(3, 1, startAddress, startBit, true),
+            startBlockStraight,
                 createHorizontalStraight(4, 1),
-            createHorizontalBlockStraight(5, 1, endAddress, endBit, true)));
+            createHorizontalBlockStraight(5, 1, endBlock)));
         Route route = mockRoute();
-        route.setStart(createBlockStraight(startAddress, startBit, true));
-        route.setEnd(createTrackBlock(endAddress, endBit, true));
+        route.setStart(startBlockStraight);
+        route.setEnd(endBlock);
         route.setWaypoints(Lists.newArrayList(new GridPosition(waypointX, waypointY)));
         getTrackBuilder().build(route);
     }
@@ -330,17 +371,22 @@ public class TrackBuilderTest extends AbstractTrackBuilderTest {
 
         int waypointX = 4;
         int waypointY = 1;
+
+        BlockStraight startBlockStraight = createHorizontalBlockStraight(1, 1,
+            createTrackBlock(startAddress, startBit));
+        TrackBlock endBlock = createTrackBlock(endAddress, endBit);
+
         mockTrack(Lists.newArrayList(
-            createHorizontalBlockStraight(1, 1, startAddress, startBit, true),
+            startBlockStraight,
                 createSwitch(2, 1, Switch.DIRECTION.RIGHT, PRESENTATION.LEFT_TO_RIGHT, new BusDataConfiguration(1,
                         switchAddress, switchBit, true)),
                 createCurve(2, 2, DIRECTION.TOP_RIGHT),
-            createHorizontalBlockStraight(3, 1, endAddress, endBit, true),
+            createHorizontalBlockStraight(3, 1, endBlock),
                 createHorizontalStraight(waypointX, waypointY)));
 
         Route route = mockRoute();
-        route.setStart(createBlockStraight(startAddress, startBit, true));
-        route.setEnd(createTrackBlock(endAddress, endBit, true));
+        route.setStart(startBlockStraight);
+        route.setEnd(endBlock);
         route.setWaypoints(Lists.newArrayList(new GridPosition(waypointX, waypointY)));
 
         getTrackBuilder().build(route);
@@ -387,8 +433,12 @@ public class TrackBuilderTest extends AbstractTrackBuilderTest {
         int switchAddress2 = 51;
         int switchBit2 = 4;
 
+        BlockStraight startBlockStraight = createHorizontalBlockStraight(1, 1,
+            createTrackBlock(startAddress, startBit));
+        TrackBlock endBlock = createTrackBlock(endAddress, endBit);
+
         mockTrack(Lists.newArrayList(
-            createHorizontalBlockStraight(1, 1, startAddress, startBit, true),
+            startBlockStraight,
                 createHorizontalStraight(2, 1),
                 createSwitch(3, 1, Switch.DIRECTION.RIGHT, PRESENTATION.LEFT_TO_RIGHT, new BusDataConfiguration(1,
                         switchAddress, switchBit, true)),
@@ -400,11 +450,11 @@ public class TrackBuilderTest extends AbstractTrackBuilderTest {
 
                 createHorizontalStraight(5, 2),
 
-            createHorizontalBlockStraight(5, 3, endAddress, endBit, true)));
+            createHorizontalBlockStraight(5, 3, endBlock)));
 
         Route route = mockRoute();
-        route.setStart(createBlockStraight(startAddress, startBit, true));
-        route.setEnd(createTrackBlock(endAddress, endBit, true));
+        route.setStart(startBlockStraight);
+        route.setEnd(endBlock);
 
         Track track = getTrackBuilder().build(route);
         Assert.assertEquals(7, track.getLength());
@@ -436,8 +486,12 @@ public class TrackBuilderTest extends AbstractTrackBuilderTest {
         int switchAddress2 = 56;
         int switchBit2 = 6;
 
+        BlockStraight startBlockStraight = createHorizontalBlockStraight(1, 1,
+            createTrackBlock(startAddress, startBit));
+        TrackBlock endBlock = createTrackBlock(endAddress, endBit);
+
         mockTrack(Lists.newArrayList(
-            createHorizontalBlockStraight(1, 1, startAddress, startBit, true),
+            startBlockStraight,
                 createHorizontalStraight(2, 1),
                 createSwitch(3, 1, Switch.DIRECTION.RIGHT, PRESENTATION.LEFT_TO_RIGHT, new BusDataConfiguration(1,
                         switchAddress, switchBit, true)),
@@ -451,11 +505,11 @@ public class TrackBuilderTest extends AbstractTrackBuilderTest {
                 createVerticalStraight(5, 2),
                 createCurve(5, 3, DIRECTION.TOP_LEFT),
 
-            createHorizontalBlockStraight(6, 1, endAddress, endBit, true)));
+            createHorizontalBlockStraight(6, 1, endBlock)));
 
         Route route = mockRoute();
-        route.setStart(createBlockStraight(startAddress, startBit, true));
-        route.setEnd(createTrackBlock(endAddress, endBit, true));
+        route.setStart(startBlockStraight);
+        route.setEnd(endBlock);
 
         Track track = getTrackBuilder().build(route);
         Assert.assertEquals(6, track.getLength());
@@ -486,8 +540,12 @@ public class TrackBuilderTest extends AbstractTrackBuilderTest {
         int switchAddress2 = 56;
         int switchBit2 = 6;
 
+        BlockStraight startBlockStraight = createHorizontalBlockStraight(5, 2,
+            createTrackBlock(startAddress, startBit));
+        TrackBlock endBlock = createTrackBlock(endAddress, endBit);
+
         mockTrack(Lists.newArrayList(
-            createHorizontalBlockStraight(1, 1, endAddress, endBit, true),
+            createHorizontalBlockStraight(1, 1, endBlock),
                 createHorizontalStraight(2, 1),
                 createCurve(3, 1, DIRECTION.BOTTOM_LEFT),
 
@@ -497,7 +555,7 @@ public class TrackBuilderTest extends AbstractTrackBuilderTest {
                         switchAddress, switchBit, true)),
                 createSwitch(4, 2, Switch.DIRECTION.LEFT, PRESENTATION.RIGHT_TO_LEFT, new BusDataConfiguration(1,
                         switchAddress2, switchBit2, true)),
-            createHorizontalBlockStraight(5, 2, startAddress, startBit, true),
+            startBlockStraight,
 
                 createHorizontalStraight(1, 3),
                 createHorizontalStraight(2, 3),
@@ -505,8 +563,8 @@ public class TrackBuilderTest extends AbstractTrackBuilderTest {
                 createCurve(4, 3, DIRECTION.TOP_LEFT)));
 
         Route route = mockRoute();
-        route.setStart(createBlockStraight(startAddress, startBit, true));
-        route.setEnd(createTrackBlock(endAddress, endBit, true));
+        route.setStart(startBlockStraight);
+        route.setEnd(endBlock);
 
         Track track = getTrackBuilder().build(route);
         Assert.assertEquals(6, track.getLength());
@@ -537,8 +595,12 @@ public class TrackBuilderTest extends AbstractTrackBuilderTest {
         int switchAddress2 = 100;
         int switchBit2 = 5;
 
+        BlockStraight startBlockStraight = createHorizontalBlockStraight(1, 3,
+            createTrackBlock(startAddress, startBit));
+        TrackBlock endBlock = createTrackBlock(endAddress, endBit);
+
         mockTrack(Lists.newArrayList(
-            createHorizontalBlockStraight(1, 3, startAddress, startBit, true),
+            startBlockStraight,
                 createHorizontalStraight(2, 3),
                 createSwitch(3, 3, Switch.DIRECTION.LEFT, PRESENTATION.LEFT_TO_RIGHT, new BusDataConfiguration(1,
                         switchAddress, switchBit, true)),
@@ -551,11 +613,11 @@ public class TrackBuilderTest extends AbstractTrackBuilderTest {
                 createSwitch(5, 3, Switch.DIRECTION.RIGHT, PRESENTATION.RIGHT_TO_LEFT, new BusDataConfiguration(1,
                         switchAddress2, switchBit2, true)),
 
-            createHorizontalBlockStraight(6, 3, endAddress, endBit, true)));
+            createHorizontalBlockStraight(6, 3, endBlock)));
 
         Route route = mockRoute();
-        route.setStart(createBlockStraight(startAddress, startBit, true));
-        route.setEnd(createTrackBlock(endAddress, endBit, true));
+        route.setStart(startBlockStraight);
+        route.setEnd(endBlock);
 
         Track track = getTrackBuilder().build(route);
         Assert.assertEquals(6, track.getLength());
@@ -586,18 +648,22 @@ public class TrackBuilderTest extends AbstractTrackBuilderTest {
         int switchAddress2 = 100;
         int switchBit2 = 5;
 
+        BlockStraight startBlockStraight = createVerticalBlockStraight(1, 1,
+            createTrackBlock(startAddress, startBit));
+        TrackBlock endBlock = createTrackBlock(endAddress, endBit);
+
         mockTrack(Lists.newArrayList(
-            createVerticalBlockStraight(1, 1, startAddress, startBit, true),
+            startBlockStraight,
                 createSwitch(1, 2, Switch.DIRECTION.LEFT, PRESENTATION.TOP_TO_BOTTOM, new BusDataConfiguration(1,
                         switchAddress, switchBit, true)),
                 createSwitch(2, 2, Switch.DIRECTION.LEFT, PRESENTATION.BOTTOM_TO_TOP, new BusDataConfiguration(1,
                         switchAddress2, switchBit2, true)),
                 createCurve(2, 3, DIRECTION.TOP_RIGHT),
-            createHorizontalBlockStraight(3, 3, endAddress, endBit, true)));
+            createHorizontalBlockStraight(3, 3, endBlock)));
 
         Route route = mockRoute();
-        route.setStart(createBlockStraight(startAddress, startBit, true));
-        route.setEnd(createTrackBlock(endAddress, endBit, true));
+        route.setStart(startBlockStraight);
+        route.setEnd(endBlock);
 
         Track track = getTrackBuilder().build(route);
         Assert.assertEquals(5, track.getLength());
@@ -630,8 +696,13 @@ public class TrackBuilderTest extends AbstractTrackBuilderTest {
 
         int waypointX = 4;
         int waypointY = 2;
+
+        BlockStraight startBlockStraight = createHorizontalBlockStraight(1, 1,
+            createTrackBlock(startAddress, startBit));
+        TrackBlock endBlock = createTrackBlock(endAddress, endBit);
+
         mockTrack(Lists.newArrayList(
-            createHorizontalBlockStraight(1, 1, startAddress, startBit, true),
+            startBlockStraight,
                 createHorizontalStraight(2, 1),
                 createSwitch(3, 1, Switch.DIRECTION.RIGHT, PRESENTATION.LEFT_TO_RIGHT, new BusDataConfiguration(1,
                         switchAddress, switchBit, true)),
@@ -641,11 +712,11 @@ public class TrackBuilderTest extends AbstractTrackBuilderTest {
                 createSwitch(5, 1, Switch.DIRECTION.LEFT, PRESENTATION.RIGHT_TO_LEFT, new BusDataConfiguration(1,
                         switchAddress2, switchBit2, true)),
                 createCurve(5, 2, DIRECTION.TOP_LEFT),
-            createHorizontalBlockStraight(6, 1, endAddress, endBit, true)));
+            createHorizontalBlockStraight(6, 1, endBlock)));
 
         Route route = mockRoute();
-        route.setStart(createBlockStraight(startAddress, startBit, true));
-        route.setEnd(createTrackBlock(endAddress, endBit, true));
+        route.setStart(startBlockStraight);
+        route.setEnd(endBlock);
         route.setWaypoints(Lists.newArrayList(new GridPosition(waypointX, waypointY)));
 
         Track track = getTrackBuilder().build(route);
@@ -679,8 +750,13 @@ public class TrackBuilderTest extends AbstractTrackBuilderTest {
 
         int waypointX = 4;
         int waypointY = 1;
+
+        BlockStraight startBlockStraight = createHorizontalBlockStraight(1, 1,
+            createTrackBlock(startAddress, startBit));
+        TrackBlock endBlock = createTrackBlock(endAddress, endBit);
+
         mockTrack(Lists.newArrayList(
-            createHorizontalBlockStraight(1, 1, startAddress, startBit, true),
+            startBlockStraight,
                 createHorizontalStraight(2, 1),
                 createSwitch(3, 1, Switch.DIRECTION.RIGHT, PRESENTATION.LEFT_TO_RIGHT, new BusDataConfiguration(1,
                         switchAddress, switchBit, true)),
@@ -690,11 +766,11 @@ public class TrackBuilderTest extends AbstractTrackBuilderTest {
                 createSwitch(5, 1, Switch.DIRECTION.LEFT, PRESENTATION.RIGHT_TO_LEFT, new BusDataConfiguration(1,
                         switchAddress2, switchBit2, true)),
                 createCurve(5, 2, DIRECTION.TOP_LEFT),
-            createHorizontalBlockStraight(6, 1, endAddress, endBit, true)));
+            createHorizontalBlockStraight(6, 1, endBlock)));
 
         Route route = mockRoute();
-        route.setStart(createBlockStraight(startAddress, startBit, true));
-        route.setEnd(createTrackBlock(endAddress, endBit, true));
+        route.setStart(startBlockStraight);
+        route.setEnd(endBlock);
         route.setWaypoints(Lists.newArrayList(new GridPosition(waypointX, waypointY)));
 
         Track track = getTrackBuilder().build(route);
@@ -719,9 +795,13 @@ public class TrackBuilderTest extends AbstractTrackBuilderTest {
     public void testEndless() throws TrackNotFoundException {
         int startAddress = 20;
         int startBit = 1;
+
+        BlockStraight startBlockStraight = createVerticalBlockStraight(1, 2,
+            createTrackBlock(startAddress, startBit));
+
         mockTrack(Lists.newArrayList(
                 createCurve(1, 1, DIRECTION.BOTTOM_RIGHT),
-            createVerticalBlockStraight(1, 2, startAddress, startBit, true),
+            startBlockStraight,
                 createCurve(1, 3, DIRECTION.TOP_RIGHT),
                 createHorizontalStraight(2, 1),
                 createHorizontalStraight(2, 3),
@@ -731,7 +811,7 @@ public class TrackBuilderTest extends AbstractTrackBuilderTest {
                 createCurve(3, 3, DIRECTION.TOP_LEFT)));
 
         Route route = mockRoute();
-        route.setStart(createBlockStraight(startAddress, startBit, true));
+        route.setStart(startBlockStraight);
         route.setEnd(createTrackBlock(100, 1, true));
         getTrackBuilder().build(route);
     }

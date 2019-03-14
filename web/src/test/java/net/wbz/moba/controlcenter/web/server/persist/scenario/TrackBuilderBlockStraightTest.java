@@ -1,8 +1,6 @@
 package net.wbz.moba.controlcenter.web.server.persist.scenario;
 
 import com.google.common.collect.Lists;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import junit.framework.Assert;
 import net.wbz.moba.controlcenter.web.shared.scenario.Route;
@@ -90,12 +88,16 @@ public class TrackBuilderBlockStraightTest extends AbstractTrackBuilderTest {
         int endAddress = 30;
         int endBit = 3;
 
+        BlockStraight startBlockStraight = createHorizontalBlockStraight(4, 1, 2,
+            createTrackBlock(startAddress, startBit));
+        TrackBlock endBlock = createTrackBlock(endAddress, endBit);
+
         testSimpleTrack(Lists.newArrayList(
-            createHorizontalBlockStraight(1, 1, endAddress, endBit, true, 2),
+            createHorizontalBlockStraight(1, 1, 2, endBlock),
             createHorizontalStraight(3, 1),
-            createHorizontalBlockStraight(4, 1, startAddress, startBit, true, 2)),
-            startAddress, startBit,
-            endAddress, endBit,
+            startBlockStraight),
+            startBlockStraight,
+            endBlock,
             3);
     }
 
@@ -182,45 +184,61 @@ public class TrackBuilderBlockStraightTest extends AbstractTrackBuilderTest {
 
     private void testBlockLengthBackwardVertical(int startAddress, int startBit, int endAddress, int endBit,
         int blockLength) throws TrackNotFoundException {
+
+        BlockStraight startBlockStraight = createVerticalBlockStraight(1, 3, blockLength,
+            createTrackBlock(startAddress, startBit));
+        TrackBlock endBlock = createTrackBlock(endAddress, endBit);
+
         testSimpleTrack(Lists.newArrayList(
-            createVerticalBlockStraight(1, 1, endAddress, endBit, true),
+            createVerticalBlockStraight(1, 1, endBlock),
             createVerticalStraight(1, 2),
-            createVerticalBlockStraight(1, 3, startAddress, startBit, true, blockLength)), startAddress,
-            startBit,
-            endAddress,
-            endBit, 3);
+            startBlockStraight),
+            startBlockStraight,
+            endBlock, 3);
     }
 
     private void testBlockLengthForward(int startAddress, int startBit, int endAddress, int endBit, int blockLength)
         throws TrackNotFoundException {
+        BlockStraight startBlockStraight = createHorizontalBlockStraight(1, 1, blockLength,
+            createTrackBlock(startAddress, startBit));
+        TrackBlock endBlock = createTrackBlock(endAddress, endBit);
+
         testSimpleTrack(Lists.newArrayList(
-            createHorizontalBlockStraight(1, 1, startAddress, startBit, true, blockLength),
+            startBlockStraight,
             createHorizontalStraight(1 + blockLength, 1),
-            createHorizontalBlockStraight(2 + blockLength, 1, endAddress, endBit, true)), startAddress, startBit,
-            endAddress, endBit,
+            createHorizontalBlockStraight(2 + blockLength, 1, endBlock)),
+            startBlockStraight,
+            endBlock,
             3);
     }
 
     private void testBlockLengthForwardVertical(int startAddress, int startBit, int endAddress, int endBit,
-        int blockLength)
-        throws TrackNotFoundException {
+        int blockLength) throws TrackNotFoundException {
+        BlockStraight startBlockStraight = createVerticalBlockStraight(1, 1, blockLength,
+            createTrackBlock(startAddress, startBit));
+        TrackBlock endBlock = createTrackBlock(endAddress, endBit);
+
         testSimpleTrack(Lists.newArrayList(
-            createVerticalBlockStraight(1, 1, startAddress, startBit, true, blockLength),
+            startBlockStraight,
             createVerticalStraight(1, 1 + blockLength),
-            createVerticalBlockStraight(1, 2 + blockLength, endAddress, endBit, true)), startAddress, startBit,
-            endAddress, endBit,
+            createVerticalBlockStraight(1, 2 + blockLength, endBlock)),
+            startBlockStraight,
+            endBlock,
             3);
     }
 
     private void testBlockLengthBackward(int startAddress, int startBit, int endAddress, int endBit, int blockLength)
         throws TrackNotFoundException {
-        testSimpleTrack(Lists.newArrayList(
-            createHorizontalBlockStraight(1, 1, endAddress, endBit, true),
-            createHorizontalStraight(2, 1),
-            createHorizontalBlockStraight(3, 1, startAddress, startBit, true, blockLength)), startAddress, startBit,
-            endAddress,
-            endBit, 3);
-    }
+        BlockStraight startBlockStraight = createHorizontalBlockStraight(3, 1, blockLength,
+            createTrackBlock(startAddress, startBit));
+        TrackBlock endBlock = createTrackBlock(endAddress, endBit);
 
+        testSimpleTrack(Lists.newArrayList(
+            createHorizontalBlockStraight(1, 1, endBlock),
+            createHorizontalStraight(2, 1),
+            startBlockStraight),
+            startBlockStraight,
+            endBlock, 3);
+    }
 
 }

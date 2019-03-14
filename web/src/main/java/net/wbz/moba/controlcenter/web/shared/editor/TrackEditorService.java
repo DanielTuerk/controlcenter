@@ -17,7 +17,7 @@ public interface TrackEditorService extends RemoteService {
 
     Collection<AbstractTrackPart> loadTrack();
 
-    void saveTrack(Collection<AbstractTrackPart> trackParts);
+    void saveTrack(Collection<AbstractTrackPart> trackParts) throws ValidationException;
 
     Collection<TrackBlock> loadTrackBlocks();
 

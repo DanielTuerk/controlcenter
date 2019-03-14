@@ -96,6 +96,7 @@ public class BusDataConfiguration extends AbstractDto {
 
     @Override
     public int hashCode() {
+        // TODO drop super?
         return java.util.Objects.hash(super.hashCode(), bus, address, bit);
     }
 

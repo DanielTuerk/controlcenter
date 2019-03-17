@@ -20,6 +20,7 @@ import net.wbz.moba.controlcenter.web.server.persist.device.DeviceInfoEntity;
 import net.wbz.moba.controlcenter.web.server.web.DataMapper;
 import net.wbz.moba.controlcenter.web.shared.bus.BusDataEvent;
 import net.wbz.moba.controlcenter.web.shared.bus.BusService;
+import net.wbz.moba.controlcenter.web.shared.bus.DeviceConnectionEvent;
 import net.wbz.moba.controlcenter.web.shared.bus.DeviceInfo;
 import net.wbz.moba.controlcenter.web.shared.bus.DeviceInfoEvent;
 import net.wbz.moba.controlcenter.web.shared.bus.PlayerEvent;
@@ -86,8 +87,7 @@ public class BusServiceImpl extends RemoteServiceServlet implements BusService {
                 final DeviceInfo deviceInfo = getDeviceInfo(device);
                 deviceInfo.setConnected(true);
                 // fire initial rail voltage state
-                BusServiceImpl.this.eventBroadcaster
-                    .fireEvent(new DeviceInfoEvent(deviceInfo, DeviceInfoEvent.TYPE.CONNECTED));
+                eventBroadcaster.fireEvent(new DeviceConnectionEvent(deviceInfo, DeviceConnectionEvent.TYPE.CONNECTED));
                 // add listener to receive state change
                 device.addRailVoltageListener(isOn -> eventBroadcaster.fireEvent(new RailVoltageEvent(isOn)));
             }
@@ -97,7 +97,7 @@ public class BusServiceImpl extends RemoteServiceServlet implements BusService {
                 DeviceInfo deviceInfo = getDeviceInfo(device);
                 deviceInfo.setConnected(false);
                 BusServiceImpl.this.eventBroadcaster
-                    .fireEvent(new DeviceInfoEvent(deviceInfo, DeviceInfoEvent.TYPE.DISCONNECTED));
+                    .fireEvent(new DeviceConnectionEvent(deviceInfo, DeviceConnectionEvent.TYPE.DISCONNECTED));
                 device.getBusDataDispatcher().unregisterConsumer(allBusDataConsumer);
             }
         });

@@ -1,20 +1,25 @@
 package net.wbz.moba.controlcenter.web.shared.bus;
 
-import de.novanic.eventservice.client.event.Event;
+import net.wbz.moba.controlcenter.web.client.event.StateEvent;
 
 /**
- * Event for the data of the device.
+ * Event for the connection state of a device.
  *
  * @author Daniel Tuerk
  */
-public class DeviceInfoEvent implements Event {
+public class DeviceConnectionEvent implements StateEvent {
+
+    public enum TYPE {
+        CONNECTED, DISCONNECTED
+    }
 
     private DeviceInfo deviceInfo;
     private TYPE eventType;
-    public DeviceInfoEvent() {
+
+    public DeviceConnectionEvent() {
     }
 
-    public DeviceInfoEvent(DeviceInfo deviceInfo, TYPE eventType) {
+    public DeviceConnectionEvent(DeviceInfo deviceInfo, TYPE eventType) {
         this.deviceInfo = deviceInfo;
         this.eventType = eventType;
     }
@@ -28,6 +33,11 @@ public class DeviceInfoEvent implements Event {
     }
 
     @Override
+    public String getCacheKey() {
+        return getClass().getSimpleName() + ":" + deviceInfo.getKey();
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) {
             return true;
@@ -35,24 +45,19 @@ public class DeviceInfoEvent implements Event {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        DeviceInfoEvent that = (DeviceInfoEvent) o;
+        DeviceConnectionEvent that = (DeviceConnectionEvent) o;
         return java.util.Objects.equals(deviceInfo, that.deviceInfo) && eventType == that.eventType;
     }
 
     @Override
     public int hashCode() {
-
         return java.util.Objects.hash(deviceInfo, eventType);
     }
 
     @Override
     public String toString() {
-        return "DeviceInfoEvent{" + "deviceInfo=" + deviceInfo
+        return "DeviceConnectionEvent{" + "deviceInfo=" + deviceInfo
             + ", eventType=" + eventType
             + '}';
-    }
-
-    public enum TYPE {
-        CREATE, REMOVE, MODIFY
     }
 }

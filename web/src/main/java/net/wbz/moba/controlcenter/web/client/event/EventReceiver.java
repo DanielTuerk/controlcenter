@@ -54,7 +54,7 @@ public class EventReceiver {
         }
     }
 
-    public void addListener(final Class<? extends Event> eventClazz,
+    public synchronized void addListener(final Class<? extends Event> eventClazz,
         net.wbz.moba.controlcenter.web.client.event.RemoteEventListener listener) {
         if (!listenersByEvent.containsKey(eventClazz)) {
             final ListenerDelegate delegate = new ListenerDelegate(clientEventCache);

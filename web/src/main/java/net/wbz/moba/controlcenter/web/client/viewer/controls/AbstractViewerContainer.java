@@ -8,7 +8,6 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Widget;
 import java.util.ArrayList;
 import java.util.List;
-import net.wbz.moba.controlcenter.web.client.util.Log;
 
 /**
  * Abstract container for the viewer elements in the track viewer. Load and reload the items in the container.
@@ -51,7 +50,7 @@ public abstract class AbstractViewerContainer extends Composite {
         resetItems();
     }
 
-    private void resetItems() {
+    protected void resetItems() {
         lastWidgets.forEach(Widget::removeFromParent);
         lastWidgets.clear();
     }

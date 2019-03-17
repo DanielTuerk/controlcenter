@@ -56,6 +56,7 @@ public class TrainItemControlsPanel extends AbstractViewerItemControlsComposite<
 
     private Map<TrainFunction, OnOffToggleButton> functionButtons = Maps.newConcurrentMap();
     private int lastSendSpeedValue = -1;
+    private boolean lastReceivedState = false;
 
     TrainItemControlsPanel(Train train) {
         super(train);
@@ -135,6 +136,9 @@ public class TrainItemControlsPanel extends AbstractViewerItemControlsComposite<
     @Override
     protected void onLoad() {
         super.onLoad();
+        // set as default to disconnected mode
+        deviceConnectionChanged(lastReceivedState);
+
         EventReceiver.getInstance().addListener(trainHornStateRemoteListener, trainLightStateRemoteListener,
             trainDrivingDirectionRemoteListener, trainDrivingLevelRemoteListener, trainFunctionStateRemoteListener);
     }
@@ -148,6 +152,7 @@ public class TrainItemControlsPanel extends AbstractViewerItemControlsComposite<
 
     @Override
     protected void deviceConnectionChanged(boolean connected) {
+        lastReceivedState = connected;
         boolean state = getModel().getAddress() != null && connected;
         for (OnOffToggleButton button : functionButtons.values()) {
             button.setEnabled(state);
@@ -157,6 +162,7 @@ public class TrainItemControlsPanel extends AbstractViewerItemControlsComposite<
         btnDirectionBackward.setEnabled(state);
         btnDirectionForward.setEnabled(state);
         btnStop.setEnabled(state);
+        sliderDrivingLevel.setEnabled(state);
     }
 
     @UiHandler("btnEditTrain")

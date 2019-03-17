@@ -3,27 +3,33 @@
 >
 
   <ui:style>
+    .box {
+      display: flex;
+    }
+
+    .grow {
+      flex-grow: 100;
+    }
   </ui:style>
 
   <b:Panel>
     <b:PanelHeader>
-      <g:FlowPanel>
-        <g:HTMLPanel>
+      <g:FlowPanel addStyleNames="{style.box}">
+        <g:HTMLPanel addStyleNames="{style.grow}">
           <b:Label ui:field="lblName"/>
           <g:FlowPanel>
-            <b:Label ui:field="lblState"/>
-            <b:Label ui:field="lblStateDetails"/>
+            <b:Label text="" ui:field="lblState"/>
+            <b:Label text="" ui:field="lblStateDetails"/>
           </g:FlowPanel>
         </g:HTMLPanel>
         <b:Button ui:field="btnCollapse" icon="CARET_SQUARE_O_DOWN" dataToggle="COLLAPSE"/>
       </g:FlowPanel>
 
     </b:PanelHeader>
-    <b:PanelBody>
-      <b:PanelCollapse ui:field="contentCollapse">
-
-      </b:PanelCollapse>
-    </b:PanelBody>
+    <b:PanelCollapse ui:field="contentCollapse">
+      <b:PanelBody ui:field="panelBody">
+      </b:PanelBody>
+    </b:PanelCollapse>
   </b:Panel>
 
 </ui:UiBinder>

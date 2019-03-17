@@ -19,6 +19,7 @@ public class TrainViewerControlsPanel extends AbstractViewerContainer {
     private final TrainDataChangedRemoteListener trainDataChangedRemoteListener;
 
     public TrainViewerControlsPanel() {
+        super();
         trainDataChangedRemoteListener = event -> reloadItems();
     }
 
@@ -32,6 +33,9 @@ public class TrainViewerControlsPanel extends AbstractViewerContainer {
     @Override
     protected void onUnload() {
         EventReceiver.getInstance().removeListener(trainDataChangedRemoteListener);
+
+        resetItems();
+
         super.onUnload();
     }
 

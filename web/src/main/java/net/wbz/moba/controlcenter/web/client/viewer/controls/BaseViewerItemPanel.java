@@ -8,7 +8,9 @@ import com.google.gwt.user.client.ui.Widget;
 import net.wbz.moba.controlcenter.web.shared.track.model.AbstractDto;
 import org.gwtbootstrap3.client.ui.Button;
 import org.gwtbootstrap3.client.ui.Label;
+import org.gwtbootstrap3.client.ui.PanelBody;
 import org.gwtbootstrap3.client.ui.PanelCollapse;
+import org.gwtbootstrap3.client.ui.constants.IconType;
 
 
 /**
@@ -31,13 +33,23 @@ public class BaseViewerItemPanel<Model extends AbstractDto> extends Composite {
     PanelCollapse contentCollapse;
     @UiField
     Button btnCollapse;
+    @UiField
+    PanelBody panelBody;
 
     public BaseViewerItemPanel(AbstractViewerItemControlsComposite<Model> widget) {
         this.model = widget.getModel();
         initWidget(uiBinder.createAndBindUi(this));
 
         btnCollapse.setDataTargetWidget(contentCollapse);
-        contentCollapse.add(widget);
+        panelBody.add(widget);
+
+        contentCollapse.addShowHandler(showEvent -> {
+            btnCollapse.setIcon(IconType.CARET_SQUARE_O_UP);
+        });
+        contentCollapse.addHiddenHandler(showEvent -> {
+            btnCollapse.setIcon(IconType.CARET_SQUARE_O_DOWN);
+        });
+
     }
 
     public Model getModel() {

@@ -85,6 +85,10 @@ public class Route extends AbstractDto {
         this.track = track;
     }
 
+    public boolean hasTrack() {
+        return track != null;
+    }
+
     public ROUTE_RUN_STATE getRunState() {
         return runState;
     }

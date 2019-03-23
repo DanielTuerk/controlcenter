@@ -25,8 +25,6 @@ import net.wbz.moba.controlcenter.web.shared.scenario.Route.ROUTE_RUN_STATE;
 import net.wbz.moba.controlcenter.web.shared.scenario.RouteSequence;
 import net.wbz.moba.controlcenter.web.shared.scenario.Scenario;
 import net.wbz.moba.controlcenter.web.shared.scenario.Scenario.RUN_STATE;
-import net.wbz.moba.controlcenter.web.shared.scenario.Track;
-import net.wbz.moba.controlcenter.web.shared.scenario.TrackNotFoundException;
 import net.wbz.moba.controlcenter.web.shared.track.model.BusDataConfiguration;
 import net.wbz.moba.controlcenter.web.shared.track.model.Signal;
 import net.wbz.moba.controlcenter.web.shared.track.model.Signal.FUNCTION;
@@ -115,8 +113,6 @@ abstract class ScenarioExecution implements Callable<Void> {
             routeSequences.sort(Comparator.comparingInt(RouteSequence::getPosition));
 
             LOG.info("start scenario {}", scenario);
-            // TODO darf hier nicht sein
-            buildTracks();
             // flag for the first route to try to start
             boolean isFirstRoute = true;
             // indicate that just a single route started for execution
@@ -288,22 +284,6 @@ abstract class ScenarioExecution implements Callable<Void> {
         for (RouteListener routeListener : routeListeners) {
             routeListener.routeFailed(scenario, routeSequence, msg);
         }
-    }
-
-    /**
-     * Build all {@link Track}s of the {@link Scenario}.
-     */
-    private void buildTracks() {
-        LOG.info("build track for routes");
-        for (RouteSequence routeSequence : scenario.getRouteSequences()) {
-            try {
-                Track track = trackBuilder.build(routeSequence.getRoute());
-                routeSequence.getRoute().setTrack(track);
-            } catch (TrackNotFoundException e) {
-                LOG.error("can't build track for route {}.", routeSequence.getRoute(), e);
-            }
-        }
-        LOG.info("finished track for routes", scenario);
     }
 
     private void finishScenarioExecution(RUN_STATE runState) {

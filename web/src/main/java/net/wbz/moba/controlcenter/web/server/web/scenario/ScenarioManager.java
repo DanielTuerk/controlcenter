@@ -17,12 +17,13 @@ import net.wbz.moba.controlcenter.web.server.persist.scenario.ScenarioDao;
 import net.wbz.moba.controlcenter.web.server.persist.scenario.ScenarioDataMapper;
 import net.wbz.moba.controlcenter.web.server.persist.scenario.ScenarioEntity;
 import net.wbz.moba.controlcenter.web.server.persist.scenario.TrackBuilder;
-import net.wbz.moba.controlcenter.web.shared.scenario.TrackNotFoundException;
+import net.wbz.moba.controlcenter.web.server.web.constrution.ConstructionServiceImpl;
 import net.wbz.moba.controlcenter.web.shared.scenario.Route;
 import net.wbz.moba.controlcenter.web.shared.scenario.RouteSequence;
 import net.wbz.moba.controlcenter.web.shared.scenario.RoutesChangedEvent;
 import net.wbz.moba.controlcenter.web.shared.scenario.Scenario;
 import net.wbz.moba.controlcenter.web.shared.scenario.ScenarioDataChangedEvent;
+import net.wbz.moba.controlcenter.web.shared.scenario.TrackNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,7 +58,8 @@ public class ScenarioManager {
     @Inject
     public ScenarioManager(ScenarioDao scenarioDao, RouteDao routeDao, RouteSequenceDao routeSequenceDao,
         EventBroadcaster eventBroadcaster, RouteDataMapper routeDataMapper, ScenarioDataMapper dataMapper,
-        RouteSequenceDataMapper routeSequenceDataMapper, TrackBuilder trackBuilder) {
+        RouteSequenceDataMapper routeSequenceDataMapper, TrackBuilder trackBuilder,
+        ConstructionServiceImpl constructionService) {
         this.scenarioDao = scenarioDao;
         this.routeDao = routeDao;
         this.routeSequenceDao = routeSequenceDao;
@@ -66,6 +68,9 @@ public class ScenarioManager {
         this.dataMapper = dataMapper;
         this.routeSequenceDataMapper = routeSequenceDataMapper;
         this.trackBuilder = trackBuilder;
+
+        // load routes initial to build all tracks
+        constructionService.addListener(x -> loadRoutesFromDatabase());
     }
 
     synchronized List<Scenario> getScenarios() {

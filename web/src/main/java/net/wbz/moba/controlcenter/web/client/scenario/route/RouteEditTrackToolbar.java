@@ -5,6 +5,8 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
+import java.util.ArrayList;
+import java.util.List;
 import org.gwtbootstrap3.client.ui.ButtonGroup;
 import org.gwtbootstrap3.client.ui.RadioButton;
 
@@ -16,6 +18,7 @@ import org.gwtbootstrap3.client.ui.RadioButton;
 class RouteEditTrackToolbar extends Composite {
     private static Binder uiBinder = GWT.create(Binder.class);
 
+    private final List<ModeChangeListener> listeners = new ArrayList<>();
     @UiField
     ButtonGroup radioMode;
     private RouteEditMode currentMode;
@@ -25,7 +28,10 @@ class RouteEditTrackToolbar extends Composite {
 
         for (final RouteEditMode mode : RouteEditMode.values()) {
             RadioButton radioButton = new RadioButton(mode.name(), mode.name());
-            radioButton.addClickHandler(event -> currentMode = mode);
+            radioButton.addClickHandler(event -> {
+                currentMode = mode;
+                fireModeChange();
+            });
             radioMode.add(radioButton);
         }
     }
@@ -33,13 +39,27 @@ class RouteEditTrackToolbar extends Composite {
     @Override
     protected void onLoad() {
         currentMode = null;
-
     }
 
+    void addListener(ModeChangeListener listener) {
+        listeners.add(listener);
+    }
+
+    void removeListener(ModeChangeListener listener) {
+        listeners.remove(listener);
+    }
     RouteEditMode getCurrentMode() {
         return currentMode;
     }
 
+    private void fireModeChange() {
+        listeners.forEach(listener -> listener.modeChanged(currentMode));
+    }
     interface Binder extends UiBinder<Widget, RouteEditTrackToolbar> {
+    }
+
+    interface ModeChangeListener {
+
+        void modeChanged(RouteEditMode newMode);
     }
 }

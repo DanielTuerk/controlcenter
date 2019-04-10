@@ -32,6 +32,7 @@ import net.wbz.selectrix4java.device.Device;
 import net.wbz.selectrix4java.device.DeviceAccessException;
 import net.wbz.selectrix4java.device.DeviceConnectionListener;
 import net.wbz.selectrix4java.device.DeviceManager;
+import net.wbz.selectrix4java.device.RailVoltageListener;
 import net.wbz.selectrix4java.device.serial.SerialDevice;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,6 +51,7 @@ public class BusServiceImpl extends RemoteServiceServlet implements BusService {
     private final Map<DeviceInfo, Device> storedDevices = Maps.newHashMap();
     private final DeviceInfoDao deviceInfoDao;
     private final DataMapper<DeviceInfo, DeviceInfoEntity> dtoMapper;
+    private final RailVoltageListener railVoltageListener;
     private net.wbz.selectrix4java.device.Device activeDevice;
     private boolean trackingActive = false;
     private BusDataPlayer busDataPlayer;
@@ -71,6 +73,8 @@ public class BusServiceImpl extends RemoteServiceServlet implements BusService {
             }
         };
 
+        railVoltageListener = isOn -> eventBroadcaster.fireEvent(new RailVoltageEvent(isOn));
+
         initConnectionListener();
     }
 
@@ -89,7 +93,7 @@ public class BusServiceImpl extends RemoteServiceServlet implements BusService {
                 // fire initial rail voltage state
                 eventBroadcaster.fireEvent(new DeviceConnectionEvent(deviceInfo, DeviceConnectionEvent.TYPE.CONNECTED));
                 // add listener to receive state change
-                device.addRailVoltageListener(isOn -> eventBroadcaster.fireEvent(new RailVoltageEvent(isOn)));
+                device.addRailVoltageListener(railVoltageListener);
             }
 
             @Override
@@ -99,6 +103,7 @@ public class BusServiceImpl extends RemoteServiceServlet implements BusService {
                 BusServiceImpl.this.eventBroadcaster
                     .fireEvent(new DeviceConnectionEvent(deviceInfo, DeviceConnectionEvent.TYPE.DISCONNECTED));
                 device.getBusDataDispatcher().unregisterConsumer(allBusDataConsumer);
+                device.removeRailVoltageListener(railVoltageListener);
             }
         });
     }

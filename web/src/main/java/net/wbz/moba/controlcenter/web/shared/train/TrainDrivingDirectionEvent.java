@@ -1,5 +1,7 @@
 package net.wbz.moba.controlcenter.web.shared.train;
 
+import com.google.gwt.user.client.rpc.IsSerializable;
+
 /**
  * @author Daniel Tuerk
  */
@@ -25,7 +27,7 @@ public class TrainDrivingDirectionEvent extends TrainStateEvent {
                 "} " + super.toString();
     }
 
-    public enum DRIVING_DIRECTION {
+    public enum DRIVING_DIRECTION implements IsSerializable {
         FORWARD, BACKWARD
     }
 }

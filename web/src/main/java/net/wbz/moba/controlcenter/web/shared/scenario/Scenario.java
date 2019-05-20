@@ -1,5 +1,6 @@
 package net.wbz.moba.controlcenter.web.shared.scenario;
 
+import com.google.gwt.user.client.rpc.IsSerializable;
 import com.googlecode.jmapper.annotations.JMap;
 import java.util.ArrayList;
 import java.util.List;
@@ -10,12 +11,12 @@ import net.wbz.moba.controlcenter.web.shared.train.Train;
 /**
  * @author Daniel Tuerk
  */
-public class Scenario extends AbstractDto {
+public class  Scenario extends AbstractDto {
 
     /**
      * State of the actual execution.
      */
-    public enum RUN_STATE {
+    public enum RUN_STATE implements IsSerializable {
         /**
          * Scenario is currently running.
          */
@@ -40,7 +41,7 @@ public class Scenario extends AbstractDto {
     /**
      * Mode of the scenario execution.
      */
-    public enum MODE {
+    public enum MODE implements IsSerializable {
         /**
          * Scenario is inactive.
          */

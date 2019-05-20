@@ -1,5 +1,6 @@
 package net.wbz.moba.controlcenter.web.shared.bus;
 
+import com.google.gwt.user.client.rpc.IsSerializable;
 import net.wbz.moba.controlcenter.web.client.event.StateEvent;
 
 /**
@@ -46,7 +47,7 @@ public class RecordingEvent implements StateEvent {
         return java.util.Objects.hash(super.hashCode(), getFilePath());
     }
 
-    public enum STATE {
+    public enum STATE implements IsSerializable {
         START, STOP
     }
 }

@@ -242,7 +242,7 @@ public class Signal extends Straight implements HasToggleFunction {
     /**
      * Available functions for the signal types.
      */
-    public enum FUNCTION {
+    public enum FUNCTION implements IsSerializable {
         HP0, HP1, HP2, HP0_SH1
     }
 
@@ -268,7 +268,7 @@ public class Signal extends Straight implements HasToggleFunction {
     /**
      * Available lights of the different signal types.
      */
-    public enum LIGHT {
+    public enum LIGHT implements IsSerializable {
         RED1, RED2, GREEN1, GREEN2, YELLOW1, YELLOW2, WHITE
     }
 }

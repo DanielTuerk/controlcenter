@@ -1,5 +1,6 @@
 package net.wbz.moba.controlcenter.web.shared.viewer;
 
+import com.google.gwt.user.client.rpc.IsSerializable;
 import java.util.Objects;
 import net.wbz.moba.controlcenter.web.client.event.StateEvent;
 import net.wbz.moba.controlcenter.web.shared.track.model.BusDataConfiguration;
@@ -63,7 +64,7 @@ public class TrackPartBlockEvent implements StateEvent {
         return "TrackPartBlockEvent{" + "config=" + config + ", state=" + state + '}';
     }
 
-    public enum STATE {
+    public enum STATE implements IsSerializable {
         UNKNOWN, FREE, USED
     }
 }

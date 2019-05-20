@@ -15,6 +15,8 @@ import net.wbz.moba.controlcenter.web.shared.scenario.ScenarioEditorService;
 import net.wbz.moba.controlcenter.web.shared.scenario.ScenarioEditorServiceAsync;
 import net.wbz.moba.controlcenter.web.shared.scenario.ScenarioService;
 import net.wbz.moba.controlcenter.web.shared.scenario.ScenarioServiceAsync;
+import net.wbz.moba.controlcenter.web.shared.scenario.ScenarioStatisticService;
+import net.wbz.moba.controlcenter.web.shared.scenario.ScenarioStatisticServiceAsync;
 import net.wbz.moba.controlcenter.web.shared.train.TrainEditorService;
 import net.wbz.moba.controlcenter.web.shared.train.TrainEditorServiceAsync;
 import net.wbz.moba.controlcenter.web.shared.train.TrainService;
@@ -40,6 +42,7 @@ public class RequestUtils {
     private ConstructionServiceAsync constructionRequest = GWT.create(ConstructionService.class);
     private ScenarioServiceAsync scenarioService = GWT.create(ScenarioService.class);
     private ScenarioEditorServiceAsync scenarioEditorService = GWT.create(ScenarioEditorService.class);
+    private ScenarioStatisticServiceAsync scenarioStatisticService = GWT.create(ScenarioStatisticService.class);
 
     private RequestUtils() {
     }
@@ -82,5 +85,9 @@ public class RequestUtils {
 
     public ScenarioEditorServiceAsync getScenarioEditorService() {
         return scenarioEditorService;
+    }
+
+    public ScenarioStatisticServiceAsync getScenarioStatisticService() {
+        return scenarioStatisticService;
     }
 }

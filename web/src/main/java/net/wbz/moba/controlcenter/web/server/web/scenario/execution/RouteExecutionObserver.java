@@ -2,17 +2,27 @@ package net.wbz.moba.controlcenter.web.server.web.scenario.execution;
 
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
+import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+import net.wbz.moba.controlcenter.web.server.SelectrixHelper;
+import net.wbz.moba.controlcenter.web.server.web.editor.TrackManager;
+import net.wbz.moba.controlcenter.web.server.web.editor.block.BusAddressIdentifier;
 import net.wbz.moba.controlcenter.web.shared.scenario.Route;
 import net.wbz.moba.controlcenter.web.shared.scenario.Route.ROUTE_RUN_STATE;
 import net.wbz.moba.controlcenter.web.shared.scenario.RouteSequence;
+import net.wbz.moba.controlcenter.web.shared.track.model.BlockStraight;
 import net.wbz.moba.controlcenter.web.shared.track.model.BusDataConfiguration;
 import net.wbz.moba.controlcenter.web.shared.track.model.TrackBlock;
+import net.wbz.selectrix4java.device.Device;
+import net.wbz.selectrix4java.device.DeviceAccessException;
+import net.wbz.selectrix4java.device.DeviceManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,14 +38,22 @@ public class RouteExecutionObserver {
 
     private static final Logger LOG = LoggerFactory.getLogger(RouteExecutionObserver.class);
 
+    private final TrackManager trackManager;
     /**
      * Actual running {@link RouteSequence}s which need to be thread safe. Each execution will access the collection in
      * parallel.
      */
     private final Collection<RouteSequence> runningRouteSequences = Collections.synchronizedSet(new HashSet<>());
+    private final DeviceManager deviceManager;
+
+    @Inject
+    public RouteExecutionObserver(TrackManager trackManager, DeviceManager deviceManager) {
+        this.trackManager = trackManager;
+        this.deviceManager = deviceManager;
+    }
 
     void removeRunningRouteSequence(RouteSequence routeSequence) {
-        LOG.debug("removeRunningRouteSequence: {}" + routeSequence);
+        LOG.debug("removeRunningRouteSequence: {}", routeSequence);
         runningRouteSequences.remove(routeSequence);
     }
 
@@ -56,16 +74,45 @@ public class RouteExecutionObserver {
          */
         if (dependingRunningRoutes.isEmpty() || (dependingRunningRoutes.size() == 1 && dependingRunningRoutes
             .contains(previousRouteSequence))) {
-            route.setRunState(ROUTE_RUN_STATE.RESERVED);
-            removeRunningRouteSequence(previousRouteSequence);
-            addRunningRouteSequence(routeSequence);
+
+            // only set to reserve if the next route blocks are free, also without dependent route
+            if (allBlocksAreFree(route.getAllTrackBlocksToDrive())) {
+                route.setRunState(ROUTE_RUN_STATE.RESERVED);
+                synchronized (this) {
+                    addRunningRouteSequence(routeSequence);
+                    removeRunningRouteSequence(previousRouteSequence);
+                }
+            }
             return true;
         }
         return false;
     }
 
+    /**
+     * Check that all given {@link TrackBlock}s are free.
+     *
+     * @param trackBlocks {@link TrackBlock}s to check
+     * @return {@code true} if all given blocks are free
+     */
+    private boolean allBlocksAreFree(Set<TrackBlock> trackBlocks) {
+        try {
+            Device device = deviceManager.getConnectedDevice();
+            for (TrackBlock trackBlock : trackBlocks) {
+                BusDataConfiguration blockFunction = trackBlock.getBlockFunction();
+                BusAddressIdentifier entry = new BusAddressIdentifier(blockFunction);
+                if (SelectrixHelper.getFeedbackBlockModule(device, entry)
+                    .getLastReceivedBlockState(blockFunction.getBit())) {
+                    return false;
+                }
+            }
+        } catch (DeviceAccessException e) {
+            LOG.error("can't check blocks to reserve track", e);
+            return false;
+        }
+        return true;
+    }
     private void addRunningRouteSequence(RouteSequence routeSequence) {
-        LOG.debug("addRunningRouteSequence: {}" + routeSequence);
+        LOG.debug("addRunningRouteSequence: {}", routeSequence);
         runningRouteSequences.add(routeSequence);
     }
 
@@ -92,16 +139,20 @@ public class RouteExecutionObserver {
      * @return {@code true} if a single {@link TrackBlock} is the same in both routes
      */
     private boolean containsSameTrackBlock(Route left, Route right) {
+
+        // TODO: von end auch alle anderen blöcke der blockstraight mit dazu nehmen, bei right und left
+
         // collect all track blocks of left route
         List<TrackBlock> runningTrackBlocks = new ArrayList<>(left.getStart().getAllTrackBlocks());
         if (left.getTrack() != null) {
             runningTrackBlocks.addAll(left.getTrack().getTrackBlocks());
         }
-        runningTrackBlocks.add(left.getEnd());
+        runningTrackBlocks.addAll(getTrackBlocksForBlockStraightsOfTrackBlock(left.getEnd()));
 
         // check for same track blocks from left route in right route
         if (runningTrackBlocks.stream().anyMatch(x -> right.getStart().getAllTrackBlocks().contains(x))
-            || runningTrackBlocks.contains(right.getEnd())) {
+            || runningTrackBlocks.stream()
+            .anyMatch(x -> getTrackBlocksForBlockStraightsOfTrackBlock(right.getEnd()).contains(x))) {
             return true;
         }
         for (TrackBlock blockToCheck : right.getTrack().getTrackBlocks()) {
@@ -110,6 +161,14 @@ public class RouteExecutionObserver {
             }
         }
         return false;
+    }
+
+    private Set<TrackBlock> getTrackBlocksForBlockStraightsOfTrackBlock(TrackBlock left) {
+        return trackManager.getBlockStraightsFromTrackBlock(left)
+            .stream()
+            .map(BlockStraight::getAllTrackBlocks)
+            .flatMap(Collection::stream)
+            .collect(Collectors.toSet());
     }
 
     /**

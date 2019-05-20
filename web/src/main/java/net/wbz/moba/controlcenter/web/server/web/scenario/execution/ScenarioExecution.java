@@ -9,10 +9,11 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import javax.validation.constraints.NotNull;
 import net.wbz.moba.controlcenter.web.server.SelectrixHelper;
 import net.wbz.moba.controlcenter.web.server.persist.scenario.TrackBuilder;
@@ -65,7 +66,7 @@ abstract class ScenarioExecution implements Callable<Void> {
     private final TrackBuilder trackBuilder;
     private final List<RouteListener> routeListeners;
     private final RouteExecutionObserver routeExecutionObserver;
-    private final ExecutorService executor;
+//    private final ExecutorService executor;
     /**
      * Flag for stop called to scenario.
      */
@@ -89,7 +90,10 @@ abstract class ScenarioExecution implements Callable<Void> {
         this.routeListeners = routeListeners;
         this.routeExecutionObserver = routeExecutionObserver;
 
-        executor = Executors.newCachedThreadPool();
+//        executor = Executors.poolnewFixedThreadPool();
+//        return new ThreadPoolExecutor(nThreads, nThreads,
+//            0L, TimeUnit.MILLISECONDS,
+//            new LinkedBlockingQueue<Runnable>());
     }
 
     @Override
@@ -140,6 +144,8 @@ abstract class ScenarioExecution implements Callable<Void> {
 
                     previousRouteSequence = routeSequence;
 
+                    // TODO die nächsrten beiden werden niocht für start und ende 2er routen aufgerufen
+
                     // check track for running scenarios and wait for the free track
                     waitForFreeTrack(routeExecution);
 
@@ -161,13 +167,13 @@ abstract class ScenarioExecution implements Callable<Void> {
                     }
 
                     finishRoute(routeSequence);
-                } catch (ScenarioExecutionInterruptException e) {
+                } catch (ScenarioExecutionInterruptException | RouteExecutionInterruptException e) {
                     String msg = "execution error of route sequence at pos: " + routeSequence.getPosition();
                     LOG.error(msg, e);
                     fireRouteErrorState(routeSequence, e.getMessage());
                     // scenario can't be executed and will be stopped
                     stop();
-                } catch (RouteExecutionInterruptException e) {
+                } catch (NoTrainInStartBlockException e) {
                     LOG.info(e.getMessage());
                     fireRouteErrorState(routeSequence, e.getMessage());
                     cleanupRunningRouteInSequence(routeSequence);
@@ -205,8 +211,10 @@ abstract class ScenarioExecution implements Callable<Void> {
      * Stop the execution by the next route block in the route sequence.
      */
     void stop() {
+        LOG.info("stop");
         stopped = true;
         stopTrain();
+        scenario.setRunState(RUN_STATE.STOPPED);
     }
 
     private void startRoute(final RouteExecution routeExecution) throws ScenarioExecutionInterruptException,
@@ -310,11 +318,10 @@ abstract class ScenarioExecution implements Callable<Void> {
      * @param isFirstRoute {@code true} if this is the check for the first route in the execution
      * @param isAnyRouteRunning {@code false} until any route was successful prepared @throws
      * ScenarioExecutionInterruptException interrupt of scenario
-     * @throws RouteExecutionInterruptException interrupt of the current route in the sequence
      */
     private RouteExecution prepare(final RouteSequence routeSequence, final RouteSequence previousRouteSequence,
         RouteSequence nextRouteSequence, boolean isFirstRoute, boolean isAnyRouteRunning) throws
-        ScenarioExecutionInterruptException, RouteExecutionInterruptException {
+        NoTrainInStartBlockException {
         Route route = routeSequence.getRoute();
 
         Train train = getTrain();
@@ -439,11 +446,14 @@ abstract class ScenarioExecution implements Callable<Void> {
             routeListener.routeWaitingToStart(scenario, routeExecution.getRouteSequence());
         }
 
-        Future<Void> future = executor
-            .submit(new WaitForFreeTrackCallable(routeExecutionObserver, scenario, routeExecution));
+//        Future<Void> future = executor
+//            .submit(new WaitForFreeTrackCallable(routeExecutionObserver, scenario, routeExecution));
+        Thread thread = new Thread(new WaitForFreeTrackCallable(routeExecutionObserver, scenario, routeExecution));
+        thread.start();
         try {
-            future.get();
-        } catch (InterruptedException | ExecutionException e) {
+            thread.join();
+        } catch (InterruptedException e) {
+//        } catch (InterruptedException | ExecutionException e) {
             throw new ScenarioExecutionInterruptException("wait for free track interrupted", e);
         }
     }
@@ -504,7 +514,7 @@ abstract class ScenarioExecution implements Callable<Void> {
      * @param route current {@link Route}
      */
     private void updateTrack(Scenario scenario, Route route) {
-        LOG.info("update the track for scenario {} with start route: {}", scenario, route);
+        LOG.info("update the track for scenario {} with start route: {}", scenario.getName(), route.getName());
         Map<BusDataConfiguration, Boolean> trackPartStates = new HashMap<>();
         for (BusDataConfiguration routeBlockPart : route.getTrack().getTrackFunctions()) {
             trackPartStates.put(routeBlockPart, routeBlockPart.getBitState());

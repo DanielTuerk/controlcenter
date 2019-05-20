@@ -8,7 +8,6 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
 import net.wbz.moba.controlcenter.web.client.scenario.route.RoutePanel;
 import org.gwtbootstrap3.client.ui.Container;
-import org.gwtbootstrap3.client.ui.PanelBody;
 
 /**
  * @author Daniel Tuerk
@@ -25,6 +24,8 @@ public class ScenarioEditor extends Composite {
     Container stationBody;
     @UiField
     Container routeBody;
+    @UiField
+    Container scenarioStatisticBody;
 
     public ScenarioEditor() {
         initWidget(uiBinder.createAndBindUi(this));
@@ -34,6 +35,7 @@ public class ScenarioEditor extends Composite {
         scenarioBody.add(new ScenarioPanel());
         stationBody.add(new StationPanel());
         routeBody.add(new RoutePanel());
+        scenarioStatisticBody.add(new ScenarioStatisticPanel());
     }
 
 }

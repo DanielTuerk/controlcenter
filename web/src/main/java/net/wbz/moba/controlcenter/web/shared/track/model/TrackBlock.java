@@ -2,6 +2,7 @@ package net.wbz.moba.controlcenter.web.shared.track.model;
 
 import com.google.common.base.Objects;
 import com.google.common.base.Strings;
+import com.google.gwt.user.client.rpc.IsSerializable;
 import com.googlecode.jmapper.annotations.JMap;
 import net.wbz.moba.controlcenter.web.shared.constrution.Construction;
 
@@ -92,7 +93,7 @@ public class TrackBlock extends AbstractDto {
             : "-") + ")";
     }
 
-    public enum DRIVING_LEVEL_ADJUST_TYPE {
+    public enum DRIVING_LEVEL_ADJUST_TYPE implements IsSerializable {
         /**
          * No adjustment.
          */

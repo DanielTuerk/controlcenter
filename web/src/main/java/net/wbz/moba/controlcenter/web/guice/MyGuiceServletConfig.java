@@ -19,6 +19,7 @@ import net.wbz.moba.controlcenter.web.server.web.constrution.ConstructionService
 import net.wbz.moba.controlcenter.web.server.web.editor.TrackEditorServiceImpl;
 import net.wbz.moba.controlcenter.web.server.web.scenario.ScenarioEditorServiceImpl;
 import net.wbz.moba.controlcenter.web.server.web.scenario.ScenarioServiceImpl;
+import net.wbz.moba.controlcenter.web.server.web.scenario.ScenarioStatisticServiceImpl;
 import net.wbz.moba.controlcenter.web.server.web.train.TrainEditorServiceImpl;
 import net.wbz.moba.controlcenter.web.server.web.train.TrainServiceImpl;
 import net.wbz.moba.controlcenter.web.server.web.viewer.TrackViewerServiceImpl;
@@ -38,6 +39,7 @@ public class MyGuiceServletConfig extends GuiceServletContextListener {
     public static final String SERVICE_CONFIG = "config";
     public static final String SERVICE_CONSTRUCTION = "construction";
     public static final String SERVICE_SCENARIO = "scenario";
+    public static final String SERVICE_SCENARIO_STATISTIC = "scenarioStatistics";
     public static final String SERVICE_SCENARIO_EDITOR = "scenarioEditor";
     public static final String SERVICE_TRACK = "track";
     public static final String SERVICE_TRACK_EDITOR = "trackEditor";
@@ -109,6 +111,7 @@ public class MyGuiceServletConfig extends GuiceServletContextListener {
                 serve("/" + APP_NAME + "/" + SERVICE_TRAIN_EDITOR).with(TrainEditorServiceImpl.class);
                 serve("/" + APP_NAME + "/" + SERVICE_SCENARIO).with(ScenarioServiceImpl.class);
                 serve("/" + APP_NAME + "/" + SERVICE_SCENARIO_EDITOR).with(ScenarioEditorServiceImpl.class);
+                serve("/" + APP_NAME + "/" + SERVICE_SCENARIO_STATISTIC).with(ScenarioStatisticServiceImpl.class);
 
                 install(new ServerModule());
             }

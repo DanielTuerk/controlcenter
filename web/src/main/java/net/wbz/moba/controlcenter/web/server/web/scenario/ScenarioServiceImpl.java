@@ -68,8 +68,7 @@ public class ScenarioServiceImpl extends RemoteServiceServlet implements Scenari
 
     @Inject
     public ScenarioServiceImpl(ScenarioManager scenarioManager, DeviceManager deviceManager,
-        ScenarioHistoryService scenarioHistoryService, ScenarioExecutor scenarioExecutor,
-        EventBroadcaster eventBroadcaster) {
+        ScenarioExecutor scenarioExecutor, EventBroadcaster eventBroadcaster) {
         this.scenarioManager = scenarioManager;
         this.deviceManager = deviceManager;
         this.scenarioExecutor = scenarioExecutor;
@@ -82,23 +81,12 @@ public class ScenarioServiceImpl extends RemoteServiceServlet implements Scenari
         } catch (SchedulerException e) {
             throw new RuntimeException("Can't create scheduler", e);
         }
-
-        addScenarioStateListener(scenarioHistoryService);
-
         INSTANCE = this;
     }
 
     public static ScenarioServiceImpl getInstance() {
         //TODO refactor
         return INSTANCE;
-    }
-
-    public void addScenarioStateListener(ScenarioStateListener listener) {
-        scenarioExecutor.addScenarioStateListener(listener);
-    }
-
-    public void removeScenarioStateListener(ScenarioStateListener listener) {
-        scenarioExecutor.removeScenarioStateListener(listener);
     }
 
     @Override

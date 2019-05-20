@@ -1,7 +1,7 @@
 package net.wbz.moba.controlcenter.web.shared.track.model;
 
+import com.google.gwt.user.client.rpc.IsSerializable;
 import com.googlecode.jmapper.annotations.JMap;
-import java.io.Serializable;
 import java.util.concurrent.atomic.AtomicLong;
 import net.wbz.moba.controlcenter.web.shared.Identity;
 
@@ -10,7 +10,7 @@ import net.wbz.moba.controlcenter.web.shared.Identity;
  *
  * @author Daniel Tuerk
  */
-public abstract class AbstractDto implements Serializable, Identity {
+public abstract class AbstractDto implements Identity, IsSerializable {
 
     /**
      * Counter for the temporary IDs which are used as default. This ids are negative.

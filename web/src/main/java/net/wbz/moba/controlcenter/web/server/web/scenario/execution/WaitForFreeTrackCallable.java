@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Daniel Tuerk
  */
-class WaitForFreeTrackCallable implements Callable<Void> {
+class WaitForFreeTrackCallable implements Runnable {
 
     private static final Logger LOG = LoggerFactory.getLogger(WaitForFreeTrackCallable.class);
     private static final long TIME_TO_WAIT_IN_MILLIS = 500L;
@@ -29,7 +29,7 @@ class WaitForFreeTrackCallable implements Callable<Void> {
     }
 
     @Override
-    public Void call() throws Exception {
+    public void run() {
         final Route route = routeExecution.getRouteSequence().getRoute();
         LOG.info("train ({}) request free track: {}", routeExecution.getTrain(), route);
 
@@ -37,13 +37,19 @@ class WaitForFreeTrackCallable implements Callable<Void> {
             if (routeExecutionObserver.checkAndReserveNextRunningRoute(routeExecution.getRouteSequence(),
                 routeExecution.getPreviousRouteSequence())) {
                 // no dependent route running, stop check
-                return null;
+                return ;
             } else {
                 // dependency running, wait and recheck
-                Thread.sleep(TIME_TO_WAIT_IN_MILLIS);
+                try {
+                    Thread.sleep(TIME_TO_WAIT_IN_MILLIS);
+                } catch (InterruptedException e) {
+                    //TODO
+                    e.printStackTrace();
+                }
             }
         }
-        return null;
+        //TODO
+        return ;
     }
 
 }

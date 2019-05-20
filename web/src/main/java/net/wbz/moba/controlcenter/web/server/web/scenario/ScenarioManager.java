@@ -7,23 +7,15 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import net.wbz.moba.controlcenter.web.server.event.EventBroadcaster;
-import net.wbz.moba.controlcenter.web.server.persist.scenario.RouteDao;
-import net.wbz.moba.controlcenter.web.server.persist.scenario.RouteDataMapper;
-import net.wbz.moba.controlcenter.web.server.persist.scenario.RouteEntity;
 import net.wbz.moba.controlcenter.web.server.persist.scenario.RouteSequenceDao;
 import net.wbz.moba.controlcenter.web.server.persist.scenario.RouteSequenceDataMapper;
 import net.wbz.moba.controlcenter.web.server.persist.scenario.RouteSequenceEntity;
 import net.wbz.moba.controlcenter.web.server.persist.scenario.ScenarioDao;
 import net.wbz.moba.controlcenter.web.server.persist.scenario.ScenarioDataMapper;
 import net.wbz.moba.controlcenter.web.server.persist.scenario.ScenarioEntity;
-import net.wbz.moba.controlcenter.web.server.persist.scenario.TrackBuilder;
-import net.wbz.moba.controlcenter.web.server.web.constrution.ConstructionServiceImpl;
-import net.wbz.moba.controlcenter.web.shared.scenario.Route;
 import net.wbz.moba.controlcenter.web.shared.scenario.RouteSequence;
-import net.wbz.moba.controlcenter.web.shared.scenario.RoutesChangedEvent;
 import net.wbz.moba.controlcenter.web.shared.scenario.Scenario;
 import net.wbz.moba.controlcenter.web.shared.scenario.ScenarioDataChangedEvent;
-import net.wbz.moba.controlcenter.web.shared.scenario.TrackNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,36 +33,26 @@ public class ScenarioManager {
      * Cached scenarios from persistence.
      */
     private final List<Scenario> scenarios = new ArrayList<>();
-    /**
-     * Cached routes from persistence.
-     */
-    private final List<Route> routes = new ArrayList<>();
 
     private final ScenarioDao scenarioDao;
-    private final RouteDao routeDao;
     private final RouteSequenceDao routeSequenceDao;
     private final EventBroadcaster eventBroadcaster;
     private final ScenarioDataMapper dataMapper;
-    private final RouteDataMapper routeDataMapper;
     private final RouteSequenceDataMapper routeSequenceDataMapper;
-    private final TrackBuilder trackBuilder;
+    private final RouteManager routeManager;
 
     @Inject
-    public ScenarioManager(ScenarioDao scenarioDao, RouteDao routeDao, RouteSequenceDao routeSequenceDao,
-        EventBroadcaster eventBroadcaster, RouteDataMapper routeDataMapper, ScenarioDataMapper dataMapper,
-        RouteSequenceDataMapper routeSequenceDataMapper, TrackBuilder trackBuilder,
-        ConstructionServiceImpl constructionService) {
+    public ScenarioManager(ScenarioDao scenarioDao, RouteSequenceDao routeSequenceDao,
+        EventBroadcaster eventBroadcaster, ScenarioDataMapper dataMapper,
+        RouteSequenceDataMapper routeSequenceDataMapper, RouteManager routeManager) {
         this.scenarioDao = scenarioDao;
-        this.routeDao = routeDao;
         this.routeSequenceDao = routeSequenceDao;
         this.eventBroadcaster = eventBroadcaster;
-        this.routeDataMapper = routeDataMapper;
         this.dataMapper = dataMapper;
         this.routeSequenceDataMapper = routeSequenceDataMapper;
-        this.trackBuilder = trackBuilder;
+        this.routeManager = routeManager;
 
-        // load routes initial to build all tracks
-        constructionService.addListener(x -> loadRoutesFromDatabase());
+        routeManager.addListener(() -> updateRoutesOfScenarios(getScenarios()));
     }
 
     synchronized List<Scenario> getScenarios() {
@@ -131,69 +113,26 @@ public class ScenarioManager {
         scenarioDao.update(scenarioEntity);
         loadScenariosFromDatabase();
         fireScenariosChanged();
-        fireRoutesChanged();
-    }
-
-    synchronized Collection<Route> getRoutes() {
-        if (routes.isEmpty()) {
-            loadRoutesFromDatabase();
-        }
-        return routes;
-    }
-
-    @Transactional
-    void updateRoute(Route route) {
-        RouteEntity entity = routeDataMapper.transformTarget(route);
-        routeDao.update(entity);
-        loadRoutesFromDatabase();
-        fireRoutesChanged();
-    }
-
-    @Transactional
-    void createRoute(Route route) {
-        RouteEntity entity = routeDataMapper.transformTarget(route);
-        routeDao.create(entity);
-        loadRoutesFromDatabase();
-        fireRoutesChanged();
-    }
-
-    /**
-     * Delete the {@link Route} for the given id and reload the cached data.
-     *
-     * @param routeId id of {@link Route} to delete
-     */
-    @Transactional
-    void deleteRoute(long routeId) {
-        if (!routeSequenceDao.routeUsedInScenario(routeId)) {
-            routeSequenceDao.delete(routeId);
-            loadRoutesFromDatabase();
-            fireRoutesChanged();
-        } else {
-            LOG.error("can't delete route, still in use of scenario");
-        }
     }
 
     private void loadScenariosFromDatabase() {
         LOG.debug("load scenarios from database");
         scenarios.clear();
-        scenarios.addAll(dataMapper.transformSource(scenarioDao.listAll()));
+        Collection<Scenario> scenarios = dataMapper.transformSource(scenarioDao.listAll());
+        updateRoutesOfScenarios(scenarios);
+
+        this.scenarios.addAll(scenarios);
     }
 
-    private void loadRoutesFromDatabase() {
-        LOG.debug("load routes from database");
-
-        routes.clear();
-        routes.addAll(routeDataMapper.transformSource(routeDao.listAll()));
-        LOG.debug("build tracks");
-
-        for (Route route : routes) {
-            try {
-                route.setTrack(trackBuilder.build(route));
-            } catch (TrackNotFoundException e) {
-                LOG.error("can't build track of route: {} ({})", new Object[]{route, e.getMessage()});
-            }
-        }
-        LOG.debug("tracks finished");
+    /**
+     * Replace mapped route with cached route of route manager (with build tracks).
+     *
+     * @param scenarios scenarios to update
+     */
+    private void updateRoutesOfScenarios(Collection<Scenario> scenarios) {
+        scenarios.forEach(scenario -> scenario.getRouteSequences().forEach(
+            routeSequence -> routeManager.getRouteById(routeSequence.getRoute().getId())
+                .ifPresent(routeSequence::setRoute)));
     }
 
     private void createOrUpdateRouteSequences(List<RouteSequence> routeSequences, ScenarioEntity scenarioEntity) {
@@ -223,11 +162,6 @@ public class ScenarioManager {
 
     private void fireScenariosChanged() {
         eventBroadcaster.fireEvent(new ScenarioDataChangedEvent());
-    }
-
-    private void fireRoutesChanged() {
-        // TODO split to create, update, delete event; to prevent reload and rebuild all tracks
-        eventBroadcaster.fireEvent(new RoutesChangedEvent());
     }
 
 }

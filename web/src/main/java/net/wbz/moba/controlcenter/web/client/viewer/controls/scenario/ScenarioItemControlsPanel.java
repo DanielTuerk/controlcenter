@@ -60,6 +60,10 @@ public class ScenarioItemControlsPanel extends AbstractViewerItemControlsComposi
 
     @UiHandler("btnStart")
     void btnStartClicked(ClickEvent event) {
+        routeSequenceListGroupItemMap.forEach(
+            (key, value) -> getRouteSequenceFromId(key).ifPresent(x -> resetListItem(value, x))
+        );
+
         RequestUtils.getInstance().getScenarioService()
             .start(getModel().getId(), RequestUtils.VOID_ASYNC_CALLBACK);
     }
@@ -113,17 +117,7 @@ public class ScenarioItemControlsPanel extends AbstractViewerItemControlsComposi
         ListGroupItem listGroupItem = routeSequenceListGroupItemMap.get(event.getRouteSequenceId());
         Optional<RouteSequence> routeSequenceFromId = getRouteSequenceFromId(event.getRouteSequenceId());
         if (routeSequenceFromId.isPresent()) {
-            listGroupItem.setText(routeSequenceFromId.get().getRoute().getName());
-            // detail label text
-
-            listGroupItem.setType(ListGroupItemType.DEFAULT);
-            // remove icon
-            for (int i = 0; i < listGroupItem.getWidgetCount(); i++) {
-                if (listGroupItem.getWidget(i) instanceof Icon) {
-                    listGroupItem.remove(i);
-                    break;
-                }
-            }
+            resetListItem(listGroupItem, routeSequenceFromId.get());
             switch (event.getState()) {
                 case WAITING:
                     listGroupItem.setType(ListGroupItemType.WARNING);
@@ -146,36 +140,45 @@ public class ScenarioItemControlsPanel extends AbstractViewerItemControlsComposi
         }
     }
 
-    private void updateScenarioState(ScenarioStateEvent event) {
-        switch (event.getState()) {
-            case RUNNING:
-                btnSchedule.setEnabled(false);
-                btnStart.setEnabled(false);
-                btnStop.setEnabled(true);
+    private void resetListItem(ListGroupItem listGroupItem, RouteSequence routeSequenceFromId) {
+        listGroupItem.setText(routeSequenceFromId.getRoute().getName());
+        // detail label text
+        listGroupItem.setType(ListGroupItemType.DEFAULT);
+        // remove icon
+        for (int i = 0; i < listGroupItem.getWidgetCount(); i++) {
+            if (listGroupItem.getWidget(i) instanceof Icon) {
+                listGroupItem.remove(i);
+                break;
+            }
+        }
+    }
 
-                // reset route states for new execution
-                // TODO maybe too late? because first route starts faster
-                for (ListGroupItem widgets : routeSequenceListGroupItemMap.values()) {
-                    widgets.setType(ListGroupItemType.DEFAULT);
-                }
-                break;
-            case IDLE:
-                btnSchedule.setEnabled(true);
-                btnStart.setEnabled(true);
-                btnStop.setEnabled(false);
-                break;
-            case PAUSED:
-                btnSchedule.setEnabled(false);
-                btnStart.setEnabled(false);
-                btnStop.setEnabled(true);
-                // TODO resume
-                break;
-            case STOPPED:
-            case FINISHED:
-                btnSchedule.setEnabled(true);
-                btnStart.setEnabled(true);
-                btnStop.setEnabled(false);
-                break;
+    private void updateScenarioState(ScenarioStateEvent event) {
+        if (event.getItemId() == getModel().getId()) {
+            switch (event.getState()) {
+                case RUNNING:
+                    btnSchedule.setEnabled(false);
+                    btnStart.setEnabled(false);
+                    btnStop.setEnabled(true);
+                    break;
+                case IDLE:
+                    btnSchedule.setEnabled(true);
+                    btnStart.setEnabled(true);
+                    btnStop.setEnabled(false);
+                    break;
+                case PAUSED:
+                    btnSchedule.setEnabled(false);
+                    btnStart.setEnabled(false);
+                    btnStop.setEnabled(true);
+                    // TODO resume
+                    break;
+                case STOPPED:
+                case FINISHED:
+                    btnSchedule.setEnabled(true);
+                    btnStart.setEnabled(true);
+                    btnStop.setEnabled(false);
+                    break;
+            }
         }
     }
 

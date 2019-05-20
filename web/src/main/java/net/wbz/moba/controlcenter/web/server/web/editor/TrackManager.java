@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import javax.inject.Inject;
 import net.wbz.moba.controlcenter.web.server.event.EventBroadcaster;
@@ -27,6 +29,7 @@ import net.wbz.moba.controlcenter.web.server.web.editor.block.SignalBlockRegistr
 import net.wbz.moba.controlcenter.web.server.web.editor.block.TrackBlockRegistry;
 import net.wbz.moba.controlcenter.web.shared.constrution.Construction;
 import net.wbz.moba.controlcenter.web.shared.track.model.AbstractTrackPart;
+import net.wbz.moba.controlcenter.web.shared.track.model.BlockStraight;
 import net.wbz.moba.controlcenter.web.shared.track.model.BusDataConfiguration;
 import net.wbz.moba.controlcenter.web.shared.track.model.EventConfiguration;
 import net.wbz.moba.controlcenter.web.shared.track.model.HasToggleFunction;
@@ -239,6 +242,14 @@ public class TrackManager implements ConstructionChangeListener {
 
     public Collection<AbstractTrackPart> getTrack() {
         return cachedEntities;
+    }
+
+    public Set<BlockStraight> getBlockStraightsFromTrackBlock(TrackBlock trackBlock) {
+       return  getTrack().stream()
+           .filter(x->x instanceof BlockStraight)
+           .map( BlockStraight.class::cast )
+           .filter(x-> x.getAllTrackBlocks().contains(trackBlock))
+           .collect(Collectors.toSet());
     }
 
     Collection<TrackBlock> loadTrackBlocks() {

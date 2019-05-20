@@ -25,13 +25,15 @@ public class ScenarioEditorServiceImpl extends RemoteServiceServlet implements S
     private final ScenarioManager scenarioManager;
     private final TrackBuilder trackBuilder;
     private final StationManager stationManager;
+    private final RouteManager routeManager;
 
     @Inject
     public ScenarioEditorServiceImpl(ScenarioManager scenarioManager, TrackBuilder trackBuilder,
-        StationManager stationManager) {
+        StationManager stationManager, RouteManager routeManager) {
         this.scenarioManager = scenarioManager;
         this.trackBuilder = trackBuilder;
         this.stationManager = stationManager;
+        this.routeManager = routeManager;
     }
 
     @Override
@@ -76,22 +78,22 @@ public class ScenarioEditorServiceImpl extends RemoteServiceServlet implements S
 
     @Override
     public Collection<Route> getRoutes() {
-        return scenarioManager.getRoutes();
+        return routeManager.getRoutes();
     }
 
     @Override
     public void createRoute(Route route) {
-        scenarioManager.createRoute(route);
+        routeManager.createRoute(route);
     }
 
     @Override
     public void updateRoute(Route route) {
-        scenarioManager.updateRoute(route);
+        routeManager.updateRoute(route);
     }
 
     @Override
     public void deleteRoute(long routeId) {
-        scenarioManager.deleteRoute(routeId);
+        routeManager.deleteRoute(routeId);
     }
 
     @Override

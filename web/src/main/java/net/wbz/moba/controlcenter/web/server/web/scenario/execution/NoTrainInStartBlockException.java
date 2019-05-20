@@ -9,7 +9,7 @@ import net.wbz.moba.controlcenter.web.shared.train.Train;
  * 
  * @author Daniel Tuerk
  */
-class NoTrainInStartBlockException extends RouteExecutionInterruptException {
+class NoTrainInStartBlockException extends Exception {
 
     NoTrainInStartBlockException(Train train, BlockStraight blockStraight) {
         super(String.format("train '%s' (%d) not in one of the start blocks: left='%s', middle='%s', right='%s'!",

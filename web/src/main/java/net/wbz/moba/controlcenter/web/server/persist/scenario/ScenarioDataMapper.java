@@ -12,4 +12,6 @@ public class ScenarioDataMapper extends DataMapper<Scenario, ScenarioEntity> {
     public ScenarioDataMapper() {
         super(Scenario.class, ScenarioEntity.class);
     }
+
+
 }

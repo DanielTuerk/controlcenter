@@ -1,5 +1,6 @@
 package net.wbz.moba.controlcenter.web.shared.bus;
 
+import com.google.gwt.user.client.rpc.IsSerializable;
 import com.googlecode.jmapper.annotations.JMap;
 
 import net.wbz.moba.controlcenter.web.shared.track.model.AbstractDto;
@@ -39,7 +40,7 @@ public class DeviceInfo extends AbstractDto {
         this.connected = connected;
     }
 
-    public enum DEVICE_TYPE {
+    public enum DEVICE_TYPE implements IsSerializable {
         SERIAL, TEST
     }
 

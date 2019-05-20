@@ -1,5 +1,8 @@
 package net.wbz.moba.controlcenter.web.server.web.scenario.execution;
 
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -7,14 +10,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
-
 import net.wbz.moba.controlcenter.web.server.event.EventBroadcaster;
 import net.wbz.moba.controlcenter.web.server.persist.scenario.TrackBuilder;
 import net.wbz.moba.controlcenter.web.server.web.editor.block.SignalBlockRegistry;
@@ -28,6 +23,8 @@ import net.wbz.moba.controlcenter.web.shared.scenario.Scenario.RUN_STATE;
 import net.wbz.moba.controlcenter.web.shared.scenario.ScenarioStateEvent;
 import net.wbz.moba.controlcenter.web.shared.train.TrainService;
 import net.wbz.selectrix4java.device.DeviceManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Executor to start and stop {@link Scenario}s.
@@ -38,7 +35,7 @@ import net.wbz.selectrix4java.device.DeviceManager;
 public class ScenarioExecutor {
 
     private static final Logger LOG = LoggerFactory.getLogger(ScenarioExecutor.class);
-    private final ExecutorService taskExecutor;
+//    private final ExecutorService taskExecutor;
 
     private final TrackViewerServiceImpl trackViewerService;
     private final TrainService trainService;
@@ -79,9 +76,9 @@ public class ScenarioExecutor {
         this.eventBroadcaster = eventBroadcaster;
         this.routeExecutionObserver = routeExecutionObserver;
 
-        ThreadFactory namedThreadFactory = new ThreadFactoryBuilder().setNameFormat(getClass().getSimpleName() + "-%d")
-                .build();
-        taskExecutor = Executors.newCachedThreadPool(namedThreadFactory);
+//        ThreadFactory namedThreadFactory = new ThreadFactoryBuilder().setNameFormat(getClass().getSimpleName() + "-%d")
+//                .build();
+//        taskExecutor = Executors.newCachedThreadPool(namedThreadFactory);
 
         routeListeners.add(scenarioRouteEventBroadcaster);
     }
@@ -100,11 +97,16 @@ public class ScenarioExecutor {
                 protected void fireScenarioStateChangeEvent(Scenario scenario) {
                     if (scenario.getRunState() == RUN_STATE.FINISHED) {
                         finishExecution(scenario);
+                    } else {
+                        fireEvent(scenario);
                     }
                 }
             };
             executionsByScenarioId.put(scenario.getId(), scenarioExecution);
-            taskExecutor.submit(new ScenarioCallable(scenarioExecution));
+            // TODO
+//            taskExecutor.submit(new ScenarioCallable(scenarioExecution));
+            Thread thread = new Thread(new ScenarioCallable(scenarioExecution));
+            thread.start();
         } else {
             LOG.error("scenario {} already running!", scenario);
         }
@@ -118,7 +120,7 @@ public class ScenarioExecutor {
     public synchronized void stopScenario(Scenario scenario) {
         ScenarioExecution scenarioExecution = executionsByScenarioId.get(scenario.getId());
         scenarioExecution.stop();
-        finishExecution(scenario);
+//        finishExecution(scenario);
     }
 
     public void addScenarioStateListener(ScenarioStateListener listener) {

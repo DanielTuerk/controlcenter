@@ -1,5 +1,6 @@
 package net.wbz.moba.controlcenter.web.shared.scenario;
 
+import com.google.gwt.user.client.rpc.IsSerializable;
 import net.wbz.moba.controlcenter.web.client.event.StateEvent;
 
 /**
@@ -74,7 +75,7 @@ public class RouteStateEvent implements StateEvent {
                 '}';
     }
 
-    public enum STATE {
+    public enum STATE implements IsSerializable {
         WAITING, RUNNING, FINISHED, FAILED
     }
 }

@@ -9,7 +9,7 @@ import java.util.concurrent.Callable;
  * 
  * @author Daniel Tuerk
  */
-class ScenarioCallable implements Callable<Void> {
+class ScenarioCallable implements Runnable {
     private final ScenarioExecution scenarioExecution;
 
     ScenarioCallable(ScenarioExecution scenarioExecution) {
@@ -17,8 +17,7 @@ class ScenarioCallable implements Callable<Void> {
     }
 
     @Override
-    public Void call() throws Exception {
+    public  void run()   {
         scenarioExecution.start();
-        return null;
     }
 }

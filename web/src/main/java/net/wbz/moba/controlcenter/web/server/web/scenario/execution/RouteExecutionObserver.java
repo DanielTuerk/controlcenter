@@ -139,9 +139,6 @@ public class RouteExecutionObserver {
      * @return {@code true} if a single {@link TrackBlock} is the same in both routes
      */
     private boolean containsSameTrackBlock(Route left, Route right) {
-
-        // TODO: von end auch alle anderen blöcke der blockstraight mit dazu nehmen, bei right und left
-
         // collect all track blocks of left route
         List<TrackBlock> runningTrackBlocks = new ArrayList<>(left.getStart().getAllTrackBlocks());
         if (left.getTrack() != null) {

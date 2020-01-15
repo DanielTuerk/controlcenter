@@ -86,6 +86,7 @@ public class BusServiceImpl extends RemoteServiceServlet implements BusService {
         }
 
         deviceManager.addDeviceConnectionListener(new DeviceConnectionListener() {
+
             @Override
             public void connected(Device device) {
                 final DeviceInfo deviceInfo = getDeviceInfo(device);
@@ -270,7 +271,7 @@ public class BusServiceImpl extends RemoteServiceServlet implements BusService {
 
     @Override
     public void requestResendLastEvent(final String eventClazzName) {
-        eventBroadcaster.resendEvent(eventClazzName);
+         eventBroadcaster.resendEvent(eventClazzName);
     }
 
     public void connectBus() {

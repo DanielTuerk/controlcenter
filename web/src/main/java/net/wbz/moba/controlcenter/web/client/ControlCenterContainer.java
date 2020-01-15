@@ -28,6 +28,11 @@ class ControlCenterContainer extends Composite {
         appMenu.setCallback(appMenuCallback);
     }
 
+    @Override
+    protected void onLoad() {
+        super.onLoad();
+    }
+
     void setContent(Widget widget) {
         // first remove all children from the entries which are also parents, otherwise the removal will be blocked
 //        for (Widget container : contentContainer) {

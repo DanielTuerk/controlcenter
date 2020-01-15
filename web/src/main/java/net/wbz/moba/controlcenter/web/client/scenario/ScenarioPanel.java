@@ -40,12 +40,13 @@ public class ScenarioPanel extends Composite {
     Container container;
     @UiField
     CellTable<Scenario> scenarioTable;
+
     private SimplePager simplePager = new SimplePager();
     private Pagination pagination = new Pagination(PaginationSize.SMALL);
     private ListDataProvider<Scenario> dataProvider = new ListDataProvider<>();
     private Collection<Station> stations = new ArrayList<>();
 
-    public ScenarioPanel() {
+    ScenarioPanel() {
         initWidget(uiBinder.createAndBindUi(this));
 
         scenarioRemoteListener = anEvent -> loadScenarios();

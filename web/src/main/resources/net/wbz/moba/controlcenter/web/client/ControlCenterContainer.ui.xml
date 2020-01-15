@@ -1,6 +1,5 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
   xmlns:cc="urn:import:net.wbz.moba.controlcenter.web.client"
-  xmlns:cc.device="urn:import:net.wbz.moba.controlcenter.web.client.device"
   xmlns:g="urn:import:com.google.gwt.user.client.ui"
 >
   <ui:style>
@@ -12,12 +11,12 @@
 
   <g:HTMLPanel styleName="flexbox-parent">
     <div class="flexbox-item">
-    <cc:AppMenu ui:field="appMenu"/>
+      <cc:AppMenu ui:field="appMenu"/>
     </div>
-    <g:HTMLPanel ui:field="contentContainer" styleName="{style.contentContainer} fill-area flexbox-item-grow">
-    </g:HTMLPanel>
     <div class="flexbox-item">
       <cc:StatePanel />
     </div>
+    <g:HTMLPanel ui:field="contentContainer" styleName="{style.contentContainer} fill-area flexbox-item-grow">
+    </g:HTMLPanel>
   </g:HTMLPanel>
 </ui:UiBinder>

@@ -45,6 +45,9 @@ public class ControlCenterApp implements EntryPoint {
      */
     @Override
     public void onModuleLoad() {
+        WebResources.INSTANCE.mainCss().ensureInjected();
+        WebResources.INSTANCE.trackCss().ensureInjected();
+        WebResources.INSTANCE.scenarioCss().ensureInjected();
 
         ModelManager.getInstance().init();
 

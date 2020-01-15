@@ -28,7 +28,7 @@ public class DeviceListBox extends Composite {
     private final List<DeviceInfo> devices = new ArrayList<>();
     private final RemoteDeviceListener remoteDeviceListener;
     @UiField
-    Button btnDropup;
+    Button btnDropdown;
     @UiField
     DropDownMenu dropDownMenu;
 
@@ -70,21 +70,21 @@ public class DeviceListBox extends Composite {
 
 
     DeviceInfo getSelectedDevice() {
-        return getDevice(btnDropup.getText());
+        return getDevice(btnDropdown.getText());
     }
 
     public void setSelectedDevice(DeviceInfo deviceInfo) {
         if (deviceInfo != null) {
             DeviceInfo device = getDevice(deviceInfo.getKey());
             if (device != null) {
-                btnDropup.setText(device.getKey());
+                btnDropdown.setText(device.getKey());
             }
         }
     }
 
 
     public void setEnabled(boolean b) {
-        btnDropup.setEnabled(b);
+        btnDropdown.setEnabled(b);
     }
 
     private void reload() {
@@ -99,7 +99,7 @@ public class DeviceListBox extends Composite {
                 for (DeviceInfo device : result) {
                     String deviceKey = device.getKey();
                     AnchorListItem child = new AnchorListItem(deviceKey);
-                    child.addClickHandler(clickEvent -> btnDropup.setText(deviceKey));
+                    child.addClickHandler(clickEvent -> btnDropdown.setText(deviceKey));
                     dropDownMenu.add(child);
                 }
                 // select first as default

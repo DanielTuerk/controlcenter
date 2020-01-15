@@ -6,8 +6,8 @@
       min-width: 150px;
     }
   </ui:style>
-  <b:ButtonGroup dropUp="true">
-    <b:Button dataToggle="DROPDOWN" ui:field="btnDropup" addStyleNames="{style.device-list}">
+  <b:ButtonGroup>
+    <b:Button dataToggle="DROPDOWN" ui:field="btnDropdown" addStyleNames="{style.device-list}">
       no device available
     </b:Button>
     <b:DropDownMenu ui:field="dropDownMenu">

@@ -7,15 +7,22 @@
       padding-bottom: 8px;
       height: 0;
     }
+    .headerContainer {
+      background-color: transparent;
+      /*#105d92*/
+    }
+    .headerContainer2 {
+      background-color: #293b50;
+    }
   </ui:style>
 
   <g:HTMLPanel styleName="flexbox-parent">
-    <div class="flexbox-item">
+    <g:HTMLPanel addStyleNames="flexbox-item {style.headerContainer}">
       <cc:AppMenu ui:field="appMenu"/>
-    </div>
-    <div class="flexbox-item">
       <cc:StatePanel />
-    </div>
+    </g:HTMLPanel>
+<!--    <div class="flexbox-item">-->
+<!--    </div>-->
     <g:HTMLPanel ui:field="contentContainer" styleName="{style.contentContainer} fill-area flexbox-item-grow">
     </g:HTMLPanel>
   </g:HTMLPanel>

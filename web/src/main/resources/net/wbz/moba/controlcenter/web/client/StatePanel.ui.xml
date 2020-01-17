@@ -6,14 +6,16 @@
 <ui:style>
 
   .state-panel {
-    padding-top: 5px;
-    padding-left: 20px;
-    padding-right: 20px;
-    background-color: #4E5D6C;
+    padding: 5px 20px;
+    border: 1px solid black;
+    border-radius: 6px;
+    background-color: #2a3b51;
+    margin-left: 10px;
+    margin-right: 10px;
   }
 
 </ui:style>
-    <b:Container styleName="{style.state-panel}">
+    <b:Navbar addStyleNames="{style.state-panel}">
       <device:BusConnectionToggleButton ui:field="busConnectionToggleButton"/>
       <device:DeviceListBox ui:field="deviceListBox"/>
       <b:Button text="Config" ui:field="btnDeviceConfig"/>
@@ -24,6 +26,6 @@
       <b:Button text="Player" ui:field="btnPlayerStart"/>
       <b:Button text="Stop Player" ui:field="btnPlayerStop"/>
       <b:Label text="version"/>
-  </b:Container>
+  </b:Navbar>
 
 </ui:UiBinder>

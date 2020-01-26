@@ -32,6 +32,7 @@ import net.wbz.selectrix4java.device.Device;
 import net.wbz.selectrix4java.device.DeviceAccessException;
 import net.wbz.selectrix4java.device.DeviceConnectionListener;
 import net.wbz.selectrix4java.device.DeviceManager;
+import net.wbz.selectrix4java.device.DeviceManager.DEVICE_TYPE;
 import net.wbz.selectrix4java.device.RailVoltageListener;
 import net.wbz.selectrix4java.device.serial.SerialDevice;
 import org.slf4j.Logger;
@@ -110,9 +111,12 @@ public class BusServiceImpl extends RemoteServiceServlet implements BusService {
     }
 
     private void registerDevice(DeviceInfoEntity deviceInfo) {
-        storedDevices.put(dtoMapper.transformSource(deviceInfo), deviceManager
-            .registerDevice(DeviceManager.DEVICE_TYPE.valueOf(deviceInfo.getType().name()), deviceInfo.getKey(),
-                SerialDevice.DEFAULT_BAUD_RATE_FCC));
+        Device device = deviceManager
+            .createDevice(DEVICE_TYPE.valueOf(deviceInfo.getType().name()), deviceInfo.getKey(),
+                SerialDevice.DEFAULT_BAUD_RATE_FCC);
+        storedDevices.put(dtoMapper.transformSource(deviceInfo), device);
+
+        deviceManager.registerDevice(device);
     }
 
     @Override
@@ -121,6 +125,7 @@ public class BusServiceImpl extends RemoteServiceServlet implements BusService {
     }
 
     @Override
+
     @Transactional
     public void createDevice(DeviceInfo deviceInfo) {
         // TODO - device settings (e.g. serial/test)
@@ -128,6 +133,7 @@ public class BusServiceImpl extends RemoteServiceServlet implements BusService {
         entity.setKey(deviceInfo.getKey());
         entity.setType(DeviceInfoEntity.DEVICE_TYPE.valueOf(deviceInfo.getType().name()));
         deviceInfoDao.create(entity);
+        deviceInfoDao.flush();
 
         registerDevice(entity);
 

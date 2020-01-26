@@ -137,7 +137,7 @@ public class TrainItemControlsPanel extends AbstractViewerItemControlsComposite<
     protected void onLoad() {
         super.onLoad();
         // set as default to disconnected mode
-        deviceConnectionChanged(lastReceivedState);
+//        deviceConnectionChanged(lastReceivedState);
 
         EventReceiver.getInstance().addListener(trainHornStateRemoteListener, trainLightStateRemoteListener,
             trainDrivingDirectionRemoteListener, trainDrivingLevelRemoteListener, trainFunctionStateRemoteListener);

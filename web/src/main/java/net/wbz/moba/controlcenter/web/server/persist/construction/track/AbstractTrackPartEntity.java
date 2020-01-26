@@ -56,6 +56,7 @@ public abstract class AbstractTrackPartEntity extends AbstractEntity {
 
     public void setConstruction(ConstructionEntity construction) {
         this.construction = construction;
+        this.gridPosition.setConstruction(construction);
     }
 
     public GridPositionEntity getGridPosition() {

@@ -1,17 +1,16 @@
 package net.wbz.moba.controlcenter.web.client.editor.track;
 
-import com.google.common.base.Strings;
-import com.google.gwt.gen2.logging.shared.Log;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Widget;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-import net.wbz.moba.controlcenter.web.client.request.RequestUtils;
+import java.util.logging.Logger;
 import net.wbz.moba.controlcenter.web.client.model.track.AbsoluteTrackPosition;
 import net.wbz.moba.controlcenter.web.client.model.track.AbstractSvgTrackWidget;
 import net.wbz.moba.controlcenter.web.client.model.track.ModelManager;
+import net.wbz.moba.controlcenter.web.client.request.RequestUtils;
 import net.wbz.moba.controlcenter.web.shared.track.model.AbstractTrackPart;
 
 /**
@@ -22,6 +21,7 @@ import net.wbz.moba.controlcenter.web.shared.track.model.AbstractTrackPart;
  */
 public class SimpleTrackPanel extends AbstractTrackPanel {
 
+    private final static Logger logger = Logger.getLogger(SimpleTrackPanel.class.getName());
     private static final int TRACK_PANEL_PADDING_IN_PX = 2 * AbstractSvgTrackWidget.WIDGET_HEIGHT;
 
     protected SimpleTrackPanel() {
@@ -60,7 +60,7 @@ public class SimpleTrackPanel extends AbstractTrackPanel {
 
                     @Override
                     public void onSuccess(Collection<AbstractTrackPart> trackParts) {
-                        Log.info("load track success " + new Date().toString());
+                        logger.info("load track success " + new Date().toString());
                         int maxTop = 0;
                         for (AbstractTrackPart trackPart : trackParts) {
                             AbstractSvgTrackWidget trackWidget = ModelManager.getInstance().getWidgetOf(trackPart);
@@ -75,7 +75,7 @@ public class SimpleTrackPanel extends AbstractTrackPanel {
 
                             add(initTrackWidget(trackWidget), trackPosition.getLeft(), trackPosition.getTop());
                         }
-                        Log.info("load track done " + new Date().toString());
+                        logger.info("load track done " + new Date().toString());
                         if (!isFixedSize()) {
                             setHeight((maxTop + TRACK_PANEL_PADDING_IN_PX) + "px");
                         }

@@ -80,32 +80,9 @@
     </dependency>
 
     <dependency>
-      <groupId>com.orange.links</groupId>
-      <artifactId>links</artifactId>
-      <version>3.1.2</version>
-      <scope>system</scope>
-      <systemPath>${project.basedir}/lib/gwt-links-1.4.2.jar</systemPath>
-    </dependency>
-    <dependency>
-      <groupId>com.allen_sauer.gwt</groupId>
-      <artifactId>dnd</artifactId>
-      <version>3.1.2</version>
-      <scope>system</scope>
-      <systemPath>${project.basedir}/lib/gwt-dnd-3.3.0.jar</systemPath>
-    </dependency>
-    <dependency>
-      <groupId>com.kiouri.sliderbar</groupId>
-      <artifactId>gwt-slider-bar</artifactId>
-      <version>1.0</version>
-      <scope>system</scope>
-      <systemPath>${project.basedir}/lib/gwt-slider-bar-1.0.jar</systemPath>
-    </dependency>
-    <dependency>
-      <groupId>com.google.gwt</groupId>
-      <artifactId>incubator</artifactId>
-      <version>1</version>
-      <scope>system</scope>
-      <systemPath>${project.basedir}/lib/gwt-incubator-20101117-r1766.jar</systemPath>
+      <groupId>com.allen-sauer.gwt.dnd</groupId>
+      <artifactId>gwt-dnd</artifactId>
+      <version>3.3.4</version>
     </dependency>
 
     <dependency>

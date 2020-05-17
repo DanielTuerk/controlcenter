@@ -4,13 +4,13 @@ import net.wbz.moba.controlcenter.web.client.viewer.track.parallax.trackparts.Ba
 import net.wbz.moba.controlcenter.web.client.viewer.track.parallax.trackparts.Curve3dWidget;
 import net.wbz.moba.controlcenter.web.client.viewer.track.parallax.trackparts.Signal3dWidget;
 import net.wbz.moba.controlcenter.web.client.viewer.track.parallax.trackparts.Straight3dWidget;
-import net.wbz.moba.controlcenter.web.client.viewer.track.parallax.trackparts.Switch3dWidget;
+import net.wbz.moba.controlcenter.web.client.viewer.track.parallax.trackparts.Turnout3dWidget;
 import net.wbz.moba.controlcenter.web.server.persist.construction.track.AbstractTrackPartEntity;
 import net.wbz.moba.controlcenter.web.shared.track.model.AbstractTrackPart;
 import net.wbz.moba.controlcenter.web.shared.track.model.Curve;
 import net.wbz.moba.controlcenter.web.shared.track.model.Signal;
 import net.wbz.moba.controlcenter.web.shared.track.model.Straight;
-import net.wbz.moba.controlcenter.web.shared.track.model.Switch;
+import net.wbz.moba.controlcenter.web.shared.track.model.Turnout;
 import thothbot.parallax.core.shared.math.Vector3;
 
 /**
@@ -47,8 +47,8 @@ public class TrackPartGeometryFactory {
             mesh = new Straight3dWidget((Straight) trackPart);
         } else if (trackPart instanceof Curve) {
             mesh = new Curve3dWidget((Curve) trackPart);
-        } else if (trackPart instanceof Switch) {
-            mesh = new Switch3dWidget((Switch) trackPart);
+        } else if (trackPart instanceof Turnout) {
+            mesh = new Turnout3dWidget((Turnout) trackPart);
         } else {
             mesh = new Basic3dTrackWidget<>(trackPart);
         }

@@ -4,12 +4,12 @@ import org.vectomatic.dom.svg.OMSVGDocument;
 import org.vectomatic.dom.svg.OMSVGSVGElement;
 
 import net.wbz.moba.controlcenter.web.client.util.SvgTrackUtil;
-import net.wbz.moba.controlcenter.web.shared.track.model.Switch;
+import net.wbz.moba.controlcenter.web.shared.track.model.Turnout;
 
 /**
  * @author Daniel Tuerk
  */
-abstract public class AbstractSwitchLeftWidget extends AbstractSwitchWidget {
+abstract public class AbstractTurnoutLeftWidget extends AbstractTurnoutWidget {
 
     @Override
     protected void addSvgContent(OMSVGDocument doc, OMSVGSVGElement svg, String color) {
@@ -26,7 +26,7 @@ abstract public class AbstractSwitchLeftWidget extends AbstractSwitchWidget {
     }
 
     @Override
-    protected Switch.DIRECTION getDirection() {
-        return Switch.DIRECTION.LEFT;
+    protected Turnout.DIRECTION getDirection() {
+        return Turnout.DIRECTION.LEFT;
     }
 }

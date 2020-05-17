@@ -266,7 +266,7 @@ abstract class ScenarioExecution implements Callable<Void> {
     }
 
     /**
-     * Try to reserve next route. Switch start signal of next route also to HP1 to drive through from the end of the
+     * Try to reserve next route. Turnout start signal of next route also to HP1 to drive through from the end of the
      * current route.
      *
      * @param routeExecution {@link RouteExecution}

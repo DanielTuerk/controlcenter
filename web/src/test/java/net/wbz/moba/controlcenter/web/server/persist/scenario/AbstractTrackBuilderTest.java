@@ -20,8 +20,8 @@ import net.wbz.moba.controlcenter.web.shared.track.model.Curve;
 import net.wbz.moba.controlcenter.web.shared.track.model.GridPosition;
 import net.wbz.moba.controlcenter.web.shared.track.model.Straight;
 import net.wbz.moba.controlcenter.web.shared.track.model.Straight.DIRECTION;
-import net.wbz.moba.controlcenter.web.shared.track.model.Switch;
-import net.wbz.moba.controlcenter.web.shared.track.model.Switch.PRESENTATION;
+import net.wbz.moba.controlcenter.web.shared.track.model.Turnout;
+import net.wbz.moba.controlcenter.web.shared.track.model.Turnout.PRESENTATION;
 import net.wbz.moba.controlcenter.web.shared.track.model.TrackBlock;
 import org.mockito.Mockito;
 import org.testng.annotations.BeforeMethod;
@@ -73,7 +73,7 @@ abstract class AbstractTrackBuilderTest {
         Assert.assertEquals(0, track.getTrackFunctions().size());
     }
 
-    void testSwitch(int switchAddress,
+    void testTurnout(int switchAddress,
         int switchBit, boolean switchTargetBitState, int expectedTrackLength,
         BlockStraight startBlockStraight, TrackBlock endBlock) throws TrackNotFoundException {
         Route route = mockRoute();
@@ -129,14 +129,14 @@ abstract class AbstractTrackBuilderTest {
         return straight;
     }
 
-    Switch createSwitch(int x, int y, Switch.DIRECTION direction, PRESENTATION presentation,
+    Turnout createTurnout(int x, int y, Turnout.DIRECTION direction, PRESENTATION presentation,
             BusDataConfiguration toggleFunction) {
-        Switch aSwitch = new Switch();
-        aSwitch.setCurrentPresentation(presentation);
-        aSwitch.setCurrentDirection(direction);
-        aSwitch.setGridPosition(new GridPosition(x, y));
-        aSwitch.setToggleFunction(toggleFunction);
-        return aSwitch;
+        Turnout aTurnout = new Turnout();
+        aTurnout.setCurrentPresentation(presentation);
+        aTurnout.setCurrentDirection(direction);
+        aTurnout.setGridPosition(new GridPosition(x, y));
+        aTurnout.setToggleFunction(toggleFunction);
+        return aTurnout;
     }
 
     Curve createCurve(int x, int y, Curve.DIRECTION direction) {

@@ -67,13 +67,13 @@ public class ModelManager {
         registerModel(new CurveBottomRightWidget());
         registerModel(new CurveBottomLeftWidget());
 
-        registerModel(new SwitchLeftBottomToTopWidget());
-        registerModel(new SwitchLeftTopToBottomWidget());
-        registerModel(new SwitchLeftRightToLeftWidget());
-        registerModel(new SwitchLeftLeftToRightWidget());
-        registerModel(new SwitchRightBottomToTopWidget());
-        registerModel(new SwitchRightTopToBottomWidget());
-        registerModel(new SwitchRightRightToLeftWidget());
-        registerModel(new SwitchRightLeftToRightWidget());
+        registerModel(new TurnoutLeftBottomToTopWidget());
+        registerModel(new TurnoutLeftTopToBottomWidget());
+        registerModel(new TurnoutLeftRightToLeftWidget());
+        registerModel(new TurnoutLeftLeftToRightWidget());
+        registerModel(new TurnoutRightBottomToTopWidget());
+        registerModel(new TurnoutRightTopToBottomWidget());
+        registerModel(new TurnoutRightRightToLeftWidget());
+        registerModel(new TurnoutRightLeftToRightWidget());
     }
 }

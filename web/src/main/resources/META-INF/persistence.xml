@@ -29,7 +29,7 @@
     <class>net.wbz.moba.controlcenter.web.server.persist.construction.track.CurveEntity</class>
     <class>net.wbz.moba.controlcenter.web.server.persist.construction.track.StraightEntity</class>
     <class>net.wbz.moba.controlcenter.web.server.persist.construction.track.SignalEntity</class>
-    <class>net.wbz.moba.controlcenter.web.server.persist.construction.track.SwitchEntity</class>
+    <class>net.wbz.moba.controlcenter.web.server.persist.construction.track.TurnoutEntity</class>
     <class>net.wbz.moba.controlcenter.web.server.persist.construction.track.UncouplerEntity</class>
     <class>net.wbz.moba.controlcenter.web.server.persist.construction.track.BlockStraightEntity</class>
 

@@ -4,16 +4,16 @@ import org.vectomatic.dom.svg.OMSVGDocument;
 import org.vectomatic.dom.svg.OMSVGSVGElement;
 
 import net.wbz.moba.controlcenter.web.client.util.SvgTrackUtil;
-import net.wbz.moba.controlcenter.web.shared.track.model.Switch;
+import net.wbz.moba.controlcenter.web.shared.track.model.Turnout;
 
 /**
  * @author Daniel Tuerk
  */
-abstract public class AbstractSwitchRightWidget extends AbstractSwitchWidget {
+abstract public class AbstractTurnoutRightWidget extends AbstractTurnoutWidget {
 
     @Override
-    protected Switch.DIRECTION getDirection() {
-        return Switch.DIRECTION.RIGHT;
+    protected Turnout.DIRECTION getDirection() {
+        return Turnout.DIRECTION.RIGHT;
     }
 
     @Override

@@ -9,12 +9,12 @@ import java.util.Collection;
 /**
  * @author Daniel Tuerk
  */
-public class Switch extends AbstractTrackPart implements HasToggleFunction {
+public class Turnout extends AbstractTrackPart implements HasToggleFunction {
 
     @JMap
-    private Switch.DIRECTION currentDirection;
+    private Turnout.DIRECTION currentDirection;
     @JMap
-    private Switch.PRESENTATION currentPresentation;
+    private Turnout.PRESENTATION currentPresentation;
     @JMap
     private BusDataConfiguration toggleFunction;
     @JMap
@@ -173,7 +173,7 @@ public class Switch extends AbstractTrackPart implements HasToggleFunction {
 
     /**
      * Rotation angle in degree of the current
-     * {@link Switch.PRESENTATION} of the switch.
+     * {@link Turnout.PRESENTATION} of the switch.
      *
      * @return angle in degree
      */

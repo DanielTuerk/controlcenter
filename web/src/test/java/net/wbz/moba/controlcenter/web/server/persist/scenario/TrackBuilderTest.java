@@ -10,8 +10,8 @@ import net.wbz.moba.controlcenter.web.shared.track.model.BusDataConfiguration;
 import net.wbz.moba.controlcenter.web.shared.track.model.Curve;
 import net.wbz.moba.controlcenter.web.shared.track.model.Curve.DIRECTION;
 import net.wbz.moba.controlcenter.web.shared.track.model.GridPosition;
-import net.wbz.moba.controlcenter.web.shared.track.model.Switch;
-import net.wbz.moba.controlcenter.web.shared.track.model.Switch.PRESENTATION;
+import net.wbz.moba.controlcenter.web.shared.track.model.Turnout;
+import net.wbz.moba.controlcenter.web.shared.track.model.Turnout.PRESENTATION;
 import net.wbz.moba.controlcenter.web.shared.track.model.TrackBlock;
 import org.testng.annotations.Test;
 
@@ -360,7 +360,7 @@ public class TrackBuilderTest extends AbstractTrackBuilderTest {
      * </pre>
      */
     @Test(expectedExceptions = TrackNotFoundException.class)
-    public void testExceptionWaypointSwitch() throws TrackNotFoundException {
+    public void testExceptionWaypointTurnout() throws TrackNotFoundException {
         int startAddress = 20;
         int startBit = 1;
         int endAddress = 30;
@@ -378,7 +378,7 @@ public class TrackBuilderTest extends AbstractTrackBuilderTest {
 
         mockTrack(Lists.newArrayList(
             startBlockStraight,
-                createSwitch(2, 1, Switch.DIRECTION.RIGHT, PRESENTATION.LEFT_TO_RIGHT, new BusDataConfiguration(1,
+                createTurnout(2, 1, Turnout.DIRECTION.RIGHT, PRESENTATION.LEFT_TO_RIGHT, new BusDataConfiguration(1,
                         switchAddress, switchBit, true)),
                 createCurve(2, 2, DIRECTION.TOP_RIGHT),
             createHorizontalBlockStraight(3, 1, endBlock),
@@ -400,13 +400,13 @@ public class TrackBuilderTest extends AbstractTrackBuilderTest {
      * </pre>
      */
     @Test
-    public void testForwardDoubleSwitch() throws TrackNotFoundException {
+    public void testForwardDoubleTurnout() throws TrackNotFoundException {
         int startAddress = 20;
         int startBit = 1;
         int endAddress = 30;
         int endBit = 3;
 
-        testDoubleSwitch(startAddress, startBit, endAddress, endBit);
+        testDoubleTurnout(startAddress, startBit, endAddress, endBit);
     }
 
     /**
@@ -417,16 +417,16 @@ public class TrackBuilderTest extends AbstractTrackBuilderTest {
      * </pre>
      */
     @Test
-    public void testBackwardDoubleSwitch() throws TrackNotFoundException {
+    public void testBackwardDoubleTurnout() throws TrackNotFoundException {
         int startAddress = 20;
         int startBit = 1;
         int endAddress = 30;
         int endBit = 3;
 
-        testDoubleSwitch(endAddress, endBit, startAddress, startBit);
+        testDoubleTurnout(endAddress, endBit, startAddress, startBit);
     }
 
-    private void testDoubleSwitch(int startAddress, int startBit, int endAddress, int endBit)
+    private void testDoubleTurnout(int startAddress, int startBit, int endAddress, int endBit)
             throws TrackNotFoundException {
         int switchAddress = 50;
         int switchBit = 5;
@@ -440,11 +440,11 @@ public class TrackBuilderTest extends AbstractTrackBuilderTest {
         mockTrack(Lists.newArrayList(
             startBlockStraight,
                 createHorizontalStraight(2, 1),
-                createSwitch(3, 1, Switch.DIRECTION.RIGHT, PRESENTATION.LEFT_TO_RIGHT, new BusDataConfiguration(1,
+                createTurnout(3, 1, Turnout.DIRECTION.RIGHT, PRESENTATION.LEFT_TO_RIGHT, new BusDataConfiguration(1,
                         switchAddress, switchBit, true)),
                 createCurve(3, 2, DIRECTION.TOP_RIGHT),
                 createHorizontalStraight(4, 1),
-                createSwitch(4, 2, Switch.DIRECTION.RIGHT, PRESENTATION.LEFT_TO_RIGHT, new BusDataConfiguration(1,
+                createTurnout(4, 2, Turnout.DIRECTION.RIGHT, PRESENTATION.LEFT_TO_RIGHT, new BusDataConfiguration(1,
                         switchAddress2, switchBit2, true)),
                 createCurve(4, 3, DIRECTION.TOP_RIGHT),
 
@@ -493,14 +493,14 @@ public class TrackBuilderTest extends AbstractTrackBuilderTest {
         mockTrack(Lists.newArrayList(
             startBlockStraight,
                 createHorizontalStraight(2, 1),
-                createSwitch(3, 1, Switch.DIRECTION.RIGHT, PRESENTATION.LEFT_TO_RIGHT, new BusDataConfiguration(1,
+                createTurnout(3, 1, Turnout.DIRECTION.RIGHT, PRESENTATION.LEFT_TO_RIGHT, new BusDataConfiguration(1,
                         switchAddress, switchBit, true)),
                 createVerticalStraight(3, 2),
                 createCurve(3, 3, DIRECTION.TOP_RIGHT),
                 createHorizontalStraight(4, 1),
                 createHorizontalStraight(4, 3),
 
-                createSwitch(5, 1, Switch.DIRECTION.LEFT, PRESENTATION.RIGHT_TO_LEFT, new BusDataConfiguration(1,
+                createTurnout(5, 1, Turnout.DIRECTION.LEFT, PRESENTATION.RIGHT_TO_LEFT, new BusDataConfiguration(1,
                         switchAddress2, switchBit2, true)),
                 createVerticalStraight(5, 2),
                 createCurve(5, 3, DIRECTION.TOP_LEFT),
@@ -529,7 +529,7 @@ public class TrackBuilderTest extends AbstractTrackBuilderTest {
      * </pre>
      */
     @Test
-    public void testTwoSwitchInARow() throws TrackNotFoundException {
+    public void testTwoTurnoutInARow() throws TrackNotFoundException {
         int startAddress = 20;
         int startBit = 1;
         int endAddress = 30;
@@ -551,9 +551,9 @@ public class TrackBuilderTest extends AbstractTrackBuilderTest {
 
                 createHorizontalStraight(1, 2),
                 createHorizontalStraight(2, 2),
-                createSwitch(3, 2, Switch.DIRECTION.RIGHT, PRESENTATION.RIGHT_TO_LEFT, new BusDataConfiguration(1,
+                createTurnout(3, 2, Turnout.DIRECTION.RIGHT, PRESENTATION.RIGHT_TO_LEFT, new BusDataConfiguration(1,
                         switchAddress, switchBit, true)),
-                createSwitch(4, 2, Switch.DIRECTION.LEFT, PRESENTATION.RIGHT_TO_LEFT, new BusDataConfiguration(1,
+                createTurnout(4, 2, Turnout.DIRECTION.LEFT, PRESENTATION.RIGHT_TO_LEFT, new BusDataConfiguration(1,
                         switchAddress2, switchBit2, true)),
             startBlockStraight,
 
@@ -602,7 +602,7 @@ public class TrackBuilderTest extends AbstractTrackBuilderTest {
         mockTrack(Lists.newArrayList(
             startBlockStraight,
                 createHorizontalStraight(2, 3),
-                createSwitch(3, 3, Switch.DIRECTION.LEFT, PRESENTATION.LEFT_TO_RIGHT, new BusDataConfiguration(1,
+                createTurnout(3, 3, Turnout.DIRECTION.LEFT, PRESENTATION.LEFT_TO_RIGHT, new BusDataConfiguration(1,
                         switchAddress, switchBit, true)),
                 createVerticalStraight(3, 2),
                 createCurve(3, 1, DIRECTION.BOTTOM_RIGHT),
@@ -610,7 +610,7 @@ public class TrackBuilderTest extends AbstractTrackBuilderTest {
                 createHorizontalStraight(4, 1),
                 createCurve(5, 1, DIRECTION.BOTTOM_LEFT),
                 createVerticalStraight(5, 2),
-                createSwitch(5, 3, Switch.DIRECTION.RIGHT, PRESENTATION.RIGHT_TO_LEFT, new BusDataConfiguration(1,
+                createTurnout(5, 3, Turnout.DIRECTION.RIGHT, PRESENTATION.RIGHT_TO_LEFT, new BusDataConfiguration(1,
                         switchAddress2, switchBit2, true)),
 
             createHorizontalBlockStraight(6, 3, endBlock)));
@@ -637,7 +637,7 @@ public class TrackBuilderTest extends AbstractTrackBuilderTest {
      * </pre>
      */
     @Test
-    public void testTwoSwitchVertical() throws TrackNotFoundException {
+    public void testTwoTurnoutVertical() throws TrackNotFoundException {
         int startAddress = 20;
         int startBit = 1;
         int endAddress = 30;
@@ -654,9 +654,9 @@ public class TrackBuilderTest extends AbstractTrackBuilderTest {
 
         mockTrack(Lists.newArrayList(
             startBlockStraight,
-                createSwitch(1, 2, Switch.DIRECTION.LEFT, PRESENTATION.TOP_TO_BOTTOM, new BusDataConfiguration(1,
+                createTurnout(1, 2, Turnout.DIRECTION.LEFT, PRESENTATION.TOP_TO_BOTTOM, new BusDataConfiguration(1,
                         switchAddress, switchBit, true)),
-                createSwitch(2, 2, Switch.DIRECTION.LEFT, PRESENTATION.BOTTOM_TO_TOP, new BusDataConfiguration(1,
+                createTurnout(2, 2, Turnout.DIRECTION.LEFT, PRESENTATION.BOTTOM_TO_TOP, new BusDataConfiguration(1,
                         switchAddress2, switchBit2, true)),
                 createCurve(2, 3, DIRECTION.TOP_RIGHT),
             createHorizontalBlockStraight(3, 3, endBlock)));
@@ -704,12 +704,12 @@ public class TrackBuilderTest extends AbstractTrackBuilderTest {
         mockTrack(Lists.newArrayList(
             startBlockStraight,
                 createHorizontalStraight(2, 1),
-                createSwitch(3, 1, Switch.DIRECTION.RIGHT, PRESENTATION.LEFT_TO_RIGHT, new BusDataConfiguration(1,
+                createTurnout(3, 1, Turnout.DIRECTION.RIGHT, PRESENTATION.LEFT_TO_RIGHT, new BusDataConfiguration(1,
                         switchAddress, switchBit, true)),
                 createCurve(3, 2, DIRECTION.TOP_RIGHT),
                 createHorizontalStraight(4, 1),
                 createHorizontalStraight(waypointX, waypointY),
-                createSwitch(5, 1, Switch.DIRECTION.LEFT, PRESENTATION.RIGHT_TO_LEFT, new BusDataConfiguration(1,
+                createTurnout(5, 1, Turnout.DIRECTION.LEFT, PRESENTATION.RIGHT_TO_LEFT, new BusDataConfiguration(1,
                         switchAddress2, switchBit2, true)),
                 createCurve(5, 2, DIRECTION.TOP_LEFT),
             createHorizontalBlockStraight(6, 1, endBlock)));
@@ -758,12 +758,12 @@ public class TrackBuilderTest extends AbstractTrackBuilderTest {
         mockTrack(Lists.newArrayList(
             startBlockStraight,
                 createHorizontalStraight(2, 1),
-                createSwitch(3, 1, Switch.DIRECTION.RIGHT, PRESENTATION.LEFT_TO_RIGHT, new BusDataConfiguration(1,
+                createTurnout(3, 1, Turnout.DIRECTION.RIGHT, PRESENTATION.LEFT_TO_RIGHT, new BusDataConfiguration(1,
                         switchAddress, switchBit, true)),
                 createCurve(3, 2, DIRECTION.TOP_RIGHT),
                 createHorizontalStraight(waypointX, waypointY),
                 createHorizontalStraight(4, 2),
-                createSwitch(5, 1, Switch.DIRECTION.LEFT, PRESENTATION.RIGHT_TO_LEFT, new BusDataConfiguration(1,
+                createTurnout(5, 1, Turnout.DIRECTION.LEFT, PRESENTATION.RIGHT_TO_LEFT, new BusDataConfiguration(1,
                         switchAddress2, switchBit2, true)),
                 createCurve(5, 2, DIRECTION.TOP_LEFT),
             createHorizontalBlockStraight(6, 1, endBlock)));

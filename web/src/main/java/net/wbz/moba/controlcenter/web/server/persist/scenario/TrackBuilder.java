@@ -22,7 +22,7 @@ import net.wbz.moba.controlcenter.web.shared.track.model.BlockStraight;
 import net.wbz.moba.controlcenter.web.shared.track.model.BusDataConfiguration;
 import net.wbz.moba.controlcenter.web.shared.track.model.GridPosition;
 import net.wbz.moba.controlcenter.web.shared.track.model.MultipleGridPosition;
-import net.wbz.moba.controlcenter.web.shared.track.model.Switch;
+import net.wbz.moba.controlcenter.web.shared.track.model.Turnout;
 import net.wbz.moba.controlcenter.web.shared.track.model.TrackBlock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -133,17 +133,17 @@ public class TrackBuilder {
             AbstractTrackPart abstractTrackPart = positions.get(gridPosition);
 
             if ((i > 0 && i < loadedTrack.size() - 1)
-                && abstractTrackPart instanceof Switch) {
+                && abstractTrackPart instanceof Turnout) {
 
-                Switch switchTrackPart = (Switch) abstractTrackPart;
+                Turnout turnoutTrackPart = (Turnout) abstractTrackPart;
 
                 GridPosition nextPosition = track.getGridPositions().get(i + 1);
                 GridPosition previousPosition = track.getGridPositions().get(i - 1);
                 boolean state =
-                    switchTrackPart.getNextGridPositionForStateBranch().equals(nextPosition)
-                        || switchTrackPart.getNextGridPositionForStateBranch().equals(previousPosition);
+                    turnoutTrackPart.getNextGridPositionForStateBranch().equals(nextPosition)
+                        || turnoutTrackPart.getNextGridPositionForStateBranch().equals(previousPosition);
 
-                BusDataConfiguration toggleFunction = switchTrackPart.getToggleFunction();
+                BusDataConfiguration toggleFunction = turnoutTrackPart.getToggleFunction();
                 if (toggleFunction != null) {
                     track.getTrackFunctions()
                         .add(new BusDataConfiguration(toggleFunction.getBus(), toggleFunction.getAddress(),

@@ -2,7 +2,7 @@ package net.wbz.moba.controlcenter.web.client.viewer.track.parallax.trackparts;
 
 import net.wbz.moba.controlcenter.web.server.persist.construction.track.CurveEntity;
 import net.wbz.moba.controlcenter.web.shared.track.model.BusDataConfiguration;
-import net.wbz.moba.controlcenter.web.shared.track.model.Switch;
+import net.wbz.moba.controlcenter.web.shared.track.model.Turnout;
 import thothbot.parallax.core.shared.math.Vector3;
 
 /**
@@ -10,16 +10,16 @@ import thothbot.parallax.core.shared.math.Vector3;
  *
  * @author Daniel Tuerk
  */
-public class Switch3dWidget extends Basic3dTrackWidget<Switch> {
+public class Turnout3dWidget extends Basic3dTrackWidget<Turnout> {
 
     private static final String TEXTURE_SWITCH_LEFT = "img/viewer3d/switch_left.png";
     private static final String TEXTURE_SWITCH_RIGHT = "img/viewer3d/switch_right.png";
 
-    public Switch3dWidget(Switch trackPart) {
+    public Turnout3dWidget(Turnout trackPart) {
         super(trackPart);
 
         String texture;
-        if (trackPart.getCurrentDirection() == Switch.DIRECTION.LEFT) {
+        if (trackPart.getCurrentDirection() == Turnout.DIRECTION.LEFT) {
             texture = TEXTURE_SWITCH_LEFT;
         } else {
             texture = TEXTURE_SWITCH_RIGHT;
@@ -37,7 +37,7 @@ public class Switch3dWidget extends Basic3dTrackWidget<Switch> {
 
         if (state) {
             // switch is in curve mode
-            if (getTrackPart().getCurrentDirection() == Switch.DIRECTION.RIGHT) {
+            if (getTrackPart().getCurrentDirection() == Turnout.DIRECTION.RIGHT) {
                 getRailwayMeshLeft().setPosition(new Vector3(0, 3.5, 0));
                 getRailwayMeshLeft().rotateZ((2 * Math.PI / 360 * (45)));
 

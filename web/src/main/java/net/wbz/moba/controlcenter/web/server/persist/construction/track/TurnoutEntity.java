@@ -10,24 +10,24 @@ import javax.persistence.Table;
 import com.googlecode.jmapper.annotations.JMap;
 
 import net.wbz.moba.controlcenter.web.shared.track.model.AbstractTrackPart;
-import net.wbz.moba.controlcenter.web.shared.track.model.Switch;
+import net.wbz.moba.controlcenter.web.shared.track.model.Turnout;
 
 /**
- * Entity for a two-way switch.
+ * Entity for a two-way turnout.
  *
  * @author Daniel Tuerk
  */
 @Entity
 @Table(name = "TRACKPART_SWITCH")
-public class SwitchEntity extends AbstractTrackPartEntity implements HasToggleFunctionEntity {
+public class TurnoutEntity extends AbstractTrackPartEntity implements HasToggleFunctionEntity {
 
     @JMap
     @Column
-    private Switch.DIRECTION currentDirection;
+    private Turnout.DIRECTION currentDirection;
 
     @JMap
     @Column
-    private Switch.PRESENTATION currentPresentation;
+    private Turnout.PRESENTATION currentPresentation;
 
     @JMap
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
@@ -55,24 +55,24 @@ public class SwitchEntity extends AbstractTrackPartEntity implements HasToggleFu
         this.toggleFunction = toggleFunction;
     }
 
-    public void setCurrentDirection(Switch.DIRECTION currentDirection) {
+    public void setCurrentDirection(Turnout.DIRECTION currentDirection) {
         this.currentDirection = currentDirection;
     }
 
-    public void setCurrentPresentation(Switch.PRESENTATION currentPresentation) {
+    public void setCurrentPresentation(Turnout.PRESENTATION currentPresentation) {
         this.currentPresentation = currentPresentation;
     }
 
-    public Switch.PRESENTATION getCurrentPresentation() {
+    public Turnout.PRESENTATION getCurrentPresentation() {
         return currentPresentation;
     }
 
-    public Switch.DIRECTION getCurrentDirection() {
+    public Turnout.DIRECTION getCurrentDirection() {
         return currentDirection;
     }
 
     @Override
     public Class<? extends AbstractTrackPart> getDefaultDtoClass() {
-        return Switch.class;
+        return Turnout.class;
     }
 }

@@ -22,10 +22,9 @@ import net.wbz.moba.controlcenter.web.client.editor.track.SimpleTrackPanel;
 import net.wbz.moba.controlcenter.web.client.model.track.AbstractCurveWidget;
 import net.wbz.moba.controlcenter.web.client.model.track.AbstractStraightWidget;
 import net.wbz.moba.controlcenter.web.client.model.track.AbstractSvgTrackWidget;
-import net.wbz.moba.controlcenter.web.client.model.track.AbstractSwitchWidget;
+import net.wbz.moba.controlcenter.web.client.model.track.AbstractTurnoutWidget;
 import net.wbz.moba.controlcenter.web.client.model.track.block.AbstractBlockStraightWidget;
 import net.wbz.moba.controlcenter.web.client.request.RequestUtils;
-import net.wbz.moba.controlcenter.web.client.scenario.route.RouteEditTrackToolbar.ModeChangeListener;
 import net.wbz.moba.controlcenter.web.client.util.SvgTrackUtil;
 import net.wbz.moba.controlcenter.web.shared.scenario.Route;
 import net.wbz.moba.controlcenter.web.shared.scenario.Track;
@@ -161,9 +160,9 @@ public class RouteEditModalBody extends Composite {
                                 }
 
                                 trackWidget.setColor(ROUTE_TRACK_COLOR);
-                                if (trackWidget instanceof AbstractSwitchWidget) {
+                                if (trackWidget instanceof AbstractTurnoutWidget) {
                                     // paint by switch function
-                                    AbstractSwitchWidget switchWidget = (AbstractSwitchWidget) trackWidget;
+                                    AbstractTurnoutWidget switchWidget = (AbstractTurnoutWidget) trackWidget;
                                     BusDataConfiguration switchToggleFunction = switchWidget.getTrackPart()
                                         .getToggleFunction();
                                     Optional<Boolean> functionState = track

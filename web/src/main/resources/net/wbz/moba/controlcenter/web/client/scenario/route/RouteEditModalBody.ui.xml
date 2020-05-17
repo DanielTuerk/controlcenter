@@ -5,41 +5,28 @@
   xmlns:ui='urn:ui:com.google.gwt.uibinder'
 >
 
-
   <b:Container fluid="true" height="100%" paddingBottom="20" paddingTop="20">
 
-    <b:Panel>
-      <b:PanelHeader>
-        <b:Heading size="H3" text="Route"/>
-      </b:PanelHeader>
-      <b:PanelBody>
+    <b:Form type="HORIZONTAL">
+      <b:FieldSet>
 
+        <b:FormGroup>
+          <b:FormLabel addStyleNames="col-lg-2" for="formName">Name</b:FormLabel>
+          <g:FlowPanel addStyleNames="col-lg-10">
+            <b:TextBox ui:field="txtName"/>
+          </g:FlowPanel>
+        </b:FormGroup>
 
-        <b:Form type="HORIZONTAL">
-          <b:FieldSet>
+        <b:FormGroup>
+          <b:InlineCheckBox addStyleNames="col-lg-offset-2 col-lg-10" text="Oneway" ui:field="cbxOneway"/>
+        </b:FormGroup>
 
-            <b:FormGroup>
-              <b:FormLabel addStyleNames="col-lg-2" for="formName">Name</b:FormLabel>
-              <g:FlowPanel addStyleNames="col-lg-10">
-                <b:TextBox ui:field="txtName"/>
-              </g:FlowPanel>
-            </b:FormGroup>
-
-            <b:FormGroup>
-              <b:InlineCheckBox text="Oneway" ui:field="cbxOneway"/>
-            </b:FormGroup>
-
-          </b:FieldSet>
-        </b:Form>
-
-      </b:PanelBody>
-    </b:Panel>
+      </b:FieldSet>
+    </b:Form>
 
     <b:Panel>
-      <b:PanelHeader>
-        <b:Heading size="H3" text="Blocks"/>
-      </b:PanelHeader>
       <b:PanelBody>
+
         <b:Row>
           <b:Column size="SM_9">
             <route:RouteEditTrackToolbar ui:field="trackToolbar"/>
@@ -53,8 +40,10 @@
         <g:FlowPanel ui:field="trackPanelContainer">
         </g:FlowPanel>
       </b:PanelBody>
+      <b:PanelHeader>
+        <b:Heading size="H3" text="Blocks"/>
+      </b:PanelHeader>
     </b:Panel>
-
 
   </b:Container>
 

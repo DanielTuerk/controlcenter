@@ -60,16 +60,16 @@ import net.wbz.moba.controlcenter.web.client.request.RequestUtils;
         EventReceiver.getInstance().removeListener(listener);
     }
 
-    private void addBus(int i, HasWidgets panelBody) {
+    private void addBus(int busNr, HasWidgets panelBody) {
         Map<Integer, BusAddressItem> addressItemPanelMap = Maps.newHashMap();
-        for (int j = 0; j < ADDRESSES_COUNT; j++) {
+        for (int address = 0; address < ADDRESSES_COUNT; address++) {
 
-            BusAddressItem busAddressItemPanel = new BusAddressItem(i, j);
+            BusAddressItem busAddressItemPanel = new BusAddressItem(busNr, address);
             panelBody.add(busAddressItemPanel);
 
-            addressItemPanelMap.put(j, busAddressItemPanel);
+            addressItemPanelMap.put(address, busAddressItemPanel);
         }
-        addressItemMapping.put(i, addressItemPanelMap);
+        addressItemMapping.put(busNr, addressItemPanelMap);
     }
 
     interface Binder extends UiBinder<Widget, BusMonitorContainer> {

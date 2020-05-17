@@ -8,8 +8,6 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Widget;
 import net.wbz.moba.controlcenter.web.client.event.EventReceiver;
 import net.wbz.moba.controlcenter.web.client.event.device.RemoteConnectionListener;
-import net.wbz.moba.controlcenter.web.client.request.Callbacks.OnlySuccessAsyncCallback;
-import net.wbz.moba.controlcenter.web.client.request.RequestUtils;
 import net.wbz.moba.controlcenter.web.shared.bus.DeviceInfo;
 import org.gwtbootstrap3.client.ui.Well;
 
@@ -54,16 +52,6 @@ public class BusMonitorPanel extends Composite {
     protected void onLoad() {
         super.onLoad();
         EventReceiver.getInstance().addListener(connectionListener);
-        RequestUtils.getInstance().getBusService().isBusConnected(new OnlySuccessAsyncCallback<Boolean>() {
-            @Override
-            public void onSuccess(Boolean result) {
-                if (result) {
-                    addMonitor();
-                } else {
-                    removeMonitor();
-                }
-            }
-        });
     }
 
     @Override

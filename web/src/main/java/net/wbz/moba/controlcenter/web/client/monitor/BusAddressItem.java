@@ -25,7 +25,7 @@ class BusAddressItem extends Composite {
 
     private static final int BIT_SIZE = 8;
     private static final int ADDRESS_LENGTH = 3;
-    private static final String COLOR_ACTIVE = "#BDFA00";
+    private static final String COLOR_ACTIVE = "#166429";
     private static BusAddressItem.Binder uiBinder = GWT.create(BusAddressItem.Binder.class);
     /**
      * Represents the address value as 8 bits.

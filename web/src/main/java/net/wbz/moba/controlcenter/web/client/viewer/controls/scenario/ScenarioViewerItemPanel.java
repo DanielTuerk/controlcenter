@@ -6,6 +6,7 @@ import net.wbz.moba.controlcenter.web.client.event.scenario.ScenarioStateRemoteL
 import net.wbz.moba.controlcenter.web.client.viewer.controls.BaseViewerItemPanel;
 import net.wbz.moba.controlcenter.web.shared.scenario.RouteStateEvent;
 import net.wbz.moba.controlcenter.web.shared.scenario.Scenario;
+import net.wbz.moba.controlcenter.web.shared.scenario.Scenario.RUN_STATE;
 
 /**
  * Item container for the {@link Scenario}.
@@ -28,7 +29,15 @@ public class ScenarioViewerItemPanel extends BaseViewerItemPanel<Scenario> {
 
         getLblName().setText(scenario.getName());
 
-        scenarioStateRemoteListener = event -> getLblState().setText(event.getState().name());
+        scenarioStateRemoteListener = event -> {
+            if (scenario.getId().equals(event.getItemId())) {
+                String name = event.getState().name();
+                if (event.getState() == RUN_STATE.IDLE) {
+                    name += " next run: " + event.getNextScheduleTimeText();
+                }
+                getLblState().setText(name);
+            }
+        };
 
         routeStateListener = anEvent -> {
             Long scenarioId = anEvent.getScenarioId();

@@ -22,7 +22,7 @@ public class  Scenario extends AbstractDto {
          */
         RUNNING,
         /**
-         * TODO
+         * Scheduled execution waiting for cron.
          */
         IDLE,
         /**

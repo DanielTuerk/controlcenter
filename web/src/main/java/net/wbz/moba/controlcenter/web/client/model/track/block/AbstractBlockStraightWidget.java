@@ -4,10 +4,8 @@ import com.google.common.collect.Maps;
 import com.google.gwt.user.client.ui.Widget;
 import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Stream;
 import net.wbz.moba.controlcenter.web.client.editor.track.EditTrackWidgetHandler;
 import net.wbz.moba.controlcenter.web.client.event.EventReceiver;
-import net.wbz.moba.controlcenter.web.client.event.track.FeedbackTrackBlockRemoteListener;
 import net.wbz.moba.controlcenter.web.client.event.track.TrackBlockRemoteListener;
 import net.wbz.moba.controlcenter.web.client.model.track.AbstractSvgTrackWidget;
 import net.wbz.moba.controlcenter.web.client.util.SvgTrackUtil;
@@ -160,9 +158,9 @@ abstract public class AbstractBlockStraightWidget extends AbstractSvgTrackWidget
 
     @Override
     public boolean hasBlock(BusDataConfiguration configAsIdentifier) {
-        return Stream.of(getTrackPart().getLeftTrackBlock(), getTrackPart().getMiddleTrackBlock(),
-            getTrackPart().getRightTrackBlock())
-            .filter(Objects::nonNull).anyMatch(x -> configAsIdentifier.equals(x.getBlockFunction()));
+        return getTrackPart().getAllTrackBlocks()
+            .stream()
+            .filter(Objects::nonNull).anyMatch(x -> configAsIdentifier.isSameConfig(x.getBlockFunction()));
     }
 
     @Override

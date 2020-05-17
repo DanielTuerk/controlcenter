@@ -132,24 +132,24 @@ public class TrainManager {
         cachedTrains.clear();
         Collection<Train> trains = getTrains();
         if (deviceManager.isConnected()) {
-            for (Train train : trains) {
+            trains.forEach(train -> {
                 try {
                     reregisterConsumer(train, deviceManager, eventBroadcaster);
                 } catch (DeviceAccessException e) {
-                    e.printStackTrace();
+                    LOG.error("can't register consumer for train ({})", train, e);
                 }
-            }
+            });
         }
     }
 
     @Transactional
-    void createTrain(Train train) {
-        TrainEntity entity = new TrainEntity();
-        entity.setName(train.getName());
-        entity.setAddress(train.getAddress());
-        dao.create(entity);
+    Train createTrain(Train train) {
+        TrainEntity entity = dataMapper.transformTarget(train);
+        entity = dao.create(entity);
 
         reloadTrains();
+
+        return dataMapper.transformSource(entity);
     }
 
     @Transactional

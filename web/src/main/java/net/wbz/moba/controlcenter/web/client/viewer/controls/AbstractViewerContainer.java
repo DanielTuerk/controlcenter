@@ -19,6 +19,8 @@ public abstract class AbstractViewerContainer extends Composite {
     private static Binder uiBinder = GWT.create(Binder.class);
 
     @UiField
+    FlowPanel itemsControlsPanel;
+    @UiField
     FlowPanel itemsContainer;
     private final List<Widget> lastWidgets = new ArrayList<>();
 
@@ -32,6 +34,10 @@ public abstract class AbstractViewerContainer extends Composite {
     }
 
     abstract protected void loadItems();
+
+    protected FlowPanel getItemsControlsPanel() {
+        return itemsControlsPanel;
+    }
 
     protected void reloadItems() {
         resetItems();

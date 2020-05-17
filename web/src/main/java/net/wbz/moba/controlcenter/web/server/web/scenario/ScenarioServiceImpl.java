@@ -136,13 +136,24 @@ public class ScenarioServiceImpl extends RemoteServiceServlet implements Scenari
         }
     }
 
+    @Override
+    public void scheduleAll() {
+        scenarioManager.getScenarios().forEach(scenario -> schedule(scenario.getId()));
+    }
+
     private void fireScenarioStateChangeEvent(Scenario scenario) {
-        eventBroadcaster.fireEvent(new ScenarioStateEvent(scenario.getId(), scenario.getRunState()));
+        eventBroadcaster.fireEvent(new ScenarioStateEvent(scenario.getId(), scenario.getRunState(),
+            ScenarioUtil.nextExecutionTime(scenario)));
     }
 
     @Override
     public void stop(long scenarioId) {
         stopScenario(scenarioId);
+    }
+
+    @Override
+    public void stopAll() {
+        scenarioManager.getScenarios().forEach(scenario -> stop(scenario.getId()));
     }
 
     /**
@@ -203,6 +214,9 @@ public class ScenarioServiceImpl extends RemoteServiceServlet implements Scenari
         Scenario scenario = scenarioManager.getScenarioById(scenarioId);
         scenarioExecutor.stopScenario(scenario);
         scenario.setMode(MODE.OFF);
+        // TODO also happen in scenario execution
+        scenario.setRunState(RUN_STATE.STOPPED);
+        fireScenarioStateChangeEvent(scenario);
     }
 
     private void unscheduleScenario(long scenarioId) {

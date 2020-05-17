@@ -34,7 +34,7 @@ public class EventReceiver {
         theRemoteEventService = RemoteEventServiceFactory.getInstance().getRemoteEventService();
     }
 
-    public static synchronized EventReceiver getInstance() {
+    public static EventReceiver getInstance() {
         return INSTANCE;
     }
 
@@ -42,14 +42,18 @@ public class EventReceiver {
         return theRemoteEventService.isActive();
     }
 
-    public void addListener(net.wbz.moba.controlcenter.web.client.event.RemoteEventListener... listeners) {
-        for (net.wbz.moba.controlcenter.web.client.event.RemoteEventListener listener : listeners) {
+    @SafeVarargs
+    public final void addListener(
+        net.wbz.moba.controlcenter.web.client.event.RemoteEventListener<? extends Event>... listeners) {
+        for (net.wbz.moba.controlcenter.web.client.event.RemoteEventListener<? extends Event> listener : listeners) {
             addListener(listener.getRemoteClass(), listener);
         }
     }
 
-    public void removeListener(net.wbz.moba.controlcenter.web.client.event.RemoteEventListener... listeners) {
-        for (net.wbz.moba.controlcenter.web.client.event.RemoteEventListener listener : listeners) {
+    @SafeVarargs
+    public final void removeListener(
+        net.wbz.moba.controlcenter.web.client.event.RemoteEventListener<? extends Event>... listeners) {
+        for (net.wbz.moba.controlcenter.web.client.event.RemoteEventListener<? extends Event> listener : listeners) {
             removeListener(listener.getRemoteClass(), listener);
         }
     }

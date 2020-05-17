@@ -47,10 +47,9 @@ public class TrainEditorServiceImpl extends RemoteServiceServlet implements Trai
     @Override
     public void createTrain(Train train) {
         try {
-            trainManager.createTrain(train);
+            Train createdTrain = trainManager.createTrain(train);
 
-            // TODO: use id of new created?
-            eventBroadcaster.fireEvent(new TrainDataChangedEvent(-1));
+            eventBroadcaster.fireEvent(new TrainDataChangedEvent(createdTrain.getId()));
         } catch (Exception e) {
             String msg = String.format("can't create train '%s'", train.getName());
             LOG.error(msg, e);

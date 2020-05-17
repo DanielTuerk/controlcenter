@@ -7,6 +7,7 @@ import net.wbz.moba.controlcenter.web.client.request.Callbacks.OnlySuccessAsyncC
 import net.wbz.moba.controlcenter.web.client.request.RequestUtils;
 import net.wbz.moba.controlcenter.web.client.viewer.controls.AbstractViewerContainer;
 import net.wbz.moba.controlcenter.web.shared.scenario.Scenario;
+import org.gwtbootstrap3.client.ui.Button;
 
 /**
  * Viewer for the {@link Scenario}s.
@@ -20,6 +21,11 @@ public class ScenarioViewerControlsPanel extends AbstractViewerContainer {
     public ScenarioViewerControlsPanel() {
         super();
         scenarioRemoteListener = event -> reloadItems();
+
+        getItemsControlsPanel().add(new Button("schedule all",
+            event -> RequestUtils.getInstance().getScenarioService().scheduleAll(RequestUtils.VOID_ASYNC_CALLBACK)));
+        getItemsControlsPanel().add(new Button("stop all",
+            event -> RequestUtils.getInstance().getScenarioService().stopAll(RequestUtils.VOID_ASYNC_CALLBACK)));
     }
 
     @Override

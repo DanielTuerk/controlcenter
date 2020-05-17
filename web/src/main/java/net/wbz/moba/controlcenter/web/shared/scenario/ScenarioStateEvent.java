@@ -9,13 +9,19 @@ import net.wbz.moba.controlcenter.web.shared.scenario.Scenario.RUN_STATE;
 public class ScenarioStateEvent extends AbstractItemStateEvent {
 
     public RUN_STATE state;
+    private String nextScheduleTimeText;
 
     public ScenarioStateEvent() {
     }
 
-    public ScenarioStateEvent(long scenarioId, RUN_STATE state) {
+    public ScenarioStateEvent(long scenarioId, RUN_STATE state, String nextScheduleTimeText) {
         super(scenarioId);
         this.state = state;
+        this.nextScheduleTimeText = nextScheduleTimeText;
+    }
+
+    public String getNextScheduleTimeText() {
+        return nextScheduleTimeText;
     }
 
     public RUN_STATE getState() {
@@ -27,6 +33,7 @@ public class ScenarioStateEvent extends AbstractItemStateEvent {
         final StringBuffer sb = new StringBuffer("ScenarioStateEvent{");
         sb.append("state=").append(state);
         sb.append(", itemId=").append(itemId);
+        sb.append(", nextScheduleTimeText=").append(nextScheduleTimeText);
         sb.append('}');
         return sb.toString();
     }

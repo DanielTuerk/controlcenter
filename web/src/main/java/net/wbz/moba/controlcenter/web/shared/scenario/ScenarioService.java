@@ -29,10 +29,20 @@ public interface ScenarioService extends RemoteService {
     void schedule(long scenarioId);
 
     /**
+     * Schedule all {@link Scenario}s.
+     */
+    void scheduleAll();
+
+    /**
      * Immediately stop the {@link Scenario} for the given id.
      *
      * @param scenarioId id of {@link Scenario} to stop
      */
     void stop(long scenarioId);
+
+    /**
+     * Call {@link #stop(long)} for all {@link Scenario}s.
+     */
+    void stopAll();
 
 }

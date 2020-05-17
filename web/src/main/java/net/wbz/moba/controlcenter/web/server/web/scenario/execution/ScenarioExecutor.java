@@ -1,20 +1,17 @@
 package net.wbz.moba.controlcenter.web.server.web.scenario.execution;
 
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
 import net.wbz.moba.controlcenter.web.server.event.EventBroadcaster;
 import net.wbz.moba.controlcenter.web.server.persist.scenario.TrackBuilder;
 import net.wbz.moba.controlcenter.web.server.web.editor.block.SignalBlockRegistry;
 import net.wbz.moba.controlcenter.web.server.web.scenario.RouteListener;
 import net.wbz.moba.controlcenter.web.server.web.scenario.ScenarioStateListener;
+import net.wbz.moba.controlcenter.web.server.web.scenario.ScenarioUtil;
 import net.wbz.moba.controlcenter.web.server.web.train.TrainManager;
 import net.wbz.moba.controlcenter.web.server.web.train.TrainServiceImpl;
 import net.wbz.moba.controlcenter.web.server.web.viewer.TrackViewerServiceImpl;
@@ -118,9 +115,11 @@ public class ScenarioExecutor {
      * @param scenario {@link Scenario}
      */
     public synchronized void stopScenario(Scenario scenario) {
-        ScenarioExecution scenarioExecution = executionsByScenarioId.get(scenario.getId());
-        scenarioExecution.stop();
-//        finishExecution(scenario);
+        Long scenarioId = scenario.getId();
+        if (executionsByScenarioId.containsKey(scenarioId)) {
+            ScenarioExecution scenarioExecution = executionsByScenarioId.get(scenarioId);
+            scenarioExecution.stop();
+        }
     }
 
     public void addScenarioStateListener(ScenarioStateListener listener) {
@@ -164,7 +163,8 @@ public class ScenarioExecutor {
                     break;
             }
         }
-        eventBroadcaster.fireEvent(new ScenarioStateEvent(scenario.getId(), scenario.getRunState()));
+        eventBroadcaster.fireEvent(new ScenarioStateEvent(scenario.getId(), scenario.getRunState(),
+            ScenarioUtil.nextExecutionTime(scenario)));
     }
 
 }

@@ -1,12 +1,15 @@
-<ui:UiBinder xmlns:b="urn:import:org.gwtbootstrap3.client.ui"
+<ui:UiBinder
   xmlns:ui='urn:ui:com.google.gwt.uibinder' xmlns:g="urn:import:com.google.gwt.user.client.ui"
 >
 
   <ui:style>
   </ui:style>
+  <g:FlowPanel>
+    <g:FlowPanel ui:field="itemsControlsPanel">
+    </g:FlowPanel>
 
-  <g:FlowPanel ui:field="itemsContainer">
+    <g:FlowPanel ui:field="itemsContainer">
 
+    </g:FlowPanel>
   </g:FlowPanel>
-
 </ui:UiBinder>

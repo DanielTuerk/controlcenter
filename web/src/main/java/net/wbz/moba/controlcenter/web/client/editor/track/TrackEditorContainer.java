@@ -99,13 +99,15 @@ public class TrackEditorContainer extends Composite {
                             .getTrackPart(trackEditorPanel, trackEditorPanel.getZoomLevel()));
                     } catch (Exception e) {
                         String msg =
-                            "ignore widget (can't save): " + ((AbstractSvgTrackWidget) w).getPaletteTitle()
+                            "ignore widget (can't save): " + w.getPaletteTitle()
                                 + " - " + e.getMessage();
                         Notify.notify("", msg, IconType.WARNING);
                         logger.log(Level.SEVERE, msg, e);
                     }
             }
         }
+
+        trackWidgets.forEach(widget -> widget.removeStyleName(STYLE_TRACK_VALIDATION_ERROR));
 
         RequestUtils.getInstance().getTrackEditorService().saveTrack(trackParts, new AsyncCallback<Void>() {
             @Override
@@ -114,16 +116,14 @@ public class TrackEditorContainer extends Composite {
 
                 if (caught instanceof ValidationException) {
 
-                    ((ValidationException) caught).getErrors().forEach((abstractTrackPart, message) -> {
-                        trackWidgets.forEach(widget -> {
-                            widget.removeStyleName(STYLE_TRACK_VALIDATION_ERROR);
-                            if (widget.getTrackPart().equals(abstractTrackPart)) {
-                                Notify.notify("Editor", message + " - " + abstractTrackPart.getGridPosition(),
-                                    IconType.WARNING);
-                                widget.addStyleName(STYLE_TRACK_VALIDATION_ERROR);
-                            }
-                        });
-                    });
+                    ((ValidationException) caught).getErrors().forEach((abstractTrackPart, message) -> trackWidgets.forEach(widget -> {
+                        widget.removeStyleName(STYLE_TRACK_VALIDATION_ERROR);
+                        if (widget.getTrackPart().equals(abstractTrackPart)) {
+                            Notify.notify("Editor", message + " - " + abstractTrackPart.getGridPosition(),
+                                IconType.WARNING);
+                            widget.addStyleName(STYLE_TRACK_VALIDATION_ERROR);
+                        }
+                    }));
                 }
             }
 

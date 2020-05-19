@@ -14,6 +14,9 @@ import javax.inject.Inject;
 import net.wbz.moba.controlcenter.web.client.event.StateEvent;
 import net.wbz.moba.controlcenter.web.shared.EventCache;
 import net.wbz.moba.controlcenter.web.shared.bus.BusDataEvent;
+import net.wbz.selectrix4java.device.Device;
+import net.wbz.selectrix4java.device.DeviceConnectionListener;
+import net.wbz.selectrix4java.device.DeviceManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,7 +39,7 @@ public class EventBroadcaster {
      * @param eventCache {@link EventCache}
      */
     @Inject
-    public EventBroadcaster(EventCache eventCache) {
+    public EventBroadcaster(EventCache eventCache, DeviceManager deviceManager) {
         this.eventCache = eventCache;
         EventExecutorServiceFactory theSF = EventExecutorServiceFactory.getInstance();
         eventExecutorService = theSF.getEventExecutorService("event");
@@ -45,6 +48,18 @@ public class EventBroadcaster {
             .build();
         // TODO shutdown
         taskExecutor = Executors.newCachedThreadPool(namedThreadFactory);
+
+        deviceManager.addDeviceConnectionListener(new DeviceConnectionListener() {
+            @Override
+            public void connected(Device device) {
+
+            }
+
+            @Override
+            public void disconnected(Device device) {
+               eventCache.clear();
+            }
+        });
     }
 
     /***

@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 import net.wbz.moba.controlcenter.web.client.event.StateEvent;
+import net.wbz.moba.controlcenter.web.shared.bus.DeviceConnectionEvent;
 
 /**
  * Cache for {@link StateEvent}s. Each event will be cached by the class name and the {@link StateEvent#getCacheKey()}.
@@ -45,5 +46,15 @@ public class EventCache {
             return cachedEvents.get(eventClazzName).values();
         }
         return new ArrayList<>();
+    }
+
+    /**
+     * Clear the cached events.
+     */
+    public void clear() {
+        cachedEvents.keySet()
+            .stream()
+            .filter(eventClazzName -> !eventClazzName.equals(DeviceConnectionEvent.class.getName()))
+            .forEach(cachedEvents::remove);
     }
 }

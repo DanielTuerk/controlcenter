@@ -9,11 +9,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 import javax.validation.constraints.NotNull;
 import net.wbz.moba.controlcenter.web.server.SelectrixHelper;
 import net.wbz.moba.controlcenter.web.server.persist.scenario.TrackBuilder;
@@ -54,7 +49,7 @@ abstract class ScenarioExecution implements Callable<Void> {
     private static final int START_DELAY_MILLIS = 3000;
     private static final int DEFAULT_START_DRIVING_LEVEL = 8;
     private static final long MILLIS_TO_WAIT_IN_BLOCK_RUN = 200L;
-    private static final long HP0_AFTER_TRAIN_PASS_DELAY_IN_MILLIS = 10000L;
+    private static final long HP0_AFTER_TRAIN_PASS_DELAY_IN_MILLIS = 15000L;
 
     private final Scenario scenario;
     private final TrackViewerService trackViewerService;
@@ -109,6 +104,8 @@ abstract class ScenarioExecution implements Callable<Void> {
         try {
             scenario.setRunState(RUN_STATE.RUNNING);
             fireScenarioStateChangeEvent(scenario);
+
+            boolean anyRouteExecutedSuccessful = false;
 
             stopped = false;
 
@@ -167,6 +164,8 @@ abstract class ScenarioExecution implements Callable<Void> {
                     }
 
                     finishRoute(routeSequence);
+
+                    anyRouteExecutedSuccessful = true;
                 } catch (ScenarioExecutionInterruptException | RouteExecutionInterruptException e) {
                     String msg = "execution error of route sequence at pos: " + routeSequence.getPosition();
                     LOG.error(msg, e);
@@ -187,15 +186,19 @@ abstract class ScenarioExecution implements Callable<Void> {
             }
             /*
               Remove the last running for the end of the scenario sequence.
-              Otherwise it will be only removed for the start of next route in the sequence which is'nt available for
+              Otherwise it will be only removed for the start of next route in the sequence which isn't available for
               the
               last route.
              */
             cleanupRunningRouteInSequence(previousRouteSequence);
 
+            if (anyRouteExecutedSuccessful) {
+                finishScenarioExecution(RUN_STATE.SUCCESS);
+            }
         } catch (Exception e) {
             // catch unexpected errors and stop the scenario to also stop the trains
             LOG.error("error in by scenario execution of: " + scenario, e);
+            finishScenarioExecution(RUN_STATE.ERROR);
             stop();
         } finally {
             // do it for success or error to be able to restart the scenario

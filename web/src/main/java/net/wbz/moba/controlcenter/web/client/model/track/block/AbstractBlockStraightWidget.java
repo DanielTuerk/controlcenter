@@ -167,7 +167,7 @@ abstract public class AbstractBlockStraightWidget extends AbstractSvgTrackWidget
     public void showTrainOnBlock(Train train) {
         if (!trainElements.containsKey(train)) {
             OMSVGTextElement trainTextElement = getSvgDocument()
-                .createSVGTextElement(BOX_PADDING + 1f, getWidgetWidth() - 2 * BOX_PADDING - 1, (short) 1,
+                .createSVGTextElement(BOX_PADDING + 1f, getWidgetHeight() - BOX_PADDING - 1, (short) 1,
                     train.getName());
             trainTextElement.getStyle().setSVGProperty(SVGConstants.CSS_FONT_SIZE_PROPERTY, FEEDBACK_FONT_SIZE);
             trainElements.put(train, trainTextElement);

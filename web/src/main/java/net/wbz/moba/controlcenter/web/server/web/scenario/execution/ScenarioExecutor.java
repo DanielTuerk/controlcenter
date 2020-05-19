@@ -158,6 +158,12 @@ public class ScenarioExecutor {
                 case STOPPED:
                     listener.scenarioStopped(scenario);
                     break;
+                case SUCCESS:
+                    listener.scenarioSuccessfullyExecuted(scenario);
+                    break;
+                case ERROR:
+                    listener.scenarioExecuteWithError(scenario);
+                    break;
                 case FINISHED:
                     listener.scenarioFinished(scenario);
                     break;

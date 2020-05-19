@@ -43,9 +43,11 @@ public class ScenarioViewerItemPanel extends BaseViewerItemPanel<Scenario> {
             Long scenarioId = anEvent.getScenarioId();
             if (scenario.getId().equals(scenarioId)) {
                 controlsPanel.getRouteSequenceFromId(anEvent.getRouteSequenceId()).ifPresent(routeSequence -> {
-                    String text = anEvent.getState().name() + " ("
-                        + routeSequence.getPosition() + "/" + getModel()
-                        .getRouteSequences().size()
+                    String text = anEvent.getState().name()
+                        + " ("
+                        + (routeSequence.getPosition() + 1)
+                        + "/"
+                        + getModel().getRouteSequences().size()
                         + ")";
                     getLblStateDetails().setText(text);
                 });

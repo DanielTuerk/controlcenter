@@ -34,6 +34,14 @@ public class  Scenario extends AbstractDto {
          */
         STOPPED,
         /**
+         * Scenario successfully executed.
+         */
+        SUCCESS,
+        /**
+         * Scenario executed with error.
+         */
+        ERROR,
+        /**
          * Scenario is finished.
          */
         FINISHED

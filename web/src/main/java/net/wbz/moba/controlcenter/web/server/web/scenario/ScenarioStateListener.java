@@ -24,6 +24,20 @@ public interface ScenarioStateListener {
     void scenarioStopped(Scenario scenario);
 
     /**
+     * The given scenario was executed with error.
+     *
+     * @param scenario {@link Scenario}
+     */
+    void scenarioExecuteWithError(Scenario scenario);
+
+    /**
+     * The given scenario was successfully executed.
+     *
+     * @param scenario {@link Scenario}
+     */
+    void scenarioSuccessfullyExecuted(Scenario scenario);
+
+    /**
      * The given scenario has finish the execution.
      *
      * @param scenario {@link Scenario}

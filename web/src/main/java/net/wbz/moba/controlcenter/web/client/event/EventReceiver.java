@@ -72,9 +72,9 @@ public class EventReceiver {
             if (isInstanceOf(StateEvent.class, eventClazz)) {
                 // trigger to fire last event from server cache
                 RequestUtils.getInstance().getBusService().getLastSendEvent(eventClazz.getName(),
-                    new OnlySuccessAsyncCallback<Collection<Event>>() {
+                    new OnlySuccessAsyncCallback<Collection<StateEvent>>() {
                         @Override
-                        public void onSuccess(Collection<Event> result) {
+                        public void onSuccess(Collection<StateEvent> result) {
                             result.forEach(delegate::apply);
                         }
                     });

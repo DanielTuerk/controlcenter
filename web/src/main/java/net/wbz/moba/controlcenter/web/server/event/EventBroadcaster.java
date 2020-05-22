@@ -57,6 +57,7 @@ public class EventBroadcaster {
 
             @Override
             public void disconnected(Device device) {
+                LOG.info("device disconnected, clear event cache");
                eventCache.clear();
             }
         });

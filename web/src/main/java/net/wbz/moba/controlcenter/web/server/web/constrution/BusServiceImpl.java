@@ -90,22 +90,27 @@ public class BusServiceImpl extends RemoteServiceServlet implements BusService {
 
             @Override
             public void connected(Device device) {
-                final DeviceInfo deviceInfo = getDeviceInfo(device);
-                deviceInfo.setConnected(true);
-                // fire initial rail voltage state
-                eventBroadcaster.fireEvent(new DeviceConnectionEvent(deviceInfo, DeviceConnectionEvent.TYPE.CONNECTED));
-                // add listener to receive state change
-                device.addRailVoltageListener(railVoltageListener);
+                if (device.equals(activeDevice)) {
+                    final DeviceInfo deviceInfo = getDeviceInfo(device);
+                    deviceInfo.setConnected(true);
+                    // fire initial rail voltage state
+                    eventBroadcaster
+                        .fireEvent(new DeviceConnectionEvent(deviceInfo, DeviceConnectionEvent.TYPE.CONNECTED));
+                    // add listener to receive state change
+                    device.addRailVoltageListener(railVoltageListener);
+                }
             }
 
             @Override
             public void disconnected(Device device) {
-                DeviceInfo deviceInfo = getDeviceInfo(device);
-                deviceInfo.setConnected(false);
-                BusServiceImpl.this.eventBroadcaster
-                    .fireEvent(new DeviceConnectionEvent(deviceInfo, DeviceConnectionEvent.TYPE.DISCONNECTED));
-                device.getBusDataDispatcher().unregisterConsumer(allBusDataConsumer);
-                device.removeRailVoltageListener(railVoltageListener);
+                if (device.equals(activeDevice)) {
+                    DeviceInfo deviceInfo = getDeviceInfo(device);
+                    deviceInfo.setConnected(false);
+                    BusServiceImpl.this.eventBroadcaster
+                        .fireEvent(new DeviceConnectionEvent(deviceInfo, DeviceConnectionEvent.TYPE.DISCONNECTED));
+                    device.getBusDataDispatcher().unregisterConsumer(allBusDataConsumer);
+                    device.removeRailVoltageListener(railVoltageListener);
+                }
             }
         });
     }

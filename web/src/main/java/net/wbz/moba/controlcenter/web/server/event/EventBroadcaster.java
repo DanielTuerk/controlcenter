@@ -1,15 +1,12 @@
 package net.wbz.moba.controlcenter.web.server.event;
 
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.google.inject.Singleton;
 import de.novanic.eventservice.client.event.Event;
 import de.novanic.eventservice.client.event.domain.DomainFactory;
 import de.novanic.eventservice.service.EventExecutorService;
 import de.novanic.eventservice.service.EventExecutorServiceFactory;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
 import javax.inject.Inject;
 import net.wbz.moba.controlcenter.web.client.event.StateEvent;
 import net.wbz.moba.controlcenter.web.shared.EventCache;
@@ -31,7 +28,6 @@ public class EventBroadcaster {
     private static final Logger LOG = LoggerFactory.getLogger(EventBroadcaster.class);
 
     private final EventExecutorService eventExecutorService;
-    private final ExecutorService taskExecutor;
     private final EventCache eventCache;
 
     /**
@@ -44,15 +40,9 @@ public class EventBroadcaster {
         EventExecutorServiceFactory theSF = EventExecutorServiceFactory.getInstance();
         eventExecutorService = theSF.getEventExecutorService("event");
 
-        ThreadFactory namedThreadFactory = new ThreadFactoryBuilder().setNameFormat(getClass().getSimpleName() + "-%d")
-            .build();
-        // TODO shutdown
-        taskExecutor = Executors.newCachedThreadPool(namedThreadFactory);
-
         deviceManager.addDeviceConnectionListener(new DeviceConnectionListener() {
             @Override
             public void connected(Device device) {
-
             }
 
             @Override
@@ -79,15 +69,13 @@ public class EventBroadcaster {
     }
 
     /**
-     * Send again the last cached event of the given class to the clients.
+     * Get all events from cache for the given class name.
      *
-     * @param eventClazzName name of the event class
+     * @param eventClazzName class name of the event
+     * @return events from cache
      */
-    public synchronized void resendEvent(final String eventClazzName) {
-        Collection<Event> stateEvents = eventCache.getEvents(eventClazzName);
-        if (!stateEvents.isEmpty()) {
-            taskExecutor.submit(new ResendEventRunnable(eventClazzName, stateEvents, eventExecutorService));
-        }
+    public Collection<StateEvent> getLastSendEvents(final String eventClazzName) {
+        return new ArrayList<>(eventCache.getEvents(eventClazzName));
     }
 
     private void sendEvent(Event event) {

@@ -18,7 +18,7 @@ public class EventCache {
     /**
      * Cached events by event class name. Entries contains the events by the cache key.
      */
-    private final Map<String, Map<String, Event>> cachedEvents = Maps.newConcurrentMap();
+    private final Map<String, Map<String, StateEvent>> cachedEvents = Maps.newConcurrentMap();
 
     /**
      * Add the given event to the cache. Already existing event will be overridden.
@@ -26,7 +26,7 @@ public class EventCache {
      * @param event {@link E} to cache
      * @param <E> {@link Event} which also implements {@link StateEvent}
      */
-    public <E extends Event & StateEvent> void addEvent(final E event) {
+    public <E extends StateEvent> void addEvent(final E event) {
         String key = event.getClass().getName();
         if (!cachedEvents.containsKey(key)) {
             cachedEvents.put(key, Maps.newConcurrentMap());
@@ -41,7 +41,7 @@ public class EventCache {
      * @param eventClazzName name of {@link Event} class
      * @return cached {@link Event}s
      */
-    public Collection<Event> getEvents(final String eventClazzName) {
+    public Collection<StateEvent> getEvents(final String eventClazzName) {
         if (cachedEvents.containsKey(eventClazzName)) {
             return cachedEvents.get(eventClazzName).values();
         }

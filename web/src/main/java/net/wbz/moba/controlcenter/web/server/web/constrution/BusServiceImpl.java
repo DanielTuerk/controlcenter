@@ -12,8 +12,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import net.wbz.moba.controlcenter.web.client.event.StateEvent;
 import net.wbz.moba.controlcenter.web.server.event.EventBroadcaster;
 import net.wbz.moba.controlcenter.web.server.persist.device.DeviceInfoDao;
 import net.wbz.moba.controlcenter.web.server.persist.device.DeviceInfoEntity;
@@ -281,8 +283,8 @@ public class BusServiceImpl extends RemoteServiceServlet implements BusService {
     }
 
     @Override
-    public void requestResendLastEvent(final String eventClazzName) {
-         eventBroadcaster.resendEvent(eventClazzName);
+    public Collection<StateEvent> getLastSendEvent(String eventClazzName) {
+        return eventBroadcaster.getLastSendEvents(eventClazzName);
     }
 
     public void connectBus() {

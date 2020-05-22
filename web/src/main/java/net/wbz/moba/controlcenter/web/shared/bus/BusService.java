@@ -1,10 +1,9 @@
 package net.wbz.moba.controlcenter.web.shared.bus;
 
-import java.util.Collection;
-
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
-
+import java.util.Collection;
+import net.wbz.moba.controlcenter.web.client.event.StateEvent;
 import net.wbz.moba.controlcenter.web.guice.MyGuiceServletConfig;
 
 /**
@@ -94,5 +93,11 @@ public interface BusService extends RemoteService {
      */
     Collection<String> getRecords();
 
-    void requestResendLastEvent(String eventClazzName);
+    /**
+     * List off all {@link StateEvent}s from cache which was send last time.
+     *
+     * @param eventClazzName class name of the {@link StateEvent}
+     * @return {@link StateEvent}s
+     */
+    Collection<StateEvent> getLastSendEvent(String eventClazzName);
 }

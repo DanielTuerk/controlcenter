@@ -6,8 +6,9 @@ import de.novanic.eventservice.client.event.Event;
 import de.novanic.eventservice.client.event.RemoteEventService;
 import de.novanic.eventservice.client.event.RemoteEventServiceFactory;
 import de.novanic.eventservice.client.event.domain.DomainFactory;
+import java.util.Collection;
 import java.util.Map;
-import net.wbz.moba.controlcenter.web.client.request.Callbacks.VoidAsyncCallback;
+import net.wbz.moba.controlcenter.web.client.request.Callbacks.OnlySuccessAsyncCallback;
 import net.wbz.moba.controlcenter.web.client.request.RequestUtils;
 import net.wbz.moba.controlcenter.web.client.util.Log;
 import net.wbz.moba.controlcenter.web.shared.EventCache;
@@ -70,10 +71,14 @@ public class EventReceiver {
 
             if (isInstanceOf(StateEvent.class, eventClazz)) {
                 // trigger to fire last event from server cache
-                RequestUtils.getInstance().getBusService().requestResendLastEvent(eventClazz.getName(),
-                    new VoidAsyncCallback());
+                RequestUtils.getInstance().getBusService().getLastSendEvent(eventClazz.getName(),
+                    new OnlySuccessAsyncCallback<Collection<Event>>() {
+                        @Override
+                        public void onSuccess(Collection<Event> result) {
+                            result.forEach(delegate::apply);
+                        }
+                    });
             }
-
         } else {
             listenersByEvent.get(eventClazz).addListener(listener);
         }

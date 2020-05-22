@@ -37,7 +37,7 @@ class ListenerDelegate implements de.novanic.eventservice.client.event.listener.
         synchronized (listeners) {
             listeners.add(listener);
         }
-        Collection<Event> events = clientEventCache.getEvents(listener.getRemoteClass().getName());
+        Collection<StateEvent> events = clientEventCache.getEvents(listener.getRemoteClass().getName());
         if (!events.isEmpty()) {
             events.forEach(listener::apply);
         }

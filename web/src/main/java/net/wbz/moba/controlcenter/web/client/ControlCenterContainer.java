@@ -21,7 +21,6 @@ class ControlCenterContainer extends Composite {
     HTMLPanel contentContainer;
     @UiField
     AppMenu appMenu;
-    private Widget lastContent = null;
 
     ControlCenterContainer(AppMenuCallback appMenuCallback) {
         initWidget(uiBinder.createAndBindUi(this));
@@ -34,20 +33,9 @@ class ControlCenterContainer extends Composite {
     }
 
     void setContent(Widget widget) {
-        // first remove all children from the entries which are also parents, otherwise the removal will be blocked
-//        for (Widget container : contentContainer) {
-//            if (contentContainer.getElement().isOrHasChild(container.getElement())) {
-//                contentContainer.remove(container);
-//            }
-//        }
-//        // remove the first level elements
-//        contentContainer.getElement().removeAllChildren();
-//
-        if (lastContent != null) {
-            contentContainer.remove(lastContent);
-        }
+        contentContainer.clear();
+        contentContainer.getElement().setInnerHTML("");
         contentContainer.add(widget);
-        lastContent = widget;
     }
 
     interface Binder extends UiBinder<Widget, ControlCenterContainer> {

@@ -33,8 +33,6 @@ public class ControlCenterApp implements EntryPoint {
     private TrainPanel trainPanel;
     private ConfigPanel configPanel;
 
-    private WelcomeContainer welcomeContainerContainer;
-
     private ControlCenterContainer controlCenterContainer;
 
     public ControlCenterApp() {
@@ -74,12 +72,6 @@ public class ControlCenterApp implements EntryPoint {
     }
 
     private void reloadControlCenter() {
-        if (welcomeContainerContainer != null && RootLayoutPanel.get().getWidgetIndex(welcomeContainerContainer) >= 0) {
-            RootLayoutPanel.get().remove(welcomeContainerContainer);
-        }
-        if (controlCenterContainer != null && RootLayoutPanel.get().getWidgetIndex(controlCenterContainer) >= 0) {
-            RootLayoutPanel.get().remove(controlCenterContainer);
-        }
         loadControlCenter();
     }
 
@@ -119,20 +111,22 @@ public class ControlCenterApp implements EntryPoint {
     }
 
     private void loadWelcomePage() {
-        welcomeContainerContainer = new WelcomeContainer() {
+        WelcomeContainer welcomeContainerContainer = new WelcomeContainer() {
             @Override
             void onCurrentConstructionLoaded() {
                 loadControlCenter();
             }
         };
-        RootLayoutPanel.get().add(welcomeContainerContainer);
+        setRootPanelContent(welcomeContainerContainer);
+    }
+
+    private void setRootPanelContent(Widget content) {
+        RootLayoutPanel.get().clear();
+        RootLayoutPanel.get().getElement().setInnerHTML("");
+        RootLayoutPanel.get().add(content);
     }
 
     private void loadControlCenter() {
-        if (RootLayoutPanel.get().getWidgetIndex(welcomeContainerContainer) >= 0) {
-            RootLayoutPanel.get().remove(welcomeContainerContainer);
-        }
-
         trackViewerContainer = new TrackViewerContainer();
         trackEditorContainer = new TrackEditorContainer();
         busMonitorPanel = new BusMonitorPanel();
@@ -143,7 +137,7 @@ public class ControlCenterApp implements EntryPoint {
 
         show(trackViewerContainer);
 
-        RootLayoutPanel.get().add(controlCenterContainer);
+        setRootPanelContent(controlCenterContainer);
     }
 
     private AppMenu.AppMenuCallback createAppMenu() {

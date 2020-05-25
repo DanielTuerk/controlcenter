@@ -3,6 +3,7 @@ package net.wbz.moba.controlcenter.web.server.web.scenario;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -10,7 +11,6 @@ import net.wbz.moba.controlcenter.web.server.web.scenario.execution.ScenarioExec
 import net.wbz.moba.controlcenter.web.shared.scenario.Scenario;
 import net.wbz.moba.controlcenter.web.shared.scenario.ScenarioStatistic;
 import net.wbz.moba.controlcenter.web.shared.scenario.ScenarioStatisticService;
-import org.joda.time.DateTime;
 
 /**
  * Implementation of {@link ScenarioStatisticService}.
@@ -19,7 +19,6 @@ import org.joda.time.DateTime;
  */
 @Singleton
 public class ScenarioStatisticServiceImpl extends RemoteServiceServlet implements ScenarioStatisticService {
-
 
     private final ScenarioStatisticManager scenarioStatisticManager;
 
@@ -40,11 +39,11 @@ public class ScenarioStatisticServiceImpl extends RemoteServiceServlet implement
     private void trackScenarioExecution(ScenarioStatisticManager scenarioStatisticManager,
         ScenarioExecutor scenarioExecutor) {
         scenarioExecutor.addScenarioStateListener(new ScenarioStateListener() {
-            private final Map<Long, DateTime> scenarioStartDateTimes = new ConcurrentHashMap<>();
+            private final Map<Long, LocalDateTime> scenarioStartDateTimes = new ConcurrentHashMap<>();
 
             @Override
             public void scenarioStarted(Scenario scenario) {
-                scenarioStartDateTimes.put(scenario.getId(), DateTime.now());
+                scenarioStartDateTimes.put(scenario.getId(), LocalDateTime.now());
             }
 
             @Override
@@ -61,8 +60,8 @@ public class ScenarioStatisticServiceImpl extends RemoteServiceServlet implement
             public void scenarioSuccessfullyExecuted(Scenario scenario) {
                 Long scenarioId = scenario.getId();
                 if (scenarioStartDateTimes.containsKey(scenarioId)) {
-                    DateTime startDate = scenarioStartDateTimes.get(scenarioId);
-                    scenarioStatisticManager.createHistoryEntry(scenario, startDate, DateTime.now());
+                    LocalDateTime startDate = scenarioStartDateTimes.get(scenarioId);
+                    scenarioStatisticManager.createHistoryEntry(scenario, startDate, LocalDateTime.now());
                 }
             }
 

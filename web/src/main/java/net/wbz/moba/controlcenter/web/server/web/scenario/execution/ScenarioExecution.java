@@ -84,11 +84,6 @@ abstract class ScenarioExecution implements Callable<Void> {
         this.trackBuilder = trackBuilder;
         this.routeListeners = routeListeners;
         this.routeExecutionObserver = routeExecutionObserver;
-
-//        executor = Executors.poolnewFixedThreadPool();
-//        return new ThreadPoolExecutor(nThreads, nThreads,
-//            0L, TimeUnit.MILLISECONDS,
-//            new LinkedBlockingQueue<Runnable>());
     }
 
     @Override
@@ -302,7 +297,7 @@ abstract class ScenarioExecution implements Callable<Void> {
 
         scenario.setRunState(runState);
 
-        fireScenarioStateChangeEvent(scenario);
+        new Thread(() -> fireScenarioStateChangeEvent(scenario)).start();
     }
 
     /**

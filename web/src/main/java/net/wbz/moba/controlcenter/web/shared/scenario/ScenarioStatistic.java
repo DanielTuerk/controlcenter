@@ -9,8 +9,8 @@ import java.util.Date;
 public class ScenarioStatistic implements Serializable {
 
     private Scenario scenario;
-    private int runs;
-    private long averageRunTimeInMillis;
+    private long runs;
+    private double averageRunTimeInMillis;
     private Date nextRun;
     private Date lastRun;
 
@@ -22,19 +22,19 @@ public class ScenarioStatistic implements Serializable {
         this.scenario = scenario;
     }
 
-    public int getRuns() {
+    public long getRuns() {
         return runs;
     }
 
-    public void setRuns(int runs) {
+    public void setRuns(long runs) {
         this.runs = runs;
     }
 
-    public long getAverageRunTimeInMillis() {
+    public double getAverageRunTimeInMillis() {
         return averageRunTimeInMillis;
     }
 
-    public void setAverageRunTimeInMillis(long averageRunTimeInMillis) {
+    public void setAverageRunTimeInMillis(double averageRunTimeInMillis) {
         this.averageRunTimeInMillis = averageRunTimeInMillis;
     }
 

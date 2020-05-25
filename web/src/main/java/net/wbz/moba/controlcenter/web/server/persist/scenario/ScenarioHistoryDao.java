@@ -2,13 +2,14 @@ package net.wbz.moba.controlcenter.web.server.persist.scenario;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import javax.inject.Provider;
 import javax.persistence.EntityManager;
+import net.wbz.moba.controlcenter.web.server.DateUtil;
 import net.wbz.moba.controlcenter.web.server.persist.AbstractDao;
-import net.wbz.moba.controlcenter.web.shared.scenario.Scenario;
+import net.wbz.moba.controlcenter.web.server.web.scenario.ScenarioManager;
 import net.wbz.moba.controlcenter.web.shared.scenario.ScenarioStatistic;
 import org.hibernate.Query;
 import org.hibernate.transform.ResultTransformer;
@@ -20,13 +21,19 @@ import org.slf4j.LoggerFactory;
  */
 @Singleton
 public class ScenarioHistoryDao extends AbstractDao<ScenarioHistoryEntity> {
+
     private static final Logger LOG = LoggerFactory.getLogger(ScenarioHistoryDao.class);
-    public static final String QUERY = "SELECT x.scenario.id, count(x.id), max( x.endDate) FROM SCENARIO_HISTORY x"
-        + " GROUP BY x.scenario";
+    public static final String QUERY =
+        "SELECT x.scenario.id, count(x.id), max( x.endDateTime), avg(x.elapsedTimeMillis) FROM SCENARIO_HISTORY x"
+            + " GROUP BY x.scenario.id";
+
+    private final ScenarioManager scenarioManager;
 
     @Inject
-    public ScenarioHistoryDao(Provider<EntityManager> entityManager) {
+    public ScenarioHistoryDao(Provider<EntityManager> entityManager,
+        ScenarioManager scenarioManager) {
         super(entityManager, ScenarioHistoryEntity.class);
+        this.scenarioManager = scenarioManager;
     }
 
     public Optional<ScenarioStatistic> listByScenario(long scenarioId) {
@@ -52,9 +59,10 @@ public class ScenarioHistoryDao extends AbstractDao<ScenarioHistoryEntity> {
         @Override
         public Object transformTuple(Object[] objects, String[] strings) {
             ScenarioStatistic scenarioStatistic = new ScenarioStatistic();
-            scenarioStatistic.setScenario((Scenario) objects[0]);
-            scenarioStatistic.setRuns((Integer) objects[1]);
-            scenarioStatistic.setLastRun((Date) objects[2]);
+            scenarioStatistic.setScenario(scenarioManager.getScenarioById((Long) objects[0]));
+            scenarioStatistic.setRuns((Long) objects[1]);
+            scenarioStatistic.setLastRun(DateUtil.convertToDate((LocalDateTime) objects[2]));
+            scenarioStatistic.setAverageRunTimeInMillis((Double) objects[3]);
             return scenarioStatistic;
         }
 

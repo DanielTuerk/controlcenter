@@ -2,6 +2,8 @@ package net.wbz.moba.controlcenter.web.client.scenario;
 
 import com.google.common.collect.Lists;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.i18n.shared.DateTimeFormat;
+import com.google.gwt.i18n.shared.DefaultDateTimeFormatInfo;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.cellview.client.SimplePager;
@@ -10,11 +12,11 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.ListDataProvider;
 import java.util.Collection;
+import java.util.Date;
 import net.wbz.moba.controlcenter.web.client.event.EventReceiver;
 import net.wbz.moba.controlcenter.web.client.event.scenario.ScenarioRemoteListener;
 import net.wbz.moba.controlcenter.web.client.request.Callbacks.OnlySuccessAsyncCallback;
 import net.wbz.moba.controlcenter.web.client.request.RequestUtils;
-import net.wbz.moba.controlcenter.web.shared.scenario.Scenario;
 import net.wbz.moba.controlcenter.web.shared.scenario.ScenarioStatistic;
 import org.gwtbootstrap3.client.ui.Container;
 import org.gwtbootstrap3.client.ui.Pagination;
@@ -37,6 +39,12 @@ public class ScenarioStatisticPanel extends Composite {
     private SimplePager simplePager = new SimplePager();
     private Pagination pagination = new Pagination(PaginationSize.SMALL);
     private ListDataProvider<ScenarioStatistic> dataProvider = new ListDataProvider<>();
+    public static final DateTimeFormat DATE_TIME_FORMAT = new DateTimeFormat("yyyy-MM-dd HH:mm",
+        new DefaultDateTimeFormatInfo()) {
+    };
+    public static final DateTimeFormat TIME_FORMAT = new DateTimeFormat("mm:ss",
+        new DefaultDateTimeFormatInfo()) {
+    };
 
     ScenarioStatisticPanel() {
         initWidget(uiBinder.createAndBindUi(this));
@@ -51,10 +59,22 @@ public class ScenarioStatisticPanel extends Composite {
         scenarioTable.addColumn(new TextColumn<ScenarioStatistic>() {
             @Override
             public String getValue(ScenarioStatistic object) {
-                return object.getScenario().getRunState() != null ? object.getScenario().getRunState().name() : "";
+                return String.valueOf(object.getRuns());
             }
-        }, "State");
+        }, "Runs");
 
+        scenarioTable.addColumn(new TextColumn<ScenarioStatistic>() {
+            @Override
+            public String getValue(ScenarioStatistic object) {
+                return DATE_TIME_FORMAT.format(object.getLastRun());
+            }
+        }, "Last Run");
+        scenarioTable.addColumn(new TextColumn<ScenarioStatistic>() {
+            @Override
+            public String getValue(ScenarioStatistic object) {
+                return TIME_FORMAT.format(new Date((long) object.getAverageRunTimeInMillis()));
+            }
+        }, "Average time");
         container.add(pagination);
 
         scenarioTable.addRangeChangeHandler(event -> pagination.rebuild(simplePager));

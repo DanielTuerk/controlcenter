@@ -1,11 +1,9 @@
 package net.wbz.moba.controlcenter.web.server.persist.scenario;
 
+import java.time.LocalDateTime;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
-
-import org.joda.time.DateTime;
-
 import net.wbz.moba.controlcenter.web.server.persist.AbstractEntity;
 
 /**
@@ -20,13 +18,13 @@ public class ScenarioHistoryEntity extends AbstractEntity {
     private ScenarioEntity scenario;
 
     @Column
-    private DateTime startDate;
+    private LocalDateTime startDateTime;
 
     @Column
-    private DateTime endDate;
+    private LocalDateTime endDateTime;
 
     @Column
-    private long elapsedTime;
+    private long elapsedTimeMillis;
 
     public ScenarioEntity getScenario() {
         return scenario;
@@ -36,27 +34,27 @@ public class ScenarioHistoryEntity extends AbstractEntity {
         this.scenario = scenario;
     }
 
-    public DateTime getStartDate() {
-        return startDate;
+    public LocalDateTime getStartDateTime() {
+        return startDateTime;
     }
 
-    public void setStartDate(DateTime startDate) {
-        this.startDate = startDate;
+    public void setStartDateTime(LocalDateTime startDate) {
+        this.startDateTime = startDate;
     }
 
-    public DateTime getEndDate() {
-        return endDate;
+    public LocalDateTime getEndDateTime() {
+        return endDateTime;
     }
 
-    public void setEndDate(DateTime endDate) {
-        this.endDate = endDate;
+    public void setEndDateTime(LocalDateTime endDate) {
+        this.endDateTime = endDate;
     }
 
-    public long getElapsedTime() {
-        return elapsedTime;
+    public long getElapsedTimeMillis() {
+        return elapsedTimeMillis;
     }
 
-    public void setElapsedTime(long elapsedTime) {
-        this.elapsedTime = elapsedTime;
+    public void setElapsedTimeMillis(long elapsedTime) {
+        this.elapsedTimeMillis = elapsedTime;
     }
 }

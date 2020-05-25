@@ -8,7 +8,6 @@
     }
   </ui:style>
   <b:Container fluid="true" ui:field="container" addStyleNames="{style.scenarioContainer}">
-    <b:Button type="PRIMARY" icon="PLUS" text="Create Scenario" ui:field="btnCreateScenario"/>
     <b-gwt:CellTable ui:field="scenarioTable" bordered="true" condensed="true" striped="true" hover="true"
       height="100%" width="100%"/>
   </b:Container>

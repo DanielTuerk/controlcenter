@@ -62,8 +62,8 @@ public class ScenarioManager {
         return scenarios;
     }
 
-    Scenario getScenarioById(long scenarioId) {
-        for (Scenario scenario : scenarios) {
+    public Scenario getScenarioById(long scenarioId) {
+        for (Scenario scenario : getScenarios()) {
             if (scenarioId == scenario.getId()) {
                 return scenario;
             }

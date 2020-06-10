@@ -9,9 +9,10 @@
     <b:Navbar addStyleNames="{style.menu-navbar}">
         <b:NavbarHeader>
             <b:NavbarBrand>Control Center</b:NavbarBrand>
+            <b:NavbarCollapseButton dataTarget="#navbar-collapse"/>
         </b:NavbarHeader>
 
-        <b:NavbarCollapse>
+        <b:NavbarCollapse b:id="navbar-collapse">
             <b:NavbarNav>
                 <b:AnchorListItem ui:field="linkViewer" active="true" icon="EYE">Viewer</b:AnchorListItem>
                 <b:AnchorListItem ui:field="linkEditor" icon="PENCIL_SQUARE">Editor</b:AnchorListItem>

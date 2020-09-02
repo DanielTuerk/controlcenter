@@ -22,7 +22,7 @@ import net.wbz.moba.controlcenter.web.client.request.Callbacks.OnlySuccessAsyncC
 import net.wbz.moba.controlcenter.web.client.request.RequestUtils;
 import net.wbz.moba.controlcenter.web.shared.scenario.Route;
 import net.wbz.moba.controlcenter.web.shared.scenario.Station;
-import net.wbz.moba.controlcenter.web.shared.scenario.StationRail;
+import net.wbz.moba.controlcenter.web.shared.scenario.StationPlatform;
 import org.gwtbootstrap3.client.ui.Container;
 import org.gwtbootstrap3.client.ui.Pagination;
 import org.gwtbootstrap3.client.ui.constants.PaginationSize;
@@ -149,11 +149,11 @@ public class RoutePanel extends Composite {
         EventReceiver.getInstance().removeListener(routeRemoteListener);
     }
 
-    private String getStationRailDisplayName(StationRail stationRail) {
+    private String getStationRailDisplayName(StationPlatform stationPlatform) {
         for (Station station : stations) {
-            for (StationRail rail : station.getRails()) {
-                if (rail.equals(stationRail)) {
-                    return station.getName() + " - " + rail.getRailNumber();
+            for (StationPlatform rail : station.getPlatforms()) {
+                if (rail.equals(stationPlatform)) {
+                    return station.getName() + " - " + rail.getName();
                 }
             }
         }

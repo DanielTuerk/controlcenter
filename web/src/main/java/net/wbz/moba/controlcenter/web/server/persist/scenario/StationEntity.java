@@ -1,17 +1,12 @@
 package net.wbz.moba.controlcenter.web.server.persist.scenario;
 
+import com.googlecode.jmapper.annotations.JMap;
 import java.util.List;
-
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
-
-import com.googlecode.jmapper.annotations.JMap;
-
 import net.wbz.moba.controlcenter.web.server.persist.AbstractEntity;
-import net.wbz.moba.controlcenter.web.shared.scenario.StationRail;
 
 /**
  * @author Daniel Tuerk
@@ -24,8 +19,8 @@ public class StationEntity extends AbstractEntity {
     private String name;
 
     @JMap
-    @OneToMany(mappedBy = "station")
-    private List<StationRailEntity> rails;
+    @OneToMany(mappedBy = "station", fetch = FetchType.EAGER)
+    private List<StationPlatformEntity> platforms;
 
     public String getName() {
         return name;
@@ -35,11 +30,11 @@ public class StationEntity extends AbstractEntity {
         this.name = name;
     }
 
-    public List<StationRailEntity> getRails() {
-        return rails;
+    public List<StationPlatformEntity> getPlatforms() {
+        return platforms;
     }
 
-    public void setRails(List<StationRailEntity> rails) {
-        this.rails = rails;
+    public void setPlatforms(List<StationPlatformEntity> rails) {
+        this.platforms = rails;
     }
 }

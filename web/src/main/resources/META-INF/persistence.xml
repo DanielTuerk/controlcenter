@@ -34,7 +34,7 @@
     <class>net.wbz.moba.controlcenter.web.server.persist.construction.track.BlockStraightEntity</class>
 
     <!-- scenario models -->
-    <class>net.wbz.moba.controlcenter.web.server.persist.scenario.StationRailEntity</class>
+    <class>net.wbz.moba.controlcenter.web.server.persist.scenario.StationPlatformEntity</class>
     <class>net.wbz.moba.controlcenter.web.server.persist.scenario.StationEntity</class>
     <class>net.wbz.moba.controlcenter.web.server.persist.scenario.RouteEntity</class>
     <class>net.wbz.moba.controlcenter.web.server.persist.scenario.ScenarioEntity</class>

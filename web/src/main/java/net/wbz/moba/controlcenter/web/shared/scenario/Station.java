@@ -1,9 +1,8 @@
 package net.wbz.moba.controlcenter.web.shared.scenario;
 
-import java.util.List;
-
 import com.googlecode.jmapper.annotations.JMap;
-
+import java.util.ArrayList;
+import java.util.List;
 import net.wbz.moba.controlcenter.web.shared.track.model.AbstractDto;
 
 /**
@@ -15,7 +14,7 @@ public class Station extends AbstractDto {
     private String name;
 
     @JMap
-    private List<StationRail> rails;
+    private List<StationPlatform> platforms;
 
     public String getName() {
         return name;
@@ -25,11 +24,14 @@ public class Station extends AbstractDto {
         this.name = name;
     }
 
-    public List<StationRail> getRails() {
-        return rails;
+    public List<StationPlatform> getPlatforms() {
+        if (platforms == null) {
+            platforms = new ArrayList<>();
+        }
+        return platforms;
     }
 
-    public void setRails(List<StationRail> rails) {
-        this.rails = rails;
+    public void setPlatforms(List<StationPlatform> platforms) {
+        this.platforms = platforms;
     }
 }

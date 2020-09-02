@@ -1,0 +1,26 @@
+<ui:UiBinder xmlns:b="urn:import:org.gwtbootstrap3.client.ui"
+  xmlns:g="urn:import:com.google.gwt.user.client.ui"
+  xmlns:ui='urn:ui:com.google.gwt.uibinder'>
+
+  <b:Form type="HORIZONTAL">
+    <b:FieldSet>
+
+      <b:FormGroup>
+        <b:FormLabel addStyleNames="col-lg-2" for="formName">Name</b:FormLabel>
+        <g:FlowPanel addStyleNames="col-lg-10">
+          <b:TextBox ui:field="txtName"/>
+        </g:FlowPanel>
+      </b:FormGroup>
+
+      <b:FormGroup>
+        <b:FormLabel addStyleNames="col-lg-2">Platforms</b:FormLabel>
+        <g:FlowPanel addStyleNames="col-lg-10">
+          <b:Button icon="PLUS" type="PRIMARY" ui:field="btnAddPlatform"/>
+          <g:FlowPanel ui:field="platformsPanel">
+          </g:FlowPanel>
+        </g:FlowPanel>
+      </b:FormGroup>
+
+    </b:FieldSet>
+  </b:Form>
+</ui:UiBinder>

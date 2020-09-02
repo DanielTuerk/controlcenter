@@ -84,6 +84,7 @@ public class ScenarioEditModalBody extends Composite {
 
                 @Override
                 protected void deleted() {
+                    scenario.getRouteSequences().remove(routeSequence);
                     initRouteSequences();
                 }
             });

@@ -1,7 +1,5 @@
 package net.wbz.moba.controlcenter.web.client.scenario;
 
-import org.gwtbootstrap3.client.ui.Label;
-
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -9,9 +7,9 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
-
 import net.wbz.moba.controlcenter.web.shared.scenario.RouteSequence;
 import net.wbz.moba.controlcenter.web.shared.scenario.Scenario;
+import org.gwtbootstrap3.client.ui.Label;
 
 /**
  * @author Daniel Tuerk
@@ -66,7 +64,6 @@ abstract class ScenarioRoutePanel extends Composite {
 
     @UiHandler("btnDelete")
     void onClickDelete(ClickEvent ignored) {
-        scenario.getRouteSequences().remove(routeSequence);
         deleted();
     }
 

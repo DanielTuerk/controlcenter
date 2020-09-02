@@ -11,7 +11,6 @@ import com.google.gwt.user.cellview.client.TextColumn;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.ListDataProvider;
-import java.util.ArrayList;
 import java.util.Collection;
 import net.wbz.moba.controlcenter.web.client.components.modal.DeleteModal;
 import net.wbz.moba.controlcenter.web.client.components.table.DeleteButtonColumn;
@@ -23,7 +22,6 @@ import net.wbz.moba.controlcenter.web.client.request.RequestUtils;
 import net.wbz.moba.controlcenter.web.shared.scenario.Route;
 import net.wbz.moba.controlcenter.web.shared.scenario.RouteSequence;
 import net.wbz.moba.controlcenter.web.shared.scenario.Scenario;
-import net.wbz.moba.controlcenter.web.shared.scenario.Station;
 import org.gwtbootstrap3.client.ui.Container;
 import org.gwtbootstrap3.client.ui.Pagination;
 import org.gwtbootstrap3.client.ui.constants.PaginationSize;
@@ -44,7 +42,6 @@ public class ScenarioPanel extends Composite {
     private SimplePager simplePager = new SimplePager();
     private Pagination pagination = new Pagination(PaginationSize.SMALL);
     private ListDataProvider<Scenario> dataProvider = new ListDataProvider<>();
-    private Collection<Station> stations = new ArrayList<>();
 
     ScenarioPanel() {
         initWidget(uiBinder.createAndBindUi(this));
@@ -148,7 +145,6 @@ public class ScenarioPanel extends Composite {
         super.onLoad();
         EventReceiver.getInstance().addListener(scenarioRemoteListener);
 
-        loadStations();
         loadScenarios();
     }
 
@@ -184,19 +180,6 @@ public class ScenarioPanel extends Composite {
                     dataProvider.flush();
                     dataProvider.refresh();
                     pagination.rebuild(simplePager);
-                }
-            });
-    }
-
-    private void loadStations() {
-        RequestUtils.getInstance().getScenarioEditorService().getStations(
-            new OnlySuccessAsyncCallback<Collection<Station>>() {
-                @Override
-                public void onSuccess(Collection<Station> result) {
-                    stations.clear();
-                    stations.addAll(result);
-
-
                 }
             });
     }

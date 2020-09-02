@@ -1,33 +1,33 @@
 package net.wbz.moba.controlcenter.web.shared.scenario;
 
 import com.googlecode.jmapper.annotations.JMap;
-
-import com.googlecode.jmapper.annotations.JMapConversion;
-import com.googlecode.jmapper.annotations.JMapConversion.Type;
+import java.util.ArrayList;
 import java.util.List;
-import javax.persistence.ManyToOne;
 import net.wbz.moba.controlcenter.web.shared.track.model.AbstractDto;
 import net.wbz.moba.controlcenter.web.shared.track.model.TrackBlock;
 
 /**
  * @author Daniel Tuerk
  */
-public class StationRail extends AbstractDto {
+public class StationPlatform extends AbstractDto {
 
     @JMap
-    private int railNumber;
+    private String name;
     @JMap
     private List<TrackBlock> trackBlocks;
 
-    public int getRailNumber() {
-        return railNumber;
+    public String getName() {
+        return name;
     }
 
-    public void setRailNumber(int railNumber) {
-        this.railNumber = railNumber;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public List<TrackBlock> getTrackBlocks() {
+        if (trackBlocks == null) {
+            return new ArrayList<>();
+        }
         return trackBlocks;
     }
 

@@ -53,9 +53,8 @@ abstract public class AbstractConfigEntry<T> {
     protected void handleStorageRead(String value) {
         if (value != null) {
             T convertedValue = convertValueFromString(value);
-            AbstractConfigEntry.this.value = convertedValue;
             AbstractConfigEntry.this.originalValue = convertedValue;
-            valueChanged();
+            setValue(convertedValue);
         }
     }
 

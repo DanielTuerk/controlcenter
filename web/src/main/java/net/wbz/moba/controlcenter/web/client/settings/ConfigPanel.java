@@ -20,8 +20,8 @@ import org.gwtbootstrap3.extras.notify.client.ui.Notify;
  */
 public class ConfigPanel extends Composite {
 
-    private static Binder uiBinder = GWT.create(ConfigPanel.Binder.class);
-    private final List<AbstractConfigEntry> configEntries = new ArrayList<>();
+    private static final Binder uiBinder = GWT.create(ConfigPanel.Binder.class);
+    private final List<AbstractConfigEntry<?>> configEntries = new ArrayList<>();
 
     @UiField
     Form contentContainer;

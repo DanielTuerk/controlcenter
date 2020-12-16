@@ -22,8 +22,26 @@ abstract public class SelectionConfigEntry extends StringConfigEntry {
     }
 
     @Override
+    public void setValue(String value) {
+        select.getItems().forEach(item -> {
+            if (value == null) {
+                if (item.getValue().equals(NOTHING_SELECTED)) {
+                    item.setSelected(true);
+                }
+            } else if (value.equals(item.getValue())) {
+                item.setSelected(true);
+            }
+        });
+        super.setValue(value);
+    }
+
+    @Override
     protected void valueChanged() {
-        select.setValue(getValue());
+        select.refresh();
+    }
+
+    void clear() {
+        select.clear();
         select.refresh();
     }
 

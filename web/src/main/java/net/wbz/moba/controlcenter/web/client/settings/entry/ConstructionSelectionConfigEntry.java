@@ -14,31 +14,35 @@ import net.wbz.moba.controlcenter.web.shared.constrution.Construction;
  */
 public class ConstructionSelectionConfigEntry extends SelectionConfigEntry {
 
+    @Override
+    public void setValueAndSave(String value) {
+        super.setValueAndSave(value);
+    }
+
     public ConstructionSelectionConfigEntry(STORAGE storageType, GROUP group, String name) {
         super(storageType, group, name);
     }
 
     @Override
-    protected void handleStorageRead(final String value) {
-        // at first initialize value for direct usage
-        ConstructionSelectionConfigEntry.super.handleStorageRead(value);
-        // load available options for the select component
+    public void reset() {
+        clear();
         RequestUtils.getInstance().getConstructionService().loadConstructions(
-                new AsyncCallback<Collection<Construction>>() {
-                    @Override
-                    public void onFailure(Throwable caught) {
+            new AsyncCallback<Collection<Construction>>() {
+                @Override
+                public void onFailure(Throwable caught) {
 
+                }
+
+                @Override
+                public void onSuccess(Collection<Construction> result) {
+
+                    addOption(NOTHING_SELECTED);
+                    for (Construction construction : result) {
+                        addOption(construction.getName());
                     }
 
-                    @Override
-                    public void onSuccess(Collection<Construction> result) {
-
-                        addOption(NOTHING_SELECTED);
-                        for (Construction construction : result) {
-                            addOption(construction.getName());
-                        }
-                    }
-                });
-
+                    ConstructionSelectionConfigEntry.super.reset();
+                }
+            });
     }
 }

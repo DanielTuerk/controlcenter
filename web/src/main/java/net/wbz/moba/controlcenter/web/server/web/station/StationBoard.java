@@ -1,6 +1,7 @@
 package net.wbz.moba.controlcenter.web.server.web.station;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -82,13 +83,20 @@ class StationBoard {
     }
 
     void removeDeparture(Scenario scenario) {
-        departureEntries.removeIf(equalScenarioPredicate(scenario));
+        removeOldestEntryForScenario(scenario, departureEntries);
         fireChangedEvent(TYPE.DEPARTURE);
     }
 
     void removeArrival(Scenario scenario) {
-        arrivalEntries.removeIf(equalScenarioPredicate(scenario));
+        removeOldestEntryForScenario(scenario, arrivalEntries);
         fireChangedEvent(TYPE.ARRIVAL);
+    }
+
+    private void removeOldestEntryForScenario(Scenario scenario, List<StationBoardEntry> stationBoardEntries) {
+        stationBoardEntries.stream()
+            .filter(equalScenarioPredicate(scenario))
+            .min(Comparator.comparingLong(StationBoardEntry::getCreatedTimestamp))
+            .ifPresent(stationBoardEntries::remove);
     }
 
     private Predicate<StationBoardEntry> equalScenarioPredicate(Scenario scenario) {

@@ -103,10 +103,8 @@ public class ScenarioExecutor {
                     trainService, signalBlockRegistry, deviceManager, trainManager, trackBuilder,
                     routeListeners, routeExecutionObserver) {
                 @Override
-                protected void fireScenarioStateChangeEvent(Scenario scenario) {
-                    if (scenario.getRunState() == RUN_STATE.FINISHED) {
-                        finishExecution(scenario);
-                    }
+                protected void scenarioExecutionFinished(Scenario scenario) {
+                    finishExecution(scenario);
                     fireEvent(scenario);
                 }
             };
@@ -166,16 +164,13 @@ public class ScenarioExecutor {
                 case PAUSED:
                     listener.scenarioPaused(scenario);
                     break;
-                case STOPPED:
-                    listener.scenarioStopped(scenario);
-                    break;
                 case SUCCESS:
                     listener.scenarioSuccessfullyExecuted(scenario);
-                    break;
                 case ERROR:
                     listener.scenarioExecuteWithError(scenario);
-                    break;
-                case FINISHED:
+                case STOPPED:
+                    listener.scenarioStopped(scenario);
+                default:
                     listener.scenarioFinished(scenario);
                     break;
             }

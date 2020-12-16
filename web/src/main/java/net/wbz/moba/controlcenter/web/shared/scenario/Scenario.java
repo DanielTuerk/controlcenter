@@ -4,7 +4,6 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 import com.googlecode.jmapper.annotations.JMap;
 import java.util.ArrayList;
 import java.util.List;
-import net.wbz.moba.controlcenter.web.shared.station.StationPlatform;
 import net.wbz.moba.controlcenter.web.shared.track.model.AbstractDto;
 import net.wbz.moba.controlcenter.web.shared.track.model.TrackBlock;
 import net.wbz.moba.controlcenter.web.shared.train.Train;
@@ -41,11 +40,7 @@ public class  Scenario extends AbstractDto {
         /**
          * Scenario executed with error.
          */
-        ERROR,
-        /**
-         * Scenario is finished.
-         */
-        FINISHED
+        ERROR
     }
     /**
      * Mode of the scenario execution.

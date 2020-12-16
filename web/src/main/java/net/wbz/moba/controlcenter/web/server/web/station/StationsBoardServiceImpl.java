@@ -37,7 +37,6 @@ public class StationsBoardServiceImpl extends RemoteServiceServlet implements St
 
             @Override
             public void scenarioStopped(Scenario scenario) {
-                new BoardAction(scenario, stationManager).apply(removeScenarioBoardConsumer);
             }
 
             @Override
@@ -47,11 +46,11 @@ public class StationsBoardServiceImpl extends RemoteServiceServlet implements St
 
             @Override
             public void scenarioSuccessfullyExecuted(Scenario scenario) {
-                new BoardAction(scenario, stationManager).apply(removeScenarioBoardConsumer);
             }
 
             @Override
             public void scenarioFinished(Scenario scenario) {
+                new BoardAction(scenario, stationManager).apply(removeScenarioBoardConsumer);
             }
 
             @Override

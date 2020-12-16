@@ -13,6 +13,7 @@ public class StationBoardEntry implements IsSerializable {
     private String station;
     private String platform;
     private String information;
+    private long createdTimestamp;
 
     public StationBoardEntry() {
     }
@@ -23,6 +24,11 @@ public class StationBoardEntry implements IsSerializable {
         this.train = train;
         this.station = station;
         this.platform = platform;
+        this.createdTimestamp = System.currentTimeMillis();
+    }
+
+    public long getCreatedTimestamp() {
+        return createdTimestamp;
     }
 
     public Long getScenarioId() {

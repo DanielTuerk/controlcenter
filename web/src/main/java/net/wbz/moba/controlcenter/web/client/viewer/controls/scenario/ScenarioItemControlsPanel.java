@@ -172,8 +172,9 @@ public class ScenarioItemControlsPanel extends AbstractViewerItemControlsComposi
                     btnStop.setEnabled(true);
                     // TODO resume
                     break;
+                case SUCCESS:
+                case ERROR:
                 case STOPPED:
-                case FINISHED:
                     btnSchedule.setEnabled(true);
                     btnStart.setEnabled(true);
                     btnStop.setEnabled(false);

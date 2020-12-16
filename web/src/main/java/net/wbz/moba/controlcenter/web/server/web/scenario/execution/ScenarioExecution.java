@@ -98,7 +98,7 @@ abstract class ScenarioExecution implements Callable<Void> {
     void start() {
         try {
             scenario.setRunState(RUN_STATE.RUNNING);
-            fireScenarioStateChangeEvent(scenario);
+            scenarioExecutionFinished(scenario);
 
             boolean anyRouteExecutedSuccessful = false;
 
@@ -201,7 +201,7 @@ abstract class ScenarioExecution implements Callable<Void> {
             stop();
         } finally {
             // do it for success or error to be able to restart the scenario
-            finishScenarioExecution(RUN_STATE.FINISHED);
+//            finishScenarioExecution(RUN_STATE.FINISHED);
         }
     }
 
@@ -297,11 +297,10 @@ abstract class ScenarioExecution implements Callable<Void> {
     }
 
     private void finishScenarioExecution(RUN_STATE runState) {
+        scenario.setRunState(runState);
         LOG.info("finished scenario {}", scenario);
 
-        scenario.setRunState(runState);
-
-        new Thread(() -> fireScenarioStateChangeEvent(scenario)).start();
+        new Thread(() -> scenarioExecutionFinished(scenario)).start();
     }
 
     /**
@@ -309,7 +308,7 @@ abstract class ScenarioExecution implements Callable<Void> {
      *
      * @param scenario {@link Scenario}
      */
-    protected abstract void fireScenarioStateChangeEvent(Scenario scenario);
+    protected abstract void scenarioExecutionFinished(Scenario scenario);
 
     /**
      * Prepare the {@link Route} for drive.

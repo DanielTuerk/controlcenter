@@ -114,10 +114,7 @@ public class ScenarioServiceImpl extends RemoteServiceServlet implements Scenari
                 Trigger trigger = TriggerBuilder.newTrigger().withIdentity(triggerKey)
                     .withSchedule(CronScheduleBuilder.cronSchedule(cron)).forJob(job).build();
 
-                scenarioById.setRunState(RUN_STATE.IDLE);
-                scenarioById.setMode(MODE.AUTOMATIC);
-
-                fireScenarioStateChangeEvent(scenarioById);
+                scenarioExecutor.scheduleScenario(scenarioById);
 
                 // Tell quartz to schedule the job using our trigger
                 try {
@@ -215,8 +212,8 @@ public class ScenarioServiceImpl extends RemoteServiceServlet implements Scenari
         scenarioExecutor.stopScenario(scenario);
         scenario.setMode(MODE.OFF);
         // TODO also happen in scenario execution
-        scenario.setRunState(RUN_STATE.STOPPED);
-        fireScenarioStateChangeEvent(scenario);
+//        scenario.setRunState(RUN_STATE.STOPPED);
+//        fireScenarioStateChangeEvent(scenario);
     }
 
     private void unscheduleScenario(long scenarioId) {

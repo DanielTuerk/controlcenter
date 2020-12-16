@@ -17,6 +17,7 @@
                 <b:AnchorListItem ui:field="linkViewer" active="true" icon="EYE">Viewer</b:AnchorListItem>
                 <b:AnchorListItem ui:field="linkEditor" icon="PENCIL_SQUARE">Editor</b:AnchorListItem>
                 <b:AnchorListItem ui:field="linkBusMonitor" icon="DESKTOP">Bus Monitor</b:AnchorListItem>
+                <b:AnchorListItem ui:field="linkStationsBoard" icon="HOME">Stations Board</b:AnchorListItem>
                 <b:AnchorListItem ui:field="linkScenarioEditor" icon="MAP_SIGNS">Scenario Editor</b:AnchorListItem>
                 <b:AnchorListItem ui:field="linkTrainEditor" icon="TRAIN">Train Editor</b:AnchorListItem>
             </b:NavbarNav>

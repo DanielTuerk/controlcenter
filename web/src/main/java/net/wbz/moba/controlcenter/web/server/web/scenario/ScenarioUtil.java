@@ -10,7 +10,7 @@ import org.quartz.CronExpression;
 /**
  * @author Daniel Tuerk
  */
-public  final class ScenarioUtil {
+public final class ScenarioUtil {
 
     private static final SimpleDateFormat FORMATTER = new SimpleDateFormat("HH:mm");
 
@@ -18,6 +18,19 @@ public  final class ScenarioUtil {
         if (!Strings.isNullOrEmpty(scenario.getCron())) {
             try {
                 return FORMATTER.format(new CronExpression(scenario.getCron()).getNextValidTimeAfter(new Date()));
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        }
+        return null;
+    }
+
+    public static String arrivalTimeOfNextExecution(Scenario scenario, long addMillis) {
+        if (!Strings.isNullOrEmpty(scenario.getCron())) {
+            try {
+                Date nextValidTimeAfter = new CronExpression(scenario.getCron()).getNextValidTimeAfter(new Date());
+                nextValidTimeAfter.setTime(nextValidTimeAfter.getTime() + addMillis);
+                return FORMATTER.format(nextValidTimeAfter);
             } catch (ParseException e) {
                 e.printStackTrace();
             }

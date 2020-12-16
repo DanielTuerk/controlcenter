@@ -4,6 +4,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 import com.googlecode.jmapper.annotations.JMap;
 import java.util.ArrayList;
 import java.util.List;
+import net.wbz.moba.controlcenter.web.shared.station.StationPlatform;
 import net.wbz.moba.controlcenter.web.shared.track.model.AbstractDto;
 import net.wbz.moba.controlcenter.web.shared.track.model.TrackBlock;
 import net.wbz.moba.controlcenter.web.shared.train.Train;
@@ -79,6 +80,10 @@ public class  Scenario extends AbstractDto {
     private Integer startDrivingLevel;
     @JMap
     private List<RouteSequence> routeSequences;
+    @JMap
+    private Long stationPlatformStartId;
+    @JMap
+    private Long stationPlatformEndId;
     private RUN_STATE runState = RUN_STATE.IDLE;
     private MODE mode = MODE.OFF;
 
@@ -149,15 +154,28 @@ public class  Scenario extends AbstractDto {
         this.startDrivingLevel = startDrivingLevel;
     }
 
+    public Long getStationPlatformStartId() {
+        return stationPlatformStartId;
+    }
+
+    public void setStationPlatformStartId(Long stationPlatformStartId) {
+        this.stationPlatformStartId = stationPlatformStartId;
+    }
+
+    public Long getStationPlatformEndId() {
+        return stationPlatformEndId;
+    }
+
+    public void setStationPlatformEndId(Long stationPlatformEndId) {
+        this.stationPlatformEndId = stationPlatformEndId;
+    }
+
     @Override
     public String toString() {
         final StringBuffer sb = new StringBuffer("Scenario{");
         sb.append("name='").append(name).append('\'');
         sb.append(", cron='").append(cron).append('\'');
         sb.append(", train=").append(train);
-        sb.append(", trainDrivingDirection=").append(trainDrivingDirection);
-        sb.append(", startDrivingLevel=").append(startDrivingLevel);
-        sb.append(", routeSequences=").append(routeSequences);
         sb.append(", runState=").append(runState);
         sb.append(", mode=").append(mode);
         sb.append('}');

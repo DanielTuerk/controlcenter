@@ -2,7 +2,7 @@ package net.wbz.moba.controlcenter.web.client.scenario.station;
 
 import com.google.gwt.user.client.ui.IsWidget;
 import net.wbz.moba.controlcenter.web.client.components.AbstractEditModal;
-import net.wbz.moba.controlcenter.web.shared.scenario.Station;
+import net.wbz.moba.controlcenter.web.shared.station.Station;
 
 /**
  * @author Daniel Tuerk

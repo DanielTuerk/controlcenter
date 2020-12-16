@@ -17,11 +17,11 @@ import net.wbz.moba.controlcenter.web.client.components.modal.DeleteModal;
 import net.wbz.moba.controlcenter.web.client.components.table.DeleteButtonColumn;
 import net.wbz.moba.controlcenter.web.client.components.table.EditButtonColumn;
 import net.wbz.moba.controlcenter.web.client.event.EventReceiver;
-import net.wbz.moba.controlcenter.web.client.event.scenario.StationRemoteListener;
+import net.wbz.moba.controlcenter.web.client.event.station.StationRemoteListener;
 import net.wbz.moba.controlcenter.web.client.request.Callbacks.OnlySuccessAsyncCallback;
 import net.wbz.moba.controlcenter.web.client.request.RequestUtils;
-import net.wbz.moba.controlcenter.web.shared.scenario.Station;
-import net.wbz.moba.controlcenter.web.shared.scenario.StationPlatform;
+import net.wbz.moba.controlcenter.web.shared.station.Station;
+import net.wbz.moba.controlcenter.web.shared.station.StationPlatform;
 import net.wbz.moba.controlcenter.web.shared.track.model.TrackBlock;
 import org.gwtbootstrap3.client.ui.Container;
 import org.gwtbootstrap3.client.ui.Pagination;
@@ -33,19 +33,19 @@ import org.gwtbootstrap3.client.ui.gwt.CellTable;
  */
 public class StationPanel extends Composite {
 
-    private static Binder uiBinder = GWT.create(Binder.class);
-    private final StationRemoteListener stationRemoteListener;
+    private static final Binder uiBinder = GWT.create(Binder.class);
+    private final StationRemoteListener stationBoardListener;
     @UiField
     CellTable<Station> stationTable;
     @UiField
     Container stationContainer;
-    private SimplePager simplePager = new SimplePager();
-    private Pagination pagination = new Pagination(PaginationSize.SMALL);
-    private ListDataProvider<Station> dataProvider = new ListDataProvider<>();
+    private final SimplePager simplePager = new SimplePager();
+    private final Pagination pagination = new Pagination(PaginationSize.SMALL);
+    private final ListDataProvider<Station> dataProvider = new ListDataProvider<>();
 
     public StationPanel() {
         initWidget(uiBinder.createAndBindUi(this));
-        stationRemoteListener = event -> loadStations();
+        stationBoardListener = event -> loadStations();
 
         stationTable.addColumn(new TextColumn<Station>() {
             @Override
@@ -105,17 +105,17 @@ public class StationPanel extends Composite {
         super.onLoad();
         loadStations();
 
-        EventReceiver.getInstance().addListener(stationRemoteListener);
+        EventReceiver.getInstance().addListener(stationBoardListener);
     }
 
     @Override
     protected void onUnload() {
         super.onUnload();
-        EventReceiver.getInstance().removeListener(stationRemoteListener);
+        EventReceiver.getInstance().removeListener(stationBoardListener);
     }
 
     private void loadStations() {
-        RequestUtils.getInstance().getScenarioEditorService().getStations(
+        RequestUtils.getInstance().getStationEditorService().getStations(
             new OnlySuccessAsyncCallback<Collection<Station>>() {
                 @Override
                 public void onSuccess(Collection<Station> result) {
@@ -132,7 +132,7 @@ public class StationPanel extends Composite {
 
             @Override
             public void onConfirm() {
-                RequestUtils.getInstance().getScenarioEditorService().deleteStation(station.getId(),
+                RequestUtils.getInstance().getStationEditorService().deleteStation(station.getId(),
                     RequestUtils.VOID_ASYNC_CALLBACK);
                 hide();
             }

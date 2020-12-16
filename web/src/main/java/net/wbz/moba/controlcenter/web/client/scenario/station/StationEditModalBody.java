@@ -10,8 +10,8 @@ import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.Widget;
 import java.util.ArrayList;
 import java.util.List;
-import net.wbz.moba.controlcenter.web.shared.scenario.Station;
-import net.wbz.moba.controlcenter.web.shared.scenario.StationPlatform;
+import net.wbz.moba.controlcenter.web.shared.station.Station;
+import net.wbz.moba.controlcenter.web.shared.station.StationPlatform;
 import org.gwtbootstrap3.client.ui.TextBox;
 
 /**

@@ -8,7 +8,7 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
 import net.wbz.moba.controlcenter.web.client.components.TrackBlockMultiSelect;
-import net.wbz.moba.controlcenter.web.shared.scenario.StationPlatform;
+import net.wbz.moba.controlcenter.web.shared.station.StationPlatform;
 import org.gwtbootstrap3.client.ui.TextBox;
 
 /**

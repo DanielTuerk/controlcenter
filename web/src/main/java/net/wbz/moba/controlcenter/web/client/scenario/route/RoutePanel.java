@@ -21,8 +21,8 @@ import net.wbz.moba.controlcenter.web.client.event.scenario.RouteRemoteListener;
 import net.wbz.moba.controlcenter.web.client.request.Callbacks.OnlySuccessAsyncCallback;
 import net.wbz.moba.controlcenter.web.client.request.RequestUtils;
 import net.wbz.moba.controlcenter.web.shared.scenario.Route;
-import net.wbz.moba.controlcenter.web.shared.scenario.Station;
-import net.wbz.moba.controlcenter.web.shared.scenario.StationPlatform;
+import net.wbz.moba.controlcenter.web.shared.station.Station;
+import net.wbz.moba.controlcenter.web.shared.station.StationPlatform;
 import org.gwtbootstrap3.client.ui.Container;
 import org.gwtbootstrap3.client.ui.Pagination;
 import org.gwtbootstrap3.client.ui.constants.PaginationSize;
@@ -131,7 +131,7 @@ public class RoutePanel extends Composite {
 
         EventReceiver.getInstance().addListener(routeRemoteListener);
 
-        RequestUtils.getInstance().getScenarioEditorService().getStations(
+        RequestUtils.getInstance().getStationEditorService().getStations(
             new OnlySuccessAsyncCallback<Collection<Station>>() {
                 @Override
                 public void onSuccess(Collection<Station> result) {

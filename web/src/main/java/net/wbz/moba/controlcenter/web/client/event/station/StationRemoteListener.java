@@ -1,7 +1,7 @@
-package net.wbz.moba.controlcenter.web.client.event.scenario;
+package net.wbz.moba.controlcenter.web.client.event.station;
 
 import net.wbz.moba.controlcenter.web.client.event.RemoteEventListener;
-import net.wbz.moba.controlcenter.web.shared.scenario.StationDataChangedEvent;
+import net.wbz.moba.controlcenter.web.shared.station.StationDataChangedEvent;
 
 /**
  * {@link RemoteEventListener} for the {@link StationDataChangedEvent}s.

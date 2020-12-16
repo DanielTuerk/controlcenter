@@ -38,7 +38,9 @@ public class ScenarioHistoryDao extends AbstractDao<ScenarioHistoryEntity> {
 
     public Optional<ScenarioStatistic> listByScenario(long scenarioId) {
         return Optional.ofNullable((ScenarioStatistic)
-            createQuery(QUERY + " HAVING x.scenario.id = :scenarioId").setParameter("scenarioId", scenarioId)
+            getEntityManager().createQuery(QUERY + " HAVING x.scenario.id = :scenarioId")
+                .setParameter("scenarioId", scenarioId)
+                .unwrap(Query.class)
                 .uniqueResult());
     }
 

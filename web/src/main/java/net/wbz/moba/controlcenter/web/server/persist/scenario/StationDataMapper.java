@@ -1,8 +1,7 @@
 package net.wbz.moba.controlcenter.web.server.persist.scenario;
 
-import net.wbz.moba.controlcenter.web.server.persist.scenario.StationEntity;
 import net.wbz.moba.controlcenter.web.server.web.DataMapper;
-import net.wbz.moba.controlcenter.web.shared.scenario.Station;
+import net.wbz.moba.controlcenter.web.shared.station.Station;
 
 /**
  * @author Daniel Tuerk

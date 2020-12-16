@@ -2,7 +2,6 @@ package net.wbz.moba.controlcenter.web.server.persist.scenario;
 
 import java.util.List;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -59,6 +58,12 @@ public class ScenarioEntity extends AbstractEntity {
     @OneToMany(mappedBy = "scenario", fetch = FetchType.EAGER)
     private List<RouteSequenceEntity> routeSequences;
 
+    @JMap
+    private Long stationPlatformStartId;
+
+    @JMap
+    private Long stationPlatformEndId;
+
     public String getName() {
         return name;
     }
@@ -106,5 +111,21 @@ public class ScenarioEntity extends AbstractEntity {
 
     public void setStartDrivingLevel(Integer startDrivingLevel) {
         this.startDrivingLevel = startDrivingLevel;
+    }
+
+    public Long getStationPlatformStartId() {
+        return stationPlatformStartId;
+    }
+
+    public void setStationPlatformStartId(Long stationPlatformStartId) {
+        this.stationPlatformStartId = stationPlatformStartId;
+    }
+
+    public Long getStationPlatformEndId() {
+        return stationPlatformEndId;
+    }
+
+    public void setStationPlatformEndId(Long stationPlatformEndId) {
+        this.stationPlatformEndId = stationPlatformEndId;
     }
 }

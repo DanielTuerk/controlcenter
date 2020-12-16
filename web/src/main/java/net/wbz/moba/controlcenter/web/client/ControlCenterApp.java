@@ -15,6 +15,7 @@ import net.wbz.moba.controlcenter.web.client.request.RequestUtils;
 import net.wbz.moba.controlcenter.web.client.scenario.ScenarioEditor;
 import net.wbz.moba.controlcenter.web.client.settings.ConfigPanel;
 import net.wbz.moba.controlcenter.web.client.settings.Settings;
+import net.wbz.moba.controlcenter.web.client.station.StationBoardsPanel;
 import net.wbz.moba.controlcenter.web.client.train.TrainPanel;
 import net.wbz.moba.controlcenter.web.client.viewer.track.TrackViewerContainer;
 import net.wbz.moba.controlcenter.web.shared.constrution.Construction;
@@ -32,6 +33,7 @@ public class ControlCenterApp implements EntryPoint {
     private ScenarioEditor trackScenarioEditorPanel;
     private TrainPanel trainPanel;
     private ConfigPanel configPanel;
+    private StationBoardsPanel stationsBoard;
 
     private ControlCenterContainer controlCenterContainer;
 
@@ -133,6 +135,7 @@ public class ControlCenterApp implements EntryPoint {
         trackScenarioEditorPanel = new ScenarioEditor();
         trainPanel = new TrainPanel();
         configPanel = new ConfigPanel();
+        stationsBoard = new StationBoardsPanel();
         controlCenterContainer = new ControlCenterContainer(createAppMenu());
 
         show(trackViewerContainer);
@@ -171,6 +174,11 @@ public class ControlCenterApp implements EntryPoint {
             @Override
             public void showConfiguration() {
                 show(configPanel);
+            }
+
+            @Override
+            public void showStationsBoard() {
+                show(stationsBoard);
             }
         };
     }

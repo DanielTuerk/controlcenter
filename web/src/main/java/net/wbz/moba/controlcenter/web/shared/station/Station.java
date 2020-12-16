@@ -1,4 +1,4 @@
-package net.wbz.moba.controlcenter.web.shared.scenario;
+package net.wbz.moba.controlcenter.web.shared.station;
 
 import com.googlecode.jmapper.annotations.JMap;
 import java.util.ArrayList;

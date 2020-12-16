@@ -30,6 +30,9 @@ class AppMenu extends Composite {
     AnchorListItem linkTrainEditor;
     @UiField
     AnchorListItem linkConfiguration;
+    @UiField
+    AnchorListItem linkStationsBoard;
+
     private AppMenuCallback callback;
 
     public AppMenu() {
@@ -47,6 +50,7 @@ class AppMenu extends Composite {
         linkScenarioEditor.setActive(false);
         linkTrainEditor.setActive(false);
         linkConfiguration.setActive(false);
+        linkStationsBoard.setActive(false);
     }
 
     @UiHandler("linkViewer")
@@ -91,6 +95,13 @@ class AppMenu extends Composite {
         linkConfiguration.setActive(true);
     }
 
+    @UiHandler("linkStationsBoard")
+    void clickLinkStationsBoard(ClickEvent event) {
+        callback.showStationsBoard();
+        setAllInactive();
+        linkStationsBoard.setActive(true);
+    }
+
     interface AppMenuBinder extends UiBinder<Widget, AppMenu> {
 
     }
@@ -108,5 +119,7 @@ class AppMenu extends Composite {
         void showTrainEditor();
 
         void showConfiguration();
+
+        void showStationsBoard();
     }
 }

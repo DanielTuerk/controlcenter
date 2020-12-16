@@ -5,10 +5,11 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import java.util.Collection;
 import net.wbz.moba.controlcenter.web.server.persist.scenario.TrackBuilder;
+import net.wbz.moba.controlcenter.web.server.web.station.StationManager;
 import net.wbz.moba.controlcenter.web.shared.scenario.Route;
 import net.wbz.moba.controlcenter.web.shared.scenario.Scenario;
 import net.wbz.moba.controlcenter.web.shared.scenario.ScenarioEditorService;
-import net.wbz.moba.controlcenter.web.shared.scenario.Station;
+import net.wbz.moba.controlcenter.web.shared.station.Station;
 import net.wbz.moba.controlcenter.web.shared.scenario.Track;
 import net.wbz.moba.controlcenter.web.shared.scenario.TrackNotFoundException;
 import org.slf4j.Logger;
@@ -54,26 +55,6 @@ public class ScenarioEditorServiceImpl extends RemoteServiceServlet implements S
     @Override
     public void deleteScenario(long scenarioId) {
         scenarioManager.deleteScenario(scenarioId);
-    }
-
-    @Override
-    public Collection<Station> getStations() {
-        return stationManager.getStations();
-    }
-
-    @Override
-    public void createStation(Station station) {
-        stationManager.createStation(station);
-    }
-
-    @Override
-    public void updateStation(Station station) {
-        stationManager.updateStation(station);
-    }
-
-    @Override
-    public void deleteStation(long stationId) {
-        stationManager.deleteStation(stationId);
     }
 
     @Override

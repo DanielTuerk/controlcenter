@@ -188,7 +188,11 @@ abstract class ScenarioExecution implements Callable<Void> {
             cleanupRunningRouteInSequence(previousRouteSequence);
 
             if (anyRouteExecutedSuccessful) {
+                // there was a success and the train maybe started in the middle of the routes
                 finishScenarioExecution(RUN_STATE.SUCCESS);
+            } else {
+                // no one succeeded, so we didn't have got an execution of the scenario
+                finishScenarioExecution(RUN_STATE.ERROR);
             }
         } catch (Exception e) {
             // catch unexpected errors and stop the scenario to also stop the trains

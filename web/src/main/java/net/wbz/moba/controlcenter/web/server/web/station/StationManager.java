@@ -1,10 +1,11 @@
-package net.wbz.moba.controlcenter.web.server.web.scenario;
+package net.wbz.moba.controlcenter.web.server.web.station;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.google.inject.persist.Transactional;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import net.wbz.moba.controlcenter.web.server.event.EventBroadcaster;
 import net.wbz.moba.controlcenter.web.server.persist.scenario.StationDao;
 import net.wbz.moba.controlcenter.web.server.persist.scenario.StationDataMapper;
@@ -12,9 +13,9 @@ import net.wbz.moba.controlcenter.web.server.persist.scenario.StationEntity;
 import net.wbz.moba.controlcenter.web.server.persist.scenario.StationPlatformDao;
 import net.wbz.moba.controlcenter.web.server.persist.scenario.StationPlatformDataMapper;
 import net.wbz.moba.controlcenter.web.server.persist.scenario.StationPlatformEntity;
-import net.wbz.moba.controlcenter.web.shared.scenario.Station;
-import net.wbz.moba.controlcenter.web.shared.scenario.StationDataChangedEvent;
-import net.wbz.moba.controlcenter.web.shared.scenario.StationPlatform;
+import net.wbz.moba.controlcenter.web.shared.station.Station;
+import net.wbz.moba.controlcenter.web.shared.station.StationDataChangedEvent;
+import net.wbz.moba.controlcenter.web.shared.station.StationPlatform;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -126,4 +127,11 @@ public class StationManager {
         eventBroadcaster.fireEvent(new StationDataChangedEvent());
     }
 
+    public Station getStationOfPlatform(Long stationPlatformId) {
+        return stationDataMapper.transformSource(stationDao.findByPlatformId(stationPlatformId));
+    }
+
+    public StationPlatform findStationPlatform(long stationPlatformId) {
+        return stationPlatformDataMapper.transformSource(stationPlatformDao.findById(stationPlatformId));
+    }
 }

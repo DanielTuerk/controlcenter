@@ -16,6 +16,7 @@ import net.wbz.moba.controlcenter.web.server.web.train.TrainManager;
 import net.wbz.moba.controlcenter.web.server.web.train.TrainServiceImpl;
 import net.wbz.moba.controlcenter.web.server.web.viewer.TrackViewerServiceImpl;
 import net.wbz.moba.controlcenter.web.shared.scenario.Scenario;
+import net.wbz.moba.controlcenter.web.shared.scenario.Scenario.MODE;
 import net.wbz.moba.controlcenter.web.shared.scenario.Scenario.RUN_STATE;
 import net.wbz.moba.controlcenter.web.shared.scenario.ScenarioStateEvent;
 import net.wbz.moba.controlcenter.web.shared.train.TrainService;
@@ -81,6 +82,17 @@ public class ScenarioExecutor {
     }
 
     /**
+     * TODO muss auch den job anlegen etc. raus ziehen aus scenario service
+     * @param scenario
+     */
+    public void scheduleScenario(Scenario scenario) {
+        scenario.setMode(MODE.AUTOMATIC);
+        scenario.setRunState(RUN_STATE.IDLE);
+
+        fireEvent(scenario);
+    }
+
+    /**
      * Start the given {@link Scenario} if not already running.
      *
      * @param scenario {@link Scenario}
@@ -94,9 +106,8 @@ public class ScenarioExecutor {
                 protected void fireScenarioStateChangeEvent(Scenario scenario) {
                     if (scenario.getRunState() == RUN_STATE.FINISHED) {
                         finishExecution(scenario);
-                    } else {
-                        fireEvent(scenario);
                     }
+                    fireEvent(scenario);
                 }
             };
             executionsByScenarioId.put(scenario.getId(), scenarioExecution);
@@ -119,6 +130,7 @@ public class ScenarioExecutor {
         if (executionsByScenarioId.containsKey(scenarioId)) {
             ScenarioExecution scenarioExecution = executionsByScenarioId.get(scenarioId);
             scenarioExecution.stop();
+            fireEvent(scenario);
         }
     }
 
@@ -140,7 +152,6 @@ public class ScenarioExecutor {
 
     private void finishExecution(Scenario scenario) {
         executionsByScenarioId.remove(scenario.getId());
-        ScenarioExecutor.this.fireEvent(scenario);
     }
 
     private void fireEvent(Scenario scenario) {

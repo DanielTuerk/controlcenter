@@ -17,6 +17,10 @@ import net.wbz.moba.controlcenter.web.shared.scenario.ScenarioService;
 import net.wbz.moba.controlcenter.web.shared.scenario.ScenarioServiceAsync;
 import net.wbz.moba.controlcenter.web.shared.scenario.ScenarioStatisticService;
 import net.wbz.moba.controlcenter.web.shared.scenario.ScenarioStatisticServiceAsync;
+import net.wbz.moba.controlcenter.web.shared.station.StationEditorService;
+import net.wbz.moba.controlcenter.web.shared.station.StationEditorServiceAsync;
+import net.wbz.moba.controlcenter.web.shared.station.StationsBoardService;
+import net.wbz.moba.controlcenter.web.shared.station.StationsBoardServiceAsync;
 import net.wbz.moba.controlcenter.web.shared.train.TrainEditorService;
 import net.wbz.moba.controlcenter.web.shared.train.TrainEditorServiceAsync;
 import net.wbz.moba.controlcenter.web.shared.train.TrainService;
@@ -33,16 +37,18 @@ public class RequestUtils {
 
     public static final AsyncCallback<Void> VOID_ASYNC_CALLBACK = new VoidAsyncCallback();
     private final static RequestUtils INSTANCE = new RequestUtils();
-    private TrackEditorServiceAsync trackEditorRequest = GWT.create(TrackEditorService.class);
-    private TrackViewerServiceAsync trackViewerRequest = GWT.create(TrackViewerService.class);
-    private TrainServiceAsync trainRequest = GWT.create(TrainService.class);
-    private TrainEditorServiceAsync trainEditorRequest = GWT.create(TrainEditorService.class);
-    private BusServiceAsync busRequest = GWT.create(BusService.class);
-    private ConfigServiceAsync configRequest = GWT.create(ConfigService.class);
-    private ConstructionServiceAsync constructionRequest = GWT.create(ConstructionService.class);
-    private ScenarioServiceAsync scenarioService = GWT.create(ScenarioService.class);
-    private ScenarioEditorServiceAsync scenarioEditorService = GWT.create(ScenarioEditorService.class);
-    private ScenarioStatisticServiceAsync scenarioStatisticService = GWT.create(ScenarioStatisticService.class);
+    private final TrackEditorServiceAsync trackEditorRequest = GWT.create(TrackEditorService.class);
+    private final TrackViewerServiceAsync trackViewerRequest = GWT.create(TrackViewerService.class);
+    private final TrainServiceAsync trainRequest = GWT.create(TrainService.class);
+    private final TrainEditorServiceAsync trainEditorRequest = GWT.create(TrainEditorService.class);
+    private final BusServiceAsync busRequest = GWT.create(BusService.class);
+    private final ConfigServiceAsync configRequest = GWT.create(ConfigService.class);
+    private final ConstructionServiceAsync constructionRequest = GWT.create(ConstructionService.class);
+    private final ScenarioServiceAsync scenarioService = GWT.create(ScenarioService.class);
+    private final ScenarioEditorServiceAsync scenarioEditorService = GWT.create(ScenarioEditorService.class);
+    private final ScenarioStatisticServiceAsync scenarioStatisticService = GWT.create(ScenarioStatisticService.class);
+    private final StationEditorServiceAsync stationEditorServiceAsync = GWT.create(StationEditorService.class);
+    private final StationsBoardServiceAsync stationsBoardServiceAsync = GWT.create(StationsBoardService.class);
 
     private RequestUtils() {
     }
@@ -89,5 +95,13 @@ public class RequestUtils {
 
     public ScenarioStatisticServiceAsync getScenarioStatisticService() {
         return scenarioStatisticService;
+    }
+
+    public StationsBoardServiceAsync getStationsBoardService() {
+        return stationsBoardServiceAsync;
+    }
+
+    public StationEditorServiceAsync getStationEditorService() {
+        return stationEditorServiceAsync;
     }
 }

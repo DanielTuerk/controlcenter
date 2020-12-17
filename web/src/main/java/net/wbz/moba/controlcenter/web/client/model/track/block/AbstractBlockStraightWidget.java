@@ -12,6 +12,7 @@ import net.wbz.moba.controlcenter.web.client.util.SvgTrackUtil;
 import net.wbz.moba.controlcenter.web.shared.track.model.BlockStraight;
 import net.wbz.moba.controlcenter.web.shared.track.model.BusDataConfiguration;
 import net.wbz.moba.controlcenter.web.shared.track.model.Straight;
+import net.wbz.moba.controlcenter.web.shared.track.model.Straight.DIRECTION;
 import net.wbz.moba.controlcenter.web.shared.train.Train;
 import org.gwtbootstrap3.client.ui.FieldSet;
 import org.gwtbootstrap3.client.ui.FormGroup;
@@ -47,7 +48,7 @@ abstract public class AbstractBlockStraightWidget extends AbstractSvgTrackWidget
      * Mapping of elements on the track part by each train. Used to add or remove an element for entering and exiting
      * the block of a train called by the {@link net.wbz.moba.controlcenter.web.shared.bus.FeedbackBlockEvent}.
      */
-    private Map<Train, OMSVGElement> trainElements = Maps.newConcurrentMap();
+    private final Map<Train, OMSVGElement> trainElements = Maps.newConcurrentMap();
     private final FeedbackBlockRemoteListener feedbackBlockRemoteListener;
     private final TrackBlockRemoteListener blockEventListener;
     /**
@@ -169,6 +170,9 @@ abstract public class AbstractBlockStraightWidget extends AbstractSvgTrackWidget
             OMSVGTextElement trainTextElement = getSvgDocument()
                 .createSVGTextElement(BOX_PADDING + 1f, getWidgetHeight() - BOX_PADDING - 1, (short) 1,
                     train.getName());
+            if (getStraightDirection() == DIRECTION.VERTICAL) {
+                trainTextElement.getStyle().setSVGProperty(SVGConstants.SVG_TRANSFORM_ATTRIBUTE, "rotate(-90deg)");
+            }
             trainTextElement.getStyle().setSVGProperty(SVGConstants.CSS_FONT_SIZE_PROPERTY, FEEDBACK_FONT_SIZE);
             trainElements.put(train, trainTextElement);
             getSvgRootElement().appendChild(trainTextElement);

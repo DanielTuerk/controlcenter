@@ -22,7 +22,7 @@ public class StationDao extends AbstractDao<StationEntity> {
     }
 
     public List<StationEntity> listAll() {
-        return getEntityManager().createQuery("SELECT x FROM STATION x", StationEntity.class).getResultList();
+        return getEntityManager().createQuery("SELECT x FROM STATION x ORDER BY x.name ", StationEntity.class).getResultList();
     }
 
     public StationEntity findByPlatformId(long platformId) {

@@ -1,18 +1,13 @@
 package net.wbz.moba.controlcenter.web.server.persist.scenario;
 
-import java.util.List;
-
-import javax.inject.Provider;
-import javax.persistence.EntityManager;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-
+import java.util.List;
+import javax.inject.Provider;
+import javax.persistence.EntityManager;
 import net.wbz.moba.controlcenter.web.server.persist.AbstractDao;
-import net.wbz.moba.controlcenter.web.server.persist.device.DeviceInfoEntity;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Daniel Tuerk
@@ -27,7 +22,8 @@ public class ScenarioDao extends AbstractDao<ScenarioEntity> {
     }
 
     public List<ScenarioEntity> listAll() {
-        return getEntityManager().createQuery("SELECT x FROM SCENARIO x", ScenarioEntity.class).getResultList();
+        return getEntityManager().createQuery("SELECT x FROM SCENARIO x ORDER BY x.name", ScenarioEntity.class)
+            .getResultList();
     }
 
 }

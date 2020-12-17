@@ -23,14 +23,8 @@ public class TrainDao extends AbstractDao<TrainEntity> {
         super(entityManager, TrainEntity.class);
     }
 
-    // @Override
-    // public TrainEntity getById(Long id) {
-    // return (TrainEntity) getEntityManager().createQuery("select x FROM train x WHERE x.id = :id")
-    // .setParameter("id", id).getSingleResult();
-    // }
-
     public List<TrainEntity> getTrains() {
-        return getEntityManager().createQuery("SELECT x FROM TRAIN x", TrainEntity.class).getResultList();
+        return getEntityManager().createQuery("SELECT x FROM TRAIN x ORDER BY x.name", TrainEntity.class).getResultList();
     }
 
     public TrainEntity getTrainByAddress(int address) throws TrainException {

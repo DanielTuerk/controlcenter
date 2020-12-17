@@ -23,13 +23,15 @@ public class StationPlatformDao extends AbstractDao<StationPlatformEntity> {
     }
 
     public List<StationPlatformEntity> listAll() {
-        return getEntityManager().createQuery("SELECT x FROM STATION_PLATFORM x", StationPlatformEntity.class)
+        return getEntityManager().createQuery("SELECT x FROM STATION_PLATFORM x ORDER BY x.name",
+            StationPlatformEntity.class)
             .getResultList();
     }
 
     public List<StationPlatformEntity> findByStation(Long stationId) {
         return getEntityManager().createQuery(
-            "SELECT x FROM STATION_PLATFORM x where x.station.id = :stationId", StationPlatformEntity.class)
+            "SELECT x FROM STATION_PLATFORM x where x.station.id = :stationId ORDER BY x.name",
+            StationPlatformEntity.class)
             .setParameter("stationId", stationId)
             .getResultList();
     }

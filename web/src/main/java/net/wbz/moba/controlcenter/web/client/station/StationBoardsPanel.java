@@ -6,10 +6,7 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
-import net.wbz.moba.controlcenter.web.client.request.Callbacks.OnlySuccessAsyncCallback;
-import net.wbz.moba.controlcenter.web.client.request.RequestUtils;
 import net.wbz.moba.controlcenter.web.shared.station.Station;
 import org.gwtbootstrap3.client.ui.Container;
 
@@ -22,32 +19,36 @@ public class StationBoardsPanel extends Composite {
     private final List<StationBoardPanel> stationBoardPanels = new ArrayList<>();
     @UiField
     Container stationsBoardContainer;
+    @UiField
+    SelectStationPanel selectStationPanel;
 
     public StationBoardsPanel() {
         initWidget(UI_BINDER.createAndBindUi(this));
+
+        selectStationPanel.addOpenStationConsumer(stations -> {
+            clearStations();
+            stations.forEach(this::addStation);
+        });
     }
 
     @Override
     protected void onLoad() {
         super.onLoad();
-
-        RequestUtils.getInstance().getStationEditorService().getStations(
-            new OnlySuccessAsyncCallback<Collection<Station>>() {
-                @Override
-                public void onSuccess(Collection<Station> result) {
-                    stationBoardPanels.clear();
-                    result.forEach(station -> {
-                        StationBoardPanel stationBoardPanel = new StationBoardPanel(station);
-                        stationBoardPanels.add(stationBoardPanel);
-                        stationsBoardContainer.add(stationBoardPanel);
-                    });
-                }
-            });
     }
 
     @Override
     protected void onUnload() {
         super.onUnload();
+        clearStations();
+    }
+
+    private void addStation(Station station) {
+        StationBoardPanel stationBoardPanel = new StationBoardPanel(station);
+        stationBoardPanels.add(stationBoardPanel);
+        stationsBoardContainer.add(stationBoardPanel);
+    }
+
+    private void clearStations() {
         stationBoardPanels.forEach(stationBoardPanel -> stationsBoardContainer.remove(stationBoardPanel));
         stationBoardPanels.clear();
     }

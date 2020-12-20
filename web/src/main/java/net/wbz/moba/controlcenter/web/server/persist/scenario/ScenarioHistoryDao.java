@@ -41,6 +41,7 @@ public class ScenarioHistoryDao extends AbstractDao<ScenarioHistoryEntity> {
             getEntityManager().createQuery(QUERY + " HAVING x.scenario.id = :scenarioId")
                 .setParameter("scenarioId", scenarioId)
                 .unwrap(Query.class)
+                .setResultTransformer(new Transformer())
                 .uniqueResult());
     }
 

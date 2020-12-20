@@ -15,7 +15,6 @@ import net.wbz.moba.controlcenter.web.client.request.RequestUtils;
 import net.wbz.moba.controlcenter.web.shared.station.Station;
 import net.wbz.moba.controlcenter.web.shared.station.StationBoardChangedEvent;
 import net.wbz.moba.controlcenter.web.shared.station.StationBoardEntry;
-import org.gwtbootstrap3.client.ui.Heading;
 import org.gwtbootstrap3.client.ui.PageHeader;
 import org.gwtbootstrap3.client.ui.gwt.CellTable;
 
@@ -119,7 +118,13 @@ public class StationBoardPanel extends Composite {
             public String getValue(StationBoardEntry object) {
                 return object.getPlatform();
             }
-        }, "Gleis");
+        }, "Platform");
+        table.addColumn(new TextColumn<StationBoardEntry>() {
+            @Override
+            public String getValue(StationBoardEntry object) {
+                return String.join(", ", object.getViaStations());
+            }
+        }, "via");
         table.addColumn(new TextColumn<StationBoardEntry>() {
             @Override
             public String getValue(StationBoardEntry object) {

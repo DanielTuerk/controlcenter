@@ -1,41 +1,45 @@
 package net.wbz.moba.controlcenter.web.server.web.station;
 
+import java.util.Set;
 import java.util.function.Consumer;
 import net.wbz.moba.controlcenter.web.shared.scenario.Scenario;
 import net.wbz.moba.controlcenter.web.shared.station.Station;
+import net.wbz.moba.controlcenter.web.shared.station.StationPlatform;
 
 /**
  * @author Daniel Tuerk
  */
 class BoardAction {
 
-    private final StationManager stationManager;
     private final Scenario scenario;
-    private final Long stationPlatformStart;
-    private final Long stationPlatformEnd;
-    private Station stationStart;
-    private Station stationEnd;
+    private final StationPlatform stationPlatformStart;
+    private final StationPlatform stationPlatformEnd;
+    private final Station stationStart;
+    private final Station stationEnd;
+    private final Set<Station> viaStations;
 
-    BoardAction(Scenario scenario, StationManager stationManager) {
+    public BoardAction(Scenario scenario, Station stationStart, StationPlatform stationPlatformStart,
+        Station stationEnd,
+        StationPlatform stationPlatformEnd, Set<Station> viaStations) {
         this.scenario = scenario;
-        this.stationPlatformStart = scenario.getStationPlatformStartId();
-        this.stationPlatformEnd = scenario.getStationPlatformEndId();
-        this.stationManager = stationManager;
+        this.stationPlatformStart = stationPlatformStart;
+        this.stationPlatformEnd = stationPlatformEnd;
+        this.stationStart = stationStart;
+        this.stationEnd = stationEnd;
+        this.viaStations = viaStations;
     }
 
     void apply(Consumer<BoardAction> consumer) {
         if (stationPlatformStart != null && stationPlatformEnd != null) {
-            stationStart = stationManager.getStationOfPlatform(stationPlatformStart);
-            stationEnd = stationManager.getStationOfPlatform(stationPlatformEnd);
             consumer.accept(this);
         }
     }
 
-    public Long getStationPlatformStart() {
+    public StationPlatform getStationPlatformStart() {
         return stationPlatformStart;
     }
 
-    public Long getStationPlatformEnd() {
+    public StationPlatform getStationPlatformEnd() {
         return stationPlatformEnd;
     }
 
@@ -49,5 +53,9 @@ class BoardAction {
 
     public Scenario getScenario() {
         return scenario;
+    }
+
+    public Set<Station> getViaStations() {
+        return viaStations;
     }
 }

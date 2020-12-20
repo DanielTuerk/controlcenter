@@ -37,4 +37,15 @@ public final class ScenarioUtil {
         }
         return null;
     }
+
+    public static Date getDateFromTimeText(String timeText) {
+        if(Strings.isNullOrEmpty(timeText)) {
+            return null;
+        }
+        try {
+            return FORMATTER.parse(timeText);
+        } catch (ParseException e) {
+            return null;
+        }
+    }
 }

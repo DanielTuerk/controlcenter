@@ -2,10 +2,10 @@ package net.wbz.moba.controlcenter.web.server.web.scenario.execution;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import net.wbz.moba.controlcenter.web.server.event.EventBroadcaster;
 import net.wbz.moba.controlcenter.web.server.persist.scenario.TrackBuilder;
 import net.wbz.moba.controlcenter.web.server.web.editor.block.SignalBlockRegistry;
@@ -53,11 +53,11 @@ public class ScenarioExecutor {
     /**
      * Server side listeners for state changes.
      */
-    private final List<ScenarioStateListener> listeners = new ArrayList<>();
+    private final List<ScenarioStateListener> listeners = new CopyOnWriteArrayList<>();
     /**
      * Server side listeners for route run state changes.
      */
-    private final List<RouteListener> routeListeners = new ArrayList<>();
+    private final List<RouteListener> routeListeners = new CopyOnWriteArrayList<>();
 
     @Inject
     ScenarioExecutor(TrackViewerServiceImpl trackViewerService, TrainServiceImpl trainService,
@@ -128,8 +128,10 @@ public class ScenarioExecutor {
         if (executionsByScenarioId.containsKey(scenarioId)) {
             ScenarioExecution scenarioExecution = executionsByScenarioId.get(scenarioId);
             scenarioExecution.stop();
-            fireEvent(scenario);
+        } else {
+            scenario.setRunState(RUN_STATE.STOPPED);
         }
+        fireEvent(scenario);
     }
 
     public void addScenarioStateListener(ScenarioStateListener listener) {

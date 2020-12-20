@@ -2,7 +2,10 @@ package net.wbz.moba.controlcenter.web.server.web.station;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import java.util.List;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
+import net.wbz.moba.controlcenter.web.shared.station.Station;
 
 /**
  * @author Daniel Tuerk
@@ -11,22 +14,21 @@ import java.util.function.Consumer;
 class QueuedScenarioBoardConsumer implements Consumer<BoardAction> {
 
     private final StationBoardFactory stationBoardFactory;
-    private final StationManager stationManager;
 
     @Inject
-    QueuedScenarioBoardConsumer(StationBoardFactory stationBoardFactory,
-        StationManager stationManager) {
+    QueuedScenarioBoardConsumer(StationBoardFactory stationBoardFactory) {
         this.stationBoardFactory = stationBoardFactory;
-        this.stationManager = stationManager;
     }
 
     @Override
     public void accept(BoardAction boardAction) {
+        List<String> viaStations = boardAction.getViaStations().stream().map(Station::getName)
+            .collect(Collectors.toList());
         stationBoardFactory.getStationBoard(boardAction.getStationStart().getId())
             .addDeparture(boardAction.getScenario(), boardAction.getStationEnd(),
-                stationManager.findStationPlatform(boardAction.getStationPlatformStart()));
+                boardAction.getStationPlatformStart(), viaStations);
         stationBoardFactory.getStationBoard(boardAction.getStationEnd().getId())
             .addArrival(boardAction.getScenario(), boardAction.getStationStart(),
-                stationManager.findStationPlatform(boardAction.getStationPlatformEnd()));
+                boardAction.getStationPlatformEnd(), viaStations);
     }
 }

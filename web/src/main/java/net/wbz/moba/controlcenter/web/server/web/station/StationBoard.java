@@ -2,6 +2,7 @@ package net.wbz.moba.controlcenter.web.server.web.station;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -56,20 +57,38 @@ class StationBoard {
         return arrivalTimeText;
     }
 
-    void addDeparture(Scenario scenario, Station stationEnd,
-        StationPlatform stationPlatformStart) {
+    void addDeparture(Scenario scenario, Station stationEnd, StationPlatform stationPlatformStart,
+        List<String> viaStations) {
         departureEntries.add(new StationBoardEntry(
             scenario.getId(), ScenarioUtil.nextExecutionTime(scenario), scenario.getTrain().getName(),
             stationEnd.getName(),
-            stationPlatformStart.getName()));
+            stationPlatformStart.getName(), viaStations));
+
+        sortEntries(departureEntries);
         fireChangedEvent(TYPE.DEPARTURE);
     }
 
-    void addArrival(Scenario scenario, Station stationStart, StationPlatform stationPlatformEnd) {
+    void addArrival(Scenario scenario, Station stationStart, StationPlatform stationPlatformEnd,
+        List<String> viaStations) {
         String arrivalTimeText = getArrivalTimeText(scenario);
         arrivalEntries.add(new StationBoardEntry(scenario.getId(), arrivalTimeText,
-            scenario.getTrain().getName(), stationStart.getName(), stationPlatformEnd.getName()));
+            scenario.getTrain().getName(), stationStart.getName(), stationPlatformEnd.getName(), viaStations));
+        sortEntries(arrivalEntries);
         fireChangedEvent(TYPE.ARRIVAL);
+    }
+
+    private void sortEntries(List<StationBoardEntry> boardEntries) {
+        boardEntries.sort((o1, o2) -> {
+            Date o1Date = ScenarioUtil.getDateFromTimeText(o1.getTimeText());
+            if (o1Date == null) {
+                return -1;
+            }
+            Date o2Date = ScenarioUtil.getDateFromTimeText(o2.getTimeText());
+            if (o2Date == null) {
+                return 1;
+            }
+            return o1Date.compareTo(o2Date);
+        });
     }
 
     void updateDeparture(Scenario scenario, String information) {

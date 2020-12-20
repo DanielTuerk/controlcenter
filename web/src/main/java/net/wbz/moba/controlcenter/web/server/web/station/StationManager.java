@@ -5,7 +5,6 @@ import com.google.inject.Singleton;
 import com.google.inject.persist.Transactional;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import net.wbz.moba.controlcenter.web.server.event.EventBroadcaster;
 import net.wbz.moba.controlcenter.web.server.persist.scenario.StationDao;
 import net.wbz.moba.controlcenter.web.server.persist.scenario.StationDataMapper;
@@ -30,9 +29,13 @@ public class StationManager {
     private static final Logger LOG = LoggerFactory.getLogger(StationManager.class);
 
     /**
-     * Cached scenarios from persistence.
+     * Cached {@link Station}s from persistence.
      */
     private final List<Station> stations = new ArrayList<>();
+    /**
+     * Cached {@link StationPlatform}s from persistence.
+     */
+    private final List<StationPlatform> stationPlatforms = new ArrayList<>();
 
     private final StationDao stationDao;
     private final EventBroadcaster eventBroadcaster;
@@ -59,6 +62,13 @@ public class StationManager {
         return stations;
     }
 
+    synchronized List<StationPlatform> getStationPlatforms() {
+        if (stationPlatforms.isEmpty()) {
+            loadStationPlatformsFromDatabase();
+        }
+        return stationPlatforms;
+    }
+
     @Transactional
     void createStation(Station station) {
         StationEntity entity = stationDataMapper.transformTarget(station);
@@ -69,6 +79,7 @@ public class StationManager {
         stationDao.update(createdStationEntity);
 
         loadStationsFromDatabase();
+        loadStationPlatformsFromDatabase();
         fireStationsChanged();
     }
 
@@ -80,6 +91,7 @@ public class StationManager {
 
         stationDao.update(entity);
         loadStationsFromDatabase();
+        loadStationPlatformsFromDatabase();
         fireStationsChanged();
     }
 
@@ -88,6 +100,7 @@ public class StationManager {
         stationPlatformDao.deleteByStation(stationId);
         stationDao.delete(stationDao.findById(stationId));
         loadStationsFromDatabase();
+        loadStationPlatformsFromDatabase();
         fireStationsChanged();
     }
 
@@ -122,16 +135,23 @@ public class StationManager {
         stations.addAll(stationDataMapper.transformSource(stationDao.listAll()));
     }
 
+    private void loadStationPlatformsFromDatabase() {
+        LOG.debug("load station platforms from database");
+        stationPlatforms.clear();
+        stationPlatforms.addAll(stationPlatformDataMapper.transformSource(stationPlatformDao.listAll()));
+    }
 
     private void fireStationsChanged() {
         eventBroadcaster.fireEvent(new StationDataChangedEvent());
     }
 
     public Station getStationOfPlatform(Long stationPlatformId) {
+        // TODO cache oder nicht, oder veilleicht doch einfach @Cacheable ?
         return stationDataMapper.transformSource(stationDao.findByPlatformId(stationPlatformId));
     }
 
     public StationPlatform findStationPlatform(long stationPlatformId) {
+        // TODO chached nicht mehr, lieber stream?
         return stationPlatformDataMapper.transformSource(stationPlatformDao.findById(stationPlatformId));
     }
 }

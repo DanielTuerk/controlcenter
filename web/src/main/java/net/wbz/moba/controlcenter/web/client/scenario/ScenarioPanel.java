@@ -101,10 +101,6 @@ public class ScenarioPanel extends Composite {
                     for (RouteSequence routeSequence : object.getRouteSequences()) {
                         Route route = routeSequence.getRoute();
                         if (route != null) {
-                            sb.append("from: ");
-                            sb.append(route.getName());
-                            sb.append("\n");
-                            sb.append(" to: ");
                             sb.append(route.getName());
                             sb.append("\n");
                         }

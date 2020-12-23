@@ -33,6 +33,8 @@ class WaitForFreeTrackCallable implements Runnable {
         final Route route = routeExecution.getRouteSequence().getRoute();
         LOG.info("train ({}) request free track: {}", routeExecution.getTrain(), route);
 
+        routeExecutionObserver.addRunningRouteSequence(routeExecution.getRouteSequence());
+
         while (scenario.getRunState() != RUN_STATE.STOPPED) {
             if (routeExecutionObserver.checkAndReserveNextRunningRoute(routeExecution.getRouteSequence(),
                 routeExecution.getPreviousRouteSequence())) {

@@ -136,7 +136,7 @@ abstract class ScenarioExecution implements Callable<Void> {
 
                     previousRouteSequence = routeSequence;
 
-                    // TODO die nächsrten beiden werden niocht für start und ende 2er routen aufgerufen
+                    routeExecutionObserver.addRunningRouteSequence(routeSequence);
 
                     // check track for running scenarios and wait for the free track
                     waitForFreeTrack(routeExecution);
@@ -157,6 +157,8 @@ abstract class ScenarioExecution implements Callable<Void> {
                     } catch (InterruptedException e) {
                         throw new RouteExecutionInterruptException("block run interrupted", e);
                     }
+
+                    routeExecutionObserver.removeRunningRouteSequence(routeSequence);
 
                     finishRoute(routeSequence);
 
@@ -277,6 +279,10 @@ abstract class ScenarioExecution implements Callable<Void> {
         if (routeExecution.getNextRouteSequence() != null && routeExecutionObserver
             .checkAndReserveNextRunningRoute(routeExecution.getNextRouteSequence(),
                 routeExecution.getRouteSequence())) {
+
+            synchronized (routeExecutionObserver) {
+                routeExecutionObserver.addRunningRouteSequence(routeExecution.getNextRouteSequence());
+            }
 
             Optional<Signal> startSignal = findStartSignal(routeExecution.getNextRouteSequence().getRoute());
             startSignal.ifPresent(signal -> trackViewerService.switchSignal(signal, FUNCTION.HP1));

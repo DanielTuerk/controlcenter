@@ -52,11 +52,6 @@ public class RouteExecutionObserver {
         this.deviceManager = deviceManager;
     }
 
-    void removeRunningRouteSequence(RouteSequence routeSequence) {
-        LOG.debug("removeRunningRouteSequence: {}", routeSequence);
-        runningRouteSequences.remove(routeSequence);
-    }
-
     /**
      * Synchronized to guarantee a single reserve for a route execution.
      *
@@ -78,12 +73,14 @@ public class RouteExecutionObserver {
             // only set to reserve if the next route blocks are free, also without dependent route
             if (allBlocksAreFree(route.getAllTrackBlocksToDrive())) {
                 route.setRunState(ROUTE_RUN_STATE.RESERVED);
-                synchronized (this) {
-                    addRunningRouteSequence(routeSequence);
-                    removeRunningRouteSequence(previousRouteSequence);
-                }
+                return true;
+            } else {
+                /*
+                 * No depending route is running but still blocks occupied to drive.
+                 * From manual drive or non started route.
+                 */
+                return false;
             }
-            return true;
         }
         return false;
     }
@@ -111,9 +108,15 @@ public class RouteExecutionObserver {
         }
         return true;
     }
-    private void addRunningRouteSequence(RouteSequence routeSequence) {
+
+    void addRunningRouteSequence(RouteSequence routeSequence) {
         LOG.debug("addRunningRouteSequence: {}", routeSequence);
         runningRouteSequences.add(routeSequence);
+    }
+
+    void removeRunningRouteSequence(RouteSequence routeSequence) {
+        LOG.debug("removeRunningRouteSequence: {}", routeSequence);
+        runningRouteSequences.remove(routeSequence);
     }
 
     /**
@@ -127,32 +130,32 @@ public class RouteExecutionObserver {
         List<RouteSequence> unfiltered = Lists.newArrayList(runningRouteSequences);
         return Collections2.filter(unfiltered, input -> !route.equals(input.getRoute())
             // add as dependent if routes have the same track block or function
-            && (containsSameTrackBlock(input.getRoute(), route) || containsSameTrackFunctions(input.getRoute(),
+            && (containsSameTrackBlock(route, input.getRoute()) || containsSameTrackFunctions(input.getRoute(),
             route)));
     }
 
     /**
      * Check for same {@link TrackBlock}s of given routes.
      *
-     * @param left {@link Route}
-     * @param right {@link Route}
+     * @param routeToStart {@link Route}
+     * @param other {@link Route}
      * @return {@code true} if a single {@link TrackBlock} is the same in both routes
      */
-    private boolean containsSameTrackBlock(Route left, Route right) {
+    private boolean containsSameTrackBlock(Route routeToStart, Route other) {
         // collect all track blocks of left route
-        List<TrackBlock> runningTrackBlocks = new ArrayList<>(left.getStart().getAllTrackBlocks());
-        if (left.getTrack() != null) {
-            runningTrackBlocks.addAll(left.getTrack().getTrackBlocks());
+        List<TrackBlock> runningTrackBlocks = new ArrayList<>();
+        if (routeToStart.getTrack() != null) {
+            runningTrackBlocks.addAll(routeToStart.getTrack().getTrackBlocks());
         }
-        runningTrackBlocks.addAll(getTrackBlocksForBlockStraightsOfTrackBlock(left.getEnd()));
+        runningTrackBlocks.addAll(getTrackBlocksForBlockStraightsOfTrackBlock(routeToStart.getEnd()));
 
         // check for same track blocks from left route in right route
-        if (runningTrackBlocks.stream().anyMatch(x -> right.getStart().getAllTrackBlocks().contains(x))
+        if (runningTrackBlocks.stream().anyMatch(x -> other.getStart().getAllTrackBlocks().contains(x))
             || runningTrackBlocks.stream()
-            .anyMatch(x -> getTrackBlocksForBlockStraightsOfTrackBlock(right.getEnd()).contains(x))) {
+            .anyMatch(x -> getTrackBlocksForBlockStraightsOfTrackBlock(other.getEnd()).contains(x))) {
             return true;
         }
-        for (TrackBlock blockToCheck : right.getTrack().getTrackBlocks()) {
+        for (TrackBlock blockToCheck : other.getTrack().getTrackBlocks()) {
             if (runningTrackBlocks.contains(blockToCheck)) {
                 return true;
             }
@@ -170,7 +173,7 @@ public class RouteExecutionObserver {
 
     /**
      * Check for same track functions (like switch) on track of given routes. The track functions is only checked for
-     * bus, address and bit. The bit state doesn't depend to detect a signle switch which is used in both routes, also
+     * bus, address and bit. The bit state doesn't depend to detect a single switch which is used in both routes, also
      * for different state.
      *
      * @param left {@link Route}

@@ -6,7 +6,9 @@ import com.google.inject.persist.Transactional;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import net.wbz.moba.controlcenter.web.server.persist.scenario.ScenarioEntity;
 import net.wbz.moba.controlcenter.web.server.persist.scenario.ScenarioHistoryDao;
 import net.wbz.moba.controlcenter.web.server.persist.scenario.ScenarioHistoryEntity;
@@ -34,7 +36,10 @@ public class ScenarioStatisticManager {
     }
 
     public Collection<ScenarioStatistic> loadAll() {
-        return scenarioHistoryDao.loadAll();
+        return scenarioHistoryDao.loadAll()
+            .stream()
+            .sorted(Comparator.comparing(x -> x.getScenario().getName()))
+            .collect(Collectors.toList());
     }
 
     @Transactional

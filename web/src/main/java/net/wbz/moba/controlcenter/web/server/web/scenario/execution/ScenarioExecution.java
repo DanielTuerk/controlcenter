@@ -46,8 +46,15 @@ import org.slf4j.LoggerFactory;
 abstract class ScenarioExecution implements Callable<Void> {
 
     private static final Logger LOG = LoggerFactory.getLogger(ScenarioExecution.class);
-    private static final int START_DELAY_MILLIS = 3000;
-    private static final int DEFAULT_START_DRIVING_LEVEL = 8;
+    /**
+     * Delay to start the {@link Train} for a started {@link Route}.
+     */
+    private static final int START_TRAIN_DELAY_MILLIS = 3000;
+    /**
+     * Delay to wait to finish the {@link Route} for a stopped {@link Train} at {@link Route} end.
+     */
+    private static final int FINISH_ROUTE_DELAY_MILLIS = 3000;
+    private static final int DEFAULT_START_DRIVING_LEVEL = 10;
     private static final long MILLIS_TO_WAIT_IN_BLOCK_RUN = 200L;
     private static final long HP0_AFTER_TRAIN_PASS_DELAY_IN_MILLIS = 15000L;
 
@@ -394,7 +401,8 @@ abstract class ScenarioExecution implements Callable<Void> {
      *
      * @param route {@link Route}
      * @return {@link Signal}
-     * @deprecated aktuell findet der 2 an beiden enden und gibt nur 1 zurück.
+     * @deprecated aktuell findet der 2 an beiden enden und gibt nur 1 zurück, wenn der block auf beiden seiten ein
+     * signal hat.
      */
     @Deprecated
     private Optional<Signal> findStartSignal(Route route) {
@@ -488,7 +496,7 @@ abstract class ScenarioExecution implements Callable<Void> {
 
     private void startTrain(Train train, Integer startDrivingLevel) throws InterruptedException {
         // delay the start of the train
-        Thread.sleep(START_DELAY_MILLIS);
+        Thread.sleep(START_TRAIN_DELAY_MILLIS);
         // start train
         LOG.info("start train to drive {}", train);
         trainService.updateDrivingLevel(train.getId(),
@@ -498,6 +506,12 @@ abstract class ScenarioExecution implements Callable<Void> {
     private void routeFinished(RouteSequence nextRouteSequence) {
         if (nextRouteSequence == null || nextRouteSequence.getRoute().getRunState() != ROUTE_RUN_STATE.RESERVED) {
             stopTrain();
+            try {
+                // delay to end the route to let the train stop for a bit at the route end (or signal for next route)
+                Thread.sleep(FINISH_ROUTE_DELAY_MILLIS);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
         blockRunning = false;
     }

@@ -45,13 +45,10 @@ class WaitForFreeTrackCallable implements Runnable {
                 try {
                     Thread.sleep(TIME_TO_WAIT_IN_MILLIS);
                 } catch (InterruptedException e) {
-                    //TODO
-                    e.printStackTrace();
+                    LOG.error("interrupted wait free track of train {}", routeExecution.getTrain(), e);
                 }
             }
         }
-        //TODO
-        return ;
     }
 
 }

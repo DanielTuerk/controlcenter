@@ -14,7 +14,6 @@ import net.wbz.moba.controlcenter.web.shared.scenario.Scenario;
 import net.wbz.moba.controlcenter.web.shared.scenario.Scenario.MODE;
 import net.wbz.moba.controlcenter.web.shared.scenario.Scenario.RUN_STATE;
 import net.wbz.moba.controlcenter.web.shared.scenario.ScenarioService;
-import net.wbz.moba.controlcenter.web.shared.scenario.ScenarioStateEvent;
 import net.wbz.moba.controlcenter.web.shared.train.Train;
 import net.wbz.selectrix4java.device.DeviceManager;
 import org.quartz.CronScheduleBuilder;
@@ -191,7 +190,9 @@ public class ScenarioServiceImpl extends RemoteServiceServlet implements Scenari
         scenarioExecutor.addScenarioStateListener(new DefaultScenarioStateListener() {
             @Override
             public void scenarioFinished(Scenario scenario) {
-                scenarioExecutor.scheduleScenario(scenario);
+                if (scenario.getMode() == MODE.AUTOMATIC) {
+                    scenarioExecutor.scheduleScenario(scenario);
+                }
             }
         });
 

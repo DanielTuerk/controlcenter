@@ -63,12 +63,16 @@ public class RouteExecutionObserver {
         RouteSequence previousRouteSequence) {
         Route route = routeSequence.getRoute();
         Collection<RouteSequence> dependingRunningRoutes = getDependingRunningRoutes(route);
-        /*
-         * Check that no depending route is running, or only the previous given one is running, which will be now
-         * removed to start next route in the sequence.
-         */
-        if (dependingRunningRoutes.isEmpty() || (dependingRunningRoutes.size() == 1 && dependingRunningRoutes
-            .contains(previousRouteSequence))) {
+
+        // previous given one is running, which will be now removed to start next route in the sequence
+        dependingRunningRoutes.remove(previousRouteSequence);
+
+        // all are prepared, than start with one by setting state RESERVED to avoid dead lock of routes
+        boolean allDependingRoutesHaveStatePrepared = dependingRunningRoutes.stream()
+            .allMatch(x -> x.getRoute().getRunState() == ROUTE_RUN_STATE.PREPARED);
+
+        // Check that no depending route is running
+        if (dependingRunningRoutes.isEmpty() || allDependingRoutesHaveStatePrepared) {
 
             // only set to reserve if the next route blocks are free, also without dependent route
             if (allBlocksAreFree(route.getAllTrackBlocksToDrive())) {

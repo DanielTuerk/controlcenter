@@ -96,7 +96,7 @@ public class RouteManager {
     @Transactional
     void deleteRoute(long routeId) {
         if (!routeSequenceDao.routeUsedInScenario(routeId)) {
-            routeSequenceDao.delete(routeId);
+            routeDao.delete(routeId);
             loadRoutesFromDatabase();
             fireRoutesChanged();
         } else {
@@ -119,7 +119,7 @@ public class RouteManager {
             try {
                 route.setTrack(trackBuilder.build(route));
             } catch (TrackNotFoundException e) {
-                LOG.error("can't build track of route: {} ({})", new Object[]{route, e.getMessage()});
+                LOG.error("can't build track of route: {} ({})", route, e.getMessage());
             }
         }
         LOG.debug("tracks finished");

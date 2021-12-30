@@ -43,8 +43,8 @@ public class RouteSequenceDao extends AbstractDao<RouteSequenceEntity> {
 
     public boolean routeUsedInScenario(Long routeId) {
         return getEntityManager().createQuery(
-            "SELECT COUNT (x.id) FROM SCENARIO_SEQUENCE x where x.route.id = :routeId")
+            "SELECT x.id FROM SCENARIO_SEQUENCE x where x.route.id = :routeId")
             .setParameter("routeId", routeId)
-            .getMaxResults() > 0;
+            .getResultList().size() > 0;
     }
 }

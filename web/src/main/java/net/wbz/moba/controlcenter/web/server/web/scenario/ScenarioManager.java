@@ -36,6 +36,7 @@ public class ScenarioManager {
 
     private final ScenarioDao scenarioDao;
     private final RouteSequenceDao routeSequenceDao;
+    private final ScenarioStatisticManager scenarioStatisticManager;
     private final EventBroadcaster eventBroadcaster;
     private final ScenarioDataMapper dataMapper;
     private final RouteSequenceDataMapper routeSequenceDataMapper;
@@ -43,10 +44,12 @@ public class ScenarioManager {
 
     @Inject
     public ScenarioManager(ScenarioDao scenarioDao, RouteSequenceDao routeSequenceDao,
+        ScenarioStatisticManager scenarioStatisticManager,
         EventBroadcaster eventBroadcaster, ScenarioDataMapper dataMapper,
         RouteSequenceDataMapper routeSequenceDataMapper, RouteManager routeManager) {
         this.scenarioDao = scenarioDao;
         this.routeSequenceDao = routeSequenceDao;
+        this.scenarioStatisticManager = scenarioStatisticManager;
         this.eventBroadcaster = eventBroadcaster;
         this.dataMapper = dataMapper;
         this.routeSequenceDataMapper = routeSequenceDataMapper;
@@ -94,6 +97,7 @@ public class ScenarioManager {
     @Transactional
     void deleteScenario(long scenarioId) {
         routeSequenceDao.deleteByScenario(scenarioId);
+        scenarioStatisticManager.deleteEntriesOfScenario(scenarioId);
         scenarioDao.delete(scenarioId);
         loadScenariosFromDatabase();
         fireScenariosChanged();

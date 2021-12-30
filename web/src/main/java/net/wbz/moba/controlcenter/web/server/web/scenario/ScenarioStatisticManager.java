@@ -51,4 +51,9 @@ public class ScenarioStatisticManager {
         entity.setElapsedTimeMillis(ChronoUnit.MILLIS.between(startDate, endDate));
         scenarioHistoryDao.create(entity);
     }
+
+    @Transactional
+    public void deleteEntriesOfScenario(Long scenarioId) {
+        scenarioHistoryDao.deleteByScenario(scenarioId);
+    }
 }

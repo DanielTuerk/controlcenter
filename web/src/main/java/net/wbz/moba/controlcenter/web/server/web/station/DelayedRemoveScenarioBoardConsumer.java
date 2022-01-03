@@ -14,7 +14,7 @@ import java.util.concurrent.TimeUnit;
 @Singleton
 class DelayedRemoveScenarioBoardConsumer extends RemoveScenarioBoardConsumer {
 
-    private static final int DELAY_IN_MINUTES = 2;
+    private static final int DELAY_IN_SECONDS = 60;
     private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
 
     @Inject
@@ -24,7 +24,7 @@ class DelayedRemoveScenarioBoardConsumer extends RemoveScenarioBoardConsumer {
 
     @Override
     public void accept(BoardAction boardAction) {
-        scheduler.schedule(() -> super.accept(boardAction), DELAY_IN_MINUTES, TimeUnit.MINUTES);
+        scheduler.schedule(() -> super.accept(boardAction), DELAY_IN_SECONDS, TimeUnit.SECONDS);
     }
 
 }

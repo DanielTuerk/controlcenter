@@ -45,18 +45,16 @@ public class StationsBoardServiceImpl extends RemoteServiceServlet implements St
 
             @Override
             public void scenarioExecuteWithError(Scenario scenario) {
+                //show info
                 createBoardAction(scenario, stationManager).ifPresent(
                     boardAction -> boardAction.apply(updateScenarioBoardConsumer));
+                // delete delayed
+                removeBoardEntry(scenario, stationManager, delayedRemoveScenarioBoardConsumer);
             }
 
             @Override
             public void scenarioStopped(Scenario scenario) {
                 removeBoardEntry(scenario, stationManager, removeScenarioBoardConsumer);
-            }
-
-            @Override
-            public void scenarioFinished(Scenario scenario) {
-                removeBoardEntry(scenario, stationManager, delayedRemoveScenarioBoardConsumer);
             }
 
             @Override

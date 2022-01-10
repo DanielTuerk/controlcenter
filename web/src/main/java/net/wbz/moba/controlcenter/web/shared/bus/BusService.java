@@ -78,8 +78,9 @@ public interface BusService extends RemoteService {
      * Start playback from the give file path.
      *
      * @param absoluteFilePath path of file on local system
+     * @param playbackSpeed playback speed (1 is normal speed; 2 double speed)
      */
-    void startPlayer(String absoluteFilePath);
+    void startPlayer(String absoluteFilePath, int playbackSpeed);
 
     /**
      * Stop the actual running playback.

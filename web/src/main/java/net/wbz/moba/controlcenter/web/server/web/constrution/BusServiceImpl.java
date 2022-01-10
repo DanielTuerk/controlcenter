@@ -243,8 +243,9 @@ public class BusServiceImpl extends RemoteServiceServlet implements BusService {
         deviceRecorder.stopRecording();
     }
 
-    public void startPlayer(String absoluteFilePath) {
-        busDataPlayer = new BusDataPlayer(activeDevice.getBusDataDispatcher(), activeDevice.getBusDataChannel());
+    public void startPlayer(String absoluteFilePath, int playbackSpeed) {
+        busDataPlayer = new BusDataPlayer(activeDevice.getBusDataDispatcher(), activeDevice.getBusDataChannel(),
+            playbackSpeed);
         busDataPlayer.addListener(new BusDataPlayerListener() {
             @Override
             public void playbackStarted() {

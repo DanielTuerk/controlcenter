@@ -1,0 +1,16 @@
+<ui:UiBinder xmlns:b="urn:import:org.gwtbootstrap3.client.ui"
+  xmlns:ui='urn:ui:com.google.gwt.uibinder'
+  xmlns:g="urn:import:com.google.gwt.user.client.ui"
+>
+  <g:HTMLPanel>
+    <b:Modal title="Bus Data Player" ui:field="modal" fade="true">
+      <b:ModalBody>
+        <g:Label text="Playbackspeed:"/><b:Input type="NUMBER" ui:field="playbackSpeed"/>
+        <b:gwt.FlowPanel ui:field="recordsContainer" dataSpy="SCROLL"></b:gwt.FlowPanel>
+      </b:ModalBody>
+      <b:ModalFooter>
+        <b:Button ui:field="btnClose" text="Close" pull="LEFT"/>
+      </b:ModalFooter>
+    </b:Modal>
+  </g:HTMLPanel>
+</ui:UiBinder>

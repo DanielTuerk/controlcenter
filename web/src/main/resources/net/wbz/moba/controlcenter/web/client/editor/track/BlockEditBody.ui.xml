@@ -25,6 +25,13 @@
           <b:TextBox ui:field="txtBit"/>
         </g:FlowPanel>
       </b:FormGroup>
+
+      <b:FormGroup>
+        <b:FormLabel addStyleNames="col-lg-2" for="formFeedback">Feedback</b:FormLabel>
+        <g:FlowPanel addStyleNames="col-lg-10">
+          <b:CheckBox ui:field="cbxFeedback"/>
+        </g:FlowPanel>
+      </b:FormGroup>
     </b:FieldSet>
     <b:FieldSet>
       <b:Legend>Driving level adjustment</b:Legend>

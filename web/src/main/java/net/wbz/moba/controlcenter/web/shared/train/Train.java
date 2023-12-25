@@ -79,7 +79,9 @@ public class Train extends AbstractDto {
     }
 
     public boolean isCurrentlyInBlock(TrackBlock... trackBlock) {
-        return currentBlocks.stream().anyMatch(Sets.newHashSet(trackBlock)::contains);
+        return currentBlocks.stream()
+            .filter(TrackBlock::getFeedback)
+            .anyMatch(Sets.newHashSet(trackBlock)::contains);
     }
 
     public boolean isPresentOnTrack() {

@@ -1,6 +1,5 @@
 package net.wbz.moba.controlcenter.web.shared.track.model;
 
-import com.google.common.base.Objects;
 import com.google.common.base.Strings;
 import com.google.gwt.user.client.rpc.IsSerializable;
 import com.googlecode.jmapper.annotations.JMap;
@@ -26,6 +25,9 @@ public class TrackBlock extends AbstractDto {
     private Integer backwardTargetDrivingLevel;
     @JMap
     private DRIVING_LEVEL_ADJUST_TYPE drivingLevelAdjustType;
+
+    @JMap
+    private Boolean feedback;
 
     public BusDataConfiguration getBlockFunction() {
         return blockFunction;
@@ -79,12 +81,24 @@ public class TrackBlock extends AbstractDto {
         this.drivingLevelAdjustType = drivingLevelAdjustType;
     }
 
+    public Boolean getFeedback() {
+        return feedback;
+    }
+
+    public void setFeedback(Boolean feedback) {
+        this.feedback = feedback;
+    }
+
     @Override
     public String toString() {
-        return "TrackBlock{" + "blockFunction=" + blockFunction + ", name='" + name + '\'' + (
-            drivingLevelAdjustType != DRIVING_LEVEL_ADJUST_TYPE.NONE ? (", drivingLevelAdjustType='"
-                + drivingLevelAdjustType + '\'' + ", name='" + forwardTargetDrivingLevel + '\'' + ", name='"
-                + backwardTargetDrivingLevel + '\'') : "") + "} " + super.toString();
+        return "TrackBlock{" + "blockFunction=" + blockFunction
+            + ", construction=" + construction
+            + ", name='" + name + '\''
+            + ", forwardTargetDrivingLevel=" + forwardTargetDrivingLevel
+            + ", backwardTargetDrivingLevel=" + backwardTargetDrivingLevel
+            + ", drivingLevelAdjustType=" + drivingLevelAdjustType
+            + ", feedback=" + feedback
+            + '}';
     }
 
     public String getDisplayValue() {

@@ -2,6 +2,7 @@ package net.wbz.moba.controlcenter.web.server.persist.scenario;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import javax.inject.Provider;
@@ -13,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * TODO: foo foo foo, not working anymore on rasperry; maybe bug also local, but queries to fast
  * @author Daniel Tuerk
  */
 @Singleton
@@ -33,23 +35,26 @@ public class ScenarioHistoryDao extends AbstractDao<ScenarioHistoryEntity> {
     }
 
     public Optional<ScenarioStatistic> listByScenario(long scenarioId) {
-        return Optional.ofNullable((ScenarioStatistic)
-            getEntityManager().createQuery(QUERY + " HAVING x.scenario.id = :scenarioId")
-                .setParameter("scenarioId", scenarioId)
-                .unwrap(Query.class)
-                .setResultTransformer(resultTransformer)
-                .uniqueResult());
+        return Optional.empty();
+//        return Optional.ofNullable((ScenarioStatistic)
+//            getEntityManager().createQuery(QUERY + " HAVING x.scenario.id = :scenarioId")
+//                .setParameter("scenarioId", scenarioId)
+//                .unwrap(Query.class)
+//                .setResultTransformer(resultTransformer)
+//                .uniqueResult());
     }
 
     public List<ScenarioStatistic> loadAll() {
-        return (List<ScenarioStatistic>) createQuery(QUERY).list();
+        return new ArrayList<>();
+        // TODO, just disabled to avoid the derby error
+//        return (List<ScenarioStatistic>) createQuery(QUERY).list();
     }
 
     public void deleteByScenario(Long scenarioId) {
-        getEntityManager().createQuery(
-            "DELETE FROM SCENARIO_HISTORY x where x.scenario.id = :scenarioId")
-            .setParameter("scenarioId", scenarioId)
-            .executeUpdate();
+//        getEntityManager().createQuery(
+//            "DELETE FROM SCENARIO_HISTORY x where x.scenario.id = :scenarioId")
+//            .setParameter("scenarioId", scenarioId)
+//            .executeUpdate();
     }
 
     private Query createQuery(String query) {
@@ -57,7 +62,6 @@ public class ScenarioHistoryDao extends AbstractDao<ScenarioHistoryEntity> {
             .createQuery(QUERY)
             .unwrap(Query.class)
             .setResultTransformer(resultTransformer);
-
     }
 
 }

@@ -22,6 +22,7 @@ public class EmbeddedDerbyConfiguration implements DatabaseConfiguration {
         // common
         properties.put("hibernate.show_sql", "false");
         properties.put("hibernate.hbm2ddl.auto", "update");
+        properties.put("hibernate.connection.pool_size", "10");
     }
 
     @Override

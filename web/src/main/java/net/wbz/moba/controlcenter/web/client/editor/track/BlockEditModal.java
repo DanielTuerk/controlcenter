@@ -174,18 +174,15 @@ public class BlockEditModal extends Modal {
 
     private Widget createOverviewBody() {
         FlowPanel widgets = new FlowPanel();
-        widgets.add(new Button("add block", IconType.PLUS, new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent clickEvent) {
-                TrackBlock trackBlock = new TrackBlock();
-                trackBlock.setDrivingLevelAdjustType(DRIVING_LEVEL_ADJUST_TYPE.NONE);
+        widgets.add(new Button("add block", IconType.PLUS, clickEvent -> {
+            TrackBlock trackBlock = new TrackBlock();
+            trackBlock.setDrivingLevelAdjustType(DRIVING_LEVEL_ADJUST_TYPE.NONE);
 
-                dataProvider.getList().add(trackBlock);
-                dataProvider.flush();
+            dataProvider.getList().add(trackBlock);
+            dataProvider.flush();
 
-                pagination.rebuild(simplePager);
+            pagination.rebuild(simplePager);
 
-            }
         }));
 
         CellTable<TrackBlock> trackBlockDataGrid = new CellTable<>();

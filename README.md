@@ -1,7 +1,7 @@
 ControlCenter
 =============
 
-Software to control an model railroad construction with selectrix.
+Software to control a model railroad construction with selectrix.
 
 For more information feel free to contact me, the current state is NOT ready to use. 
 

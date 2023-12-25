@@ -1,5 +1,6 @@
 package net.wbz.moba.controlcenter.web.server.persist.construction.track;
 
+import com.googlecode.jmapper.annotations.JMap;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -7,12 +8,10 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
-
-import com.googlecode.jmapper.annotations.JMap;
-
 import net.wbz.moba.controlcenter.web.server.persist.AbstractEntity;
 import net.wbz.moba.controlcenter.web.server.persist.construction.ConstructionEntity;
 import net.wbz.moba.controlcenter.web.shared.track.model.TrackBlock.DRIVING_LEVEL_ADJUST_TYPE;
+import org.hibernate.annotations.ColumnDefault;
 
 /**
  * Block on track as state receiver for a track detector.
@@ -64,6 +63,13 @@ public class TrackBlockEntity extends AbstractEntity {
     @Enumerated(EnumType.ORDINAL)
     private DRIVING_LEVEL_ADJUST_TYPE drivingLevelAdjustType;
 
+    /**
+     * Block has feedback function.
+     */
+    @JMap
+    @Column(nullable = false, columnDefinition = "int default 1")
+    private Boolean feedback;
+
     public TrackBlockEntity() {
     }
 
@@ -114,5 +120,13 @@ public class TrackBlockEntity extends AbstractEntity {
     public void setDrivingLevelAdjustType(
         DRIVING_LEVEL_ADJUST_TYPE drivingLevelAdjustType) {
         this.drivingLevelAdjustType = drivingLevelAdjustType;
+    }
+
+    public Boolean getFeedback() {
+        return feedback;
+    }
+
+    public void setFeedback(Boolean feedback) {
+        this.feedback = feedback;
     }
 }

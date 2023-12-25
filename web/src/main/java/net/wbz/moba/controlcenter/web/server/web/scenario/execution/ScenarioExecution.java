@@ -5,10 +5,13 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.validation.constraints.NotNull;
 import net.wbz.moba.controlcenter.web.server.SelectrixHelper;
 import net.wbz.moba.controlcenter.web.server.persist.scenario.TrackBuilder;
@@ -335,7 +338,7 @@ abstract class ScenarioExecution implements Callable<Void> {
      */
     private RouteExecution prepare(final RouteSequence routeSequence, final RouteSequence previousRouteSequence,
         RouteSequence nextRouteSequence, boolean isFirstRoute, boolean isAnyRouteRunning) throws
-        NoTrainInStartBlockException {
+        NoTrainInStartBlockException, ScenarioExecutionInterruptException {
         Route route = routeSequence.getRoute();
 
         Train train = getTrain();
@@ -359,9 +362,26 @@ abstract class ScenarioExecution implements Callable<Void> {
         return new RouteExecution(routeSequence, previousRouteSequence, nextRouteSequence, train, signal.orElse(null));
     }
 
-    private boolean trainIsNotInStartBlock(Route route, Train train) {
-        return !train.isCurrentlyInBlock(route.getStart().getLeftTrackBlock(), route.getStart().getMiddleTrackBlock(),
-            route.getStart().getRightTrackBlock());
+    private boolean trainIsNotInStartBlock(Route route, Train train) throws ScenarioExecutionInterruptException {
+        List<TrackBlock> trackBlocks = Stream.of(route.getStart().getLeftTrackBlock(),
+                route.getStart().getMiddleTrackBlock(),
+                route.getStart().getRightTrackBlock())
+            .filter(Objects::nonNull)
+            .collect(Collectors.toList());
+        for (TrackBlock trackBlock : trackBlocks) {
+            if (!trackBlock.getFeedback()) {
+                try {
+                    if (SelectrixHelper.getBlockModule(deviceManager.getConnectedDevice(), trackBlock)
+                        .getLastReceivedBlockState(trackBlock.getBlockFunction().getBit())) {
+                        return false;
+                    }
+                } catch (DeviceAccessException e) {
+                    throw new ScenarioExecutionInterruptException("no connected device", e);
+                }
+            }
+        }
+
+        return !train.isCurrentlyInBlock(trackBlocks.toArray(new TrackBlock[0]));
     }
 
     /**

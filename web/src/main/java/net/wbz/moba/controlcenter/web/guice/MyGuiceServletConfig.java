@@ -97,7 +97,7 @@ public class MyGuiceServletConfig extends GuiceServletContextListener {
                 /*
                  * Install JPA and delegate all requests by the {@link PersistFilter} to enable transaction
                  * handling by HTTP request.
-                 * As result you have to inject the {@link javax.persistence.EntityManager} by the
+                 * As result, you have to inject the {@link javax.persistence.EntityManager} by the
                  * {@link com.google.inject.Provider}.
                  */
                 install(new JpaPersistModule(PERSISTENCE_UNIT).properties(properties));

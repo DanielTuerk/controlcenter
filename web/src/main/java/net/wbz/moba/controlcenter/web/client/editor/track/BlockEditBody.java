@@ -1,19 +1,18 @@
 package net.wbz.moba.controlcenter.web.client.editor.track;
 
-import org.gwtbootstrap3.client.ui.Legend;
-import org.gwtbootstrap3.client.ui.ListBox;
-import org.gwtbootstrap3.client.ui.TextBox;
-
 import com.google.common.base.Strings;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
-
 import net.wbz.moba.controlcenter.web.shared.track.model.BusDataConfiguration;
 import net.wbz.moba.controlcenter.web.shared.track.model.TrackBlock;
 import net.wbz.moba.controlcenter.web.shared.track.model.TrackBlock.DRIVING_LEVEL_ADJUST_TYPE;
+import org.gwtbootstrap3.client.ui.CheckBox;
+import org.gwtbootstrap3.client.ui.Legend;
+import org.gwtbootstrap3.client.ui.ListBox;
+import org.gwtbootstrap3.client.ui.TextBox;
 
 /**
  * @author Daniel Tuerk
@@ -43,6 +42,8 @@ public class BlockEditBody extends Composite {
     TextBox txtForwardTargetDrivingLevel;
     @UiField
     TextBox txtBackwardTargetDrivingLevel;
+    @UiField
+    CheckBox cbxFeedback;
 
     public BlockEditBody(TrackBlock trackBlock) {
         this.trackBlock = trackBlock;
@@ -72,7 +73,7 @@ public class BlockEditBody extends Composite {
 
         txtForwardTargetDrivingLevel.setText(getStringValue(trackBlock.getForwardTargetDrivingLevel()));
         txtBackwardTargetDrivingLevel.setText(getStringValue(trackBlock.getBackwardTargetDrivingLevel()));
-
+        cbxFeedback.setValue(trackBlock.getFeedback());
     }
 
     void applyChanges() {
@@ -89,6 +90,7 @@ public class BlockEditBody extends Composite {
                 selectDrivingLevelAdjustType.getSelectedValue()));
         trackBlock.setForwardTargetDrivingLevel(getIntegerValue(txtForwardTargetDrivingLevel.getText()));
         trackBlock.setBackwardTargetDrivingLevel(getIntegerValue(txtBackwardTargetDrivingLevel.getText()));
+        trackBlock.setFeedback(cbxFeedback.getValue());
     }
 
     private String getStringValue(Number bit) {

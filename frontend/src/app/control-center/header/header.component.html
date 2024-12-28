@@ -1,10 +1,26 @@
 <header>
-  <img src="img.png" width="100%" height="150px">
-  <h1>Control Center</h1>
-  <ul>
-    <li><a routerLink="viewer">Viewer</a></li>
-    <li><a routerLink="editor">Editor</a></li>
-    <li><a routerLink="train">Trains</a></li>
-    <li><a routerLink="scenario">Scenarios</a></li>
-  </ul>
+  <mat-toolbar color="primary">
+    <span>Control Center</span>
+    <span class="example-spacer"></span>
+    <button routerLink="viewer" mat-flat-button>
+      <mat-icon>visibility</mat-icon>
+      Viewer
+    </button>
+    <button routerLink="editor" mat-flat-button>
+      <mat-icon>border_color</mat-icon>
+      Editor
+    </button>
+    <button routerLink="train" mat-flat-button>
+      <mat-icon>train</mat-icon>
+      Trains
+    </button>
+    <button routerLink="scenario" mat-flat-button>
+      <mat-icon>map</mat-icon>
+      Scenarios
+    </button>
+    <mat-divider [vertical]="true"></mat-divider>
+    <button routerLink="settings" mat-mini-fab>
+      <mat-icon>settings</mat-icon>
+    </button>
+  </mat-toolbar>
 </header>

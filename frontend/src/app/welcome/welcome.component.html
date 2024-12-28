@@ -1,0 +1,7 @@
+<h3>Select construction</h3>
+
+<li *ngFor="let construction of constructions(); index as i;">
+  <button (click)="selectCurrentConstruction(construction)">{{ construction.name }}</button>
+</li>
+
+<app-create-construction/>

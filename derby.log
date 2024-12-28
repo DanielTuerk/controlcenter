@@ -1,0 +1,13 @@
+----------------------------------------------------------------
+Sat Dec 28 16:30:47 CET 2024:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.11.1.1 - (1616546): instance a816c00e-0194-0de4-35fb-000019e11ea8 
+on database directory /Users/dtuerk/.moba/data/derby_db with class loader sun.misc.Launcher$AppClassLoader@18b4aac2 
+Loaded from file:/Users/dtuerk/.m2-moba/repository/org/apache/derby/derby/10.11.1.1/derby-10.11.1.1.jar
+java.vendor=Amazon.com Inc.
+java.runtime.version=1.8.0_362-b08
+user.dir=/Users/dtuerk/privat/moba/controlcenter
+os.name=Mac OS X
+os.arch=aarch64
+os.version=15.2
+derby.system.home=null
+Database Class Loader started - derby.database.classpath=''

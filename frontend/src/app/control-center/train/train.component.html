@@ -1,0 +1,7 @@
+<p>train works!</p>
+
+<ul>
+  <li *ngFor="let train of trains(); index as i;">
+    {{ train.name }} <a routerLink="{{train.id}}">edit</a>
+  </li>
+</ul>

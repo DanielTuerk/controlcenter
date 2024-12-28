@@ -1,0 +1,9 @@
+<p>train-edit works!</p>
+id: {{ trainId() }}
+
+
+@if (train() !== null) {
+  <p> name: {{ train()?.name }} </p>
+}
+
+<a routerLink="../">back</a>

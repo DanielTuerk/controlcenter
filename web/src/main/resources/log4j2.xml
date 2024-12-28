@@ -1,17 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
     <Properties>
-        <Property name="LOG_PATTERN">%d [%p] %c{1} - %m%n</Property>
+        <Property name="LOG_PATTERN">%d [%p] %m \t %l [%t] %3x%n</Property>
     </Properties>
 
     <Appenders>
-
-        <!-- Console Appender -->
         <Console name="Console" target="SYSTEM_OUT" follow="true">
             <PatternLayout pattern="${LOG_PATTERN}"/>
         </Console>
-
-        <!-- File Appenders on need basis -->
         <RollingFile name="File" fileName="${sys:user.home}/.moba/log/controlcenter.log"
           filePattern="${sys:user.home}/.moba/log/controlcenter-%d{yyyy-MM-dd}-%i.log">
             <LevelRangeFilter minLevel="DEBUG" maxLevel="ERROR" onMatch="ACCEPT" onMismatch="DENY"/>
@@ -21,22 +17,16 @@
             </Policies>
             <DefaultRolloverStrategy max="10"/>
         </RollingFile>
-
     </Appenders>
 
     <Loggers>
-        <logger name="net.wbz">
-            <level value="debug"/>
-        </logger>
-
-        <logger name="net.wbz.selectrix4java.block">
-            <level value="trace"/>
-        </logger>
-
-        <root level="info">
-            <appender-ref ref="Console"/>
+        <Logger name="net.wbz" level="debug" additivity="false">
+            <AppenderRef ref="Console"/>
+        </Logger>
+        <Root level="warn">
+            <AppenderRef ref="Console"/>
             <appender-ref ref="File"/>
-        </root>
+        </Root>
     </Loggers>
 </configuration>
 

@@ -1,0 +1,13 @@
+<h3>new construction</h3>
+<form [formGroup]="form" (ngSubmit)="onSubmit()">
+  <div>
+    <label for="name">Name</label>
+    <input id="name" type="text" [formControl]="form.controls.name"/>
+  </div>
+
+  @if(nameIsInvalid) {
+    <p>Invalid name entered!</p>
+  }
+
+  <button>Create</button>
+</form>

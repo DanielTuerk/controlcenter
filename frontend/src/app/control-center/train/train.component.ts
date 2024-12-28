@@ -5,7 +5,6 @@ import {RouterLink} from "@angular/router";
 
 @Component({
   selector: 'app-train',
-  standalone: true,
   imports: [
     NgForOf,
     RouterLink

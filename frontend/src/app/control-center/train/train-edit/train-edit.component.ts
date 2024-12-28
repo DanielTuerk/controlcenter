@@ -1,11 +1,10 @@
-import {Component, computed, inject, Input, input, OnInit, signal} from '@angular/core';
+import {Component, inject, input, OnInit, signal} from '@angular/core';
 import {TrainService} from "../../../shared/train.service";
 import {Train} from "../../../shared/shared.model";
 import {RouterLink} from "@angular/router";
 
 @Component({
   selector: 'app-train-edit',
-  standalone: true,
   imports: [
     RouterLink
   ],

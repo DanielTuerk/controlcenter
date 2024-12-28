@@ -3,7 +3,6 @@ import {FormControl, FormGroup, ReactiveFormsModule, Validators} from "@angular/
 
 @Component({
   selector: 'app-create-construction',
-  standalone: true,
   imports: [ReactiveFormsModule],
   templateUrl: './create-construction.component.html',
   styleUrl: './create-construction.component.css'

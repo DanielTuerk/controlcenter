@@ -4,7 +4,6 @@ import {ConstructionService} from "./shared/construction.service";
 
 @Component({
   selector: 'app-root',
-  standalone: true,
   templateUrl: './app.component.html',
   imports: [RouterOutlet]
 })

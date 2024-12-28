@@ -6,7 +6,6 @@ import {CreateConstructionComponent} from "./create-construction/create-construc
 
 @Component({
   selector: 'app-welcome',
-  standalone: true,
   imports: [
     NgForOf,
     CreateConstructionComponent

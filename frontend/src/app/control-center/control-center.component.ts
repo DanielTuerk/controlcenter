@@ -1,14 +1,11 @@
 import {Component, inject} from '@angular/core';
 import {ConstructionService} from "../shared/construction.service";
-import {TrainComponent} from "./train/train.component";
 import {RouterOutlet} from "@angular/router";
 import {HeaderComponent} from "./header/header.component";
 
 @Component({
   selector: 'app-control-center',
-  standalone: true,
   imports: [
-    TrainComponent,
     RouterOutlet,
     HeaderComponent
   ],

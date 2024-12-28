@@ -11,6 +11,6 @@ export const appConfig: ApplicationConfig = {
     ConstructionService,
     TrainService,
     provideHttpClient(),
-    provideRouter(routes, withComponentInputBinding()), provideAnimationsAsync()
+    provideRouter(routes, withComponentInputBinding()), provideAnimationsAsync(), provideAnimationsAsync()
   ]
 }

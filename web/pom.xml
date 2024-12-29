@@ -26,6 +26,10 @@
     <jersey.version>1.12</jersey.version>
     <jackson.version>1.9.6</jackson.version>
     <jetty.version>8.1.3.v20120416</jetty.version>
+
+
+    <src.thrift.dir>src/main/resources/thrift/</src.thrift.dir>
+    <thrift.compiler>thrift</thrift.compiler>
   </properties>
 
   <dependencies>
@@ -310,13 +314,98 @@
       <version>1.4.01</version>
     </dependency>
 
+
+    <!-- https://mvnrepository.com/artifact/org.apache.thrift/libthrift -->
+    <dependency>
+      <groupId>org.apache.thrift</groupId>
+      <artifactId>libthrift</artifactId>
+      <version>0.21.0</version>
+    </dependency>
+
+
   </dependencies>
+
 
   <build>
     <!-- Generate compiled stuff in the folder used for developing mode -->
     <outputDirectory>${webappDirectory}/WEB-INF/classes</outputDirectory>
     <finalName>controlcenter</finalName>
+<!--    <resources>-->
+<!--      <resource>-->
+<!--        <directory>${project.build.directory}/generated-sources</directory>-->
+<!--      </resource>-->
+<!--      <resource>-->
+<!--        <directory>${project.build.directory}/gen-java</directory>-->
+<!--      </resource>-->
+<!--    </resources>-->
     <plugins>
+
+      <!-- Thrift -->
+
+      <plugin>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <version>3.1.0</version>
+        <executions>
+          <execution>
+            <phase>compile</phase>
+            <configuration>
+              <target name="compile-thrift">
+                <!-- Define fileset of thrift files -->
+                <fileset id="thrift.src.files" dir="${src.thrift.dir}">
+                  <include name="**/*.thrift"/>
+                </fileset>
+
+                <!-- Invoke thrift binary for each of these files -->
+                <apply executable="${thrift.compiler}" resultproperty="thrift.compile.result"
+                  failifexecutionfails="true" failonerror="true"
+                  searchpath="true" dir="${src.thrift.dir}">
+                  <arg value="-o"/>
+                  <arg value="${basedir}/target/generated-sources/"/>
+                  <arg value="--gen"/>
+                  <arg value="java"/>
+                  <srcfile/>
+                  <fileset refid="thrift.src.files"/>
+                </apply>
+
+                <apply executable="${thrift.compiler}" resultproperty="thrift.compile.result"
+                  failifexecutionfails="true" failonerror="true"
+                  searchpath="true" dir="${src.thrift.dir}">
+                  <arg value="-o"/>
+                  <arg value="${basedir}/frontend/src/shared"/>
+                  <arg value="--gen"/>
+                  <arg value="js:ts"/>
+                  <srcfile/>
+                  <fileset refid="thrift.src.files"/>
+                </apply>
+              </target>
+
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <version>3.2.0</version>
+        <executions>
+          <execution>
+            <id>add-source</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>add-source</goal>
+            </goals>
+            <configuration>
+              <sources>
+                <source>target/generated-sources/gen-java/</source>
+              </sources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
 
       <!-- GWT Maven Plugin -->
       <plugin>

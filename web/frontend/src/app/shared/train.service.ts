@@ -1,6 +1,6 @@
 import {inject, signal} from "@angular/core";
 import {HttpClient} from "@angular/common/http";
-import {Train} from "./shared.model";
+import {Train} from "../../shared/gen-js/train_types";
 
 export class TrainService {
 

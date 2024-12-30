@@ -1,6 +1,7 @@
 package net.wbz.moba.controlcenter.web.server.web.constrution;
 
-import com.google.gson.GsonBuilder;
+import com.sun.jersey.api.NotFoundException;
+import java.util.Collection;
 import java.util.Optional;
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
@@ -29,10 +30,8 @@ public class ConstructionController {
 
     @GET
     @Produces({MediaType.APPLICATION_JSON})
-    public String loadConstructions() {
-        return new GsonBuilder().setPrettyPrinting().create().toJson(
-            constructionService.loadConstructions()
-        );
+    public Collection<Construction> loadConstructions() {
+        return constructionService.loadConstructions();
     }
 
     @POST
@@ -45,18 +44,20 @@ public class ConstructionController {
             .findFirst();
         if (optionalConstruction.isPresent()) {
             constructionService.setCurrentConstruction(optionalConstruction.get());
+            return Response.status(Status.OK.getStatusCode()).build();
         } else {
-            throw new IllegalArgumentException("no construction found for id " + id);
+            throw new NotFoundException("no construction found for id " + id);
         }
-        return Response.status(Status.OK.getStatusCode()).build();
     }
 
     @GET
     @Path("/current")
     @Produces(MediaType.APPLICATION_JSON)
-    public String getCurrentConstruction() {
+    public Construction getCurrentConstruction() {
         Construction currentConstruction = constructionService.getCurrentConstruction();
-        return currentConstruction == null ? null
-            : new GsonBuilder().setPrettyPrinting().create().toJson(currentConstruction);
+        if (currentConstruction == null) {
+            throw new NotFoundException("no current construction selected");
+        }
+        return currentConstruction;
     }
 }

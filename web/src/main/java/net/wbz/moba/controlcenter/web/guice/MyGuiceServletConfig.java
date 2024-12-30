@@ -15,27 +15,10 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
-import javax.ws.rs.ext.MessageBodyReader;
-import javax.ws.rs.ext.MessageBodyWriter;
 import net.wbz.moba.controlcenter.web.server.ServerModule;
 import net.wbz.moba.controlcenter.web.server.web.RestServerModule;
-import net.wbz.moba.controlcenter.web.server.web.config.ConfigServiceImpl;
-import net.wbz.moba.controlcenter.web.server.web.constrution.BusServiceImpl;
-import net.wbz.moba.controlcenter.web.server.web.constrution.ConstructionController;
-import net.wbz.moba.controlcenter.web.server.web.constrution.ConstructionServiceImpl;
-import net.wbz.moba.controlcenter.web.server.web.editor.TrackEditorServiceImpl;
-import net.wbz.moba.controlcenter.web.server.web.scenario.ScenarioEditorServiceImpl;
-import net.wbz.moba.controlcenter.web.server.web.scenario.ScenarioServiceImpl;
-import net.wbz.moba.controlcenter.web.server.web.scenario.ScenarioStatisticServiceImpl;
-import net.wbz.moba.controlcenter.web.server.web.station.StationEditorServiceImpl;
-import net.wbz.moba.controlcenter.web.server.web.station.StationsBoardServiceImpl;
-import net.wbz.moba.controlcenter.web.server.web.train.TrainController;
-import net.wbz.moba.controlcenter.web.server.web.train.TrainEditorServiceImpl;
-import net.wbz.moba.controlcenter.web.server.web.train.TrainServiceImpl;
-import net.wbz.moba.controlcenter.web.server.web.viewer.TrackViewerServiceImpl;
 import net.wbz.moba.controlcenter.web.shared.EventCache;
 import net.wbz.selectrix4java.device.DeviceManager;
-import org.codehaus.jackson.jaxrs.JacksonJsonProvider;
 
 /**
  * BusDataConfigurationEntity of the guice context.
@@ -115,13 +98,12 @@ public class MyGuiceServletConfig extends GuiceServletContextListener {
                 install(new ServerModule());
 
                 install(new RestServerModule());
-
                 /* bind jackson converters for JAXB/JSON serialization */
-                bind(MessageBodyReader.class).to(JacksonJsonProvider.class);
-                bind(MessageBodyWriter.class).to(JacksonJsonProvider.class);
-                Map<String, String> initParams = new HashMap<String, String>();
+
+                Map<String, String> initParams = new HashMap<>();
                 initParams.put("com.sun.jersey.config.feature.Trace",
                     "true");
+
                 serve("*").with(
                     GuiceContainer.class,
                     initParams);
@@ -168,6 +150,7 @@ public class MyGuiceServletConfig extends GuiceServletContextListener {
             public EventCache serverEventCache() {
                 return new EventCache();
             }
+
         });
     }
 }

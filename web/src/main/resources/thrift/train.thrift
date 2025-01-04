@@ -5,7 +5,8 @@ include "common.thrift"
 struct Train {
   1: required i64 id;
   2: required string name;
-  3: required TrainFunction functions;
+  3: required i32 address;
+  4: required TrainFunction functions;
 }
 
 struct TrainFunction {

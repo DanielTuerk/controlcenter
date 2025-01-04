@@ -1,9 +1,25 @@
-<p>train-edit works!</p>
-id: {{ trainId() }}
-
-
-@if (train() !== null) {
-  <p> name: {{ train()?.name }} </p>
-}
-
-<a routerLink="../">back</a>
+<mat-card appearance="outlined">
+  <mat-card-header>
+    <mat-card-title>Edit train</mat-card-title>
+  </mat-card-header>
+  <form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <mat-card-content>
+      <div>
+        <label>Name: </label>
+        <mat-form-field>
+          <input matInput required [formControl]="form.controls.name"/>
+        </mat-form-field>
+      </div>
+      <div>
+        <label>Address: </label>
+        <mat-form-field>
+          <input matInput required [formControl]="form.controls.address"/>
+        </mat-form-field>
+      </div>
+    </mat-card-content>
+    <mat-card-footer>
+      <button mat-stroked-button type="button" routerLink="../">Back</button>
+      <button mat-stroked-button>Update</button>
+    </mat-card-footer>
+  </form>
+</mat-card>

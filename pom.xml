@@ -23,133 +23,15 @@
   </developers>
 
   <properties>
-    <maven.compiler.source>1.8</maven.compiler.source>
-    <maven.compiler.target>1.8</maven.compiler.target>
 
-    <selectrix.version>0.3.1-SNAPSHOT</selectrix.version>
-
-    <gwtbootstrap3.version>0.9.4</gwtbootstrap3.version>
-
-    <!-- setting this makes build more platform independent by explicitly specifying an encoding -->
-    <logback.version>0.9.15</logback.version>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <googlecollections.version>1.0</googlecollections.version>
-
-    <logback.version>1.0.9</logback.version>
-    <org.slf4j.version>1.7.2</org.slf4j.version>
-
-    <joda.time.version>2.1</joda.time.version>
-    <joda.time.jsptags.version>1.0.2</joda.time.jsptags.version>
-    <com.google.collections.version>1.0</com.google.collections.version>
-    <javax.servlet.api.version>2.5</javax.servlet.api.version>
-    <javax.servlet.jsp.api.version>2.1</javax.servlet.jsp.api.version>
-    <javax.servlet.jstl.version>1.2</javax.servlet.jstl.version>
-    <org.tuckey.urlrewritefilter.version>3.2.0</org.tuckey.urlrewritefilter.version>
-
-    <org.codehaus.jackson.version>1.8.3</org.codehaus.jackson.version>
-    <build.helper.maven.plugin.version>1.5</build.helper.maven.plugin.version>
-
-    <guice.version>4.1.0</guice.version>
-    <log4j.version>2.8.2</log4j.version>
   </properties>
 
   <build>
-
     <plugins>
-      <!-- COMPILING -->
-      <plugin>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <version>2.5.1</version>
-        <configuration>
-          <source>${maven.compiler.source}</source>
-          <target>${maven.compiler.target}</target>
-          <debug>true</debug>
-          <encoding>UTF-8</encoding>
-        </configuration>
-      </plugin>
     </plugins>
   </build>
 
   <dependencies>
-
-    <dependency>
-      <groupId>org.apache.logging.log4j</groupId>
-      <artifactId>log4j-api</artifactId>
-      <version>${log4j.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.logging.log4j</groupId>
-      <artifactId>log4j-core</artifactId>
-      <version>${log4j.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.logging.log4j</groupId>
-      <artifactId>log4j-slf4j-impl</artifactId>
-      <version>${log4j.version}</version>
-    </dependency>
-
-    <!-- Joda Time -->
-    <dependency>
-      <groupId>joda-time</groupId>
-      <artifactId>joda-time</artifactId>
-      <version>${joda.time.version}</version>
-    </dependency>
-
-    <!-- get nullable annotation -->
-    <dependency>
-      <groupId>com.google.code.findbugs</groupId>
-      <artifactId>jsr305</artifactId>
-      <version>3.0.0</version>
-    </dependency>
-
-    <!--+++ Jakarta's Commons Lang +++ -->
-    <dependency>
-      <groupId>commons-lang</groupId>
-      <artifactId>commons-lang</artifactId>
-      <version>2.6</version>
-    </dependency>
-
-    <!-- Guice -->
-    <dependency>
-      <groupId>com.google.inject</groupId>
-      <artifactId>guice</artifactId>
-      <version>${guice.version}</version>
-    </dependency>
-
-    <!-- DTO -->
-    <dependency>
-      <groupId>com.googlecode.jmapper-framework</groupId>
-      <artifactId>jmapper-core</artifactId>
-      <version>1.6.1.CR1</version>
-      <exclusions>
-        <exclusion>
-          <groupId>org.slf4j</groupId>
-          <artifactId>slf4j-api</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-
-    <!-- Testing -->
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>4.13.1</version>
-      <scope>test</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>org.testng</groupId>
-      <artifactId>testng</artifactId>
-      <version>6.8</version>
-      <scope>test</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>org.mockito</groupId>
-      <artifactId>mockito-core</artifactId>
-      <version>2.11.0</version>
-      <scope>test</scope>
-    </dependency>
 
   </dependencies>
 

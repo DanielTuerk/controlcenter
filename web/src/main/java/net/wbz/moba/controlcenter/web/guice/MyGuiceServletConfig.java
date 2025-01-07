@@ -80,7 +80,7 @@ public class MyGuiceServletConfig extends GuiceServletContextListener {
                  * {@link com.google.inject.Provider}.
                  */
                 install(new JpaPersistModule(PERSISTENCE_UNIT).properties(properties));
-                filter("/" + APP_NAME + "/*").through(PersistFilter.class);
+                filter("/*").through(PersistFilter.class);
 
                 install(new ServerModule());
 

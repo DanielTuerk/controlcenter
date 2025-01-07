@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
+import lombok.extern.slf4j.Slf4j;
 import net.wbz.moba.controlcenter.web.server.event.EventBroadcaster;
 import net.wbz.moba.controlcenter.web.server.persist.train.TrainDao;
 import net.wbz.moba.controlcenter.web.server.persist.train.TrainEntity;
@@ -26,8 +27,6 @@ import net.wbz.selectrix4java.device.DeviceManager;
 import net.wbz.selectrix4java.train.TrainDataListener;
 import net.wbz.selectrix4java.train.TrainModule;
 import org.apache.commons.lang.ArrayUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Manager to access the {@link TrainEntity}s from database. Each {@link TrainEntity} register an {@link
@@ -37,9 +36,8 @@ import org.slf4j.LoggerFactory;
  * @author Daniel Tuerk
  */
 @Singleton
+@Slf4j
 public class TrainManager {
-
-    private static final Logger LOG = LoggerFactory.getLogger(TrainManager.class);
 
     private final TrainDao dao;
     private final EventBroadcaster eventBroadcaster;
@@ -61,7 +59,7 @@ public class TrainManager {
                         reregisterConsumer(train, deviceManager, eventBroadcaster);
                     }
                 } catch (DeviceAccessException e) {
-                    e.printStackTrace();
+                    log.error("can't register consumer for device {}", device, e);
                 }
             }
 
@@ -136,7 +134,7 @@ public class TrainManager {
                 try {
                     reregisterConsumer(train, deviceManager, eventBroadcaster);
                 } catch (DeviceAccessException e) {
-                    LOG.error("can't register consumer for train ({})", train, e);
+                    log.error("can't register consumer for train ({})", train, e);
                 }
             });
         }
@@ -200,7 +198,7 @@ public class TrainManager {
                 return train;
             }
         }
-        LOG.error("can't find train for address " + address);
+        log.error("can't find train for address: {}", address);
         return null;
     }
 

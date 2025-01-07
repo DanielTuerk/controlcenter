@@ -1,7 +1,6 @@
 package net.wbz.moba.controlcenter.web.shared.station;
 
-import com.google.gwt.user.client.rpc.IsSerializable;
-import de.novanic.eventservice.client.event.Event;
+import net.wbz.moba.controlcenter.web.shared.Event;
 
 /**
  * Event for changed data of an station board for a {@link Station}.
@@ -10,7 +9,7 @@ import de.novanic.eventservice.client.event.Event;
  */
 public class StationBoardChangedEvent implements Event {
 
-    public enum TYPE implements IsSerializable {
+    public enum TYPE {
         ARRIVAL, DEPARTURE
     }
 

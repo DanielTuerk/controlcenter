@@ -1,6 +1,5 @@
 package net.wbz.moba.controlcenter.web.shared.bus;
 
-import com.google.gwt.user.client.rpc.IsSerializable;
 import net.wbz.moba.controlcenter.web.client.event.StateEvent;
 
 /**
@@ -23,7 +22,7 @@ public class PlayerEvent implements StateEvent {
         return state;
     }
 
-    public enum STATE implements IsSerializable {
+    public enum STATE {
         START, STOP
     }
 

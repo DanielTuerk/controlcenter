@@ -12,13 +12,14 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import javax.validation.constraints.NotNull;
 import net.wbz.moba.controlcenter.web.server.SelectrixHelper;
 import net.wbz.moba.controlcenter.web.server.persist.scenario.TrackBuilder;
 import net.wbz.moba.controlcenter.web.server.web.editor.block.BusAddressIdentifier;
 import net.wbz.moba.controlcenter.web.server.web.editor.block.SignalBlockRegistry;
 import net.wbz.moba.controlcenter.web.server.web.scenario.RouteListener;
 import net.wbz.moba.controlcenter.web.server.web.train.TrainManager;
+import net.wbz.moba.controlcenter.web.server.web.train.TrainService;
+import net.wbz.moba.controlcenter.web.server.web.viewer.TrackViewerService;
 import net.wbz.moba.controlcenter.web.shared.scenario.Route;
 import net.wbz.moba.controlcenter.web.shared.scenario.Route.ROUTE_RUN_STATE;
 import net.wbz.moba.controlcenter.web.shared.scenario.RouteSequence;
@@ -30,8 +31,6 @@ import net.wbz.moba.controlcenter.web.shared.track.model.Signal.FUNCTION;
 import net.wbz.moba.controlcenter.web.shared.track.model.TrackBlock;
 import net.wbz.moba.controlcenter.web.shared.train.Train;
 import net.wbz.moba.controlcenter.web.shared.train.Train.DRIVING_DIRECTION;
-import net.wbz.moba.controlcenter.web.shared.train.TrainService;
-import net.wbz.moba.controlcenter.web.shared.viewer.TrackViewerService;
 import net.wbz.selectrix4java.block.BlockListener;
 import net.wbz.selectrix4java.block.FeedbackBlockModule;
 import net.wbz.selectrix4java.device.Device;
@@ -493,7 +492,7 @@ abstract class ScenarioExecution implements Callable<Void> {
         }
     }
 
-    private void switchSignalToDrive(@NotNull final Signal signal) {
+    private void switchSignalToDrive(final Signal signal) {
         LOG.info("switch signal to HP1 {}", signal);
         trackViewerService.switchSignal(signal, FUNCTION.HP1);
 

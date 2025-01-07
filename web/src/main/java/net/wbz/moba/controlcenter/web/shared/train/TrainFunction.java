@@ -1,6 +1,5 @@
 package net.wbz.moba.controlcenter.web.shared.train;
 
-import com.google.gwt.user.client.rpc.IsSerializable;
 import com.googlecode.jmapper.annotations.JMap;
 import java.io.Serializable;
 import net.wbz.moba.controlcenter.web.shared.track.model.AbstractDto;
@@ -44,7 +43,7 @@ public class TrainFunction extends AbstractDto {
     /**
      * Available functions for the train.
      */
-    public enum FUNCTION implements Serializable, IsSerializable {
+    public enum FUNCTION implements Serializable {
         LIGHT, HORN, FUNCTION
     }
 }

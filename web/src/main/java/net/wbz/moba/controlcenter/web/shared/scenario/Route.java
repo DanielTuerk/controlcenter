@@ -1,6 +1,5 @@
 package net.wbz.moba.controlcenter.web.shared.scenario;
 
-import com.google.gwt.user.client.rpc.IsSerializable;
 import com.googlecode.jmapper.annotations.JMap;
 import java.util.HashSet;
 import java.util.List;
@@ -129,7 +128,7 @@ public class Route extends AbstractDto {
     /**
      * Run state of a route.
      */
-    public enum ROUTE_RUN_STATE implements IsSerializable {
+    public enum ROUTE_RUN_STATE {
         /**
          * Prepared to start.
          */

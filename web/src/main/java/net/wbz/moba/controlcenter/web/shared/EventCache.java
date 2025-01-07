@@ -1,7 +1,6 @@
 package net.wbz.moba.controlcenter.web.shared;
 
 import com.google.common.collect.Maps;
-import de.novanic.eventservice.client.event.Event;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;

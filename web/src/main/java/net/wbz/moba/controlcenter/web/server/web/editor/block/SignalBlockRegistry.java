@@ -9,12 +9,11 @@ import java.util.List;
 import java.util.Map;
 import net.wbz.moba.controlcenter.web.server.event.EventBroadcaster;
 import net.wbz.moba.controlcenter.web.server.web.train.TrainManager;
-import net.wbz.moba.controlcenter.web.server.web.train.TrainServiceImpl;
-import net.wbz.moba.controlcenter.web.server.web.viewer.TrackViewerServiceImpl;
+import net.wbz.moba.controlcenter.web.server.web.train.TrainService;
+import net.wbz.moba.controlcenter.web.server.web.viewer.TrackViewerService;
 import net.wbz.moba.controlcenter.web.shared.track.model.BusDataConfiguration;
 import net.wbz.moba.controlcenter.web.shared.track.model.Signal;
 import net.wbz.moba.controlcenter.web.shared.train.Train;
-import net.wbz.moba.controlcenter.web.shared.viewer.TrackViewerService;
 import net.wbz.selectrix4java.block.FeedbackBlockListener;
 import net.wbz.selectrix4java.block.FeedbackBlockModule;
 import net.wbz.selectrix4java.device.Device;
@@ -60,8 +59,8 @@ public class SignalBlockRegistry extends AbstractBlockRegistry<Signal> {
     private Collection<Signal> signals;
 
     @Inject
-    public SignalBlockRegistry(EventBroadcaster eventBroadcaster, TrainServiceImpl trainService,
-        TrainManager trainManager, TrackViewerServiceImpl trackViewerService) {
+    public SignalBlockRegistry(EventBroadcaster eventBroadcaster, TrainService trainService,
+        TrainManager trainManager, TrackViewerService trackViewerService) {
         super(eventBroadcaster, trainService, trainManager);
         this.trackViewerService = trackViewerService;
     }

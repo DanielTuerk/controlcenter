@@ -13,7 +13,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import net.wbz.moba.controlcenter.web.shared.constrution.Construction;
-import net.wbz.moba.controlcenter.web.shared.constrution.ConstructionService;
 
 /**
  * @author Daniel Tuerk

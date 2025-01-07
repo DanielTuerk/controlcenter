@@ -1,7 +1,6 @@
 package net.wbz.moba.controlcenter.web.shared.track.model;
 
 import com.google.common.collect.Lists;
-import com.google.gwt.user.client.rpc.IsSerializable;
 import com.googlecode.jmapper.annotations.JMap;
 import java.util.Collection;
 
@@ -62,7 +61,7 @@ public class Straight extends AbstractTrackPart {
         return "Straight{" + "direction=" + direction + "} " + super.toString();
     }
 
-    public enum DIRECTION implements IsSerializable {
+    public enum DIRECTION {
         HORIZONTAL, VERTICAL
     }
 }

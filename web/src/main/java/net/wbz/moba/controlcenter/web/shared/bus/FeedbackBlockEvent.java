@@ -1,6 +1,5 @@
 package net.wbz.moba.controlcenter.web.shared.bus;
 
-import com.google.gwt.user.client.rpc.IsSerializable;
 import net.wbz.moba.controlcenter.web.client.event.StateEvent;
 
 /**
@@ -90,7 +89,7 @@ public class FeedbackBlockEvent implements StateEvent {
         return sb.toString();
     }
 
-    public enum STATE implements IsSerializable {
+    public enum STATE {
         ENTER, EXIT
     }
 }

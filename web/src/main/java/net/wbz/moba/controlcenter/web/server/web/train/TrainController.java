@@ -9,7 +9,6 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import net.wbz.moba.controlcenter.web.shared.train.Train;
-import net.wbz.moba.controlcenter.web.shared.train.TrainEditorService;
 
 /**
  * @author Daniel Tuerk

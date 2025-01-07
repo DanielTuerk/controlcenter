@@ -1,10 +1,10 @@
 package net.wbz.moba.controlcenter.web.server.web.editor.block;
 
 import java.util.Collection;
-import net.wbz.moba.controlcenter.web.server.event.EventBroadcaster;
 import net.wbz.moba.controlcenter.web.server.SelectrixHelper;
+import net.wbz.moba.controlcenter.web.server.event.EventBroadcaster;
 import net.wbz.moba.controlcenter.web.server.web.train.TrainManager;
-import net.wbz.moba.controlcenter.web.server.web.train.TrainServiceImpl;
+import net.wbz.moba.controlcenter.web.server.web.train.TrainService;
 import net.wbz.moba.controlcenter.web.shared.track.model.AbstractDto;
 import net.wbz.moba.controlcenter.web.shared.track.model.BusDataConfiguration;
 import net.wbz.moba.controlcenter.web.shared.track.model.TrackBlock;
@@ -24,7 +24,7 @@ public abstract class AbstractBlockRegistry<T extends AbstractDto> {
     private static final Logger log = LoggerFactory.getLogger(AbstractBlockRegistry.class);
 
     private final EventBroadcaster eventBroadcaster;
-    private final TrainServiceImpl trainService;
+    private final TrainService trainService;
     private final TrainManager trainManager;
 
     /**
@@ -34,7 +34,7 @@ public abstract class AbstractBlockRegistry<T extends AbstractDto> {
      * @param trainService {@link net.wbz.moba.controlcenter.web.shared.train.TrainService}
      * @param trainManager {@link TrainManager}
      */
-    public AbstractBlockRegistry(EventBroadcaster eventBroadcaster, TrainServiceImpl trainService,
+    public AbstractBlockRegistry(EventBroadcaster eventBroadcaster, TrainService trainService,
         TrainManager trainManager) {
         this.eventBroadcaster = eventBroadcaster;
         this.trainService = trainService;
@@ -92,7 +92,7 @@ public abstract class AbstractBlockRegistry<T extends AbstractDto> {
         return eventBroadcaster;
     }
 
-    protected TrainServiceImpl getTrainService() {
+    protected TrainService getTrainService() {
         return trainService;
     }
 

@@ -1,9 +1,6 @@
 package net.wbz.moba.controlcenter.web.server.persist.construction.track;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-
+import com.googlecode.jmapper.annotations.JMap;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -11,11 +8,6 @@ import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
-import javax.validation.constraints.NotNull;
-
-import com.google.common.collect.Sets;
-import com.googlecode.jmapper.annotations.JMap;
-
 import net.wbz.moba.controlcenter.web.server.persist.AbstractEntity;
 import net.wbz.moba.controlcenter.web.server.persist.construction.ConstructionEntity;
 import net.wbz.moba.controlcenter.web.shared.track.model.AbstractTrackPart;

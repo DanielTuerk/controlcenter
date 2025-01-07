@@ -1,10 +1,8 @@
 package net.wbz.moba.controlcenter.web.shared.track.model;
 
 import com.google.common.collect.Lists;
-import com.google.gwt.user.client.rpc.IsSerializable;
-import java.util.Collection;
-
 import com.googlecode.jmapper.annotations.JMap;
+import java.util.Collection;
 
 /**
  * @author Daniel Tuerk
@@ -93,7 +91,7 @@ public class Curve extends AbstractTrackPart {
         return "Curve{" + "direction=" + direction+ "} "  +super.toString();
     }
 
-    public enum DIRECTION implements IsSerializable {
+    public enum DIRECTION {
         BOTTOM_RIGHT, BOTTOM_LEFT, TOP_LEFT, TOP_RIGHT
     }
 }

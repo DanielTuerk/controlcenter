@@ -8,31 +8,4 @@
   xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
   id="WebApp_ID" version="2.5">
 
-<!--  <filter>-->
-<!--    <filter-name>guiceFilter</filter-name>-->
-<!--    <filter-class>com.google.inject.servlet.GuiceFilter</filter-class>-->
-<!--  </filter>-->
-
-<!--  <filter-mapping>-->
-<!--    <filter-name>guiceFilter</filter-name>-->
-<!--    <url-pattern>/*</url-pattern>-->
-<!--  </filter-mapping>-->
-
-<!--  <listener>-->
-<!--    <listener-class>net.wbz.moba.controlcenter.web.guice.MyGuiceServletConfig</listener-class>-->
-<!--  </listener>-->
-
-<!--  <servlet>-->
-<!--    <servlet-name>EventService</servlet-name>-->
-<!--    <servlet-class>de.novanic.eventservice.service.EventServiceImpl</servlet-class>-->
-<!--  </servlet>-->
-<!--  <servlet-mapping>-->
-<!--    <servlet-name>EventService</servlet-name>-->
-<!--    <url-pattern>/ControlCenterApp/gwteventservice</url-pattern>-->
-<!--  </servlet-mapping>-->
-
-<!--  <welcome-file-list>-->
-<!--    <welcome-file>ControlCenterApp.html</welcome-file>-->
-<!--  </welcome-file-list>-->
-
 </web-app>

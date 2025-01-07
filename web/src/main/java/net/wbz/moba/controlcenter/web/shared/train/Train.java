@@ -1,7 +1,6 @@
 package net.wbz.moba.controlcenter.web.shared.train;
 
 import com.google.common.collect.Sets;
-import com.google.gwt.user.client.rpc.IsSerializable;
 import com.googlecode.jmapper.annotations.JMap;
 import java.util.HashSet;
 import java.util.Set;
@@ -108,7 +107,7 @@ public class Train extends AbstractDto {
     /**
      * Driving direction of the train.
      */
-    public enum DRIVING_DIRECTION implements IsSerializable {
+    public enum DRIVING_DIRECTION {
         FORWARD, BACKWARD
     }
 

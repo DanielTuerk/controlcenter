@@ -2,7 +2,6 @@ package net.wbz.moba.controlcenter.web.shared.scenario;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import com.google.gwt.user.client.rpc.IsSerializable;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -18,7 +17,7 @@ import net.wbz.moba.controlcenter.web.shared.track.model.TrackBlock;
  *
  * @author Daniel Tuerk
  */
-public class Track implements IsSerializable {
+public class Track {
 
     /**
      * Blocks which need to be freed to drive.

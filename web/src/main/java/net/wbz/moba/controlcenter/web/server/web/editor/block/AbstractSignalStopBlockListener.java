@@ -1,10 +1,9 @@
 package net.wbz.moba.controlcenter.web.server.web.editor.block;
 
+import net.wbz.moba.controlcenter.web.server.web.train.TrainManager;
+import net.wbz.moba.controlcenter.web.server.web.train.TrainService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import net.wbz.moba.controlcenter.web.server.web.train.TrainManager;
-import net.wbz.moba.controlcenter.web.shared.train.TrainService;
 
 /**
  * Abstract {@link AbstractSignalBlockListener} for the stop block of a {@link SignalBlock}.

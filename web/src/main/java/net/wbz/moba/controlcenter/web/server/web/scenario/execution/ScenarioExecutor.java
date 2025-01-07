@@ -13,13 +13,12 @@ import net.wbz.moba.controlcenter.web.server.web.scenario.RouteListener;
 import net.wbz.moba.controlcenter.web.server.web.scenario.ScenarioStateListener;
 import net.wbz.moba.controlcenter.web.server.web.scenario.ScenarioUtil;
 import net.wbz.moba.controlcenter.web.server.web.train.TrainManager;
-import net.wbz.moba.controlcenter.web.server.web.train.TrainServiceImpl;
-import net.wbz.moba.controlcenter.web.server.web.viewer.TrackViewerServiceImpl;
+import net.wbz.moba.controlcenter.web.server.web.train.TrainService;
+import net.wbz.moba.controlcenter.web.server.web.viewer.TrackViewerService;
 import net.wbz.moba.controlcenter.web.shared.scenario.Scenario;
 import net.wbz.moba.controlcenter.web.shared.scenario.Scenario.MODE;
 import net.wbz.moba.controlcenter.web.shared.scenario.Scenario.RUN_STATE;
 import net.wbz.moba.controlcenter.web.shared.scenario.ScenarioStateEvent;
-import net.wbz.moba.controlcenter.web.shared.train.TrainService;
 import net.wbz.selectrix4java.device.DeviceManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,7 +34,7 @@ public class ScenarioExecutor {
     private static final Logger LOG = LoggerFactory.getLogger(ScenarioExecutor.class);
 //    private final ExecutorService taskExecutor;
 
-    private final TrackViewerServiceImpl trackViewerService;
+    private final TrackViewerService trackViewerService;
     private final TrainService trainService;
     private final SignalBlockRegistry signalBlockRegistry;
     private final TrainManager trainManager;
@@ -60,7 +59,7 @@ public class ScenarioExecutor {
     private final List<RouteListener> routeListeners = new CopyOnWriteArrayList<>();
 
     @Inject
-    ScenarioExecutor(TrackViewerServiceImpl trackViewerService, TrainServiceImpl trainService,
+    ScenarioExecutor(TrackViewerService trackViewerService, TrainService trainService,
             SignalBlockRegistry signalBlockRegistry, TrainManager trainManager, DeviceManager deviceManager,
             TrackBuilder trackBuilder, EventBroadcaster eventBroadcaster,
             ScenarioRouteEventBroadcaster scenarioRouteEventBroadcaster,

@@ -1,6 +1,5 @@
 package net.wbz.moba.controlcenter.web.shared.bus;
 
-import com.google.gwt.user.client.rpc.IsSerializable;
 import net.wbz.moba.controlcenter.web.client.event.StateEvent;
 
 /**
@@ -10,7 +9,7 @@ import net.wbz.moba.controlcenter.web.client.event.StateEvent;
  */
 public class DeviceConnectionEvent implements StateEvent {
 
-    public enum TYPE implements IsSerializable {
+    public enum TYPE {
         CONNECTED, DISCONNECTED
     }
 

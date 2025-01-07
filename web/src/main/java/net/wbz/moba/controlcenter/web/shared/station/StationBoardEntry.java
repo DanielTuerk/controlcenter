@@ -1,13 +1,12 @@
 package net.wbz.moba.controlcenter.web.shared.station;
 
-import com.google.gwt.user.client.rpc.IsSerializable;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * @author Daniel Tuerk
  */
-public class StationBoardEntry implements IsSerializable {
+public class StationBoardEntry {
 
     private long scenarioId;
     private String timeText;

@@ -1,7 +1,5 @@
 package net.wbz.moba.controlcenter.web.shared;
 
-import de.novanic.eventservice.client.event.Event;
-
 /**
  * Abstract {@link Event} for a item identified by the ID of the item.
  *

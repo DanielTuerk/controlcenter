@@ -6,6 +6,7 @@ import java.util.Iterator;
 /**
  * @author Daniel Tuerk
  */
+@Deprecated
 public class StringUtils {
 
     public static String join(Collection<?> elements, String delimiter) {

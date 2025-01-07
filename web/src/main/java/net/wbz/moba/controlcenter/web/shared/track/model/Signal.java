@@ -2,7 +2,6 @@ package net.wbz.moba.controlcenter.web.shared.track.model;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.gwt.user.client.rpc.IsSerializable;
 import com.googlecode.jmapper.annotations.JMap;
 import java.util.ArrayList;
 import java.util.List;
@@ -242,14 +241,14 @@ public class Signal extends Straight implements HasToggleFunction {
     /**
      * Available functions for the signal types.
      */
-    public enum FUNCTION implements IsSerializable {
+    public enum FUNCTION {
         HP0, HP1, HP2, HP0_SH1
     }
 
     /**
      * Types of signal with corresponding mapping of the lights.
      */
-    public enum TYPE implements IsSerializable {
+    public enum TYPE {
         BLOCK(new LIGHT[]{LIGHT.RED1, LIGHT.GREEN1}), ENTER(new LIGHT[]{LIGHT.RED1, LIGHT.GREEN1, LIGHT.YELLOW1}), EXIT(
             new LIGHT[]{LIGHT.RED1, LIGHT.RED2, LIGHT.GREEN1, LIGHT.YELLOW1, LIGHT.WHITE}), BEFORE(
             new LIGHT[]{LIGHT.GREEN1, LIGHT.GREEN2, LIGHT.YELLOW1, LIGHT.YELLOW2});
@@ -268,7 +267,7 @@ public class Signal extends Straight implements HasToggleFunction {
     /**
      * Available lights of the different signal types.
      */
-    public enum LIGHT implements IsSerializable {
+    public enum LIGHT {
         RED1, RED2, GREEN1, GREEN2, YELLOW1, YELLOW2, WHITE
     }
 }

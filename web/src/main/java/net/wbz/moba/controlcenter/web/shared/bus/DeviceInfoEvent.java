@@ -1,8 +1,6 @@
 package net.wbz.moba.controlcenter.web.shared.bus;
 
-import com.google.gwt.user.client.rpc.IsSerializable;
-import de.novanic.eventservice.client.event.Event;
-
+import net.wbz.moba.controlcenter.web.shared.Event;
 /**
  * Event for the data of the device.
  *
@@ -53,7 +51,7 @@ public class DeviceInfoEvent implements Event {
             + '}';
     }
 
-    public enum TYPE implements IsSerializable {
+    public enum TYPE {
         CREATE, REMOVE, MODIFY
     }
 }

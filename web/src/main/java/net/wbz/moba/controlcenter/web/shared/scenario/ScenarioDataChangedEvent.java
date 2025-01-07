@@ -1,6 +1,6 @@
 package net.wbz.moba.controlcenter.web.shared.scenario;
 
-import de.novanic.eventservice.client.event.Event;
+import net.wbz.moba.controlcenter.web.shared.Event;
 
 /**
  * Event that indicates changes to the {@link Scenario}s data.

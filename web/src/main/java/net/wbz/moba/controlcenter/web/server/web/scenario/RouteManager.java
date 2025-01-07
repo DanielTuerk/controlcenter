@@ -13,7 +13,7 @@ import net.wbz.moba.controlcenter.web.server.persist.scenario.RouteDataMapper;
 import net.wbz.moba.controlcenter.web.server.persist.scenario.RouteEntity;
 import net.wbz.moba.controlcenter.web.server.persist.scenario.RouteSequenceDao;
 import net.wbz.moba.controlcenter.web.server.persist.scenario.TrackBuilder;
-import net.wbz.moba.controlcenter.web.server.web.constrution.ConstructionServiceImpl;
+import net.wbz.moba.controlcenter.web.server.web.constrution.ConstructionService;
 import net.wbz.moba.controlcenter.web.shared.scenario.Route;
 import net.wbz.moba.controlcenter.web.shared.scenario.RoutesChangedEvent;
 import net.wbz.moba.controlcenter.web.shared.scenario.Scenario;
@@ -46,7 +46,7 @@ public class RouteManager {
 
     @Inject
     public RouteManager(RouteDao routeDao, RouteSequenceDao routeSequenceDao, EventBroadcaster eventBroadcaster,
-        RouteDataMapper routeDataMapper, TrackBuilder trackBuilder, ConstructionServiceImpl constructionService) {
+        RouteDataMapper routeDataMapper, TrackBuilder trackBuilder, ConstructionService constructionService) {
         this.routeDao = routeDao;
         this.routeSequenceDao = routeSequenceDao;
         this.eventBroadcaster = eventBroadcaster;

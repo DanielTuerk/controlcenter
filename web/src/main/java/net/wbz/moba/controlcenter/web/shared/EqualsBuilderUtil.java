@@ -5,6 +5,7 @@ import java.util.Objects;
 /**
  * @author Daniel Tuerk
  */
+@Deprecated
 public class EqualsBuilderUtil {
     private boolean isEquals = true;
 

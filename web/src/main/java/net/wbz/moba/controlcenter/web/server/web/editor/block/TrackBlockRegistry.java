@@ -1,18 +1,13 @@
 package net.wbz.moba.controlcenter.web.server.web.editor.block;
 
-import java.util.Collection;
-import java.util.Map;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-
+import java.util.Collection;
+import java.util.Map;
 import net.wbz.moba.controlcenter.web.server.event.EventBroadcaster;
 import net.wbz.moba.controlcenter.web.server.web.train.TrainManager;
-import net.wbz.moba.controlcenter.web.server.web.train.TrainServiceImpl;
+import net.wbz.moba.controlcenter.web.server.web.train.TrainService;
 import net.wbz.moba.controlcenter.web.shared.bus.FeedbackBlockEvent;
 import net.wbz.moba.controlcenter.web.shared.track.model.BusDataConfiguration;
 import net.wbz.moba.controlcenter.web.shared.track.model.TrackBlock;
@@ -23,6 +18,8 @@ import net.wbz.selectrix4java.block.FeedbackBlockListener;
 import net.wbz.selectrix4java.block.FeedbackBlockModule;
 import net.wbz.selectrix4java.device.Device;
 import net.wbz.selectrix4java.device.DeviceAccessException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Registry for available {@link TrackBlock}s to add the {@link FeedbackBlockListener}s for receiving the block states
@@ -42,7 +39,7 @@ public class TrackBlockRegistry extends AbstractBlockRegistry<TrackBlock> {
     private Collection<TrackBlock> trackBlocks;
 
     @Inject
-    public TrackBlockRegistry(EventBroadcaster eventBroadcaster, TrainServiceImpl trainService,
+    public TrackBlockRegistry(EventBroadcaster eventBroadcaster, TrainService trainService,
             TrainManager trainManager) {
         super(eventBroadcaster, trainService, trainManager);
     }

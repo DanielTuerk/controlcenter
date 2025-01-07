@@ -1,6 +1,6 @@
 package net.wbz.moba.controlcenter.web.shared.station;
 
-import de.novanic.eventservice.client.event.Event;
+import net.wbz.moba.controlcenter.web.shared.Event;
 
 /**
  * Event if the data of a {@link Station} has changed.

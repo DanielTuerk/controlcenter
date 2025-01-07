@@ -1,7 +1,6 @@
 package net.wbz.moba.controlcenter.web.shared.track.model;
 
 import com.google.common.collect.Lists;
-import com.google.gwt.user.client.rpc.IsSerializable;
 import com.googlecode.jmapper.annotations.JMap;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -193,15 +192,15 @@ public class Turnout extends AbstractTrackPart implements HasToggleFunction {
         }
     }
 
-    public enum DIRECTION implements IsSerializable {
+    public enum DIRECTION {
         RIGHT, LEFT
     }
 
-    public enum PRESENTATION implements IsSerializable {
+    public enum PRESENTATION {
         LEFT_TO_RIGHT, RIGHT_TO_LEFT, BOTTOM_TO_TOP, TOP_TO_BOTTOM
     }
 
-    public enum STATE implements IsSerializable {
+    public enum STATE {
         STRAIGHT, BRANCH
     }
 }

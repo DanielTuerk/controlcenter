@@ -1,0 +1,27 @@
+{
+  "resourcePackages": [
+    "net.wbz.moba.controlcenter.web.resource"
+  ],
+  "prettyPrint": true,
+  "cacheTTL": 0,
+  "openAPI": {
+    "info": {
+      "version": "1.0.0",
+      "title": "Control Center API",
+      "description": "OpenAPI swagger configuration for the REST interfaces of Control Center.",
+      "contact": {
+        "email": "https://github.com/DanielTuerk/controlcenter"
+      },
+      "license": {
+        "name": "MIT License",
+        "url": "https://en.wikipedia.org/wiki/MIT_License"
+      }
+    },
+    "servers": [
+      {
+        "url": "http://localhost:8080/",
+        "description": "Openapi Swagger API server"
+      }
+    ]
+  }
+}

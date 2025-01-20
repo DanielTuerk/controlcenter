@@ -1,41 +1,45 @@
 package net.wbz.moba.controlcenter.web;
 
+import com.google.inject.Guice;
+import com.google.inject.Injector;
+import java.io.IOException;
+import java.net.URI;
 import lombok.extern.slf4j.Slf4j;
-import net.wbz.moba.controlcenter.web.guice.FrontendServlet;
+import net.wbz.moba.controlcenter.web.config.JerseyConfig;
 import net.wbz.moba.controlcenter.web.guice.MyGuiceServletConfig;
-
-import java.util.EnumSet;
-
-import javax.servlet.DispatcherType;
-
-import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.servlet.ServletContextHandler;
-
-import com.google.inject.servlet.GuiceFilter;
-
+import org.glassfish.grizzly.http.server.HttpServer;
+import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
 /**
  * @author Daniel Tuerk
  */
 @Slf4j
 public class Main {
 
+    private static final URI BASE_URI = URI.create("http://localhost:8080/OpenAPIExample/");
+    private static Injector injector;
+
+    public static Injector getInjector() {
+        return injector;
+    }
+
     public static void main(String[] args) {
-        int port = 8080;
-        log.info("starting server on port {}", port);
-
-        Server server = new Server(port);
-        ServletContextHandler root = new ServletContextHandler(server, "/", ServletContextHandler.SESSIONS);
-
-        root.addEventListener(new MyGuiceServletConfig());
-        root.addFilter(GuiceFilter.class, "/*", EnumSet.of(DispatcherType.REQUEST));
-        root.addServlet(FrontendServlet.class, "/*");
-
         try {
+            injector = Guice.createInjector(new AppModule());
+            final HttpServer server = GrizzlyHttpServerFactory.createHttpServer(
+                BASE_URI,
+                new JerseyConfig(injector),
+                false);
+
+
+
+            Runtime.getRuntime().addShutdownHook(new Thread(server::shutdownNow));
             server.start();
-            log.info("server started on port {}", port);
-        } catch (Exception e) {
-            log.error("can't start server", e);
-            throw new RuntimeException(e);
+
+            System.out.println("Application started.");
+
+            Thread.currentThread().join();
+        } catch (IOException | InterruptedException ex) {
+            ex.printStackTrace();
         }
     }
 }

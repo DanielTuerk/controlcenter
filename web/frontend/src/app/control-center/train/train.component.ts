@@ -1,12 +1,12 @@
-import {Component, inject, OnInit} from '@angular/core';
+import {Component, inject, OnInit, signal} from '@angular/core';
 import {TrainService} from "../../shared/train.service";
 import {RouterLink} from "@angular/router";
 import {MatCard, MatCardContent, MatCardHeader, MatCardTitle} from "@angular/material/card";
 import {MatTableModule} from "@angular/material/table";
 import {MatIcon} from "@angular/material/icon";
-import {Train} from "../../../shared/gen-js/train_types";
 import {MatDialog} from "@angular/material/dialog";
 import {ConfirmDialogComponent} from "../common/confirm-dialog/confirm-dialog.component";
+import {Train} from "../../../shared/openapi-gen";
 
 @Component({
   selector: 'app-train',
@@ -24,12 +24,14 @@ import {ConfirmDialogComponent} from "../common/confirm-dialog/confirm-dialog.co
 })
 export class TrainComponent implements OnInit {
   private trainService = inject(TrainService);
-  trains = this.trainService.loadedTrains;
+  trains = signal<Train[]>([]);//this.trainService.loadedTrains;
   displayedColumns: string[] = ['id', 'name', 'address', 'action'];
   readonly dialog = inject(MatDialog);
 
   ngOnInit() {
-    this.trainService.loadTrains()
+    this.trainService.loadTrains().subscribe(data => {
+      this.trains.set(data);
+    })
   }
 
   deleteTrain(train: Train) {
@@ -39,7 +41,8 @@ export class TrainComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result === true) {
-        this.trainService.deleteTrain(train.id);
+        // TODO
+        // this.trainService.deleteTrain(train.id);
       }
     });
   }

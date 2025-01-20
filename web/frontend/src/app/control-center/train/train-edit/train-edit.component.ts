@@ -41,8 +41,9 @@ export class TrainEditComponent implements OnInit {
   ngOnInit() {
 
     this.trainService.loadTrain(this.trainId()).subscribe(data => {
-      this.form.controls.address.setValue(data.address)
-      this.form.controls.name.setValue(data.name)
+      //TODO
+      // this.form.controls.address.setValue(data.address)
+      // this.form.controls.name.setValue(data.name)
     });
   }
 

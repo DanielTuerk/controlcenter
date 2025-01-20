@@ -1,0 +1,319 @@
+{
+  "openapi" : "3.0.1",
+  "info" : {
+    "title" : "Control Center API",
+    "description" : "OpenAPI swagger configuration for the REST interfaces of Control Center.",
+    "contact" : {
+      "email" : "https://github.com/DanielTuerk/controlcenter"
+    },
+    "license" : {
+      "name" : "MIT License",
+      "url" : "https://en.wikipedia.org/wiki/MIT_License"
+    },
+    "version" : "1.0.0"
+  },
+  "servers" : [ {
+    "url" : "http://localhost:8080/",
+    "description" : "Openapi Swagger API server"
+  } ],
+  "paths" : {
+    "/api/construction/current" : {
+      "get" : {
+        "operationId" : "getCurrentConstruction",
+        "responses" : {
+          "default" : {
+            "description" : "default response",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Construction"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post" : {
+        "operationId" : "setCurrentConstruction",
+        "requestBody" : {
+          "content" : {
+            "text/plain" : {
+              "schema" : {
+                "type" : "string"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "default" : {
+            "description" : "default response",
+            "content" : {
+              "*/*" : { }
+            }
+          }
+        }
+      }
+    },
+    "/api/construction" : {
+      "get" : {
+        "operationId" : "loadConstructions",
+        "responses" : {
+          "default" : {
+            "description" : "default response",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/Construction"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/scenario" : {
+      "get" : {
+        "operationId" : "getSecnarios",
+        "responses" : {
+          "default" : {
+            "description" : "default response",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/FakeScenario"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/train/{id}" : {
+      "get" : {
+        "operationId" : "loadTrain",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "default response",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Train"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/train" : {
+      "get" : {
+        "operationId" : "loadTrains",
+        "responses" : {
+          "default" : {
+            "description" : "default response",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/Train"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components" : {
+    "schemas" : {
+      "Construction" : {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "inAutomaticMode" : {
+            "type" : "boolean"
+          },
+          "new" : {
+            "type" : "boolean"
+          }
+        }
+      },
+      "FakeScenario" : {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "id2" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        }
+      },
+      "BusDataConfiguration" : {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "bus" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "address" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "bit" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "bitState" : {
+            "type" : "boolean"
+          },
+          "valid" : {
+            "type" : "boolean"
+          },
+          "identifierKey" : {
+            "type" : "string"
+          },
+          "new" : {
+            "type" : "boolean"
+          }
+        }
+      },
+      "TrackBlock" : {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "blockFunction" : {
+            "$ref" : "#/components/schemas/BusDataConfiguration"
+          },
+          "construction" : {
+            "$ref" : "#/components/schemas/Construction"
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "forwardTargetDrivingLevel" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "backwardTargetDrivingLevel" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "drivingLevelAdjustType" : {
+            "type" : "string",
+            "enum" : [ "NONE", "ENTER", "EXIT" ]
+          },
+          "feedback" : {
+            "type" : "boolean"
+          },
+          "displayValue" : {
+            "type" : "string"
+          },
+          "new" : {
+            "type" : "boolean"
+          }
+        }
+      },
+      "Train" : {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "currentBlocks" : {
+            "uniqueItems" : true,
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/TrackBlock"
+            }
+          },
+          "address" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "functions" : {
+            "uniqueItems" : true,
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/TrainFunction"
+            }
+          },
+          "drivingLevel" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "forward" : {
+            "type" : "boolean"
+          },
+          "addressByte" : {
+            "type" : "string",
+            "format" : "byte"
+          },
+          "presentOnTrack" : {
+            "type" : "boolean"
+          },
+          "new" : {
+            "type" : "boolean"
+          }
+        }
+      },
+      "TrainFunction" : {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "alias" : {
+            "type" : "string"
+          },
+          "configuration" : {
+            "$ref" : "#/components/schemas/BusDataConfiguration"
+          },
+          "active" : {
+            "type" : "boolean"
+          },
+          "new" : {
+            "type" : "boolean"
+          }
+        }
+      }
+    }
+  }
+}

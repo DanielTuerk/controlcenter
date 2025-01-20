@@ -21,10 +21,10 @@
     <selectrix.version>0.3.1-SNAPSHOT</selectrix.version>
 
     <webappDirectory>${project.build.directory}/${project.build.finalName}</webappDirectory>
-    <hibernate.version>5.1.3.Final</hibernate.version>
+    <hibernate.version>5.6.15.Final</hibernate.version>
 
 
-    <jersey.version>1.12</jersey.version>
+    <jersey.version>3.1.6</jersey.version>
     <jackson.version>1.9.6</jackson.version>
     <jetty.version>8.1.3.v20120416</jetty.version>
 
@@ -44,11 +44,16 @@
     <build.helper.maven.plugin.version>1.5</build.helper.maven.plugin.version>
 
     <guice.version>6.0.0</guice.version>
-    <log4j.version>2.23.1</log4j.version>
+
+    <!--    TODO remove old ones above-->
+    <grizzly.version>2.3.16</grizzly.version>
+    <jersey.version>2.30</jersey.version>
+<!--    <guice.version>4.2.2</guice.version>-->
+    <guice.bridge>2.5.0-b61</guice.bridge>
+    <swagger.version>2.2.21</swagger.version>
+<!--    <swagger.version>2.1.5</swagger.version>-->
 
 
-    <src.thrift.dir>src/main/resources/thrift/</src.thrift.dir>
-    <thrift.compiler>thrift</thrift.compiler>
   </properties>
 
   <dependencies>
@@ -66,56 +71,152 @@
       <scope>test</scope>
     </dependency>
 
+
+    <!-- Guice dependencies -->
     <dependency>
-      <groupId>com.sun.jersey</groupId>
-      <artifactId>jersey-server</artifactId>
+      <groupId>com.google.inject</groupId>
+      <artifactId>guice</artifactId>
+      <version>${guice.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.glassfish.hk2</groupId>
+      <artifactId>guice-bridge</artifactId>
+      <version>${guice.bridge}</version>
+    </dependency>
+    <!-- custom added -->
+    <dependency>
+      <groupId>com.google.inject.extensions</groupId>
+      <artifactId>guice-persist</artifactId>
+      <version>${guice.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.google.inject.extensions</groupId>
+      <artifactId>guice-servlet</artifactId>
+      <version>${guice.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>com.google.inject.extensions</groupId>
+      <artifactId>guice-multibindings</artifactId>
+      <version>4.2.3</version>
+    </dependency>
+
+    <!-- https://mvnrepository.com/artifact/javax.servlet/servlet-api -->
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>servlet-api</artifactId>
+      <version>2.5</version>
+      <scope>provided</scope>
+    </dependency>
+
+
+    <!-- Jersey dependencies -->
+    <dependency>
+      <groupId>org.glassfish.jersey.bundles</groupId>
+      <artifactId>jaxrs-ri</artifactId>
       <version>${jersey.version}</version>
     </dependency>
     <dependency>
-      <groupId>com.sun.jersey.contribs</groupId>
-      <artifactId>jersey-guice</artifactId>
+      <groupId>org.glassfish.jersey.containers</groupId>
+      <artifactId>jersey-container-grizzly2-http</artifactId>
       <version>${jersey.version}</version>
     </dependency>
     <dependency>
-      <groupId>com.sun.jersey</groupId>
-      <artifactId>jersey-json</artifactId>
+      <groupId>org.glassfish.jersey.containers</groupId>
+      <artifactId>jersey-container-servlet</artifactId>
+      <version>${jersey.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.glassfish.jersey.ext</groupId>
+      <artifactId>jersey-bean-validation</artifactId>
+      <version>${jersey.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.glassfish.jersey.inject</groupId>
+      <artifactId>jersey-hk2</artifactId>
       <version>${jersey.version}</version>
     </dependency>
 
+    <!-- swagger dependencies -->
+    <dependency>
+      <groupId>io.swagger.core.v3</groupId>
+      <artifactId>swagger-jaxrs2</artifactId>
+      <version>${swagger.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>io.swagger.core.v3</groupId>
+      <artifactId>swagger-annotations</artifactId>
+      <version>${swagger.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>io.swagger.core.v3</groupId>
+      <artifactId>swagger-core</artifactId>
+      <version>${swagger.version}</version>
+    </dependency>
+    <!-- for openapi yaml -->
+    <dependency>
+      <groupId>org.yaml</groupId>
+      <artifactId>snakeyaml</artifactId>
+      <version>2.2</version>
+      <scope>runtime</scope>
+    </dependency>
 
 
-    <dependency>
-      <groupId>org.codehaus.jackson</groupId>
-      <artifactId>jackson-core-asl</artifactId>
-      <version>${jackson.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.codehaus.jackson</groupId>
-      <artifactId>jackson-mapper-asl</artifactId>
-      <version>${jackson.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.codehaus.jackson</groupId>
-      <artifactId>jackson-jaxrs</artifactId>
-      <version>${jackson.version}</version>
-    </dependency>
+    <!--    <dependency>-->
+    <!--      <groupId>javax.ws.rs</groupId>-->
+    <!--      <artifactId>javax.ws.rs-api</artifactId>-->
+    <!--      <version>2.0.1</version>-->
+    <!--    </dependency>-->
 
-    <dependency>
-      <groupId>org.eclipse.jetty</groupId>
-      <artifactId>jetty-http</artifactId>
-      <version>${jetty.version}</version>
-    </dependency>
+    <!--    <dependency>-->
+    <!--      <groupId>com.sun.jersey</groupId>-->
+    <!--      <artifactId>jersey-server</artifactId>-->
+    <!--      <version>${jersey.version}</version>-->
+    <!--    </dependency>-->
+    <!--    <dependency>-->
+    <!--      <groupId>com.sun.jersey.contribs</groupId>-->
+    <!--      <artifactId>jersey-guice</artifactId>-->
+    <!--      <version>${jersey.version}</version>-->
+    <!--    </dependency>-->
+    <!--    <dependency>-->
+    <!--      <groupId>com.sun.jersey</groupId>-->
+    <!--      <artifactId>jersey-json</artifactId>-->
+    <!--      <version>${jersey.version}</version>-->
+    <!--    </dependency>-->
 
-    <dependency>
-      <groupId>org.eclipse.jetty</groupId>
-      <artifactId>jetty-server</artifactId>
-      <version>${jetty.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.eclipse.jetty</groupId>
-      <artifactId>jetty-servlet</artifactId>
-      <version>${jetty.version}</version>
-    </dependency>
+
+    <!--    <dependency>-->
+    <!--      <groupId>org.codehaus.jackson</groupId>-->
+    <!--      <artifactId>jackson-core-asl</artifactId>-->
+    <!--      <version>${jackson.version}</version>-->
+    <!--    </dependency>-->
+    <!--    <dependency>-->
+    <!--      <groupId>org.codehaus.jackson</groupId>-->
+    <!--      <artifactId>jackson-mapper-asl</artifactId>-->
+    <!--      <version>${jackson.version}</version>-->
+    <!--    </dependency>-->
+    <!--    <dependency>-->
+    <!--      <groupId>org.codehaus.jackson</groupId>-->
+    <!--      <artifactId>jackson-jaxrs</artifactId>-->
+    <!--      <version>${jackson.version}</version>-->
+    <!--    </dependency>-->
+
+    <!--    <dependency>-->
+    <!--      <groupId>org.eclipse.jetty</groupId>-->
+    <!--      <artifactId>jetty-http</artifactId>-->
+    <!--      <version>${jetty.version}</version>-->
+    <!--    </dependency>-->
+
+    <!--    <dependency>-->
+    <!--      <groupId>org.eclipse.jetty</groupId>-->
+    <!--      <artifactId>jetty-server</artifactId>-->
+    <!--      <version>${jetty.version}</version>-->
+    <!--    </dependency>-->
+    <!--    <dependency>-->
+    <!--      <groupId>org.eclipse.jetty</groupId>-->
+    <!--      <artifactId>jetty-servlet</artifactId>-->
+    <!--      <version>${jetty.version}</version>-->
+    <!--    </dependency>-->
 
     <dependency>
       <groupId>org.projectlombok</groupId>
@@ -166,23 +267,19 @@
       <version>10.4.2.0</version>
     </dependency>
 
-    <dependency>
-      <groupId>com.google.inject.extensions</groupId>
-      <artifactId>guice-servlet</artifactId>
-      <version>${guice.version}</version>
-    </dependency>
 
-    <dependency>
-      <groupId>com.google.inject.extensions</groupId>
-      <artifactId>guice-persist</artifactId>
-      <version>${guice.version}</version>
-    </dependency>
+<!---->
+    <!--    <dependency>-->
+    <!--      <groupId>com.google.inject.extensions</groupId>-->
+    <!--      <artifactId>guice-persist</artifactId>-->
+    <!--      <version>${guice.version}</version>-->
+    <!--    </dependency>-->
 
-    <dependency>
-      <groupId>com.google.inject.extensions</groupId>
-      <artifactId>guice-multibindings</artifactId>
-      <version>4.2.3</version>
-    </dependency>
+    <!--    <dependency>-->
+    <!--      <groupId>com.google.inject.extensions</groupId>-->
+    <!--      <artifactId>guice-multibindings</artifactId>-->
+    <!--      <version>4.2.3</version>-->
+    <!--    </dependency>-->
 
     <!-- Hibernate -->
     <dependency>
@@ -250,68 +347,54 @@
     </dependency>
 
     <!-- Jersey Jackson mapping for usage of DTOs as JSON request and response bodies. -->
-    <dependency>
-      <groupId>org.glassfish.jersey.inject</groupId>
-      <artifactId>jersey-hk2</artifactId>
-      <version>2.26</version>
-    </dependency>
-    <dependency>
-      <groupId>com.fasterxml.jackson.jaxrs</groupId>
-      <artifactId>jackson-jaxrs-json-provider</artifactId>
-      <version>2.15.2</version> <!-- Use the latest version -->
-    </dependency>
+    <!--    <dependency>-->
+    <!--      <groupId>org.glassfish.jersey.inject</groupId>-->
+    <!--      <artifactId>jersey-hk2</artifactId>-->
+    <!--      <version>2.26</version>-->
+    <!--    </dependency>-->
+    <!--    <dependency>-->
+    <!--      <groupId>com.fasterxml.jackson.jaxrs</groupId>-->
+    <!--      <artifactId>jackson-jaxrs-json-provider</artifactId>-->
+    <!--      <version>2.15.2</version> &lt;!&ndash; Use the latest version &ndash;&gt;-->
+    <!--    </dependency>-->
 
 
     <!-- SLF4J API -->
+<!--    TODO: only simple?-->
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-simple</artifactId>
+      <version>2.0.12</version>
+      <scope>runtime</scope>
+    </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
-      <version>1.7.36</version>
+      <version>2.0.12</version>
     </dependency>
 
-    <!-- Logback Classic Module -->
-    <dependency>
-      <groupId>ch.qos.logback</groupId>
-      <artifactId>logback-classic</artifactId>
-      <version>1.2.10</version>
-    </dependency>
-
-    <!-- Logback Core Module -->
-    <dependency>
-      <groupId>ch.qos.logback</groupId>
-      <artifactId>logback-core</artifactId>
-      <version>1.2.10</version>
-    </dependency>
-
+<!--    &lt;!&ndash; Logback Classic Module &ndash;&gt;-->
 <!--    <dependency>-->
-<!--      <groupId>org.slf4j</groupId>-->
-<!--      <artifactId>slf4j-api</artifactId>-->
-<!--      <version>1.7.36</version>-->
-<!--    </dependency>-->
-<!--    <dependency>-->
-<!--      <groupId>org.apache.logging.log4j</groupId>-->
-<!--      <artifactId>log4j-api</artifactId>-->
-<!--      <version>${log4j.version}</version>-->
-<!--    </dependency>-->
-<!--    <dependency>-->
-<!--      <groupId>org.apache.logging.log4j</groupId>-->
-<!--      <artifactId>log4j-core</artifactId>-->
-<!--      <version>${log4j.version}</version>-->
-<!--    </dependency>-->
-<!--    <dependency>-->
-<!--      <groupId>org.apache.logging.log4j</groupId>-->
-<!--      <artifactId>log4j-slf4j-impl</artifactId>-->
-<!--      <version>${log4j.version}</version>-->
+<!--      <groupId>ch.qos.logback</groupId>-->
+<!--      <artifactId>logback-classic</artifactId>-->
+<!--      <version>1.2.10</version>-->
 <!--    </dependency>-->
 
-    <!-- Joda Time -->
+<!--    &lt;!&ndash; Logback Core Module &ndash;&gt;-->
+<!--    <dependency>-->
+<!--      <groupId>ch.qos.logback</groupId>-->
+<!--      <artifactId>logback-core</artifactId>-->
+<!--      <version>1.2.10</version>-->
+<!--    </dependency>-->
+
+    <!-- Joda Time TODO: remove -->
     <dependency>
       <groupId>joda-time</groupId>
       <artifactId>joda-time</artifactId>
       <version>${joda.time.version}</version>
     </dependency>
 
-    <!-- get nullable annotation -->
+    <!-- get nullable annotation TODO: remove -->
     <dependency>
       <groupId>com.google.code.findbugs</groupId>
       <artifactId>jsr305</artifactId>
@@ -325,12 +408,6 @@
       <version>2.6</version>
     </dependency>
 
-    <!-- Guice -->
-    <dependency>
-      <groupId>com.google.inject</groupId>
-      <artifactId>guice</artifactId>
-      <version>${guice.version}</version>
-    </dependency>
 
     <!-- DTO -->
     <dependency>
@@ -367,18 +444,7 @@
       <scope>test</scope>
     </dependency>
 
-
-
-    <!-- thrift for models of REST interfaces (frontend / backend) -->
-    <dependency>
-      <groupId>org.apache.thrift</groupId>
-      <artifactId>libthrift</artifactId>
-      <version>0.21.0</version>
-    </dependency>
-
-
   </dependencies>
-
 
   <dependencyManagement>
     <dependencies>
@@ -417,53 +483,6 @@
           <encoding>UTF-8</encoding>
         </configuration>
       </plugin>
-
-      <!-- Thrift -->
-
-      <!--      <plugin>-->
-      <!--        <artifactId>maven-antrun-plugin</artifactId>-->
-      <!--        <version>3.1.0</version>-->
-      <!--        <executions>-->
-      <!--          <execution>-->
-      <!--            <phase>compile</phase>-->
-      <!--            <configuration>-->
-      <!--              <target name="compile-thrift">-->
-      <!--                &lt;!&ndash; Define fileset of thrift files &ndash;&gt;-->
-      <!--                <fileset id="thrift.src.files" dir="${src.thrift.dir}">-->
-      <!--                  <include name="**/*.thrift"/>-->
-      <!--                </fileset>-->
-
-      <!--                &lt;!&ndash; Invoke thrift binary for each of these files &ndash;&gt;-->
-      <!--                <apply executable="${thrift.compiler}" resultproperty="thrift.compile.result"-->
-      <!--                  failifexecutionfails="true" failonerror="true"-->
-      <!--                  searchpath="true" dir="${src.thrift.dir}">-->
-      <!--                  <arg value="-o"/>-->
-      <!--                  <arg value="${basedir}/target/generated-sources/"/>-->
-      <!--                  <arg value="&#45;&#45;gen"/>-->
-      <!--                  <arg value="java"/>-->
-      <!--                  <srcfile/>-->
-      <!--                  <fileset refid="thrift.src.files"/>-->
-      <!--                </apply>-->
-
-      <!--                <apply executable="${thrift.compiler}" resultproperty="thrift.compile.result"-->
-      <!--                  failifexecutionfails="true" failonerror="true"-->
-      <!--                  searchpath="true" dir="${src.thrift.dir}">-->
-      <!--                  <arg value="-o"/>-->
-      <!--                  <arg value="${basedir}/frontend/src/shared"/>-->
-      <!--                  <arg value="&#45;&#45;gen"/>-->
-      <!--                  <arg value="js:ts"/>-->
-      <!--                  <srcfile/>-->
-      <!--                  <fileset refid="thrift.src.files"/>-->
-      <!--                </apply>-->
-      <!--              </target>-->
-
-      <!--            </configuration>-->
-      <!--            <goals>-->
-      <!--              <goal>run</goal>-->
-      <!--            </goals>-->
-      <!--          </execution>-->
-      <!--        </executions>-->
-      <!--      </plugin>-->
 
       <plugin>
         <groupId>org.codehaus.mojo</groupId>

@@ -1,4 +1,4 @@
-package net.wbz.moba.controlcenter.web.guice;
+package net.wbz.moba.controlcenter.web.guice.db;
 
 import java.sql.Types;
 import org.hibernate.dialect.DerbyTenSevenDialect;

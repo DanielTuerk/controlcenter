@@ -1,6 +1,5 @@
 {
   "resourcePackages": [
-    "net.wbz.moba.controlcenter.web.resource"
   ],
   "prettyPrint": true,
   "cacheTTL": 0,

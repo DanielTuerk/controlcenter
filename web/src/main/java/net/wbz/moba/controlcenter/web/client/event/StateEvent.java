@@ -8,6 +8,7 @@ import net.wbz.moba.controlcenter.web.shared.Event;
  *
  * @author Daniel Tuerk
  */
+@Deprecated
 public interface StateEvent extends Event {
 
     /**

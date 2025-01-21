@@ -1,19 +1,20 @@
-package net.wbz.moba.controlcenter.web.resource;
+package net.wbz.moba.controlcenter.web.server.web.train;
 
-import javax.ws.rs.NotFoundException;
 import java.util.Collection;
 import javax.inject.Inject;
 import javax.ws.rs.GET;
+import javax.ws.rs.NotFoundException;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import net.wbz.moba.controlcenter.web.server.web.train.TrainEditorService;
+import net.wbz.moba.controlcenter.web.resource.RestResource;
 import net.wbz.moba.controlcenter.web.shared.train.Train;
 
 /**
  * @author Daniel Tuerk
  */
+@RestResource
 @Path("/api/train")
 public class TrainController {
 

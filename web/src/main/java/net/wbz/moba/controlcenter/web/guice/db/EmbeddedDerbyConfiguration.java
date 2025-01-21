@@ -1,4 +1,4 @@
-package net.wbz.moba.controlcenter.web.guice;
+package net.wbz.moba.controlcenter.web.guice.db;
 
 import java.util.Properties;
 
@@ -13,10 +13,11 @@ public class EmbeddedDerbyConfiguration implements DatabaseConfiguration {
         properties = new Properties();
         // derby
         properties.put("hibernate.connection.driver_class", "org.apache.derby.jdbc.EmbeddedDriver");
-        properties.put("hibernate.dialect", "net.wbz.moba.controlcenter.web.guice.DerbyDialect");
+        properties.put("hibernate.dialect", DerbyDialect.class.getName());
         // auth
-        properties.put("hibernate.connection.url", "jdbc:derby:" + homePath + "/data/" + databaseFolderName
-                + ";create=true");
+        properties.put("hibernate.connection.url", "jdbc:derby:" + homePath + "/data/" + databaseFolderName);
+        //TODO
+//                + ";create=true");
         properties.put("hibernate.connection.username", "");
         properties.put("hibernate.connection.password", "");
         // common

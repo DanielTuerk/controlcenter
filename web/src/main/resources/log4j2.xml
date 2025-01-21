@@ -20,6 +20,10 @@
     </Appenders>
 
     <Loggers>
+        <Logger name="com.mchange" level="warn" additivity="false">
+            <AppenderRef ref="Console"/>
+        </Logger>
+
         <Logger name="net.wbz" level="debug" additivity="false">
             <AppenderRef ref="Console"/>
         </Logger>

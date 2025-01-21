@@ -11,8 +11,8 @@ import com.google.inject.persist.jpa.JpaPersistModule;
 import com.google.inject.persist.jpa.JpaPersistOptions;
 import java.io.File;
 import java.util.Properties;
-import net.wbz.moba.controlcenter.web.guice.EmbeddedDerbyConfiguration;
-import net.wbz.moba.controlcenter.web.guice.RemoteDerbyConfiguration;
+import net.wbz.moba.controlcenter.web.guice.db.EmbeddedDerbyConfiguration;
+import net.wbz.moba.controlcenter.web.guice.db.RemoteDerbyConfiguration;
 
 /**
  * @author Daniel Tuerk

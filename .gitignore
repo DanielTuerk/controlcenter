@@ -3,3 +3,6 @@
 *.log
 web/target/
 /web/src/main/resources/net/wbz/moba/controlcenter/web/theme/css/bootswatch.css
+/web/frontend/node_modules/*
+/web/frontend/src/shared/*
+/web/frontend/.angular

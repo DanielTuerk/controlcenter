@@ -2,11 +2,13 @@ import {inject, signal} from "@angular/core";
 import {HttpClient} from "@angular/common/http";
 import {Construction} from "./shared.model";
 import {Router} from "@angular/router";
+import {SnackBar} from "../control-center/common/snack-bar.component";
 
 export class ConstructionService {
 
   private httpClient = inject(HttpClient);
   private router= inject(Router)
+  private snackBar = inject(SnackBar);
   private constructions = signal<Construction[]>([]);
   private _currentConstruction = signal<Construction | null>(null);
 
@@ -37,12 +39,9 @@ export class ConstructionService {
           console.error(error)
         },
         complete: () => {
-          console.log('done selectCurrentConstruction')
-
           this.loadCurrentConstruction();
         }
       });
-    // .pipe();
   }
 
   loadCurrentConstruction() {
@@ -50,21 +49,12 @@ export class ConstructionService {
     .subscribe(
       {
         next: (construction) => {
-          console.log('current construction: ' + construction);
+          console.log(`current construction: ${construction.name} (${construction.id})`);
           this._currentConstruction.set(construction);
-          if (construction===null) {
-
-            this.router.navigate(['/welcome', { }]);
-
-          }else {
-            this.router.navigate(['/cc', { }]);
-          }
+          this.router.navigate(['/cc', {}]);
         },
         error: (error) => {
-          console.error(error)
-        },
-        complete: () => {
-          console.log('done loadCurrentConstruction')
+          this.snackBar.showError(`can't load current construction: ${error}`);
         }
       });
   }

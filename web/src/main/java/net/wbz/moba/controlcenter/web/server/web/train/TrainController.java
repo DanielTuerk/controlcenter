@@ -1,9 +1,12 @@
 package net.wbz.moba.controlcenter.web.server.web.train;
 
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import java.util.Collection;
 import javax.inject.Inject;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.NotFoundException;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -40,5 +43,17 @@ public class TrainController {
             .filter(train -> train.getId().equals(id))
                 .findFirst()
             .orElseThrow(() -> new NotFoundException("no train found for id " + id));
+    }
+
+    @POST
+    @Path("/{id}")
+    public void updateTrain(@PathParam(value = "id") Long id, @RequestBody Train train) {
+        trainEditorService.updateTrain(train);
+    }
+
+    @DELETE
+    @Path("/{id}")
+    public void deleteTrain(@PathParam(value = "id") Long id) {
+        trainEditorService.deleteTrain(id);
     }
 }

@@ -5,22 +5,24 @@ export class SnackBar {
   private _snackBar = inject(MatSnackBar);
 
   showError(msg: string) {
-    this.open(msg);
+    console.error(msg)
+    this.open(msg, 'error');
   }
 
   showSuccess(msg: string) {
-    this.open(msg, 'Got It!', 5);
+    this.open(msg, 'success', 5);
   }
 
   showMessage(msg: string) {
-    this.open(msg, 'Got It!', 5);
+    this.open(msg);
   }
 
-  private open(msg: string, action: string = 'Got It!', durationInSeconds: number = 5) {
-    this._snackBar.open(msg, action, {
+  private open(msg: string, type:string = '', durationInSeconds: number = 10) {
+    this._snackBar.open(msg, 'Got It!', {
       duration: durationInSeconds * 1000,
       horizontalPosition: 'right',
       verticalPosition: 'top',
+      panelClass: ['snackbar-'+type]
     });
   }
 }

@@ -41,8 +41,7 @@ export class TrainComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result === true) {
-        // TODO
-        // this.trainService.deleteTrain(train.id);
+        this.trainService.deleteTrain(train.id!);
       }
     });
   }

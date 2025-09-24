@@ -2,7 +2,8 @@ import {inject, Injectable, signal} from "@angular/core";
 import {HttpClient} from "@angular/common/http";
 import {SnackBar} from "../control-center/common/snack-bar.component";
 import {DefaultService, Train} from "../../shared/openapi-gen";
-import {Observable} from "rxjs";
+import {EMPTY, Observable} from "rxjs";
+import {catchError} from "rxjs/operators";
 
 @Injectable({
   providedIn: 'root',
@@ -23,55 +24,31 @@ export class TrainService {
     return this.api.loadTrains()
   }
 
-  // loadTrains() {
-  //   this.httpClient.get<Train[]>('/api/train')
-  //   .subscribe({
-  //     next: (trains) => {
-  //       console.log(trains);
-  //       this.trains.set(trains);
-  //     },
-  //     error: (error) => {
-  //       console.error(error)
-  //     },
-  //     complete: () => {
-  //       console.log('done')
-  //     }
-  //   })
-  // }
-
   loadTrain(trainId: Number) {
-    // let trainWritableSignal = signal<Train|null>(null);
-    // let foo = output<Train>();
     return this.httpClient.get<Train>('/api/train/' + trainId)
-    // .subscribe({
-    //   // next: (train) => {
-    //   //   console.log(train);
-    //   //   // return train;
-    //   //   // trainWritableSignal.set(train)
-    //   //   // foo.emit(train);
-    //   // },
-    //   error: (error) => {
-    //     console.error(error)
-    //   },
-    //   complete: () => {
-    //     console.log('done')
-    //   }
-    // });
-    // return trainWritableSignal.asReadonly();
-    // return foo;
+  }
+
+  saveTrain(train: Train) {
+
+    return this.httpClient.post('/api/train/' + train.id, train)
+    .pipe(
+      catchError((err: any, caught: Observable<any>) => {
+        this.snackBar.showError(`can't save train ${train.id}: ${err.message}`);
+        return EMPTY
+      })
+    )
   }
 
   deleteTrain(trainId: Number) {
     // TODO notifications
-    this.httpClient.delete<Train>('/api/train/' + trainId)
+    return this.httpClient.delete('/api/train/' + trainId)
     .subscribe({
       next: (train) => {
         console.log(train);
-        this.snackBar.showSuccess('fooo successfully');
+        this.snackBar.showSuccess(`train ${trainId} deleted`);
       },
       error: (error) => {
-        console.error(error);
-        this.snackBar.showError('fooo error');
+        this.snackBar.showError(`can't delete train ${trainId}: ${error.message}`);
       },
       complete: () => {
         console.log('done');

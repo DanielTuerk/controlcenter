@@ -1,4 +1,4 @@
-import {provideHttpClient} from "@angular/common/http";
+import {HTTP_INTERCEPTORS, provideHttpClient} from "@angular/common/http";
 import {provideRouter, withComponentInputBinding} from "@angular/router";
 import {routes} from "./app.routes";
 import {ApplicationConfig, importProvidersFrom} from "@angular/core";
@@ -8,6 +8,7 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
 import {SnackBar} from "./control-center/common/snack-bar.component";
 import {ApiModule, Configuration, ConfigurationParameters} from "../shared/openapi-gen";
 import {environment} from "../env/local.env";
+import {HttpErrorInterceptor} from "./http-error.interceptor";
 
 export function apiConfigFactory(): Configuration {
   const params: ConfigurationParameters = {
@@ -22,6 +23,7 @@ export const appConfig: ApplicationConfig = {
     TrainService,
     SnackBar,
     provideHttpClient(),
+    { provide: HTTP_INTERCEPTORS, useClass: HttpErrorInterceptor, multi: true },
     provideRouter(routes, withComponentInputBinding()), provideAnimationsAsync(), provideAnimationsAsync(),
     importProvidersFrom([ApiModule.forRoot(apiConfigFactory)])
   ]

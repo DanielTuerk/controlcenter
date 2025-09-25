@@ -7,6 +7,7 @@ import {MatIcon} from "@angular/material/icon";
 import {MatDialog} from "@angular/material/dialog";
 import {ConfirmDialogComponent} from "../common/confirm-dialog/confirm-dialog.component";
 import {Train} from "../../../shared/openapi-gen";
+import {MatButton} from "@angular/material/button";
 
 @Component({
   selector: 'app-train',
@@ -17,7 +18,8 @@ import {Train} from "../../../shared/openapi-gen";
     MatCardTitle,
     MatCardContent,
     MatTableModule,
-    MatIcon
+    MatIcon,
+    MatButton
   ],
   templateUrl: './train.component.html',
   styleUrl: './train.component.css'

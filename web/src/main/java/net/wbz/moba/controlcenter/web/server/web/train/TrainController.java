@@ -34,6 +34,12 @@ public class TrainController {
         return trainEditorService.getTrains();
     }
 
+
+    @POST
+    public void createTrain(@RequestBody Train train) {
+        trainEditorService.createTrain(train);
+    }
+
     @GET
     @Path("/{id}")
     @Produces({MediaType.APPLICATION_JSON})

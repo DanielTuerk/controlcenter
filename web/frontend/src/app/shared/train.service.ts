@@ -28,8 +28,17 @@ export class TrainService {
     return this.httpClient.get<Train>('/api/train/' + trainId)
   }
 
-  saveTrain(train: Train) {
+  createTrain(train: Train) {
+    return this.httpClient.post('/api/train/', train)
+    .pipe(
+      catchError((err: any, caught: Observable<any>) => {
+        this.snackBar.showError(`can't create train: ${err.message}`);
+        return EMPTY
+      })
+    )
+  }
 
+  saveTrain(train: Train) {
     return this.httpClient.post('/api/train/' + train.id, train)
     .pipe(
       catchError((err: any, caught: Observable<any>) => {
@@ -40,19 +49,13 @@ export class TrainService {
   }
 
   deleteTrain(trainId: Number) {
-    // TODO notifications
     return this.httpClient.delete('/api/train/' + trainId)
     .subscribe({
       next: (train) => {
-        console.log(train);
         this.snackBar.showSuccess(`train ${trainId} deleted`);
       },
       error: (error) => {
         this.snackBar.showError(`can't delete train ${trainId}: ${error.message}`);
-      },
-      complete: () => {
-        console.log('done');
-        this.snackBar.showMessage('fooo mess');
       }
     });
   }

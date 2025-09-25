@@ -3,6 +3,10 @@
     <mat-card-title>Trains</mat-card-title>
   </mat-card-header>
   <mat-card-content>
+    <p>
+
+      <button mat-stroked-button routerLink="create"><mat-icon >add</mat-icon> Create</button>
+    </p>
     <table mat-table [dataSource]="trains()" class="mat-elevation-z8">
 
       <ng-container matColumnDef="id">

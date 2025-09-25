@@ -57,8 +57,17 @@ export class TrainEditComponent implements OnInit {
     trainToUpdate.address = this.form.controls.address.getRawValue()!
     trainToUpdate.name = this.form.controls.name.getRawValue()!
 
-    this.trainService.saveTrain(trainToUpdate).subscribe(data => {
-      this.snackBar.showSuccess(`train "${trainToUpdate.name}" updated successfully.`);
+    let observable;
+    let operation;
+    if (trainToUpdate.id === undefined) {
+      observable = this.trainService.createTrain(trainToUpdate);
+      operation='created'
+    } else {
+      observable = this.trainService.saveTrain(trainToUpdate);
+      operation='updated'
+    }
+    observable.subscribe(data => {
+      this.snackBar.showSuccess(`train "${trainToUpdate.name}" ${operation} successfully.`);
       this.router.navigate(['/cc/train', {}]);
     })
   }

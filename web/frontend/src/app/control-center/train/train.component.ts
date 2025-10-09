@@ -26,7 +26,7 @@ import {MatButton} from "@angular/material/button";
 })
 export class TrainComponent implements OnInit {
   private trainService = inject(TrainService);
-  trains = signal<Train[]>([]);//this.trainService.loadedTrains;
+  trains = signal<Train[]>([]);
   displayedColumns: string[] = ['id', 'name', 'address', 'action'];
   readonly dialog = inject(MatDialog);
 

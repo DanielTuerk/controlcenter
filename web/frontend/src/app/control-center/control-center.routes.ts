@@ -5,6 +5,7 @@ import {ScenarioComponent} from "./scenario/scenario.component";
 import {ViewerComponent} from "./viewer/viewer.component";
 import {EditorComponent} from "./editor/editor.component";
 import {SettingComponent} from "./setting/setting.component";
+import {ScenarioEditComponent} from "./scenario/scenario-edit/scenario-edit.component";
 
 export const routes: Routes = [
   {
@@ -18,6 +19,10 @@ export const routes: Routes = [
   {
     path: 'scenario',
     component: ScenarioComponent
+  },
+  {
+    path: 'scenario/:scenarioId',
+    component: ScenarioEditComponent
   },
   {
     path: 'viewer',

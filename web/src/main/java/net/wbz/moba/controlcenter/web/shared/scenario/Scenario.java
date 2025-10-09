@@ -1,5 +1,6 @@
 package net.wbz.moba.controlcenter.web.shared.scenario;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.googlecode.jmapper.annotations.JMap;
 import java.util.ArrayList;
 import java.util.List;
@@ -181,6 +182,7 @@ public class  Scenario extends AbstractDto {
      *
      * @return {@link TrackBlock} or {@code null}
      */
+    @JsonIgnore
     public TrackBlock getEndPoint() {
         if (!routeSequences.isEmpty()) {
             Route route = routeSequences.get(routeSequences.size() - 1).getRoute();
@@ -188,7 +190,9 @@ public class  Scenario extends AbstractDto {
                 return route.getEnd();
             }
         }
-        throw new RuntimeException("scenario has no valid endpoint");
+//        throw new RuntimeException("scenario has no valid endpoint");
+        // TODO
+        return null;
     }
 
 }

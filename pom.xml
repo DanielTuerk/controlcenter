@@ -26,7 +26,7 @@
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
 
-    <selectrix.version>0.3.1-SNAPSHOT</selectrix.version>
+    <selectrix.version>0.3.2-SNAPSHOT</selectrix.version>
 
     <gwtbootstrap3.version>0.9.4</gwtbootstrap3.version>
 

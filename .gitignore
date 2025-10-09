@@ -6,3 +6,5 @@ web/target/
 /web/frontend/node_modules/*
 /web/frontend/src/shared/*
 /web/frontend/.angular
+derby.log
+record_*

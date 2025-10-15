@@ -13,7 +13,7 @@ import com.google.inject.Singleton;
 import com.google.inject.name.Named;
 
 import net.wbz.moba.controlcenter.web.server.event.EventBroadcaster;
-import net.wbz.moba.controlcenter.web.shared.bus.RecordingEvent;
+import net.wbz.moba.controlcenter.shared.bus.RecordingEvent;
 import net.wbz.selectrix4java.data.recording.IsRecordable;
 import net.wbz.selectrix4java.device.Device;
 import net.wbz.selectrix4java.device.DeviceAccessException;

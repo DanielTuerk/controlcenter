@@ -1,6 +1,6 @@
 package net.wbz.moba.controlcenter.web.server.web.scenario.execution;
 
-import net.wbz.moba.controlcenter.web.shared.scenario.Route;
+import net.wbz.moba.controlcenter.shared.scenario.Route;
 import net.wbz.selectrix4java.block.BlockListener;
 import net.wbz.selectrix4java.block.FeedbackBlockListener;
 

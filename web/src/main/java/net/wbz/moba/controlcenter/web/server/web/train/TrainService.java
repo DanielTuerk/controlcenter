@@ -2,9 +2,9 @@ package net.wbz.moba.controlcenter.web.server.web.train;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import net.wbz.moba.controlcenter.web.shared.track.model.BusDataConfiguration;
-import net.wbz.moba.controlcenter.web.shared.train.Train;
-import net.wbz.moba.controlcenter.web.shared.train.TrainFunction;
+import net.wbz.moba.controlcenter.shared.track.model.BusDataConfiguration;
+import net.wbz.moba.controlcenter.shared.train.Train;
+import net.wbz.moba.controlcenter.shared.train.TrainFunction;
 import net.wbz.selectrix4java.device.DeviceAccessException;
 import net.wbz.selectrix4java.device.DeviceManager;
 import net.wbz.selectrix4java.train.TrainModule;

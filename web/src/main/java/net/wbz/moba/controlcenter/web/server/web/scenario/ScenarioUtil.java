@@ -4,7 +4,7 @@ import com.google.common.base.Strings;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import net.wbz.moba.controlcenter.web.shared.scenario.Scenario;
+import net.wbz.moba.controlcenter.shared.scenario.Scenario;
 import org.quartz.CronExpression;
 
 /**

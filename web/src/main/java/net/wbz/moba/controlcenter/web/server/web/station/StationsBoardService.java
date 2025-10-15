@@ -12,12 +12,12 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import net.wbz.moba.controlcenter.web.server.web.scenario.DefaultScenarioStateListener;
 import net.wbz.moba.controlcenter.web.server.web.scenario.execution.ScenarioExecutor;
-import net.wbz.moba.controlcenter.web.shared.scenario.RouteSequence;
-import net.wbz.moba.controlcenter.web.shared.scenario.Scenario;
-import net.wbz.moba.controlcenter.web.shared.station.Station;
-import net.wbz.moba.controlcenter.web.shared.station.StationBoardEntry;
-import net.wbz.moba.controlcenter.web.shared.station.StationPlatform;
-import net.wbz.moba.controlcenter.web.shared.track.model.TrackBlock;
+import net.wbz.moba.controlcenter.shared.scenario.RouteSequence;
+import net.wbz.moba.controlcenter.shared.scenario.Scenario;
+import net.wbz.moba.controlcenter.shared.station.Station;
+import net.wbz.moba.controlcenter.shared.station.StationBoardEntry;
+import net.wbz.moba.controlcenter.shared.station.StationPlatform;
+import net.wbz.moba.controlcenter.shared.track.model.TrackBlock;
 
 /**
  *

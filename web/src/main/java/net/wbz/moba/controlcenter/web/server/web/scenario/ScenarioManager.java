@@ -13,9 +13,9 @@ import net.wbz.moba.controlcenter.web.server.persist.scenario.RouteSequenceEntit
 import net.wbz.moba.controlcenter.web.server.persist.scenario.ScenarioDao;
 import net.wbz.moba.controlcenter.web.server.persist.scenario.ScenarioDataMapper;
 import net.wbz.moba.controlcenter.web.server.persist.scenario.ScenarioEntity;
-import net.wbz.moba.controlcenter.web.shared.scenario.RouteSequence;
-import net.wbz.moba.controlcenter.web.shared.scenario.Scenario;
-import net.wbz.moba.controlcenter.web.shared.scenario.ScenarioDataChangedEvent;
+import net.wbz.moba.controlcenter.shared.scenario.RouteSequence;
+import net.wbz.moba.controlcenter.shared.scenario.Scenario;
+import net.wbz.moba.controlcenter.shared.scenario.ScenarioDataChangedEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

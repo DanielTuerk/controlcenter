@@ -1,8 +1,8 @@
 package net.wbz.moba.controlcenter.web.server.web.editor.block;
 
 import net.wbz.moba.controlcenter.web.server.web.train.TrainManager;
-import net.wbz.moba.controlcenter.web.shared.track.model.TrackBlock;
-import net.wbz.moba.controlcenter.web.shared.train.Train;
+import net.wbz.moba.controlcenter.shared.track.model.TrackBlock;
+import net.wbz.moba.controlcenter.shared.train.Train;
 import net.wbz.selectrix4java.block.FeedbackBlockListener;
 
 /**

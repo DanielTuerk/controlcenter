@@ -5,7 +5,7 @@ import com.google.inject.Singleton;
 import com.google.inject.persist.Transactional;
 import java.util.List;
 import javax.inject.Provider;
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 import lombok.extern.slf4j.Slf4j;
 import net.wbz.moba.controlcenter.web.server.persist.AbstractDao;
 
@@ -14,7 +14,7 @@ import net.wbz.moba.controlcenter.web.server.persist.AbstractDao;
  */
 @Singleton
 @Slf4j
-public class ConstructionDao extends AbstractDao<ConstructionEntity> {
+public class ConstructionDao implements PanacheRepository<ConstructionEntity> {
 
     @Inject
     public ConstructionDao(Provider<EntityManager> entityManager) {

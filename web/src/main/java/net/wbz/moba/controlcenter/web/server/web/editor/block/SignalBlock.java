@@ -1,7 +1,7 @@
 package net.wbz.moba.controlcenter.web.server.web.editor.block;
 
-import net.wbz.moba.controlcenter.web.shared.track.model.Signal;
-import net.wbz.moba.controlcenter.web.shared.train.Train;
+import net.wbz.moba.controlcenter.shared.track.model.Signal;
+import net.wbz.moba.controlcenter.shared.train.Train;
 
 /**
  * <p>

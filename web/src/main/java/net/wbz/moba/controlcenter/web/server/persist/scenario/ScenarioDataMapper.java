@@ -2,7 +2,7 @@ package net.wbz.moba.controlcenter.web.server.persist.scenario;
 
 import net.wbz.moba.controlcenter.web.server.persist.scenario.ScenarioEntity;
 import net.wbz.moba.controlcenter.web.server.web.DataMapper;
-import net.wbz.moba.controlcenter.web.shared.scenario.Scenario;
+import net.wbz.moba.controlcenter.shared.scenario.Scenario;
 
 /**
  * @author Daniel Tuerk

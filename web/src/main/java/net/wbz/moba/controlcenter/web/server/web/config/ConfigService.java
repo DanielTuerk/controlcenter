@@ -4,10 +4,10 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.google.inject.persist.Transactional;
 import javax.inject.Provider;
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.Query;
 import net.wbz.moba.controlcenter.web.server.persist.config.ConfigValueEntity;
-import net.wbz.moba.controlcenter.web.shared.config.ConfigNotAvailableException;
+import net.wbz.moba.controlcenter.shared.config.ConfigNotAvailableException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

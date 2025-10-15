@@ -7,10 +7,10 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import net.wbz.moba.controlcenter.web.shared.editor.ValidationException;
-import net.wbz.moba.controlcenter.web.shared.track.model.AbstractTrackPart;
-import net.wbz.moba.controlcenter.web.shared.track.model.BlockStraight;
-import net.wbz.moba.controlcenter.web.shared.track.model.GridPosition;
+import net.wbz.moba.controlcenter.shared.editor.ValidationException;
+import net.wbz.moba.controlcenter.shared.track.model.AbstractTrackPart;
+import net.wbz.moba.controlcenter.shared.track.model.BlockStraight;
+import net.wbz.moba.controlcenter.shared.track.model.GridPosition;
 
 /**
  * Check for same {@link net.wbz.moba.controlcenter.web.shared.track.model.GridPosition} in {@link AbstractTrackPart}s.

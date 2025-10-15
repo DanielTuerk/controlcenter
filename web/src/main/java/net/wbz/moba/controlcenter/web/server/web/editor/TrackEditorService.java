@@ -4,9 +4,9 @@ import com.google.inject.Singleton;
 import java.util.Collection;
 import java.util.Set;
 import javax.inject.Inject;
-import net.wbz.moba.controlcenter.web.shared.editor.ValidationException;
-import net.wbz.moba.controlcenter.web.shared.track.model.AbstractTrackPart;
-import net.wbz.moba.controlcenter.web.shared.track.model.TrackBlock;
+import net.wbz.moba.controlcenter.shared.editor.ValidationException;
+import net.wbz.moba.controlcenter.shared.track.model.AbstractTrackPart;
+import net.wbz.moba.controlcenter.shared.track.model.TrackBlock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

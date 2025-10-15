@@ -5,10 +5,10 @@ import javax.inject.Singleton;
 
 import net.wbz.moba.controlcenter.web.server.event.EventBroadcaster;
 import net.wbz.moba.controlcenter.web.server.web.scenario.RouteListener;
-import net.wbz.moba.controlcenter.web.shared.scenario.RouteSequence;
-import net.wbz.moba.controlcenter.web.shared.scenario.RouteStateEvent;
-import net.wbz.moba.controlcenter.web.shared.scenario.RouteStateEvent.STATE;
-import net.wbz.moba.controlcenter.web.shared.scenario.Scenario;
+import net.wbz.moba.controlcenter.shared.scenario.RouteSequence;
+import net.wbz.moba.controlcenter.shared.scenario.RouteStateEvent;
+import net.wbz.moba.controlcenter.shared.scenario.RouteStateEvent.STATE;
+import net.wbz.moba.controlcenter.shared.scenario.Scenario;
 
 /**
  * Implementation of the {@link RouteListener} to fire {@link RouteStateEvent}s by {@link EventBroadcaster}.

@@ -1,8 +1,8 @@
 package net.wbz.moba.controlcenter.web.server.web.editor;
 
 import java.util.Collection;
-import net.wbz.moba.controlcenter.web.shared.editor.ValidationException;
-import net.wbz.moba.controlcenter.web.shared.track.model.AbstractTrackPart;
+import net.wbz.moba.controlcenter.shared.editor.ValidationException;
+import net.wbz.moba.controlcenter.shared.track.model.AbstractTrackPart;
 
 /**
  * Validator to check {@link AbstractTrackPart}s.

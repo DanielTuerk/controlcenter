@@ -6,7 +6,7 @@ import java.util.stream.Collectors;
 import net.wbz.moba.controlcenter.web.server.persist.construction.track.GridPositionDao;
 import net.wbz.moba.controlcenter.web.server.persist.construction.track.GridPositionEntity;
 import net.wbz.moba.controlcenter.web.server.web.DataMapper;
-import net.wbz.moba.controlcenter.web.shared.scenario.Route;
+import net.wbz.moba.controlcenter.shared.scenario.Route;
 
 /**
  * {@link DataMapper} for the {@link Route}.

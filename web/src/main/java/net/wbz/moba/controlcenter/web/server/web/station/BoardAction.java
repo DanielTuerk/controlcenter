@@ -2,9 +2,9 @@ package net.wbz.moba.controlcenter.web.server.web.station;
 
 import java.util.Set;
 import java.util.function.Consumer;
-import net.wbz.moba.controlcenter.web.shared.scenario.Scenario;
-import net.wbz.moba.controlcenter.web.shared.station.Station;
-import net.wbz.moba.controlcenter.web.shared.station.StationPlatform;
+import net.wbz.moba.controlcenter.shared.scenario.Scenario;
+import net.wbz.moba.controlcenter.shared.station.Station;
+import net.wbz.moba.controlcenter.shared.station.StationPlatform;
 
 /**
  * @author Daniel Tuerk

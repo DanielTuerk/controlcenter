@@ -5,12 +5,12 @@ import static org.testng.Assert.assertTrue;
 
 import com.google.common.collect.Lists;
 import java.util.List;
-import net.wbz.moba.controlcenter.web.shared.editor.ValidationException;
-import net.wbz.moba.controlcenter.web.shared.track.model.AbstractTrackPart;
-import net.wbz.moba.controlcenter.web.shared.track.model.BlockStraight;
-import net.wbz.moba.controlcenter.web.shared.track.model.GridPosition;
-import net.wbz.moba.controlcenter.web.shared.track.model.Straight;
-import net.wbz.moba.controlcenter.web.shared.track.model.Straight.DIRECTION;
+import net.wbz.moba.controlcenter.shared.editor.ValidationException;
+import net.wbz.moba.controlcenter.shared.track.model.AbstractTrackPart;
+import net.wbz.moba.controlcenter.shared.track.model.BlockStraight;
+import net.wbz.moba.controlcenter.shared.track.model.GridPosition;
+import net.wbz.moba.controlcenter.shared.track.model.Straight;
+import net.wbz.moba.controlcenter.shared.track.model.Straight.DIRECTION;
 import org.junit.Assert;
 import org.testng.annotations.Test;
 

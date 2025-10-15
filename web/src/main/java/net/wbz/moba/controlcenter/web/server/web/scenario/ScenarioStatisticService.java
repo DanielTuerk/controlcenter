@@ -7,8 +7,8 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import net.wbz.moba.controlcenter.web.server.web.scenario.execution.ScenarioExecutor;
-import net.wbz.moba.controlcenter.web.shared.scenario.Scenario;
-import net.wbz.moba.controlcenter.web.shared.scenario.ScenarioStatistic;
+import net.wbz.moba.controlcenter.shared.scenario.Scenario;
+import net.wbz.moba.controlcenter.shared.scenario.ScenarioStatistic;
 
 /**
  *

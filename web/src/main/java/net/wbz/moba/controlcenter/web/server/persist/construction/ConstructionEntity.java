@@ -2,24 +2,23 @@ package net.wbz.moba.controlcenter.web.server.persist.construction;
 
 import java.util.List;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.OneToMany;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.OneToMany;
 
-import com.googlecode.jmapper.annotations.JMap;
 
-import net.wbz.moba.controlcenter.web.server.persist.AbstractEntity;
+
+
 import net.wbz.moba.controlcenter.web.server.persist.construction.track.AbstractTrackPartEntity;
 
 /**
  * @author Daniel Tuerk
  */
-@Entity(name = "CONSTRUCTION")
+@Entity
+@Table(name = "CONSTRUCTION")
 public class ConstructionEntity extends AbstractEntity {
 
-    @JMap
-    @Column
     private String name;
 
     @OneToMany(mappedBy = "construction", fetch = FetchType.LAZY)

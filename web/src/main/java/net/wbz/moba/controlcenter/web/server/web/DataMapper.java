@@ -4,8 +4,8 @@ import com.google.common.collect.Lists;
 import com.googlecode.jmapper.JMapper;
 import java.util.Collection;
 import java.util.stream.Collectors;
-import net.wbz.moba.controlcenter.web.server.persist.AbstractEntity;
-import net.wbz.moba.controlcenter.web.shared.track.model.AbstractDto;
+
+import net.wbz.moba.controlcenter.shared.track.model.AbstractDto;
 
 /**
  * Mapper to create DTOs from Entities and backwards.

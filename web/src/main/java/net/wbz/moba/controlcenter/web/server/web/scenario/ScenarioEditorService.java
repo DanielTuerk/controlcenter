@@ -5,10 +5,10 @@ import com.google.inject.Singleton;
 import java.util.Collection;
 import net.wbz.moba.controlcenter.web.server.persist.scenario.TrackBuilder;
 import net.wbz.moba.controlcenter.web.server.web.station.StationManager;
-import net.wbz.moba.controlcenter.web.shared.scenario.Route;
-import net.wbz.moba.controlcenter.web.shared.scenario.Scenario;
-import net.wbz.moba.controlcenter.web.shared.scenario.Track;
-import net.wbz.moba.controlcenter.web.shared.scenario.TrackNotFoundException;
+import net.wbz.moba.controlcenter.shared.scenario.Route;
+import net.wbz.moba.controlcenter.shared.scenario.Scenario;
+import net.wbz.moba.controlcenter.shared.scenario.Track;
+import net.wbz.moba.controlcenter.shared.scenario.TrackNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -1,14 +1,14 @@
 package net.wbz.moba.controlcenter.web.server.persist.scenario;
 
 import com.google.common.collect.Lists;
-import net.wbz.moba.controlcenter.web.shared.scenario.TrackNotFoundException;
-import net.wbz.moba.controlcenter.web.shared.track.model.BlockStraight;
-import net.wbz.moba.controlcenter.web.shared.track.model.BusDataConfiguration;
-import net.wbz.moba.controlcenter.web.shared.track.model.Curve;
-import net.wbz.moba.controlcenter.web.shared.track.model.Curve.DIRECTION;
-import net.wbz.moba.controlcenter.web.shared.track.model.Turnout;
-import net.wbz.moba.controlcenter.web.shared.track.model.Turnout.PRESENTATION;
-import net.wbz.moba.controlcenter.web.shared.track.model.TrackBlock;
+import net.wbz.moba.controlcenter.shared.scenario.TrackNotFoundException;
+import net.wbz.moba.controlcenter.shared.track.model.BlockStraight;
+import net.wbz.moba.controlcenter.shared.track.model.BusDataConfiguration;
+import net.wbz.moba.controlcenter.shared.track.model.Curve;
+import net.wbz.moba.controlcenter.shared.track.model.Curve.DIRECTION;
+import net.wbz.moba.controlcenter.shared.track.model.Turnout;
+import net.wbz.moba.controlcenter.shared.track.model.Turnout.PRESENTATION;
+import net.wbz.moba.controlcenter.shared.track.model.TrackBlock;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 

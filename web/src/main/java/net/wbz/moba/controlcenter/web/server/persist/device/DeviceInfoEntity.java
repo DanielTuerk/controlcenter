@@ -1,17 +1,18 @@
 package net.wbz.moba.controlcenter.web.server.persist.device;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Transient;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Transient;
 
-import com.googlecode.jmapper.annotations.JMap;
 
-import net.wbz.moba.controlcenter.web.server.persist.AbstractEntity;
+
+
 
 /**
  * @author Daniel Tuerk
  */
-@Entity(name = "DEVICE_INFO")
+@Entity
+@Table(name = "DEVICE_INFO")
 public class DeviceInfoEntity extends AbstractEntity {
 
     public enum DEVICE_TYPE {
@@ -22,9 +23,7 @@ public class DeviceInfoEntity extends AbstractEntity {
     private boolean connected;
 
     @Column(name = "device_key")
-    @JMap
     private String key;
-    @JMap
     private DEVICE_TYPE type;
 
     public String getKey() {

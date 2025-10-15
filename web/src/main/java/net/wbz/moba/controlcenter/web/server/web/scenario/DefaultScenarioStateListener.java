@@ -1,6 +1,6 @@
 package net.wbz.moba.controlcenter.web.server.web.scenario;
 
-import net.wbz.moba.controlcenter.web.shared.scenario.Scenario;
+import net.wbz.moba.controlcenter.shared.scenario.Scenario;
 
 /**
  * Default implementation of {@link ScenarioStateListener}.

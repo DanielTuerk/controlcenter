@@ -1,8 +1,8 @@
 package net.wbz.moba.controlcenter.web.server.web.scenario.execution;
 
-import net.wbz.moba.controlcenter.web.shared.scenario.RouteSequence;
-import net.wbz.moba.controlcenter.web.shared.track.model.Signal;
-import net.wbz.moba.controlcenter.web.shared.train.Train;
+import net.wbz.moba.controlcenter.shared.scenario.RouteSequence;
+import net.wbz.moba.controlcenter.shared.track.model.Signal;
+import net.wbz.moba.controlcenter.shared.train.Train;
 
 /**
  * Model for the execution of a {@link RouteSequence}.

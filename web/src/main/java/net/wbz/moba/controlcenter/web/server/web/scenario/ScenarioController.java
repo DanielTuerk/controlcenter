@@ -12,7 +12,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import net.wbz.moba.controlcenter.web.resource.RestResource;
-import net.wbz.moba.controlcenter.web.shared.scenario.Scenario;
+import net.wbz.moba.controlcenter.shared.scenario.Scenario;
 
 /**
  * @author Daniel Tuerk

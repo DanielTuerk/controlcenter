@@ -10,13 +10,13 @@ import java.util.function.Predicate;
 import net.wbz.moba.controlcenter.web.server.event.EventBroadcaster;
 import net.wbz.moba.controlcenter.web.server.web.scenario.ScenarioStatisticManager;
 import net.wbz.moba.controlcenter.web.server.web.scenario.ScenarioUtil;
-import net.wbz.moba.controlcenter.web.shared.scenario.Scenario;
-import net.wbz.moba.controlcenter.web.shared.scenario.ScenarioStatistic;
-import net.wbz.moba.controlcenter.web.shared.station.Station;
-import net.wbz.moba.controlcenter.web.shared.station.StationBoardChangedEvent;
-import net.wbz.moba.controlcenter.web.shared.station.StationBoardChangedEvent.TYPE;
-import net.wbz.moba.controlcenter.web.shared.station.StationBoardEntry;
-import net.wbz.moba.controlcenter.web.shared.station.StationPlatform;
+import net.wbz.moba.controlcenter.shared.scenario.Scenario;
+import net.wbz.moba.controlcenter.shared.scenario.ScenarioStatistic;
+import net.wbz.moba.controlcenter.shared.station.Station;
+import net.wbz.moba.controlcenter.shared.station.StationBoardChangedEvent;
+import net.wbz.moba.controlcenter.shared.station.StationBoardChangedEvent.TYPE;
+import net.wbz.moba.controlcenter.shared.station.StationBoardEntry;
+import net.wbz.moba.controlcenter.shared.station.StationPlatform;
 
 /**
  * @author Daniel Tuerk

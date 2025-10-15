@@ -6,8 +6,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import net.wbz.moba.controlcenter.web.server.DateUtil;
 import net.wbz.moba.controlcenter.web.server.web.DataMapper;
-import net.wbz.moba.controlcenter.web.shared.scenario.Scenario;
-import net.wbz.moba.controlcenter.web.shared.scenario.ScenarioStatistic;
+import net.wbz.moba.controlcenter.shared.scenario.Scenario;
+import net.wbz.moba.controlcenter.shared.scenario.ScenarioStatistic;
 import org.hibernate.transform.ResultTransformer;
 
 /**

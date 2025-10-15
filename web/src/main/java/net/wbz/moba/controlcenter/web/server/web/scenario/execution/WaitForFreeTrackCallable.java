@@ -1,9 +1,9 @@
 package net.wbz.moba.controlcenter.web.server.web.scenario.execution;
 
 import java.util.concurrent.Callable;
-import net.wbz.moba.controlcenter.web.shared.scenario.Route;
-import net.wbz.moba.controlcenter.web.shared.scenario.Scenario;
-import net.wbz.moba.controlcenter.web.shared.scenario.Scenario.RUN_STATE;
+import net.wbz.moba.controlcenter.shared.scenario.Route;
+import net.wbz.moba.controlcenter.shared.scenario.Scenario;
+import net.wbz.moba.controlcenter.shared.scenario.Scenario.RUN_STATE;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

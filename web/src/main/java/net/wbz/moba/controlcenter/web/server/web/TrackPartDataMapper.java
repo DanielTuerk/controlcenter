@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import net.wbz.moba.controlcenter.web.server.persist.construction.track.AbstractTrackPartEntity;
-import net.wbz.moba.controlcenter.web.shared.track.model.AbstractTrackPart;
+import net.wbz.moba.controlcenter.shared.track.model.AbstractTrackPart;
 import org.reflections.Reflections;
 
 /**

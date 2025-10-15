@@ -14,10 +14,10 @@ import net.wbz.moba.controlcenter.web.server.persist.scenario.RouteEntity;
 import net.wbz.moba.controlcenter.web.server.persist.scenario.RouteSequenceDao;
 import net.wbz.moba.controlcenter.web.server.persist.scenario.TrackBuilder;
 import net.wbz.moba.controlcenter.web.server.web.constrution.ConstructionService;
-import net.wbz.moba.controlcenter.web.shared.scenario.Route;
-import net.wbz.moba.controlcenter.web.shared.scenario.RoutesChangedEvent;
-import net.wbz.moba.controlcenter.web.shared.scenario.Scenario;
-import net.wbz.moba.controlcenter.web.shared.scenario.TrackNotFoundException;
+import net.wbz.moba.controlcenter.shared.scenario.Route;
+import net.wbz.moba.controlcenter.shared.scenario.RoutesChangedEvent;
+import net.wbz.moba.controlcenter.shared.scenario.Scenario;
+import net.wbz.moba.controlcenter.shared.scenario.TrackNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

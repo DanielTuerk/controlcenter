@@ -4,8 +4,8 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import java.util.Collection;
 import net.wbz.moba.controlcenter.web.server.event.EventBroadcaster;
-import net.wbz.moba.controlcenter.web.shared.train.Train;
-import net.wbz.moba.controlcenter.web.shared.train.TrainDataChangedEvent;
+import net.wbz.moba.controlcenter.shared.train.Train;
+import net.wbz.moba.controlcenter.shared.train.TrainDataChangedEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -1,11 +1,11 @@
 package net.wbz.moba.controlcenter.web.server.persist;
 
 import javax.inject.Provider;
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 import org.hibernate.Session;
 
-import net.wbz.moba.controlcenter.web.shared.Identity;
+import net.wbz.moba.controlcenter.shared.Identity;
 
 /**
  * Abstract DAO for CRUD operations to the defined {@link Identity}.

@@ -4,9 +4,9 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import java.util.List;
 import javax.inject.Provider;
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 import net.wbz.moba.controlcenter.web.server.persist.AbstractDao;
-import net.wbz.moba.controlcenter.web.shared.track.model.TrackBlock;
+import net.wbz.moba.controlcenter.shared.track.model.TrackBlock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory;
  * @author Daniel Tuerk
  */
 @Singleton
-public class BlockStraightDao extends AbstractDao<BlockStraightEntity> {
+public class BlockStraightDao implements PanacheRepository<BlockStraightEntity> {
 
     private static final Logger LOG = LoggerFactory.getLogger(BlockStraightDao.class);
 

@@ -3,7 +3,7 @@ package net.wbz.moba.controlcenter.web.server.web.station;
 import java.util.Collection;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import net.wbz.moba.controlcenter.web.shared.station.Station;
+import net.wbz.moba.controlcenter.shared.station.Station;
 
 /**
  * @author Daniel Tuerk

@@ -3,7 +3,7 @@ package net.wbz.moba.controlcenter.web.server.persist.device;
 import java.util.List;
 
 import javax.inject.Provider;
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,7 +17,7 @@ import net.wbz.moba.controlcenter.web.server.persist.AbstractDao;
  * @author Daniel Tuerk
  */
 @Singleton
-public class DeviceInfoDao extends AbstractDao<DeviceInfoEntity> {
+public class DeviceInfoDao implements PanacheRepository<DeviceInfoEntity> {
     private static final Logger LOG = LoggerFactory.getLogger(DeviceInfoDao.class);
 
     @Inject

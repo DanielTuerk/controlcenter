@@ -12,9 +12,9 @@ import net.wbz.moba.controlcenter.web.server.persist.scenario.StationEntity;
 import net.wbz.moba.controlcenter.web.server.persist.scenario.StationPlatformDao;
 import net.wbz.moba.controlcenter.web.server.persist.scenario.StationPlatformDataMapper;
 import net.wbz.moba.controlcenter.web.server.persist.scenario.StationPlatformEntity;
-import net.wbz.moba.controlcenter.web.shared.station.Station;
-import net.wbz.moba.controlcenter.web.shared.station.StationDataChangedEvent;
-import net.wbz.moba.controlcenter.web.shared.station.StationPlatform;
+import net.wbz.moba.controlcenter.shared.station.Station;
+import net.wbz.moba.controlcenter.shared.station.StationDataChangedEvent;
+import net.wbz.moba.controlcenter.shared.station.StationPlatform;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -1,7 +1,7 @@
 package net.wbz.moba.controlcenter.web.server.web.scenario;
 
-import net.wbz.moba.controlcenter.web.shared.scenario.RouteSequence;
-import net.wbz.moba.controlcenter.web.shared.scenario.Scenario;
+import net.wbz.moba.controlcenter.shared.scenario.RouteSequence;
+import net.wbz.moba.controlcenter.shared.scenario.Scenario;
 
 /**
  * Listener for the state of execution of single {@link RouteSequence} in {@link Scenario}.

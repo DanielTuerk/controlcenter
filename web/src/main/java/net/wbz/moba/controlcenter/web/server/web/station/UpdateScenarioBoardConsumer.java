@@ -3,7 +3,7 @@ package net.wbz.moba.controlcenter.web.server.web.station;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import java.util.function.Consumer;
-import net.wbz.moba.controlcenter.web.shared.station.Station;
+import net.wbz.moba.controlcenter.shared.station.Station;
 
 /**
  * Consumer to update the entries of a {@link StationBoard} for a specific {@link net.wbz.moba.controlcenter.web.shared.scenario.Scenario}.

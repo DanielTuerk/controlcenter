@@ -1,13 +1,13 @@
 package net.wbz.moba.controlcenter.web.server.persist;
 
 import com.google.common.base.Objects;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.MappedSuperclass;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.MappedSuperclass;
 
-import com.googlecode.jmapper.annotations.JMap;
 
-import net.wbz.moba.controlcenter.web.shared.Identity;
+
+import net.wbz.moba.controlcenter.shared.Identity;
 
 /**
  * @author Daniel Tuerk
@@ -17,7 +17,6 @@ public abstract class AbstractEntity implements Identity {
 
     @Id
     @GeneratedValue
-    @JMap
     private Long id;
 
     public AbstractEntity() {

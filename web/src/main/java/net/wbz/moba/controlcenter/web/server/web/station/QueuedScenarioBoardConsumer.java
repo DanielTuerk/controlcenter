@@ -5,7 +5,7 @@ import com.google.inject.Singleton;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
-import net.wbz.moba.controlcenter.web.shared.station.Station;
+import net.wbz.moba.controlcenter.shared.station.Station;
 
 /**
  * @author Daniel Tuerk

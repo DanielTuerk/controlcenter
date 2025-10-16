@@ -1,38 +1,30 @@
-package net.wbz.moba.controlcenter.service;
+package net.wbz.moba.controlcenter.service.constrution;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
-import net.wbz.moba.controlcenter.EventBroadcaster;
-import net.wbz.moba.controlcenter.api.ConstructionDto;
-import net.wbz.moba.controlcenter.model.ConstructionMapper;
+import net.wbz.moba.controlcenter.api.construction.ConstructionDto;
 import net.wbz.moba.controlcenter.persist.entity.ConstructionEntity;
 import net.wbz.moba.controlcenter.persist.repository.ConstructionRepository;
 import net.wbz.moba.controlcenter.shared.constrution.Construction;
-import net.wbz.moba.controlcenter.shared.constrution.CurrentConstructionChangeEvent;
 import org.jboss.logging.Logger;
 
 /**
  * @author Daniel Tuerk
  */
 @ApplicationScoped
-public class ConstructionService {
+public class ConstructionManager {
 
-    private static final Logger LOG = Logger.getLogger(ConstructionService.class);
-    private final List<ConstructionChangeListener> listeners = new ArrayList<>();
-    private final AtomicReference<Construction> currentConstruction = new AtomicReference<>(null);
+    private static final Logger LOG = Logger.getLogger(ConstructionManager.class);
+
     @Inject
     ConstructionRepository constructionRepository;
     @Inject
     ConstructionMapper constructionMapper;
-    @Inject
-    EventBroadcaster eventBroadcaster;
 
 //    @Inject
 //    public ConstructionService(ConstructionDao dao, TrackManager trackManager, EventBroadcaster eventBroadcaster) {
@@ -44,29 +36,8 @@ public class ConstructionService {
 //        addListener(trackManager);
 //    }
 
-//    public void addListener(ConstructionChangeListener listener) {
-//        listeners.add(listener);
-//    }
-//
-//    public void removeListener(ConstructionChangeListener listener) {
-//        listeners.remove(listener);
-//    }
-
-    public Optional<Construction> getCurrentConstruction() {
-        return Optional.ofNullable(currentConstruction.get());
-    }
-
-    public synchronized void setCurrentConstruction(Construction construction) {
-        currentConstruction.set(construction);
-        LOG.infof("current construction changed to: {}", construction);
-        // TODO: that should be used by server and clients
-        eventBroadcaster.fireEvent(new CurrentConstructionChangeEvent(construction));
-        // TODO: not needed if events are propagated to server listeners
-        listeners.forEach(listener -> listener.currentConstructionChanged(construction));
-    }
-
     @Transactional
-    public Construction createConstruction(ConstructionDto construction) {
+    public Construction create(ConstructionDto construction) {
         ConstructionEntity entity = new ConstructionEntity();
         entity.name = construction.name();
         constructionRepository.persist(entity);
@@ -74,7 +45,7 @@ public class ConstructionService {
     }
 
     @Transactional
-    public void updateConstruction(Long id, ConstructionDto updated) {
+    public void update(Long id, ConstructionDto updated) {
         ConstructionEntity existing = constructionRepository.findById(id);
         if (existing == null) {
             throw new EntityNotFoundException();
@@ -83,7 +54,7 @@ public class ConstructionService {
         // TODO throw change event
     }
 
-    public List<Construction> loadConstructions() {
+    public List<Construction> load() {
         return constructionRepository.streamAll()
             .map(constructionMapper::toDto)
             .collect(Collectors.toList());

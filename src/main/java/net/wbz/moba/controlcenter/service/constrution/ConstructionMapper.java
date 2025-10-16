@@ -1,4 +1,4 @@
-package net.wbz.moba.controlcenter.model;
+package net.wbz.moba.controlcenter.service.constrution;
 
 import net.wbz.moba.controlcenter.persist.entity.ConstructionEntity;
 import net.wbz.moba.controlcenter.shared.constrution.Construction;
@@ -13,6 +13,5 @@ public interface ConstructionMapper {
 
     @Mapping(target = "inAutomaticMode", ignore = true)
     Construction toDto(ConstructionEntity entity);
-    ConstructionEntity toEntity(Construction dto);
 
 }

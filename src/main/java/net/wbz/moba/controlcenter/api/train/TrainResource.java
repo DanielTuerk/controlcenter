@@ -1,5 +1,4 @@
-package net.wbz.moba.controlcenter.api;
-
+package net.wbz.moba.controlcenter.api.train;
 
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -14,34 +13,36 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import java.util.List;
-import java.util.Optional;
-import net.wbz.moba.controlcenter.service.ConstructionService;
-import net.wbz.moba.controlcenter.shared.constrution.Construction;
+import net.wbz.moba.controlcenter.service.train.TrainManager;
+import net.wbz.moba.controlcenter.shared.train.Train;
 
-@Path("/constructions")
+@Path("/trains")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public class ConstructionResource {
+public class TrainResource {
 
     @Inject
-    ConstructionService constructionService;
+    TrainManager trainManager;
 
     @GET
-    public List<Construction> listAll() {
-        return constructionService.loadConstructions();
+    public List<Train> listAll() {
+        return trainManager.load();
     }
 
     @GET
     @Path("/{id}")
-    public Optional<Construction> getById(@PathParam("id") Long id) {
-        // TODO test if optional also result in 404
-        return constructionService.getById(id);
+    public Response getById(@PathParam("id") Long id) {
+        var byId = trainManager.getById(id);
+        if (byId.isEmpty()) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+        return Response.ok(byId.get()).build();
     }
 
     @POST
     @Transactional
-    public Response create(ConstructionDto created) {
-        var construction = constructionService.createConstruction(created);
+    public Response create(TrainDto dto) {
+        var construction = trainManager.create(dto);
         return Response.status(Response.Status.CREATED)
             .entity(construction)
             .build();
@@ -49,18 +50,20 @@ public class ConstructionResource {
 
     @PUT
     @Path("/{id}")
-    public Response update(@PathParam("id") Long id, ConstructionDto updated) {
-        if (!constructionService.existsById(id)) {
+    @Transactional
+    public Response update(@PathParam("id") Long id, TrainDto dto) {
+        if (!trainManager.existsById(id)) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
-        constructionService.updateConstruction(id, updated);
+        trainManager.update(id, dto);
         return Response.ok().build();
     }
 
     @DELETE
     @Path("/{id}")
+    @Transactional
     public Response delete(@PathParam("id") Long id) {
-        boolean deleted = constructionService.deleteById(id);
+        boolean deleted = trainManager.deleteById(id);
         if (deleted) {
             return Response.noContent().build();
         } else {
@@ -68,4 +71,3 @@ public class ConstructionResource {
         }
     }
 }
-

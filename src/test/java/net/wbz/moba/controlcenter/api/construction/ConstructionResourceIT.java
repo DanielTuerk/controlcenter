@@ -1,4 +1,4 @@
-package org.agoncal.quarkus.microservices.book;
+package net.wbz.moba.controlcenter.api.construction;
 
 import io.quarkus.test.junit.QuarkusIntegrationTest;
 

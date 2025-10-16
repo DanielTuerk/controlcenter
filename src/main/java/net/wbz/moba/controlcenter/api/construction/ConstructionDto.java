@@ -1,4 +1,4 @@
-package net.wbz.moba.controlcenter.api;
+package net.wbz.moba.controlcenter.api.construction;
 
 /**
  * @author Daniel Tuerk

@@ -1,4 +1,4 @@
-package net.wbz.moba.controlcenter.service;
+package net.wbz.moba.controlcenter.service.constrution;
 
 import net.wbz.moba.controlcenter.shared.constrution.Construction;
 

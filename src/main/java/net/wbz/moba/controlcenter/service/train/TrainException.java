@@ -1,4 +1,4 @@
-package net.wbz.moba.controlcenter.web.server.web.train;
+package net.wbz.moba.controlcenter.service.train;
 
 /**
  * Exception for a {@link net.wbz.moba.controlcenter.web.shared.train.Train} data manipulation.

@@ -1,4 +1,4 @@
-package org.agoncal.quarkus.microservices.book;
+package net.wbz.moba.controlcenter.api.construction;
 
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
@@ -55,6 +55,15 @@ public class ConstructionResourceTest {
             .when()
             .put("/constructions/{id}")
             .then()
+            .statusCode(200);
+
+
+        // Get
+        given()
+            .pathParam("id", id.longValue())
+            .when()
+            .get("/constructions/{id}")
+            .then()
             .statusCode(200)
             .body("name", equalTo("Updated Name"));
     }
@@ -86,7 +95,7 @@ public class ConstructionResourceTest {
             .when()
             .get("/constructions/{id}")
             .then()
-            .statusCode(204); // Panache returns null → no content
+            .statusCode(404);
     }
 }
 

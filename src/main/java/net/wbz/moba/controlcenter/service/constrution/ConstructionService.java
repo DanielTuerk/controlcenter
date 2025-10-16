@@ -1,5 +1,6 @@
 package net.wbz.moba.controlcenter.service.constrution;
 
+import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,6 +14,7 @@ import org.jboss.logging.Logger;
 /**
  * @author Daniel Tuerk
  */
+@ApplicationScoped
 public class ConstructionService {
     private static final Logger LOG = Logger.getLogger(ConstructionService.class);
 

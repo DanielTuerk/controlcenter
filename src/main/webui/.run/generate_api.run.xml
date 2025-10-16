@@ -1,6 +1,6 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="generate:api" type="js.build_tools.npm" nameIsGenerated="true">
-    <package-json value="$PROJECT_DIR$/web/frontend/package.json" />
+    <package-json value="$PROJECT_DIR$/src/main/webui/package.json" />
     <command value="run" />
     <scripts>
       <script value="generate:api" />

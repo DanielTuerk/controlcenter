@@ -16,7 +16,7 @@ export class ConstructionService {
   currentConstruction = this._currentConstruction.asReadonly();
 
   loadConstructions() {
-    this.httpClient.get<Construction[]>('/api/construction')
+    this.httpClient.get<Construction[]>('/api/constructions')
     .subscribe({
       next: (constructions) => {
         console.log(constructions);
@@ -32,7 +32,7 @@ export class ConstructionService {
   }
 
   selectCurrentConstruction(construction: Construction) {
-    this.httpClient.post<String>('/api/construction/current', '' + construction.id)
+    this.httpClient.post<String>('/api/current-construction', '' + construction.id)
     .subscribe(
       {
         error: (error) => {
@@ -45,7 +45,7 @@ export class ConstructionService {
   }
 
   loadCurrentConstruction() {
-    this.httpClient.get<Construction>('/api/construction/current')
+    this.httpClient.get<Construction>('/api/current-construction')
     .subscribe(
       {
         next: (construction) => {

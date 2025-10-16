@@ -16,7 +16,7 @@ import java.util.List;
 import net.wbz.moba.controlcenter.service.train.TrainManager;
 import net.wbz.moba.controlcenter.shared.train.Train;
 
-@Path("/trains")
+@Path("/api/trains")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class TrainResource {

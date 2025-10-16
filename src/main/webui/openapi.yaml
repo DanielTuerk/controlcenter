@@ -1,0 +1,362 @@
+---
+openapi: 3.1.0
+components:
+  schemas:
+    BusDataConfiguration:
+      type: object
+      properties:
+        tempId:
+          type: integer
+          deprecated: true
+          format: int64
+        id:
+          type: integer
+          format: int64
+        new:
+          type: boolean
+          deprecated: true
+        internalId:
+          type: integer
+          deprecated: true
+          format: int64
+        bus:
+          type: integer
+          format: int32
+        address:
+          type: integer
+          format: int32
+        bit:
+          type: integer
+          format: int32
+        bitState:
+          type: boolean
+        valid:
+          type: boolean
+        identifierKey:
+          type: string
+    Construction:
+      type: object
+      properties:
+        tempId:
+          type: integer
+          deprecated: true
+          format: int64
+        id:
+          type: integer
+          format: int64
+        new:
+          type: boolean
+          deprecated: true
+        internalId:
+          type: integer
+          deprecated: true
+          format: int64
+        name:
+          type: string
+        inAutomaticMode:
+          type: boolean
+    ConstructionDto:
+      type: object
+      properties:
+        name:
+          type: string
+    DRIVING_LEVEL_ADJUST_TYPE:
+      type: string
+      enum:
+        - NONE
+        - ENTER
+        - EXIT
+    TrackBlock:
+      type: object
+      properties:
+        tempId:
+          type: integer
+          deprecated: true
+          format: int64
+        id:
+          type: integer
+          format: int64
+        new:
+          type: boolean
+          deprecated: true
+        internalId:
+          type: integer
+          deprecated: true
+          format: int64
+        blockFunction:
+          $ref: "#/components/schemas/BusDataConfiguration"
+        construction:
+          $ref: "#/components/schemas/Construction"
+        name:
+          type: string
+        forwardTargetDrivingLevel:
+          type: integer
+          format: int32
+        backwardTargetDrivingLevel:
+          type: integer
+          format: int32
+        drivingLevelAdjustType:
+          $ref: "#/components/schemas/DRIVING_LEVEL_ADJUST_TYPE"
+        feedback:
+          type: boolean
+        displayValue:
+          type: string
+    Train:
+      type: object
+      properties:
+        tempId:
+          type: integer
+          deprecated: true
+          format: int64
+        id:
+          type: integer
+          format: int64
+        new:
+          type: boolean
+          deprecated: true
+        internalId:
+          type: integer
+          deprecated: true
+          format: int64
+        currentBlocks:
+          type: array
+          uniqueItems: true
+          items:
+            $ref: "#/components/schemas/TrackBlock"
+        address:
+          type: integer
+          format: int32
+        name:
+          type: string
+        functions:
+          type: array
+          uniqueItems: true
+          items:
+            $ref: "#/components/schemas/TrainFunction"
+        drivingLevel:
+          type: integer
+          format: int32
+        forward:
+          type: boolean
+        addressByte:
+          type: integer
+          format: int8
+        presentOnTrack:
+          type: boolean
+    TrainDto:
+      type: object
+      properties:
+        name:
+          type: string
+        address:
+          type: integer
+          format: int32
+    TrainFunction:
+      type: object
+      properties:
+        tempId:
+          type: integer
+          deprecated: true
+          format: int64
+        id:
+          type: integer
+          format: int64
+        new:
+          type: boolean
+          deprecated: true
+        internalId:
+          type: integer
+          deprecated: true
+          format: int64
+        alias:
+          type: string
+        configuration:
+          $ref: "#/components/schemas/BusDataConfiguration"
+        active:
+          type: boolean
+paths:
+  /api/constructions:
+    get:
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Construction"
+      summary: List All
+      tags:
+        - Construction Resource
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ConstructionDto"
+        required: true
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+      summary: Create
+      tags:
+        - Construction Resource
+  /api/constructions/{id}:
+    put:
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ConstructionDto"
+        required: true
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+      summary: Update
+      tags:
+        - Construction Resource
+    get:
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: OK
+      summary: Get By Id
+      tags:
+        - Construction Resource
+    delete:
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: OK
+      summary: Delete
+      tags:
+        - Construction Resource
+  /api/current-construction:
+    post:
+      requestBody:
+        content:
+          text/plain:
+            schema:
+              type: integer
+              format: int64
+        required: true
+      responses:
+        "200":
+          description: OK
+      summary: Set Current
+      tags:
+        - Current Construction Resource
+    get:
+      responses:
+        "200":
+          description: OK
+      summary: Get Current
+      tags:
+        - Current Construction Resource
+  /api/trains:
+    get:
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Train"
+      summary: List All
+      tags:
+        - Train Resource
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TrainDto"
+        required: true
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+      summary: Create
+      tags:
+        - Train Resource
+  /api/trains/{id}:
+    put:
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TrainDto"
+        required: true
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+      summary: Update
+      tags:
+        - Train Resource
+    get:
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: OK
+      summary: Get By Id
+      tags:
+        - Train Resource
+    delete:
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: OK
+      summary: Delete
+      tags:
+        - Train Resource
+info:
+  title: controlcenter API
+  version: 0.3-SNAPSHOT

@@ -17,7 +17,7 @@ import java.util.List;
 import net.wbz.moba.controlcenter.service.constrution.ConstructionManager;
 import net.wbz.moba.controlcenter.shared.constrution.Construction;
 
-@Path("/constructions")
+@Path("/api/constructions")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class ConstructionResource {
@@ -69,5 +69,6 @@ public class ConstructionResource {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
     }
+
 }
 

@@ -4,6 +4,7 @@ import {SnackBar} from "../control-center/common/snack-bar.component";
 import {DefaultService, Train} from "../../shared/openapi-gen";
 import {EMPTY, Observable} from "rxjs";
 import {catchError} from "rxjs/operators";
+import {Construction} from "./shared.model";
 
 @Injectable({
   providedIn: 'root',
@@ -13,10 +14,10 @@ export class TrainService {
   private snackBar = inject(SnackBar);
 
   private httpClient = inject(HttpClient);
-  private api = inject(DefaultService);
 
   loadTrains(): Observable<Train[]> {
-    return this.api.loadTrains().pipe(
+    return this.httpClient.get<Train[]>('/api/trains')
+    .pipe(
       catchError((err: any) => {
         this.snackBar.showError(`can't load trains: ${err.message}`);
         return EMPTY
@@ -25,11 +26,11 @@ export class TrainService {
   }
 
   loadTrain(trainId: Number) {
-    return this.httpClient.get<Train>('/api/train/' + trainId)
+    return this.httpClient.get<Train>('/api/trains/' + trainId)
   }
 
   createTrain(train: Train) {
-    return this.httpClient.post('/api/train/', train)
+    return this.httpClient.post('/api/trains/', train)
     .pipe(
       catchError((err: any) => {
         this.snackBar.showError(`can't create train: ${err.message}`);
@@ -39,7 +40,7 @@ export class TrainService {
   }
 
   saveTrain(train: Train) {
-    return this.httpClient.post('/api/train/' + train.id, train)
+    return this.httpClient.put('/api/trains/' + train.id, train)
     .pipe(
       catchError((err: any) => {
         this.snackBar.showError(`can't save train ${train.id}: ${err.message}`);
@@ -49,7 +50,7 @@ export class TrainService {
   }
 
   deleteTrain(trainId: Number) {
-    return this.httpClient.delete('/api/train/' + trainId)
+    return this.httpClient.delete('/api/trains/' + trainId)
     .subscribe({
       next: () => {
         this.snackBar.showSuccess(`train ${trainId} deleted`);

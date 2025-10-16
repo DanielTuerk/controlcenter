@@ -1,7 +1,7 @@
 import {inject, Injectable} from "@angular/core";
 import {SnackBar} from "../control-center/common/snack-bar.component";
 import {HttpClient} from "@angular/common/http";
-import {DefaultService, Scenario} from "../../shared/openapi-gen";
+import {DefaultService, Scenario, Train} from "../../shared/openapi-gen";
 import {EMPTY, Observable} from "rxjs";
 import {catchError} from "rxjs/operators";
 
@@ -13,10 +13,10 @@ export class ScenarioService {
   private snackBar = inject(SnackBar);
 
   private httpClient = inject(HttpClient);
-  private api = inject(DefaultService);
 
   loadScenarios(): Observable<Scenario[]> {
-    return this.api.loadScenarios().pipe(
+    return this.httpClient.get<Scenario[]>('/api/scenarios')
+    .pipe(
       catchError((err: any) => {
         this.snackBar.showError(`can't load scenarios: ${err.message}`);
         return EMPTY
@@ -25,11 +25,11 @@ export class ScenarioService {
   }
 
   loadScenario(scenarioId: Number) {
-    return this.httpClient.get<Scenario>('/api/scenario/' + scenarioId)
+    return this.httpClient.get<Scenario>('/api/scenarios/' + scenarioId)
   }
 
   createScenario(scenario: Scenario) {
-    return this.httpClient.post('/api/scenario/', scenario)
+    return this.httpClient.post('/api/scenarios/', scenario)
     .pipe(
       catchError((err: any, caught: Observable<any>) => {
         this.snackBar.showError(`can't create scenario: ${err.message}`);
@@ -39,7 +39,7 @@ export class ScenarioService {
   }
 
   saveScenario(scenario: Scenario) {
-    return this.httpClient.post('/api/scenario/' + scenario.id, scenario)
+    return this.httpClient.put('/api/scenarios/' + scenario.id, scenario)
     .pipe(
       catchError((err: any, caught: Observable<any>) => {
         this.snackBar.showError(`can't save scenario ${scenario.id}: ${err.message}`);
@@ -49,7 +49,7 @@ export class ScenarioService {
   }
 
   deleteScenario(scenarioId: Number) {
-    return this.httpClient.delete('/api/scenario/' + scenarioId)
+    return this.httpClient.delete('/api/scenarios/' + scenarioId)
     .subscribe({
       next: (scenario) => {
         this.snackBar.showSuccess(`scenario ${scenarioId} deleted`);

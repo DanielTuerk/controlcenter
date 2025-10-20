@@ -2,7 +2,7 @@ package net.wbz.moba.controlcenter.web.guice;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.inject.Singleton;
+
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;

@@ -1,8 +1,8 @@
 package net.wbz.moba.controlcenter.web.server.web.editor.block;
 
 import com.google.common.collect.Maps;
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
+
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -18,7 +18,7 @@ import net.wbz.selectrix4java.block.FeedbackBlockListener;
 import net.wbz.selectrix4java.block.FeedbackBlockModule;
 import net.wbz.selectrix4java.device.Device;
 import net.wbz.selectrix4java.device.DeviceAccessException;
-import org.slf4j.Logger;
+import org.jboss.logging.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -37,7 +37,7 @@ import org.slf4j.LoggerFactory;
 @Singleton
 public class SignalBlockRegistry extends AbstractBlockRegistry<Signal> {
 
-    private static final Logger log = LoggerFactory.getLogger(SignalBlockRegistry.class);
+    private static final Logger log = Logger.getLogger(SignalBlockRegistry.class);
 
     /**
      * The unique {@link BusAddressIdentifier}s for the {@link FeedbackBlockModule}s which have to register the {@link

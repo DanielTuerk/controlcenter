@@ -6,7 +6,7 @@ import static org.mockito.Mockito.when;
 
 import com.google.common.collect.Lists;
 import com.google.inject.AbstractModule;
-import com.google.inject.Inject;
+
 import java.util.List;
 import junit.framework.Assert;
 import net.wbz.moba.controlcenter.web.server.web.editor.TrackManager;

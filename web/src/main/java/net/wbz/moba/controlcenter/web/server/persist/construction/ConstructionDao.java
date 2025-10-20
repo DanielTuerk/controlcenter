@@ -1,7 +1,7 @@
 package net.wbz.moba.controlcenter.web.server.persist.construction;
 
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
+
+
 import com.google.inject.persist.Transactional;
 import java.util.List;
 import javax.inject.Provider;

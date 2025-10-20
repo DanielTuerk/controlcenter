@@ -6,13 +6,13 @@ import org.glassfish.jersey.server.monitoring.ApplicationEventListener;
 import org.glassfish.jersey.server.monitoring.RequestEvent;
 import org.glassfish.jersey.server.monitoring.RequestEvent.Type;
 import org.glassfish.jersey.server.monitoring.RequestEventListener;
-import org.slf4j.Logger;
+import org.jboss.logging.Logger;
 import org.slf4j.LoggerFactory;
 
 @Provider
 public class ExceptionLogger implements ApplicationEventListener, RequestEventListener {
 
-    private static final Logger log = LoggerFactory.getLogger(ExceptionLogger.class);
+    private static final Logger log = Logger.getLogger(ExceptionLogger.class);
 
     @Override
     public void onEvent(final ApplicationEvent applicationEvent) {

@@ -1,6 +1,6 @@
 package net.wbz.moba.controlcenter.web.jersey;
 
-import com.google.inject.Inject;
+
 import com.google.inject.Injector;
 import com.google.inject.name.Named;
 import com.google.inject.servlet.GuiceFilter;

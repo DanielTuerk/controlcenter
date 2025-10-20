@@ -5,11 +5,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import org.slf4j.Logger;
+import org.jboss.logging.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
+
+
 import com.google.inject.name.Named;
 
 import net.wbz.moba.controlcenter.web.server.event.EventBroadcaster;
@@ -24,7 +24,7 @@ import net.wbz.selectrix4java.device.DeviceAccessException;
 @Singleton
 public class DeviceRecorder {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(DeviceRecorder.class);
+    private static final Logger LOGGER = Logger.getLogger(DeviceRecorder.class);
     private static final String FOLDER = "/record/";
 
     private IsRecordable recordable;

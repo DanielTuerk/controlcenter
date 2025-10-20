@@ -2,7 +2,7 @@ package net.wbz.moba.controlcenter.web.server.web;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.inject.Singleton;
+
 import java.lang.reflect.Modifier;
 import java.util.Collection;
 import java.util.Map;

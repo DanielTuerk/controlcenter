@@ -1,7 +1,7 @@
 package net.wbz.moba.controlcenter.web.server.web.editor.block;
 
 import net.wbz.moba.controlcenter.web.server.web.train.TrainManager;
-import org.slf4j.Logger;
+import org.jboss.logging.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
  */
 public class SignalBreakingBlockListener extends AbstractSignalBlockListener {
 
-    private static final Logger log = LoggerFactory.getLogger(SignalBreakingBlockListener.class);
+    private static final Logger log = Logger.getLogger(SignalBreakingBlockListener.class);
 
     public SignalBreakingBlockListener(SignalBlock signalBlock, TrainManager trainManager) {
         super(signalBlock.getSignal().getBreakingBlock(), trainManager);

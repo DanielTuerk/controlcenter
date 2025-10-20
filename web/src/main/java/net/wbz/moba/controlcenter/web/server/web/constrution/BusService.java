@@ -2,8 +2,8 @@ package net.wbz.moba.controlcenter.web.server.web.constrution;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
+
+
 import com.google.inject.persist.Transactional;
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
@@ -35,7 +35,7 @@ import net.wbz.selectrix4java.device.DeviceManager;
 import net.wbz.selectrix4java.device.DeviceManager.DEVICE_TYPE;
 import net.wbz.selectrix4java.device.RailVoltageListener;
 import net.wbz.selectrix4java.device.serial.SerialDevice;
-import org.slf4j.Logger;
+import org.jboss.logging.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -44,7 +44,7 @@ import org.slf4j.LoggerFactory;
 @Singleton
 public class BusService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(BusService.class);
+    private static final Logger LOGGER = Logger.getLogger(BusService.class);
     private final DeviceManager deviceManager;
     private final EventBroadcaster eventBroadcaster;
     private final AllBusDataConsumer allBusDataConsumer;

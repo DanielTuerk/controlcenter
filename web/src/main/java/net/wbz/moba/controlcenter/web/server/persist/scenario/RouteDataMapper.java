@@ -1,6 +1,6 @@
 package net.wbz.moba.controlcenter.web.server.persist.scenario;
 
-import com.google.inject.Inject;
+
 import java.util.List;
 import java.util.stream.Collectors;
 import net.wbz.moba.controlcenter.web.server.persist.construction.track.GridPositionDao;

@@ -11,7 +11,7 @@ import net.wbz.moba.controlcenter.shared.track.model.TrackBlock;
 import net.wbz.selectrix4java.block.FeedbackBlockModule;
 import net.wbz.selectrix4java.device.Device;
 import net.wbz.selectrix4java.device.DeviceAccessException;
-import org.slf4j.Logger;
+import org.jboss.logging.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -21,7 +21,7 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class AbstractBlockRegistry<T extends AbstractDto> {
 
-    private static final Logger log = LoggerFactory.getLogger(AbstractBlockRegistry.class);
+    private static final Logger log = Logger.getLogger(AbstractBlockRegistry.class);
 
     private final EventBroadcaster eventBroadcaster;
     private final TrainService trainService;

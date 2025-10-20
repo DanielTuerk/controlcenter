@@ -2,7 +2,7 @@ package net.wbz.moba.controlcenter.web.server.web.editor.block;
 
 import net.wbz.moba.controlcenter.web.server.web.train.TrainManager;
 import net.wbz.moba.controlcenter.web.server.web.train.TrainService;
-import org.slf4j.Logger;
+import org.jboss.logging.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
  * @author Daniel Tuerk
  */
 abstract class AbstractSignalStopBlockListener extends AbstractSignalBlockListener {
-    private static final Logger log = LoggerFactory.getLogger(AbstractSignalStopBlockListener.class);
+    private static final Logger log = Logger.getLogger(AbstractSignalStopBlockListener.class);
 
     private final SignalBlock signalBlock;
     private final TrainService trainService;

@@ -1,8 +1,8 @@
 package net.wbz.moba.controlcenter.web.server.web.editor.block;
 
 import com.google.common.collect.Maps;
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
+
+
 import java.util.Collection;
 import java.util.Map;
 import net.wbz.moba.controlcenter.web.server.event.EventBroadcaster;
@@ -18,7 +18,7 @@ import net.wbz.selectrix4java.block.FeedbackBlockListener;
 import net.wbz.selectrix4java.block.FeedbackBlockModule;
 import net.wbz.selectrix4java.device.Device;
 import net.wbz.selectrix4java.device.DeviceAccessException;
-import org.slf4j.Logger;
+import org.jboss.logging.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -32,7 +32,7 @@ import org.slf4j.LoggerFactory;
 @Singleton
 public class TrackBlockRegistry extends AbstractBlockRegistry<TrackBlock> {
 
-    private static final Logger log = LoggerFactory.getLogger(TrackBlockRegistry.class);
+    private static final Logger log = Logger.getLogger(TrackBlockRegistry.class);
 
     private final Map<TrackBlock, FeedbackBlockListener> feedbackBlockListeners =
             Maps.newConcurrentMap();

@@ -1,14 +1,14 @@
 package net.wbz.moba.controlcenter.web.server.web.config;
 
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
+
+
 import com.google.inject.persist.Transactional;
 import javax.inject.Provider;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import net.wbz.moba.controlcenter.web.server.persist.config.ConfigValueEntity;
 import net.wbz.moba.controlcenter.shared.config.ConfigNotAvailableException;
-import org.slf4j.Logger;
+import org.jboss.logging.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -20,7 +20,7 @@ import org.slf4j.LoggerFactory;
 @Singleton
 public class ConfigService {
 
-    private static final Logger log = LoggerFactory.getLogger(ConfigService.class);
+    private static final Logger log = Logger.getLogger(ConfigService.class);
 
     private final Provider<EntityManager> entityManager;
 

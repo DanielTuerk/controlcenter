@@ -1,7 +1,7 @@
 package net.wbz.moba.controlcenter.web.server.web.editor;
 
 import com.google.common.collect.Lists;
-import com.google.inject.Singleton;
+
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;

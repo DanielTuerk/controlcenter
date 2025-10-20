@@ -1,7 +1,7 @@
 package net.wbz.moba.controlcenter.web.server.web.station;
 
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
+
+
 import com.google.inject.persist.Transactional;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,7 +15,7 @@ import net.wbz.moba.controlcenter.web.server.persist.scenario.StationPlatformEnt
 import net.wbz.moba.controlcenter.shared.station.Station;
 import net.wbz.moba.controlcenter.shared.station.StationDataChangedEvent;
 import net.wbz.moba.controlcenter.shared.station.StationPlatform;
-import org.slf4j.Logger;
+import org.jboss.logging.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
 @Singleton
 public class StationManager {
 
-    private static final Logger LOG = LoggerFactory.getLogger(StationManager.class);
+    private static final Logger LOG = Logger.getLogger(StationManager.class);
 
     /**
      * Cached {@link Station}s from persistence.

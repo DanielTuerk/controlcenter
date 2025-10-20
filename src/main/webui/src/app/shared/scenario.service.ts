@@ -1,7 +1,7 @@
 import {inject, Injectable} from "@angular/core";
 import {SnackBar} from "../control-center/common/snack-bar.component";
 import {HttpClient} from "@angular/common/http";
-import {DefaultService, Scenario, Train} from "../../shared/openapi-gen";
+import {Scenario} from "../../shared/openapi-gen";
 import {EMPTY, Observable} from "rxjs";
 import {catchError} from "rxjs/operators";
 

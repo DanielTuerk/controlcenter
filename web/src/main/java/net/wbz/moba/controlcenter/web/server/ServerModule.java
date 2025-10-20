@@ -2,7 +2,7 @@ package net.wbz.moba.controlcenter.web.server;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
-import com.google.inject.Singleton;
+
 import io.swagger.v3.jaxrs2.integration.resources.OpenApiResource;
 import net.wbz.moba.controlcenter.web.server.web.WebModule;
 

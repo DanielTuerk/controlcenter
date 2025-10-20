@@ -5,11 +5,11 @@ import java.util.List;
 import javax.inject.Provider;
 import jakarta.persistence.EntityManager;
 
-import org.slf4j.Logger;
+import org.jboss.logging.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
+
+
 
 import net.wbz.moba.controlcenter.web.server.persist.AbstractDao;
 
@@ -18,7 +18,7 @@ import net.wbz.moba.controlcenter.web.server.persist.AbstractDao;
  */
 @Singleton
 public class DeviceInfoDao implements PanacheRepository<DeviceInfoEntity> {
-    private static final Logger LOG = LoggerFactory.getLogger(DeviceInfoDao.class);
+    private static final Logger LOG = Logger.getLogger(DeviceInfoDao.class);
 
     @Inject
     public DeviceInfoDao(Provider<EntityManager> entityManager) {

@@ -4,7 +4,7 @@ import net.wbz.moba.controlcenter.web.server.web.train.TrainManager;
 import net.wbz.moba.controlcenter.web.server.web.viewer.TrackViewerService;
 import net.wbz.moba.controlcenter.shared.track.model.BusDataConfiguration;
 import net.wbz.moba.controlcenter.shared.track.model.Signal.FUNCTION;
-import org.slf4j.Logger;
+import org.jboss.logging.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -17,7 +17,7 @@ import org.slf4j.LoggerFactory;
  */
 class SignalMonitoringBlockListener extends AbstractSignalBlockListener {
 
-    private static final Logger LOG = LoggerFactory.getLogger(SignalMonitoringBlockListener.class);
+    private static final Logger LOG = Logger.getLogger(SignalMonitoringBlockListener.class);
     private final SignalBlock signalBlock;
     private final TrackViewerService trackViewerService;
     private Integer blockNrToMonitore;

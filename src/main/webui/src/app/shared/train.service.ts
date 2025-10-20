@@ -1,10 +1,9 @@
 import {inject, Injectable} from "@angular/core";
 import {HttpClient} from "@angular/common/http";
 import {SnackBar} from "../control-center/common/snack-bar.component";
-import {DefaultService, Train} from "../../shared/openapi-gen";
+import {Train} from "../../shared/openapi-gen";
 import {EMPTY, Observable} from "rxjs";
 import {catchError} from "rxjs/operators";
-import {Construction} from "./shared.model";
 
 @Injectable({
   providedIn: 'root',

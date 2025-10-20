@@ -11,7 +11,7 @@ import net.wbz.moba.controlcenter.shared.bus.BusDataEvent;
 import net.wbz.selectrix4java.device.Device;
 import net.wbz.selectrix4java.device.DeviceConnectionListener;
 import net.wbz.selectrix4java.device.DeviceManager;
-import org.slf4j.Logger;
+import org.jboss.logging.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -24,14 +24,11 @@ import org.slf4j.LoggerFactory;
 @ApplicationScoped
 public class EventBroadcaster {
 
-    private static final Logger LOG = LoggerFactory.getLogger(EventBroadcaster.class);
+    private static final Logger LOG = Logger.getLogger(EventBroadcaster.class);
 
     //    private final EventExecutorService eventExecutorService;
 //    private final EventCache eventCache;
 
-    /**
-     * @param eventCache {@link EventCache}
-     */
 //    @Inject
     public EventBroadcaster(DeviceManager deviceManager) {
 //        this.eventCache = eventCache;

@@ -18,6 +18,7 @@ import org.jboss.logging.Logger;
 public class ConstructionService {
     private static final Logger LOG = Logger.getLogger(ConstructionService.class);
 
+    // TODO migrate to events?
     private final List<ConstructionChangeListener> listeners = new ArrayList<>();
 
     private final AtomicReference<Construction> currentConstruction = new AtomicReference<>(null);
@@ -30,7 +31,7 @@ public class ConstructionService {
 
     public synchronized void setCurrentConstruction(Construction construction) {
         currentConstruction.set(construction);
-        LOG.infof("current construction changed to: {}", construction);
+        LOG.infof("current construction changed to: %s", construction);
         // TODO: that should be used by server and clients
         eventBroadcaster.fireEvent(new CurrentConstructionChangeEvent(construction));
         // TODO: not needed if events are propagated to server listeners
@@ -38,11 +39,11 @@ public class ConstructionService {
     }
 
 
-//    public void addListener(ConstructionChangeListener listener) {
-//        listeners.add(listener);
-//    }
-//
-//    public void removeListener(ConstructionChangeListener listener) {
-//        listeners.remove(listener);
-//    }
+    public void addListener(ConstructionChangeListener listener) {
+        listeners.add(listener);
+    }
+
+    public void removeListener(ConstructionChangeListener listener) {
+        listeners.remove(listener);
+    }
 }

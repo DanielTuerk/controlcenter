@@ -1,7 +1,7 @@
 package net.wbz.moba.controlcenter.web.server.web.station;
 
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
+
+
 import java.util.function.Consumer;
 import net.wbz.moba.controlcenter.shared.station.Station;
 

@@ -1,13 +1,13 @@
 package net.wbz.moba.controlcenter.web.server.web.editor;
 
-import com.google.inject.Singleton;
+
 import java.util.Collection;
 import java.util.Set;
 import javax.inject.Inject;
 import net.wbz.moba.controlcenter.shared.editor.ValidationException;
 import net.wbz.moba.controlcenter.shared.track.model.AbstractTrackPart;
 import net.wbz.moba.controlcenter.shared.track.model.TrackBlock;
-import org.slf4j.Logger;
+import org.jboss.logging.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -16,7 +16,7 @@ import org.slf4j.LoggerFactory;
 @Singleton
 public class TrackEditorService {
 
-    private static final Logger LOG = LoggerFactory.getLogger(TrackEditorService.class);
+    private static final Logger LOG = Logger.getLogger(TrackEditorService.class);
 
     private final TrackManager trackManager;
     private Set<TrackPartValidator> validators;

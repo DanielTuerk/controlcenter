@@ -2,6 +2,58 @@
 openapi: 3.1.0
 components:
   schemas:
+    BlockStraight:
+      type: object
+      properties:
+        tempId:
+          type: integer
+          deprecated: true
+          format: int64
+        id:
+          type: integer
+          format: int64
+        new:
+          type: boolean
+          deprecated: true
+        internalId:
+          type: integer
+          deprecated: true
+          format: int64
+        gridPosition:
+          $ref: "#/components/schemas/GridPosition"
+        direction:
+          $ref: "#/components/schemas/DIRECTION"
+        lastGridPositions:
+          type: array
+          items:
+            $ref: "#/components/schemas/GridPosition"
+        rotationAngle:
+          type: number
+          format: double
+        vertical:
+          type: boolean
+        blockLength:
+          type: integer
+          format: int32
+        leftTrackBlock:
+          $ref: "#/components/schemas/TrackBlock"
+        middleTrackBlock:
+          $ref: "#/components/schemas/TrackBlock"
+        rightTrackBlock:
+          $ref: "#/components/schemas/TrackBlock"
+        endGridPosition:
+          $ref: "#/components/schemas/GridPosition"
+        allGridPositions:
+          type: array
+          items:
+            $ref: "#/components/schemas/GridPosition"
+        gridLength:
+          type: integer
+          format: int32
+        allTrackBlocks:
+          type: array
+          items:
+            $ref: "#/components/schemas/TrackBlock"
     BusDataConfiguration:
       type: object
       properties:
@@ -60,12 +112,191 @@ components:
       properties:
         name:
           type: string
+    DIRECTION:
+      type: string
+      enum:
+        - HORIZONTAL
+        - VERTICAL
+    DRIVING_DIRECTION:
+      type: string
+      enum:
+        - FORWARD
+        - BACKWARD
     DRIVING_LEVEL_ADJUST_TYPE:
       type: string
       enum:
         - NONE
         - ENTER
         - EXIT
+    GridPosition:
+      type: object
+      properties:
+        tempId:
+          type: integer
+          deprecated: true
+          format: int64
+        id:
+          type: integer
+          format: int64
+        new:
+          type: boolean
+          deprecated: true
+        internalId:
+          type: integer
+          deprecated: true
+          format: int64
+        x:
+          type: integer
+          format: int32
+        "y":
+          type: integer
+          format: int32
+    MODE:
+      type: string
+      enum:
+        - "OFF"
+        - MANUAL
+        - AUTOMATIC
+    ROUTE_RUN_STATE:
+      type: string
+      enum:
+        - PREPARED
+        - RESERVED
+        - RUNNING
+        - FINISHED
+    RUN_STATE:
+      type: string
+      enum:
+        - RUNNING
+        - IDLE
+        - PAUSED
+        - STOPPED
+        - SUCCESS
+        - ERROR
+    Route:
+      type: object
+      properties:
+        tempId:
+          type: integer
+          deprecated: true
+          format: int64
+        id:
+          type: integer
+          format: int64
+        new:
+          type: boolean
+          deprecated: true
+        internalId:
+          type: integer
+          deprecated: true
+          format: int64
+        name:
+          type: string
+        start:
+          $ref: "#/components/schemas/BlockStraight"
+        end:
+          $ref: "#/components/schemas/TrackBlock"
+        oneway:
+          type: boolean
+        waypoints:
+          type: array
+          items:
+            $ref: "#/components/schemas/GridPosition"
+        runState:
+          $ref: "#/components/schemas/ROUTE_RUN_STATE"
+        track:
+          $ref: "#/components/schemas/Track"
+        allTrackBlocksToDrive:
+          type: array
+          uniqueItems: true
+          items:
+            $ref: "#/components/schemas/TrackBlock"
+    RouteSequence:
+      type: object
+      properties:
+        tempId:
+          type: integer
+          deprecated: true
+          format: int64
+        id:
+          type: integer
+          format: int64
+        new:
+          type: boolean
+          deprecated: true
+        internalId:
+          type: integer
+          deprecated: true
+          format: int64
+        position:
+          type: integer
+          format: int32
+        route:
+          $ref: "#/components/schemas/Route"
+        endDelayInSeconds:
+          type: integer
+          format: int32
+    Scenario:
+      type: object
+      properties:
+        tempId:
+          type: integer
+          deprecated: true
+          format: int64
+        id:
+          type: integer
+          format: int64
+        new:
+          type: boolean
+          deprecated: true
+        internalId:
+          type: integer
+          deprecated: true
+          format: int64
+        name:
+          type: string
+        cron:
+          type: string
+        train:
+          $ref: "#/components/schemas/Train"
+        trainDrivingDirection:
+          $ref: "#/components/schemas/DRIVING_DIRECTION"
+        startDrivingLevel:
+          type: integer
+          format: int32
+        routeSequences:
+          type: array
+          items:
+            $ref: "#/components/schemas/RouteSequence"
+        stationPlatformStartId:
+          type: integer
+          format: int64
+        stationPlatformEndId:
+          type: integer
+          format: int64
+        runState:
+          $ref: "#/components/schemas/RUN_STATE"
+        mode:
+          $ref: "#/components/schemas/MODE"
+    Track:
+      type: object
+      properties:
+        trackBlocks:
+          type: array
+          uniqueItems: true
+          items:
+            $ref: "#/components/schemas/TrackBlock"
+        trackFunctions:
+          type: array
+          items:
+            $ref: "#/components/schemas/BusDataConfiguration"
+        gridPositions:
+          type: array
+          items:
+            $ref: "#/components/schemas/GridPosition"
+        length:
+          type: integer
+          format: int32
     TrackBlock:
       type: object
       properties:
@@ -277,6 +508,86 @@ paths:
       summary: Get Current
       tags:
         - Current Construction Resource
+  /api/scenario:
+    get:
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Scenario"
+      summary: List All
+      tags:
+        - Scenario Controller
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Scenario"
+        required: true
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+      summary: Create
+      tags:
+        - Scenario Controller
+  /api/scenario/{id}:
+    put:
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Scenario"
+        required: true
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+      summary: Update
+      tags:
+        - Scenario Controller
+    get:
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: OK
+      summary: Get By Id
+      tags:
+        - Scenario Controller
+    delete:
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: OK
+      summary: Delete
+      tags:
+        - Scenario Controller
   /api/trains:
     get:
       responses:

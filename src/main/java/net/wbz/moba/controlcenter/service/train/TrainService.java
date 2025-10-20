@@ -14,7 +14,7 @@ import net.wbz.selectrix4java.device.DeviceConnectionListener;
 import net.wbz.selectrix4java.device.DeviceManager;
 import net.wbz.selectrix4java.train.TrainDataListener;
 import net.wbz.selectrix4java.train.TrainModule;
-import org.slf4j.Logger;
+import org.jboss.logging.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory;
 @ApplicationScoped
 public class TrainService {
 
-    private static final Logger LOG = LoggerFactory.getLogger(TrainService.class);
+    private static final Logger LOG = Logger.getLogger(TrainService.class);
 
     private final TrainManager trainManager;
     private final DeviceManager deviceManager;

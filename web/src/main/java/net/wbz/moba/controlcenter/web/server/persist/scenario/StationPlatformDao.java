@@ -1,12 +1,12 @@
 package net.wbz.moba.controlcenter.web.server.persist.scenario;
 
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
+
+
 import java.util.List;
 import javax.inject.Provider;
 import jakarta.persistence.EntityManager;
 import net.wbz.moba.controlcenter.web.server.persist.AbstractDao;
-import org.slf4j.Logger;
+import org.jboss.logging.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -15,7 +15,7 @@ import org.slf4j.LoggerFactory;
 @Singleton
 public class StationPlatformDao implements PanacheRepository<StationPlatformEntity> {
 
-    private static final Logger LOG = LoggerFactory.getLogger(StationPlatformDao.class);
+    private static final Logger LOG = Logger.getLogger(StationPlatformDao.class);
 
     @Inject
     public StationPlatformDao(Provider<EntityManager> entityManager) {

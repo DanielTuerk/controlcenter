@@ -3,10 +3,14 @@ package net.wbz.moba.controlcenter.shared.viewer;
 import java.util.Objects;
 import net.wbz.moba.controlcenter.shared.StateEvent;
 import net.wbz.moba.controlcenter.shared.track.model.Signal;
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
+import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 /**
  * @author Daniel Tuerk
  */
+@Schema(description = "track status update sent via WebSocket")
+@Tag(ref = "websocket")
 public class SignalFunctionStateEvent implements StateEvent {
 
     private Long signalId;

@@ -1,12 +1,16 @@
 package net.wbz.moba.controlcenter.shared.bus;
 
 import net.wbz.moba.controlcenter.shared.StateEvent;
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
+import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 /**
  * Event for train state at {@link net.wbz.selectrix4java.block.FeedbackBlockModule}.
  *
  * @author Daniel Tuerk
  */
+@Schema(description = "bus status update sent via WebSocket")
+@Tag(ref = "websocket")
 public class FeedbackBlockEvent implements StateEvent {
 
     private int bus;

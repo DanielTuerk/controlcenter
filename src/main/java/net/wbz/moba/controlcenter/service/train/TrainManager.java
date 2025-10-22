@@ -7,11 +7,13 @@ import jakarta.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import net.wbz.moba.controlcenter.EventBroadcaster;
 import net.wbz.moba.controlcenter.api.train.TrainDto;
 import net.wbz.moba.controlcenter.persist.entity.TrainEntity;
 import net.wbz.moba.controlcenter.persist.repository.TrainRepository;
 import net.wbz.moba.controlcenter.service.constrution.ConstructionManager;
 import net.wbz.moba.controlcenter.shared.train.Train;
+import net.wbz.moba.controlcenter.shared.train.TrainDataChangedEvent;
 import org.jboss.logging.Logger;
 
 /**
@@ -30,15 +32,18 @@ public class TrainManager {
     private final TrainRepository trainRepository;
     //    private final EventBroadcaster eventBroadcaster;
     private final TrainMapper trainMapper;
+    private final EventBroadcaster eventBroadcaster;
 
     @Inject
-    public TrainManager(TrainRepository trainRepository, TrainMapper trainMapper) {
+    public TrainManager(TrainRepository trainRepository, TrainMapper trainMapper, EventBroadcaster eventBroadcaster) {
         this.trainRepository = trainRepository;
 //        this.eventBroadcaster = eventBroadcaster;
         this.trainMapper = trainMapper;
+        this.eventBroadcaster = eventBroadcaster;
     }
 
     public List<Train> load() {
+        // TODO overall use a cache lib?
         return getTrains();
     }
 
@@ -49,9 +54,15 @@ public class TrainManager {
         entity.address = dto.address();
 
         trainRepository.persist(entity);
-        // TODO reload trains
-        // e.g. eventBroadcaster.fireEvent(new TrainDataChangedEvent(createdTrain.getId()));
+        reloadData(entity.id);
         return trainMapper.toDto(entity);
+    }
+
+    private void reloadData(Long id) {
+        // TODO
+        cachedTrains.clear();
+        getTrains();
+        eventBroadcaster.fireEvent(new TrainDataChangedEvent(id));
     }
 
     @Transactional
@@ -63,10 +74,12 @@ public class TrainManager {
         existing.name = updated.name();
         existing.address = updated.address();
         // TODO throw change event
+        reloadData(id);
     }
 
     @Transactional
     public boolean deleteById(Long id) {
+        reloadData(id);
         return trainRepository.deleteById(id);
         // TODO reload trains
     }

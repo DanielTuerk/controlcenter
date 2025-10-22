@@ -6,8 +6,10 @@ import {MatTableModule} from "@angular/material/table";
 import {MatIcon} from "@angular/material/icon";
 import {MatDialog} from "@angular/material/dialog";
 import {ConfirmDialogComponent} from "../common/confirm-dialog/confirm-dialog.component";
-import {Train} from "../../../shared/openapi-gen";
 import {MatButton} from "@angular/material/button";
+import {Train} from "../../../shared/openapi-gen";
+import {TrainSubscription} from "../../shared/websocket/train.subscription";
+import {WebSocketService} from "../../shared/websocket/websocket.service";
 
 @Component({
   selector: 'app-train',
@@ -29,8 +31,18 @@ export class TrainComponent implements OnInit {
   trains = signal<Train[]>([]);
   displayedColumns: string[] = ['id', 'name', 'address', 'action'];
   readonly dialog = inject(MatDialog);
+  private wsService = inject(WebSocketService);
+  private trainSubscription = inject(TrainSubscription);
 
   ngOnInit() {
+    this.loadTrains();
+
+    this.trainSubscription.trainDataChanged().subscribe(event => {
+      this.loadTrains();
+    });
+  }
+
+  private loadTrains() {
     this.trainService.loadTrains().subscribe(data => {
       this.trains.set(data);
     })

@@ -112,6 +112,19 @@ components:
       properties:
         name:
           type: string
+    CurrentConstructionChangeEvent:
+      type: object
+      description: Train status update sent via WebSocket
+      properties:
+        cacheKey:
+          type: string
+        construction:
+          $ref: "#/components/schemas/Construction"
+    DEVICE_TYPE:
+      type: string
+      enum:
+        - SERIAL
+        - TEST
     DIRECTION:
       type: string
       enum:
@@ -122,12 +135,87 @@ components:
       enum:
         - FORWARD
         - BACKWARD
+    DRIVING_DIRECTION1:
+      type: string
+      enum:
+        - FORWARD
+        - BACKWARD
     DRIVING_LEVEL_ADJUST_TYPE:
       type: string
       enum:
         - NONE
         - ENTER
         - EXIT
+    DeviceConnectionEvent:
+      type: object
+      description: bus status update sent via WebSocket
+      properties:
+        deviceInfo:
+          $ref: "#/components/schemas/DeviceInfo"
+        eventType:
+          $ref: "#/components/schemas/TYPE"
+        cacheKey:
+          type: string
+    DeviceInfo:
+      type: object
+      properties:
+        tempId:
+          type: integer
+          deprecated: true
+          format: int64
+        id:
+          type: integer
+          format: int64
+        new:
+          type: boolean
+          deprecated: true
+        internalId:
+          type: integer
+          deprecated: true
+          format: int64
+        key:
+          type: string
+        type:
+          $ref: "#/components/schemas/DEVICE_TYPE"
+        connected:
+          type: boolean
+    DeviceInfoEvent:
+      type: object
+      description: bus status update sent via WebSocket
+      properties:
+        deviceInfo:
+          $ref: "#/components/schemas/DeviceInfo"
+        eventType:
+          $ref: "#/components/schemas/TYPE1"
+    FUNCTION:
+      type: string
+      enum:
+        - HP0
+        - HP1
+        - HP2
+        - HP0_SH1
+    FeedbackBlockEvent:
+      type: object
+      description: bus status update sent via WebSocket
+      properties:
+        bus:
+          type: integer
+          format: int32
+        address:
+          type: integer
+          format: int32
+        block:
+          type: integer
+          format: int32
+        train:
+          type: integer
+          format: int32
+        direction:
+          type: boolean
+        state:
+          $ref: "#/components/schemas/STATE"
+        cacheKey:
+          type: string
     GridPosition:
       type: object
       properties:
@@ -157,6 +245,14 @@ components:
         - "OFF"
         - MANUAL
         - AUTOMATIC
+    PlayerEvent:
+      type: object
+      description: bus status update sent via WebSocket
+      properties:
+        cacheKey:
+          type: string
+        state:
+          $ref: "#/components/schemas/STATE1"
     ROUTE_RUN_STATE:
       type: string
       enum:
@@ -173,6 +269,24 @@ components:
         - STOPPED
         - SUCCESS
         - ERROR
+    RailVoltageEvent:
+      type: object
+      description: track status update sent via WebSocket
+      properties:
+        cacheKey:
+          type: string
+        state:
+          type: boolean
+    RecordingEvent:
+      type: object
+      description: bus status update sent via WebSocket
+      properties:
+        cacheKey:
+          type: string
+        state:
+          $ref: "#/components/schemas/STATE2"
+        filePath:
+          type: string
     Route:
       type: object
       properties:
@@ -236,6 +350,57 @@ components:
         endDelayInSeconds:
           type: integer
           format: int32
+    RouteStateEvent:
+      type: object
+      description: scenario status update sent via WebSocket
+      properties:
+        scenarioId:
+          type: integer
+          format: int64
+        routeSequenceId:
+          type: integer
+          format: int64
+        state:
+          $ref: "#/components/schemas/STATE3"
+        message:
+          type: string
+        cacheKey:
+          type: string
+    RoutesChangedEvent:
+      type: object
+      description: scenario status update sent via WebSocket
+      properties:
+        itemId:
+          type: integer
+          format: int64
+    STATE:
+      type: string
+      enum:
+        - ENTER
+        - EXIT
+    STATE1:
+      type: string
+      enum:
+        - START
+        - STOP
+    STATE2:
+      type: string
+      enum:
+        - START
+        - STOP
+    STATE3:
+      type: string
+      enum:
+        - WAITING
+        - RUNNING
+        - FINISHED
+        - FAILED
+    STATE4:
+      type: string
+      enum:
+        - UNKNOWN
+        - FREE
+        - USED
     Scenario:
       type: object
       properties:
@@ -260,7 +425,7 @@ components:
         train:
           $ref: "#/components/schemas/Train"
         trainDrivingDirection:
-          $ref: "#/components/schemas/DRIVING_DIRECTION"
+          $ref: "#/components/schemas/DRIVING_DIRECTION1"
         startDrivingLevel:
           type: integer
           format: int32
@@ -278,6 +443,69 @@ components:
           $ref: "#/components/schemas/RUN_STATE"
         mode:
           $ref: "#/components/schemas/MODE"
+    ScenarioDataChangedEvent:
+      type: object
+      description: scenario status update sent via WebSocket
+      properties:
+        itemId:
+          type: integer
+          format: int64
+    ScenarioStateEvent:
+      type: object
+      description: scenario status update sent via WebSocket
+      properties:
+        itemId:
+          type: integer
+          format: int64
+        cacheKey:
+          type: string
+        state:
+          $ref: "#/components/schemas/RUN_STATE"
+        nextScheduleTimeText:
+          type: string
+    SignalFunctionStateEvent:
+      type: object
+      description: track status update sent via WebSocket
+      properties:
+        signalId:
+          type: integer
+          format: int64
+        signalFunction:
+          $ref: "#/components/schemas/FUNCTION"
+        cacheKey:
+          type: string
+    StationBoardChangedEvent:
+      type: object
+      description: station status update sent via WebSocket
+      properties:
+        type:
+          $ref: "#/components/schemas/TYPE2"
+        stationId:
+          type: integer
+          format: int64
+    StationDataChangedEvent:
+      type: object
+      description: station status update sent via WebSocket
+      properties:
+        itemId:
+          type: integer
+          format: int64
+    TYPE:
+      type: string
+      enum:
+        - CONNECTED
+        - DISCONNECTED
+    TYPE1:
+      type: string
+      enum:
+        - CREATE
+        - REMOVE
+        - MODIFY
+    TYPE2:
+      type: string
+      enum:
+        - ARRIVAL
+        - DEPARTURE
     Track:
       type: object
       properties:
@@ -332,6 +560,28 @@ components:
           type: boolean
         displayValue:
           type: string
+    TrackPartBlockEvent:
+      type: object
+      description: track status update sent via WebSocket
+      properties:
+        config:
+          $ref: "#/components/schemas/BusDataConfiguration"
+        state:
+          $ref: "#/components/schemas/STATE4"
+        cacheKey:
+          type: string
+    TrackPartStateEvent:
+      type: object
+      description: track status update sent via WebSocket
+      properties:
+        configuration:
+          $ref: "#/components/schemas/BusDataConfiguration"
+        state:
+          type: boolean
+        "on":
+          type: boolean
+        cacheKey:
+          type: string
     Train:
       type: object
       properties:
@@ -374,6 +624,36 @@ components:
           format: int8
         presentOnTrack:
           type: boolean
+    TrainDataChangedEvent:
+      type: object
+      description: Train status update sent via WebSocket
+      properties:
+        itemId:
+          type: integer
+          format: int64
+    TrainDrivingDirectionEvent:
+      type: object
+      description: Train status update sent via WebSocket
+      properties:
+        itemId:
+          type: integer
+          format: int64
+        cacheKey:
+          type: string
+        direction:
+          $ref: "#/components/schemas/DRIVING_DIRECTION"
+    TrainDrivingLevelEvent:
+      type: object
+      description: Train status update sent via WebSocket
+      properties:
+        itemId:
+          type: integer
+          format: int64
+        cacheKey:
+          type: string
+        speed:
+          type: integer
+          format: int32
     TrainDto:
       type: object
       properties:
@@ -405,6 +685,43 @@ components:
           $ref: "#/components/schemas/BusDataConfiguration"
         active:
           type: boolean
+    TrainFunctionStateEvent:
+      type: object
+      description: Train status update sent via WebSocket
+      properties:
+        itemId:
+          type: integer
+          format: int64
+        function:
+          $ref: "#/components/schemas/TrainFunction"
+        active:
+          type: boolean
+        cacheKey:
+          type: string
+    TrainHornStateEvent:
+      type: object
+      description: Train status update sent via WebSocket
+      properties:
+        itemId:
+          type: integer
+          format: int64
+        cacheKey:
+          type: string
+        state:
+          type: boolean
+    TrainLightStateEvent:
+      type: object
+      description: Train status update sent via WebSocket
+      properties:
+        itemId:
+          type: integer
+          format: int64
+        cacheKey:
+          type: string
+        state:
+          type: boolean
+tags:
+  - name: Websocket DTOs
 paths:
   /api/constructions:
     get:
@@ -508,7 +825,7 @@ paths:
       summary: Get Current
       tags:
         - Current Construction Resource
-  /api/scenario:
+  /api/scenarios:
     get:
       responses:
         "200":
@@ -537,7 +854,7 @@ paths:
       summary: Create
       tags:
         - Scenario Controller
-  /api/scenario/{id}:
+  /api/scenarios/{id}:
     put:
       parameters:
         - name: id
@@ -668,6 +985,15 @@ paths:
       summary: Delete
       tags:
         - Train Resource
+  /docs:
+    get:
+      summary: WebSocket DTO example
+      description: This documents the TrainUpdate DTO used in WebSocket messages.
+      tags:
+        - Websocket DTOs
+      responses:
+        "200":
+          description: OK
 info:
   title: controlcenter API
   version: 0.3-SNAPSHOT

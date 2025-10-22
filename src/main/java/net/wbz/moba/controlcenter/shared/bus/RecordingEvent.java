@@ -1,10 +1,14 @@
 package net.wbz.moba.controlcenter.shared.bus;
 
 import net.wbz.moba.controlcenter.shared.StateEvent;
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
+import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 /**
  * @author Daniel Tuerk
  */
+@Schema(description = "bus status update sent via WebSocket")
+@Tag(ref = "websocket")
 public class RecordingEvent implements StateEvent {
 
     private STATE state;

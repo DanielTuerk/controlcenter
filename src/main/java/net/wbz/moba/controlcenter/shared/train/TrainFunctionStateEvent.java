@@ -1,10 +1,14 @@
 package net.wbz.moba.controlcenter.shared.train;
 
 import java.util.Objects;
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
+import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 /**
  * @author Daniel Tuerk
  */
+@Schema(description = "Train status update sent via WebSocket")
+@Tag(ref = "websocket")
 public class TrainFunctionStateEvent extends TrainStateEvent {
 
     private TrainFunction function;

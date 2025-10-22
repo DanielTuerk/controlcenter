@@ -101,7 +101,7 @@ public class ScenarioManager {
         scenarioRepository.persist(scenarioEntity);
 
         loadScenariosFromDatabase();
-        fireScenariosChanged();
+        fireScenariosChanged(scenarioEntity.id);
 
         return scenarioMapper.toDto(scenarioEntity);
     }
@@ -119,7 +119,7 @@ public class ScenarioManager {
         scenarioStatisticManager.deleteEntriesOfScenario(scenarioId);
             scenarioRepository.deleteById(scenarioId);
         loadScenariosFromDatabase();
-        fireScenariosChanged();
+        fireScenariosChanged(scenarioId);
             return true;
         }
         return false;
@@ -146,7 +146,7 @@ public class ScenarioManager {
 
         scenarioRepository.persist(scenarioEntity);
         loadScenariosFromDatabase();
-        fireScenariosChanged();
+        fireScenariosChanged(scenarioId);
     }
 
     private void loadScenariosFromDatabase() {
@@ -197,8 +197,8 @@ public class ScenarioManager {
 //        scenarioEntity.routeSequences = entities;
     }
 
-    private void fireScenariosChanged() {
-        eventBroadcaster.fireEvent(new ScenarioDataChangedEvent());
+    private void fireScenariosChanged(long scenarioId) {
+        eventBroadcaster.fireEvent(new ScenarioDataChangedEvent(scenarioId));
     }
 
     public Optional<ScenarioEntity> getById(Long id) {

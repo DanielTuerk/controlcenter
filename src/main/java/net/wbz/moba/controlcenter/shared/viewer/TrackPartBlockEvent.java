@@ -3,10 +3,14 @@ package net.wbz.moba.controlcenter.shared.viewer;
 import java.util.Objects;
 import net.wbz.moba.controlcenter.shared.StateEvent;
 import net.wbz.moba.controlcenter.shared.track.model.BusDataConfiguration;
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
+import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 /**
  * Created by Daniel on 18.04.2014.
  */
+@Schema(description = "track status update sent via WebSocket")
+@Tag(ref = "websocket")
 public class TrackPartBlockEvent implements StateEvent {
 
     private BusDataConfiguration config;

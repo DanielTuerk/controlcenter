@@ -1,11 +1,16 @@
 package net.wbz.moba.controlcenter.shared.bus;
 
 import net.wbz.moba.controlcenter.shared.Event;
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
+import org.eclipse.microprofile.openapi.annotations.tags.Tag;
+
 /**
  * Event for the data of the device.
  *
  * @author Daniel Tuerk
  */
+@Schema(description = "bus status update sent via WebSocket")
+@Tag(ref = "websocket")
 public class DeviceInfoEvent implements Event {
 
     private DeviceInfo deviceInfo;

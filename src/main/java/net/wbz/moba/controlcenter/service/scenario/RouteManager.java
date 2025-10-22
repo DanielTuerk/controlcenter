@@ -87,7 +87,7 @@ public class RouteManager {
 //        entity.start=route.getStart()
         routeDao.persist(entity);
         loadRoutesFromDatabase();
-        fireRoutesChanged();
+        fireRoutesChanged(entity.id);
     }
 
     /**
@@ -101,7 +101,7 @@ public class RouteManager {
         if (!routeSequenceDao.routeUsedInScenario(routeId)) {
             routeDao.deleteById(routeId);
             loadRoutesFromDatabase();
-            fireRoutesChanged();
+            fireRoutesChanged(routeId);
         } else {
             LOG.error("can't delete route, still in use of scenario");
         }
@@ -128,10 +128,10 @@ public class RouteManager {
         LOG.debug("tracks finished");
     }
 
-    private void fireRoutesChanged() {
+    private void fireRoutesChanged(Long id) {
         listeners.forEach(RoutesChangedListener::routesChanged);
 
         // TODO split to create, update, delete event; to prevent reload and rebuild all tracks
-        eventBroadcaster.fireEvent(new RoutesChangedEvent());
+        eventBroadcaster.fireEvent(new RoutesChangedEvent(id));
     }
 }

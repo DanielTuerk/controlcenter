@@ -1,12 +1,16 @@
 package net.wbz.moba.controlcenter.shared.bus;
 
 import net.wbz.moba.controlcenter.shared.StateEvent;
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
+import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 /**
  * Event for the connection state of a device.
  *
  * @author Daniel Tuerk
  */
+@Schema(description = "bus status update sent via WebSocket")
+@Tag(ref = "websocket")
 public class DeviceConnectionEvent implements StateEvent {
 
     public enum TYPE {

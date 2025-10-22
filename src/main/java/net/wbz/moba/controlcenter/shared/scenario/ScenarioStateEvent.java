@@ -2,10 +2,14 @@ package net.wbz.moba.controlcenter.shared.scenario;
 
 import net.wbz.moba.controlcenter.shared.AbstractItemStateEvent;
 import net.wbz.moba.controlcenter.shared.scenario.Scenario.RUN_STATE;
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
+import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 /**
  * @author Daniel Tuerk
  */
+@Schema(description = "scenario status update sent via WebSocket")
+@Tag(ref = "websocket")
 public class ScenarioStateEvent extends AbstractItemStateEvent {
 
     public RUN_STATE state;

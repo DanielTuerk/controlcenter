@@ -3,6 +3,8 @@ import {HttpClient} from "@angular/common/http";
 import {Construction} from "./shared.model";
 import {Router} from "@angular/router";
 import {SnackBar} from "../control-center/common/snack-bar.component";
+import {Subscription} from "rxjs";
+import {ConstructionSubscription} from "./websocket/construction.subscription";
 
 export class ConstructionService {
 
@@ -23,10 +25,7 @@ export class ConstructionService {
         this.constructions.set(constructions);
       },
       error: (error) => {
-        console.error(error)
-      },
-      complete: () => {
-        console.log('done')
+        this.snackBar.showError(`can't load constructions: ${error.message}`);
       }
     })
   }
@@ -39,11 +38,12 @@ export class ConstructionService {
           console.error(error)
         },
         complete: () => {
-          this.loadCurrentConstruction();
+          // this.loadCurrentConstruction();
         }
       });
   }
 
+  // TODO should be done over event or cached event
   loadCurrentConstruction() {
     this.httpClient.get<Construction>('/api/current-construction')
     .subscribe(
@@ -54,7 +54,8 @@ export class ConstructionService {
           this.router.navigate(['/cc', {}]);
         },
         error: (error) => {
-          this.snackBar.showError(`can't load current construction: ${error}`);
+          console.log("no current construction found, navigate to welcome page")
+          this.router.navigate(['/welcome', {}]);
         }
       });
   }

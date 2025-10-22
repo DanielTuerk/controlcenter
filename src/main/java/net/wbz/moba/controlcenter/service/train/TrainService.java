@@ -5,9 +5,15 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.NotFoundException;
 import java.util.Set;
+import net.wbz.moba.controlcenter.EventBroadcaster;
 import net.wbz.moba.controlcenter.shared.track.model.BusDataConfiguration;
 import net.wbz.moba.controlcenter.shared.train.Train;
+import net.wbz.moba.controlcenter.shared.train.TrainDrivingDirectionEvent;
+import net.wbz.moba.controlcenter.shared.train.TrainDrivingLevelEvent;
 import net.wbz.moba.controlcenter.shared.train.TrainFunction;
+import net.wbz.moba.controlcenter.shared.train.TrainFunctionStateEvent;
+import net.wbz.moba.controlcenter.shared.train.TrainHornStateEvent;
+import net.wbz.moba.controlcenter.shared.train.TrainLightStateEvent;
 import net.wbz.selectrix4java.device.Device;
 import net.wbz.selectrix4java.device.DeviceAccessException;
 import net.wbz.selectrix4java.device.DeviceConnectionListener;
@@ -15,7 +21,6 @@ import net.wbz.selectrix4java.device.DeviceManager;
 import net.wbz.selectrix4java.train.TrainDataListener;
 import net.wbz.selectrix4java.train.TrainModule;
 import org.jboss.logging.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Implementation of the {@link TrainService}.
@@ -27,11 +32,13 @@ public class TrainService {
 
     private final TrainManager trainManager;
     private final DeviceManager deviceManager;
+    private final EventBroadcaster eventBroadcaster;
 
     @Inject
-    public TrainService(TrainManager trainManager, DeviceManager deviceManager) {
+    public TrainService(TrainManager trainManager, DeviceManager deviceManager, EventBroadcaster eventBroadcaster) {
         this.trainManager = trainManager;
         this.deviceManager = deviceManager;
+        this.eventBroadcaster = eventBroadcaster;
 
         deviceManager.addDeviceConnectionListener(new DeviceConnectionListener() {
             @Override
@@ -60,14 +67,14 @@ public class TrainService {
                 @Override
                 public void drivingLevelChanged(int i) {
                     train.setDrivingLevel(i);
-//                    eventBroadcaster.fireEvent(new TrainDrivingLevelEvent(train.getId(), i));
+                    eventBroadcaster.fireEvent(new TrainDrivingLevelEvent(train.getId(), i));
                 }
 
                 @Override
                 public void drivingDirectionChanged(TrainModule.DRIVING_DIRECTION driving_direction) {
                     train.setForward(driving_direction == TrainModule.DRIVING_DIRECTION.FORWARD);
-//                    eventBroadcaster.fireEvent(new TrainDrivingDirectionEvent(train.getId(),
-//                        TrainDrivingDirectionEvent.DRIVING_DIRECTION.valueOf(driving_direction.name())));
+                    eventBroadcaster.fireEvent(new TrainDrivingDirectionEvent(train.getId(),
+                        TrainDrivingDirectionEvent.DRIVING_DIRECTION.valueOf(driving_direction.name())));
                 }
 
                 @Override
@@ -75,8 +82,8 @@ public class TrainService {
                     for (TrainFunction trainFunction : train.getFunctions()) {
                         if (trainFunction.getConfiguration().getAddress() == functionAddress
                             && trainFunction.getConfiguration().getBit() == functionBit) {
-//                            eventBroadcaster
-//                                .fireEvent(new TrainFunctionStateEvent(train.getId(), trainFunction, active));
+                            eventBroadcaster
+                                .fireEvent(new TrainFunctionStateEvent(train.getId(), trainFunction, active));
                             break;
                         }
                     }
@@ -84,12 +91,12 @@ public class TrainService {
 
                 @Override
                 public void lightStateChanged(boolean state) {
-//                    eventBroadcaster.fireEvent(new TrainLightStateEvent(train.getId(), state));
+                    eventBroadcaster.fireEvent(new TrainLightStateEvent(train.getId(), state));
                 }
 
                 @Override
                 public void hornStateChanged(boolean state) {
-//                    eventBroadcaster.fireEvent(new TrainHornStateEvent(train.getId(), state));
+                    eventBroadcaster.fireEvent(new TrainHornStateEvent(train.getId(), state));
                 }
             });
         }

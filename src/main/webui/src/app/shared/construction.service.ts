@@ -1,10 +1,8 @@
 import {inject, signal} from "@angular/core";
 import {HttpClient} from "@angular/common/http";
-import {Construction} from "./shared.model";
 import {Router} from "@angular/router";
 import {SnackBar} from "../control-center/common/snack-bar.component";
-import {Subscription} from "rxjs";
-import {ConstructionSubscription} from "./websocket/construction.subscription";
+import {Construction} from "../../shared/openapi-gen";
 
 export class ConstructionService {
 
@@ -32,13 +30,9 @@ export class ConstructionService {
 
   selectCurrentConstruction(construction: Construction) {
     this.httpClient.post<String>('/api/current-construction', '' + construction.id)
-    .subscribe(
-      {
+    .subscribe({
         error: (error) => {
-          console.error(error)
-        },
-        complete: () => {
-          // this.loadCurrentConstruction();
+          this.snackBar.showError(`can't set current constructions: ${error.message}`);
         }
       });
   }
@@ -49,14 +43,21 @@ export class ConstructionService {
     .subscribe(
       {
         next: (construction) => {
-          console.log(`current construction: ${construction.name} (${construction.id})`);
-          this._currentConstruction.set(construction);
-          this.router.navigate(['/cc', {}]);
+          this.updateCurrentConstruction(construction);
         },
         error: (error) => {
-          console.log("no current construction found, navigate to welcome page")
+          console.log("no current construction found, navigate to welcome page", error)
           this.router.navigate(['/welcome', {}]);
         }
       });
+  }
+
+  updateCurrentConstruction(construction: Construction) {
+    console.log(`current construction: ${construction.name} (${construction.id})`);
+    this._currentConstruction.set(construction);
+    let ccPath = '/cc';
+    if (!this.router.url.startsWith(ccPath)) {
+      this.router.navigate([ccPath, {}]);
+    }
   }
 }

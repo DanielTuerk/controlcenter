@@ -114,6 +114,8 @@ components:
           type: string
     CurrentConstructionChangeEvent:
       type: object
+      required:
+        - construction
       description: Train status update sent via WebSocket
       properties:
         cacheKey:

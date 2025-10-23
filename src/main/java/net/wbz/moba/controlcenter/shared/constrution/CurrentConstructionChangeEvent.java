@@ -9,22 +9,7 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
  */
 @Schema(description = "Train status update sent via WebSocket")
 @Tag(ref = "websocket")
-public class CurrentConstructionChangeEvent implements StateEvent {
+public record CurrentConstructionChangeEvent(
+    @Schema(required = true) Construction construction) implements StateEvent {
 
-    private Construction construction;
-
-    public CurrentConstructionChangeEvent() {
-    }
-
-    public CurrentConstructionChangeEvent(Construction construction) {
-        this.construction = construction;
-    }
-
-    public Construction getConstruction() {
-        return construction;
-    }
-
-    public void setConstruction(Construction construction) {
-        this.construction = construction;
-    }
 }

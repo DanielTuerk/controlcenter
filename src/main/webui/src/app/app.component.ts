@@ -20,8 +20,8 @@ export class AppComponent implements OnInit {
     this.wsService.connect();
 
     this.constructionSubscription.currentConstruction().subscribe(event => {
-      // TODO should be done over event or cached event
-      this.constructionService.loadCurrentConstruction();
+      // TODO should be done over cached event
+      this.constructionService.updateCurrentConstruction(event.construction);
     });
 
   }

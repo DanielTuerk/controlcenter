@@ -14,6 +14,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import net.wbz.moba.controlcenter.service.track.TrackManager;
+import net.wbz.moba.controlcenter.service.track.TrackProvider;
 import net.wbz.moba.controlcenter.shared.scenario.Route;
 import net.wbz.moba.controlcenter.shared.scenario.Track;
 import net.wbz.moba.controlcenter.shared.scenario.TrackNotFoundException;
@@ -53,6 +54,8 @@ public class TrackBuilder {
 
     @Inject
     TrackManager trackManager;
+    @Inject
+    TrackProvider trackProvider;
 
     private static Optional<TrackBlock> getValidTrackBlock(TrackBlock trackBlock) {
         if (trackBlock != null && trackBlock.getBlockFunction().isValid()) {
@@ -98,7 +101,7 @@ public class TrackBuilder {
         GridPosition startPosition = null;
         GridPosition endPosition = null;
 
-        final Collection<AbstractTrackPart> loadedTrack = trackManager.getTrack();
+        final Collection<AbstractTrackPart> loadedTrack = trackProvider.getTrack();
 
         // prepare start, end and all grid positions of the construction
         for (AbstractTrackPart trackPart : loadedTrack) {

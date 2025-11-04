@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {Subject} from 'rxjs';
+import {delay, of, Subject} from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -31,8 +31,10 @@ export class WebSocketService {
 
     this.socket.onclose = () => {
       console.log('WebSocket disconnected');
-      console.log('try reconnecting...');
-      this.connect()
+      of(null).pipe(delay(5000)).subscribe(() => {
+        console.log('try reconnecting...');
+        this.connect()
+      });
     };
 
     this.socket.onerror = (error) => {

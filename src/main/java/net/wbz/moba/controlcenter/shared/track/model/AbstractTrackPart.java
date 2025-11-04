@@ -9,6 +9,7 @@ import java.util.Set;
  */
 public abstract class AbstractTrackPart extends AbstractDto {
 
+    private final String trackPartType = this.getClass().getSimpleName();
     private GridPosition gridPosition;
 
     public GridPosition getGridPosition() {
@@ -43,4 +44,7 @@ public abstract class AbstractTrackPart extends AbstractDto {
         return 0;
     }
 
+    public String getTrackPartType() {
+        return trackPartType;
+    }
 }

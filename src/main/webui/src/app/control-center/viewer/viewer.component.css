@@ -1,0 +1,21 @@
+.viewer-layout {
+  height: 100%;
+
+  display: grid;
+  grid-template-columns: max-content;
+  grid-template-rows: 1fr auto;
+  grid-template-areas:
+  "viewer-track-content content"
+  "viewer-track-controls controls";
+}
+
+.viewer-track-controls {
+  grid-area: controls;
+
+  background-color: red;
+  height: 60px
+}
+
+.viewer-track-content {
+  grid-area: content;
+}

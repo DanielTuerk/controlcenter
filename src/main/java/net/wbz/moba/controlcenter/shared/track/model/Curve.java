@@ -3,10 +3,14 @@ package net.wbz.moba.controlcenter.shared.track.model;
 import com.google.common.collect.Lists;
 
 import java.util.Collection;
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
+import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 /**
  * @author Daniel Tuerk
  */
+@Schema(description = "type for a track part")
+@Tag(ref = "track")
 public class Curve extends AbstractTrackPart {
     private DIRECTION direction;
 

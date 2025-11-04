@@ -11,6 +11,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
+import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 /**
  * Trackpart which is a {@link Straight} in a custom blockLength to display a {@link TrackBlock} with information about the
@@ -18,6 +20,8 @@ import java.util.stream.Stream;
  *
  * @author Daniel Tuerk
  */
+@Schema(description = "type for a track part")
+@Tag(ref = "track")
 public class BlockStraight extends Straight implements MultipleGridPosition {
 
     private int blockLength;

@@ -19,7 +19,6 @@ export class ConstructionService {
     this.httpClient.get<Construction[]>('/api/constructions')
     .subscribe({
       next: (constructions) => {
-        console.log(constructions);
         this.constructions.set(constructions);
       },
       error: (error) => {

@@ -1,0 +1,10 @@
+.boundary {
+  background-size: 26px 26px;
+  background-image: linear-gradient(to right, grey 1px, transparent 1px), linear-gradient(to bottom, grey 1px, transparent 1px);
+  background-attachment: local;
+}
+.full-svg {
+  width: 100%;
+  height: 100%;
+  background-color: darkslategray;
+}

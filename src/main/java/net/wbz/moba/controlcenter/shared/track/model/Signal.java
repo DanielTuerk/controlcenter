@@ -2,14 +2,17 @@ package net.wbz.moba.controlcenter.shared.track.model;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
+import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 /**
  * @author Daniel Tuerk
  */
+@Schema(description = "type for a track part")
+@Tag(ref = "track")
 public class Signal extends Straight implements HasToggleFunction {
 
     private TYPE type;
@@ -237,9 +240,10 @@ public class Signal extends Straight implements HasToggleFunction {
      * Types of signal with corresponding mapping of the lights.
      */
     public enum TYPE {
-        BLOCK(new LIGHT[]{LIGHT.RED1, LIGHT.GREEN1}), ENTER(new LIGHT[]{LIGHT.RED1, LIGHT.GREEN1, LIGHT.YELLOW1}), EXIT(
-            new LIGHT[]{LIGHT.RED1, LIGHT.RED2, LIGHT.GREEN1, LIGHT.YELLOW1, LIGHT.WHITE}), BEFORE(
-            new LIGHT[]{LIGHT.GREEN1, LIGHT.GREEN2, LIGHT.YELLOW1, LIGHT.YELLOW2});
+        BLOCK(new LIGHT[]{LIGHT.RED1, LIGHT.GREEN1}),
+        ENTER(new LIGHT[]{LIGHT.RED1, LIGHT.GREEN1, LIGHT.YELLOW1}),
+        EXIT(new LIGHT[]{LIGHT.RED1, LIGHT.RED2, LIGHT.GREEN1, LIGHT.YELLOW1, LIGHT.WHITE}),
+        BEFORE(new LIGHT[]{LIGHT.GREEN1, LIGHT.GREEN2, LIGHT.YELLOW1, LIGHT.YELLOW2});
 
         private LIGHT[] lights;
 

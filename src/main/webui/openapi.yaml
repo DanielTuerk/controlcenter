@@ -2,7 +2,7 @@
 openapi: 3.1.0
 components:
   schemas:
-    BlockStraight:
+    AbstractTrackPart:
       type: object
       properties:
         tempId:
@@ -19,6 +19,37 @@ components:
           type: integer
           deprecated: true
           format: int64
+        trackPartType:
+          type: string
+        gridPosition:
+          $ref: "#/components/schemas/GridPosition"
+        lastGridPositions:
+          type: array
+          items:
+            $ref: "#/components/schemas/GridPosition"
+        rotationAngle:
+          type: number
+          format: double
+    BlockStraight:
+      type: object
+      description: type for a track part
+      properties:
+        tempId:
+          type: integer
+          deprecated: true
+          format: int64
+        id:
+          type: integer
+          format: int64
+        new:
+          type: boolean
+          deprecated: true
+        internalId:
+          type: integer
+          deprecated: true
+          format: int64
+        trackPartType:
+          type: string
         gridPosition:
           $ref: "#/components/schemas/GridPosition"
         direction:
@@ -122,6 +153,41 @@ components:
           type: string
         construction:
           $ref: "#/components/schemas/Construction"
+    Curve:
+      type: object
+      description: type for a track part
+      properties:
+        tempId:
+          type: integer
+          deprecated: true
+          format: int64
+        id:
+          type: integer
+          format: int64
+        new:
+          type: boolean
+          deprecated: true
+        internalId:
+          type: integer
+          deprecated: true
+          format: int64
+        trackPartType:
+          type: string
+        gridPosition:
+          $ref: "#/components/schemas/GridPosition"
+        direction:
+          $ref: "#/components/schemas/DIRECTION1"
+        lastGridPositions:
+          type: array
+          items:
+            $ref: "#/components/schemas/GridPosition"
+        nextGridPosition:
+          $ref: "#/components/schemas/GridPosition"
+        lastGridPosition:
+          $ref: "#/components/schemas/GridPosition"
+        rotationAngle:
+          type: number
+          format: double
     DEVICE_TYPE:
       type: string
       enum:
@@ -132,6 +198,18 @@ components:
       enum:
         - HORIZONTAL
         - VERTICAL
+    DIRECTION1:
+      type: string
+      enum:
+        - BOTTOM_RIGHT
+        - BOTTOM_LEFT
+        - TOP_LEFT
+        - TOP_RIGHT
+    DIRECTION2:
+      type: string
+      enum:
+        - RIGHT
+        - LEFT
     DRIVING_DIRECTION:
       type: string
       enum:
@@ -189,6 +267,29 @@ components:
           $ref: "#/components/schemas/DeviceInfo"
         eventType:
           $ref: "#/components/schemas/TYPE1"
+    EventConfiguration:
+      type: object
+      properties:
+        tempId:
+          type: integer
+          deprecated: true
+          format: int64
+        id:
+          type: integer
+          format: int64
+        new:
+          type: boolean
+          deprecated: true
+        internalId:
+          type: integer
+          deprecated: true
+          format: int64
+        stateOnConfig:
+          $ref: "#/components/schemas/BusDataConfiguration"
+        stateOffConfig:
+          $ref: "#/components/schemas/BusDataConfiguration"
+        active:
+          type: boolean
     FUNCTION:
       type: string
       enum:
@@ -247,6 +348,13 @@ components:
         - "OFF"
         - MANUAL
         - AUTOMATIC
+    PRESENTATION:
+      type: string
+      enum:
+        - LEFT_TO_RIGHT
+        - RIGHT_TO_LEFT
+        - BOTTOM_TO_TOP
+        - TOP_TO_BOTTOM
     PlayerEvent:
       type: object
       description: bus status update sent via WebSocket
@@ -465,6 +573,71 @@ components:
           $ref: "#/components/schemas/RUN_STATE"
         nextScheduleTimeText:
           type: string
+    Signal:
+      type: object
+      description: type for a track part
+      properties:
+        tempId:
+          type: integer
+          deprecated: true
+          format: int64
+        id:
+          type: integer
+          format: int64
+        new:
+          type: boolean
+          deprecated: true
+        internalId:
+          type: integer
+          deprecated: true
+          format: int64
+        trackPartType:
+          type: string
+        gridPosition:
+          $ref: "#/components/schemas/GridPosition"
+        direction:
+          $ref: "#/components/schemas/DIRECTION"
+        lastGridPositions:
+          type: array
+          items:
+            $ref: "#/components/schemas/GridPosition"
+        rotationAngle:
+          type: number
+          format: double
+        vertical:
+          type: boolean
+        type:
+          $ref: "#/components/schemas/TYPE3"
+        signalConfigRed1:
+          $ref: "#/components/schemas/BusDataConfiguration"
+        signalConfigRed2:
+          $ref: "#/components/schemas/BusDataConfiguration"
+        signalConfigGreen1:
+          $ref: "#/components/schemas/BusDataConfiguration"
+        signalConfigGreen2:
+          $ref: "#/components/schemas/BusDataConfiguration"
+        signalConfigYellow1:
+          $ref: "#/components/schemas/BusDataConfiguration"
+        signalConfigYellow2:
+          $ref: "#/components/schemas/BusDataConfiguration"
+        signalConfigWhite:
+          $ref: "#/components/schemas/BusDataConfiguration"
+        enteringBlock:
+          $ref: "#/components/schemas/TrackBlock"
+        breakingBlock:
+          $ref: "#/components/schemas/TrackBlock"
+        stopBlock:
+          $ref: "#/components/schemas/TrackBlock"
+        monitoringBlock:
+          $ref: "#/components/schemas/TrackBlock"
+        toggleFunction:
+          $ref: "#/components/schemas/BusDataConfiguration"
+        eventConfiguration:
+          $ref: "#/components/schemas/EventConfiguration"
+        signalConfigurations:
+          type: array
+          items:
+            $ref: "#/components/schemas/BusDataConfiguration"
     SignalFunctionStateEvent:
       type: object
       description: track status update sent via WebSocket
@@ -492,6 +665,39 @@ components:
         itemId:
           type: integer
           format: int64
+    Straight:
+      type: object
+      description: type for a track part
+      properties:
+        tempId:
+          type: integer
+          deprecated: true
+          format: int64
+        id:
+          type: integer
+          format: int64
+        new:
+          type: boolean
+          deprecated: true
+        internalId:
+          type: integer
+          deprecated: true
+          format: int64
+        trackPartType:
+          type: string
+        gridPosition:
+          $ref: "#/components/schemas/GridPosition"
+        direction:
+          $ref: "#/components/schemas/DIRECTION"
+        lastGridPositions:
+          type: array
+          items:
+            $ref: "#/components/schemas/GridPosition"
+        rotationAngle:
+          type: number
+          format: double
+        vertical:
+          type: boolean
     TYPE:
       type: string
       enum:
@@ -508,6 +714,13 @@ components:
       enum:
         - ARRIVAL
         - DEPARTURE
+    TYPE3:
+      type: string
+      enum:
+        - BLOCK
+        - ENTER
+        - EXIT
+        - BEFORE
     Track:
       type: object
       properties:
@@ -722,6 +935,90 @@ components:
           type: string
         state:
           type: boolean
+    Turnout:
+      type: object
+      description: type for a track part
+      properties:
+        tempId:
+          type: integer
+          deprecated: true
+          format: int64
+        id:
+          type: integer
+          format: int64
+        new:
+          type: boolean
+          deprecated: true
+        internalId:
+          type: integer
+          deprecated: true
+          format: int64
+        trackPartType:
+          type: string
+        gridPosition:
+          $ref: "#/components/schemas/GridPosition"
+        currentDirection:
+          $ref: "#/components/schemas/DIRECTION2"
+        currentPresentation:
+          $ref: "#/components/schemas/PRESENTATION"
+        toggleFunction:
+          $ref: "#/components/schemas/BusDataConfiguration"
+        eventConfiguration:
+          $ref: "#/components/schemas/EventConfiguration"
+        nextGridPositionForStateBranch:
+          $ref: "#/components/schemas/GridPosition"
+        nextGridPositionForStateBranchToLeft:
+          $ref: "#/components/schemas/GridPosition"
+        nextGridPositionForStateBranchToRight:
+          $ref: "#/components/schemas/GridPosition"
+        nextGridPositionForStateStraight:
+          $ref: "#/components/schemas/GridPosition"
+        lastGridPositions:
+          type: array
+          items:
+            $ref: "#/components/schemas/GridPosition"
+        lastGridPosition:
+          $ref: "#/components/schemas/GridPosition"
+        rotationAngle:
+          type: number
+          format: double
+    Uncoupler:
+      type: object
+      description: type for a track part
+      properties:
+        tempId:
+          type: integer
+          deprecated: true
+          format: int64
+        id:
+          type: integer
+          format: int64
+        new:
+          type: boolean
+          deprecated: true
+        internalId:
+          type: integer
+          deprecated: true
+          format: int64
+        trackPartType:
+          type: string
+        gridPosition:
+          $ref: "#/components/schemas/GridPosition"
+        direction:
+          $ref: "#/components/schemas/DIRECTION"
+        lastGridPositions:
+          type: array
+          items:
+            $ref: "#/components/schemas/GridPosition"
+        rotationAngle:
+          type: number
+          format: double
+        vertical:
+          type: boolean
+        toggleFunction:
+          $ref: "#/components/schemas/BusDataConfiguration"
+        eventConfiguration:
+          $ref: "#/components/schemas/EventConfiguration"
 tags:
   - name: Websocket DTOs
 paths:
@@ -907,6 +1204,20 @@ paths:
       summary: Delete
       tags:
         - Scenario Controller
+  /api/track:
+    get:
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/AbstractTrackPart"
+      summary: List All
+      tags:
+        - Track Resource
   /api/trains:
     get:
       responses:

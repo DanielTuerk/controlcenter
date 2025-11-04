@@ -1,38 +1,44 @@
 package net.wbz.moba.controlcenter.service.track;
 
+import com.google.common.collect.Maps;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
-import net.wbz.moba.controlcenter.service.constrution.ConstructionChangeListener;
-import net.wbz.moba.controlcenter.shared.constrution.Construction;
+import net.wbz.moba.controlcenter.BusAddressIdentifier;
+import net.wbz.moba.controlcenter.EventBroadcaster;
 import net.wbz.moba.controlcenter.shared.track.model.AbstractTrackPart;
 import net.wbz.moba.controlcenter.shared.track.model.BlockStraight;
 import net.wbz.moba.controlcenter.shared.track.model.BusDataConfiguration;
 import net.wbz.moba.controlcenter.shared.track.model.HasToggleFunction;
 import net.wbz.moba.controlcenter.shared.track.model.TrackBlock;
+import net.wbz.selectrix4java.bus.BusAddress;
 import net.wbz.selectrix4java.bus.BusListener;
+import net.wbz.selectrix4java.device.Device;
 import net.wbz.selectrix4java.device.DeviceAccessException;
+import net.wbz.selectrix4java.device.DeviceConnectionListener;
+import net.wbz.selectrix4java.device.DeviceManager;
 import org.jboss.logging.Logger;
 
 /**
  * @author Daniel Tuerk
  */
 @ApplicationScoped
-public class TrackManager implements ConstructionChangeListener {
+public class TrackManager {
 
     private static final Logger log = Logger.getLogger(TrackManager.class);
 
-//    /**
-//     * Map for all {@link BusListener}s of a single {@link BusAddressIdentifier} to avoid duplicated listeners to
-//     * register and to call from {@link net.wbz.selectrix4java.data.BusDataChannel}.
-//     */
-//    private final Map<BusAddressIdentifier, List<BusListener>> busAddressListenersOfTheCurrentTrack = Maps
-//        .newConcurrentMap();
-//
-//    private final DeviceManager deviceManager;
-//    private final EventBroadcaster eventBroadcaster;
+    /**
+     * Map for all {@link BusListener}s of a single {@link BusAddressIdentifier} to avoid duplicated listeners to
+     * register and to call from {@link net.wbz.selectrix4java.data.BusDataChannel}.
+     */
+    private final Map<BusAddressIdentifier, List<BusListener>> busAddressListenersOfTheCurrentTrack = Maps.newConcurrentMap();
+
+    private final DeviceManager deviceManager;
+    private final EventBroadcaster eventBroadcaster;
 //    private final TrackPartDao trackPartDao;
 //    private final ConstructionDao constructionDao;
 //    private final GridPositionDao gridPositionDao;
@@ -44,10 +50,7 @@ public class TrackManager implements ConstructionChangeListener {
 //    private final SignalBlockRegistry signalBlockRegistry;
 //    private final BlockStraightDao blockStraightDao;
 //
-//    /**
-//     * Cached and transformed entities for track of current {@link Construction}.
-//     */
-//    private final Collection<AbstractTrackPart> cachedEntities = new ArrayList<>();
+
 //
 //    /**
 //     * Cached {@link TrackBlock}s of current {@link Construction}.
@@ -58,14 +61,10 @@ public class TrackManager implements ConstructionChangeListener {
 //     */
 //    private Construction currentConstruction;
 
-//    @Inject
-//    public TrackManager(DeviceManager deviceManager, EventBroadcaster eventBroadcaster, TrackPartDao trackPartDao,
-//        ConstructionDao constructionDao, GridPositionDao gridPositionDao, TrackPartDataMapper trackPartDataMapper,
-//        TrackBlockDao trackBlockDao, TrackBlockRegistry trackBlockRegistry,
-//        SignalBlockRegistry signalBlockRegistry,
-//        BlockStraightDao blockStraightDao) {
-//        this.eventBroadcaster = eventBroadcaster;
-//        this.deviceManager = deviceManager;
+    @Inject
+    public TrackManager(DeviceManager deviceManager, EventBroadcaster eventBroadcaster) {
+        this.deviceManager = deviceManager;
+        this.eventBroadcaster = eventBroadcaster;
 //        this.trackPartDao = trackPartDao;
 //        this.constructionDao = constructionDao;
 //        this.gridPositionDao = gridPositionDao;
@@ -75,22 +74,22 @@ public class TrackManager implements ConstructionChangeListener {
 //        this.signalBlockRegistry = signalBlockRegistry;
 //        this.blockStraightDao = blockStraightDao;
 //
-//        deviceManager.addDeviceConnectionListener(new DeviceConnectionListener() {
-//            @Override
-//            public void connected(Device device) {
-//                registerConsumersByConnectedDeviceForTrackParts();
-//            }
-//
-//            @Override
-//            public void disconnected(Device device) {
-//                /*
-//                 * Nothing to do, the device reset itself.
-//                 * Local listeners can be reused for next connected device.
-//                 */
-//            }
-//        });
-//    }
-//
+        deviceManager.addDeviceConnectionListener(new DeviceConnectionListener() {
+            @Override
+            public void connected(Device device) {
+                registerConsumersByConnectedDeviceForTrackParts();
+            }
+
+            @Override
+            public void disconnected(Device device) {
+                /*
+                 * Nothing to do, the device reset itself.
+                 * Local listeners can be reused for next connected device.
+                 */
+            }
+        });
+    }
+
 //    private void addBusAddressListeners(Device device) {
 //        try {
 //            for (Map.Entry<BusAddressIdentifier, List<BusListener>> entry : busAddressListenersOfTheCurrentTrack
@@ -134,15 +133,18 @@ public class TrackManager implements ConstructionChangeListener {
 
     @Transactional
     void saveTrack(Collection<AbstractTrackPart> trackParts) {
-        performSave(trackParts);
-
-        // reload track and register for connected device
-        loadData();
+        // TODO
+        throw new RuntimeException("Not implemented yet");
+//        performSave(trackParts);
+//
+//        // reload track and register for connected device
+//        loadData();
     }
 
     private void performSave(Collection<AbstractTrackPart> trackParts) {
         // TODO
         throw new RuntimeException("Not implemented yet");
+//        throw new RuntimeException("Not implemented yet");
 //        ConstructionEntity constructionEntity = getCurrentConstruction();
 //
 //        // load all existing to detect deleted track parts
@@ -216,18 +218,15 @@ public class TrackManager implements ConstructionChangeListener {
 //        loadData();
     }
 
-    public Collection<AbstractTrackPart> getTrack() {
-        // TODO
-        throw new RuntimeException("Not implemented yet");
-//        return cachedEntities;
-    }
 
     public Set<BlockStraight> getBlockStraightsFromTrackBlock(TrackBlock trackBlock) {
-       return  getTrack().stream()
-           .filter(x->x instanceof BlockStraight)
-           .map( BlockStraight.class::cast )
-           .filter(x-> x.getAllTrackBlocks().contains(trackBlock))
-           .collect(Collectors.toSet());
+        // TODO
+        throw new RuntimeException("Not implemented yet");
+//       return  getTrack().stream()
+//           .filter(x->x instanceof BlockStraight)
+//           .map( BlockStraight.class::cast )
+//           .filter(x-> x.getAllTrackBlocks().contains(trackBlock))
+//           .collect(Collectors.toSet());
     }
 
     Collection<TrackBlock> loadTrackBlocks() {
@@ -236,54 +235,17 @@ public class TrackManager implements ConstructionChangeListener {
 //        return cachedTrackBlocks;
     }
 
-    private void loadData() {
-        loadTrackBlocksData();
-        loadTrackPartData();
-    }
 
-    private void loadTrackPartData() {
-        // TODO
-        throw new RuntimeException("Not implemented yet");
-//        cachedEntities.clear();
-//
-//        log.info("load track parts from db");
-//        if (currentConstruction != null) {
-//            List<AbstractTrackPartEntity> result = trackPartDao.findByConstructionId(currentConstruction.getId());
-//            if (!result.isEmpty()) {
-//                log.info("return track parts");
-//                cachedEntities.addAll(trackPartDataMapper.transformTrackPartEntities(result));
-//
-//                if (deviceManager.isConnected()) {
-//                    registerConsumersByConnectedDeviceForTrackParts();
-//                }
-//
-//            } else {
-//                log.warn("the current construction is empty");
-//            }
-//        }
-    }
+    /**
+     * Register the {@link net.wbz.selectrix4java.bus.consumption.BusAddressDataConsumer}s for each address of the given
+     * {@link net.wbz.moba.controlcenter.persist.entity.track.AbstractTrackPartEntity}s.
+     * TODO auto register for trackpart of current track
+     * TODO re-register by changed
+     * trackparts (event by track editor service?, or better by manager/trackPartDao)
+     */
+    private void registerConsumersByConnectedDeviceForTrackParts() {
+//  TODO migrate
 
-    private void loadTrackBlocksData() {
-        // TODO
-        throw new RuntimeException("Not implemented yet");
-//        cachedTrackBlocks.clear();
-//        if (currentConstruction != null) {
-//            List<TrackBlockEntity> trackBlocks = trackBlockDao.findByConstructionId(currentConstruction.getId());
-//            if (!trackBlocks.isEmpty()) {
-//                cachedTrackBlocks.addAll(trackBlockDataMapper.transformSource(trackBlocks));
-//            }
-//        }
-    }
-
-//    /**
-//     * Register the {@link net.wbz.selectrix4java.bus.consumption.BusAddressDataConsumer}s for each address of the given
-//     * {@link AbstractTrackPartEntity}s.
-//     * TODO auto register for trackpart of current track
-//     * TODO re-register by changed
-//     * trackparts (event by track editor service?, or better by manager/trackPartDao)
-//     */
-//    private void registerConsumersByConnectedDeviceForTrackParts() {
-//
 //        // unregister existing to create new ones from given track parts
 //        Device connectedDevice = null;
 //        try {
@@ -324,7 +286,7 @@ public class TrackManager implements ConstructionChangeListener {
 //        if (connectedDevice != null) {
 //            addBusAddressListeners(connectedDevice);
 //        }
-//    }
+    }
 
 //    private void registerSignalFunction(Signal signal) {
 //        Map<BusAddressIdentifier, List<BusAddressBitListener>> busAddressListeners = new SignalFunctionReceiver(signal,
@@ -409,26 +371,17 @@ public class TrackManager implements ConstructionChangeListener {
 
     private void switchToggleFunction(HasToggleFunction toggleFunctionEntity, boolean stateOn) throws
         DeviceAccessException {
-        // TODO
-        throw new RuntimeException("Not implemented yet");
-//        BusDataConfiguration trackPartConfig = toggleFunctionEntity.getToggleFunction();
-//        if (trackPartConfig != null && trackPartConfig.isValid()) {
-//            BusAddress busAddress = deviceManager.getConnectedDevice()
-//                .getBusAddress(trackPartConfig.getBus(), trackPartConfig.getAddress().byteValue());
-//            if (stateOn) {
-//                busAddress.setBit(trackPartConfig.getBit());
-//            } else {
-//                busAddress.clearBit(trackPartConfig.getBit());
-//            }
-//            busAddress.send();
-//        }
+        BusDataConfiguration trackPartConfig = toggleFunctionEntity.getToggleFunction();
+        if (trackPartConfig != null && trackPartConfig.isValid()) {
+            BusAddress busAddress = deviceManager.getConnectedDevice()
+                .getBusAddress(trackPartConfig.getBus(), trackPartConfig.getAddress().byteValue());
+            if (stateOn) {
+                busAddress.setBit(trackPartConfig.getBit());
+            } else {
+                busAddress.clearBit(trackPartConfig.getBit());
+            }
+            busAddress.send();
+        }
     }
 
-    @Override
-    public void currentConstructionChanged(Construction construction) {
-        // TODO
-        throw new RuntimeException("Not implemented yet");
-//        currentConstruction = construction;
-//        loadData();
-    }
 }

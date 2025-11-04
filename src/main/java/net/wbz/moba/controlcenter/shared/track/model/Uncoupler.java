@@ -1,10 +1,14 @@
 package net.wbz.moba.controlcenter.shared.track.model;
 
 
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
+import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 /**
  * @author Daniel Tuerk
  */
+@Schema(description = "type for a track part")
+@Tag(ref = "track")
 public class Uncoupler extends Straight implements HasToggleFunction {
     private BusDataConfiguration toggleFunction;
 

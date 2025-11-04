@@ -4,10 +4,14 @@ import com.google.common.collect.Lists;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
+import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 /**
  * @author Daniel Tuerk
  */
+@Schema(description = "type for a track part")
+@Tag(ref = "track")
 public class Turnout extends AbstractTrackPart implements HasToggleFunction {
 
     private Turnout.DIRECTION currentDirection;

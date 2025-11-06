@@ -1,0 +1,30 @@
+<mat-expansion-panel *ngFor="let train of trains()">
+  <mat-expansion-panel-header>
+    <mat-panel-title>{{train.name}} <br> | {{train.forward ? 'Forward' : 'Backward' }} | {{train.drivingLevel}}</mat-panel-title>
+  </mat-expansion-panel-header>
+    <mat-button-toggle-group name="fontStyle" aria-label="Font Style" hideSingleSelectionIndicator="true">
+      <mat-button-toggle value="backward">
+        <mat-icon>arrow_backward</mat-icon>
+      </mat-button-toggle>
+      <mat-button-toggle value="forward">
+        <mat-icon>arrow_forward</mat-icon>
+      </mat-button-toggle>
+    </mat-button-toggle-group>
+    <button mat-mini-fab>
+      <mat-icon>stop</mat-icon>
+    </button>
+    <mat-slider min="0" max="12" step="1" showTickMarks discrete>
+      <input matSliderThumb>
+    </mat-slider>
+  <mat-divider></mat-divider>
+  <button mat-mini-fab>
+    <mat-icon>lightbulb</mat-icon>
+  </button>
+  <button mat-mini-fab>
+    <mat-icon>volume_up</mat-icon>
+  </button>
+  <mat-divider></mat-divider>
+  <button mat-mini-fab>
+    <mat-icon>edit</mat-icon>
+  </button>
+</mat-expansion-panel>

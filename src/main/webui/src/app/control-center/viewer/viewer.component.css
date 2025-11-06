@@ -9,13 +9,15 @@
   "viewer-track-controls controls";
 }
 
+.viewer-track-content {
+  grid-area: content;
+  display: grid;
+  grid-template-columns: 1fr auto;
+}
+
 .viewer-track-controls {
   grid-area: controls;
 
   background-color: red;
-  height: 60px
-}
-
-.viewer-track-content {
-  grid-area: content;
+  height: 60px;
 }

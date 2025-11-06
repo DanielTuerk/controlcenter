@@ -1,0 +1,8 @@
+<mat-expansion-panel *ngFor="let scenario of scenarios()">
+  <mat-expansion-panel-header>
+    <mat-panel-title>{{scenario.name}} <br> {{scenario.runState}} | {{nextExecutionTime(scenario)}}</mat-panel-title>
+  </mat-expansion-panel-header>
+  <ul>
+    <li *ngFor="let routeSequence of scenario.routeSequences">{{routeSequence.route?.name}}</li>
+  </ul>
+</mat-expansion-panel>

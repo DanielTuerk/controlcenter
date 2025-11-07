@@ -1,10 +1,8 @@
 import {
-  AfterViewInit,
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
   ElementRef,
-  HostListener,
   inject,
   OnInit,
   ViewChild
@@ -26,8 +24,7 @@ import {AbstractTrackPart} from "../../../../shared/openapi-gen";
   imports: [],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class TrackViewerSvgComponent implements OnInit, AfterViewInit {
-  @ViewChild('wrap', {static: true}) wrap!: ElementRef<HTMLElement>;
+export class TrackViewerSvgComponent implements OnInit {
   @ViewChild('svgRoot', {static: true}) svg!: ElementRef<SVGSVGElement>;
 
   private trackComponentBuilder = inject(TrackComponentBuilder);
@@ -37,9 +34,8 @@ export class TrackViewerSvgComponent implements OnInit, AfterViewInit {
   private httpClient = inject(HttpClient);
   private trackSubscription = inject(TrackSubscription);
 
-  // TODO get from parent viewport the initial values
-  svgWidth = 1000;
-  svgHeight = 400;
+  svgWidth = 0;
+  svgHeight = 0;
   tileSize = AbstractTrackComponentBuilder.TILE;
 
   ngOnInit() {
@@ -61,37 +57,38 @@ export class TrackViewerSvgComponent implements OnInit, AfterViewInit {
   private loadTrack(elements: AbstractTrackPart[]) {
     elements
     .map(e => this.trackComponentBuilder.build(e))
-    .forEach(e => this.addTrackPart(e));
+    .forEach(e => {
+      this.addTrackPart(e)
+    });
+
+    this.updateTrackDimension(elements);
 
     this.cdr.markForCheck();
+  }
+
+  private updateTrackDimension(elements: AbstractTrackPart[]) {
+    const {maxX, maxY} = elements.reduce(
+      (acc, el) => {
+        const pos = el.gridPosition;
+        if (pos?.x != null && pos?.y != null) {
+          acc.maxX = Math.max(acc.maxX, pos.x);
+          acc.maxY = Math.max(acc.maxY, pos.y);
+        }
+        return acc;
+      },
+      {maxX: 0, maxY: 0}
+    );
+
+    this.svgWidth = (maxX + 2) * this.tileSize;
+    this.svgHeight = (maxY + 2) * this.tileSize;
   }
 
   private addTrackPart(e: Element) {
     this.svg.nativeElement.appendChild(e);
   }
 
-  ngAfterViewInit() {
-    // get initial size
-    this.updateSizeFromWrap();
-  }
-
-  @HostListener('window:resize')
-  onResize() {
-    this.updateSizeFromWrap();
-  }
-
   generatePath(size: number): string {
     return `M ${size} 0 L ${size} ${size} L 0 ${size}`;
-  }
-
-  private updateSizeFromWrap() {
-    const el = this.wrap?.nativeElement;
-    if (el) {
-      this.svgWidth = el.clientWidth;
-      this.svgHeight = el.clientHeight;
-      console.log("size: " + el.clientWidth + "; " + el.clientHeight);
-      this.cdr.markForCheck(); // required for OnPush to let the template update
-    }
   }
 
 }

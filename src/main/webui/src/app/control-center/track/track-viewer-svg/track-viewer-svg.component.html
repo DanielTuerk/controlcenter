@@ -1,6 +1,4 @@
-  <svg #svgRoot class="full-svg">
-  <!--  <svg #svgRoot [attr.width]="svgWidth" [attr.height]="svgHeight" style="background-color: darkslategray">-->
-
+<svg #svgRoot class="full-svg" [style.min-width.px]="svgWidth" [style.min-height.px]="svgHeight">
   <!-- background with grid -->
   <defs>
     <pattern id="grid" [attr.width]="tileSize" [attr.height]="tileSize" patternUnits="userSpaceOnUse">

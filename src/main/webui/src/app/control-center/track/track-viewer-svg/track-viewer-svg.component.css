@@ -5,6 +5,7 @@
 }
 .full-svg {
   width: 100%;
-  height: 100%;
+  /*to avoid overlap which will show the scrollbar*/
+  height: 99%;
   background-color: darkslategray;
 }

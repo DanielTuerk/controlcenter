@@ -37,7 +37,6 @@ public class EventBroadcaster {
     public void onOpen(WebSocketConnection connection) {
         connections.add(connection);
         LOG.debugf("Client connected: %s", connection.id());
-//        return "Hello, " + connection.id();
     }
 
     @OnClose
@@ -75,10 +74,10 @@ public class EventBroadcaster {
      * @param event {@link Event}
      */
     public synchronized void fireEvent(Event event) {
-        if (event.getClass() != BusDataEvent.class) {
-            // avoid log spam
-            LOG.debug("fire Event: " + event.toString());
-        }
+//        if (event.getClass() != BusDataEvent.class) {
+//            // avoid log spam
+//            LOG.debug("fire Event: " + event.toString());
+//        }
         sendEvent(event);
 
 //        saveLastSendEvent(event);
@@ -95,19 +94,17 @@ public class EventBroadcaster {
 //    }
 
     private void sendEvent(Event event) {
-
         String json;
         try {
             json = objectMapper.writeValueAsString(event);
             connections.forEach(connection -> {
-                LOG.debugf("sending to %s event: %s", connection.id(), event.toString());
                 try {
-//                    connection.broadcast().sendBinaryAndAwait(objectMapper.writeValueAsString(new Payload(event.getClass().getSimpleName(), json)).getBytes());
-                    var formatted = "%s: %s"
-                        .formatted(event.getClass().getSimpleName(), json);
-                    LOG.debugf(formatted);
-                    connection.broadcast().sendTextAndAwait(formatted);
-                    LOG.debug("done send event");
+                    if (event.getClass() != BusDataEvent.class) {
+                        // avoid log spam
+                        LOG.debugf("sending %s to %s".formatted(event, connection.id()));
+                    }
+                    connection.broadcast().sendTextAndAwait(
+                        "%s: %s".formatted(event.getClass().getSimpleName(), json));
                 } catch (Exception e) {
                     LOG.debugf(e, "Failed to send event to %s", connection.id());
                 }
@@ -115,13 +112,12 @@ public class EventBroadcaster {
         } catch (Exception e) {
             throw new RuntimeException("Failed to serialize DTO", e);
         }
-
 //        eventExecutorService.addEvent(DomainFactory.getDomain(event.getClass().getName()), event);
         //TODO
     }
 
     private record Payload(String type, String payload) {
-
+        // TODO use it
     }
 //    private synchronized void saveLastSendEvent(Event event) {
 //        if (event instanceof StateEvent) {

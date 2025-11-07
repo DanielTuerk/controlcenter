@@ -5,6 +5,7 @@ import jakarta.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicReference;
 import net.wbz.moba.controlcenter.EventBroadcaster;
 import net.wbz.moba.controlcenter.shared.constrution.Construction;
@@ -19,7 +20,7 @@ public class ConstructionService {
     private static final Logger LOG = Logger.getLogger(ConstructionService.class);
 
     // TODO migrate to events?
-    private final List<ConstructionChangeListener> listeners = new ArrayList<>();
+    private final List<ConstructionChangeListener> listeners = new CopyOnWriteArrayList<>();
 
     private final AtomicReference<Construction> currentConstruction = new AtomicReference<>(null);
     @Inject

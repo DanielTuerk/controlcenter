@@ -7,6 +7,7 @@ export class Subscription {
   private wsService = inject(WebSocketService);
 
   protected createEventAccessor<T>(key: string): () => Observable<T> {
+    // TODO add error handling/log for error case, only return success
     return () => this.wsService.registerEvent<T>(key);
   }
 }

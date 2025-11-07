@@ -5,6 +5,7 @@ import jakarta.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import net.wbz.moba.controlcenter.EventBroadcaster;
 import net.wbz.moba.controlcenter.persist.entity.track.AbstractTrackPartEntity;
 import net.wbz.moba.controlcenter.persist.entity.track.BlockStraightEntity;
 import net.wbz.moba.controlcenter.persist.entity.track.CurveEntity;
@@ -16,6 +17,7 @@ import net.wbz.moba.controlcenter.persist.repository.track.TrackPartRepository;
 import net.wbz.moba.controlcenter.service.constrution.ConstructionService;
 import net.wbz.moba.controlcenter.shared.constrution.Construction;
 import net.wbz.moba.controlcenter.shared.track.model.AbstractTrackPart;
+import net.wbz.moba.controlcenter.shared.track.model.TrackChangedEvent;
 import org.jboss.logging.Logger;
 
 /**
@@ -32,24 +34,34 @@ public class TrackProvider {
     private final Collection<AbstractTrackPart> cachedEntities = new ArrayList<>();
     private final TrackPartRepository trackPartRepository;
     private final TrackPartMapper trackPartMapper;
+    private final EventBroadcaster eventBroadcaster;
+    private final ConstructionService constructionService;
 
     @Inject
     public TrackProvider(ConstructionService constructionService,
         TrackPartRepository trackPartRepository,
-        TrackPartMapper trackPartMapper) {
+        TrackPartMapper trackPartMapper,
+        EventBroadcaster eventBroadcaster) {
         this.trackPartRepository = trackPartRepository;
         this.trackPartMapper = trackPartMapper;
+        this.eventBroadcaster = eventBroadcaster;
 
         constructionService.addListener(this::loadData);
+        this.constructionService = constructionService;
     }
 
     public Collection<AbstractTrackPart> getTrack() {
+        if (cachedEntities.isEmpty()) {
+            constructionService.getCurrentConstruction().ifPresent(this::loadData);
+        }
         return cachedEntities;
     }
 
     private void loadData(Construction construction) {
         loadTrackBlocksData();
         loadTrackPartData(construction);
+
+        eventBroadcaster.fireEvent(new TrackChangedEvent(cachedEntities));
     }
 
 

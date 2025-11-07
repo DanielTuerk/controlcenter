@@ -15,6 +15,8 @@ import {SnackBar} from "../../common/snack-bar.component";
 import {HttpClient} from "@angular/common/http";
 import {TrackComponentBuilder} from "./track-builder/track-component-builder";
 import {AbstractTrackComponentBuilder} from "./track-builder/abstract-track-component-builder";
+import {TrackSubscription} from "../../../shared/websocket/track.subscription";
+import {AbstractTrackPart} from "../../../../shared/openapi-gen";
 
 @Component({
   selector: 'app-track-viewer-svg',
@@ -33,6 +35,7 @@ export class TrackViewerSvgComponent implements OnInit, AfterViewInit {
   private snackBar = inject(SnackBar);
 
   private httpClient = inject(HttpClient);
+  private trackSubscription = inject(TrackSubscription);
 
   // TODO get from parent viewport the initial values
   svgWidth = 1000;
@@ -47,12 +50,20 @@ export class TrackViewerSvgComponent implements OnInit, AfterViewInit {
         return EMPTY
       })
     ).subscribe(elements => {
-      elements
-      .map(e => this.trackComponentBuilder.build(e))
-      .forEach(e => this.addTrackPart(e));
-
-      this.cdr.markForCheck();
+      this.loadTrack(elements);
     });
+
+    this.trackSubscription.trackChanged().subscribe(event => {
+      this.loadTrack(event.trackParts);
+    });
+  }
+
+  private loadTrack(elements: AbstractTrackPart[]) {
+    elements
+    .map(e => this.trackComponentBuilder.build(e))
+    .forEach(e => this.addTrackPart(e));
+
+    this.cdr.markForCheck();
   }
 
   private addTrackPart(e: Element) {

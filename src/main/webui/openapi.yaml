@@ -775,6 +775,16 @@ components:
           type: boolean
         displayValue:
           type: string
+    TrackChangedEvent:
+      type: object
+      required:
+        - trackParts
+      description: Track update sent via WebSocket
+      properties:
+        trackParts:
+          type: array
+          items:
+            $ref: "#/components/schemas/AbstractTrackPart"
     TrackPartBlockEvent:
       type: object
       description: track status update sent via WebSocket
@@ -1206,6 +1216,8 @@ paths:
         - Scenario Controller
   /api/track:
     get:
+      tags:
+        - track
       responses:
         "200":
           description: OK
@@ -1216,8 +1228,6 @@ paths:
                 items:
                   $ref: "#/components/schemas/AbstractTrackPart"
       summary: List All
-      tags:
-        - Track Resource
   /api/trains:
     get:
       responses:

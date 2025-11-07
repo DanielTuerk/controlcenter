@@ -17,3 +17,9 @@ body {
   --mdc-snackbar-container-color: #91c16d;
   --mat-mdc-snack-bar-button-color: white;
 }
+
+.container {
+  justify-content: center;
+  margin-left: 2rem;
+  margin-right: 2rem;
+}

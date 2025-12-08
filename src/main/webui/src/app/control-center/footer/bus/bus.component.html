@@ -1,0 +1,6 @@
+<div class="footer-content">
+  <mat-slide-toggle (change)="onRailVoltageToggle()"
+                    [disabled]="!isConnected">Voltage</mat-slide-toggle>
+  <mat-slide-toggle (change)="onRecordingToggle()"
+                    [disabled]="!isConnected">Recording</mat-slide-toggle>
+</div>

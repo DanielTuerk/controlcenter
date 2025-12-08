@@ -36,21 +36,6 @@ export class ConstructionService {
       });
   }
 
-  // TODO should be done over event or cached event
-  loadCurrentConstruction() {
-    this.httpClient.get<Construction>('/api/current-construction')
-    .subscribe(
-      {
-        next: (construction) => {
-          this.updateCurrentConstruction(construction);
-        },
-        error: (error) => {
-          console.log("no current construction found, navigate to welcome page", error)
-          this.router.navigate(['/welcome', {}]);
-        }
-      });
-  }
-
   updateCurrentConstruction(construction: Construction) {
     console.log(`current construction: ${construction.name} (${construction.id})`);
     this._currentConstruction.set(construction);

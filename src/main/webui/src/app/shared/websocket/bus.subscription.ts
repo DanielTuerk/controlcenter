@@ -3,7 +3,7 @@ import {
   DeviceConnectionEvent,
   DeviceInfoEvent,
   FeedbackBlockEvent,
-  PlayerEvent,
+  PlayerEvent, RailVoltageEvent,
   RecordingEvent
 } from "../../../shared/openapi-gen";
 import {Subscription} from "./subscription";
@@ -13,11 +13,9 @@ import {Subscription} from "./subscription";
 })
 export class BusSubscription extends Subscription {
 
-  readonly deviceConnection = this.createEventAccessor<DeviceConnectionEvent>('DeviceConnectionEvent');
-  readonly deviceInfo = this.createEventAccessor<DeviceInfoEvent>('DeviceInfoEvent');
-
   readonly feedbackBlockEvent = this.createEventAccessor<FeedbackBlockEvent>('FeedbackBlockEvent');
 
+  readonly railvoltage = this.createEventAccessor<RailVoltageEvent>('RailVoltageEvent');
   readonly player = this.createEventAccessor<PlayerEvent>('PlayerEvent');
   readonly recording = this.createEventAccessor<RecordingEvent>('RecordingEvent');
 

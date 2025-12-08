@@ -1,6 +1,7 @@
 package net.wbz.moba.controlcenter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.quarkus.websockets.next.OnBinaryMessage;
 import io.quarkus.websockets.next.OnClose;
 import io.quarkus.websockets.next.OnOpen;
 import io.quarkus.websockets.next.WebSocket;
@@ -10,6 +11,8 @@ import jakarta.inject.Inject;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 import net.wbz.moba.controlcenter.shared.Event;
+import net.wbz.moba.controlcenter.shared.EventCache;
+import net.wbz.moba.controlcenter.shared.StateEvent;
 import net.wbz.moba.controlcenter.shared.bus.BusDataEvent;
 import org.jboss.logging.Logger;
 
@@ -25,18 +28,26 @@ import org.jboss.logging.Logger;
 public class EventBroadcaster {
     private static final Logger LOG = Logger.getLogger(EventBroadcaster.class);
 
+    private final EventCache eventCache;
     private final Set<WebSocketConnection> connections = new CopyOnWriteArraySet<>();
     private final ObjectMapper objectMapper;
 
     @Inject
-    public EventBroadcaster(ObjectMapper objectMapper) {
+    public EventBroadcaster(ObjectMapper objectMapper, EventCache eventCache) {
         this.objectMapper = objectMapper;
+        this.eventCache = eventCache;
     }
 
     @OnOpen
     public void onOpen(WebSocketConnection connection) {
         connections.add(connection);
         LOG.debugf("Client connected: %s", connection.id());
+
+        // send all missed messages while not connected
+        eventCache.getEvents().forEach(cachedEvent ->
+            cachedEvent.values()
+                .forEach(event -> sendEvent(event, Set.of(connection)))
+        );
     }
 
     @OnClose
@@ -45,8 +56,13 @@ public class EventBroadcaster {
         LOG.debugf("Client disconnected: %s", connection.id());
     }
 
+    @OnBinaryMessage
+    public void onBinaryMessage(WebSocketConnection connection, byte[] data) {
+
+    }
+
     //    private final EventExecutorService eventExecutorService;
-//    private final EventCache eventCache;
+
 
 //    @Inject
 //public EventBroadcaster(DeviceManager deviceManager) {
@@ -79,8 +95,7 @@ public class EventBroadcaster {
 //            LOG.debug("fire Event: " + event.toString());
 //        }
         sendEvent(event);
-
-//        saveLastSendEvent(event);
+        saveLastSendEvent(event);
     }
 //
 //    /**
@@ -94,6 +109,10 @@ public class EventBroadcaster {
 //    }
 
     private void sendEvent(Event event) {
+        sendEvent(event, connections);
+    }
+
+    private void sendEvent(Event event, Set<WebSocketConnection> connections) {
         String json;
         try {
             json = objectMapper.writeValueAsString(event);
@@ -103,7 +122,7 @@ public class EventBroadcaster {
                         // avoid log spam
                         LOG.debugf("sending %s to %s".formatted(event, connection.id()));
                     }
-                    connection.broadcast().sendTextAndAwait(
+                    connection.sendTextAndAwait(
                         "%s: %s".formatted(event.getClass().getSimpleName(), json));
                 } catch (Exception e) {
                     LOG.debugf(e, "Failed to send event to %s", connection.id());
@@ -112,17 +131,16 @@ public class EventBroadcaster {
         } catch (Exception e) {
             throw new RuntimeException("Failed to serialize DTO", e);
         }
-//        eventExecutorService.addEvent(DomainFactory.getDomain(event.getClass().getName()), event);
-        //TODO
     }
 
     private record Payload(String type, String payload) {
         // TODO use it
     }
-//    private synchronized void saveLastSendEvent(Event event) {
-//        if (event instanceof StateEvent) {
-//            eventCache.addEvent((StateEvent) event);
-//        }
-//    }
+
+    private synchronized void saveLastSendEvent(Event event) {
+        if (event instanceof StateEvent) {
+            eventCache.addEvent((StateEvent) event);
+        }
+    }
 
 }

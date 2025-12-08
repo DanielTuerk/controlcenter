@@ -15,6 +15,9 @@
 
 .footer {
   grid-area: footer;
+
+
+  background-color: #041525;
 }
 
 .main {

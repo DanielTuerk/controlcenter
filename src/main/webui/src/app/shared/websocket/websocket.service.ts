@@ -12,13 +12,27 @@ export class WebSocketService {
   /**
    * Register the event type (class name) to receive the messages for.
    *
-   * @param eventType
+   * @param eventKey
    */
-  registerEvent<T>(eventType: string) {
-    if (!this.subscriptions.has(eventType)) {
-      this.subscriptions.set(eventType, new Subject());
+  registerEventAndConsume<T>(eventKey: string) {
+    console.log("RegisterEvent", eventKey);
+    this.subscriptions.set(eventKey, new Subject());
+    return this.consumeEvent(eventKey);
+  }
+
+  isAlreadyRegistered(eventKey: string): boolean {
+    return this.subscriptions.has(eventKey);
+  }
+
+  /**
+   * Receive the messages for the given event key.
+   * @param eventKey
+   */
+  consumeEvent<T>(eventKey: string) {
+    if (!this.isAlreadyRegistered(eventKey)) {
+      throw new Error(`Event not registered: ${eventKey}`);
     }
-    let newVar = this.subscriptions.get(eventType)! as Subject<T>;
+    let newVar = this.subscriptions.get(eventKey)! as Subject<T>;
     return newVar.asObservable();
   }
 
@@ -45,12 +59,12 @@ export class WebSocketService {
       const [eventName, jsonString] = event.data.split(/:(.+)/);
       const payload = JSON.parse(jsonString.trim());
       console.log('Event:', eventName,'Payload:', payload);
-
       if (this.subscriptions.has(eventName)) {
         this.subscriptions.get(eventName)?.next(payload);
+      } else {
+        console.log('no subscription for Event:', eventName);
       }
     };
-
   }
 
   send(message: string): void {

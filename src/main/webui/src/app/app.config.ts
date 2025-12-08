@@ -15,6 +15,8 @@ import {CurveBuilder} from "./control-center/track/track-viewer-svg/track-builde
 import {TurnoutBuilder} from "./control-center/track/track-viewer-svg/track-builder/component/turnout";
 import {SignalBuilder} from "./control-center/track/track-viewer-svg/track-builder/component/signal";
 import {StraightBuilder} from "./control-center/track/track-viewer-svg/track-builder/component/straight";
+import {DeviceService} from "./shared/device.service";
+import {BusService} from "./shared/bus.service";
 
 export function apiConfigFactory(): Configuration {
   const params: ConfigurationParameters = {
@@ -25,6 +27,8 @@ export function apiConfigFactory(): Configuration {
 
 export const appConfig: ApplicationConfig = {
   providers: [
+    DeviceService,
+    BusService,
     ConstructionService,
     TrainService,
     SnackBar,

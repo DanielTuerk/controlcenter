@@ -85,6 +85,20 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/TrackBlock"
+    BusBitDto:
+      type: object
+      properties:
+        bus:
+          type: integer
+          format: int32
+        address:
+          type: integer
+          format: int32
+        bit:
+          type: integer
+          format: int32
+        state:
+          type: boolean
     BusDataConfiguration:
       type: object
       properties:
@@ -117,6 +131,18 @@ components:
           type: boolean
         identifierKey:
           type: string
+    BusDataDto:
+      type: object
+      properties:
+        bus:
+          type: integer
+          format: int32
+        address:
+          type: integer
+          format: int32
+        value:
+          type: integer
+          format: int32
     Construction:
       type: object
       properties:
@@ -1032,6 +1058,57 @@ components:
 tags:
   - name: Websocket DTOs
 paths:
+  /api/bus/bus-bit:
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BusBitDto"
+        required: true
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+      summary: Bus Data
+      tags:
+        - Bus Resource
+  /api/bus/bus-data:
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BusDataDto"
+        required: true
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+      summary: Bus Data
+      tags:
+        - Bus Resource
+  /api/bus/railvoltage:
+    post:
+      responses:
+        "200":
+          description: OK
+      summary: Update Rail Voltage
+      tags:
+        - Bus Resource
+    get:
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: boolean
+      summary: Get By Id
+      tags:
+        - Bus Resource
   /api/constructions:
     get:
       responses:
@@ -1134,6 +1211,109 @@ paths:
       summary: Get Current
       tags:
         - Current Construction Resource
+  /api/devices:
+    get:
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/DeviceInfo"
+      summary: List All
+      tags:
+        - Device Resource
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DeviceInfo"
+        required: true
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+      summary: Create
+      tags:
+        - Device Resource
+  /api/devices/disconnect:
+    post:
+      responses:
+        "200":
+          description: OK
+      summary: Create
+      tags:
+        - Device Resource
+  /api/devices/{id}:
+    put:
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DeviceInfo"
+        required: true
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+      summary: Update
+      tags:
+        - Device Resource
+    get:
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: OK
+      summary: Get By Id
+      tags:
+        - Device Resource
+    delete:
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: OK
+      summary: Delete
+      tags:
+        - Device Resource
+  /api/devices/{id}/connect:
+    post:
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: OK
+      summary: Create
+      tags:
+        - Device Resource
   /api/scenarios:
     get:
       responses:

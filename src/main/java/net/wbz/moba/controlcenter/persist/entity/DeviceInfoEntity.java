@@ -21,6 +21,7 @@ public class DeviceInfoEntity extends AbstractEntity {
 
     @Column(name = "device_key")
     public String key;
+    
     public DEVICE_TYPE type;
 
     @Override

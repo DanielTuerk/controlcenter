@@ -1,47 +1,34 @@
-package net.wbz.moba.controlcenter.web.server.web.constrution;
+package net.wbz.moba.controlcenter.service.bus;
 
-import java.io.IOException;
-import java.nio.file.Files;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 import java.nio.file.Path;
-import java.nio.file.Paths;
-
-import org.jboss.logging.Logger;
-import org.slf4j.LoggerFactory;
-
-
-
-import com.google.inject.name.Named;
-
-import net.wbz.moba.controlcenter.web.server.event.EventBroadcaster;
+import net.wbz.moba.controlcenter.EventBroadcaster;
+import net.wbz.moba.controlcenter.service.LocalFileService;
 import net.wbz.moba.controlcenter.shared.bus.RecordingEvent;
 import net.wbz.selectrix4java.data.recording.IsRecordable;
 import net.wbz.selectrix4java.device.Device;
 import net.wbz.selectrix4java.device.DeviceAccessException;
+import org.jboss.logging.Logger;
 
 /**
  * @author Daniel Tuerk
  */
-@Singleton
+@ApplicationScoped
 public class DeviceRecorder {
 
     private static final Logger LOGGER = Logger.getLogger(DeviceRecorder.class);
     private static final String FOLDER = "/record/";
 
-    private IsRecordable recordable;
-    private EventBroadcaster eventBroadcaster;
+    private final EventBroadcaster eventBroadcaster;
     private final Path destinationFolder;
 
+    private IsRecordable recordable;
+
     @Inject
-    public DeviceRecorder(@Named("homePath") String homeDir, EventBroadcaster eventBroadcaster) {
+    public DeviceRecorder(LocalFileService localFileService, EventBroadcaster eventBroadcaster) {
         this.eventBroadcaster = eventBroadcaster;
-        this.destinationFolder = Paths.get(homeDir + FOLDER);
-        if(!Files.exists(destinationFolder)) {
-            try {
-                Files.createDirectories(destinationFolder);
-            } catch (IOException e) {
-                LOGGER.error("can't create recorder output folder: " + destinationFolder);
-            }
-        }
+        this.destinationFolder = localFileService.getDir(FOLDER);
     }
 
     public void startRecording(Device device, String fileName) {

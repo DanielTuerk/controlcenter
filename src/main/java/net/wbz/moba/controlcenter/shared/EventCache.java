@@ -1,6 +1,7 @@
 package net.wbz.moba.controlcenter.shared;
 
 import com.google.common.collect.Maps;
+import jakarta.enterprise.context.ApplicationScoped;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
@@ -11,6 +12,7 @@ import net.wbz.moba.controlcenter.shared.bus.DeviceConnectionEvent;
  *
  * @author Daniel Tuerk
  */
+@ApplicationScoped
 public class EventCache {
 
     /**
@@ -44,6 +46,10 @@ public class EventCache {
             return cachedEvents.get(eventClazzName).values();
         }
         return new ArrayList<>();
+    }
+
+    public Collection<Map<String, StateEvent>> getEvents() {
+        return cachedEvents.values();
     }
 
     /**

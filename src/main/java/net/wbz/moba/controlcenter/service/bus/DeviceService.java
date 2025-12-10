@@ -2,7 +2,6 @@ package net.wbz.moba.controlcenter.service.bus;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import java.util.Objects;
 import java.util.Optional;
 import net.wbz.moba.controlcenter.EventBroadcaster;
 import net.wbz.moba.controlcenter.shared.bus.DeviceConnectionEvent;
@@ -29,6 +28,7 @@ public class DeviceService {
     private final EventBroadcaster eventBroadcaster;
     private final RailVoltageListener railVoltageListener;
     private Device activeDevice;
+    private DeviceInfo activeDeviceInfo;
 
     @Inject
     public DeviceService(DeviceManager selectrixDeviceManager,
@@ -45,15 +45,12 @@ public class DeviceService {
 
     public void changeDevice(DeviceInfo deviceInfo) {
         activeDevice = selectrixDeviceManager.getDeviceById(deviceInfo.getKey());
+        activeDeviceInfo = deviceInfo;
     }
 
-    public void connect() {
+    public void connect() throws DeviceAccessException {
         if (activeDevice != null && !activeDevice.isConnected()) {
-            try {
                 activeDevice.connect();
-            } catch (DeviceAccessException e) {
-                LOGGER.error(String.format("can't connect active device: %s", activeDevice.getClass().getName()), e);
-            }
         }
     }
 
@@ -81,7 +78,7 @@ public class DeviceService {
             @Override
             public void connected(Device device) {
                 if (device.equals(activeDevice)) {
-                    final DeviceInfo deviceInfo = getDeviceInfo(device);
+                    final DeviceInfo deviceInfo = activeDeviceInfo;
                     deviceInfo.setConnected(true);
                     // fire initial rail voltage state
                     eventBroadcaster
@@ -94,7 +91,7 @@ public class DeviceService {
             @Override
             public void disconnected(Device device) {
                 if (device.equals(activeDevice)) {
-                    DeviceInfo deviceInfo = getDeviceInfo(device);
+                    DeviceInfo deviceInfo = activeDeviceInfo;
                     deviceInfo.setConnected(false);
                     eventBroadcaster
                         .fireEvent(new DeviceConnectionEvent(deviceInfo, DeviceConnectionEvent.TYPE.DISCONNECTED));
@@ -104,21 +101,11 @@ public class DeviceService {
         });
     }
 
-
     private void registerDevice(DeviceInfo deviceInfo) {
         Device device = selectrixDeviceManager
             .createDevice(DEVICE_TYPE.valueOf(deviceInfo.getType().name()), deviceInfo.getKey(),
                 SerialDevice.DEFAULT_BAUD_RATE_FCC);
         selectrixDeviceManager.registerDevice(device);
-    }
-
-    private DeviceInfo getDeviceInfo(final Device device) {
-        for (DeviceInfo deviceInfoDeviceEntry : deviceManager.load()) {
-            if (Objects.equals(deviceInfoDeviceEntry.getKey(), device.getDeviceId())) {
-                return deviceInfoDeviceEntry;
-            }
-        }
-        throw new RuntimeException("no stored device found for device:" + device);
     }
 
 }

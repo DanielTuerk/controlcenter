@@ -43,6 +43,8 @@ public class EventBroadcaster {
         connections.add(connection);
         LOG.debugf("Client connected: %s", connection.id());
 
+        // TODO after server restart, the client need to be triggered to reload, maybe page refresh because the eventchache is empty and by that the server is restarted
+
         // send all missed messages while not connected
         eventCache.getEvents().forEach(cachedEvent ->
             cachedEvent.values()
@@ -58,31 +60,7 @@ public class EventBroadcaster {
 
     @OnBinaryMessage
     public void onBinaryMessage(WebSocketConnection connection, byte[] data) {
-
     }
-
-    //    private final EventExecutorService eventExecutorService;
-
-
-//    @Inject
-//public EventBroadcaster(DeviceManager deviceManager) {
-////        this.eventCache = eventCache;
-//    //TODO do nothing now
-////        EventExecutorServiceFactory theSF = EventExecutorServiceFactory.getInstance();
-////        eventExecutorService = theSF.getEventExecutorService("event");
-//
-//    deviceManager.addDeviceConnectionListener(new DeviceConnectionListener() {
-//        @Override
-//        public void connected(Device device) {
-//        }
-//
-//        @Override
-//        public void disconnected(Device device) {
-//            LOG.info("device disconnected, clear event cache");
-////               eventCache.clear();
-//        }
-//    });
-//}
 
     /***
      * Fire the given event to client.
@@ -90,23 +68,9 @@ public class EventBroadcaster {
      * @param event {@link Event}
      */
     public synchronized void fireEvent(Event event) {
-//        if (event.getClass() != BusDataEvent.class) {
-//            // avoid log spam
-//            LOG.debug("fire Event: " + event.toString());
-//        }
         sendEvent(event);
         saveLastSendEvent(event);
     }
-//
-//    /**
-//     * Get all events from cache for the given class name.
-//     *
-//     * @param eventClazzName class name of the event
-//     * @return events from cache
-//     */
-//    public Collection<StateEvent> getLastSendEvents(final String eventClazzName) {
-//        return new ArrayList<>(eventCache.getEvents(eventClazzName));
-//    }
 
     private void sendEvent(Event event) {
         sendEvent(event, connections);
@@ -122,8 +86,13 @@ public class EventBroadcaster {
                         // avoid log spam
                         LOG.debugf("sending %s to %s".formatted(event, connection.id()));
                     }
-                    connection.sendTextAndAwait(
-                        "%s: %s".formatted(event.getClass().getSimpleName(), json));
+                    connection.sendText(
+                            "%s: %s".formatted(event.getClass().getSimpleName(), json))
+                        .subscribe().with(
+                            unused -> {
+                            },
+                            failure -> LOG.error("failed to sent event to {}", connection.id(), failure)
+                        );
                 } catch (Exception e) {
                     LOG.debugf(e, "Failed to send event to %s", connection.id());
                 }
@@ -131,10 +100,6 @@ public class EventBroadcaster {
         } catch (Exception e) {
             throw new RuntimeException("Failed to serialize DTO", e);
         }
-    }
-
-    private record Payload(String type, String payload) {
-        // TODO use it
     }
 
     private synchronized void saveLastSendEvent(Event event) {

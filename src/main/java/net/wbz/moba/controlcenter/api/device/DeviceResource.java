@@ -17,11 +17,15 @@ import java.util.List;
 import net.wbz.moba.controlcenter.service.bus.DeviceManager;
 import net.wbz.moba.controlcenter.service.bus.DeviceService;
 import net.wbz.moba.controlcenter.shared.bus.DeviceInfo;
+import net.wbz.selectrix4java.device.DeviceAccessException;
+import org.jboss.logging.Logger;
 
 @Path("/api/devices")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class DeviceResource {
+
+    private static final Logger LOGGER = Logger.getLogger(DeviceService.class);
 
     @Inject
     DeviceManager deviceManager;
@@ -81,8 +85,14 @@ public class DeviceResource {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
         deviceService.changeDevice(byId.get());
-        deviceService.connect();
-        return Response.ok().build();
+        try {
+            deviceService.connect();
+            return Response.ok().build();
+        } catch (DeviceAccessException e) {
+            var message = "can't connect active device: %d".formatted(id);
+            LOGGER.error(message, e);
+            return Response.status(500, message).build();
+        }
     }
 
     @POST

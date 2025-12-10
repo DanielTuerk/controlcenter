@@ -18,9 +18,9 @@ export class AppComponent implements OnInit {
   ngOnInit() {
     this.wsService.connect();
 
+    this.constructionService.loadCurrentConstruction();
     this.constructionSubscription.currentConstruction().subscribe(event => {
       this.constructionService.updateCurrentConstruction(event.construction);
     });
-
   }
 }

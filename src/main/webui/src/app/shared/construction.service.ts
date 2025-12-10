@@ -27,6 +27,20 @@ export class ConstructionService {
     })
   }
 
+  loadCurrentConstruction() {
+    this.httpClient.get<Construction>('/api/current-construction')
+    .subscribe(
+      {
+        next: (construction) => {
+          this.updateCurrentConstruction(construction);
+        },
+        error: (error) => {
+          console.log("no current construction found, navigate to welcome page", error)
+          this.router.navigate(['/welcome', {}]);
+        }
+      });
+  }
+
   selectCurrentConstruction(construction: Construction) {
     this.httpClient.post<String>('/api/current-construction', '' + construction.id)
     .subscribe({
@@ -37,6 +51,10 @@ export class ConstructionService {
   }
 
   updateCurrentConstruction(construction: Construction) {
+    if(this.currentConstruction() !== null && this.currentConstruction()?.id === construction.id) {
+      // ignore already set construction (maybe cached event after reconnect)
+      return;
+    }
     console.log(`current construction: ${construction.name} (${construction.id})`);
     this._currentConstruction.set(construction);
     let ccPath = '/cc';

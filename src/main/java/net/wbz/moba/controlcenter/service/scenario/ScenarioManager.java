@@ -201,8 +201,9 @@ public class ScenarioManager {
         eventBroadcaster.fireEvent(new ScenarioDataChangedEvent(scenarioId));
     }
 
-    public Optional<ScenarioEntity> getById(Long id) {
-        return scenarioRepository.findByIdOptional(id);
+    public Optional<Scenario> getById(Long id) {
+        return scenarioRepository.findByIdOptional(id)
+            .map(scenarioMapper::toDto);
     }
 
     public boolean existsById(Long id) {

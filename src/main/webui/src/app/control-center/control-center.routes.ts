@@ -37,15 +37,7 @@ export const routes: Routes = [
   },
   {
     path: 'settings',
-    component: SettingComponent
-    // children: settingRoutes
-  },
-  {
-    path: 'settings/device',
-    component: DeviceComponent
-  },
-  {
-    path: 'settings/device/:deviceId',
-    component: DeviceEditComponent
+    component: SettingComponent,
+    children: settingRoutes
   }
 ];

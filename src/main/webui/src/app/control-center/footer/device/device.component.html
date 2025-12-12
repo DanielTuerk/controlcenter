@@ -6,6 +6,9 @@
     <mat-option *ngFor="let device of devices(); index as i;" [value]="device">{{ device.key }}</mat-option>
   </mat-select>
 </mat-form-field>
+<button mat-fab routerLink="settings/device">
+  <mat-icon>edit</mat-icon>
+</button>
 <mat-slide-toggle [checked]="isConnected"
                   [disabled]="!selectedDevice"
                   (change)="onConnectionToggle($event.checked)">Connection

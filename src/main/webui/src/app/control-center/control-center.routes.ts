@@ -6,6 +6,9 @@ import {ViewerComponent} from "./viewer/viewer.component";
 import {EditorComponent} from "./editor/editor.component";
 import {SettingComponent} from "./setting/setting.component";
 import {ScenarioEditComponent} from "./scenario/scenario-edit/scenario-edit.component";
+import {routes as settingRoutes} from "./setting/setting.routes";
+import {DeviceComponent} from "./setting/device/device.component";
+import {DeviceEditComponent} from "./setting/device-edit/device-edit.component";
 
 export const routes: Routes = [
   {
@@ -35,5 +38,14 @@ export const routes: Routes = [
   {
     path: 'settings',
     component: SettingComponent
+    // children: settingRoutes
+  },
+  {
+    path: 'settings/device',
+    component: DeviceComponent
+  },
+  {
+    path: 'settings/device/:deviceId',
+    component: DeviceEditComponent
   }
 ];

@@ -1,0 +1,29 @@
+<mat-card appearance="outlined">
+  <mat-card-header>
+    <mat-card-title>Edit Device</mat-card-title>
+  </mat-card-header>
+  <form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <mat-card-content>
+      <div>
+        <label>Key: </label>
+        <mat-form-field>
+          <input matInput required [formControl]="form.controls.key"/>
+        </mat-form-field>
+      </div>
+      <div>
+        <label>Type: </label>
+        <mat-form-field>
+          <mat-select required [formControl]="form.controls.type">
+            @for (deviceType of DEVICE_TYPES; track deviceType) {
+              <mat-option [value]="deviceType">{{deviceType}}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+      </div>
+    </mat-card-content>
+    <mat-card-footer>
+      <button mat-stroked-button type="button" routerLink="../">Back</button>
+      <button mat-stroked-button>Apply</button>
+    </mat-card-footer>
+  </form>
+</mat-card>

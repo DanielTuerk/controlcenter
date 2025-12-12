@@ -1,9 +1,9 @@
 import {inject} from "@angular/core";
 import {HttpClient} from "@angular/common/http";
 import {SnackBar} from "../control-center/common/snack-bar.component";
-import {DeviceInfo} from "../../shared/openapi-gen";
+import {DeviceInfo, Scenario} from "../../shared/openapi-gen";
 import {catchError} from "rxjs/operators";
-import {EMPTY} from "rxjs";
+import {EMPTY, Observable} from "rxjs";
 
 export class DeviceService {
 
@@ -18,6 +18,42 @@ export class DeviceService {
         return EMPTY
       })
     );
+  }
+
+  loadDevice(deviceId: Number) {
+    return this.httpClient.get<Scenario>('/api/devices/' + deviceId)
+  }
+
+  createDevice(device: DeviceInfo) {
+    return this.httpClient.post('/api/devices/', device)
+    .pipe(
+      catchError((err: any, caught: Observable<any>) => {
+        this.snackBar.showError(`can't create device: ${err.message}`);
+        return EMPTY
+      })
+    )
+  }
+
+  saveDevice(device: DeviceInfo) {
+    return this.httpClient.put('/api/devices/' + device.id, device)
+    .pipe(
+      catchError((err: any, caught: Observable<any>) => {
+        this.snackBar.showError(`can't save device ${device.id}: ${err.message}`);
+        return EMPTY
+      })
+    )
+  }
+
+  deleteDevice(deviceId: Number) {
+    return this.httpClient.delete('/api/devices/' + deviceId)
+    .subscribe({
+      next: (device) => {
+        this.snackBar.showSuccess(`device ${deviceId} deleted`);
+      },
+      error: (error) => {
+        this.snackBar.showError(`can't delete device ${deviceId}: ${error.message}`);
+      }
+    });
   }
 
   connect(deviceInfo: DeviceInfo) {

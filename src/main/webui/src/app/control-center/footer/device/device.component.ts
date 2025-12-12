@@ -1,4 +1,4 @@
-import {Component, inject, OnInit, signal, ViewEncapsulation} from '@angular/core';
+import {Component, inject, OnInit, signal} from '@angular/core';
 import {MatSlideToggle} from "@angular/material/slide-toggle";
 import {MatFormField, MatLabel} from "@angular/material/form-field";
 import {MatOption, MatSelect} from "@angular/material/select";
@@ -7,6 +7,9 @@ import {FormsModule} from "@angular/forms";
 import {NgForOf} from "@angular/common";
 import {DeviceInfo, TYPE} from "../../../../shared/openapi-gen";
 import {DeviceSubscription} from "../../../shared/websocket/device.subscription";
+import {MatIcon} from "@angular/material/icon";
+import {MatButton, MatFabButton} from "@angular/material/button";
+import {RouterLink} from "@angular/router";
 
 @Component({
   selector: 'app-device',
@@ -17,7 +20,11 @@ import {DeviceSubscription} from "../../../shared/websocket/device.subscription"
     MatSelect,
     MatOption,
     FormsModule,
-    NgForOf
+    NgForOf,
+    MatIcon,
+    MatFabButton,
+    MatButton,
+    RouterLink
   ],
   templateUrl: './device.component.html',
   styleUrl: './device.component.css'

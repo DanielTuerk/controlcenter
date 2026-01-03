@@ -41,28 +41,29 @@ public class StationsBoardServiceImpl extends RemoteServiceServlet implements St
         UpdateScenarioBoardConsumer updateScenarioBoardConsumer) {
         this.stationBoardFactory = stationBoardFactory;
 
-        scenarioExecutor.addScenarioStateListener(new DefaultScenarioStateListener() {
-
-            @Override
-            public void scenarioExecuteWithError(Scenario scenario) {
-                //show info
-                createBoardAction(scenario, stationManager).ifPresent(
-                    boardAction -> boardAction.apply(updateScenarioBoardConsumer));
-                // delete delayed
-                removeBoardEntry(scenario, stationManager, delayedRemoveScenarioBoardConsumer);
-            }
-
-            @Override
-            public void scenarioStopped(Scenario scenario) {
-                removeBoardEntry(scenario, stationManager, removeScenarioBoardConsumer);
-            }
-
-            @Override
-            public void scenarioQueued(Scenario scenario) {
-                createBoardAction(scenario, stationManager).ifPresent(
-                    boardAction -> boardAction.apply(queuedScenarioBoardConsumer));
-            }
-        });
+        // TODO re-enable, a lot events out of sync
+//        scenarioExecutor.addScenarioStateListener(new DefaultScenarioStateListener() {
+//
+//            @Override
+//            public void scenarioExecuteWithError(Scenario scenario) {
+//                //show info
+//                createBoardAction(scenario, stationManager).ifPresent(
+//                    boardAction -> boardAction.apply(updateScenarioBoardConsumer));
+//                // delete delayed
+//                removeBoardEntry(scenario, stationManager, delayedRemoveScenarioBoardConsumer);
+//            }
+//
+//            @Override
+//            public void scenarioStopped(Scenario scenario) {
+//                removeBoardEntry(scenario, stationManager, removeScenarioBoardConsumer);
+//            }
+//
+//            @Override
+//            public void scenarioQueued(Scenario scenario) {
+//                createBoardAction(scenario, stationManager).ifPresent(
+//                    boardAction -> boardAction.apply(queuedScenarioBoardConsumer));
+//            }
+//        });
     }
 
     private void removeBoardEntry(Scenario scenario, StationManager stationManager,

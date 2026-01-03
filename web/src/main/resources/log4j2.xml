@@ -25,15 +25,17 @@
     </Appenders>
 
     <Loggers>
-        <logger name="net.wbz">
-            <level value="debug"/>
+      <logger name="net.wbz.moba.controlcenter" level="DEBUG" additivity="false">
+        <appender-ref ref="Console"/>
+      </logger>
+
+
+      <logger name="net.wbz.selectrix4java" level="DEBUG" additivity="false">
+          <appender-ref ref="Console"/>
         </logger>
 
-        <logger name="net.wbz.selectrix4java.block">
-            <level value="trace"/>
-        </logger>
 
-        <root level="info">
+        <root level="INFO">
             <appender-ref ref="Console"/>
             <appender-ref ref="File"/>
         </root>

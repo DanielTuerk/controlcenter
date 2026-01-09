@@ -20,7 +20,7 @@
     <gilead.version>1.3.2</gilead.version>
 
     <webappDirectory>${project.build.directory}/${project.build.finalName}</webappDirectory>
-    <hibernate.version>5.1.3.Final</hibernate.version>
+    <hibernate.version>5.4.24.Final</hibernate.version>
   </properties>
 
   <dependencies>

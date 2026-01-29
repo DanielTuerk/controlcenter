@@ -1,5 +1,5 @@
 import {Component, inject, OnInit, signal} from '@angular/core';
-import {DeviceInfo} from "../../../../shared/openapi-gen";
+import {DeviceInfo, TYPE} from "../../../../shared/openapi-gen";
 import {DeviceService} from "../../../shared/device.service";
 import {ConfirmDialogComponent} from "../../common/confirm-dialog/confirm-dialog.component";
 import {MatDialog} from "@angular/material/dialog";
@@ -16,6 +16,7 @@ import {
 import {MatButton} from "@angular/material/button";
 import {RouterLink} from "@angular/router";
 import {MatIcon} from "@angular/material/icon";
+import {DeviceSubscription} from "../../../shared/websocket/device.subscription";
 
 @Component({
   selector: 'app-device',
@@ -44,14 +45,21 @@ import {MatIcon} from "@angular/material/icon";
 export class DeviceComponent implements OnInit {
 
   private deviceService = inject(DeviceService);
+  private deviceSubscription = inject(DeviceSubscription);
+
   devices = signal<DeviceInfo[]>([]);
   readonly dialog = inject(MatDialog);
   displayedColumns: string[] = ['id', 'key', 'type', 'action'];
+  isConnected: boolean = false;
 
   ngOnInit() {
     this.deviceService.loadDevices().subscribe(data => {
       this.devices.set(data);
     })
+
+    this.deviceSubscription.deviceConnection().subscribe(device => {
+      this.isConnected = device.eventType === TYPE.Connected;
+    });
   }
 
   deleteDevice(device: DeviceInfo) {

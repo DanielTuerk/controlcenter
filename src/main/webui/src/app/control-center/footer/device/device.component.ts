@@ -34,14 +34,10 @@ export class DeviceComponent implements OnInit {
   private deviceSubscription = inject(DeviceSubscription);
 
   devices = signal<DeviceInfo[]>([]);
-  // selectedDeviceId:DeviceInfo|null=null;
   isConnected = false;
   selectedDevice: DeviceInfo | null = null;
 
   ngOnInit() {
-    // this.deviceSubscription.deviceInfo().subscribe(event => {
-    //   this.fetchDevices();
-    // });
     this.fetchDevices();
   }
 

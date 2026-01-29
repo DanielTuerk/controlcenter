@@ -1,4 +1,4 @@
-package net.wbz.moba.controlcenter.shared.bus;
+package net.wbz.moba.controlcenter.shared.device;
 
 import net.wbz.moba.controlcenter.shared.StateEvent;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;

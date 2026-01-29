@@ -1,4 +1,4 @@
-package net.wbz.moba.controlcenter.shared.viewer;
+package net.wbz.moba.controlcenter.shared.bus;
 
 import net.wbz.moba.controlcenter.shared.StateEvent;
 import net.wbz.selectrix4java.device.Device.SYSTEM_FORMAT;

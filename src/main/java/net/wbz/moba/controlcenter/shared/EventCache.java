@@ -5,7 +5,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
-import net.wbz.moba.controlcenter.shared.bus.DeviceConnectionEvent;
+import net.wbz.moba.controlcenter.shared.device.DeviceConnectionEvent;
 
 /**
  * Cache for {@link StateEvent}s. Each event will be cached by the class name and the {@link StateEvent#getCacheKey()}.

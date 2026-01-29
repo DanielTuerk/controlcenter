@@ -16,7 +16,7 @@ import jakarta.ws.rs.core.Response;
 import java.util.List;
 import net.wbz.moba.controlcenter.service.bus.DeviceManager;
 import net.wbz.moba.controlcenter.service.bus.DeviceService;
-import net.wbz.moba.controlcenter.shared.bus.DeviceInfo;
+import net.wbz.moba.controlcenter.shared.device.DeviceInfo;
 import net.wbz.selectrix4java.device.DeviceAccessException;
 import org.jboss.logging.Logger;
 

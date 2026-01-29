@@ -11,8 +11,8 @@ import net.wbz.moba.controlcenter.EventBroadcaster;
 import net.wbz.moba.controlcenter.persist.entity.DeviceInfoEntity;
 import net.wbz.moba.controlcenter.persist.entity.DeviceInfoEntity.DEVICE_TYPE;
 import net.wbz.moba.controlcenter.persist.repository.DeviceInfoRepository;
-import net.wbz.moba.controlcenter.shared.bus.DeviceDataChangedEvent;
-import net.wbz.moba.controlcenter.shared.bus.DeviceInfo;
+import net.wbz.moba.controlcenter.shared.device.DeviceDataChangedEvent;
+import net.wbz.moba.controlcenter.shared.device.DeviceInfo;
 
 /**
  * @author Daniel Tuerk

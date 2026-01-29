@@ -7,12 +7,14 @@ import net.wbz.moba.controlcenter.EventBroadcaster;
 import net.wbz.moba.controlcenter.shared.bus.DeviceConnectionEvent;
 import net.wbz.moba.controlcenter.shared.bus.DeviceInfo;
 import net.wbz.moba.controlcenter.shared.viewer.RailVoltageEvent;
+import net.wbz.moba.controlcenter.shared.viewer.SystemFormatEvent;
 import net.wbz.selectrix4java.device.Device;
 import net.wbz.selectrix4java.device.DeviceAccessException;
 import net.wbz.selectrix4java.device.DeviceConnectionListener;
 import net.wbz.selectrix4java.device.DeviceManager;
 import net.wbz.selectrix4java.device.DeviceManager.DEVICE_TYPE;
 import net.wbz.selectrix4java.device.RailVoltageListener;
+import net.wbz.selectrix4java.device.SystemFormatListener;
 import net.wbz.selectrix4java.device.serial.SerialDevice;
 import org.jboss.logging.Logger;
 
@@ -27,6 +29,7 @@ public class DeviceService {
     private final net.wbz.moba.controlcenter.service.bus.DeviceManager deviceManager;
     private final EventBroadcaster eventBroadcaster;
     private final RailVoltageListener railVoltageListener;
+    private final SystemFormatListener systemFormatListener;
     private Device activeDevice;
     private DeviceInfo activeDeviceInfo;
 
@@ -41,6 +44,7 @@ public class DeviceService {
         initConnectionListener();
 
         railVoltageListener = isOn -> eventBroadcaster.fireEvent(new RailVoltageEvent(isOn));
+        systemFormatListener = systemFormat -> eventBroadcaster.fireEvent(new SystemFormatEvent(systemFormat));
     }
 
     public void changeDevice(DeviceInfo deviceInfo) {
@@ -85,6 +89,7 @@ public class DeviceService {
                         .fireEvent(new DeviceConnectionEvent(deviceInfo, DeviceConnectionEvent.TYPE.CONNECTED));
                     // add listener to receive state change
                     device.addRailVoltageListener(railVoltageListener);
+                    device.addSystemFormatListener(systemFormatListener);
                 }
             }
 
@@ -96,6 +101,7 @@ public class DeviceService {
                     eventBroadcaster
                         .fireEvent(new DeviceConnectionEvent(deviceInfo, DeviceConnectionEvent.TYPE.DISCONNECTED));
                     device.removeRailVoltageListener(railVoltageListener);
+                    device.removeSystemFormatListener(systemFormatListener);
                 }
             }
         });

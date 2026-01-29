@@ -407,7 +407,7 @@ components:
         - ERROR
     RailVoltageEvent:
       type: object
-      description: track status update sent via WebSocket
+      description: railvoltage status update sent via WebSocket
       properties:
         cacheKey:
           type: string
@@ -537,6 +537,17 @@ components:
         - UNKNOWN
         - FREE
         - USED
+    SYSTEM_FORMAT:
+      type: string
+      enum:
+        - UNKNOWN
+        - ONLY_SX1
+        - SX1_SX2
+        - SX1_SX2_DCC
+        - ONLY_DCC
+        - SX1_SX2_MM
+        - ONLY_MM
+        - SX1_SX2_DCC_MM
     Scenario:
       type: object
       properties:
@@ -724,6 +735,14 @@ components:
           format: double
         vertical:
           type: boolean
+    SystemFormatEvent:
+      type: object
+      description: system format update sent via WebSocket
+      properties:
+        cacheKey:
+          type: string
+        systemFormat:
+          $ref: "#/components/schemas/SYSTEM_FORMAT"
     TYPE:
       type: string
       enum:
@@ -1106,7 +1125,26 @@ paths:
             application/json:
               schema:
                 type: boolean
-      summary: Get By Id
+      summary: Fetch Railvoltage State
+      tags:
+        - Bus Resource
+  /api/bus/system-format:
+    post:
+      responses:
+        "200":
+          description: OK
+      summary: Switch System Format
+      tags:
+        - Bus Resource
+    get:
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SYSTEM_FORMAT"
+      summary: Fetch System Format State
       tags:
         - Bus Resource
   /api/constructions:

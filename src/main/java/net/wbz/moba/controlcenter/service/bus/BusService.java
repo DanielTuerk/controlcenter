@@ -15,6 +15,8 @@ import net.wbz.moba.controlcenter.shared.bus.PlayerEvent;
 import net.wbz.selectrix4java.bus.consumption.AllBusDataConsumer;
 import net.wbz.selectrix4java.data.recording.BusDataPlayer;
 import net.wbz.selectrix4java.data.recording.BusDataPlayerListener;
+import net.wbz.selectrix4java.device.Device;
+import net.wbz.selectrix4java.device.Device.SYSTEM_FORMAT;
 import net.wbz.selectrix4java.device.DeviceAccessException;
 import org.jboss.logging.Logger;
 
@@ -61,6 +63,19 @@ public class BusService {
             .orElse(false);
     }
 
+    public SYSTEM_FORMAT getSystemFormat() {
+        return deviceService.getConnectedDevice()
+            .map(device -> {
+                try {
+                    return device.getActualSystemFormat();
+                } catch (DeviceAccessException e) {
+                    LOGGER.error("can't read actual system format", e);
+                    return SYSTEM_FORMAT.UNKNOWN;
+                }
+            })
+            .orElse(SYSTEM_FORMAT.UNKNOWN);
+    }
+
     public void toggleRailVoltage() {
         deviceService.getConnectedDevice()
             .ifPresent(device -> {
@@ -70,6 +85,11 @@ public class BusService {
                     LOGGER.error("can't toggle rail voltage", e);
                 }
             });
+    }
+
+    public void switchSystemFormat() {
+        deviceService.getConnectedDevice()
+            .ifPresent(Device::switchDeviceSystemFormat);
     }
 
     public void startTrackingBus() {

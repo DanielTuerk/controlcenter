@@ -8,7 +8,7 @@ import {NgForOf} from "@angular/common";
 import {DeviceInfo, TYPE} from "../../../../shared/openapi-gen";
 import {DeviceSubscription} from "../../../shared/websocket/device.subscription";
 import {MatIcon} from "@angular/material/icon";
-import {MatButton, MatFabButton} from "@angular/material/button";
+import {MatFabButton} from "@angular/material/button";
 import {RouterLink} from "@angular/router";
 
 @Component({
@@ -23,7 +23,6 @@ import {RouterLink} from "@angular/router";
     NgForOf,
     MatIcon,
     MatFabButton,
-    MatButton,
     RouterLink
   ],
   templateUrl: './device.component.html',

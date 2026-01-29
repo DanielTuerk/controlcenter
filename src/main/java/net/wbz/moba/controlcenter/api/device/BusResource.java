@@ -10,6 +10,7 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import net.wbz.moba.controlcenter.service.bus.BusService;
+import net.wbz.selectrix4java.device.Device.SYSTEM_FORMAT;
 
 @Path("/api/bus")
 @Produces(MediaType.APPLICATION_JSON)
@@ -29,6 +30,19 @@ public class BusResource {
     @Path("/railvoltage")
     public Response updateRailVoltage() {
         busService.toggleRailVoltage();
+        return Response.ok().build();
+    }
+
+    @GET
+    @Path("/system-format")
+    public SYSTEM_FORMAT fetchSystemFormatState() {
+        return busService.getSystemFormat();
+    }
+
+    @POST
+    @Path("/system-format")
+    public Response switchSystemFormat() {
+        busService.switchSystemFormat();
         return Response.ok().build();
     }
 

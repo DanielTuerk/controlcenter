@@ -3,12 +3,14 @@ import {MatSlideToggle} from "@angular/material/slide-toggle";
 import {BusSubscription} from "../../../shared/websocket/bus.subscription";
 import {BusService} from "../../../shared/bus.service";
 import {DeviceSubscription} from "../../../shared/websocket/device.subscription";
-import {TYPE} from "../../../../shared/openapi-gen";
+import {SYSTEMFORMAT, TYPE} from "../../../../shared/openapi-gen";
+import {MatButton} from "@angular/material/button";
 
 @Component({
   selector: 'app-bus',
   imports: [
-    MatSlideToggle
+    MatSlideToggle,
+    MatButton
   ],
   templateUrl: './bus.component.html',
   styleUrl: './bus.component.css'
@@ -20,8 +22,12 @@ export class BusComponent implements OnInit {
 
   isConnected: boolean = false;
   railVoltageEnabled = false;
+  systemFormat = SYSTEMFORMAT.Unknown;
 
   ngOnInit() {
+    this.busSubscription.systemFormat().subscribe(event => {
+      this.systemFormat = event.systemFormat ? event.systemFormat : SYSTEMFORMAT.Unknown;
+    });
     this.busSubscription.railvoltage().subscribe(event => {
       this.railVoltageEnabled = event.state ? event.state : false;
     });
@@ -37,5 +43,9 @@ export class BusComponent implements OnInit {
   onRecordingToggle() {
     // TODO
     console.log("TODO: no recording");
+  }
+
+  onSystemFormat() {
+    this.busService.busFormat();
   }
 }

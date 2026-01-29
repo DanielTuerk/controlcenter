@@ -1,4 +1,5 @@
 <div class="footer-content">
+  <button mat-stroked-button [textContent]="systemFormat" (click)="onSystemFormat()"></button>
   <mat-slide-toggle (change)="onRailVoltageToggle()"
                     [checked]="railVoltageEnabled"
                     [disabled]="!isConnected">Voltage</mat-slide-toggle>

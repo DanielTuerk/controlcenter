@@ -7,10 +7,13 @@ import {EditorComponent} from "./editor/editor.component";
 import {SettingComponent} from "./setting/setting.component";
 import {ScenarioEditComponent} from "./scenario/scenario-edit/scenario-edit.component";
 import {routes as settingRoutes} from "./setting/setting.routes";
-import {DeviceComponent} from "./setting/device/device.component";
-import {DeviceEditComponent} from "./setting/device-edit/device-edit.component";
 
 export const routes: Routes = [
+  {
+    path: '',
+    redirectTo: 'viewer',
+    pathMatch: 'full'
+  },
   {
     path: 'train',
     component: TrainComponent

@@ -15,6 +15,4 @@ import {FooterComponent} from "./footer/footer.component";
   styleUrl: './control-center.component.css'
 })
 export class ControlCenterComponent {
-  private constructionService = inject(ConstructionService);
-  currentConstruction = this.constructionService.currentConstruction
 }

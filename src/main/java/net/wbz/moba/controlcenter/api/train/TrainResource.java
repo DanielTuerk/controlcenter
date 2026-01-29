@@ -42,9 +42,8 @@ public class TrainResource {
     @POST
     @Transactional
     public Response create(TrainDto dto) {
-        var construction = trainManager.create(dto);
         return Response.status(Response.Status.CREATED)
-            .entity(construction)
+            .entity(trainManager.create(dto))
             .build();
     }
 

@@ -32,7 +32,7 @@ public class TrainManager {
     private final TrainRepository trainRepository;
     //    private final EventBroadcaster eventBroadcaster;
     private final TrainMapper trainMapper;
-    private final EventBroadcaster eventBroadcaster;
+        private final EventBroadcaster eventBroadcaster;
 
     @Inject
     public TrainManager(TrainRepository trainRepository, TrainMapper trainMapper, EventBroadcaster eventBroadcaster) {
@@ -79,9 +79,9 @@ public class TrainManager {
 
     @Transactional
     public boolean deleteById(Long id) {
+        var state = trainRepository.deleteById(id);
         reloadData(id);
-        return trainRepository.deleteById(id);
-        // TODO reload trains
+        return state;
     }
 
     public boolean existsById(Long id) {

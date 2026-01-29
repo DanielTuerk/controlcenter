@@ -14,7 +14,9 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import java.util.List;
+import java.util.Objects;
 import net.wbz.moba.controlcenter.service.constrution.ConstructionManager;
+import net.wbz.moba.controlcenter.service.constrution.ConstructionService;
 import net.wbz.moba.controlcenter.shared.constrution.Construction;
 
 @Path("/api/constructions")
@@ -24,6 +26,8 @@ public class ConstructionResource {
 
     @Inject
     ConstructionManager constructionManager;
+    @Inject
+    ConstructionService constructionService;
 
     @GET
     public List<Construction> listAll() {
@@ -62,6 +66,13 @@ public class ConstructionResource {
     @DELETE
     @Path("/{id}")
     public Response delete(@PathParam("id") Long id) {
+        if (constructionService.getCurrentConstruction()
+            .map(construction -> Objects.equals(construction.getId(), id))
+            .orElse(false)) {
+            return Response.status(Response.Status.FORBIDDEN.getStatusCode(),
+                    "can't delete current construction")
+                .build();
+        }
         boolean deleted = constructionManager.deleteById(id);
         if (deleted) {
             return Response.noContent().build();

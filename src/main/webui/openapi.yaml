@@ -164,6 +164,13 @@ components:
           type: string
         inAutomaticMode:
           type: boolean
+    ConstructionDataChangedEvent:
+      type: object
+      description: Construction update sent via WebSocket
+      properties:
+        itemId:
+          type: integer
+          format: int64
     ConstructionDto:
       type: object
       properties:

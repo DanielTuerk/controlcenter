@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {CurrentConstructionChangeEvent} from "../../../shared/openapi-gen";
+import {ConstructionDataChangedEvent, CurrentConstructionChangeEvent} from "../../../shared/openapi-gen";
 import {Subscription} from "./subscription";
 
 @Injectable({
@@ -8,5 +8,6 @@ import {Subscription} from "./subscription";
 export class ConstructionSubscription extends Subscription {
 
   readonly currentConstruction = this.createEventAccessor<CurrentConstructionChangeEvent>('CurrentConstructionChangeEvent');
+  readonly constructionDataChanged = this.createEventAccessor<ConstructionDataChangedEvent>('ConstructionDataChangedEvent');
 
 }

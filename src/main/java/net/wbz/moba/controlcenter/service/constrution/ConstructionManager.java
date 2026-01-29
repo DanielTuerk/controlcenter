@@ -7,10 +7,12 @@ import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import net.wbz.moba.controlcenter.EventBroadcaster;
 import net.wbz.moba.controlcenter.api.construction.ConstructionDto;
 import net.wbz.moba.controlcenter.persist.entity.ConstructionEntity;
 import net.wbz.moba.controlcenter.persist.repository.ConstructionRepository;
 import net.wbz.moba.controlcenter.shared.constrution.Construction;
+import net.wbz.moba.controlcenter.shared.constrution.ConstructionDataChangedEvent;
 import org.jboss.logging.Logger;
 
 /**
@@ -25,22 +27,17 @@ public class ConstructionManager {
     ConstructionRepository constructionRepository;
     @Inject
     ConstructionMapper constructionMapper;
-
-//    @Inject
-//    public ConstructionService(ConstructionDao dao, TrackManager trackManager, EventBroadcaster eventBroadcaster) {
-//        this.dao = dao;
-//        this.eventBroadcaster = eventBroadcaster;
-//        mapper = new DataMapper<>(Construction.class, ConstructionEntity.class);
-//
-//    TODO: for what was that? We also rely on events on server side, so we need an abstraction for server and client events
-//        addListener(trackManager);
-//    }
+    @Inject
+    EventBroadcaster eventBroadcaster;
 
     @Transactional
     public Construction create(ConstructionDto construction) {
         ConstructionEntity entity = new ConstructionEntity();
         entity.name = construction.name();
         constructionRepository.persist(entity);
+
+        eventBroadcaster.fireEvent(new ConstructionDataChangedEvent(entity.id));
+
         return constructionMapper.toDto(entity);
     }
 
@@ -51,7 +48,8 @@ public class ConstructionManager {
             throw new EntityNotFoundException();
         }
         existing.name = updated.name();
-        // TODO throw change event
+
+        eventBroadcaster.fireEvent(new ConstructionDataChangedEvent(id));
     }
 
     public List<Construction> load() {
@@ -66,7 +64,9 @@ public class ConstructionManager {
 
     @Transactional
     public boolean deleteById(Long id) {
-        return constructionRepository.deleteById(id);
+        var state = constructionRepository.deleteById(id);
+        eventBroadcaster.fireEvent(new ConstructionDataChangedEvent(id));
+        return state;
     }
 
     public boolean existsById(Long id) {

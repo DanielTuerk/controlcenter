@@ -2,7 +2,9 @@ import {inject, signal} from "@angular/core";
 import {HttpClient} from "@angular/common/http";
 import {Router} from "@angular/router";
 import {SnackBar} from "../control-center/common/snack-bar.component";
-import {Construction} from "../../shared/openapi-gen";
+import {Construction, Scenario} from "../../shared/openapi-gen";
+import {catchError} from "rxjs/operators";
+import {EMPTY, Observable} from "rxjs";
 
 export class ConstructionService {
 
@@ -25,6 +27,16 @@ export class ConstructionService {
         this.snackBar.showError(`can't load constructions: ${error.message}`);
       }
     })
+  }
+
+  fetchConstructions() {
+    return this.httpClient.get<Construction[]>('/api/constructions')
+    .pipe(
+      catchError((err: any) => {
+        this.snackBar.showError(`can't fetch constructions: ${err.message}`);
+        return EMPTY
+      })
+    );
   }
 
   loadCurrentConstruction() {
@@ -61,5 +73,41 @@ export class ConstructionService {
     if (!this.router.url.startsWith(ccPath)) {
       this.router.navigate([ccPath, {}]);
     }
+  }
+
+  fetchConstruction(constructionId: Number) {
+    return this.httpClient.get<Scenario>('/api/constructions/' + constructionId)
+  }
+
+  createConstruction(construction: Construction) {
+    return this.httpClient.post('/api/constructions/', construction)
+    .pipe(
+      catchError((err: any, caught: Observable<any>) => {
+        this.snackBar.showError(`can't create construction: ${err.message}`);
+        return EMPTY
+      })
+    )
+  }
+
+  saveConstruction(construction: Construction) {
+    return this.httpClient.put('/api/constructions/' + construction.id, construction)
+    .pipe(
+      catchError((err: any, caught: Observable<any>) => {
+        this.snackBar.showError(`can't save construction ${construction.id}: ${err.message}`);
+        return EMPTY
+      })
+    )
+  }
+
+  deleteConstruction(constructionId: Number) {
+    return this.httpClient.delete('/api/constructions/' + constructionId)
+    .subscribe({
+      next: (construction) => {
+        this.snackBar.showSuccess(`construction ${constructionId} deleted`);
+      },
+      error: (error) => {
+        this.snackBar.showError(`can't delete construction ${constructionId}: ${error.message}`);
+      }
+    });
   }
 }

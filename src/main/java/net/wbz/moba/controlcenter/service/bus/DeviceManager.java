@@ -45,7 +45,7 @@ public class DeviceManager {
         }
         existing.key = updated.getKey();
         existing.type = DEVICE_TYPE.valueOf(updated.getType().name());
-        // TODO throw change event
+
         eventBroadcaster.fireEvent(new DeviceDataChangedEvent(id));
     }
 

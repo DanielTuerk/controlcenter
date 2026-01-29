@@ -1,1 +1,53 @@
-<p>construction works!</p>
+<mat-card appearance="outlined" class="container">
+  <mat-card-header>
+    <mat-card-title>Constructions</mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+
+    <p>
+      <button mat-stroked-button routerLink="create">
+        <mat-icon>add</mat-icon>
+        Create
+      </button>
+    </p>
+    <table mat-table [dataSource]="constructions()" class="mat-elevation-z8">
+
+      <ng-container matColumnDef="id">
+        <th mat-header-cell *matHeaderCellDef> Id</th>
+        <td mat-cell *matCellDef="let element"> {{ element.id }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef> Name</th>
+        <td mat-cell *matCellDef="let element">
+          {{ element.name }}
+          @if (isCurrentConstruction(element)) {
+            <mat-chip>current</mat-chip>
+          }
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="action">
+        <th mat-header-cell *matHeaderCellDef></th>
+        <td mat-cell *matCellDef="let construction">
+          <button mat-icon-button>
+            <mat-icon routerLink="{{construction.id}}">edit</mat-icon>
+          </button>
+          @if (!isCurrentConstruction(construction)) {
+            <button mat-icon-button>
+              <mat-icon (click)="deleteConstruction(construction)">delete</mat-icon>
+            </button>
+            &nbsp;
+            <button mat-mini-fab>
+              <mat-icon (click)="selectCurrentConstruction(construction)">logout</mat-icon>
+            </button>
+          }
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+
+  </mat-card-content>
+</mat-card>

@@ -39,6 +39,10 @@ export class DeviceComponent implements OnInit {
 
   ngOnInit() {
     this.fetchDevices();
+
+    this.deviceSubscription.deviceDataChanged().subscribe(event => {
+      this.fetchDevices();
+    });
   }
 
   onConnectionToggle(checked: boolean) {

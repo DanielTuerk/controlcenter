@@ -7,9 +7,11 @@ import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import net.wbz.moba.controlcenter.EventBroadcaster;
 import net.wbz.moba.controlcenter.persist.entity.DeviceInfoEntity;
 import net.wbz.moba.controlcenter.persist.entity.DeviceInfoEntity.DEVICE_TYPE;
 import net.wbz.moba.controlcenter.persist.repository.DeviceInfoRepository;
+import net.wbz.moba.controlcenter.shared.bus.DeviceDataChangedEvent;
 import net.wbz.moba.controlcenter.shared.bus.DeviceInfo;
 
 /**
@@ -22,6 +24,8 @@ public class DeviceManager {
     DeviceInfoRepository deviceInfoRepository;
     @Inject
     DeviceInfoMapper deviceInfoMapper;
+    @Inject
+    EventBroadcaster eventBroadcaster;
 
     @Transactional
     public DeviceInfo create(DeviceInfo construction) {
@@ -29,6 +33,7 @@ public class DeviceManager {
         entity.key = construction.getKey();
         entity.type = DEVICE_TYPE.valueOf(construction.getType().name());
         deviceInfoRepository.persist(entity);
+        eventBroadcaster.fireEvent(new DeviceDataChangedEvent(entity.id));
         return deviceInfoMapper.toDto(entity);
     }
 
@@ -41,6 +46,7 @@ public class DeviceManager {
         existing.key = updated.getKey();
         existing.type = DEVICE_TYPE.valueOf(updated.getType().name());
         // TODO throw change event
+        eventBroadcaster.fireEvent(new DeviceDataChangedEvent(id));
     }
 
     public List<DeviceInfo> load() {
@@ -55,7 +61,9 @@ public class DeviceManager {
 
     @Transactional
     public boolean deleteById(Long id) {
-        return deviceInfoRepository.deleteById(id);
+        var state = deviceInfoRepository.deleteById(id);
+        eventBroadcaster.fireEvent(new DeviceDataChangedEvent(id));
+        return state;
     }
 
     public boolean existsById(Long id) {

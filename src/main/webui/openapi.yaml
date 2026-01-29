@@ -262,6 +262,13 @@ components:
           $ref: "#/components/schemas/TYPE"
         cacheKey:
           type: string
+    DeviceDataChangedEvent:
+      type: object
+      description: Device update sent via WebSocket
+      properties:
+        itemId:
+          type: integer
+          format: int64
     DeviceInfo:
       type: object
       properties:

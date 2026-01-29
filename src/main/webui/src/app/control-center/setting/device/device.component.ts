@@ -53,13 +53,21 @@ export class DeviceComponent implements OnInit {
   isConnected: boolean = false;
 
   ngOnInit() {
-    this.deviceService.loadDevices().subscribe(data => {
-      this.devices.set(data);
-    })
+    this.fetchDevices();
 
     this.deviceSubscription.deviceConnection().subscribe(device => {
       this.isConnected = device.eventType === TYPE.Connected;
     });
+
+    this.deviceSubscription.deviceDataChanged().subscribe(event => {
+      this.fetchDevices();
+    });
+  }
+
+  private fetchDevices() {
+    this.deviceService.loadDevices().subscribe(data => {
+      this.devices.set(data);
+    })
   }
 
   deleteDevice(device: DeviceInfo) {

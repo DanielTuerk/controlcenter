@@ -7,6 +7,7 @@ import {EditorComponent} from "./editor/editor.component";
 import {SettingComponent} from "./setting/setting.component";
 import {ScenarioEditComponent} from "./scenario/scenario-edit/scenario-edit.component";
 import {routes as settingRoutes} from "./setting/setting.routes";
+import {StationComponent} from "./station/station.component";
 
 export const routes: Routes = [
   {
@@ -37,6 +38,9 @@ export const routes: Routes = [
   {
     path: 'editor',
     component: EditorComponent
+  },{
+    path: 'station',
+    component: StationComponent
   },
   {
     path: 'settings',

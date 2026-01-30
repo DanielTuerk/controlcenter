@@ -1,6 +1,7 @@
-package net.wbz.moba.controlcenter.web.server.persist.scenario;
+package net.wbz.moba.controlcenter.service.scenario;
 
 import com.google.common.collect.Lists;
+import io.quarkus.test.junit.QuarkusTest;
 import java.util.List;
 import net.wbz.moba.controlcenter.shared.scenario.TrackNotFoundException;
 import net.wbz.moba.controlcenter.shared.track.model.AbstractTrackPart;
@@ -8,20 +9,21 @@ import net.wbz.moba.controlcenter.shared.track.model.BlockStraight;
 import net.wbz.moba.controlcenter.shared.track.model.Curve;
 import net.wbz.moba.controlcenter.shared.track.model.Curve.DIRECTION;
 import net.wbz.moba.controlcenter.shared.track.model.TrackBlock;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
- * Test {@link TrackBuilder} for {@link net.wbz.moba.controlcenter.web.shared.track.model.Curve}.
+ * Test {@link TrackBuilder} for {@link Curve}.
  *
  * @author Daniel Tuerk
  */
+@QuarkusTest
 public class TrackBuilderCurveTest extends AbstractTrackBuilderTest {
 
     private TrackBlock endBlock;
     private TrackBlock startBlock;
 
-    @BeforeMethod
+    @BeforeEach
     public void beforeMethod() {
         startBlock = createTrackBlock(20, 1);
         endBlock = createTrackBlock(30, 3);

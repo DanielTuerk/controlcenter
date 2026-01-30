@@ -1,15 +1,16 @@
-package net.wbz.moba.controlcenter.web.server.persist.scenario;
+package net.wbz.moba.controlcenter.service.scenario;
 
-import static org.mockito.Mockito.mock;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
 import com.google.common.collect.Lists;
-import com.google.inject.AbstractModule;
-
+import io.quarkus.test.InjectMock;
+import jakarta.inject.Inject;
 import java.util.List;
-import junit.framework.Assert;
-import net.wbz.moba.controlcenter.web.server.web.editor.TrackManager;
+import java.util.regex.Pattern;
+import net.wbz.moba.controlcenter.service.track.TrackProvider;
 import net.wbz.moba.controlcenter.shared.scenario.Route;
 import net.wbz.moba.controlcenter.shared.scenario.Track;
 import net.wbz.moba.controlcenter.shared.scenario.TrackNotFoundException;
@@ -20,12 +21,11 @@ import net.wbz.moba.controlcenter.shared.track.model.Curve;
 import net.wbz.moba.controlcenter.shared.track.model.GridPosition;
 import net.wbz.moba.controlcenter.shared.track.model.Straight;
 import net.wbz.moba.controlcenter.shared.track.model.Straight.DIRECTION;
+import net.wbz.moba.controlcenter.shared.track.model.TrackBlock;
 import net.wbz.moba.controlcenter.shared.track.model.Turnout;
 import net.wbz.moba.controlcenter.shared.track.model.Turnout.PRESENTATION;
-import net.wbz.moba.controlcenter.shared.track.model.TrackBlock;
+import org.junit.jupiter.api.BeforeEach;
 import org.mockito.Mockito;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Guice;
 
 /**
  * Test the {@link TrackBuilder} with different track layouts.
@@ -37,18 +37,22 @@ import org.testng.annotations.Guice;
  *
  * @author Daniel Tuerk
  */
-@Guice(modules = AbstractTrackBuilderTest.TrackBuilderTestModule.class)
+
 abstract class AbstractTrackBuilderTest {
 
     @Inject
-    private TrackBuilder trackBuilder;
-    @Inject
-    private TrackManager trackManager;
+    TrackBuilder trackBuilder;
+    @InjectMock
+    TrackProvider trackProvider;
 
-    @BeforeMethod
-    public void beforeMethod() {
-        Mockito.reset(trackManager);
+    @BeforeEach
+    public void beforeEach() {
+        Mockito.reset(trackProvider);
         trackBuilder.setTimeoutEnabled(false);
+    }
+
+    protected void matches(String regex, String message) {
+        assertTrue(Pattern.compile(regex).matcher(message).matches(), "message did not match regex");
     }
 
     protected Route mockRoute() {
@@ -68,9 +72,9 @@ abstract class AbstractTrackBuilderTest {
         route.setEnd(endBlock);
 
         Track track = trackBuilder.build(route);
-        Assert.assertEquals(expectedLength, track.getLength());
-        Assert.assertEquals(0, track.getTrackBlocks().size());
-        Assert.assertEquals(0, track.getTrackFunctions().size());
+        assertEquals(expectedLength, track.getLength());
+        assertEquals(0, track.getTrackBlocks().size());
+        assertEquals(0, track.getTrackFunctions().size());
     }
 
     void testTurnout(int switchAddress,
@@ -81,11 +85,11 @@ abstract class AbstractTrackBuilderTest {
         route.setEnd(endBlock);
 
         Track track = trackBuilder.build(route);
-        Assert.assertEquals(expectedTrackLength, track.getLength());
-        Assert.assertEquals(0, track.getTrackBlocks().size());
-        Assert.assertEquals(1, track.getTrackFunctions().size());
-        Assert.assertEquals(new BusDataConfiguration(1, switchAddress, switchBit, switchTargetBitState),
-                track.getTrackFunctions().get(0));
+        assertEquals(expectedTrackLength, track.getLength());
+        assertEquals(0, track.getTrackBlocks().size());
+        assertEquals(1, track.getTrackFunctions().size());
+        assertEquals(new BusDataConfiguration(1, switchAddress, switchBit, switchTargetBitState),
+            track.getTrackFunctions().getFirst());
     }
 
     Straight createHorizontalStraight(int x, int y) {
@@ -165,19 +169,11 @@ abstract class AbstractTrackBuilderTest {
     }
 
     void mockTrack(List<? extends AbstractTrackPart> trackParts) {
-        when(trackManager.getTrack()).thenReturn(Lists.newArrayList(trackParts));
+        when(trackProvider.getTrack()).thenReturn(Lists.newArrayList(trackParts));
     }
 
     TrackBuilder getTrackBuilder() {
         return trackBuilder;
     }
 
-    public static class TrackBuilderTestModule extends AbstractModule {
-
-        @Override
-        protected void configure() {
-            TrackManager mock = mock(TrackManager.class);
-            bind(TrackManager.class).toInstance(mock);
-        }
-    }
 }

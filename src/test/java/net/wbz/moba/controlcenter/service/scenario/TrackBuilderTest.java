@@ -1,7 +1,10 @@
-package net.wbz.moba.controlcenter.web.server.persist.scenario;
+package net.wbz.moba.controlcenter.service.scenario;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.google.common.collect.Lists;
-import junit.framework.Assert;
+import io.quarkus.test.junit.QuarkusTest;
 import net.wbz.moba.controlcenter.shared.scenario.Route;
 import net.wbz.moba.controlcenter.shared.scenario.Track;
 import net.wbz.moba.controlcenter.shared.scenario.TrackNotFoundException;
@@ -10,36 +13,39 @@ import net.wbz.moba.controlcenter.shared.track.model.BusDataConfiguration;
 import net.wbz.moba.controlcenter.shared.track.model.Curve;
 import net.wbz.moba.controlcenter.shared.track.model.Curve.DIRECTION;
 import net.wbz.moba.controlcenter.shared.track.model.GridPosition;
+import net.wbz.moba.controlcenter.shared.track.model.TrackBlock;
 import net.wbz.moba.controlcenter.shared.track.model.Turnout;
 import net.wbz.moba.controlcenter.shared.track.model.Turnout.PRESENTATION;
-import net.wbz.moba.controlcenter.shared.track.model.TrackBlock;
-import org.testng.annotations.Test;
-
+import org.junit.jupiter.api.Test;
 /**
  * @author Daniel Tuerk
  */
+@QuarkusTest
 public class TrackBuilderTest extends AbstractTrackBuilderTest {
 
-    @Test(expectedExceptions = TrackNotFoundException.class, expectedExceptionsMessageRegExp = "no route given")
-    public void testNoRoute() throws TrackNotFoundException {
-        getTrackBuilder().build(null);
+    @Test
+    public void testNoRoute() {
+        assertEquals("no route given",
+            assertThrows(TrackNotFoundException.class, () -> getTrackBuilder().build(null)).getMessage());
     }
 
-    @Test(expectedExceptions = TrackNotFoundException.class, expectedExceptionsMessageRegExp = "no route start defined")
+    @Test
     public void testNoRouteStart() throws TrackNotFoundException {
         Route route = mockRoute();
         route.setEnd(new TrackBlock());
-        getTrackBuilder().build(route);
+        assertEquals("no route start defined",
+            assertThrows(TrackNotFoundException.class, () -> getTrackBuilder().build(route)).getMessage());
     }
 
-    @Test(expectedExceptions = TrackNotFoundException.class, expectedExceptionsMessageRegExp = "no route end defined")
+    @Test
     public void testNoRouteEnd() throws TrackNotFoundException {
         Route route = mockRoute();
         route.setStart(new BlockStraight());
-        getTrackBuilder().build(route);
+        assertEquals("no route end defined",
+            assertThrows(TrackNotFoundException.class, () -> getTrackBuilder().build(route)).getMessage());
     }
 
-    @Test(expectedExceptions = TrackNotFoundException.class, expectedExceptionsMessageRegExp = ".*invalid start.*invalid block function.*")
+    @Test
     public void testInvalidRouteStart() throws TrackNotFoundException {
         Route route = mockRoute();
         BlockStraight blockStraight = new BlockStraight();
@@ -48,17 +54,19 @@ public class TrackBuilderTest extends AbstractTrackBuilderTest {
         blockStraight.setRightTrackBlock(rightTrackBlock);
         route.setStart(blockStraight);
         route.setEnd(createTrackBlock(11, 1, true));
-        getTrackBuilder().build(route);
+        matches(".*invalid start.*invalid block function.*",
+            assertThrows(TrackNotFoundException.class, () -> getTrackBuilder().build(route)).getMessage());
     }
 
-    @Test(expectedExceptions = TrackNotFoundException.class, expectedExceptionsMessageRegExp = ".*invalid end.*invalid block function.*")
+    @Test
     public void testInvalidRouteEnd() throws TrackNotFoundException {
         Route route = mockRoute();
         TrackBlock end = new TrackBlock();
         end.setBlockFunction(new BusDataConfiguration());
         route.setEnd(end);
         route.setStart(createBlockStraight(11, 1, true));
-        getTrackBuilder().build(route);
+        matches(".*invalid end.*invalid block function.*",
+            assertThrows(TrackNotFoundException.class, () -> getTrackBuilder().build(route)).getMessage());
     }
 
     /**
@@ -213,11 +221,11 @@ public class TrackBuilderTest extends AbstractTrackBuilderTest {
         route.setWaypoints(Lists.newArrayList(new GridPosition(waypointX, waypointY)));
 
         Track track = getTrackBuilder().build(route);
-        Assert.assertEquals(7, track.getLength());
-        Assert.assertEquals(1, track.getTrackBlocks().size());
-        Assert.assertEquals(new BusDataConfiguration(1, blockAddress, blockBit, true),
+        assertEquals(7, track.getLength());
+        assertEquals(1, track.getTrackBlocks().size());
+        assertEquals(new BusDataConfiguration(1, blockAddress, blockBit, true),
                 track.getTrackBlocks().iterator().next().getBlockFunction());
-        Assert.assertEquals(0, track.getTrackFunctions().size());
+        assertEquals(0, track.getTrackFunctions().size());
     }
 
     /**
@@ -262,11 +270,11 @@ public class TrackBuilderTest extends AbstractTrackBuilderTest {
         route.setWaypoints(Lists.newArrayList(new GridPosition(waypointX, waypointY)));
 
         Track track = getTrackBuilder().build(route);
-        Assert.assertEquals(7, track.getLength());
-        Assert.assertEquals(1, track.getTrackBlocks().size());
-        Assert.assertEquals(new BusDataConfiguration(1, blockAddress, blockBit, true),
+        assertEquals(7, track.getLength());
+        assertEquals(1, track.getTrackBlocks().size());
+        assertEquals(new BusDataConfiguration(1, blockAddress, blockBit, true),
                 track.getTrackBlocks().iterator().next().getBlockFunction());
-        Assert.assertEquals(0, track.getTrackFunctions().size());
+        assertEquals(0, track.getTrackFunctions().size());
     }
 
     /**
@@ -274,7 +282,7 @@ public class TrackBuilderTest extends AbstractTrackBuilderTest {
      * S # - E
      * </pre>
      */
-    @Test(expectedExceptions = TrackNotFoundException.class)
+    @Test
     public void testException() throws TrackNotFoundException {
         int startAddress = 20;
         int startBit = 1;
@@ -293,7 +301,8 @@ public class TrackBuilderTest extends AbstractTrackBuilderTest {
         Route route = mockRoute();
         route.setStart(startBlockStraight);
         route.setEnd(endBlock);
-        getTrackBuilder().build(route);
+        assertEquals("no track found!",
+            assertThrows(TrackNotFoundException.class, () -> getTrackBuilder().build(route)).getMessage());
     }
 
     /**
@@ -301,7 +310,7 @@ public class TrackBuilderTest extends AbstractTrackBuilderTest {
      * S - E
      * </pre>
      */
-    @Test(expectedExceptions = TrackNotFoundException.class)
+    @Test
     public void testExceptionNoTrack() throws TrackNotFoundException {
         int startAddress = 20;
         int startBit = 1;
@@ -319,7 +328,8 @@ public class TrackBuilderTest extends AbstractTrackBuilderTest {
         Route route = mockRoute();
         route.setStart(startBlockStraight);
         route.setEnd(endBlock);
-        getTrackBuilder().build(route);
+        assertEquals("no track found!",
+            assertThrows(TrackNotFoundException.class, () -> getTrackBuilder().build(route)).getMessage());
     }
 
     /**
@@ -327,7 +337,7 @@ public class TrackBuilderTest extends AbstractTrackBuilderTest {
      * W # S # E
      * </pre>
      */
-    @Test(expectedExceptions = TrackNotFoundException.class)
+    @Test
     public void testExceptionWaypoint() throws TrackNotFoundException {
         int startAddress = 20;
         int startBit = 1;
@@ -350,7 +360,9 @@ public class TrackBuilderTest extends AbstractTrackBuilderTest {
         route.setStart(startBlockStraight);
         route.setEnd(endBlock);
         route.setWaypoints(Lists.newArrayList(new GridPosition(waypointX, waypointY)));
-        getTrackBuilder().build(route);
+
+        assertEquals("no track found!",
+            assertThrows(TrackNotFoundException.class, () -> getTrackBuilder().build(route)).getMessage());
     }
 
     /**
@@ -359,7 +371,7 @@ public class TrackBuilderTest extends AbstractTrackBuilderTest {
      *   # W
      * </pre>
      */
-    @Test(expectedExceptions = TrackNotFoundException.class)
+    @Test
     public void testExceptionWaypointTurnout() throws TrackNotFoundException {
         int startAddress = 20;
         int startBit = 1;
@@ -389,7 +401,8 @@ public class TrackBuilderTest extends AbstractTrackBuilderTest {
         route.setEnd(endBlock);
         route.setWaypoints(Lists.newArrayList(new GridPosition(waypointX, waypointY)));
 
-        getTrackBuilder().build(route);
+        assertEquals("no track found!",
+            assertThrows(TrackNotFoundException.class, () -> getTrackBuilder().build(route)).getMessage());
     }
 
     /**
@@ -457,12 +470,12 @@ public class TrackBuilderTest extends AbstractTrackBuilderTest {
         route.setEnd(endBlock);
 
         Track track = getTrackBuilder().build(route);
-        Assert.assertEquals(7, track.getLength());
-        Assert.assertEquals(0, track.getTrackBlocks().size());
-        Assert.assertEquals(2, track.getTrackFunctions().size());
-        Assert.assertEquals(new BusDataConfiguration(1, switchAddress, switchBit, true),
+        assertEquals(7, track.getLength());
+        assertEquals(0, track.getTrackBlocks().size());
+        assertEquals(2, track.getTrackFunctions().size());
+        assertEquals(new BusDataConfiguration(1, switchAddress, switchBit, true),
                 track.getTrackFunctions().get(0));
-        Assert.assertEquals(new BusDataConfiguration(1, switchAddress2, switchBit2, true),
+        assertEquals(new BusDataConfiguration(1, switchAddress2, switchBit2, true),
                 track.getTrackFunctions().get(1));
     }
 
@@ -512,12 +525,12 @@ public class TrackBuilderTest extends AbstractTrackBuilderTest {
         route.setEnd(endBlock);
 
         Track track = getTrackBuilder().build(route);
-        Assert.assertEquals(6, track.getLength());
-        Assert.assertEquals(0, track.getTrackBlocks().size());
-        Assert.assertEquals(2, track.getTrackFunctions().size());
-        Assert.assertEquals(new BusDataConfiguration(1, switchAddress, switchBit, false),
+        assertEquals(6, track.getLength());
+        assertEquals(0, track.getTrackBlocks().size());
+        assertEquals(2, track.getTrackFunctions().size());
+        assertEquals(new BusDataConfiguration(1, switchAddress, switchBit, false),
                 track.getTrackFunctions().get(0));
-        Assert.assertEquals(new BusDataConfiguration(1, switchAddress2, switchBit2, false),
+        assertEquals(new BusDataConfiguration(1, switchAddress2, switchBit2, false),
                 track.getTrackFunctions().get(1));
     }
 
@@ -567,12 +580,12 @@ public class TrackBuilderTest extends AbstractTrackBuilderTest {
         route.setEnd(endBlock);
 
         Track track = getTrackBuilder().build(route);
-        Assert.assertEquals(6, track.getLength());
-        Assert.assertEquals(0, track.getTrackBlocks().size());
-        Assert.assertEquals(2, track.getTrackFunctions().size());
-        Assert.assertEquals(new BusDataConfiguration(1, switchAddress2, switchBit2, false),
+        assertEquals(6, track.getLength());
+        assertEquals(0, track.getTrackBlocks().size());
+        assertEquals(2, track.getTrackFunctions().size());
+        assertEquals(new BusDataConfiguration(1, switchAddress2, switchBit2, false),
                 track.getTrackFunctions().get(0));
-        Assert.assertEquals(new BusDataConfiguration(1, switchAddress, switchBit, true),
+        assertEquals(new BusDataConfiguration(1, switchAddress, switchBit, true),
                 track.getTrackFunctions().get(1));
     }
 
@@ -620,12 +633,12 @@ public class TrackBuilderTest extends AbstractTrackBuilderTest {
         route.setEnd(endBlock);
 
         Track track = getTrackBuilder().build(route);
-        Assert.assertEquals(6, track.getLength());
-        Assert.assertEquals(0, track.getTrackBlocks().size());
-        Assert.assertEquals(2, track.getTrackFunctions().size());
-        Assert.assertEquals(new BusDataConfiguration(1, switchAddress, switchBit, false),
+        assertEquals(6, track.getLength());
+        assertEquals(0, track.getTrackBlocks().size());
+        assertEquals(2, track.getTrackFunctions().size());
+        assertEquals(new BusDataConfiguration(1, switchAddress, switchBit, false),
                 track.getTrackFunctions().get(0));
-        Assert.assertEquals(new BusDataConfiguration(1, switchAddress2, switchBit2, false),
+        assertEquals(new BusDataConfiguration(1, switchAddress2, switchBit2, false),
                 track.getTrackFunctions().get(1));
     }
 
@@ -666,12 +679,12 @@ public class TrackBuilderTest extends AbstractTrackBuilderTest {
         route.setEnd(endBlock);
 
         Track track = getTrackBuilder().build(route);
-        Assert.assertEquals(5, track.getLength());
-        Assert.assertEquals(0, track.getTrackBlocks().size());
-        Assert.assertEquals(2, track.getTrackFunctions().size());
-        Assert.assertEquals(new BusDataConfiguration(1, switchAddress, switchBit, true),
+        assertEquals(5, track.getLength());
+        assertEquals(0, track.getTrackBlocks().size());
+        assertEquals(2, track.getTrackFunctions().size());
+        assertEquals(new BusDataConfiguration(1, switchAddress, switchBit, true),
                 track.getTrackFunctions().get(0));
-        Assert.assertEquals(new BusDataConfiguration(1, switchAddress2, switchBit2, true),
+        assertEquals(new BusDataConfiguration(1, switchAddress2, switchBit2, true),
                 track.getTrackFunctions().get(1));
     }
 
@@ -720,12 +733,12 @@ public class TrackBuilderTest extends AbstractTrackBuilderTest {
         route.setWaypoints(Lists.newArrayList(new GridPosition(waypointX, waypointY)));
 
         Track track = getTrackBuilder().build(route);
-        Assert.assertEquals(8, track.getLength());
-        Assert.assertEquals(0, track.getTrackBlocks().size());
-        Assert.assertEquals(2, track.getTrackFunctions().size());
-        Assert.assertEquals(new BusDataConfiguration(1, switchAddress, switchBit, true),
+        assertEquals(8, track.getLength());
+        assertEquals(0, track.getTrackBlocks().size());
+        assertEquals(2, track.getTrackFunctions().size());
+        assertEquals(new BusDataConfiguration(1, switchAddress, switchBit, true),
                 track.getTrackFunctions().get(0));
-        Assert.assertEquals(new BusDataConfiguration(1, switchAddress2, switchBit2, true),
+        assertEquals(new BusDataConfiguration(1, switchAddress2, switchBit2, true),
                 track.getTrackFunctions().get(1));
     }
 
@@ -774,12 +787,12 @@ public class TrackBuilderTest extends AbstractTrackBuilderTest {
         route.setWaypoints(Lists.newArrayList(new GridPosition(waypointX, waypointY)));
 
         Track track = getTrackBuilder().build(route);
-        Assert.assertEquals(6, track.getLength());
-        Assert.assertEquals(0, track.getTrackBlocks().size());
-        Assert.assertEquals(2, track.getTrackFunctions().size());
-        Assert.assertEquals(new BusDataConfiguration(1, switchAddress, switchBit, true),
+        assertEquals(6, track.getLength());
+        assertEquals(0, track.getTrackBlocks().size());
+        assertEquals(2, track.getTrackFunctions().size());
+        assertEquals(new BusDataConfiguration(1, switchAddress, switchBit, true),
                 track.getTrackFunctions().get(0));
-        Assert.assertEquals(new BusDataConfiguration(1, switchAddress2, switchBit2, true),
+        assertEquals(new BusDataConfiguration(1, switchAddress2, switchBit2, true),
                 track.getTrackFunctions().get(1));
 
     }
@@ -791,7 +804,7 @@ public class TrackBuilderTest extends AbstractTrackBuilderTest {
      * # # #
      * </pre>
      */
-    @Test(expectedExceptions = TrackNotFoundException.class)
+    @Test
     public void testEndless() throws TrackNotFoundException {
         int startAddress = 20;
         int startBit = 1;
@@ -813,7 +826,9 @@ public class TrackBuilderTest extends AbstractTrackBuilderTest {
         Route route = mockRoute();
         route.setStart(startBlockStraight);
         route.setEnd(createTrackBlock(100, 1, true));
-        getTrackBuilder().build(route);
+
+        assertEquals("no start or end",
+            assertThrows(TrackNotFoundException.class, () -> getTrackBuilder().build(route)).getMessage());
     }
 
 }

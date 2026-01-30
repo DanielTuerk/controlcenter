@@ -1,22 +1,26 @@
-package net.wbz.moba.controlcenter.web.server.persist.scenario;
+package net.wbz.moba.controlcenter.service.scenario;
+
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.google.common.collect.Lists;
+import io.quarkus.test.junit.QuarkusTest;
 import net.wbz.moba.controlcenter.shared.scenario.TrackNotFoundException;
 import net.wbz.moba.controlcenter.shared.track.model.BlockStraight;
 import net.wbz.moba.controlcenter.shared.track.model.BusDataConfiguration;
 import net.wbz.moba.controlcenter.shared.track.model.Curve;
 import net.wbz.moba.controlcenter.shared.track.model.Curve.DIRECTION;
+import net.wbz.moba.controlcenter.shared.track.model.TrackBlock;
 import net.wbz.moba.controlcenter.shared.track.model.Turnout;
 import net.wbz.moba.controlcenter.shared.track.model.Turnout.PRESENTATION;
-import net.wbz.moba.controlcenter.shared.track.model.TrackBlock;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test {@link TrackBuilder} for {@link Turnout}.
  *
  * @author Daniel Tuerk
  */
+@QuarkusTest
 public class TrackBuilderTurnoutTest extends AbstractTrackBuilderTest {
 
     private int switchAddress;
@@ -24,8 +28,8 @@ public class TrackBuilderTurnoutTest extends AbstractTrackBuilderTest {
     private TrackBlock endBlock;
     private TrackBlock startBlock;
 
-    @BeforeMethod
-    public void beforeMethod() {
+    @BeforeEach
+    public void beforeEach() {
         startBlock = createTrackBlock(20, 1);
         endBlock = createTrackBlock(30, 3);
 
@@ -362,7 +366,7 @@ public class TrackBuilderTurnoutTest extends AbstractTrackBuilderTest {
      *
      * Turnout to right, no drive from bottom.
      */
-    @Test(expectedExceptions = TrackNotFoundException.class)
+    @Test
     public void testTurnout_LeftToRight_Exception() throws TrackNotFoundException {
         BlockStraight startBlockStraight = createVerticalBlockStraight(1, 4, startBlock);
 
@@ -375,7 +379,8 @@ public class TrackBuilderTurnoutTest extends AbstractTrackBuilderTest {
             createVerticalStraight(1, 3),
             startBlockStraight));
 
-        testTurnout(true, -1, startBlockStraight);
+        assertThrows(TrackNotFoundException.class,
+            () -> testTurnout(true, -1, startBlockStraight));
     }
 
     /**

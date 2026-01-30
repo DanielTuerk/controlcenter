@@ -1,8 +1,10 @@
-package net.wbz.moba.controlcenter.web.server.persist.scenario;
+package net.wbz.moba.controlcenter.service.scenario;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.google.common.collect.Lists;
+import io.quarkus.test.junit.QuarkusTest;
 import java.util.List;
-import junit.framework.Assert;
 import net.wbz.moba.controlcenter.shared.scenario.Route;
 import net.wbz.moba.controlcenter.shared.scenario.Track;
 import net.wbz.moba.controlcenter.shared.scenario.TrackNotFoundException;
@@ -13,13 +15,14 @@ import net.wbz.moba.controlcenter.shared.track.model.Curve.DIRECTION;
 import net.wbz.moba.controlcenter.shared.track.model.GridPosition;
 import net.wbz.moba.controlcenter.shared.track.model.Straight;
 import net.wbz.moba.controlcenter.shared.track.model.TrackBlock;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Test;
 
 /**
- * Test track for {@link net.wbz.moba.controlcenter.web.shared.track.model.BlockStraight} with length.
+ * Test track for {@link BlockStraight} with length.
  *
  * @author Daniel Tuerk
  */
+@QuarkusTest
 public class TrackBuilderBlockStraightTest extends AbstractTrackBuilderTest {
 
     /**
@@ -177,9 +180,9 @@ public class TrackBuilderBlockStraightTest extends AbstractTrackBuilderTest {
         route.setEnd(endTrackBlock);
 
         Track track = getTrackBuilder().build(route);
-        Assert.assertEquals(trackParts.size(), track.getLength());
-        Assert.assertEquals(0, track.getTrackBlocks().size());
-        Assert.assertEquals(0, track.getTrackFunctions().size());
+        assertEquals(trackParts.size(), track.getLength());
+        assertEquals(0, track.getTrackBlocks().size());
+        assertEquals(0, track.getTrackFunctions().size());
     }
 
     private void testBlockLengthBackwardVertical(int startAddress, int startBit, int endAddress, int endBit,

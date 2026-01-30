@@ -13,7 +13,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-import net.wbz.moba.controlcenter.service.track.TrackManager;
 import net.wbz.moba.controlcenter.service.track.TrackProvider;
 import net.wbz.moba.controlcenter.shared.scenario.Route;
 import net.wbz.moba.controlcenter.shared.scenario.Track;
@@ -52,8 +51,6 @@ public class TrackBuilder {
      */
     private boolean timeoutEnabled = true;
 
-    @Inject
-    TrackManager trackManager;
     @Inject
     TrackProvider trackProvider;
 

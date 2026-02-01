@@ -6,7 +6,6 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 /**
- * TODO move to other package
  * Event for the state change of the rail voltage.
  *
  * @author Daniel Tuerk

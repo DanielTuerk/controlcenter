@@ -8,6 +8,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -245,7 +246,8 @@ public class TrackBuilder {
 
     private Set<Track> filterByWaypoints(Collection<Track> tracks, final Collection<GridPosition> waypoints) {
         return Sets.newHashSet(Collections2.filter(tracks,
-            input -> waypoints == null || waypoints.isEmpty() || Objects.requireNonNull(input).getGridPositions()
+            input -> waypoints == null || waypoints.isEmpty() || new HashSet<>(
+                Objects.requireNonNull(input).getGridPositions())
                 .containsAll(waypoints)));
     }
 

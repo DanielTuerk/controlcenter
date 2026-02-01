@@ -3,8 +3,10 @@ import {
   ChangeDetectorRef,
   Component,
   ElementRef,
+  EventEmitter,
   inject,
   OnInit,
+  Output,
   ViewChild
 } from '@angular/core';
 import {catchError} from "rxjs/operators";
@@ -15,6 +17,7 @@ import {TrackComponentBuilder} from "./track-builder/track-component-builder";
 import {AbstractTrackComponentBuilder} from "./track-builder/abstract-track-component-builder";
 import {TrackSubscription} from "../../../shared/websocket/track.subscription";
 import {AbstractTrackPart} from "../../../../shared/openapi-gen";
+import {TrackElement} from "./track-element";
 
 @Component({
   selector: 'app-track-viewer-svg',
@@ -26,6 +29,12 @@ import {AbstractTrackPart} from "../../../../shared/openapi-gen";
 })
 export class TrackViewerSvgComponent implements OnInit {
   @ViewChild('svgRoot', {static: true}) svg!: ElementRef<SVGSVGElement>;
+
+  /**
+   * Output event for a trackpart which was clicked.
+   */
+  @Output() trackPartClicked = new EventEmitter<TrackElement>();
+  @Output() trackPartsReady = new EventEmitter<TrackElement[]>();
 
   private trackComponentBuilder = inject(TrackComponentBuilder);
   private cdr = inject(ChangeDetectorRef);
@@ -54,16 +63,28 @@ export class TrackViewerSvgComponent implements OnInit {
     });
   }
 
+
   private loadTrack(elements: AbstractTrackPart[]) {
+    let trackPartsFoo: TrackElement[] = []
+
     elements
-    .map(e => this.trackComponentBuilder.build(e))
-    .forEach(e => {
-      this.addTrackPart(e)
-    });
+    .map(trackPart => {
+      let element = this.trackComponentBuilder.build(trackPart);
+      let trackEvent: TrackElement = {trackPart: trackPart, svgElement: element};
+      trackPartsFoo.push(trackEvent);
+
+      element.addEventListener("click", (event) => {
+        this.trackPartClicked.emit(trackEvent);
+      });
+      return element;
+    })
+    .forEach(e => this.addTrackPart(e));
 
     this.updateTrackDimension(elements);
 
     this.cdr.markForCheck();
+
+    this.trackPartsReady.emit(trackPartsFoo);
   }
 
   private updateTrackDimension(elements: AbstractTrackPart[]) {

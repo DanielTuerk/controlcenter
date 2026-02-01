@@ -1,0 +1,41 @@
+<mat-card appearance="outlined">
+  <mat-card-header>
+    <mat-card-title>{{ $route().id ? 'Edit' : 'Create' }} route</mat-card-title>
+  </mat-card-header>
+  <form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <mat-card-content>
+      <div>
+        <label>Name: </label>
+        <mat-form-field>
+          <input matInput required [formControl]="form.controls.name"/>
+        </mat-form-field>
+      </div>
+      <div>
+        <label>Oneway: </label>
+        <mat-checkbox [formControl]="form.controls.oneway"/>
+      </div>
+      <div>
+        <label>Track: </label>
+        <mat-chip [style.background-color]="COLOR_START" (click)="selectTrackStart()">Start</mat-chip>&nbsp;
+        <mat-chip [style.background-color]="COLOR_END" (click)="selectTrackEnd()">End</mat-chip>&nbsp;
+        <mat-chip [style.background-color]="COLOR_WAYPOINT" (click)="selectTrackWaypoint()">Waypoint</mat-chip>&nbsp;
+        Status:
+        @if (trackStatus) {
+          <app-success-icon/>
+        } @else {
+          <app-error-icon/>
+        }
+        <app-track-viewer-svg
+          *ngIf="showViewer"
+          (trackPartClicked)="onTrackPartClicked($event)"
+          (trackPartsReady)="onTrackReady($event)"> style="overflow: auto">
+        </app-track-viewer-svg>
+        <br/>
+      </div>
+    </mat-card-content>
+    <mat-card-footer>
+      <button mat-stroked-button type="button" routerLink="/cc/scenario">Back</button>
+      <button mat-stroked-button>Apply</button>
+    </mat-card-footer>
+  </form>
+</mat-card>

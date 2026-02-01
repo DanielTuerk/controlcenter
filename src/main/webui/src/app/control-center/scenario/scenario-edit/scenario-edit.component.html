@@ -1,6 +1,6 @@
 <mat-card appearance="outlined">
   <mat-card-header>
-    <mat-card-title>Edit scenario</mat-card-title>
+    <mat-card-title>{{ scenario().id ? 'Edit' : 'Create' }} scenario</mat-card-title>
   </mat-card-header>
   <form [formGroup]="form" (ngSubmit)="onSubmit()">
     <mat-card-content>

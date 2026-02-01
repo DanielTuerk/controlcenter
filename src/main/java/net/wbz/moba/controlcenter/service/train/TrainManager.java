@@ -30,20 +30,17 @@ public class TrainManager {
 
     private final List<Train> cachedTrains = new ArrayList<>();
     private final TrainRepository trainRepository;
-    //    private final EventBroadcaster eventBroadcaster;
     private final TrainMapper trainMapper;
-        private final EventBroadcaster eventBroadcaster;
+    private final EventBroadcaster eventBroadcaster;
 
     @Inject
     public TrainManager(TrainRepository trainRepository, TrainMapper trainMapper, EventBroadcaster eventBroadcaster) {
         this.trainRepository = trainRepository;
-//        this.eventBroadcaster = eventBroadcaster;
         this.trainMapper = trainMapper;
         this.eventBroadcaster = eventBroadcaster;
     }
 
     public List<Train> load() {
-        // TODO overall use a cache lib?
         return getTrains();
     }
 
@@ -52,6 +49,8 @@ public class TrainManager {
         TrainEntity entity = new TrainEntity();
         entity.name = dto.name();
         entity.address = dto.address();
+
+        // TODO train functions
 
         trainRepository.persist(entity);
         reloadData(entity.id);
@@ -73,7 +72,8 @@ public class TrainManager {
         }
         existing.name = updated.name();
         existing.address = updated.address();
-        // TODO throw change event
+
+        // TODO train functions
         reloadData(id);
     }
 

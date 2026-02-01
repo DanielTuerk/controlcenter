@@ -22,7 +22,7 @@ import net.wbz.moba.controlcenter.shared.scenario.Scenario;
 @Path("/api/scenarios")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public class ScenarioController {
+public class ScenarioResource {
 
     @Inject
     ScenarioManager scenarioManager;
@@ -31,7 +31,6 @@ public class ScenarioController {
     public List<Scenario> listAll() {
         return scenarioManager.getScenarios();
     }
-
 
     @GET
     @Path("/{id}")

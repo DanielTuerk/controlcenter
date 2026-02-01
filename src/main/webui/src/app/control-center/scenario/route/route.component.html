@@ -1,0 +1,67 @@
+<mat-card appearance="outlined" class="container">
+  <mat-card-header>
+    <mat-card-title>Routes</mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+    <p>
+      <button mat-stroked-button routerLink="route/create">
+        <mat-icon>add</mat-icon>
+        Create
+      </button>
+    </p>
+    <table mat-table [dataSource]="routes()" class="mat-elevation-z8">
+
+      <ng-container matColumnDef="id">
+        <th mat-header-cell *matHeaderCellDef> Id</th>
+        <td mat-cell *matCellDef="let element">{{ element.id }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef> Name</th>
+        <td mat-cell *matCellDef="let element">{{ element.name }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="start">
+        <th mat-header-cell *matHeaderCellDef> Start</th>
+        <td mat-cell *matCellDef="let element" style="white-space: pre-line;">
+          {{ element.start?.displayValue || '' }}
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="end">
+        <th mat-header-cell *matHeaderCellDef> End</th>
+        <td mat-cell *matCellDef="let element">
+          {{ element.end?.displayValue || '' }}
+
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="oneway">
+        <th mat-header-cell *matHeaderCellDef> Oneway</th>
+        <td mat-cell *matCellDef="let element">{{ element.oneway }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="track">
+        <th mat-header-cell *matHeaderCellDef> Track</th>
+        <td mat-cell *matCellDef="let element">
+          @if (element.track == null) {
+            <app-error-icon/>
+          } @else {
+            <app-success-icon/>
+          }
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="action">
+        <th mat-header-cell *matHeaderCellDef></th>
+        <td mat-cell *matCellDef="let route">
+          <mat-icon routerLink="route/{{route.id}}">edit</mat-icon>
+          <mat-icon (click)="deleteRoute(route)">delete</mat-icon>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+
+  </mat-card-content>
+</mat-card>

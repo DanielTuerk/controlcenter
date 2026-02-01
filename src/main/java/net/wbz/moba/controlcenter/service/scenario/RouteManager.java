@@ -4,13 +4,17 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import net.wbz.moba.controlcenter.EventBroadcaster;
 import net.wbz.moba.controlcenter.persist.entity.RouteEntity;
+import net.wbz.moba.controlcenter.persist.entity.track.BlockStraightEntity;
 import net.wbz.moba.controlcenter.persist.repository.RouteRepository;
 import net.wbz.moba.controlcenter.persist.repository.RouteSequenceRepository;
+import net.wbz.moba.controlcenter.persist.repository.track.GridPositionRepository;
+import net.wbz.moba.controlcenter.persist.repository.track.TrackBlockRepository;
+import net.wbz.moba.controlcenter.persist.repository.track.TrackPartRepository;
 import net.wbz.moba.controlcenter.service.constrution.ConstructionService;
 import net.wbz.moba.controlcenter.shared.scenario.Route;
 import net.wbz.moba.controlcenter.shared.scenario.RoutesChangedEvent;
@@ -33,26 +37,34 @@ public class RouteManager {
      */
     private final List<Route> routes = new ArrayList<>();
 
-    private final RouteRepository routeDao;
     private final RouteSequenceRepository routeSequenceDao;
     private final EventBroadcaster eventBroadcaster;
     private final RouteMapper routeMapper;
     private final TrackBuilder trackBuilder;
 
     private final List<RoutesChangedListener> listeners = new ArrayList<>();
+    private final RouteRepository routeRepository;
+    private final TrackBlockRepository trackBlockRepository;
+    private final TrackPartRepository trackPartRepository;
+    private final GridPositionRepository gridPositionRepository;
 
     @Inject
     public RouteManager(RouteRepository routeRepository, RouteSequenceRepository routeSequenceRepository,
         EventBroadcaster eventBroadcaster,
-        RouteMapper routeMapper, TrackBuilder trackBuilder, ConstructionService constructionService) {
-        this.routeDao = routeRepository;
+        RouteMapper routeMapper, TrackBuilder trackBuilder, ConstructionService constructionService,
+        TrackBlockRepository trackBlockRepository, TrackPartRepository trackPartRepository,
+        GridPositionRepository gridPositionRepository) {
         this.routeSequenceDao = routeSequenceRepository;
         this.eventBroadcaster = eventBroadcaster;
         this.routeMapper = routeMapper;
         this.trackBuilder = trackBuilder;
+        this.trackBlockRepository = trackBlockRepository;
+        this.trackPartRepository = trackPartRepository;
+        this.gridPositionRepository = gridPositionRepository;
 
         // load routes initial to build all tracks
         constructionService.addListener(x -> loadRoutesFromDatabase());
+        this.routeRepository = routeRepository;
     }
 
     public void addListener(RoutesChangedListener listener) {
@@ -63,7 +75,7 @@ public class RouteManager {
         listeners.remove(listener);
     }
 
-    synchronized Collection<Route> getRoutes() {
+    public synchronized List<Route> getRoutes() {
         if (routes.isEmpty()) {
             loadRoutesFromDatabase();
         }
@@ -71,23 +83,46 @@ public class RouteManager {
     }
 
     @Transactional
-    void updateRoute(Route route) {
-        // TODO migrate
-//        RouteEntity entity = routeMapper.transformTarget(route);
-//        routeDao.update(entity);
-//        loadRoutesFromDatabase();
-//        fireRoutesChanged();
+    public void updateRoute(Long id, Route route) {
+        final var toUpdate = routeRepository.findById(id);
+
+        fillEntityFromRoute(route, toUpdate);
+
+        routeRepository.persist(toUpdate);
+        loadRoutesFromDatabase();
+        fireRoutesChanged(id);
     }
 
     @Transactional
-    void createRoute(Route route) {
-        final var entity = new RouteEntity();
-        entity.name = route.getName();
-        // TODO migrate
-//        entity.start=route.getStart()
-        routeDao.persist(entity);
+    public Route createRoute(Route route) {
+        final var toCreate = new RouteEntity();
+        fillEntityFromRoute(route, toCreate);
+
+        routeRepository.persist(toCreate);
+
         loadRoutesFromDatabase();
-        fireRoutesChanged(entity.id);
+        fireRoutesChanged(toCreate.id);
+
+        return routeMapper.toDto(toCreate);
+    }
+
+    private void fillEntityFromRoute(Route route, RouteEntity toUpdate) {
+        toUpdate.name = route.getName();
+        toUpdate.start = route.getStart() == null ? null
+            : (BlockStraightEntity) trackPartRepository.findById(route.getStart().getId());
+        toUpdate.end = route.getEnd() == null ? null
+            : trackBlockRepository.findById(route.getEnd().getId());
+        toUpdate.oneway = route.getOneway();
+
+        if (toUpdate.waypoints == null) {
+            toUpdate.waypoints = new ArrayList<>();
+        }
+        toUpdate.waypoints.clear();
+        if (route.getWaypoints() != null) {
+            toUpdate.waypoints.addAll(route.getWaypoints().stream()
+                .map(gridPositionRepository::findByGridPosition)
+                .collect(Collectors.toSet()));
+        }
     }
 
     /**
@@ -96,18 +131,19 @@ public class RouteManager {
      * @param routeId id of {@link Route} to delete
      */
     @Transactional
-    void deleteRoute(long routeId) {
-        // TODO migrate
+    public boolean deleteRoute(long routeId) {
         if (!routeSequenceDao.routeUsedInScenario(routeId)) {
-            routeDao.deleteById(routeId);
+            routeRepository.deleteById(routeId);
             loadRoutesFromDatabase();
             fireRoutesChanged(routeId);
+            return true;
         } else {
             LOG.error("can't delete route, still in use of scenario");
+            return false;
         }
     }
 
-    Optional<Route> getRouteById(Long id) {
+    public Optional<Route> getRouteById(Long id) {
         return routes.stream().filter(x -> id.equals(x.getId())).findFirst();
     }
 
@@ -115,7 +151,7 @@ public class RouteManager {
         LOG.debug("load routes from database");
 
         routes.clear();
-        routes.addAll(routeDao.listAll().stream().map(routeMapper::toDto).toList());
+        routes.addAll(routeRepository.listAll().stream().map(routeMapper::toDto).toList());
         LOG.debug("build tracks");
 
         for (Route route : routes) {
@@ -133,5 +169,9 @@ public class RouteManager {
 
         // TODO split to create, update, delete event; to prevent reload and rebuild all tracks
         eventBroadcaster.fireEvent(new RoutesChangedEvent(id));
+    }
+
+    public boolean existsById(Long id) {
+        return getRouteById(id).isPresent();
     }
 }

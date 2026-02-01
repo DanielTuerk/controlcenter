@@ -8,6 +8,7 @@ import {Scenario} from "../../../shared/openapi-gen";
 import {MatDialog} from "@angular/material/dialog";
 import {ScenarioService} from "../../shared/scenario.service";
 import {ConfirmDialogComponent} from "../common/confirm-dialog/confirm-dialog.component";
+import {RouteComponent} from "./route/route.component";
 
 @Component({
   selector: 'app-scenario',
@@ -19,7 +20,8 @@ import {ConfirmDialogComponent} from "../common/confirm-dialog/confirm-dialog.co
     MatCardContent,
     MatTableModule,
     MatIcon,
-    MatButton
+    MatButton,
+    RouteComponent
   ],
   templateUrl: './scenario.component.html',
   styleUrl: './scenario.component.css'

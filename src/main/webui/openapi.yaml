@@ -475,6 +475,22 @@ components:
           uniqueItems: true
           items:
             $ref: "#/components/schemas/TrackBlock"
+    RouteListItem:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        oneway:
+          type: boolean
+        start:
+          type: string
+        end:
+          type: string
+        trackStatus:
+          type: string
     RouteSequence:
       type: object
       properties:
@@ -1366,6 +1382,86 @@ paths:
       summary: Create
       tags:
         - Device Resource
+  /api/routes:
+    get:
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/RouteListItem"
+      summary: List All
+      tags:
+        - Route Resource
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Route"
+        required: true
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+      summary: Create
+      tags:
+        - Route Resource
+  /api/routes/{id}:
+    put:
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Route"
+        required: true
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+      summary: Update
+      tags:
+        - Route Resource
+    get:
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: OK
+      summary: Get By Id
+      tags:
+        - Route Resource
+    delete:
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: OK
+      summary: Delete
+      tags:
+        - Route Resource
   /api/scenarios:
     get:
       responses:
@@ -1379,7 +1475,7 @@ paths:
                   $ref: "#/components/schemas/Scenario"
       summary: List All
       tags:
-        - Scenario Controller
+        - Scenario Resource
     post:
       requestBody:
         content:
@@ -1394,7 +1490,7 @@ paths:
           description: Bad Request
       summary: Create
       tags:
-        - Scenario Controller
+        - Scenario Resource
   /api/scenarios/{id}:
     put:
       parameters:
@@ -1417,7 +1513,7 @@ paths:
           description: Bad Request
       summary: Update
       tags:
-        - Scenario Controller
+        - Scenario Resource
     get:
       parameters:
         - name: id
@@ -1431,7 +1527,7 @@ paths:
           description: OK
       summary: Get By Id
       tags:
-        - Scenario Controller
+        - Scenario Resource
     delete:
       parameters:
         - name: id
@@ -1445,7 +1541,7 @@ paths:
           description: OK
       summary: Delete
       tags:
-        - Scenario Controller
+        - Scenario Resource
   /api/track:
     get:
       tags:

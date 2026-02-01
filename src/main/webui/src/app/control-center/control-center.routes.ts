@@ -8,6 +8,7 @@ import {SettingComponent} from "./setting/setting.component";
 import {ScenarioEditComponent} from "./scenario/scenario-edit/scenario-edit.component";
 import {routes as settingRoutes} from "./setting/setting.routes";
 import {StationComponent} from "./station/station.component";
+import {RouteEditComponent} from "./scenario/route/route-edit/route-edit.component";
 
 export const routes: Routes = [
   {
@@ -30,6 +31,10 @@ export const routes: Routes = [
   {
     path: 'scenario/:scenarioId',
     component: ScenarioEditComponent
+  },
+  {
+    path: 'scenario/route/:routeId',
+    component: RouteEditComponent
   },
   {
     path: 'viewer',

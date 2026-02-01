@@ -1,11 +1,8 @@
 package net.wbz.moba.controlcenter.shared.track.model;
 
 import com.google.common.collect.Lists;
-
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -140,6 +137,21 @@ public class BlockStraight extends Straight implements MultipleGridPosition {
     public Collection<TrackBlock> getAllTrackBlocks() {
         return Stream.of(leftTrackBlock, middleTrackBlock, rightTrackBlock).filter(Objects::nonNull)
             .collect(Collectors.toList());
+    }
+
+    public String getDisplayValue() {
+        var sb = new StringBuilder();
+        if (leftTrackBlock != null) {
+            sb.append("left:").append(leftTrackBlock.getDisplayValue()).append(System.lineSeparator());
+        }
+        if (middleTrackBlock != null) {
+            sb.append("middle:").append(middleTrackBlock.getDisplayValue()).append(System.lineSeparator());
+        }
+        if (rightTrackBlock != null) {
+            sb.append("right:").append(rightTrackBlock.getDisplayValue());
+        }
+
+        return sb.toString();
     }
 
     @Override

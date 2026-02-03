@@ -85,6 +85,8 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/TrackBlock"
+        displayValue:
+          type: string
     BusBitDto:
       type: object
       properties:
@@ -143,6 +145,21 @@ components:
         value:
           type: integer
           format: int32
+    BusDataEvent:
+      type: object
+      description: bus data update sent via WebSocket
+      properties:
+        bus:
+          type: integer
+          format: int32
+        address:
+          type: integer
+          format: int32
+        data:
+          type: integer
+          format: int32
+        cacheKey:
+          type: string
     Construction:
       type: object
       properties:
@@ -475,22 +492,6 @@ components:
           uniqueItems: true
           items:
             $ref: "#/components/schemas/TrackBlock"
-    RouteListItem:
-      type: object
-      properties:
-        id:
-          type: integer
-          format: int64
-        name:
-          type: string
-        oneway:
-          type: boolean
-        start:
-          type: string
-        end:
-          type: string
-        trackStatus:
-          type: string
     RouteSequence:
       type: object
       properties:
@@ -1104,6 +1105,11 @@ components:
           $ref: "#/components/schemas/BusDataConfiguration"
         eventConfiguration:
           $ref: "#/components/schemas/EventConfiguration"
+    WsClient:
+      type: object
+      properties:
+        clientId:
+          type: string
 tags:
   - name: Websocket DTOs
 paths:
@@ -1156,6 +1162,38 @@ paths:
               schema:
                 type: boolean
       summary: Fetch Railvoltage State
+      tags:
+        - Bus Resource
+  /api/bus/start-tracking-bus:
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/WsClient"
+        required: true
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+      summary: Start Tracking Bus
+      tags:
+        - Bus Resource
+  /api/bus/stop-tracking-bus:
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/WsClient"
+        required: true
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+      summary: Stop Tracking Bus
       tags:
         - Bus Resource
   /api/bus/system-format:
@@ -1392,7 +1430,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/RouteListItem"
+                  $ref: "#/components/schemas/Route"
       summary: List All
       tags:
         - Route Resource
@@ -1409,6 +1447,22 @@ paths:
         "400":
           description: Bad Request
       summary: Create
+      tags:
+        - Route Resource
+  /api/routes/build-track:
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Route"
+        required: true
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+      summary: Build Track
       tags:
         - Route Resource
   /api/routes/{id}:

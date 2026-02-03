@@ -6,7 +6,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import net.wbz.moba.controlcenter.EventBroadcaster;
@@ -34,6 +36,8 @@ public class BusService {
     private BusDataPlayer busDataPlayer;
     private final DeviceService deviceService;
 
+    private final Set<String> connectionIdsOfBusTracking = new HashSet<>();
+
     @Inject
     public BusService(EventBroadcaster eventBroadcaster,
         DeviceRecorder deviceRecorder,
@@ -45,7 +49,8 @@ public class BusService {
         this.allBusDataConsumer = new AllBusDataConsumer() {
             @Override
             public void valueChanged(int bus, int address, int oldValue, int newValue) {
-                eventBroadcaster.fireEvent(new BusDataEvent(bus, address, newValue));
+                eventBroadcaster.fireTrackingEvent(new BusDataEvent(bus, address, newValue),
+                    connectionIdsOfBusTracking);
             }
         };
     }
@@ -92,22 +97,24 @@ public class BusService {
             .ifPresent(Device::switchDeviceSystemFormat);
     }
 
-    public void startTrackingBus() {
-        deviceService.getConnectedDevice().ifPresent(device -> {
-            if (!trackingActive) {
-                device.getBusDataDispatcher().registerConsumer(allBusDataConsumer);
-                trackingActive = true;
-            }
-        });
+    public void startTrackingBus(String connectionId) throws DeviceAccessException {
+        final var device = deviceService.getConnectedDevice()
+            .orElseThrow(() -> new DeviceAccessException("not connected"));
+        connectionIdsOfBusTracking.add(connectionId);
+        if (!trackingActive) {
+            device.getBusDataDispatcher().registerConsumer(allBusDataConsumer);
+            trackingActive = true;
+        }
     }
 
-    public void stopTrackingBus() {
-        deviceService.getConnectedDevice().ifPresent(device -> {
-            if (trackingActive) {
-                device.getBusDataDispatcher().unregisterConsumer(allBusDataConsumer);
-                trackingActive = false;
-            }
-        });
+    public void stopTrackingBus(String connectionId) throws DeviceAccessException {
+        final var device = deviceService.getConnectedDevice()
+            .orElseThrow(() -> new DeviceAccessException("not connected"));
+        connectionIdsOfBusTracking.remove(connectionId);
+        if (trackingActive) {
+            device.getBusDataDispatcher().unregisterConsumer(allBusDataConsumer);
+            trackingActive = false;
+        }
     }
 
     public void sendBusData(int busNr, int address, int bit, boolean state) {

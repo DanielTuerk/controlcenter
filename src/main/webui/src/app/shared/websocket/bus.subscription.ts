@@ -1,5 +1,6 @@
 import {Injectable} from '@angular/core';
 import {
+  BusDataEvent,
   FeedbackBlockEvent,
   PlayerEvent,
   RailVoltageEvent,
@@ -19,5 +20,6 @@ export class BusSubscription extends Subscription {
   readonly systemFormat = this.createEventAccessor<SystemFormatEvent>('SystemFormatEvent');
   readonly player = this.createEventAccessor<PlayerEvent>('PlayerEvent');
   readonly recording = this.createEventAccessor<RecordingEvent>('RecordingEvent');
+  readonly busDataEvent = this.createEventAccessor<BusDataEvent>('BusDataEvent');
 
 }

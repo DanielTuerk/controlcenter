@@ -8,6 +8,7 @@ export class WebSocketService {
   private URL = 'ws://localhost:8080/websocket';
   private socket!: WebSocket;
   private subscriptions = new Map<string, Subject<any>>();
+  private clientId: string | undefined = undefined;
 
   /**
    * Register the event type (class name) to receive the messages for.
@@ -57,12 +58,16 @@ export class WebSocketService {
 
     this.socket.onmessage = (event) => {
       const [eventName, jsonString] = event.data.split(/:(.+)/);
-      const payload = JSON.parse(jsonString.trim());
-      console.log('Event:', eventName,'Payload:', payload);
-      if (this.subscriptions.has(eventName)) {
-        this.subscriptions.get(eventName)?.next(payload);
+      if (eventName === 'clientId') {
+        this.clientId = jsonString.trim();
       } else {
-        console.log('no subscription for Event:', eventName);
+        const payload = JSON.parse(jsonString.trim());
+        console.log('Event:', eventName, 'Payload:', payload);
+        if (this.subscriptions.has(eventName)) {
+          this.subscriptions.get(eventName)?.next(payload);
+        } else {
+          console.log('no subscription for Event:', eventName);
+        }
       }
     };
   }
@@ -73,4 +78,8 @@ export class WebSocketService {
     }
   }
 
+  getClientId() {
+    if (!this.clientId) throw Error('no client id available')
+    return this.clientId!;
+  }
 }

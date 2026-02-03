@@ -9,6 +9,7 @@ import {ScenarioEditComponent} from "./scenario/scenario-edit/scenario-edit.comp
 import {routes as settingRoutes} from "./setting/setting.routes";
 import {StationComponent} from "./station/station.component";
 import {RouteEditComponent} from "./scenario/route/route-edit/route-edit.component";
+import {BusMonitorComponent} from "./bus-monitor/bus-monitor.component";
 
 export const routes: Routes = [
   {
@@ -51,5 +52,9 @@ export const routes: Routes = [
     path: 'settings',
     component: SettingComponent,
     children: settingRoutes
+  },
+  {
+    path: 'bus-monitor',
+    component: BusMonitorComponent
   }
 ];

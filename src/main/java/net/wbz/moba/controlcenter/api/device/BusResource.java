@@ -9,8 +9,11 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response.Status;
 import net.wbz.moba.controlcenter.service.bus.BusService;
 import net.wbz.selectrix4java.device.Device.SYSTEM_FORMAT;
+import net.wbz.selectrix4java.device.DeviceAccessException;
+import org.jboss.logging.Logger;
 
 @Path("/api/bus")
 @Produces(MediaType.APPLICATION_JSON)
@@ -19,6 +22,8 @@ public class BusResource {
 
     @Inject
     BusService busService;
+    @Inject
+    Logger logger;
 
     @GET
     @Path("/railvoltage")
@@ -59,6 +64,32 @@ public class BusResource {
         busService.sendBusData(busBit.bus(), busBit.address(), busBit.bit(), busBit.state());
         return Response.ok().build();
     }
+
+
+    @POST
+    @Path("/start-tracking-bus")
+    public Response startTrackingBus(WsClient wsClient) {
+        try {
+            busService.startTrackingBus(wsClient.clientId());
+            return Response.ok().build();
+        } catch (DeviceAccessException e) {
+            logger.error("Failed to start tracking bus", e);
+            return Response.status(Status.UNAVAILABLE_FOR_LEGAL_REASONS).build();
+        }
+    }
+
+    @POST
+    @Path("/stop-tracking-bus")
+    public Response stopTrackingBus(WsClient wsClient) {
+        try {
+            busService.stopTrackingBus(wsClient.clientId());
+            return Response.ok().build();
+        } catch (DeviceAccessException e) {
+            logger.error("Failed to stop tracking bus", e);
+            return Response.status(Status.UNAVAILABLE_FOR_LEGAL_REASONS).build();
+        }
+    }
+
     // TODO recorder
     // TODO player
 

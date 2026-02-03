@@ -3,6 +3,7 @@ import {HttpClient} from "@angular/common/http";
 import {SnackBar} from "../control-center/common/snack-bar.component";
 import {catchError} from "rxjs/operators";
 import {EMPTY} from "rxjs";
+import {BusBitDto, BusDataDto} from "../../shared/openapi-gen";
 
 export class BusService {
 
@@ -29,7 +30,47 @@ export class BusService {
     ).subscribe();
   }
 
-  private callBusAction(path: string) {
-    return this.httpClient.post<null>('/api/bus/' + path, null)
+  busBit(busBit:BusBitDto) {
+    return this.callBusAction('bus-bit', busBit)
+    .pipe(
+      catchError((err: any) => {
+        this.snackBar.showError(`can't send state of bus bit (${busBit}): ${err.message}`);
+        return EMPTY
+      })
+    ).subscribe();
+  }
+
+  sendBusData(busData:BusDataDto) {
+    return this.callBusAction('bus-data', busData)
+    .pipe(
+      catchError((err: any) => {
+        this.snackBar.showError(`can't send bus data (${busData}): ${err.message}`);
+        return EMPTY
+      })
+    ).subscribe();
+  }
+
+  startTrackingBus(connectionId: string) {
+    return this.callBusAction('start-tracking-bus', {clientId: connectionId})
+    .pipe(
+      catchError((err: any) => {
+        this.snackBar.showError(`can't start to track bus: ${err.message}`);
+        return EMPTY
+      })
+    ).subscribe();
+  }
+
+  stopTrackingBus(connectionId: string) {
+    return this.callBusAction('stop-tracking-bus', {clientId: connectionId})
+    .pipe(
+      catchError((err: any) => {
+        this.snackBar.showError(`can't stop to track bus: ${err.message}`);
+        return EMPTY
+      })
+    ).subscribe();
+  }
+
+  private callBusAction(path: string, body:any=null) {
+    return this.httpClient.post<null>('/api/bus/' + path, body)
   }
 }

@@ -2,10 +2,14 @@ package net.wbz.moba.controlcenter.shared.bus;
 
 import java.util.Objects;
 import net.wbz.moba.controlcenter.shared.StateEvent;
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
+import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 /**
  * @author Daniel Tuerk
  */
+@Schema(description = "bus data update sent via WebSocket")
+@Tag(ref = "websocket")
 public class BusDataEvent implements StateEvent {
 
     private int bus;

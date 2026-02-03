@@ -10,6 +10,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.stream.Collectors;
 import net.wbz.moba.controlcenter.shared.Event;
 import net.wbz.moba.controlcenter.shared.EventCache;
 import net.wbz.moba.controlcenter.shared.StateEvent;
@@ -43,6 +44,12 @@ public class EventBroadcaster {
         connections.add(connection);
         LOG.debugf("Client connected: %s", connection.id());
 
+        connection.sendText("clientId: %s".formatted(connection.id()))
+            .subscribe().with(
+                unused -> {
+                },
+                failure -> LOG.error("failed to sent clientId to {}", connection.id(), failure)
+            );
         // TODO after server restart, the client need to be triggered to reload, maybe page refresh because the eventchache is empty and by that the server is restarted
 
         // send all missed messages while not connected
@@ -70,6 +77,12 @@ public class EventBroadcaster {
     public synchronized void fireEvent(Event event) {
         sendEvent(event);
         saveLastSendEvent(event);
+    }
+
+    public synchronized void fireTrackingEvent(Event event, Set<String> connectionIds) {
+        sendEvent(event, connections.stream()
+            .filter(webSocketConnection -> connectionIds.contains(webSocketConnection.id()))
+            .collect(Collectors.toSet()));
     }
 
     private void sendEvent(Event event) {

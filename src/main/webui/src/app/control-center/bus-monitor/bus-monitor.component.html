@@ -12,8 +12,7 @@
           <button
             *ngFor="let bit of row.bits; let j = index"
             (click)="toggleBit(bus, row.address, j+1, !row.bits[j])"
-            [class.active]="bit"
-          >
+            [class.active]="bit">
             {{ j + 1 }}
           </button>
         </div>

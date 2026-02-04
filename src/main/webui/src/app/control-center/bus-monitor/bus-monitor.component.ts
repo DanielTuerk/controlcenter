@@ -45,7 +45,7 @@ export class BusMonitorComponent implements OnInit, OnDestroy {
       }
     });
     this.busSubscription.busDataEvent().subscribe(busDataEvent => {
-      if (busDataEvent.address && busDataEvent.data) {
+      if (busDataEvent.address !== undefined && busDataEvent.data !== undefined) {
         this.buses.filter(bus => bus.number == busDataEvent.bus)
         .flatMap(bus => bus.rows.filter(addressRow => addressRow.address == busDataEvent.address))
         .forEach(addressRow => {
@@ -55,8 +55,6 @@ export class BusMonitorComponent implements OnInit, OnDestroy {
         })
       }
     });
-
-    // TODO register websockets for bus data changes and update UI with animation for each bit
   }
 
   ngOnDestroy(): void {

@@ -1,11 +1,14 @@
-<svg #svgRoot class="full-svg" [style.min-width.px]="svgWidth" [style.min-height.px]="svgHeight">
-  <!-- background with grid -->
-  <defs>
-    <pattern id="grid" [attr.width]="tileSize" [attr.height]="tileSize" patternUnits="userSpaceOnUse">
-      <rect [attr.width]="tileSize" [attr.height]="tileSize" fill="transparent"/>
-      <path [attr.d]="generatePath(tileSize)" fill="none" stroke="grey" stroke-width="1"/>
-    </pattern>
-  </defs>
-  <rect x="0" y="0" width="100%" height="100%" fill="url(#grid)"></rect>
+<div class="connection-overlay" [class.disabled]="!isConnected()">
 
-</svg>
+  <svg #svgRoot class="full-svg" [style.min-width.px]="svgWidth" [style.min-height.px]="svgHeight">
+    <!-- background with grid -->
+    <defs>
+      <pattern id="grid" [attr.width]="tileSize" [attr.height]="tileSize" patternUnits="userSpaceOnUse">
+        <rect [attr.width]="tileSize" [attr.height]="tileSize" fill="transparent"/>
+        <path [attr.d]="generatePath(tileSize)" fill="none" stroke="grey" stroke-width="1"/>
+      </pattern>
+    </defs>
+    <rect x="0" y="0" width="100%" height="100%" fill="url(#grid)"></rect>
+  </svg>
+
+</div>

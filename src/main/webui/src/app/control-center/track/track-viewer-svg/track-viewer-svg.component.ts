@@ -6,7 +6,7 @@ import {
   EventEmitter,
   inject,
   OnInit,
-  Output,
+  Output, signal,
   ViewChild
 } from '@angular/core';
 import {catchError} from "rxjs/operators";
@@ -16,8 +16,9 @@ import {HttpClient} from "@angular/common/http";
 import {TrackComponentBuilder} from "./track-builder/track-component-builder";
 import {AbstractTrackComponentBuilder} from "./track-builder/abstract-track-component-builder";
 import {TrackSubscription} from "../../../shared/websocket/track.subscription";
-import {AbstractTrackPart} from "../../../../shared/openapi-gen";
+import {AbstractTrackPart, TYPE} from "../../../../shared/openapi-gen";
 import {TrackElement} from "./track-element";
+import {DeviceSubscription} from "../../../shared/websocket/device.subscription";
 
 @Component({
   selector: 'app-track-viewer-svg',
@@ -42,10 +43,12 @@ export class TrackViewerSvgComponent implements OnInit {
 
   private httpClient = inject(HttpClient);
   private trackSubscription = inject(TrackSubscription);
+  private deviceSubscription = inject(DeviceSubscription);
 
   svgWidth = 0;
   svgHeight = 0;
   tileSize = AbstractTrackComponentBuilder.TILE;
+  protected isConnected = signal(false);
 
   ngOnInit() {
     this.httpClient.get<[]>('/api/track')
@@ -61,8 +64,11 @@ export class TrackViewerSvgComponent implements OnInit {
     this.trackSubscription.trackChanged().subscribe(event => {
       this.loadTrack(event.trackParts);
     });
-  }
 
+    this.deviceSubscription.deviceConnection().subscribe(device => {
+      this.isConnected.set(device.eventType === TYPE.Connected);
+    });
+  }
 
   private loadTrack(elements: AbstractTrackPart[]) {
     let trackPartsFoo: TrackElement[] = []
@@ -74,7 +80,9 @@ export class TrackViewerSvgComponent implements OnInit {
       trackPartsFoo.push(trackEvent);
 
       element.addEventListener("click", () => {
-        this.trackPartClicked.emit(trackEvent);
+        if (this.isConnected()) {
+          this.trackPartClicked.emit(trackEvent);
+        }
       });
       return element;
     })

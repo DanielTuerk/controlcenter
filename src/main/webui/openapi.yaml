@@ -160,6 +160,13 @@ components:
           format: int32
         cacheKey:
           type: string
+    ConfigItem:
+      type: object
+      properties:
+        key:
+          type: string
+        value:
+          type: string
     Construction:
       type: object
       properties:
@@ -1215,6 +1222,56 @@ paths:
       summary: Fetch System Format State
       tags:
         - Bus Resource
+  /api/config:
+    get:
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                uniqueItems: true
+                items:
+                  $ref: "#/components/schemas/ConfigItem"
+      summary: List All
+      tags:
+        - Config Resource
+  /api/config/{key}:
+    put:
+      parameters:
+        - name: key
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ConfigItem"
+        required: true
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+      summary: Update
+      tags:
+        - Config Resource
+    get:
+      parameters:
+        - name: key
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+      summary: Load Value
+      tags:
+        - Config Resource
   /api/constructions:
     get:
       responses:

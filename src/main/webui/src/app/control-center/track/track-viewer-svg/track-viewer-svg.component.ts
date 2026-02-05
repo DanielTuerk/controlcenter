@@ -73,7 +73,7 @@ export class TrackViewerSvgComponent implements OnInit {
       let trackEvent: TrackElement = {trackPart: trackPart, svgElement: element};
       trackPartsFoo.push(trackEvent);
 
-      element.addEventListener("click", (event) => {
+      element.addEventListener("click", () => {
         this.trackPartClicked.emit(trackEvent);
       });
       return element;

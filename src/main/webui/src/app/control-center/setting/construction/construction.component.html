@@ -4,6 +4,26 @@
   </mat-card-header>
   <mat-card-content>
 
+    <mat-grid-list cols="2" rowHeight="50">
+      <mat-grid-tile>
+        <mat-checkbox [(ngModel)]="showWelcomePage"
+                      (click)="updateShowWelcome()">show welcome page
+        </mat-checkbox>
+      </mat-grid-tile>
+      <mat-grid-tile *ngIf="!showWelcomePage">
+        Default construction:
+        <mat-select [(ngModel)]="defaultConstruction"
+                    (selectionChange)="updateDefaultConstruction()"
+                    name="construction">
+          <mat-option *ngFor="let construction of constructions();"
+                      [value]="construction">{{ construction.name }}
+          </mat-option>
+        </mat-select>
+      </mat-grid-tile>
+    </mat-grid-list>
+
+
+    <hr/>
     <p>
       <button mat-stroked-button routerLink="create">
         <mat-icon>add</mat-icon>

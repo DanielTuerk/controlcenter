@@ -26,45 +26,5 @@ public class TrackResource {
         return trackProvider.getTrack();
     }
 
-//    @GET
-//    @Path("/{id}")
-//    public Response getById(@PathParam("id") Long id) {
-//        var byId = constructionManager.getById(id);
-//        if(byId.isEmpty()) {
-//            return Response.status(Response.Status.NOT_FOUND).build();
-//        }
-//        return Response.ok(byId.get()).build();
-//    }
-
-//    @POST
-//    @Transactional
-//    public Response create(ConstructionDto created) {
-//        var construction = constructionManager.create(created);
-//        return Response.status(Response.Status.CREATED)
-//            .entity(construction)
-//            .build();
-//    }
-//
-//    @PUT
-//    @Path("/{id}")
-//    public Response update(@PathParam("id") Long id, ConstructionDto updated) {
-//        if (!constructionManager.existsById(id)) {
-//            return Response.status(Response.Status.NOT_FOUND).build();
-//        }
-//        constructionManager.update(id, updated);
-//        return Response.ok().build();
-//    }
-//
-//    @DELETE
-//    @Path("/{id}")
-//    public Response delete(@PathParam("id") Long id) {
-//        boolean deleted = constructionManager.deleteById(id);
-//        if (deleted) {
-//            return Response.noContent().build();
-//        } else {
-//            return Response.status(Response.Status.NOT_FOUND).build();
-//        }
-//    }
-
 }
 

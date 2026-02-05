@@ -4,7 +4,7 @@ import {Router} from "@angular/router";
 import {SnackBar} from "../control-center/common/snack-bar.component";
 import {Construction, Scenario} from "../../shared/openapi-gen";
 import {catchError} from "rxjs/operators";
-import {EMPTY, Observable} from "rxjs";
+import {EMPTY} from "rxjs";
 
 export class ConstructionService {
 
@@ -40,26 +40,17 @@ export class ConstructionService {
   }
 
   loadCurrentConstruction() {
-    this.httpClient.get<Construction>('/api/current-construction')
-    .subscribe(
-      {
-        next: (construction) => {
-          this.updateCurrentConstruction(construction);
-        },
-        error: (error) => {
-          console.log("no current construction found, navigate to welcome page", error)
-          this.router.navigate(['/welcome', {}]);
-        }
-      });
+    return this.httpClient.get<Construction>('/api/current-construction')
   }
 
   selectCurrentConstruction(construction: Construction) {
-    this.httpClient.post<String>('/api/current-construction', '' + construction.id)
-    .subscribe({
-        error: (error) => {
+   return  this.httpClient.post<String>('/api/current-construction', '' + construction.id)
+    .pipe(
+      catchError((error: any) => {
           this.snackBar.showError(`can't set current constructions: ${error.message}`);
-        }
-      });
+        return EMPTY;
+      })
+    );
   }
 
   updateCurrentConstruction(construction: Construction) {
@@ -67,6 +58,7 @@ export class ConstructionService {
       // ignore already set construction (maybe cached event after reconnect)
       return;
     }
+
     console.log(`current construction: ${construction.name} (${construction.id})`);
     this._currentConstruction.set(construction);
     let ccPath = '/cc';
@@ -82,7 +74,7 @@ export class ConstructionService {
   createConstruction(construction: Construction) {
     return this.httpClient.post('/api/constructions/', construction)
     .pipe(
-      catchError((err: any, caught: Observable<any>) => {
+      catchError((err: any) => {
         this.snackBar.showError(`can't create construction: ${err.message}`);
         return EMPTY
       })
@@ -92,7 +84,7 @@ export class ConstructionService {
   saveConstruction(construction: Construction) {
     return this.httpClient.put('/api/constructions/' + construction.id, construction)
     .pipe(
-      catchError((err: any, caught: Observable<any>) => {
+      catchError((err: any) => {
         this.snackBar.showError(`can't save construction ${construction.id}: ${err.message}`);
         return EMPTY
       })
@@ -102,7 +94,7 @@ export class ConstructionService {
   deleteConstruction(constructionId: Number) {
     return this.httpClient.delete('/api/constructions/' + constructionId)
     .subscribe({
-      next: (construction) => {
+      next: () => {
         this.snackBar.showSuccess(`construction ${constructionId} deleted`);
       },
       error: (error) => {

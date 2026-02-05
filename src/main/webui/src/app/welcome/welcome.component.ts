@@ -24,6 +24,7 @@ export class WelcomeComponent implements OnInit {
   }
 
   selectCurrentConstruction(construction: Construction) {
-    this.constructionService.selectCurrentConstruction(construction);
+    this.constructionService.selectCurrentConstruction(construction)
+    .subscribe();
   }
 }

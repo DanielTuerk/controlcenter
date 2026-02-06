@@ -5,6 +5,7 @@ import {DeviceSubscription} from "../../shared/websocket/device.subscription";
 import {BusService} from "../../shared/bus.service";
 import {WebSocketService} from "../../shared/websocket/websocket.service";
 import {BusSubscription} from "../../shared/websocket/bus.subscription";
+import {DeviceService} from "../../shared/device.service";
 
 @Component({
   selector: 'app-bus-monitor',
@@ -22,8 +23,9 @@ export class BusMonitorComponent implements OnInit, OnDestroy {
   private busSubscription = inject(BusSubscription);
   private webSocketService = inject(WebSocketService);
   private busService = inject(BusService);
+  private deviceService = inject(DeviceService);
 
-  protected isConnected: boolean = false;
+  protected isConnected = this.deviceService.isConnected;
   protected buses: Bus[] = [];
 
   constructor() {
@@ -36,11 +38,9 @@ export class BusMonitorComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.deviceSubscription.deviceConnection().subscribe(device => {
       if (device.eventType === TYPE.Connected) {
-        this.isConnected = true;
         this.busService.startTrackingBus(this.webSocketService.getClientId());
       }
       if (device.eventType !== TYPE.Connected) {
-        this.isConnected = false;
         this.busService.stopTrackingBus(this.webSocketService.getClientId());
       }
     });

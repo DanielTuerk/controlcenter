@@ -1,15 +1,15 @@
 <mat-form-field class="no-subscript">
   <mat-label>Select device</mat-label>
   <mat-select [(ngModel)]="selectedDevice"
-              [disabled]="isConnected"
+              [disabled]="isConnected()"
               name="device">
     <mat-option *ngFor="let device of devices(); index as i;" [value]="device">{{ device.key }}</mat-option>
   </mat-select>
 </mat-form-field>
-<button mat-fab routerLink="settings/device" [disabled]="isConnected">
+<button mat-fab routerLink="settings/device" [disabled]="isConnected()">
   <mat-icon>edit</mat-icon>
 </button>
-<mat-slide-toggle [checked]="isConnected"
+<mat-slide-toggle [checked]="isConnected()"
                   [disabled]="!selectedDevice"
                   (change)="onConnectionToggle($event.checked)">Connection
 </mat-slide-toggle>

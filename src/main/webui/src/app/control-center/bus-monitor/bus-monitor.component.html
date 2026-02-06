@@ -1,8 +1,8 @@
-<div *ngIf="!isConnected">
+<div *ngIf="!isConnected()">
   <p>No connection! Please connect device first.</p>
 </div>
 
-<div class="bus-container" *ngIf="isConnected">
+<div class="bus-container" *ngIf="isConnected()">
   <div class="bus" *ngFor="let bus of buses">
     <h2>Bus {{ bus.number }}</h2>
     <div class="address-grid">

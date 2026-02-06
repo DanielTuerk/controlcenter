@@ -1,48 +1,40 @@
-import {Injectable} from '@angular/core';
-import {delay, of, Subject} from 'rxjs';
+import {Injectable, NgZone} from '@angular/core';
+import {delay, Observable, of, ReplaySubject} from 'rxjs';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable({providedIn: 'root'})
 export class WebSocketService {
   private URL = 'ws://localhost:8080/websocket';
   private socket!: WebSocket;
-  private subscriptions = new Map<string, Subject<any>>();
-  private clientId: string | undefined = undefined;
+  private subscriptions = new Map<string, ReplaySubject<any>>();
+  private clientId?: string;
 
-  /**
-   * Register the event type (class name) to receive the messages for.
-   *
-   * @param eventKey
-   */
-  registerEventAndConsume<T>(eventKey: string) {
-    console.log("RegisterEvent", eventKey);
-    this.subscriptions.set(eventKey, new Subject());
-    return this.consumeEvent(eventKey);
+  constructor(private ngZone: NgZone) {
   }
 
-  isAlreadyRegistered(eventKey: string): boolean {
-    return this.subscriptions.has(eventKey);
-  }
-
-  /**
-   * Receive the messages for the given event key.
-   * @param eventKey
-   */
-  consumeEvent<T>(eventKey: string) {
-    if (!this.isAlreadyRegistered(eventKey)) {
-      throw new Error(`Event not registered: ${eventKey}`);
+  registerEventAndConsume<T>(eventKey: string): Observable<T> {
+    if (!this.subscriptions.has(eventKey)) {
+      this.subscriptions.set(eventKey, this.createSubject());
     }
-    let newVar = this.subscriptions.get(eventKey)! as Subject<T>;
-    return newVar.asObservable();
+    return this.consumeEvent<T>(eventKey);
+  }
+
+  private createSubject() {
+    // TODO buffer need to be defined
+    return new ReplaySubject<any>(1000);
+  }
+
+  consumeEvent<T>(eventKey: string): Observable<T> {
+    if (!this.subscriptions.has(eventKey)) {
+      // optional: create subject lazily so late callers still get future events
+      this.subscriptions.set(eventKey, this.createSubject());
+    }
+    return this.subscriptions.get(eventKey)!.asObservable() as Observable<T>;
   }
 
   connect(): void {
     this.socket = new WebSocket(this.URL);
 
-    this.socket.onopen = () => {
-      console.log('WebSocket connected');
-    };
+    this.socket.onopen = () => console.log('WebSocket connected');
 
     this.socket.onclose = () => {
       console.log('WebSocket disconnected');
@@ -52,29 +44,33 @@ export class WebSocketService {
       });
     };
 
-    this.socket.onerror = (error) => {
-      console.log('WebSocket connection error', error);
-    }
+    this.socket.onerror = (err) => console.log('WebSocket error', err);
 
     this.socket.onmessage = (event) => {
       const [eventName, jsonString] = event.data.split(/:(.+)/);
       if (eventName === 'clientId') {
         this.clientId = jsonString.trim();
-      } else {
-        const payload = JSON.parse(jsonString.trim());
-        console.log('Event:', eventName, 'Payload:', payload);
-        if (this.subscriptions.has(eventName)) {
-          this.subscriptions.get(eventName)?.next(payload);
-        } else {
-          console.log('no subscription for Event:', eventName);
-        }
+        return;
       }
+
+      const payload = JSON.parse(jsonString.trim());
+      console.log('Event:', eventName, 'Payload:', payload);
+      // ensure we run inside Angular zone if UI updates depend on this
+      this.ngZone.run(() => {
+        if (!this.subscriptions.has(eventName)) {
+          this.subscriptions.set(eventName, this.createSubject());
+        }
+        this.subscriptions.get(eventName)!.next(payload);
+      });
     };
   }
 
-  send(message: string): void {
-    if (this.socket?.readyState === WebSocket.OPEN) {
-      this.socket.send(message);
+  // TODO optional cleanup helpers
+  destroyEvent(eventKey: string) {
+    const s = this.subscriptions.get(eventKey);
+    if (s) {
+      s.complete();
+      this.subscriptions.delete(eventKey);
     }
   }
 

@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {
-  RailVoltageEvent,
-  SignalFunctionStateEvent, TrackChangedEvent,
+  SignalFunctionStateEvent,
+  TrackChangedEvent,
   TrackPartBlockEvent,
   TrackPartStateEvent
 } from "../../../shared/openapi-gen";
@@ -14,7 +14,6 @@ export class TrackSubscription extends Subscription {
 
   readonly trackChanged = this.createEventAccessor<TrackChangedEvent>('TrackChangedEvent');
 
-  readonly railVoltage = this.createEventAccessor<RailVoltageEvent>('RailVoltageEvent');
   readonly signalFunctionState = this.createEventAccessor<SignalFunctionStateEvent>('SignalFunctionStateEvent');
   readonly trackPartBlock = this.createEventAccessor<TrackPartBlockEvent>('TrackPartBlockEvent');
   readonly trackPartState = this.createEventAccessor<TrackPartStateEvent>('TrackPartStateEvent');

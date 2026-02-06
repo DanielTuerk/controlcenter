@@ -705,10 +705,6 @@ components:
           $ref: "#/components/schemas/TrackBlock"
         monitoringBlock:
           $ref: "#/components/schemas/TrackBlock"
-        toggleFunction:
-          $ref: "#/components/schemas/BusDataConfiguration"
-        eventConfiguration:
-          $ref: "#/components/schemas/EventConfiguration"
         signalConfigurations:
           type: array
           items:
@@ -886,6 +882,9 @@ components:
           $ref: "#/components/schemas/BusDataConfiguration"
         state:
           type: boolean
+        trackPartId:
+          type: integer
+          format: int64
         "on":
           type: boolean
         cacheKey:
@@ -1247,15 +1246,13 @@ paths:
             type: string
       requestBody:
         content:
-          application/json:
+          text/plain:
             schema:
-              $ref: "#/components/schemas/ConfigItem"
+              type: string
         required: true
       responses:
         "200":
           description: OK
-        "400":
-          description: Bad Request
       summary: Update
       tags:
         - Config Resource
@@ -1667,6 +1664,21 @@ paths:
                 items:
                   $ref: "#/components/schemas/AbstractTrackPart"
       summary: List All
+  /api/track/{id}/toggle:
+    post:
+      tags:
+        - track
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: OK
+      summary: Toggle Track Part
   /api/trains:
     get:
       responses:

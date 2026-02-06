@@ -4,7 +4,6 @@ import {routes as ccRoutes} from "./control-center/control-center.routes"
 import {WelcomeComponent} from "./welcome/welcome.component";
 import {ControlCenterComponent} from "./control-center/control-center.component";
 import {NotfoundComponent} from "./notfound/notfound.component";
-import {CurrentConstructionGuard} from "./CurrentConstruction.guard";
 
 export const routes:Routes = [
   {
@@ -20,7 +19,6 @@ export const routes:Routes = [
     path: 'cc',
     component: ControlCenterComponent,
     children: ccRoutes,
-    canActivate: [CurrentConstructionGuard],
   },
   {
     path: '**',

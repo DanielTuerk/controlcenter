@@ -13,7 +13,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import net.wbz.moba.controlcenter.BusAddressIdentifier;
 import net.wbz.moba.controlcenter.SelectrixHelper;
-import net.wbz.moba.controlcenter.service.track.TrackManager;
+import net.wbz.moba.controlcenter.service.track.TrackProvider;
 import net.wbz.moba.controlcenter.shared.scenario.Route;
 import net.wbz.moba.controlcenter.shared.scenario.Route.ROUTE_RUN_STATE;
 import net.wbz.moba.controlcenter.shared.scenario.RouteSequence;
@@ -37,7 +37,7 @@ public class RouteExecutionObserver {
 
     private static final Logger LOG = Logger.getLogger(RouteExecutionObserver.class);
 
-    private final TrackManager trackManager;
+    private final TrackProvider trackProvider;
     /**
      * Actual running {@link RouteSequence}s which need to be thread safe. Each execution will access the collection in
      * parallel.
@@ -46,8 +46,8 @@ public class RouteExecutionObserver {
     private final DeviceManager deviceManager;
 
     @Inject
-    public RouteExecutionObserver(TrackManager trackManager, DeviceManager deviceManager) {
-        this.trackManager = trackManager;
+    public RouteExecutionObserver(TrackProvider trackProvider, DeviceManager deviceManager) {
+        this.trackProvider = trackProvider;
         this.deviceManager = deviceManager;
     }
 
@@ -167,9 +167,11 @@ public class RouteExecutionObserver {
     }
 
     private Set<TrackBlock> getTrackBlocksForBlockStraightsOfTrackBlock(TrackBlock left) {
-        return trackManager.getBlockStraightsFromTrackBlock(left)
-            .stream()
+        return trackProvider.getTrack().stream()
+            .filter(x -> x instanceof BlockStraight)
+            .map(BlockStraight.class::cast)
             .map(BlockStraight::getAllTrackBlocks)
+            .filter(allTrackBlocks -> allTrackBlocks.contains(left))
             .flatMap(Collection::stream)
             .collect(Collectors.toSet());
     }

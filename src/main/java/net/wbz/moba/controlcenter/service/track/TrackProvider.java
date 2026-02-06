@@ -5,6 +5,7 @@ import jakarta.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import net.wbz.moba.controlcenter.EventBroadcaster;
 import net.wbz.moba.controlcenter.persist.entity.track.AbstractTrackPartEntity;
 import net.wbz.moba.controlcenter.persist.entity.track.BlockStraightEntity;
@@ -55,6 +56,10 @@ public class TrackProvider {
             constructionService.getCurrentConstruction().ifPresent(this::loadData);
         }
         return cachedEntities;
+    }
+
+    public Optional<AbstractTrackPart> getTrackPart(Long trackPartId) {
+        return getTrack().stream().filter(x-> x.getId().equals(trackPartId)).findAny();
     }
 
     private void loadData(Construction construction) {

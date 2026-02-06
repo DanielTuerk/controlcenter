@@ -1,9 +1,9 @@
-import {BlockStraight, DIRECTION} from "../../../../../../shared/openapi-gen";
+import {BlockStraight, DIRECTION, TrackPartStateEvent} from "../../../../../../shared/openapi-gen";
 import {AbstractTrackComponentBuilder} from "../abstract-track-component-builder";
 
 export class BlockStraightBuilder extends AbstractTrackComponentBuilder {
 
-  doBuild(trackPart: BlockStraight, baseX: number, baseY: number): Element {
+  doBuild(trackPart: BlockStraight, baseX: number, baseY: number, event: TrackPartStateEvent | null = null): Element {
     let blockSize = trackPart.blockLength !== undefined
       ? AbstractTrackComponentBuilder.TILE * trackPart.blockLength
       : AbstractTrackComponentBuilder.TILE;

@@ -6,19 +6,16 @@ import {
   EventEmitter,
   inject,
   OnInit,
-  Output, signal,
+  Output,
   ViewChild
 } from '@angular/core';
-import {catchError} from "rxjs/operators";
-import {EMPTY} from "rxjs";
-import {SnackBar} from "../../common/snack-bar.component";
-import {HttpClient} from "@angular/common/http";
 import {TrackComponentBuilder} from "./track-builder/track-component-builder";
 import {AbstractTrackComponentBuilder} from "./track-builder/abstract-track-component-builder";
 import {TrackSubscription} from "../../../shared/websocket/track.subscription";
-import {AbstractTrackPart, TYPE} from "../../../../shared/openapi-gen";
+import {AbstractTrackPart, TrackPartStateEvent} from "../../../../shared/openapi-gen";
 import {TrackElement} from "./track-element";
-import {DeviceSubscription} from "../../../shared/websocket/device.subscription";
+import {TrackService} from "../../../shared/track.service";
+import {DeviceService} from "../../../shared/device.service";
 
 @Component({
   selector: 'app-track-viewer-svg',
@@ -39,52 +36,46 @@ export class TrackViewerSvgComponent implements OnInit {
 
   private trackComponentBuilder = inject(TrackComponentBuilder);
   private cdr = inject(ChangeDetectorRef);
-  private snackBar = inject(SnackBar);
-
-  private httpClient = inject(HttpClient);
+  private trackService = inject(TrackService);
   private trackSubscription = inject(TrackSubscription);
-  private deviceSubscription = inject(DeviceSubscription);
+  private deviceService = inject(DeviceService);
+
+  private loadedTrackParts: TrackElement[] = []
 
   svgWidth = 0;
   svgHeight = 0;
   tileSize = AbstractTrackComponentBuilder.TILE;
-  protected isConnected = signal(false);
+  protected isConnected = this.deviceService.isConnected;
 
   ngOnInit() {
-    this.httpClient.get<[]>('/api/track')
-    .pipe(
-      catchError((err: any) => {
-        this.snackBar.showError(`can't load track: ${err.message}`);
-        return EMPTY
-      })
-    ).subscribe(elements => {
+    this.trackService.fetchTrackParts().subscribe(elements => {
       this.loadTrack(elements);
+
+      this.trackSubscription.trackChanged().subscribe(event => {
+        this.loadTrack(event.trackParts);
+      });
+
+      // subscribe to state changes for track parts
+      this.trackSubscription.trackPartState().subscribe(event => {
+        let trackElement = this.loadedTrackParts.find(
+          trackElement => trackElement.trackPart.id === event.trackPartId);
+        if (!trackElement) return;
+
+        console.log("received trackPartState: ", trackElement);
+        this.removeTrackPart(trackElement);
+        let element = this.buildTrackPartElement(trackElement?.trackPart!, event);
+        this.addTrackPart(element);
+      });
     });
 
-    this.trackSubscription.trackChanged().subscribe(event => {
-      this.loadTrack(event.trackParts);
-    });
-
-    this.deviceSubscription.deviceConnection().subscribe(device => {
-      this.isConnected.set(device.eventType === TYPE.Connected);
-    });
   }
 
   private loadTrack(elements: AbstractTrackPart[]) {
-    let trackPartsFoo: TrackElement[] = []
+    this.loadedTrackParts = [];
 
     elements
     .map(trackPart => {
-      let element = this.trackComponentBuilder.build(trackPart);
-      let trackEvent: TrackElement = {trackPart: trackPart, svgElement: element};
-      trackPartsFoo.push(trackEvent);
-
-      element.addEventListener("click", () => {
-        if (this.isConnected()) {
-          this.trackPartClicked.emit(trackEvent);
-        }
-      });
-      return element;
+      return this.buildTrackPartElement(trackPart);
     })
     .forEach(e => this.addTrackPart(e));
 
@@ -92,7 +83,20 @@ export class TrackViewerSvgComponent implements OnInit {
 
     this.cdr.markForCheck();
 
-    this.trackPartsReady.emit(trackPartsFoo);
+    this.trackPartsReady.emit(this.loadedTrackParts);
+  }
+
+  private buildTrackPartElement(trackPart: AbstractTrackPart, event: TrackPartStateEvent | null = null) {
+    let element = this.trackComponentBuilder.build(trackPart, event);
+    let trackEvent: TrackElement = {trackPart: trackPart, svgElement: element};
+    this.loadedTrackParts.push(trackEvent);
+
+    element.addEventListener("click", () => {
+      if (this.isConnected()) {
+        this.trackPartClicked.emit(trackEvent);
+      }
+    });
+    return element;
   }
 
   private updateTrackDimension(elements: AbstractTrackPart[]) {
@@ -114,6 +118,12 @@ export class TrackViewerSvgComponent implements OnInit {
 
   private addTrackPart(e: Element) {
     this.svg.nativeElement.appendChild(e);
+  }
+
+  private removeTrackPart(trackElement: TrackElement) {
+    // remove old one if already exists
+    this.loadedTrackParts = this.loadedTrackParts.filter(e => e.trackPart.id !== trackElement.trackPart.id)
+    this.svg.nativeElement.removeChild(trackElement.svgElement);
   }
 
   generatePath(size: number): string {

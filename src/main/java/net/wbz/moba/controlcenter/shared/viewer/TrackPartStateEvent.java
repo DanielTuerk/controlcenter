@@ -15,11 +15,13 @@ public class TrackPartStateEvent implements StateEvent {
 
     private BusDataConfiguration configuration;
     private boolean state;
+    private long trackPartId;
 
     public TrackPartStateEvent() {
     }
 
-    public TrackPartStateEvent(BusDataConfiguration configuration, boolean state) {
+    public TrackPartStateEvent(long trackPartId, BusDataConfiguration configuration, boolean state) {
+        this.trackPartId = trackPartId;
         this.configuration = configuration;
         this.state = state;
     }
@@ -30,6 +32,10 @@ public class TrackPartStateEvent implements StateEvent {
 
     public BusDataConfiguration getConfiguration() {
         return configuration;
+    }
+
+    public long getTrackPartId() {
+        return trackPartId;
     }
 
     @Override

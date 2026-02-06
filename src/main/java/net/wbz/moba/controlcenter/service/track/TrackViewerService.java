@@ -8,12 +8,20 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import net.wbz.moba.controlcenter.BusAddressIdentifier;
+import net.wbz.moba.controlcenter.EventBroadcaster;
 import net.wbz.moba.controlcenter.shared.bus.BusAddressBit;
+import net.wbz.moba.controlcenter.shared.track.model.AbstractTrackPart;
 import net.wbz.moba.controlcenter.shared.track.model.BusDataConfiguration;
+import net.wbz.moba.controlcenter.shared.track.model.HasToggleFunction;
 import net.wbz.moba.controlcenter.shared.track.model.Signal;
+import net.wbz.moba.controlcenter.shared.viewer.TrackPartStateEvent;
 import net.wbz.selectrix4java.bus.BusAddress;
+import net.wbz.selectrix4java.bus.BusAddressBitListener;
+import net.wbz.selectrix4java.bus.BusListener;
 import net.wbz.selectrix4java.device.Device;
 import net.wbz.selectrix4java.device.DeviceAccessException;
+import net.wbz.selectrix4java.device.DeviceConnectionListener;
 import net.wbz.selectrix4java.device.DeviceManager;
 import org.jboss.logging.Logger;
 
@@ -25,28 +33,120 @@ import org.jboss.logging.Logger;
 public class TrackViewerService {
 
     private static final Logger LOG = Logger.getLogger(TrackViewerService.class);
+    /**
+     * Map for all {@link BusListener}s of a single {@link BusAddressIdentifier} to avoid duplicated listeners to
+     * register and to call from {@link net.wbz.selectrix4java.data.BusDataChannel}.
+     */
+    private final Map<BusAddressIdentifier, List<BusListener>> busAddressListenersOfTheCurrentTrack = Maps.newConcurrentMap();
+
+    private final DeviceManager deviceManager;
+    private final EventBroadcaster eventBroadcaster;
+
+    private final Logger logger;
 
     @Inject
-    DeviceManager deviceManager;
+    public TrackViewerService(DeviceManager deviceManager, TrackProvider trackProvider,
+        EventBroadcaster eventBroadcaster, Logger logger) {
+        this.deviceManager = deviceManager;
+        this.eventBroadcaster = eventBroadcaster;
+        this.logger = logger;
 
-    public void toggleTrackPart(BusDataConfiguration configuration, boolean state) {
-        if (configuration != null && configuration.isValid()) {
-            try {
-                if (deviceManager.getConnectedDevice() != null) {
-                    BusAddress busAddress = deviceManager.getConnectedDevice()
-                        .getBusAddress(1, configuration.getAddress().byteValue());
-                    if (state) {
-                        busAddress.setBit(configuration.getBit());
+        trackProvider.getTrack().stream()
+            .filter(t -> t instanceof HasToggleFunction)
+            .forEach(this::registerToggleFunctionOfTrackPart);
+
+        deviceManager.addDeviceConnectionListener(new DeviceConnectionListener() {
+            @Override
+            public void connected(Device device) {
+
+                registerBusAddressListeners(device);
+            }
+
+            @Override
+            public void disconnected(Device device) {
+                removeBusAddressListeners(device);
+            }
+        });
+    }
+
+    private void registerToggleFunctionOfTrackPart(AbstractTrackPart trackPart) {
+        if (trackPart instanceof HasToggleFunction trackPartConfiguration) {
+            final var toggleFunction = trackPartConfiguration.getToggleFunction();
+            if (toggleFunction != null && toggleFunction.isValid()) {
+                addBusListener(toggleFunction, new BusAddressBitListener(toggleFunction.getBit()) {
+                    @Override
+                    public void bitChanged(boolean oldValue, boolean newValue) {
+                        eventBroadcaster.fireEvent(
+                            new TrackPartStateEvent(trackPart.getId(), toggleFunction, newValue));
+                    }
+                });
+//                registerEventConfigurationOfTrackPart(trackPartConfiguration);
+            }
+        }
+    }
+
+
+    private void addBusListener(BusDataConfiguration trackPartConfiguration, BusListener listener) {
+        BusAddressIdentifier busAddressIdentifier = new BusAddressIdentifier(trackPartConfiguration.getBus(),
+            trackPartConfiguration.getAddress());
+        if (!busAddressListenersOfTheCurrentTrack.containsKey(busAddressIdentifier)) {
+            busAddressListenersOfTheCurrentTrack.put(busAddressIdentifier, new ArrayList<>());
+        }
+        busAddressListenersOfTheCurrentTrack.get(busAddressIdentifier).add(listener);
+    }
+
+    private void removeBusAddressListeners(Device device) {
+        try {
+            for (Map.Entry<BusAddressIdentifier, List<BusListener>> entry : busAddressListenersOfTheCurrentTrack
+                .entrySet()) {
+                device.getBusAddress(entry.getKey().getBus(), (byte) entry.getKey().getAddress())
+                    .removeListeners(entry.getValue());
+            }
+        } catch (DeviceAccessException e) {
+            logger.error("can't register listeners to active device", e);
+        }
+    }
+
+    private void registerBusAddressListeners(Device device) {
+        try {
+            for (Map.Entry<BusAddressIdentifier, List<BusListener>> entry : busAddressListenersOfTheCurrentTrack
+                .entrySet()) {
+                device.getBusAddress(entry.getKey().getBus(), (byte) entry.getKey().getAddress())
+                    .addListeners(entry.getValue());
+            }
+        } catch (DeviceAccessException e) {
+            logger.error("can't register listeners to active device", e);
+        }
+
+        // TODO
+//        try {
+//            trackBlockRegistry.registerListeners(device);
+//        } catch (DeviceAccessException e) {
+//            log.error("can't register track block listeners to active device", e);
+//        }
+//
+//        try {
+//            signalBlockRegistry.registerListeners(device);
+//        } catch (DeviceAccessException e) {
+//            log.error("can't register signal block listeners to active device", e);
+//        }
+
+    }
+
+    public void toggleTrackPart(AbstractTrackPart trackPart) throws DeviceAccessException {
+        if (trackPart instanceof HasToggleFunction) {
+            var trackPartConfig = ((HasToggleFunction) trackPart).getToggleFunction();
+            if (trackPartConfig != null && trackPartConfig.isValid()) {
+                final var busAddress = deviceManager.getConnectedDevice()
+                    .getBusAddress(trackPartConfig.getBus(), trackPartConfig.getAddress().byteValue());
+                if (busAddress.getBitState(trackPartConfig.getBit())) {
+                    busAddress.clearBit(trackPartConfig.getBit());
                     } else {
-                        busAddress.clearBit(configuration.getBit());
+                    busAddress.setBit(trackPartConfig.getBit());
                     }
                     busAddress.send();
                 }
-            } catch (DeviceAccessException e) {
-                LOG.error("can't toggle track part", e);
-                throw new RuntimeException("can't toggle track part");
             }
-        }
     }
 
     public void toggleTrackParts(Map<BusDataConfiguration, Boolean> trackPartStates) {
@@ -64,7 +164,9 @@ public class TrackViewerService {
         sendTrackPartStates(busAddressBits);
     }
 
+    @Deprecated
     public boolean getTrackPartState(BusDataConfiguration configuration) {
+        // TODO method can be deleted?
         if (configuration.isValid()) {
             try {
                 if (deviceManager.getConnectedDevice() != null) {
@@ -226,4 +328,46 @@ public class TrackViewerService {
         sendTrackPartStates(Lists.newArrayList(availableLightConfig.values()));
     }
 
+
+//    private void registerEventConfigurationOfTrackPart(final HasToggleFunction toggleFunctionEntity) {
+//        // TODO
+//        EventConfiguration eventConfiguration = toggleFunctionEntity.getEventConfiguration();
+//        if (eventConfiguration != null && eventConfiguration.isActive()) {
+//
+//            // add state 'ON'
+//            final BusDataConfiguration stateOnConfig = eventConfiguration.getStateOnConfig();
+//            if (stateOnConfig.isValid()) {
+//                addBusListener(stateOnConfig, new BusAddressBitListener(stateOnConfig.getBit()) {
+//                    @Override
+//                    public void bitChanged(boolean oldValue, boolean newValue) {
+//                        if ((newValue && stateOnConfig.getBitState()) || (!newValue && !stateOnConfig.getBitState())) {
+//                            try {
+//                                switchToggleFunction(toggleFunctionEntity, true);
+//                            } catch (DeviceAccessException e) {
+//                                logger.error("can't toggle the 'on' state", e);
+//                            }
+//                        }
+//                    }
+//                });
+//            }
+//
+//            // add state 'OFF'
+//            final BusDataConfiguration stateOffConfig = eventConfiguration.getStateOffConfig();
+//            if (stateOffConfig.isValid()) {
+//                addBusListener(stateOffConfig, new BusAddressBitListener(stateOffConfig.getBit()) {
+//                    @Override
+//                    public void bitChanged(boolean oldValue, boolean newValue) {
+//                        if ((newValue && stateOffConfig.getBitState()) || (!newValue && !stateOffConfig
+//                            .getBitState())) {
+//                            try {
+//                                switchToggleFunction(toggleFunctionEntity, false);
+//                            } catch (DeviceAccessException e) {
+//                                logger.error("can't toggle the 'off' state", e);
+//                            }
+//                        }
+//                    }
+//                });
+//            }
+//        }
+//    }
 }

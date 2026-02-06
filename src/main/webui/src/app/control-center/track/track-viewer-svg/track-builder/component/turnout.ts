@@ -1,45 +1,79 @@
-import {DIRECTION2, PRESENTATION, Turnout} from "../../../../../../shared/openapi-gen";
 import {AbstractTrackComponentBuilder} from "../abstract-track-component-builder";
+import {DIRECTION2, PRESENTATION, TrackPartStateEvent, Turnout} from "../../../../../../shared/openapi-gen";
 
 export class TurnoutBuilder extends AbstractTrackComponentBuilder {
 
-  doBuild(trackPart: Turnout, baseX: number, baseY: number): Element {
+  doBuild(trackPart: Turnout, baseX: number, baseY: number, event: TrackPartStateEvent | null = null): Element {
     const cx = baseX + AbstractTrackComponentBuilder.TILE / 2;
     const cy = baseY + AbstractTrackComponentBuilder.BASE_HEIGHT / 2;
-    let degree = 0;
-    let isLeft = trackPart.currentDirection === DIRECTION2.Left;
-    switch (trackPart.currentPresentation) {
-      case PRESENTATION.LeftToRight:
-        degree = isLeft ? 180 : 0;
-        break;
-      case PRESENTATION.RightToLeft:
-        degree = isLeft ? 0 : 180;
-        break;
-      case PRESENTATION.BottomToTop:
-        degree = isLeft ? 270 : 90;
-        break;
-      case PRESENTATION.TopToBottom:
-        degree = isLeft ? 90 : 270;
-        break;
-    }
-    let path;
-    if (isLeft) {
-      path = `M ${baseX} ${cy} L ${baseX + AbstractTrackComponentBuilder.TILE - 5} ${cy} L ${baseX + 10} ${baseY + AbstractTrackComponentBuilder.TILE - 5}`
+
+    const isLeft = trackPart.currentDirection === DIRECTION2.Left;
+
+    const straightRectPoints = `
+  ${baseX},${baseY}
+  ${baseX + AbstractTrackComponentBuilder.TILE},${baseY}
+  ${baseX + AbstractTrackComponentBuilder.TILE},${baseY + AbstractTrackComponentBuilder.BASE_HEIGHT}
+  ${baseX},${baseY + AbstractTrackComponentBuilder.BASE_HEIGHT}`;
+
+    const turnTrapPoints = isLeft ?
+      `
+   ${baseX + AbstractTrackComponentBuilder.TILE},${baseY}
+  ${baseX + AbstractTrackComponentBuilder.BASE_HEIGHT},${baseY + AbstractTrackComponentBuilder.BASE_HEIGHT * 2}
+  ${baseX + AbstractTrackComponentBuilder.TILE / 2 + AbstractTrackComponentBuilder.BASE_HEIGHT / 2}, ${baseY + AbstractTrackComponentBuilder.BASE_HEIGHT * 2}
+  ${baseX + AbstractTrackComponentBuilder.TILE},${baseY + AbstractTrackComponentBuilder.BASE_HEIGHT}
+  ` : `
+  ${baseX},${baseY}
+  ${baseX + AbstractTrackComponentBuilder.TILE / 2 + AbstractTrackComponentBuilder.BASE_HEIGHT / 2}, ${baseY + AbstractTrackComponentBuilder.BASE_HEIGHT * 2}
+  ${baseX + AbstractTrackComponentBuilder.BASE_HEIGHT},${baseY + AbstractTrackComponentBuilder.BASE_HEIGHT * 2}
+  ${baseX},${baseY + AbstractTrackComponentBuilder.BASE_HEIGHT}
+  `;
+
+    const group = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+
+    let transform = `rotate(${this.calcDegreeValue(trackPart, isLeft)} ${cx} ${cy})`;
+
+    if (event !== null && event.on) {
+      group.appendChild(this.basePolygon(straightRectPoints, 'grey', transform));
+      group.appendChild(this.basePolygon(turnTrapPoints, 'white', transform));
     } else {
-      path = `M ${baseX + (AbstractTrackComponentBuilder.TILE)} ${cy} L ${baseX + 5} ${cy} L ${cx + 2} ${baseY + AbstractTrackComponentBuilder.TILE - 5}`;
+      group.appendChild(this.basePolygon(turnTrapPoints, 'grey', transform));
+      group.appendChild(this.basePolygon(straightRectPoints, 'white', transform));
     }
 
-    const rect = this.createElement('path');
-    rect.setAttribute('d', path);
-    rect.setAttribute('width', `${AbstractTrackComponentBuilder.TILE}`);
-    rect.setAttribute('height', `${AbstractTrackComponentBuilder.BASE_HEIGHT}`);
-    rect.setAttribute('stroke', 'white');
-    rect.setAttribute('stroke-width', `${AbstractTrackComponentBuilder.BASE_HEIGHT}`);
-    rect.setAttribute('color', 'white');
-    rect.setAttribute('fill', 'none');
-    rect.setAttribute('transform', `rotate(${degree} ${cx} ${cy})`);
-    return rect;
+    return group;
   }
 
+  private calcDegreeValue(trackPart: Turnout, isLeft: boolean) {
+    switch (trackPart.currentPresentation) {
+      case PRESENTATION.LeftToRight:
+        return isLeft ? 180 : 0;
+      case PRESENTATION.RightToLeft:
+        return isLeft ? 0 : 180;
+      case PRESENTATION.BottomToTop:
+        return isLeft ? 270 : 90;
+      case PRESENTATION.TopToBottom:
+        return isLeft ? 90 : 270;
+      default:
+        throw Error(`invalid presentation value: ${trackPart.currentPresentation}`);
+    }
+  }
+
+  private basePolygon(
+    points: string,
+    fill: string,
+    transform?: string,
+    stroke: string = 'black',
+    strokeWidth: string = '0'
+  ): Element {
+    const polygon = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+    polygon.setAttribute('points', points);
+    polygon.setAttribute('fill', fill);
+    polygon.setAttribute('stroke', stroke);
+    polygon.setAttribute('stroke-width', strokeWidth);
+    if (transform) {
+      polygon.setAttribute('transform', transform);
+    }
+    return polygon;
+  }
 
 }

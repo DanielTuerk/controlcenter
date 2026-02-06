@@ -6,6 +6,7 @@ import {ConstructionSubscription} from "./shared/websocket/construction.subscrip
 import {ConfigService, KEY_CONSTRUCTION_DEFAULT, KEY_CONSTRUCTION_SHOW_WELCOME} from "./shared/config.service";
 import {EMPTY, of, switchMap, tap, throwError} from "rxjs";
 import {catchError} from "rxjs/operators";
+import {DeviceService} from "./shared/device.service";
 
 @Component({
   selector: 'app-root',
@@ -14,6 +15,7 @@ import {catchError} from "rxjs/operators";
 })
 export class AppComponent implements OnInit {
 
+  private deviceService = inject(DeviceService);
   private constructionService = inject(ConstructionService);
   private wsService = inject(WebSocketService);
   private configService = inject(ConfigService);
@@ -21,6 +23,9 @@ export class AppComponent implements OnInit {
   private router = inject(Router)
 
   ngOnInit() {
+    // TODO find better way
+    this.deviceService.init();
+
     // check for current construction already set on server side and handle the event
     this.wsService.connect();
     this.constructionSubscription.currentConstruction().subscribe(event => {

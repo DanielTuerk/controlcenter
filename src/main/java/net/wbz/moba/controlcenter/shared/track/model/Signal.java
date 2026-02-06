@@ -13,7 +13,7 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
  */
 @Schema(description = "type for a track part")
 @Tag(ref = "track")
-public class Signal extends Straight implements HasToggleFunction {
+public class Signal extends Straight {
 
     private TYPE type;
     private BusDataConfiguration signalConfigRed1;
@@ -36,25 +36,6 @@ public class Signal extends Straight implements HasToggleFunction {
         this.type = type;
     }
 
-    @Override
-    public BusDataConfiguration getToggleFunction() {
-        return null;
-    }
-
-    @Override
-    public void setToggleFunction(BusDataConfiguration toggleFunction) {
-    }
-
-    @Override
-    public EventConfiguration getEventConfiguration() {
-        return null;
-    }
-
-    @Override
-    public void setEventConfiguration(EventConfiguration eventConfiguration) {
-
-    }
-
     /**
      * Return {@link BusDataConfiguration} for the given {@link LIGHT} or {@code null}.
      *
@@ -62,24 +43,15 @@ public class Signal extends Straight implements HasToggleFunction {
      * @return {@link BusDataConfiguration} of given light
      */
     public BusDataConfiguration getSignalConfiguration(LIGHT light) {
-        switch (light) {
-            case RED1:
-                return signalConfigRed1;
-            case RED2:
-                return signalConfigRed2;
-            case GREEN1:
-                return signalConfigGreen1;
-            case GREEN2:
-                return signalConfigGreen2;
-            case YELLOW1:
-                return signalConfigYellow1;
-            case YELLOW2:
-                return signalConfigYellow2;
-            case WHITE:
-                return signalConfigWhite;
-            default:
-                return null;
-        }
+        return switch (light) {
+            case RED1 -> signalConfigRed1;
+            case RED2 -> signalConfigRed2;
+            case GREEN1 -> signalConfigGreen1;
+            case GREEN2 -> signalConfigGreen2;
+            case YELLOW1 -> signalConfigYellow1;
+            case YELLOW2 -> signalConfigYellow2;
+            case WHITE -> signalConfigWhite;
+        };
     }
 
     public void updateSignalConfiguration(LIGHT light, BusDataConfiguration busDataConfiguration) {
@@ -217,25 +189,6 @@ public class Signal extends Straight implements HasToggleFunction {
         return lightConfigs;
     }
 
-    @Override
-    public String toString() {
-        final StringBuffer sb = new StringBuffer("Signal{");
-        sb.append("type=").append(type);
-        sb.append(", enteringBlock=").append(enteringBlock);
-        sb.append(", breakingBlock=").append(breakingBlock);
-        sb.append(", stopBlock=").append(stopBlock);
-        sb.append(", monitoringBlock=").append(monitoringBlock);
-        sb.append('}');
-        return sb.toString();
-    }
-
-    /**
-     * Available functions for the signal types.
-     */
-    public enum FUNCTION {
-        HP0, HP1, HP2, HP0_SH1
-    }
-
     /**
      * Types of signal with corresponding mapping of the lights.
      */
@@ -245,7 +198,7 @@ public class Signal extends Straight implements HasToggleFunction {
         EXIT(new LIGHT[]{LIGHT.RED1, LIGHT.RED2, LIGHT.GREEN1, LIGHT.YELLOW1, LIGHT.WHITE}),
         BEFORE(new LIGHT[]{LIGHT.GREEN1, LIGHT.GREEN2, LIGHT.YELLOW1, LIGHT.YELLOW2});
 
-        private LIGHT[] lights;
+        private final LIGHT[] lights;
 
         TYPE(LIGHT[] lights) {
             this.lights = lights;
@@ -254,6 +207,23 @@ public class Signal extends Straight implements HasToggleFunction {
         public LIGHT[] getLights() {
             return lights;
         }
+    }
+
+    /**
+     * Available functions for the signal types.
+     */
+    public enum FUNCTION {
+        HP0, HP1, HP2, HP0_SH1
+    }
+
+    @Override
+    public String toString() {
+        return "Signal{" + "type=" + type
+            + ", enteringBlock=" + enteringBlock
+            + ", breakingBlock=" + breakingBlock
+            + ", stopBlock=" + stopBlock
+            + ", monitoringBlock=" + monitoringBlock
+            + '}';
     }
 
     /**

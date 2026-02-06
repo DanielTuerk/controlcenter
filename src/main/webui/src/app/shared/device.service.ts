@@ -1,14 +1,29 @@
-import {inject} from "@angular/core";
+import {inject, Injectable, signal} from "@angular/core";
 import {HttpClient} from "@angular/common/http";
 import {SnackBar} from "../control-center/common/snack-bar.component";
-import {DeviceInfo, Scenario} from "../../shared/openapi-gen";
+import {DeviceInfo, Scenario, TYPE} from "../../shared/openapi-gen";
 import {catchError} from "rxjs/operators";
 import {EMPTY, Observable} from "rxjs";
+import {DeviceSubscription} from "./websocket/device.subscription";
 
+@Injectable({
+  providedIn: 'root',
+})
 export class DeviceService {
 
   private httpClient = inject(HttpClient);
   private snackBar = inject(SnackBar);
+
+  private deviceSubscription = inject(DeviceSubscription);
+  private _isConnected = signal(false);
+  public readonly isConnected = this._isConnected.asReadonly();
+
+  init() {
+    this.deviceSubscription.deviceConnection().subscribe($event => {
+      console.log("device connection changed", {device: $event});
+      this._isConnected.set($event.eventType === TYPE.Connected);
+    });
+  }
 
   loadDevices() {
     return this.httpClient.get<DeviceInfo[]>('/api/devices')
@@ -47,7 +62,7 @@ export class DeviceService {
   deleteDevice(deviceId: Number) {
     return this.httpClient.delete('/api/devices/' + deviceId)
     .subscribe({
-      next: (device) => {
+      next: () => {
         this.snackBar.showSuccess(`device ${deviceId} deleted`);
       },
       error: (error) => {

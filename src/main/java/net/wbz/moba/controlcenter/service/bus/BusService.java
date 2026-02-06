@@ -6,8 +6,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -30,13 +31,11 @@ public class BusService {
 
     private static final Logger LOGGER = Logger.getLogger(BusService.class);
     private final EventBroadcaster eventBroadcaster;
-    private final AllBusDataConsumer allBusDataConsumer;
     private final DeviceRecorder deviceRecorder;
-    private boolean trackingActive = false;
     private BusDataPlayer busDataPlayer;
     private final DeviceService deviceService;
 
-    private final Set<String> connectionIdsOfBusTracking = new HashSet<>();
+    private final Map<String, AllBusDataConsumer> connectionIdsOfBusTracking = new HashMap<>();
 
     @Inject
     public BusService(EventBroadcaster eventBroadcaster,
@@ -45,14 +44,6 @@ public class BusService {
         this.eventBroadcaster = eventBroadcaster;
         this.deviceRecorder = deviceRecorder;
         this.deviceService = deviceService;
-
-        this.allBusDataConsumer = new AllBusDataConsumer() {
-            @Override
-            public void valueChanged(int bus, int address, int oldValue, int newValue) {
-                eventBroadcaster.fireTrackingEvent(new BusDataEvent(bus, address, newValue),
-                    connectionIdsOfBusTracking);
-            }
-        };
     }
 
     public boolean getRailVoltage() {
@@ -100,20 +91,29 @@ public class BusService {
     public void startTrackingBus(String connectionId) throws DeviceAccessException {
         final var device = deviceService.getConnectedDevice()
             .orElseThrow(() -> new DeviceAccessException("not connected"));
-        connectionIdsOfBusTracking.add(connectionId);
-        if (!trackingActive) {
-            device.getBusDataDispatcher().registerConsumer(allBusDataConsumer);
-            trackingActive = true;
+        if (!connectionIdsOfBusTracking.containsKey(connectionId)) {
+
+            var value = new AllBusDataConsumer() {
+                @Override
+                public void valueChanged(int bus, int address, int oldValue, int newValue) {
+                    eventBroadcaster.fireTrackingEvent(new BusDataEvent(bus, address, newValue),
+                        Set.of(connectionId));
+                }
+            };
+            connectionIdsOfBusTracking.put(connectionId, value);
+            device.getBusDataDispatcher().registerConsumer(value);
+
         }
     }
 
     public void stopTrackingBus(String connectionId) throws DeviceAccessException {
         final var device = deviceService.getConnectedDevice()
             .orElseThrow(() -> new DeviceAccessException("not connected"));
-        connectionIdsOfBusTracking.remove(connectionId);
-        if (trackingActive) {
-            device.getBusDataDispatcher().unregisterConsumer(allBusDataConsumer);
-            trackingActive = false;
+
+        if (connectionIdsOfBusTracking.containsKey(connectionId)) {
+            // TODO missing connection loss for the connectionIdsOfBusTracking
+            device.getBusDataDispatcher().unregisterConsumer(connectionIdsOfBusTracking.get(connectionId));
+            connectionIdsOfBusTracking.remove(connectionId);
         }
     }
 
@@ -147,9 +147,7 @@ public class BusService {
 
     public void startRecording(String fileName) {
         deviceService.getConnectedDevice()
-            .ifPresent(device -> {
-                deviceRecorder.startRecording(device, null);
-            });
+            .ifPresent(device -> deviceRecorder.startRecording(device, null));
     }
 
     public void stopRecording() {

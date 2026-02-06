@@ -7,18 +7,14 @@ import jakarta.transaction.Transactional;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import net.wbz.moba.controlcenter.BusAddressIdentifier;
 import net.wbz.moba.controlcenter.EventBroadcaster;
 import net.wbz.moba.controlcenter.shared.track.model.AbstractTrackPart;
-import net.wbz.moba.controlcenter.shared.track.model.BlockStraight;
 import net.wbz.moba.controlcenter.shared.track.model.BusDataConfiguration;
 import net.wbz.moba.controlcenter.shared.track.model.HasToggleFunction;
 import net.wbz.moba.controlcenter.shared.track.model.TrackBlock;
-import net.wbz.selectrix4java.bus.BusAddress;
 import net.wbz.selectrix4java.bus.BusListener;
 import net.wbz.selectrix4java.device.Device;
-import net.wbz.selectrix4java.device.DeviceAccessException;
 import net.wbz.selectrix4java.device.DeviceConnectionListener;
 import net.wbz.selectrix4java.device.DeviceManager;
 import org.jboss.logging.Logger;
@@ -50,7 +46,8 @@ public class TrackManager {
 //    private final SignalBlockRegistry signalBlockRegistry;
 //    private final BlockStraightDao blockStraightDao;
 //
-
+@Inject
+TrackProvider trackProvider;
 //
 //    /**
 //     * Cached {@link TrackBlock}s of current {@link Construction}.
@@ -219,16 +216,6 @@ public class TrackManager {
     }
 
 
-    public Set<BlockStraight> getBlockStraightsFromTrackBlock(TrackBlock trackBlock) {
-        // TODO
-        throw new RuntimeException("Not implemented yet");
-//       return  getTrack().stream()
-//           .filter(x->x instanceof BlockStraight)
-//           .map( BlockStraight.class::cast )
-//           .filter(x-> x.getAllTrackBlocks().contains(trackBlock))
-//           .collect(Collectors.toSet());
-    }
-
     Collection<TrackBlock> loadTrackBlocks() {
         // TODO
         throw new RuntimeException("Not implemented yet");
@@ -369,19 +356,6 @@ public class TrackManager {
 //        }
     }
 
-    private void switchToggleFunction(HasToggleFunction toggleFunctionEntity, boolean stateOn) throws
-        DeviceAccessException {
-        BusDataConfiguration trackPartConfig = toggleFunctionEntity.getToggleFunction();
-        if (trackPartConfig != null && trackPartConfig.isValid()) {
-            BusAddress busAddress = deviceManager.getConnectedDevice()
-                .getBusAddress(trackPartConfig.getBus(), trackPartConfig.getAddress().byteValue());
-            if (stateOn) {
-                busAddress.setBit(trackPartConfig.getBit());
-            } else {
-                busAddress.clearBit(trackPartConfig.getBit());
-            }
-            busAddress.send();
-        }
-    }
+
 
 }

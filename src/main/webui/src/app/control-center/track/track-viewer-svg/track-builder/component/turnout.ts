@@ -39,7 +39,6 @@ export class TurnoutBuilder extends AbstractTrackComponentBuilder {
       group.appendChild(this.basePolygon(turnTrapPoints, 'grey', transform));
       group.appendChild(this.basePolygon(straightRectPoints, 'white', transform));
     }
-
     return group;
   }
 

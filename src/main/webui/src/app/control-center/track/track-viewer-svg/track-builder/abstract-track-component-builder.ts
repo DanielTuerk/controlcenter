@@ -17,7 +17,10 @@ export abstract class AbstractTrackComponentBuilder {
     const baseY = trackPart.gridPosition.y * AbstractTrackComponentBuilder.TILE
       + ((AbstractTrackComponentBuilder.TILE - AbstractTrackComponentBuilder.BASE_HEIGHT) / 2);
 
-    return this.doBuild(trackPart, baseX, baseY,event);
+    let element = this.doBuild(trackPart, baseX, baseY,event);
+    // react to complete tile for the click events
+    element.appendChild(this.createInvisibleTileRect(baseX,baseY));
+    return element;
   }
 
   protected baseRect(x: number, y: number, width: number, height: number, fill: string, groupTransform: string | null): Element {
@@ -33,7 +36,23 @@ export abstract class AbstractTrackComponentBuilder {
     return rect;
   }
 
-  protected createElement(qualifiedName: string) {
-    return document.createElementNS(AbstractTrackComponentBuilder.SVG_NS, qualifiedName);
+  protected createElement(qualifiedName: string):SVGElement {
+    return <SVGElement>document.createElementNS(AbstractTrackComponentBuilder.SVG_NS, qualifiedName);
+  }
+
+  private createInvisibleTileRect(baseX: number, baseY: number) {
+    const cx = baseX + AbstractTrackComponentBuilder.TILE / 2;
+    const cy = baseY + AbstractTrackComponentBuilder.BASE_HEIGHT / 2;
+    const hitSize = AbstractTrackComponentBuilder.TILE - 2;
+    const rect = this.createElement('rect');
+    // set x/y to center of tile
+    rect.setAttribute('width', String(hitSize));
+    rect.setAttribute('height', String(hitSize));
+    rect.setAttribute('x', String(cx - hitSize / 2));
+    rect.setAttribute('y', String(cy - hitSize / 2));
+    rect.setAttribute('fill', 'transparent');
+    rect.style.pointerEvents = 'all';
+    rect.style.cursor = 'pointer';
+    return rect;
   }
 }

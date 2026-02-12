@@ -7,6 +7,7 @@ import {EditorComponent} from "./editor/editor.component";
 import {SettingComponent} from "./setting/setting.component";
 import {ScenarioEditComponent} from "./scenario/scenario-edit/scenario-edit.component";
 import {routes as settingRoutes} from "./setting/setting.routes";
+import {routes as editorRoutes} from "./editor/editor.routes";
 import {StationComponent} from "./station/station.component";
 import {RouteEditComponent} from "./scenario/route/route-edit/route-edit.component";
 import {BusMonitorComponent} from "./bus-monitor/bus-monitor.component";
@@ -43,8 +44,10 @@ export const routes: Routes = [
   },
   {
     path: 'editor',
-    component: EditorComponent
-  },{
+    component: EditorComponent,
+    children: editorRoutes
+  },
+  {
     path: 'station',
     component: StationComponent
   },

@@ -854,6 +854,13 @@ components:
           type: boolean
         displayValue:
           type: string
+    TrackBlockDataChangedEvent:
+      type: object
+      description: Track-block update sent via WebSocket
+      properties:
+        itemId:
+          type: integer
+          format: int64
     TrackChangedEvent:
       type: object
       required:
@@ -1664,6 +1671,93 @@ paths:
                 items:
                   $ref: "#/components/schemas/AbstractTrackPart"
       summary: List All
+  /api/track-block:
+    get:
+      tags:
+        - track
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/TrackBlock"
+      summary: List All
+    post:
+      tags:
+        - track
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TrackBlock"
+        required: true
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+      summary: Create
+  /api/track-block/{id}:
+    put:
+      tags:
+        - track
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TrackBlock"
+        required: true
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+      summary: Update
+    delete:
+      tags:
+        - track
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: OK
+      summary: Delete
+  /api/track/{id}/switch-signal:
+    post:
+      tags:
+        - track
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        content:
+          text/plain:
+            schema:
+              $ref: "#/components/schemas/FUNCTION"
+        required: true
+      responses:
+        "200":
+          description: OK
+      summary: Switch Signal
   /api/track/{id}/toggle:
     post:
       tags:

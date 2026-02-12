@@ -1,0 +1,11 @@
+/* fester Abstand */
+.tab-content {
+  margin: 16px; /* oder 24px, 8px je nach gewünschtem Abstand */
+}
+
+/* responsive Variante: kleiner auf mobilen Geräten */
+@media (max-width: 600px) {
+  .tab-content {
+    margin: 12px;
+  }
+}

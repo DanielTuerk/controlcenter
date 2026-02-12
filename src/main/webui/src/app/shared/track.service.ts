@@ -1,7 +1,7 @@
 import {inject, Injectable} from "@angular/core";
 import {SnackBar} from "../control-center/common/snack-bar.component";
 import {HttpClient} from "@angular/common/http";
-import {AbstractTrackPart, FUNCTION} from "../../shared/openapi-gen";
+import {AbstractTrackPart, FUNCTION, TrackBlock, Train} from "../../shared/openapi-gen";
 import {catchError} from "rxjs/operators";
 import {EMPTY} from "rxjs";
 
@@ -22,7 +22,6 @@ export class TrackService {
       })
     )
   }
-
   toggleTrackPart(trackPart: AbstractTrackPart) {
     return this.httpClient.post(`/api/track/${trackPart.id}/toggle`, null)
     .pipe(
@@ -41,5 +40,51 @@ export class TrackService {
         return EMPTY
       })
     )
+  }
+
+  loadTrackBlocks() {
+    return this.httpClient.get<[]>('/api/track-block')
+    .pipe(
+      catchError((err: any) => {
+        this.snackBar.showError(`can't load track-block: ${err.message}`);
+        return EMPTY
+      })
+    )
+  }
+
+  loadTrackBlock(trackBlockId: Number) {
+    return this.httpClient.get<Train>('/api/track-block/' + trackBlockId)
+  }
+
+  createTrackBlock(trackBlock: TrackBlock) {
+    return this.httpClient.post('/api/track-block/', trackBlock)
+    .pipe(
+      catchError((err: any) => {
+        this.snackBar.showError(`can't create track-block: ${err.message}`);
+        return EMPTY
+      })
+    )
+  }
+
+  saveTrackBlock(train: Train) {
+    return this.httpClient.put('/api/track-block/' + train.id, train)
+    .pipe(
+      catchError((err: any) => {
+        this.snackBar.showError(`can't save track-block ${train.id}: ${err.message}`);
+        return EMPTY
+      })
+    )
+  }
+
+  deleteTrackBlock(trackBlockId: Number) {
+    return this.httpClient.delete('/api/track-block/' + trackBlockId)
+    .subscribe({
+      next: () => {
+        this.snackBar.showSuccess(`track-block ${trackBlockId} deleted`);
+      },
+      error: (error) => {
+        this.snackBar.showError(`can't delete track-block ${trackBlockId}: ${error.message}`);
+      }
+    });
   }
 }

@@ -1,1 +1,8 @@
-<p>editor works!</p>
+<mat-tab-group [selectedIndex]="selectedIndex" (selectedIndexChange)="onTabChange($event)">
+  <mat-tab label="Track"></mat-tab>
+  <mat-tab label="Blocks"></mat-tab>
+</mat-tab-group>
+
+<div class="tab-content">
+  <router-outlet></router-outlet>
+</div>

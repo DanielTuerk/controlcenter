@@ -29,3 +29,12 @@ body {
   gap: 10px;
   padding: 0.4em;
 }
+
+
+mat-card-footer, .mat-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px;
+}

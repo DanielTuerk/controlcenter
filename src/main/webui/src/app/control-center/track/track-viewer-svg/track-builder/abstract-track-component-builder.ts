@@ -7,9 +7,9 @@ export abstract class AbstractTrackComponentBuilder {
   protected static BASE_HEIGHT = 8;
   protected static BASE_COLOR = 'white';
 
-  abstract doBuild<T extends AbstractTrackPart>(trackPart: T, baseX: number, baseY: number, event: TrackPartStateEvent | null): Element;
+  abstract doBuild<T extends AbstractTrackPart, E extends TrackPartStateEvent>(trackPart: T, baseX: number, baseY: number, event: E | null): Element;
 
-  build<T extends AbstractTrackPart>(trackPart: T, event: TrackPartStateEvent | null = null): Element {
+  build<T extends AbstractTrackPart, E extends TrackPartStateEvent>(trackPart: T, event: E | null = null): Element {
     if (!trackPart.gridPosition || (trackPart.gridPosition.x == null || trackPart.gridPosition.y == null)) {
       throw new Error("no grid position for track part: " + JSON.stringify(trackPart));
     }

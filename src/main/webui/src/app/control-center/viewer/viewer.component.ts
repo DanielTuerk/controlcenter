@@ -3,6 +3,9 @@ import {TrackViewerSvgComponent} from "../track/track-viewer-svg/track-viewer-sv
 import {ControlComponent} from "./control/control.component";
 import {TrackElement} from "../track/track-viewer-svg/track-element";
 import {TrackService} from "../../shared/track.service";
+import {FUNCTION, Signal, TYPE3} from "../../../shared/openapi-gen";
+import {MatDialog} from "@angular/material/dialog";
+import {SelectSignalFunctionComponent} from "./select-signal-func/select-signal-func.component";
 
 @Component({
   selector: 'app-viewer',
@@ -16,18 +19,54 @@ import {TrackService} from "../../shared/track.service";
 export class ViewerComponent {
 
   private trackService = inject(TrackService);
+  readonly selectSignalFuncDialog = inject(MatDialog);
 
-  protected onTrackPartClicked($trackEvent: TrackElement) {
-    if ('toggleFunction' in $trackEvent.trackPart) {
-      console.log("toggle " + $trackEvent.trackPart.trackPartType)
-      this.trackService.toggleTrackPart($trackEvent.trackPart)
+  protected onTrackPartClicked($trackElement: TrackElement<any>) {
+    if ('toggleFunction' in $trackElement.trackPart) {
+      console.log("toggle " + $trackElement.trackPart.trackPartType);
+      this.trackService.toggleTrackPart($trackElement.trackPart)
       .subscribe();
+    } else if ($trackElement.trackPart.trackPartType === 'Signal') {
+      console.log(`switch signal ${$trackElement}`);
+
+      let signal: Signal = $trackElement.trackPart;
+
+      let newFuncState = FUNCTION.Hp0;
+      switch (signal.type) {
+        case TYPE3.Block:
+          if ($trackElement.lastEvent && 'signalFunction' in $trackElement.lastEvent) {
+            if ($trackElement.lastEvent.signalFunction === FUNCTION.Hp0) {
+              newFuncState = FUNCTION.Hp1;
+            }
+          }
+          this.trackService.switchSignal($trackElement.trackPart, newFuncState).subscribe();
+          break;
+        case TYPE3.Enter:
+          this.selectSignalFuncDialog.open(SelectSignalFunctionComponent, {
+            data: [FUNCTION.Hp0, FUNCTION.Hp1, FUNCTION.Hp2]
+          }).afterClosed().subscribe((func) => {
+            if (func) {
+              this.trackService.switchSignal($trackElement.trackPart, func).subscribe();
+            }
+          });
+          break;
+        case TYPE3.Exit:
+          this.selectSignalFuncDialog.open(SelectSignalFunctionComponent, {
+            data: [FUNCTION.Hp0, FUNCTION.Hp1, FUNCTION.Hp2, FUNCTION.Hp0Sh1]
+          }).afterClosed().subscribe((func) => {
+            if (func) {
+              this.trackService.switchSignal($trackElement.trackPart, func).subscribe();
+            }
+          });
+          break;
+        case TYPE3.Before:
+          // TODO
+          // this.trackService.switchSignal($trackElement.trackPart, newFuncState).subscribe();
+          break;
+        default:
+          throw Error(`invalid signal type: ${signal.type}`)
+      }
     }
-    // TODO signal
-    // switch ($trackEvent.trackPart.trackPartType) {
-    //   case 'Signal':
-    //     console.log("signal");
-    //     break;
-    // }
+
   }
 }

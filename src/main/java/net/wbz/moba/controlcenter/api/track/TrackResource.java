@@ -14,6 +14,8 @@ import java.util.Collection;
 import net.wbz.moba.controlcenter.service.track.TrackProvider;
 import net.wbz.moba.controlcenter.service.track.TrackViewerService;
 import net.wbz.moba.controlcenter.shared.track.model.AbstractTrackPart;
+import net.wbz.moba.controlcenter.shared.track.model.Signal;
+import net.wbz.moba.controlcenter.shared.track.model.Signal.FUNCTION;
 import net.wbz.selectrix4java.device.DeviceAccessException;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import org.jboss.logging.Logger;
@@ -50,6 +52,21 @@ public class TrackResource {
             logger.error("Failed to toggle track part " + trackPartId, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         }
+    }
+
+    @POST
+    @Path("/{id}/switch-signal")
+    @Consumes(MediaType.TEXT_PLAIN)
+    public Response switchSignal(@PathParam("id") Long trackPartId, FUNCTION signalFunction) {
+        var $trackPart = trackProvider.getTrackPart(trackPartId);
+        if ($trackPart.isEmpty()) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+        if (!($trackPart.get() instanceof Signal)) {
+            return Response.notModified().build();
+        }
+        trackViewerService.switchSignal((Signal) $trackPart.get(), signalFunction);
+        return Response.ok().build();
     }
 }
 

@@ -1,7 +1,7 @@
 import {inject, Injectable} from "@angular/core";
 import {SnackBar} from "../control-center/common/snack-bar.component";
 import {HttpClient} from "@angular/common/http";
-import {AbstractTrackPart} from "../../shared/openapi-gen";
+import {AbstractTrackPart, FUNCTION} from "../../shared/openapi-gen";
 import {catchError} from "rxjs/operators";
 import {EMPTY} from "rxjs";
 
@@ -28,6 +28,16 @@ export class TrackService {
     .pipe(
       catchError((err: any) => {
         this.snackBar.showError(`can't toggle track part (${trackPart.id}): ${err.message}`);
+        return EMPTY
+      })
+    )
+  }
+
+  switchSignal(trackPart: AbstractTrackPart, signalFunc: FUNCTION) {
+    return this.httpClient.post(`/api/track/${trackPart.id}/switch-signal`, signalFunc)
+    .pipe(
+      catchError((err: any) => {
+        this.snackBar.showError(`can't switch signal (${trackPart.id}): ${err.message}`);
         return EMPTY
       })
     )

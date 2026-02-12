@@ -219,6 +219,7 @@ public class Signal extends Straight {
     @Override
     public String toString() {
         return "Signal{" + "type=" + type
+            + ", id=" + getId()
             + ", enteringBlock=" + enteringBlock
             + ", breakingBlock=" + breakingBlock
             + ", stopBlock=" + stopBlock

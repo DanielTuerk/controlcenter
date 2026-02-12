@@ -26,13 +26,14 @@ import {DeviceService} from "../../../shared/device.service";
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TrackViewerSvgComponent implements OnInit {
+
   @ViewChild('svgRoot', {static: true}) svg!: ElementRef<SVGSVGElement>;
 
   /**
    * Output event for a trackpart which was clicked.
    */
-  @Output() trackPartClicked = new EventEmitter<TrackElement>();
-  @Output() trackPartsReady = new EventEmitter<TrackElement[]>();
+  @Output() trackPartClicked = new EventEmitter<TrackElement<any>>();
+  @Output() trackPartsReady = new EventEmitter<TrackElement<any>[]>();
 
   private trackComponentBuilder = inject(TrackComponentBuilder);
   private cdr = inject(ChangeDetectorRef);
@@ -40,7 +41,7 @@ export class TrackViewerSvgComponent implements OnInit {
   private trackSubscription = inject(TrackSubscription);
   private deviceService = inject(DeviceService);
 
-  private loadedTrackParts: TrackElement[] = []
+  private loadedTrackParts: TrackElement<TrackPartStateEvent>[] = []
 
   svgWidth = 0;
   svgHeight = 0;
@@ -55,22 +56,29 @@ export class TrackViewerSvgComponent implements OnInit {
         this.loadTrack(event.trackParts);
       });
 
-      // subscribe to state changes for track parts
+      // subscribe to state changes for track elements
       this.trackSubscription.trackPartState().subscribe(event => {
-        let trackElement = this.loadedTrackParts.find(
-          trackElement => trackElement.trackPart.id === event.trackPartId);
-        if (!trackElement) return;
-
-        console.log("received trackPartState: ", trackElement);
-        this.removeTrackPart(trackElement);
-        let element = this.buildTrackPartElement(trackElement?.trackPart!, event);
-        this.addTrackPart(element);
+        this.consumeTrackEvent('trackPartState', event, event.trackPartId!);
+      });
+      this.trackSubscription.signalFunctionState().subscribe(event => {
+        this.consumeTrackEvent('signalFunctionState', event, event.signalId!);
       });
     });
+  }
 
+  private consumeTrackEvent(name: string, event: any, trackPartId: number) {
+    let trackElement = this.loadedTrackParts.find(
+      trackElement => trackElement.trackPart.id === trackPartId);
+    if (!trackElement) return;
+
+    console.log(`received ${name}: `, trackElement);
+    this.removeTrackPart(trackElement);
+    let element = this.buildTrackPartElement(trackElement?.trackPart!, event);
+    this.addTrackPart(element);
   }
 
   private loadTrack(elements: AbstractTrackPart[]) {
+    console.log("load track");
     this.loadedTrackParts = [];
 
     elements
@@ -84,11 +92,12 @@ export class TrackViewerSvgComponent implements OnInit {
     this.cdr.markForCheck();
 
     this.trackPartsReady.emit(this.loadedTrackParts);
+    console.log("load finished");
   }
 
-  private buildTrackPartElement(trackPart: AbstractTrackPart, event: TrackPartStateEvent | null = null) {
+  private buildTrackPartElement<E extends TrackPartStateEvent>(trackPart: AbstractTrackPart, event: E | null = null) {
     let element = this.trackComponentBuilder.build(trackPart, event);
-    let trackEvent: TrackElement = {trackPart: trackPart, svgElement: element};
+    let trackEvent: TrackElement<TrackPartStateEvent> = {trackPart: trackPart, svgElement: element, lastEvent: event};
     this.loadedTrackParts.push(trackEvent);
 
     element.addEventListener("click", () => {
@@ -120,7 +129,7 @@ export class TrackViewerSvgComponent implements OnInit {
     this.svg.nativeElement.appendChild(e);
   }
 
-  private removeTrackPart(trackElement: TrackElement) {
+  private removeTrackPart(trackElement: TrackElement<TrackPartStateEvent>) {
     // remove old one if already exists
     this.loadedTrackParts = this.loadedTrackParts.filter(e => e.trackPart.id !== trackElement.trackPart.id)
     this.svg.nativeElement.removeChild(trackElement.svgElement);

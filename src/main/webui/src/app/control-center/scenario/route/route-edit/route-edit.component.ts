@@ -66,8 +66,8 @@ export class RouteEditComponent implements OnInit {
   protected COLOR_WAYPOINT = 'purple';
 
   private selectionType: 'start' | 'end' | 'waypoint' | undefined;
-  private lastStart: TrackElement | undefined;
-  private lastEnd: TrackElement | undefined;
+  private lastStart: TrackElement<any> | undefined;
+  private lastEnd: TrackElement<any> | undefined;
   protected trackStatus: boolean | undefined = undefined;
   protected originalBlockStraightFillColor: string | null = '';
   protected originalWaypointFillColor: string | null = '';
@@ -95,7 +95,7 @@ export class RouteEditComponent implements OnInit {
       observable = this.routeService.saveRoute(routeToUpdate);
       operation = 'updated'
     }
-    observable.subscribe(data => {
+    observable.subscribe(() => {
       this.snackBar.showSuccess(`route "${routeToUpdate.name}" ${operation} successfully.`);
       this.router.navigate(['/cc/scenario', {}]);
     })
@@ -121,7 +121,7 @@ export class RouteEditComponent implements OnInit {
     this.selectionType = 'waypoint';
   }
 
-  protected onTrackPartClicked(trackEvent: TrackElement) {
+  protected onTrackPartClicked(trackEvent: TrackElement<any>) {
     // TODO cleanup code and maybe extract
     switch (this.selectionType + ':' + trackEvent.trackPart.trackPartType) {
       case 'start:BlockStraight':
@@ -201,7 +201,7 @@ export class RouteEditComponent implements OnInit {
     }).afterClosed();
   }
 
-  protected onTrackReady($event: TrackElement[]) {
+  protected onTrackReady($event: TrackElement<any>[]) {
     let route = this.$route();
     $event.forEach(trackElement => {
       // highlight by type

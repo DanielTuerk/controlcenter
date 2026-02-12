@@ -1,12 +1,11 @@
-package net.wbz.moba.controlcenter.web.server.web.editor;
+package net.wbz.moba.controlcenter.service.track;
 
 import com.google.common.collect.Maps;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import net.wbz.moba.controlcenter.web.server.event.EventBroadcaster;
-import net.wbz.moba.controlcenter.web.server.persist.construction.track.BusDataConfigurationEntity;
-import net.wbz.moba.controlcenter.web.server.web.editor.block.BusAddressIdentifier;
+import net.wbz.moba.controlcenter.BusAddressIdentifier;
+import net.wbz.moba.controlcenter.EventBroadcaster;
 import net.wbz.moba.controlcenter.shared.track.model.BusDataConfiguration;
 import net.wbz.moba.controlcenter.shared.track.model.Signal;
 import net.wbz.moba.controlcenter.shared.viewer.SignalFunctionStateEvent;
@@ -14,25 +13,25 @@ import net.wbz.selectrix4java.bus.BusAddressBitListener;
 
 /**
  * Register busAddressListeners to update the current signal function by bus data. Each signal function change will
- * throw an new {@link net.wbz.moba.controlcenter.web.shared.viewer.SignalFunctionStateEvent} by the {@link
+ * throw an new {@link SignalFunctionStateEvent} by the {@link
  * EventBroadcaster}.
  *
  * @author Daniel Tuerk
  */
-public class SignalFunctionReceiver {
+class SignalFunctionReceiver {
 
     private final Signal signal;
     private final EventBroadcaster eventBroadcaster;
-    private Map<BusAddressIdentifier, List<BusAddressBitListener>> busAddressListeners = Maps.newConcurrentMap();
+    private final Map<BusAddressIdentifier, List<BusAddressBitListener>> busAddressListeners = Maps.newConcurrentMap();
 
-    private Map<Signal.LIGHT, Boolean> lightStates = Maps.newHashMap();
+    private final Map<Signal.LIGHT, Boolean> lightStates = Maps.newHashMap();
 
     /**
      * Flag to avoid multiple events for same function by received bit changes.
      */
     private Signal.FUNCTION lastFiredFunction = null;
 
-    public SignalFunctionReceiver(final Signal signal, EventBroadcaster eventBroadcaster) {
+    SignalFunctionReceiver(final Signal signal, EventBroadcaster eventBroadcaster) {
         this.signal = signal;
         this.eventBroadcaster = eventBroadcaster;
 
@@ -118,6 +117,16 @@ public class SignalFunctionReceiver {
     }
 
     /**
+     * Each {@link net.wbz.selectrix4java.bus.BusAddressBitListener} for all addresses of the
+     * {@link net.wbz.moba.controlcenter.persist.entity.track.BusDataConfigurationEntity} of the signal.
+     *
+     * @return listeners for each address
+     */
+    Map<BusAddressIdentifier, List<BusAddressBitListener>> getBusAddressListeners() {
+        return busAddressListeners;
+    }
+
+    /**
      * Check active state of the given light.
      *
      * @param light {@link Signal.LIGHT}
@@ -148,15 +157,5 @@ public class SignalFunctionReceiver {
             eventBroadcaster.fireEvent(new SignalFunctionStateEvent(signal.getId(), function));
             lastFiredFunction = function;
         }
-    }
-
-    /**
-     * Each {@link net.wbz.selectrix4java.bus.BusAddressBitListener} for all addresses of the {@link
-     * BusDataConfigurationEntity} of the signal.
-     *
-     * @return listeners for each address
-     */
-    public Map<BusAddressIdentifier, List<BusAddressBitListener>> getBusAddressListeners() {
-        return busAddressListeners;
     }
 }

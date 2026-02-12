@@ -2,6 +2,7 @@ package net.wbz.moba.controlcenter.service.track;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import io.quarkus.runtime.Startup;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import java.util.ArrayList;
@@ -15,6 +16,8 @@ import net.wbz.moba.controlcenter.shared.track.model.AbstractTrackPart;
 import net.wbz.moba.controlcenter.shared.track.model.BusDataConfiguration;
 import net.wbz.moba.controlcenter.shared.track.model.HasToggleFunction;
 import net.wbz.moba.controlcenter.shared.track.model.Signal;
+import net.wbz.moba.controlcenter.shared.track.model.Signal.LIGHT;
+import net.wbz.moba.controlcenter.shared.track.model.Signal.TYPE;
 import net.wbz.moba.controlcenter.shared.viewer.TrackPartStateEvent;
 import net.wbz.selectrix4java.bus.BusAddress;
 import net.wbz.selectrix4java.bus.BusAddressBitListener;
@@ -26,13 +29,13 @@ import net.wbz.selectrix4java.device.DeviceManager;
 import org.jboss.logging.Logger;
 
 /**
- *
+ * TODO split class to multiples, e.g. trackpart vs signal or listener registration vs actions
  * @author Daniel Tuerk
  */
+@Startup
 @ApplicationScoped
 public class TrackViewerService {
 
-    private static final Logger LOG = Logger.getLogger(TrackViewerService.class);
     /**
      * Map for all {@link BusListener}s of a single {@link BusAddressIdentifier} to avoid duplicated listeners to
      * register and to call from {@link net.wbz.selectrix4java.data.BusDataChannel}.
@@ -51,13 +54,18 @@ public class TrackViewerService {
         this.eventBroadcaster = eventBroadcaster;
         this.logger = logger;
 
-        trackProvider.getTrack().stream()
-            .filter(t -> t instanceof HasToggleFunction)
-            .forEach(this::registerToggleFunctionOfTrackPart);
-
         deviceManager.addDeviceConnectionListener(new DeviceConnectionListener() {
             @Override
             public void connected(Device device) {
+                var track = trackProvider.getTrack();
+                track.stream()
+                    .filter(t -> t instanceof HasToggleFunction)
+                    .forEach(t -> registerToggleFunctionOfTrackPart(t));
+
+                track.stream()
+                    .filter(t -> t instanceof Signal)
+                    .map(t -> (Signal) t)
+                    .forEach(t -> registerSignalFunction(t));
 
                 registerBusAddressListeners(device);
             }
@@ -65,11 +73,38 @@ public class TrackViewerService {
             @Override
             public void disconnected(Device device) {
                 removeBusAddressListeners(device);
+                busAddressListenersOfTheCurrentTrack.clear();
+            }
+
+            private void registerBusAddressListeners(Device device) {
+                try {
+                    for (Map.Entry<BusAddressIdentifier, List<BusListener>> entry : busAddressListenersOfTheCurrentTrack
+                        .entrySet()) {
+                        device.getBusAddress(entry.getKey().getBus(), (byte) entry.getKey().getAddress())
+                            .addListeners(entry.getValue());
+                    }
+                } catch (DeviceAccessException e) {
+                    logger.error("can't register listeners to active device", e);
+                }
+
+                // TODO
+//        try {
+//            trackBlockRegistry.registerListeners(device);
+//        } catch (DeviceAccessException e) {
+//            log.error("can't register track block listeners to active device", e);
+//        }
+//
+//        try {
+//            signalBlockRegistry.registerListeners(device);
+//        } catch (DeviceAccessException e) {
+//            log.error("can't register signal block listeners to active device", e);
+//        }
+
             }
         });
     }
 
-    private void registerToggleFunctionOfTrackPart(AbstractTrackPart trackPart) {
+    protected void registerToggleFunctionOfTrackPart(AbstractTrackPart trackPart) {
         if (trackPart instanceof HasToggleFunction trackPartConfiguration) {
             final var toggleFunction = trackPartConfiguration.getToggleFunction();
             if (toggleFunction != null && toggleFunction.isValid()) {
@@ -80,7 +115,6 @@ public class TrackViewerService {
                             new TrackPartStateEvent(trackPart.getId(), toggleFunction, newValue));
                     }
                 });
-//                registerEventConfigurationOfTrackPart(trackPartConfiguration);
             }
         }
     }
@@ -103,34 +137,8 @@ public class TrackViewerService {
                     .removeListeners(entry.getValue());
             }
         } catch (DeviceAccessException e) {
-            logger.error("can't register listeners to active device", e);
+            logger.error("can't remove listeners to active device", e);
         }
-    }
-
-    private void registerBusAddressListeners(Device device) {
-        try {
-            for (Map.Entry<BusAddressIdentifier, List<BusListener>> entry : busAddressListenersOfTheCurrentTrack
-                .entrySet()) {
-                device.getBusAddress(entry.getKey().getBus(), (byte) entry.getKey().getAddress())
-                    .addListeners(entry.getValue());
-            }
-        } catch (DeviceAccessException e) {
-            logger.error("can't register listeners to active device", e);
-        }
-
-        // TODO
-//        try {
-//            trackBlockRegistry.registerListeners(device);
-//        } catch (DeviceAccessException e) {
-//            log.error("can't register track block listeners to active device", e);
-//        }
-//
-//        try {
-//            signalBlockRegistry.registerListeners(device);
-//        } catch (DeviceAccessException e) {
-//            log.error("can't register signal block listeners to active device", e);
-//        }
-
     }
 
     public void toggleTrackPart(AbstractTrackPart trackPart) throws DeviceAccessException {
@@ -150,15 +158,12 @@ public class TrackViewerService {
     }
 
     public void toggleTrackParts(Map<BusDataConfiguration, Boolean> trackPartStates) {
-
         List<BusAddressBit> busAddressBits = new ArrayList<>();
-
-        for (Entry<BusDataConfiguration, Boolean> entry : trackPartStates.entrySet()) {
-            BusDataConfiguration busDataConfiguration = entry.getKey();
-            Boolean configState = entry.getValue();
+        for (final Entry<BusDataConfiguration, Boolean> entry : trackPartStates.entrySet()) {
+            final var busDataConfiguration = entry.getKey();
             if (busDataConfiguration != null && busDataConfiguration.isValid()) {
                 busAddressBits.add(new BusAddressBit(busDataConfiguration.getBus(), busDataConfiguration.getAddress(),
-                    busDataConfiguration.getBit(), configState));
+                    busDataConfiguration.getBit(), entry.getValue()));
             }
         }
         sendTrackPartStates(busAddressBits);
@@ -166,7 +171,7 @@ public class TrackViewerService {
 
     @Deprecated
     public boolean getTrackPartState(BusDataConfiguration configuration) {
-        // TODO method can be deleted?
+        // TODO method can be deleted? not used atm
         if (configuration.isValid()) {
             try {
                 if (deviceManager.getConnectedDevice() != null) {
@@ -175,7 +180,7 @@ public class TrackViewerService {
                 }
             } catch (DeviceAccessException e) {
                 String msg = "can't load state of track part";
-                LOG.error(msg, e);
+                logger.errorf(msg, e);
                 throw new RuntimeException(msg);
             }
         }
@@ -211,7 +216,7 @@ public class TrackViewerService {
 
         } catch (DeviceAccessException e) {
             String msg = "can't change data of addresses";
-            LOG.error(msg, e);
+            logger.errorf(msg, e);
             throw new RuntimeException(msg);
         }
     }
@@ -231,7 +236,8 @@ public class TrackViewerService {
      * @param signalFunction {@link Signal.FUNCTION}
      */
     public void switchSignal(Signal signal, Signal.FUNCTION signalFunction) {
-        LOG.debugf("switch signal %s to %s", signal, signalFunction);
+        logger.debugf("switch signal %s to %s", signal, signalFunction);
+
         Map<Signal.LIGHT, BusAddressBit> availableLightConfig = Maps.newHashMap();
 
         Signal.TYPE signalType = signal.getType();
@@ -315,59 +321,26 @@ public class TrackViewerService {
                 }
                 break;
             case HP0_SH1:
-                switch (signalType) {
-                    case EXIT:
-                        availableLightConfig.put(Signal.LIGHT.RED1,
-                            convertFunctionConfig(signal.getSignalConfiguration(Signal.LIGHT.RED1)));
-                        availableLightConfig.put(Signal.LIGHT.WHITE,
-                            convertFunctionConfig(signal.getSignalConfiguration(Signal.LIGHT.WHITE)));
-                        break;
+                if (signalType == TYPE.EXIT) {
+                    availableLightConfig.put(LIGHT.RED1,
+                        convertFunctionConfig(signal.getSignalConfiguration(LIGHT.RED1)));
+                    availableLightConfig.put(LIGHT.WHITE,
+                        convertFunctionConfig(signal.getSignalConfiguration(LIGHT.WHITE)));
                 }
                 break;
         }
         sendTrackPartStates(Lists.newArrayList(availableLightConfig.values()));
     }
 
+    private void registerSignalFunction(Signal signal) {
+        Map<BusAddressIdentifier, List<BusAddressBitListener>> busAddressListeners = new SignalFunctionReceiver(signal,
+            eventBroadcaster).getBusAddressListeners();
+        for (Map.Entry<BusAddressIdentifier, List<BusAddressBitListener>> entry : busAddressListeners.entrySet()) {
+            if (!busAddressListenersOfTheCurrentTrack.containsKey(entry.getKey())) {
+                busAddressListenersOfTheCurrentTrack.put(entry.getKey(), new ArrayList<>());
+            }
+            busAddressListenersOfTheCurrentTrack.get(entry.getKey()).addAll(entry.getValue());
+        }
+    }
 
-//    private void registerEventConfigurationOfTrackPart(final HasToggleFunction toggleFunctionEntity) {
-//        // TODO
-//        EventConfiguration eventConfiguration = toggleFunctionEntity.getEventConfiguration();
-//        if (eventConfiguration != null && eventConfiguration.isActive()) {
-//
-//            // add state 'ON'
-//            final BusDataConfiguration stateOnConfig = eventConfiguration.getStateOnConfig();
-//            if (stateOnConfig.isValid()) {
-//                addBusListener(stateOnConfig, new BusAddressBitListener(stateOnConfig.getBit()) {
-//                    @Override
-//                    public void bitChanged(boolean oldValue, boolean newValue) {
-//                        if ((newValue && stateOnConfig.getBitState()) || (!newValue && !stateOnConfig.getBitState())) {
-//                            try {
-//                                switchToggleFunction(toggleFunctionEntity, true);
-//                            } catch (DeviceAccessException e) {
-//                                logger.error("can't toggle the 'on' state", e);
-//                            }
-//                        }
-//                    }
-//                });
-//            }
-//
-//            // add state 'OFF'
-//            final BusDataConfiguration stateOffConfig = eventConfiguration.getStateOffConfig();
-//            if (stateOffConfig.isValid()) {
-//                addBusListener(stateOffConfig, new BusAddressBitListener(stateOffConfig.getBit()) {
-//                    @Override
-//                    public void bitChanged(boolean oldValue, boolean newValue) {
-//                        if ((newValue && stateOffConfig.getBitState()) || (!newValue && !stateOffConfig
-//                            .getBitState())) {
-//                            try {
-//                                switchToggleFunction(toggleFunctionEntity, false);
-//                            } catch (DeviceAccessException e) {
-//                                logger.error("can't toggle the 'off' state", e);
-//                            }
-//                        }
-//                    }
-//                });
-//            }
-//        }
-//    }
 }

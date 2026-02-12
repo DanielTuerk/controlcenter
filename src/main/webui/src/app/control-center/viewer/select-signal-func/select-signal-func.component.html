@@ -1,0 +1,15 @@
+<h2 mat-dialog-title>Select new signal function</h2>
+<mat-dialog-content>
+
+  <button mat-button mat-dialog-close cdkFocusInitial [mat-dialog-close]="func"
+          *ngFor="let func of functions(); index as i;"
+          [value]="func"
+  >{{ func }}
+  </button>
+
+  <br>
+  <br>
+</mat-dialog-content>
+<mat-dialog-actions>
+  <button mat-button mat-dialog-close>Cancel</button>
+</mat-dialog-actions>

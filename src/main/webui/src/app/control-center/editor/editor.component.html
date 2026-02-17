@@ -1,8 +1,11 @@
-<mat-tab-group [selectedIndex]="selectedIndex" (selectedIndexChange)="onTabChange($event)">
-  <mat-tab label="Track"></mat-tab>
-  <mat-tab label="Blocks"></mat-tab>
-</mat-tab-group>
+<div style="height: 100%">
+  <mat-tab-group [selectedIndex]="selectedIndex" (selectedIndexChange)="onTabChange($event)">
+    <mat-tab label="Track"></mat-tab>
+    <mat-tab label="Blocks"></mat-tab>
+  </mat-tab-group>
 
-<div class="tab-content">
-  <router-outlet></router-outlet>
+  <!-- TODO height is atm only a workaround -->
+  <div class="tab-content" style="height: 100%">
+    <router-outlet></router-outlet>
+</div>
 </div>

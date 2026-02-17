@@ -2,9 +2,11 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
+  computed,
   ElementRef,
   EventEmitter,
   inject,
+  Input,
   OnInit,
   Output,
   ViewChild
@@ -29,6 +31,7 @@ export class TrackViewerSvgComponent implements OnInit {
 
   @ViewChild('svgRoot', {static: true}) svg!: ElementRef<SVGSVGElement>;
 
+  @Input() overrideIsConnected = false;
   /**
    * Output event for a trackpart which was clicked.
    */
@@ -46,7 +49,9 @@ export class TrackViewerSvgComponent implements OnInit {
   svgWidth = 0;
   svgHeight = 0;
   tileSize = AbstractTrackComponentBuilder.TILE;
-  protected isConnected = this.deviceService.isConnected;
+
+  protected isConnected = computed(() =>
+    this.overrideIsConnected ? true : this.deviceService.isConnected());
 
   ngOnInit() {
     this.trackService.fetchTrackParts().subscribe(elements => {
@@ -54,6 +59,12 @@ export class TrackViewerSvgComponent implements OnInit {
 
       this.trackSubscription.trackChanged().subscribe(event => {
         this.loadTrack(event.trackParts);
+      });
+
+      this.trackSubscription.trackPartDataChangedEvent().subscribe(() => {
+        this.trackService.fetchTrackParts().subscribe(elements => {
+          this.loadTrack(elements);
+        });
       });
 
       // subscribe to state changes for track elements

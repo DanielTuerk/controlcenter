@@ -8,9 +8,8 @@ import {
   MatDialogTitle
 } from "@angular/material/dialog";
 import {TrackBlock} from "../../../../../../shared/openapi-gen";
-import {MatOption, MatSelect} from "@angular/material/select";
-import {NgForOf} from "@angular/common";
 import {FormsModule} from "@angular/forms";
+import {TrackBlockSelectComponent} from "../../../../common/track-block-select/track-block-select.component";
 
 @Component({
   selector: 'app-select-track-block',
@@ -20,10 +19,8 @@ import {FormsModule} from "@angular/forms";
     MatDialogClose,
     MatDialogContent,
     MatDialogTitle,
-    MatSelect,
-    MatOption,
-    NgForOf,
-    FormsModule
+    FormsModule,
+    TrackBlockSelectComponent
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './select-track-block.component.html',

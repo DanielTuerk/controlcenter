@@ -66,11 +66,11 @@ export class TrackService {
     )
   }
 
-  saveTrackBlock(train: Train) {
-    return this.httpClient.put('/api/track-block/' + train.id, train)
+  saveTrackBlock(trackBlock: TrackBlock) {
+    return this.httpClient.put('/api/track-block/' + trackBlock.id, trackBlock)
     .pipe(
       catchError((err: any) => {
-        this.snackBar.showError(`can't save track-block ${train.id}: ${err.message}`);
+        this.snackBar.showError(`can't save track-block ${trackBlock.id}: ${err.message}`);
         return EMPTY
       })
     )
@@ -84,6 +84,32 @@ export class TrackService {
       },
       error: (error) => {
         this.snackBar.showError(`can't delete track-block ${trackBlockId}: ${error.message}`);
+      }
+    });
+  }
+
+  loadTrackPart(trackPartId: Number) {
+    return this.httpClient.get<AbstractTrackPart>('/api/track/' + trackPartId)
+  }
+
+  saveTrackPart(toUpdate: AbstractTrackPart) {
+    return this.httpClient.put('/api/track/' + toUpdate.id, toUpdate)
+    .pipe(
+      catchError((err: any) => {
+        this.snackBar.showError(`can't save track-part ${toUpdate.id}: ${err.message}`);
+        return EMPTY
+      })
+    )
+  }
+
+  deleteTrackPart(trackPartId: Number) {
+    return this.httpClient.delete('/api/track/' + trackPartId)
+    .subscribe({
+      next: () => {
+        this.snackBar.showSuccess(`track-part ${trackPartId} deleted`);
+      },
+      error: (error) => {
+        this.snackBar.showError(`can't delete track-part ${trackPartId}: ${error.message}`);
       }
     });
   }

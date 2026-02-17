@@ -8,4 +8,8 @@ public interface HasToggleFunctionEntity {
     EventConfigurationEntity getEventConfiguration();
 
     void setEventConfiguration(EventConfigurationEntity eventConfigurationEntity);
+
+    BusDataConfigurationEntity getToggleFunctionConfiguration();
+
+    void setToggleFunctionConfiguration(BusDataConfigurationEntity busDataConfigurationEntity);
 }

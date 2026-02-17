@@ -103,4 +103,8 @@ public class TrackProvider {
 //                }
 
     }
+
+    public synchronized void markDirty() {
+        cachedEntities.clear();
+    }
 }

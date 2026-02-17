@@ -1,8 +1,8 @@
 package net.wbz.moba.controlcenter.shared.track.model;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.Collection;
-import java.util.Set;
 
 /**
  * @author Daniel Tuerk
@@ -26,6 +26,7 @@ public abstract class AbstractTrackPart extends AbstractDto {
      * @param previousPosition previous {@link GridPosition}
      * @return next {@link GridPosition}
      */
+    @JsonIgnore
     public abstract Collection<GridPosition> getNextGridPositions(GridPosition previousPosition);
 
     /**
@@ -33,6 +34,7 @@ public abstract class AbstractTrackPart extends AbstractDto {
      *
      * @return last {@link GridPosition}
      */
+    @JsonIgnore
     public abstract Collection<GridPosition> getLastGridPositions();
 
     /**

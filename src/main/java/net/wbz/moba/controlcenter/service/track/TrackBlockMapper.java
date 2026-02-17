@@ -13,4 +13,6 @@ public interface TrackBlockMapper {
 
     TrackBlock toDto(TrackBlockEntity entity);
 
+    TrackBlockEntity toEntity(TrackBlock entity);
+
 }

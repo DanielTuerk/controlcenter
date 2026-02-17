@@ -1,7 +1,8 @@
 package net.wbz.moba.controlcenter.shared.track.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.google.common.collect.Lists;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
@@ -12,6 +13,8 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
  */
 @Schema(description = "type for a track part")
 @Tag(ref = "track")
+
+@JsonTypeName("Signal")
 public class Turnout extends AbstractTrackPart implements HasToggleFunction {
 
     private Turnout.DIRECTION currentDirection;
@@ -55,6 +58,7 @@ public class Turnout extends AbstractTrackPart implements HasToggleFunction {
         this.eventConfiguration = eventConfiguration;
     }
 
+    @JsonIgnore
     @Override
     public Collection<GridPosition> getNextGridPositions(GridPosition previousPosition) {
         Collection<GridPosition> gridPositions = new ArrayList<>();
@@ -75,6 +79,7 @@ public class Turnout extends AbstractTrackPart implements HasToggleFunction {
         return gridPositions;
     }
 
+    @JsonIgnore
     public GridPosition getNextGridPositionForStateBranch() {
         switch (currentDirection) {
             case RIGHT:
@@ -125,6 +130,7 @@ public class Turnout extends AbstractTrackPart implements HasToggleFunction {
         return new GridPosition(x, y);
     }
 
+    @JsonIgnore
     public GridPosition getNextGridPositionForStateStraight() {
         int x = getGridPosition().getX();
         int y = getGridPosition().getY();
@@ -145,11 +151,13 @@ public class Turnout extends AbstractTrackPart implements HasToggleFunction {
         return new GridPosition(x, y);
     }
 
+    @JsonIgnore
     @Override
     public Collection<GridPosition> getLastGridPositions() {
         return Lists.newArrayList(getLastGridPosition());
     }
 
+    @JsonIgnore
     public GridPosition getLastGridPosition() {
         int x = getGridPosition().getX();
         int y = getGridPosition().getY();
@@ -176,6 +184,7 @@ public class Turnout extends AbstractTrackPart implements HasToggleFunction {
      *
      * @return angle in degree
      */
+    @JsonIgnore
     @Override
     public double getRotationAngle() {
         switch (getCurrentPresentation()) {

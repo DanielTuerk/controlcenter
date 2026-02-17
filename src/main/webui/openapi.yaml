@@ -5,16 +5,9 @@ components:
     AbstractTrackPart:
       type: object
       properties:
-        tempId:
-          type: integer
-          deprecated: true
-          format: int64
         id:
           type: integer
           format: int64
-        new:
-          type: boolean
-          deprecated: true
         internalId:
           type: integer
           deprecated: true
@@ -23,10 +16,6 @@ components:
           type: string
         gridPosition:
           $ref: "#/components/schemas/GridPosition"
-        lastGridPositions:
-          type: array
-          items:
-            $ref: "#/components/schemas/GridPosition"
         rotationAngle:
           type: number
           format: double
@@ -34,16 +23,9 @@ components:
       type: object
       description: type for a track part
       properties:
-        tempId:
-          type: integer
-          deprecated: true
-          format: int64
         id:
           type: integer
           format: int64
-        new:
-          type: boolean
-          deprecated: true
         internalId:
           type: integer
           deprecated: true
@@ -54,15 +36,6 @@ components:
           $ref: "#/components/schemas/GridPosition"
         direction:
           $ref: "#/components/schemas/DIRECTION"
-        lastGridPositions:
-          type: array
-          items:
-            $ref: "#/components/schemas/GridPosition"
-        rotationAngle:
-          type: number
-          format: double
-        vertical:
-          type: boolean
         blockLength:
           type: integer
           format: int32
@@ -104,16 +77,9 @@ components:
     BusDataConfiguration:
       type: object
       properties:
-        tempId:
-          type: integer
-          deprecated: true
-          format: int64
         id:
           type: integer
           format: int64
-        new:
-          type: boolean
-          deprecated: true
         internalId:
           type: integer
           deprecated: true
@@ -129,10 +95,6 @@ components:
           format: int32
         bitState:
           type: boolean
-        valid:
-          type: boolean
-        identifierKey:
-          type: string
     BusDataDto:
       type: object
       properties:
@@ -170,16 +132,9 @@ components:
     Construction:
       type: object
       properties:
-        tempId:
-          type: integer
-          deprecated: true
-          format: int64
         id:
           type: integer
           format: int64
-        new:
-          type: boolean
-          deprecated: true
         internalId:
           type: integer
           deprecated: true
@@ -214,16 +169,9 @@ components:
       type: object
       description: type for a track part
       properties:
-        tempId:
-          type: integer
-          deprecated: true
-          format: int64
         id:
           type: integer
           format: int64
-        new:
-          type: boolean
-          deprecated: true
         internalId:
           type: integer
           deprecated: true
@@ -234,10 +182,6 @@ components:
           $ref: "#/components/schemas/GridPosition"
         direction:
           $ref: "#/components/schemas/DIRECTION1"
-        lastGridPositions:
-          type: array
-          items:
-            $ref: "#/components/schemas/GridPosition"
         nextGridPosition:
           $ref: "#/components/schemas/GridPosition"
         lastGridPosition:
@@ -303,16 +247,9 @@ components:
     DeviceInfo:
       type: object
       properties:
-        tempId:
-          type: integer
-          deprecated: true
-          format: int64
         id:
           type: integer
           format: int64
-        new:
-          type: boolean
-          deprecated: true
         internalId:
           type: integer
           deprecated: true
@@ -334,16 +271,9 @@ components:
     EventConfiguration:
       type: object
       properties:
-        tempId:
-          type: integer
-          deprecated: true
-          format: int64
         id:
           type: integer
           format: int64
-        new:
-          type: boolean
-          deprecated: true
         internalId:
           type: integer
           deprecated: true
@@ -352,8 +282,6 @@ components:
           $ref: "#/components/schemas/BusDataConfiguration"
         stateOffConfig:
           $ref: "#/components/schemas/BusDataConfiguration"
-        active:
-          type: boolean
     FUNCTION:
       type: string
       enum:
@@ -386,16 +314,9 @@ components:
     GridPosition:
       type: object
       properties:
-        tempId:
-          type: integer
-          deprecated: true
-          format: int64
         id:
           type: integer
           format: int64
-        new:
-          type: boolean
-          deprecated: true
         internalId:
           type: integer
           deprecated: true
@@ -464,16 +385,9 @@ components:
     Route:
       type: object
       properties:
-        tempId:
-          type: integer
-          deprecated: true
-          format: int64
         id:
           type: integer
           format: int64
-        new:
-          type: boolean
-          deprecated: true
         internalId:
           type: integer
           deprecated: true
@@ -502,16 +416,9 @@ components:
     RouteSequence:
       type: object
       properties:
-        tempId:
-          type: integer
-          deprecated: true
-          format: int64
         id:
           type: integer
           format: int64
-        new:
-          type: boolean
-          deprecated: true
         internalId:
           type: integer
           deprecated: true
@@ -589,16 +496,9 @@ components:
     Scenario:
       type: object
       properties:
-        tempId:
-          type: integer
-          deprecated: true
-          format: int64
         id:
           type: integer
           format: int64
-        new:
-          type: boolean
-          deprecated: true
         internalId:
           type: integer
           deprecated: true
@@ -652,16 +552,9 @@ components:
       type: object
       description: type for a track part
       properties:
-        tempId:
-          type: integer
-          deprecated: true
-          format: int64
         id:
           type: integer
           format: int64
-        new:
-          type: boolean
-          deprecated: true
         internalId:
           type: integer
           deprecated: true
@@ -672,15 +565,6 @@ components:
           $ref: "#/components/schemas/GridPosition"
         direction:
           $ref: "#/components/schemas/DIRECTION"
-        lastGridPositions:
-          type: array
-          items:
-            $ref: "#/components/schemas/GridPosition"
-        rotationAngle:
-          type: number
-          format: double
-        vertical:
-          type: boolean
         type:
           $ref: "#/components/schemas/TYPE3"
         signalConfigRed1:
@@ -740,16 +624,9 @@ components:
       type: object
       description: type for a track part
       properties:
-        tempId:
-          type: integer
-          deprecated: true
-          format: int64
         id:
           type: integer
           format: int64
-        new:
-          type: boolean
-          deprecated: true
         internalId:
           type: integer
           deprecated: true
@@ -760,15 +637,6 @@ components:
           $ref: "#/components/schemas/GridPosition"
         direction:
           $ref: "#/components/schemas/DIRECTION"
-        lastGridPositions:
-          type: array
-          items:
-            $ref: "#/components/schemas/GridPosition"
-        rotationAngle:
-          type: number
-          format: double
-        vertical:
-          type: boolean
     SystemFormatEvent:
       type: object
       description: system format update sent via WebSocket
@@ -822,16 +690,9 @@ components:
     TrackBlock:
       type: object
       properties:
-        tempId:
-          type: integer
-          deprecated: true
-          format: int64
         id:
           type: integer
           format: int64
-        new:
-          type: boolean
-          deprecated: true
         internalId:
           type: integer
           deprecated: true
@@ -881,6 +742,13 @@ components:
           $ref: "#/components/schemas/STATE4"
         cacheKey:
           type: string
+    TrackPartDataChangedEvent:
+      type: object
+      description: Track-part update sent via WebSocket
+      properties:
+        itemId:
+          type: integer
+          format: int64
     TrackPartStateEvent:
       type: object
       description: track status update sent via WebSocket
@@ -899,16 +767,9 @@ components:
     Train:
       type: object
       properties:
-        tempId:
-          type: integer
-          deprecated: true
-          format: int64
         id:
           type: integer
           format: int64
-        new:
-          type: boolean
-          deprecated: true
         internalId:
           type: integer
           deprecated: true
@@ -979,16 +840,9 @@ components:
     TrainFunction:
       type: object
       properties:
-        tempId:
-          type: integer
-          deprecated: true
-          format: int64
         id:
           type: integer
           format: int64
-        new:
-          type: boolean
-          deprecated: true
         internalId:
           type: integer
           deprecated: true
@@ -1038,16 +892,9 @@ components:
       type: object
       description: type for a track part
       properties:
-        tempId:
-          type: integer
-          deprecated: true
-          format: int64
         id:
           type: integer
           format: int64
-        new:
-          type: boolean
-          deprecated: true
         internalId:
           type: integer
           deprecated: true
@@ -1064,37 +911,17 @@ components:
           $ref: "#/components/schemas/BusDataConfiguration"
         eventConfiguration:
           $ref: "#/components/schemas/EventConfiguration"
-        nextGridPositionForStateBranch:
-          $ref: "#/components/schemas/GridPosition"
         nextGridPositionForStateBranchToLeft:
           $ref: "#/components/schemas/GridPosition"
         nextGridPositionForStateBranchToRight:
           $ref: "#/components/schemas/GridPosition"
-        nextGridPositionForStateStraight:
-          $ref: "#/components/schemas/GridPosition"
-        lastGridPositions:
-          type: array
-          items:
-            $ref: "#/components/schemas/GridPosition"
-        lastGridPosition:
-          $ref: "#/components/schemas/GridPosition"
-        rotationAngle:
-          type: number
-          format: double
     Uncoupler:
       type: object
       description: type for a track part
       properties:
-        tempId:
-          type: integer
-          deprecated: true
-          format: int64
         id:
           type: integer
           format: int64
-        new:
-          type: boolean
-          deprecated: true
         internalId:
           type: integer
           deprecated: true
@@ -1105,15 +932,6 @@ components:
           $ref: "#/components/schemas/GridPosition"
         direction:
           $ref: "#/components/schemas/DIRECTION"
-        lastGridPositions:
-          type: array
-          items:
-            $ref: "#/components/schemas/GridPosition"
-        rotationAngle:
-          type: number
-          format: double
-        vertical:
-          type: boolean
         toggleFunction:
           $ref: "#/components/schemas/BusDataConfiguration"
         eventConfiguration:
@@ -1722,6 +1540,55 @@ paths:
           description: OK
         "400":
           description: Bad Request
+      summary: Update
+    get:
+      tags:
+        - track
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: OK
+      summary: Get By Id
+    delete:
+      tags:
+        - track
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: OK
+      summary: Delete
+  /api/track/{id}:
+    put:
+      tags:
+        - track
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: string
+        required: true
+      responses:
+        "200":
+          description: OK
       summary: Update
     delete:
       tags:

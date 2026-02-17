@@ -7,10 +7,6 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-
-
-
-import net.wbz.moba.controlcenter.shared.track.model.AbstractTrackPart;
 import net.wbz.moba.controlcenter.shared.track.model.Turnout;
 
 /**
@@ -44,6 +40,16 @@ public class TurnoutEntity extends AbstractTrackPartEntity implements HasToggleF
     @Override
     public void setEventConfiguration(EventConfigurationEntity eventConfigurationEntity) {
         eventConfiguration = eventConfigurationEntity;
+    }
+
+    @Override
+    public BusDataConfigurationEntity getToggleFunctionConfiguration() {
+        return toggleFunction;
+    }
+
+    @Override
+    public void setToggleFunctionConfiguration(BusDataConfigurationEntity busDataConfigurationEntity) {
+        toggleFunction = busDataConfigurationEntity;
     }
 
 }

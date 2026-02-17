@@ -1,11 +1,6 @@
 <h2 mat-dialog-title>Select end block</h2>
 <mat-dialog-content>
-  <mat-select [(ngModel)]="selectedBlock"
-              name="trackBlock">
-    <mat-option *ngFor="let trackBlock of trackBlocks(); index as i;"
-                [value]="trackBlock">{{ trackBlock.displayValue }}
-    </mat-option>
-  </mat-select>
+  <app-track-block-select [trackBlocks]="trackBlocks()" [(selected)]="selectedBlock"></app-track-block-select>
 </mat-dialog-content>
 <mat-dialog-actions>
   <button mat-button mat-dialog-close>Cancel</button>

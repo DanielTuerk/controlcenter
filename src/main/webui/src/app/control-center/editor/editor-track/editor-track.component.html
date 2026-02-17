@@ -1,1 +1,20 @@
-<p>editor-track works!</p>
+<div class="viewer-track-content">
+  <mat-toolbar style="width: 100%">
+    Mode:&nbsp;
+    <mat-button-toggle-group name="editType" [(ngModel)]="editType" (ngModelChange)="onEditTypeChanged()">
+      <mat-button-toggle value="move" disabled>
+        <mat-icon>open_with</mat-icon>&nbsp;Move
+      </mat-button-toggle>
+      <mat-button-toggle value="edit">
+        <mat-icon>edit</mat-icon>&nbsp;Edit
+      </mat-button-toggle>
+      <mat-button-toggle value="delete">
+        <mat-icon>delete</mat-icon>&nbsp;Delete
+      </mat-button-toggle>
+    </mat-button-toggle-group>
+  </mat-toolbar>
+  <app-track-viewer-svg #trackViewer
+                        style="overflow: auto"
+                        [overrideIsConnected]="true"
+                        (trackPartClicked)="onTrackPartClicked($event)"></app-track-viewer-svg>
+</div>

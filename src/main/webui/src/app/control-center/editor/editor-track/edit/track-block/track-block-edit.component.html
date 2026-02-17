@@ -1,0 +1,20 @@
+<div>
+  <label>Length: </label>
+  <mat-form-field>
+    <input matInput required [formControl]="blockLengthFormField"/>
+  </mat-form-field>
+</div>
+<hr/>
+<br/>
+<div>
+  <label>Left Block: </label>
+  <app-track-block-select [trackBlocks]="trackBlocks()" [(selected)]="selectedLeftBlock"></app-track-block-select>
+</div>
+<div>
+  <label>Middle Block: </label>
+  <app-track-block-select [trackBlocks]="trackBlocks()" [(selected)]="selectedMiddleBlock"></app-track-block-select>
+</div>
+<div>
+  <label>Right Block: </label>
+  <app-track-block-select [trackBlocks]="trackBlocks()" [(selected)]="selectedRightBlock"></app-track-block-select>
+</div>

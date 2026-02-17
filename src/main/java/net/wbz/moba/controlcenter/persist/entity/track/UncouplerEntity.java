@@ -29,4 +29,14 @@ public class UncouplerEntity extends StraightEntity implements HasToggleFunction
         eventConfiguration = eventConfigurationEntity;
     }
 
+    @Override
+    public BusDataConfigurationEntity getToggleFunctionConfiguration() {
+        return toggleFunction;
+    }
+
+    @Override
+    public void setToggleFunctionConfiguration(BusDataConfigurationEntity busDataConfigurationEntity) {
+        this.toggleFunction = busDataConfigurationEntity;
+    }
+
 }

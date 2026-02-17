@@ -1,5 +1,6 @@
 package net.wbz.moba.controlcenter.shared.track.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.base.Objects;
 
 
@@ -58,10 +59,12 @@ public class BusDataConfiguration extends AbstractDto {
         this.bitState = bitState == null ? true : bitState;
     }
 
+    @JsonIgnore
     public boolean isValid() {
         return (bus != null && address != null && bit != null) && address > 0 && bit > 0 && bus > -1;
     }
 
+    @JsonIgnore
     public String getIdentifierKey() {
         return address + "-" + bit;
     }

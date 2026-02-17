@@ -1,12 +1,13 @@
 package net.wbz.moba.controlcenter.shared.track.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.google.common.base.Strings;
-
 import net.wbz.moba.controlcenter.shared.constrution.Construction;
 
 /**
  * @author Daniel Tuerk
  */
+@JsonIgnoreProperties({"displayValue"})
 public class TrackBlock extends AbstractDto {
 
     private BusDataConfiguration blockFunction;

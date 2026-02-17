@@ -1,7 +1,7 @@
 package net.wbz.moba.controlcenter.shared.track.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.collect.Lists;
-
 import java.util.Collection;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
@@ -23,6 +23,7 @@ public class Straight extends AbstractTrackPart {
         this.direction = direction;
     }
 
+    @JsonIgnore
     @Override
     public Collection<GridPosition> getNextGridPositions(GridPosition previousPosition) {
         int x = getGridPosition().getX();
@@ -35,6 +36,7 @@ public class Straight extends AbstractTrackPart {
         return Lists.newArrayList(new GridPosition(x, y));
     }
 
+    @JsonIgnore
     @Override
     public Collection<GridPosition> getLastGridPositions() {
         int x = getGridPosition().getX();
@@ -47,6 +49,7 @@ public class Straight extends AbstractTrackPart {
         return Lists.newArrayList(new GridPosition(x, y));
     }
 
+    @JsonIgnore
     @Override
     public double getRotationAngle() {
         if (isVertical()) {
@@ -55,6 +58,7 @@ public class Straight extends AbstractTrackPart {
         return 0d;
     }
 
+    @JsonIgnore
     boolean isVertical() {
         return getDirection() == DIRECTION.VERTICAL;
     }

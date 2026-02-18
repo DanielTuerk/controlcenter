@@ -1,0 +1,23 @@
+.panel-title {
+  display: flex;
+  flex-direction: column;
+  min-width: 0; /* avoid overflow in flex-Layouts */
+}
+
+.title-top {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.title-bottom {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: medium;
+}
+
+.icon {
+  font-size: medium;
+  display: contents;
+}

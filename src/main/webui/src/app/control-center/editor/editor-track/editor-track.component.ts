@@ -3,7 +3,6 @@ import {TrackViewerSvgComponent} from "../../track/track-viewer-svg/track-viewer
 import {TrackElement} from "../../track/track-viewer-svg/track-element";
 import {MatToolbar} from "@angular/material/toolbar";
 import {MatIcon} from "@angular/material/icon";
-import {AbstractTrackPart, BlockStraight, Signal, Turnout, Uncoupler} from "../../../../shared/openapi-gen";
 import {SignalEditComponent} from "./edit/signal/signal-edit.component";
 import {TrackBlockEditComponent} from "./edit/track-block/track-block-edit.component";
 import {ToggleFunctionEditComponent} from "./edit/turnout/toggle-function-edit.component";
@@ -13,6 +12,7 @@ import {FormsModule} from "@angular/forms";
 import {TrackService} from "../../../shared/track.service";
 import {BaseEditTrackPartComponent} from "./edit/base-edit-track-part.component";
 import {ConfirmDialogComponent} from "../../common/confirm-dialog/confirm-dialog.component";
+import {AbstractTrackPart, BlockStraight, Signal, Turnout, Uncoupler} from "../../../../shared/openapi-gen";
 
 @Component({
   selector: 'app-editor-track',

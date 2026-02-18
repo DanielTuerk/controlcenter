@@ -1,4 +1,6 @@
 import {Injectable} from '@angular/core';
+
+import {Subscription} from "./subscription";
 import {
   TrainDataChangedEvent,
   TrainDrivingDirectionEvent,
@@ -7,7 +9,6 @@ import {
   TrainHornStateEvent,
   TrainLightStateEvent
 } from "../../../shared/openapi-gen";
-import {Subscription} from "./subscription";
 
 @Injectable({
   providedIn: 'root'

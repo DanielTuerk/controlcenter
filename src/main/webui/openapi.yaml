@@ -36,6 +36,15 @@ components:
           $ref: "#/components/schemas/GridPosition"
         direction:
           $ref: "#/components/schemas/DIRECTION"
+        lastGridPositions:
+          type: array
+          items:
+            $ref: "#/components/schemas/GridPosition"
+        rotationAngle:
+          type: number
+          format: double
+        vertical:
+          type: boolean
         blockLength:
           type: integer
           format: int32
@@ -45,21 +54,14 @@ components:
           $ref: "#/components/schemas/TrackBlock"
         rightTrackBlock:
           $ref: "#/components/schemas/TrackBlock"
-        endGridPosition:
-          $ref: "#/components/schemas/GridPosition"
         allGridPositions:
           type: array
           items:
             $ref: "#/components/schemas/GridPosition"
-        gridLength:
-          type: integer
-          format: int32
         allTrackBlocks:
           type: array
           items:
             $ref: "#/components/schemas/TrackBlock"
-        displayValue:
-          type: string
     BusBitDto:
       type: object
       properties:
@@ -713,8 +715,6 @@ components:
           $ref: "#/components/schemas/DRIVING_LEVEL_ADJUST_TYPE"
         feedback:
           type: boolean
-        displayValue:
-          type: string
     TrackBlockDataChangedEvent:
       type: object
       description: Track-block update sent via WebSocket
@@ -1590,6 +1590,20 @@ paths:
         "200":
           description: OK
       summary: Update
+    get:
+      tags:
+        - track
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: OK
+      summary: Load Track Part
     delete:
       tags:
         - track
@@ -1718,6 +1732,91 @@ paths:
         "200":
           description: OK
       summary: Delete
+      tags:
+        - Train Resource
+  /api/trains/{id}/direction:
+    post:
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        content:
+          text/plain:
+            schema:
+              $ref: "#/components/schemas/DRIVING_DIRECTION1"
+        required: true
+      responses:
+        "200":
+          description: OK
+      summary: Update Driving Direction
+      tags:
+        - Train Resource
+  /api/trains/{id}/horn:
+    post:
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        content:
+          text/plain:
+            schema:
+              type: boolean
+        required: true
+      responses:
+        "200":
+          description: OK
+      summary: Toggle Horn
+      tags:
+        - Train Resource
+  /api/trains/{id}/level:
+    post:
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        content:
+          text/plain:
+            schema:
+              type: integer
+              format: int32
+        required: true
+      responses:
+        "200":
+          description: OK
+      summary: Update Driving Direction
+      tags:
+        - Train Resource
+  /api/trains/{id}/light:
+    post:
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        content:
+          text/plain:
+            schema:
+              type: boolean
+        required: true
+      responses:
+        "200":
+          description: OK
+      summary: Toggle Light
       tags:
         - Train Resource
   /docs:

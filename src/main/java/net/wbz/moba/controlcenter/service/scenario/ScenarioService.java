@@ -52,10 +52,6 @@ public class ScenarioService {
     private final ScenarioExecutor scenarioExecutor;
 
     /**
-     * Broadcaster for client side event handling of state changes.
-     */
-    private final EventBroadcaster eventBroadcaster;
-    /**
      * Mapping of scenario id to {@link TriggerKey}s to unschedule running jobs.
      */
     private final Map<Long, TriggerKey> scenarioTriggerKeys = new HashMap<>();
@@ -66,7 +62,6 @@ public class ScenarioService {
         this.scenarioManager = scenarioManager;
         this.deviceManager = deviceManager;
         this.scenarioExecutor = scenarioExecutor;
-        this.eventBroadcaster = eventBroadcaster;
 
         // start the scheduler to trigger scenarios by cron
         try {
@@ -83,17 +78,16 @@ public class ScenarioService {
         return INSTANCE;
     }
 
-    public void start(long scenarioId) {
-        Scenario scenario = scenarioManager.getScenarioById(scenarioId);
+    public void start(Scenario scenario) {
         scenario.setMode(MODE.MANUAL);
 
         startScenario(scenario);
     }
 
-    public void schedule(long scenarioId) {
-        final Scenario scenarioById = scenarioManager.getScenarioById(scenarioId);
-        if (scenarioById.getRunState() != RUN_STATE.RUNNING) {
-            String cron = scenarioById.getCron();
+    public void schedule(Scenario scenario) {
+        if (scenario.getRunState() != RUN_STATE.RUNNING) {
+            var scenarioId = scenario.getId();
+            String cron = scenario.getCron();
             if (!Strings.isNullOrEmpty(cron)) {
 
                 JobDetail job = JobBuilder.newJob(ScheduleScenarioJob.class)
@@ -106,12 +100,12 @@ public class ScenarioService {
                 Trigger trigger = TriggerBuilder.newTrigger().withIdentity(triggerKey)
                     .withSchedule(CronScheduleBuilder.cronSchedule(cron)).forJob(job).build();
 
-                scenarioExecutor.scheduleScenario(scenarioById);
+                scenarioExecutor.scheduleScenario(scenario);
 
                 // Tell quartz to schedule the job using our trigger
                 try {
                     scheduler.scheduleJob(job, trigger);
-                    LOG.info("scenario (%s) scheduled: %s".formatted(scenarioById, cron));
+                    LOG.info("scenario (%s) scheduled: %s".formatted(scenario, cron));
                 } catch (SchedulerException e) {
                     LOG.error("error by schedule job", e);
                 }
@@ -120,21 +114,25 @@ public class ScenarioService {
                 LOG.error("no cron expression");
             }
         } else {
-            LOG.warn("Can't schedule scenario: %s - not in IDLE state (actual %s)".formatted(scenarioById,
-                scenarioById.getRunState()));
+            LOG.warn("Can't schedule scenario: %s - not in IDLE state (actual %s)".formatted(scenario,
+                scenario.getRunState()));
         }
     }
 
     public void scheduleAll() {
-        scenarioManager.getScenarios().forEach(scenario -> schedule(scenario.getId()));
+        scenarioManager.getScenarios().forEach(this::schedule);
     }
 
-    public void stop(long scenarioId) {
-        stopScenario(scenarioId);
+    public void stop(Scenario scenario) {
+        var scenarioId = scenario.getId();
+        LOG.debugf("stop scenario: %s", scenarioId);
+        unscheduleScenario(scenarioId);
+        scenarioExecutor.stopScenario(scenario);
+        scenario.setMode(MODE.OFF);
     }
 
     public void stopAll() {
-        scenarioManager.getScenarios().forEach(scenario -> stop(scenario.getId()));
+        scenarioManager.getScenarios().forEach(this::stop);
     }
 
     /**
@@ -154,7 +152,9 @@ public class ScenarioService {
      * @param train {@link Train}
      * @return {@link Optional} for {@link Scenario}
      */
+    @Deprecated
     public java.util.Optional<Scenario> getRunningScenarioOfTrain(Train train) {
+        // TODO where was it used?
         for (Scenario scenario : getScenariosOfTrain(train)) {
             if (scenario.getRunState() == RUN_STATE.RUNNING) {
                 return java.util.Optional.of(scenario);
@@ -197,17 +197,6 @@ public class ScenarioService {
                 LOG.error("scenario already running");
             }
         }
-    }
-
-    private void stopScenario(long scenarioId) {
-        LOG.debugf("stop scenario: %s", scenarioId);
-        unscheduleScenario(scenarioId);
-        Scenario scenario = scenarioManager.getScenarioById(scenarioId);
-        scenarioExecutor.stopScenario(scenario);
-        scenario.setMode(MODE.OFF);
-        // TODO also happen in scenario execution
-//        scenario.setRunState(RUN_STATE.STOPPED);
-//        fireScenarioStateChangeEvent(scenario);
     }
 
     private void unscheduleScenario(long scenarioId) {

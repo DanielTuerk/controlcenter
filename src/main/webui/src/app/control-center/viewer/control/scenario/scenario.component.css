@@ -1,0 +1,29 @@
+.panel-title {
+  display: flex;
+  flex-direction: column;
+  min-width: 0; /* avoid overflow in flex-Layouts */
+}
+
+.title-top {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.title-bottom {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: medium;
+}
+
+.control-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.route-state-PREPARED { background: #8f8b5a; }
+.route-state-STOPPED { background: #1e3a53; }
+.route-state-RUNNING { background: #748595; }
+.route-state-FINISHED { background: #1e7724; }
+.route-state-FAILED { background: #6e3333; }

@@ -171,7 +171,7 @@ public class ScenarioExecutor {
             }
         }
         eventBroadcaster.fireEvent(new ScenarioStateEvent(scenario.getId(), scenario.getRunState(),
-            ScenarioUtil.nextExecutionTime(scenario)));
+            scenario.getRunState() != RUN_STATE.STOPPED ? ScenarioUtil.nextExecutionTime(scenario) : null));
     }
 
 }

@@ -1,8 +1,52 @@
-<mat-expansion-panel *ngFor="let scenario of scenarios()">
+<div class="control-group" style="padding-top: 10px; padding-left: 10px">
+  <button mat-mini-fab (click)="scheduleAllScenarios()"
+          [disabled]="!isConnected()">
+    <mat-icon>schedule_send</mat-icon>
+  </button>
+  <button mat-mini-fab (click)="stopAllScenarios()"
+          [disabled]="!isConnected()">
+    <mat-icon>stop</mat-icon>
+  </button>
+</div>
+
+<mat-expansion-panel *ngFor="let scenario of scenarios()" style="padding-top: 10px">
   <mat-expansion-panel-header>
-    <mat-panel-title>{{scenario.name}} <br> {{scenario.runState}} | {{nextExecutionTime(scenario)}}</mat-panel-title>
+    <mat-panel-title class="panel-title">
+      <div class="title-top">
+        <span class="train-name">{{ scenario.name }}</span>
+      </div>
+      <div class="title-bottom">
+        <span>
+          {{ scenario.runState }}
+        </span>
+        <span>
+          <mat-icon style=" display: contents;font-size: medium">departure_board</mat-icon>
+          {{ scenario.scheduledExecutionTimeAsText }}
+        </span>
+      </div>
+    </mat-panel-title>
   </mat-expansion-panel-header>
-  <ul>
-    <li *ngFor="let routeSequence of scenario.routeSequences">{{routeSequence.route?.name}}</li>
-  </ul>
+  <div class="control-group">
+    <button mat-mini-fab (click)="scheduleScenario(scenario.scenarioId)"
+            [disabled]="!isConnected() || scenario.runState===RUNSTATE.Running">
+      <mat-icon>schedule_send</mat-icon>
+    </button>
+    <button mat-mini-fab (click)="startScenario(scenario.scenarioId)"
+            [disabled]="!isConnected()|| scenario.runState===RUNSTATE.Running">
+      <mat-icon>play_circle</mat-icon>
+    </button>
+    <button mat-mini-fab (click)="stopScenario(scenario.scenarioId)"
+            [disabled]="!isConnected()|| scenario.runState!==RUNSTATE.Running">
+      <mat-icon>stop</mat-icon>
+    </button>
+  </div>
+
+  <div style="padding-top: 5px">
+    <div *ngFor="let route of scenario.routes"
+         style="width: 90%;padding: 2px"
+         [ngClass]="'route-state-' + (route.runState ?? '')">
+      {{ route.name }} - {{ route.runState }}
+    </div>
+  </div>
 </mat-expansion-panel>
+<br/>

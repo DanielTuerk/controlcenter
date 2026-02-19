@@ -127,15 +127,22 @@ public class Route extends AbstractDto {
         /**
          * Prepared to start.
          */
-        PREPARED, /**
+        PREPARED,
+        /**
          * Reserved for start after successful preparation.
          */
-        RESERVED, /**
+        RESERVED,
+        /**
          * Currently running.
          */
-        RUNNING, /**
+        RUNNING,
+        /**
          * Execution finished.
          */
-        FINISHED
+        FINISHED,
+        /**
+         * Execution failed
+         */
+        FAILED
     }
 }

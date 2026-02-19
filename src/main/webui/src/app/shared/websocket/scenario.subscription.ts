@@ -15,7 +15,7 @@ export class ScenarioSubscription extends Subscription {
   readonly routesChanged = this.createEventAccessor<RoutesChangedEvent>('RoutesChangedEvent');
   readonly scenarioDataChanged = this.createEventAccessor<ScenarioDataChangedEvent>('ScenarioDataChangedEvent');
 
-  readonly routeState = this.createEventAccessor<RouteStateEvent>('RouteStateEvent');
-  readonly scenarioState = this.createEventAccessor<ScenarioStateEvent>('ScenarioStateEvent');
+  readonly routeStateChanged = this.createEventAccessor<RouteStateEvent>('RouteStateEvent');
+  readonly scenarioStateChanged = this.createEventAccessor<ScenarioStateEvent>('ScenarioStateEvent');
 
 }

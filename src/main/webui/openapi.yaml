@@ -357,6 +357,7 @@ components:
         - RESERVED
         - RUNNING
         - FINISHED
+        - FAILED
     RUN_STATE:
       type: string
       enum:
@@ -444,7 +445,7 @@ components:
           type: integer
           format: int64
         state:
-          $ref: "#/components/schemas/STATE3"
+          $ref: "#/components/schemas/ROUTE_RUN_STATE"
         message:
           type: string
         cacheKey:
@@ -472,13 +473,6 @@ components:
         - START
         - STOP
     STATE3:
-      type: string
-      enum:
-        - WAITING
-        - RUNNING
-        - FINISHED
-        - FAILED
-    STATE4:
       type: string
       enum:
         - UNKNOWN
@@ -739,7 +733,7 @@ components:
         config:
           $ref: "#/components/schemas/BusDataConfiguration"
         state:
-          $ref: "#/components/schemas/STATE4"
+          $ref: "#/components/schemas/STATE3"
         cacheKey:
           type: string
     TrackPartDataChangedEvent:
@@ -1424,6 +1418,22 @@ paths:
       summary: Create
       tags:
         - Scenario Resource
+  /api/scenarios/schedule-all:
+    post:
+      responses:
+        "200":
+          description: OK
+      summary: Schedule All
+      tags:
+        - Scenario Resource
+  /api/scenarios/stop-all:
+    post:
+      responses:
+        "200":
+          description: OK
+      summary: Stop All
+      tags:
+        - Scenario Resource
   /api/scenarios/{id}:
     put:
       parameters:
@@ -1473,6 +1483,51 @@ paths:
         "200":
           description: OK
       summary: Delete
+      tags:
+        - Scenario Resource
+  /api/scenarios/{id}/schedule:
+    post:
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: OK
+      summary: Schedule
+      tags:
+        - Scenario Resource
+  /api/scenarios/{id}/start:
+    post:
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: OK
+      summary: Start
+      tags:
+        - Scenario Resource
+  /api/scenarios/{id}/stop:
+    post:
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: OK
+      summary: Stop
       tags:
         - Scenario Resource
   /api/track:

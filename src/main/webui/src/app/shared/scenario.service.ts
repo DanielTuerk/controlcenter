@@ -31,7 +31,7 @@ export class ScenarioService {
   createScenario(scenario: Scenario) {
     return this.httpClient.post('/api/scenarios/', scenario)
     .pipe(
-      catchError((err: any, caught: Observable<any>) => {
+      catchError((err: any) => {
         this.snackBar.showError(`can't create scenario: ${err.message}`);
         return EMPTY
       })
@@ -41,7 +41,7 @@ export class ScenarioService {
   saveScenario(scenario: Scenario) {
     return this.httpClient.put('/api/scenarios/' + scenario.id, scenario)
     .pipe(
-      catchError((err: any, caught: Observable<any>) => {
+      catchError((err: any) => {
         this.snackBar.showError(`can't save scenario ${scenario.id}: ${err.message}`);
         return EMPTY
       })
@@ -51,11 +51,71 @@ export class ScenarioService {
   deleteScenario(scenarioId: Number) {
     return this.httpClient.delete('/api/scenarios/' + scenarioId)
     .subscribe({
-      next: (scenario) => {
+      next: () => {
         this.snackBar.showSuccess(`scenario ${scenarioId} deleted`);
       },
       error: (error) => {
         this.snackBar.showError(`can't delete scenario ${scenarioId}: ${error.message}`);
+      }
+    });
+  }
+
+  startScenario(scenarioId: Number) {
+    return this.httpClient.post(`/api/scenarios/${scenarioId}/start`, null)
+    .subscribe({
+      next: () => {
+        this.snackBar.showSuccess(`scenario ${scenarioId} started`);
+      },
+      error: (error) => {
+        this.snackBar.showError(`can't start scenario ${scenarioId}: ${error.message}`);
+      }
+    });
+  }
+
+  scheduleScenario(scenarioId: Number) {
+    return this.httpClient.post(`/api/scenarios/${scenarioId}/schedule`, null)
+    .subscribe({
+      next: () => {
+        this.snackBar.showSuccess(`scenario ${scenarioId} scheduled`);
+      },
+      error: (error) => {
+        this.snackBar.showError(`can't schedule scenario ${scenarioId}: ${error.message}`);
+      }
+    });
+  }
+
+  stopScenario(scenarioId: Number) {
+    return this.httpClient.post(`/api/scenarios/${scenarioId}/stop`, null)
+    .subscribe({
+      next: () => {
+        this.snackBar.showSuccess(`scenario ${scenarioId} stopped`);
+      },
+      error: (error) => {
+        this.snackBar.showError(`can't stop scenario ${scenarioId}: ${error.message}`);
+      }
+    });
+  }
+
+  scheduleAll() {
+    return this.httpClient.post(`/api/scenarios/schedule-all`, null)
+    .subscribe({
+      next: () => {
+        this.snackBar.showSuccess(`all scenarios scheduled`);
+      },
+      error: (error) => {
+        this.snackBar.showError(`can't schedule all scenarios: ${error.message}`);
+      }
+    });
+  }
+
+  stopAll() {
+    return this.httpClient.post(`/api/scenarios/stop-all`, null)
+    .subscribe({
+      next: () => {
+        this.snackBar.showSuccess(`all scenarios stopped`);
+      },
+      error: (error) => {
+        this.snackBar.showError(`can't stop all scenarios: ${error.message}`);
       }
     });
   }

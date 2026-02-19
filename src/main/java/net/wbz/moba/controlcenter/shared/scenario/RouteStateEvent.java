@@ -1,6 +1,7 @@
 package net.wbz.moba.controlcenter.shared.scenario;
 
 import net.wbz.moba.controlcenter.shared.StateEvent;
+import net.wbz.moba.controlcenter.shared.scenario.Route.ROUTE_RUN_STATE;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
@@ -24,7 +25,7 @@ public class RouteStateEvent implements StateEvent {
     /**
      * Actual state.
      */
-    private STATE state;
+    private ROUTE_RUN_STATE state;
     /**
      * Optional message.
      */
@@ -33,11 +34,11 @@ public class RouteStateEvent implements StateEvent {
     public RouteStateEvent() {
     }
 
-    public RouteStateEvent(Long scenarioId, Long routeSequenceId, STATE state) {
+    public RouteStateEvent(Long scenarioId, Long routeSequenceId, ROUTE_RUN_STATE state) {
         this(scenarioId, routeSequenceId, state, null);
     }
 
-    public RouteStateEvent(Long scenarioId, Long routeSequenceId, STATE state, String msg) {
+    public RouteStateEvent(Long scenarioId, Long routeSequenceId, ROUTE_RUN_STATE state, String msg) {
         this.scenarioId = scenarioId;
         this.routeSequenceId = routeSequenceId;
         this.state = state;
@@ -52,7 +53,7 @@ public class RouteStateEvent implements StateEvent {
         return routeSequenceId;
     }
 
-    public STATE getState() {
+    public ROUTE_RUN_STATE getState() {
         return state;
     }
 

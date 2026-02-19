@@ -14,6 +14,7 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import java.util.List;
 import net.wbz.moba.controlcenter.service.scenario.ScenarioManager;
+import net.wbz.moba.controlcenter.service.scenario.ScenarioService;
 import net.wbz.moba.controlcenter.shared.scenario.Scenario;
 
 /**
@@ -26,6 +27,8 @@ public class ScenarioResource {
 
     @Inject
     ScenarioManager scenarioManager;
+    @Inject
+    ScenarioService scenarioService;
 
     @GET
     public List<Scenario> listAll() {
@@ -70,5 +73,49 @@ public class ScenarioResource {
         } else {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
+    }
+
+    @POST
+    @Path("/{id}/start")
+    public Response start(@PathParam("id") Long id) {
+        if (!scenarioManager.existsById(id)) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+        scenarioService.start(scenarioManager.getScenarioById(id));
+        return Response.ok().build();
+    }
+
+    @POST
+    @Path("/{id}/stop")
+    public Response stop(@PathParam("id") Long id) {
+        if (!scenarioManager.existsById(id)) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+        scenarioService.stop(scenarioManager.getScenarioById(id));
+        return Response.ok().build();
+    }
+
+    @POST
+    @Path("/stop-all")
+    public Response stopAll() {
+        scenarioService.stopAll();
+        return Response.ok().build();
+    }
+
+    @POST
+    @Path("/{id}/schedule")
+    public Response schedule(@PathParam("id") Long id) {
+        if (!scenarioManager.existsById(id)) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+        scenarioService.schedule(scenarioManager.getScenarioById(id));
+        return Response.ok().build();
+    }
+
+    @POST
+    @Path("/schedule-all")
+    public Response scheduleAll() {
+        scenarioService.scheduleAll();
+        return Response.ok().build();
     }
 }

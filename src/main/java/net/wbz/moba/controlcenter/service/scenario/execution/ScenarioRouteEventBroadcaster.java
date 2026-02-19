@@ -5,9 +5,9 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import net.wbz.moba.controlcenter.EventBroadcaster;
 import net.wbz.moba.controlcenter.service.scenario.RouteListener;
+import net.wbz.moba.controlcenter.shared.scenario.Route.ROUTE_RUN_STATE;
 import net.wbz.moba.controlcenter.shared.scenario.RouteSequence;
 import net.wbz.moba.controlcenter.shared.scenario.RouteStateEvent;
-import net.wbz.moba.controlcenter.shared.scenario.RouteStateEvent.STATE;
 import net.wbz.moba.controlcenter.shared.scenario.Scenario;
 
 /**
@@ -30,29 +30,29 @@ class ScenarioRouteEventBroadcaster implements RouteListener {
 
     @Override
     public void routeStarted(Scenario scenario, RouteSequence routeSequence) {
-        fireEvent(scenario, routeSequence, STATE.RUNNING);
+        fireEvent(scenario, routeSequence, ROUTE_RUN_STATE.RUNNING);
     }
 
     @Override
     public void routeFinished(Scenario scenario, RouteSequence routeSequence) {
-        fireEvent(scenario, routeSequence, STATE.FINISHED);
+        fireEvent(scenario, routeSequence, ROUTE_RUN_STATE.FINISHED);
     }
 
     @Override
     public void routeWaitingToStart(Scenario scenario, RouteSequence routeSequence) {
-        fireEvent(scenario, routeSequence, STATE.WAITING);
+        fireEvent(scenario, routeSequence, ROUTE_RUN_STATE.RESERVED);
     }
 
     @Override
     public void routeFailed(Scenario scenario, RouteSequence routeSequence, String msg) {
-        fireEvent(scenario, routeSequence, STATE.FAILED, msg);
+        fireEvent(scenario, routeSequence, ROUTE_RUN_STATE.FAILED, msg);
     }
 
-    private void fireEvent(Scenario scenario, RouteSequence routeSequence, STATE state) {
+    private void fireEvent(Scenario scenario, RouteSequence routeSequence, ROUTE_RUN_STATE state) {
         fireEvent(scenario, routeSequence, state, null);
     }
 
-    private void fireEvent(Scenario scenario, RouteSequence routeSequence, STATE state, String message) {
+    private void fireEvent(Scenario scenario, RouteSequence routeSequence, ROUTE_RUN_STATE state, String message) {
         eventBroadcaster.fireEvent(new RouteStateEvent(scenario.getId(), routeSequence.getId(), state, message));
     }
 }

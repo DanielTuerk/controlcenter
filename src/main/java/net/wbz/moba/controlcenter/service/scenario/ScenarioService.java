@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import net.wbz.moba.controlcenter.EventBroadcaster;
 import net.wbz.moba.controlcenter.service.scenario.execution.ScenarioExecutor;
 import net.wbz.moba.controlcenter.shared.scenario.Scenario;
 import net.wbz.moba.controlcenter.shared.scenario.Scenario.MODE;
@@ -58,7 +57,7 @@ public class ScenarioService {
 
     @Inject
     public ScenarioService(ScenarioManager scenarioManager, DeviceManager deviceManager,
-        ScenarioExecutor scenarioExecutor, EventBroadcaster eventBroadcaster) {
+        ScenarioExecutor scenarioExecutor) {
         this.scenarioManager = scenarioManager;
         this.deviceManager = deviceManager;
         this.scenarioExecutor = scenarioExecutor;
@@ -133,34 +132,6 @@ public class ScenarioService {
 
     public void stopAll() {
         scenarioManager.getScenarios().forEach(this::stop);
-    }
-
-    /**
-     * Get scenarios for the given train.
-     *
-     * @param train {@link Train}
-     * @return {@link Scenario}s
-     */
-    public Iterable<Scenario> getScenariosOfTrain(final Train train) {
-        return scenarioManager.getScenarios().stream().filter(input -> input.getTrain().equals(train))
-            .collect(Collectors.toList());
-    }
-
-    /**
-     * Get the running scenario for the given train.
-     *
-     * @param train {@link Train}
-     * @return {@link Optional} for {@link Scenario}
-     */
-    @Deprecated
-    public java.util.Optional<Scenario> getRunningScenarioOfTrain(Train train) {
-        // TODO where was it used?
-        for (Scenario scenario : getScenariosOfTrain(train)) {
-            if (scenario.getRunState() == RUN_STATE.RUNNING) {
-                return java.util.Optional.of(scenario);
-            }
-        }
-        return java.util.Optional.empty();
     }
 
     /**

@@ -79,7 +79,6 @@ public class BlockStraight extends Straight implements MultipleGridPosition {
         return positions;
     }
 
-
     /**
      * Return the block length which can be set as value or calculated. The length depends on the blocks. Each block
      * will increase the min length by 1.
@@ -100,7 +99,7 @@ public class BlockStraight extends Straight implements MultipleGridPosition {
         if (minLength == 0) {
             minLength = 1;
         }
-        return blockLength < minLength ? minLength : blockLength;
+        return Math.max(blockLength, minLength);
     }
 
     public void setBlockLength(int blockLength) {

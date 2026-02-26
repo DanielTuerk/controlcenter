@@ -2,19 +2,33 @@
   <mat-toolbar style="width: 100%">
     Mode:&nbsp;
     <mat-button-toggle-group name="editType" [(ngModel)]="editType" (ngModelChange)="onEditTypeChanged()">
-      <mat-button-toggle value="move" disabled>
+      <mat-button-toggle value="move">
         <mat-icon>open_with</mat-icon>&nbsp;Move
       </mat-button-toggle>
-      <mat-button-toggle value="edit">
+      <mat-button-toggle value="edit" [disabled]="pendingChanges()">
         <mat-icon>edit</mat-icon>&nbsp;Edit
       </mat-button-toggle>
-      <mat-button-toggle value="delete">
+      <mat-button-toggle value="delete" [disabled]="pendingChanges()">
         <mat-icon>delete</mat-icon>&nbsp;Delete
       </mat-button-toggle>
     </mat-button-toggle-group>
+
+    <button mat-mini-fab style="margin-left: 10px"
+            [disabled]="!pendingChanges()"
+            (click)="save()">
+      <mat-icon>save</mat-icon>
+    </button>
+    <button mat-mini-fab style="margin-left: 10px"
+            [disabled]="!pendingChanges()"
+            (click)="revert()">
+      <mat-icon>undo</mat-icon>
+    </button>
   </mat-toolbar>
   <app-track-viewer-svg #trackViewer
                         style="overflow: auto"
                         [overrideIsConnected]="true"
-                        (trackPartClicked)="onTrackPartClicked($event)"></app-track-viewer-svg>
+                        (trackPartClicked)="onTrackPartClicked($event)"
+                        (mousemove)="mouseOverTrackViewer($event)"
+                        (click)="onTrackViewerClicked()">
+  </app-track-viewer-svg>
 </div>

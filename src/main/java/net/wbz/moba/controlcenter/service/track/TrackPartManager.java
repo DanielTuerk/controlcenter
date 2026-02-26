@@ -5,17 +5,21 @@ import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
+import java.util.Objects;
 import net.wbz.moba.controlcenter.EventBroadcaster;
 import net.wbz.moba.controlcenter.persist.entity.track.AbstractTrackPartEntity;
 import net.wbz.moba.controlcenter.persist.entity.track.BlockStraightEntity;
 import net.wbz.moba.controlcenter.persist.entity.track.BusDataConfigurationEntity;
+import net.wbz.moba.controlcenter.persist.entity.track.GridPositionEntity;
 import net.wbz.moba.controlcenter.persist.entity.track.HasToggleFunctionEntity;
 import net.wbz.moba.controlcenter.persist.entity.track.SignalEntity;
 import net.wbz.moba.controlcenter.persist.entity.track.TrackBlockEntity;
+import net.wbz.moba.controlcenter.persist.repository.track.GridPositionRepository;
 import net.wbz.moba.controlcenter.persist.repository.track.TrackPartRepository;
 import net.wbz.moba.controlcenter.shared.track.model.AbstractTrackPart;
 import net.wbz.moba.controlcenter.shared.track.model.BlockStraight;
 import net.wbz.moba.controlcenter.shared.track.model.BusDataConfiguration;
+import net.wbz.moba.controlcenter.shared.track.model.GridPosition;
 import net.wbz.moba.controlcenter.shared.track.model.HasToggleFunction;
 import net.wbz.moba.controlcenter.shared.track.model.Signal;
 import net.wbz.moba.controlcenter.shared.track.model.TrackBlock;
@@ -39,6 +43,8 @@ public class TrackPartManager {
     EntityManager entityManager;
     @Inject
     TrackBlockMapper trackBlockMapper;
+    @Inject
+    GridPositionRepository gridPositionRepository;
 
     @Transactional
     public void update(Long id, AbstractTrackPart updated) {
@@ -63,6 +69,7 @@ public class TrackPartManager {
     public boolean deleteById(Long id) {
         var state = trackPartRepository.deleteById(id);
         eventBroadcaster.fireEvent(new TrackPartDataChangedEvent(id));
+        trackProvider.markDirty();
         return state;
     }
 
@@ -125,10 +132,42 @@ public class TrackPartManager {
         return trackBlock == null ? null : entityManager.merge(trackBlockMapper.toEntity(trackBlock));
     }
 
-    private void persistTrackPart(AbstractTrackPartEntity existing) {
-        trackPartRepository.persist(existing);
+    private void persistTrackPart(AbstractTrackPartEntity entity) {
+        trackPartRepository.persist(entity);
         trackProvider.markDirty();
-        eventBroadcaster.fireEvent(new TrackPartDataChangedEvent(existing.id));
+        eventBroadcaster.fireEvent(new TrackPartDataChangedEvent(entity.id));
+    }
+
+    @Transactional
+    public void move(AbstractTrackPart abstractTrackPart, GridPosition newGridPosition) {
+        var existingGridPosEntity = gridPositionRepository.findByGridPosition(newGridPosition);
+        var trackPartEntity = trackPartRepository.findByIdOptional(abstractTrackPart.getId())
+            .orElseThrow(() -> new IllegalStateException("no track part with id " + abstractTrackPart.getId()));
+
+        if (existingGridPosEntity == null) {
+            // non-existing grid position can be applied
+            var gridPosition = new GridPositionEntity();
+            gridPosition.x = newGridPosition.getX();
+            gridPosition.y = newGridPosition.getY();
+            trackPartEntity.gridPosition = gridPosition;
+
+            persistTrackPart(trackPartEntity);
+        } else {
+            var byGridPositionId = trackPartRepository.findByGridPositionId(
+                existingGridPosEntity.id);
+            if (byGridPositionId.isEmpty()) {
+                trackPartEntity.gridPosition = existingGridPosEntity;
+
+                persistTrackPart(trackPartEntity);
+            } else {
+                if (!Objects.equals(byGridPositionId.get().id, existingGridPosEntity.id)) {
+                    // ignore non-changed grid pos or throw error if assigned to other existing track part
+                    throw new IllegalStateException(
+                        "target position (%s) already assigned to track part with id %d".formatted(newGridPosition,
+                            existingGridPosEntity.id));
+                }
+            }
+        }
     }
 
 }

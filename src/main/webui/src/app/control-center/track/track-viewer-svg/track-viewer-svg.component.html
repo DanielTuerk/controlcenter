@@ -1,4 +1,4 @@
-<div class="connection-overlay" [class.disabled]="!isConnected()">
+<div #container class="connection-overlay" [class.disabled]="!isConnected()">
 
   <svg #svgRoot class="full-svg" [style.min-width.px]="svgWidth" [style.min-height.px]="svgHeight">
     <!-- background with grid -->
@@ -9,6 +9,7 @@
       </pattern>
     </defs>
     <rect x="0" y="0" width="100%" height="100%" fill="url(#grid)"></rect>
+    <g #svgContentContainer></g>
   </svg>
 
 </div>

@@ -17,10 +17,14 @@ export abstract class AbstractTrackComponentBuilder {
     const baseY = trackPart.gridPosition.y * AbstractTrackComponentBuilder.TILE
       + ((AbstractTrackComponentBuilder.TILE - AbstractTrackComponentBuilder.BASE_HEIGHT) / 2);
 
-    let element = this.doBuild(trackPart, baseX, baseY,event);
     // react to complete tile for the click events
-    element.appendChild(this.createInvisibleTileRect(baseX,baseY));
-    return element;
+    const group = this.createElement('g');
+
+    let tileRect = this.createInvisibleTileRect(baseX, baseY);
+    group.appendChild(tileRect);
+    let element = this.doBuild(trackPart, baseX, baseY, event);
+    group.appendChild(element);
+    return group;
   }
 
   protected baseRect(x: number, y: number, width: number, height: number, fill: string, groupTransform: string | null): Element {
@@ -45,6 +49,7 @@ export abstract class AbstractTrackComponentBuilder {
     const cy = baseY + AbstractTrackComponentBuilder.BASE_HEIGHT / 2;
     const hitSize = AbstractTrackComponentBuilder.TILE - 2;
     const rect = this.createElement('rect');
+    rect.setAttribute('tileContainer', 'tileContainer');
     // set x/y to center of tile
     rect.setAttribute('width', String(hitSize));
     rect.setAttribute('height', String(hitSize));

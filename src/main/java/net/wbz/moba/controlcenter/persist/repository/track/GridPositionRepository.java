@@ -12,10 +12,11 @@ import net.wbz.moba.controlcenter.shared.track.model.GridPosition;
 public class GridPositionRepository implements PanacheRepository<GridPositionEntity> {
 
     public GridPositionEntity findByGridPosition(GridPosition input) {
-        return getEntityManager().createQuery("SELECT g FROM GRID_POSITION g"
-                + " WHERE g.x = :x AND g.y = :y", GridPositionEntity.class)
-                .setParameter("x", input.getX())
-                .setParameter("y", input.getY())
-                .getSingleResult();
+        return find("x=?1 AND y=?2", input.getX(), input.getY()).firstResultOptional().orElse(null);
+//        return getEntityManager().createQuery("SELECT g FROM GRID_POSITION g"
+//                + " WHERE g.x = :x AND g.y = :y", GridPositionEntity.class)
+//                .setParameter("x", input.getX())
+//                .setParameter("y", input.getY())
+//                .getSingleResult();
     }
 }

@@ -71,7 +71,7 @@ public class TrackProvider {
 
 
     private void loadTrackBlocksData() {
-        // TODO migrate
+        // TODO migrate / really needed?
 //        cachedTrackBlocks.clear();
 //        if (currentConstruction != null) {
 //            List<TrackBlockEntity> trackBlocks = trackBlockDao.findByConstructionId(currentConstruction.getId());
@@ -86,7 +86,7 @@ public class TrackProvider {
         LOG.info("load track parts from db");
 
         List<AbstractTrackPartEntity> result = trackPartRepository.findByConstructionId(construction.getId());
-        LOG.info("return track parts");
+        LOG.infof("return track parts (%d)", result.size());
         cachedEntities.addAll(result.stream().map(x -> switch (x) {
             case CurveEntity e -> trackPartMapper.toDto(e);
             case TurnoutEntity e -> trackPartMapper.toDto(e);
@@ -96,12 +96,6 @@ public class TrackProvider {
             case StraightEntity e -> trackPartMapper.toDto(e);
             default -> throw new IllegalStateException("Unexpected value: " + x);
         }).toList());
-
-        // TODO migrate (do it here or in a separate class? Originally in TrainManager
-//                if (deviceManager.isConnected()) {
-//                    registerConsumersByConnectedDeviceForTrackParts();
-//                }
-
     }
 
     public synchronized void markDirty() {

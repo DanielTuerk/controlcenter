@@ -1,7 +1,7 @@
 import {inject, Injectable} from "@angular/core";
 import {SnackBar} from "../control-center/common/snack-bar.component";
 import {HttpClient} from "@angular/common/http";
-import {AbstractTrackPart, FUNCTION, TrackBlock, Train} from "../../shared/openapi-gen";
+import {AbstractTrackPart, FUNCTION, GridPosition, TrackBlock, Train} from "../../shared/openapi-gen";
 import {catchError} from "rxjs/operators";
 import {EMPTY} from "rxjs";
 
@@ -113,4 +113,15 @@ export class TrackService {
       }
     });
   }
+
+  moveTrackPart(trackPartId: number, newGridPos: GridPosition) {
+    return this.httpClient.put('/api/track/' + trackPartId + '/move', newGridPos)
+    .pipe(
+      catchError((err: any) => {
+        this.snackBar.showError(`can't move track-part ${trackPartId}: ${err.message}`);
+        return EMPTY
+      })
+    )
+  }
+
 }

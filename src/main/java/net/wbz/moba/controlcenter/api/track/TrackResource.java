@@ -21,6 +21,7 @@ import net.wbz.moba.controlcenter.service.track.TrackProvider;
 import net.wbz.moba.controlcenter.service.track.TrackViewerService;
 import net.wbz.moba.controlcenter.shared.track.model.AbstractTrackPart;
 import net.wbz.moba.controlcenter.shared.track.model.BlockStraight;
+import net.wbz.moba.controlcenter.shared.track.model.GridPosition;
 import net.wbz.moba.controlcenter.shared.track.model.Signal;
 import net.wbz.moba.controlcenter.shared.track.model.Signal.FUNCTION;
 import net.wbz.moba.controlcenter.shared.track.model.Turnout;
@@ -113,6 +114,22 @@ public class TrackResource {
         } catch (Exception e) {
             logger.error("Failed to update track part " + id, e);
             return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+        }
+    }
+
+    @PUT
+    @Path("/{id}/move")
+    @Transactional
+    public Response move(@PathParam("id") Long trackPartId, GridPosition newGridPosition) {
+        var $trackPart = trackProvider.getTrackPart(trackPartId);
+        if ($trackPart.isEmpty()) {
+            return Response.status(Status.NOT_FOUND).build();
+        }
+        try {
+            trackPartManager.move($trackPart.get(), newGridPosition);
+            return Response.ok().build();
+        } catch (IllegalStateException e) {
+            return Response.status(Status.CONFLICT).build();
         }
     }
 

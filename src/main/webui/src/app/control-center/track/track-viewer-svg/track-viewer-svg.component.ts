@@ -29,7 +29,12 @@ import {DeviceService} from "../../../shared/device.service";
 })
 export class TrackViewerSvgComponent implements OnInit {
 
-  @ViewChild('svgRoot', {static: true}) svg!: ElementRef<SVGSVGElement>;
+  @ViewChild('container', {static: true}) private _container!: ElementRef<HTMLDivElement>;
+  @ViewChild('svgContentContainer', {static: true}) private _svgContentContainer!: ElementRef<SVGElement>;
+
+  get container(): ElementRef<HTMLDivElement> {
+    return this._container;
+  }
 
   @Input() overrideIsConnected = false;
   /**
@@ -57,14 +62,12 @@ export class TrackViewerSvgComponent implements OnInit {
     this.trackService.fetchTrackParts().subscribe(elements => {
       this.loadTrack(elements);
 
-      this.trackSubscription.trackChanged().subscribe(event => {
-        this.loadTrack(event.trackParts);
+      this.trackSubscription.trackChanged().subscribe(() => {
+        this.reloadTrack();
       });
 
       this.trackSubscription.trackPartDataChangedEvent().subscribe(() => {
-        this.trackService.fetchTrackParts().subscribe(elements => {
-          this.loadTrack(elements);
-        });
+        this.reloadTrack();
       });
 
       // subscribe to state changes for track elements
@@ -77,15 +80,15 @@ export class TrackViewerSvgComponent implements OnInit {
     });
   }
 
-  private consumeTrackEvent(name: string, event: any, trackPartId: number) {
-    let trackElement = this.loadedTrackParts.find(
-      trackElement => trackElement.trackPart.id === trackPartId);
-    if (!trackElement) return;
-
-    console.log(`received ${name}: `, trackElement);
-    this.removeTrackPart(trackElement);
-    let element = this.buildTrackPartElement(trackElement?.trackPart!, event);
-    this.addTrackPart(element);
+  public reloadTrack() {
+    console.log("reload track");
+    this.trackService.fetchTrackParts().subscribe(elements => {
+      const container = this._svgContentContainer.nativeElement;
+      while (container.firstChild) {
+        container.removeChild(container.firstChild);
+      }
+      this.loadTrack(elements);
+    });
   }
 
   private loadTrack(elements: AbstractTrackPart[]) {
@@ -119,6 +122,17 @@ export class TrackViewerSvgComponent implements OnInit {
     return element;
   }
 
+  private consumeTrackEvent(name: string, event: any, trackPartId: number) {
+    let trackElement = this.loadedTrackParts.find(
+      trackElement => trackElement.trackPart.id === trackPartId);
+    if (!trackElement) return;
+
+    console.log(`received ${name}: `, trackElement);
+    this.removeTrackPart(trackElement);
+    let element = this.buildTrackPartElement(trackElement?.trackPart!, event);
+    this.addTrackPart(element);
+  }
+
   private updateTrackDimension(elements: AbstractTrackPart[]) {
     const {maxX, maxY} = elements.reduce(
       (acc, el) => {
@@ -137,16 +151,16 @@ export class TrackViewerSvgComponent implements OnInit {
   }
 
   private addTrackPart(e: Element) {
-    this.svg.nativeElement.appendChild(e);
+    this._svgContentContainer.nativeElement.appendChild(e);
   }
 
   private removeTrackPart(trackElement: TrackElement<TrackPartStateEvent>) {
     // remove old one if already exists
     this.loadedTrackParts = this.loadedTrackParts.filter(e => e.trackPart.id !== trackElement.trackPart.id)
-    this.svg.nativeElement.removeChild(trackElement.svgElement);
+    this._svgContentContainer.nativeElement.removeChild(trackElement.svgElement);
   }
 
-  generatePath(size: number): string {
+  protected generatePath(size: number): string {
     return `M ${size} 0 L ${size} ${size} L 0 ${size}`;
   }
 

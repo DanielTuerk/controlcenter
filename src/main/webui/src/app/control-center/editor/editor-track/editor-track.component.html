@@ -2,6 +2,9 @@
   <mat-toolbar style="width: 100%">
     Mode:&nbsp;
     <mat-button-toggle-group name="editType" [(ngModel)]="editType" (ngModelChange)="onEditTypeChanged()">
+      <mat-button-toggle value="rotate" disabled>
+        <mat-icon>rotate_90_degrees_ccw</mat-icon>&nbsp;Rotate
+      </mat-button-toggle>
       <mat-button-toggle value="move">
         <mat-icon>open_with</mat-icon>&nbsp;Move
       </mat-button-toggle>

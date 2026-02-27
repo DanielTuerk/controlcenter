@@ -65,6 +65,8 @@ export class EditorTrackComponent implements OnDestroy {
 
   private changeCursor() {
     switch (this.editType) {
+      case 'rotate':
+        return this.changeCursorStyle('pointer');
       case 'edit':
         return this.changeCursorStyle('pointer');
       case 'move':
@@ -85,7 +87,6 @@ export class EditorTrackComponent implements OnDestroy {
   }
 
   protected save() {
-    // this.trackPartToMove = null;
     this.moveAction.stopMovement();
 
     if (this.moveAction.unsavedMoveActions.size > 0) {

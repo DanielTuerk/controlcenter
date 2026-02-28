@@ -1,5 +1,5 @@
 import {AbstractTrackComponentBuilder} from "../abstract-track-component-builder";
-import {FUNCTION, Signal, SignalFunctionStateEvent, TYPE3} from "../../../../../../shared/openapi-gen";
+import {DIRECTION, FUNCTION, Signal, SignalFunctionStateEvent, TYPE3} from "../../../../../../shared/openapi-gen";
 import {StraightBuilder} from "./straight";
 
 export class SignalBuilder extends StraightBuilder {
@@ -10,13 +10,16 @@ export class SignalBuilder extends StraightBuilder {
     const group = this.createElement('g');
     group.appendChild(straight);
 
+    const signalGroup = this.createElement('g');
+
+    group.appendChild(signalGroup);
+
     const cx = baseX + AbstractTrackComponentBuilder.TILE / 2;
     const cy = baseY + AbstractTrackComponentBuilder.BASE_HEIGHT / 2;
 
     const hitSize = AbstractTrackComponentBuilder.TILE - 6;
     let plate = this.baseRect(cx - hitSize / 2, cy - hitSize / 2, hitSize, hitSize, 'gray', null);
-    group.appendChild(plate);
-
+    signalGroup.appendChild(plate);
 
     const lights: SVGElement[] = (() => {
       const pixelShift = 4.5;
@@ -34,8 +37,18 @@ export class SignalBuilder extends StraightBuilder {
           throw Error(`invalid signal type: ${signalTrackPart.type}`)
       }
     })();
-    lights.forEach(light => group.appendChild(light));
+    lights.forEach(light => signalGroup.appendChild(light));
 
+    let degree;
+    switch (signalTrackPart.direction) {
+      case DIRECTION.Horizontal:
+        degree = 0;
+        break;
+      case DIRECTION.Vertical:
+        degree = 90;
+        break;
+    }
+    signalGroup.setAttribute('transform', `rotate(${degree} ${cx} ${cy})`);
     return group;
   }
 
@@ -55,25 +68,29 @@ export class SignalBuilder extends StraightBuilder {
 
   private createLightsForEnter(event: SignalFunctionStateEvent | null, cx: number, pixelShift: number, cy: number) {
     if (!event) {
-      return [this.createRedLight(cx - pixelShift, cy + pixelShift), this.createGreenLight(cx + pixelShift, cy + pixelShift), this.createYellowLight(cx + pixelShift, cy - pixelShift)];
+      return [
+        this.createRedLight(cx + pixelShift, cy + pixelShift),
+        this.createGreenLight(cx - pixelShift, cy - pixelShift),
+        this.createYellowLight(cx + pixelShift, cy - pixelShift)
+      ];
     }
     switch (event?.signalFunction) {
       case FUNCTION.Hp0:
         return [
-          this.createRedLight(cx - pixelShift, cy + pixelShift, true),
-          this.createGreenLight(cx + pixelShift, cy + pixelShift),
+          this.createRedLight(cx + pixelShift, cy + pixelShift, true),
+          this.createGreenLight(cx - pixelShift, cy - pixelShift),
           this.createYellowLight(cx + pixelShift, cy - pixelShift)
         ];
       case FUNCTION.Hp1:
         return [
-          this.createRedLight(cx - pixelShift, cy + pixelShift),
-          this.createGreenLight(cx + pixelShift, cy + pixelShift, true),
+          this.createRedLight(cx + pixelShift, cy + pixelShift),
+          this.createGreenLight(cx - pixelShift, cy - pixelShift, true),
           this.createYellowLight(cx + pixelShift, cy - pixelShift)
         ];
       case FUNCTION.Hp2:
         return [
-          this.createRedLight(cx - pixelShift, cy + pixelShift),
-          this.createGreenLight(cx + pixelShift, cy + pixelShift, true),
+          this.createRedLight(cx + pixelShift, cy + pixelShift),
+          this.createGreenLight(cx - pixelShift, cy - pixelShift, true),
           this.createYellowLight(cx + pixelShift, cy - pixelShift, true)
         ];
       default:
@@ -85,33 +102,33 @@ export class SignalBuilder extends StraightBuilder {
     if (!event) {
       return [
         this.createGreenLight(cx + pixelShift, cy - pixelShift),
-        this.createRedLight(cx - pixelShift, cy + pixelShift),
-        this.createRedLight(cx + pixelShift, cy + pixelShift)
+        this.createRedLight(cx - pixelShift, cy - pixelShift),
+        this.createRedLight(cx - pixelShift, cy + pixelShift)
       ];
     }
     switch (event?.signalFunction) {
       case FUNCTION.Hp0:
         return [
-          this.createGreenLight(cx - pixelShift, cy - pixelShift),
+          this.createGreenLight(cx + pixelShift, cy - pixelShift),
+          this.createRedLight(cx - pixelShift, cy - pixelShift, true),
           this.createRedLight(cx - pixelShift, cy + pixelShift, true),
-          this.createRedLight(cx + pixelShift, cy + pixelShift, true),
         ];
       case FUNCTION.Hp1:
         return [
-          this.createGreenLight(cx - pixelShift, cy - pixelShift, true),
+          this.createGreenLight(cx + pixelShift, cy - pixelShift, true),
+          this.createRedLight(cx - pixelShift, cy - pixelShift),
           this.createRedLight(cx - pixelShift, cy + pixelShift),
-          this.createRedLight(cx + pixelShift, cy + pixelShift),
         ];
       case FUNCTION.Hp2:
         return [
-          this.createGreenLight(cx - pixelShift, cy - pixelShift, true),
+          this.createGreenLight(cx + pixelShift, cy - pixelShift, true),
           this.createYellowLight(cx - pixelShift, cy + pixelShift, true)
         ];
       case FUNCTION.Hp0Sh1:
         return [
-          this.createRedLight(cx - pixelShift, cy + pixelShift, true),
-          this.createRedLight(cx + pixelShift, cy + pixelShift),
-          this.createWhiteLight(cx - pixelShift, cy - pixelShift, true)
+          this.createRedLight(cx - pixelShift, cy - pixelShift, true),
+          this.createRedLight(cx - pixelShift, cy + pixelShift),
+          this.createWhiteLight(cx + pixelShift, cy - pixelShift, true)
         ];
       default:
         throw Error(`invalid signal function ${event?.signalFunction} of signal: ${event?.signalId}`);

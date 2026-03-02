@@ -83,10 +83,17 @@ export class MoveAction {
       && (this.pendingX != null || this.pendingY != null)) {
 
       console.log("drop trackpart", this.trackPartToMove);
+
+      let newX = Math.floor(this.pendingX! / AbstractTrackComponentBuilder.TILE);
+      let newY = Math.floor(this.pendingY! / AbstractTrackComponentBuilder.TILE);
+
+      this.trackPartToMove!.trackPart.gridPosition!.x = newX;
+      this.trackPartToMove!.trackPart.gridPosition!.y = newY;
+
       this._unsavedMoveActions.set(this.trackPartToMove!.trackPart.id!,
         {
-          x: Math.floor(this.pendingX! / AbstractTrackComponentBuilder.TILE),
-          y: Math.floor(this.pendingY! / AbstractTrackComponentBuilder.TILE)
+          x: newX,
+          y: newY
         }
       );
 

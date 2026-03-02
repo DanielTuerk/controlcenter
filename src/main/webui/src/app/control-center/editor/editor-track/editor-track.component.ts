@@ -7,10 +7,10 @@ import {MatButtonToggle, MatButtonToggleGroup} from "@angular/material/button-to
 import {FormsModule} from "@angular/forms";
 import {TrackService} from "../../../shared/track.service";
 import {MatMiniFabButton} from "@angular/material/button";
-import {Observable} from "rxjs";
 import {EditAction} from "./edit-action";
 import {DeleteAction} from "./delete-action";
 import {MoveAction} from "./move-action";
+import {RotateAction} from "./rotate-action";
 
 @Component({
   selector: 'app-editor-track',
@@ -32,6 +32,7 @@ export class EditorTrackComponent implements OnDestroy {
   private editAction = inject(EditAction);
   private deleteAction = inject(DeleteAction);
   private moveAction = inject(MoveAction);
+  private rotateAction = inject(RotateAction);
 
   @ViewChild('trackViewer') trackViewerEl!: TrackViewerSvgComponent;
 
@@ -44,11 +45,16 @@ export class EditorTrackComponent implements OnDestroy {
   }
 
   protected onTrackPartClicked($event: TrackElement<any>) {
+    if (!this.editType) {
+      return;
+    }
     if (this.moveAction.isActive()) {
       return;
     }
-
     switch (this.editType) {
+      case 'rotate':
+        this.trackViewerEl.repaintTrackPart(this.rotateAction.rotate($event));
+        break;
       case 'move':
         this.moveAction.startMovement($event);
         break;
@@ -89,19 +95,39 @@ export class EditorTrackComponent implements OnDestroy {
   protected save() {
     this.moveAction.stopMovement();
 
+    this.trackService.changeTrack({
+      addActions: [],
+      moveActions: this.moveChanges(),
+      rotateActions: this.rotateChanges(),
+    }).subscribe();
+  }
+
+  private rotateChanges() {
+    let rotateActions: object[] = [];
+    if (this.rotateAction.unsavedRotateChanges.size > 0) {
+      this.rotateAction.unsavedRotateChanges.forEach((value, trackPartId) => {
+        rotateActions.push({trackPartId: trackPartId, value: value});
+      });
+      this.rotateAction.unsavedRotateChanges.clear();
+    }
+    return rotateActions;
+  }
+
+  private moveChanges() {
+    let moveActions: object[] = [];
     if (this.moveAction.unsavedMoveActions.size > 0) {
-      let moveActions: Observable<any>[] = [];
       this.moveAction.unsavedMoveActions.forEach((gridPos, trackPartId) => {
-        moveActions.push(this.trackService.moveTrackPart(trackPartId, gridPos));
+        moveActions.push({trackPartId: trackPartId, gridPosition: gridPos});
       });
       this.moveAction.unsavedMoveActions.clear();
-      moveActions.forEach(x => x.subscribe());
     }
+    return moveActions;
   }
 
   protected revert() {
     this.moveAction.stopMovement();
 
+    this.rotateAction.unsavedRotateChanges.clear();
     this.moveAction.unsavedMoveActions.clear();
 
     this.trackViewerEl.reloadTrack();
@@ -118,6 +144,7 @@ export class EditorTrackComponent implements OnDestroy {
   }
 
   protected pendingChanges() {
-    return this.moveAction.unsavedMoveActions.size > 0;
+    return this.moveAction.unsavedMoveActions.size > 0
+      || this.rotateAction.unsavedRotateChanges.size > 0;
   }
 }

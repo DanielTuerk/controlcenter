@@ -3,7 +3,6 @@ package net.wbz.moba.controlcenter.api.track;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.inject.Inject;
-import jakarta.transaction.Transactional;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
@@ -21,7 +20,6 @@ import net.wbz.moba.controlcenter.service.track.TrackProvider;
 import net.wbz.moba.controlcenter.service.track.TrackViewerService;
 import net.wbz.moba.controlcenter.shared.track.model.AbstractTrackPart;
 import net.wbz.moba.controlcenter.shared.track.model.BlockStraight;
-import net.wbz.moba.controlcenter.shared.track.model.GridPosition;
 import net.wbz.moba.controlcenter.shared.track.model.Signal;
 import net.wbz.moba.controlcenter.shared.track.model.Signal.FUNCTION;
 import net.wbz.moba.controlcenter.shared.track.model.Turnout;
@@ -93,7 +91,6 @@ public class TrackResource {
 
     @PUT
     @Path("/{id}")
-    @Transactional
     public Response update(@PathParam("id") Long id, String body) {
         try {
             final var mapper = new ObjectMapper();
@@ -118,15 +115,10 @@ public class TrackResource {
     }
 
     @PUT
-    @Path("/{id}/move")
-    @Transactional
-    public Response move(@PathParam("id") Long trackPartId, GridPosition newGridPosition) {
-        var $trackPart = trackProvider.getTrackPart(trackPartId);
-        if ($trackPart.isEmpty()) {
-            return Response.status(Status.NOT_FOUND).build();
-        }
+    public Response change(ChangeTrackDto dto) {
         try {
-            trackPartManager.move($trackPart.get(), newGridPosition);
+            trackPartManager.change(dto);
+            trackProvider.markDirty();
             return Response.ok().build();
         } catch (IllegalStateException e) {
             return Response.status(Status.CONFLICT).build();
@@ -135,7 +127,6 @@ public class TrackResource {
 
     @DELETE
     @Path("/{id}")
-    @Transactional
     public Response delete(@PathParam("id") Long id) {
         if (trackPartManager.deleteById(id)) {
             return Response.noContent().build();

@@ -1,7 +1,7 @@
 import {inject, Injectable} from "@angular/core";
 import {SnackBar} from "../control-center/common/snack-bar.component";
 import {HttpClient} from "@angular/common/http";
-import {AbstractTrackPart, FUNCTION, GridPosition, TrackBlock, Train} from "../../shared/openapi-gen";
+import {AbstractTrackPart, ChangeTrackDto, FUNCTION, TrackBlock, Train} from "../../shared/openapi-gen";
 import {catchError} from "rxjs/operators";
 import {EMPTY} from "rxjs";
 
@@ -53,7 +53,7 @@ export class TrackService {
   }
 
   loadTrackBlock(trackBlockId: Number) {
-    return this.httpClient.get<Train>('/api/track-block/' + trackBlockId)
+    return this.httpClient.get<Train>(`/api/track-block/${trackBlockId}`)
   }
 
   createTrackBlock(trackBlock: TrackBlock) {
@@ -67,7 +67,7 @@ export class TrackService {
   }
 
   saveTrackBlock(trackBlock: TrackBlock) {
-    return this.httpClient.put('/api/track-block/' + trackBlock.id, trackBlock)
+    return this.httpClient.put(`/api/track-block/${trackBlock.id}`, trackBlock)
     .pipe(
       catchError((err: any) => {
         this.snackBar.showError(`can't save track-block ${trackBlock.id}: ${err.message}`);
@@ -89,11 +89,11 @@ export class TrackService {
   }
 
   loadTrackPart(trackPartId: Number) {
-    return this.httpClient.get<AbstractTrackPart>('/api/track/' + trackPartId)
+    return this.httpClient.get<AbstractTrackPart>(`/api/track/${trackPartId}`)
   }
 
   saveTrackPart(toUpdate: AbstractTrackPart) {
-    return this.httpClient.put('/api/track/' + toUpdate.id, toUpdate)
+    return this.httpClient.put(`/api/track/${toUpdate.id}`, toUpdate)
     .pipe(
       catchError((err: any) => {
         this.snackBar.showError(`can't save track-part ${toUpdate.id}: ${err.message}`);
@@ -103,7 +103,7 @@ export class TrackService {
   }
 
   deleteTrackPart(trackPartId: Number) {
-    return this.httpClient.delete('/api/track/' + trackPartId)
+    return this.httpClient.delete(`/api/track/${trackPartId}`)
     .subscribe({
       next: () => {
         this.snackBar.showSuccess(`track-part ${trackPartId} deleted`);
@@ -114,11 +114,11 @@ export class TrackService {
     });
   }
 
-  moveTrackPart(trackPartId: number, newGridPos: GridPosition) {
-    return this.httpClient.put('/api/track/' + trackPartId + '/move', newGridPos)
+  changeTrack(changeTrackDto: ChangeTrackDto) {
+    return this.httpClient.put(`/api/track`, changeTrackDto)
     .pipe(
       catchError((err: any) => {
-        this.snackBar.showError(`can't move track-part ${trackPartId}: ${err.message}`);
+        this.snackBar.showError(`can't change track ${changeTrackDto}: ${err.message}`);
         return EMPTY
       })
     )

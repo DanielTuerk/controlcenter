@@ -8,6 +8,7 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 /**
  * Created by Daniel on 18.04.2014.
+ * TODO not used atm, remove?
  */
 @Schema(description = "track status update sent via WebSocket")
 @Tag(ref = "websocket")

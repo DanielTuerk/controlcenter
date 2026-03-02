@@ -4,6 +4,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import net.wbz.moba.controlcenter.EventBroadcaster;
@@ -32,7 +33,7 @@ public class TrackProvider {
     /**
      * Cached and transformed entities for track of current {@link Construction}.
      */
-    private final Collection<AbstractTrackPart> cachedEntities = new ArrayList<>();
+    private final Collection<AbstractTrackPart> cachedEntities = Collections.synchronizedList(new ArrayList<>());
     private final TrackPartRepository trackPartRepository;
     private final TrackPartMapper trackPartMapper;
     private final EventBroadcaster eventBroadcaster;
@@ -47,7 +48,10 @@ public class TrackProvider {
         this.trackPartMapper = trackPartMapper;
         this.eventBroadcaster = eventBroadcaster;
 
-        constructionService.addListener(this::loadData);
+        constructionService.addListener(construction -> {
+            loadData(construction);
+            eventBroadcaster.fireEvent(new TrackChangedEvent(false));
+        });
         this.constructionService = constructionService;
     }
 
@@ -65,10 +69,7 @@ public class TrackProvider {
     private void loadData(Construction construction) {
         loadTrackBlocksData();
         loadTrackPartData(construction);
-
-        eventBroadcaster.fireEvent(new TrackChangedEvent(cachedEntities));
     }
-
 
     private void loadTrackBlocksData() {
         // TODO migrate / really needed?
@@ -100,5 +101,6 @@ public class TrackProvider {
 
     public synchronized void markDirty() {
         cachedEntities.clear();
+        eventBroadcaster.fireEvent(new TrackChangedEvent(true));
     }
 }

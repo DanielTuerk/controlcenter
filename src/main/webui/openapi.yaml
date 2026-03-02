@@ -19,6 +19,11 @@ components:
         rotationAngle:
           type: number
           format: double
+    Add:
+      type: object
+      properties:
+        trackPart:
+          $ref: "#/components/schemas/AbstractTrackPart"
     BlockStraight:
       type: object
       description: type for a track part
@@ -124,6 +129,23 @@ components:
           format: int32
         cacheKey:
           type: string
+    ChangeTrackDto:
+      type: object
+      properties:
+        addActions:
+          type: array
+          items:
+            $ref: "#/components/schemas/Add"
+        moveActions:
+          type: array
+          items:
+            $ref: "#/components/schemas/Move"
+        rotateActions:
+          type: array
+          items:
+            $ref: "#/components/schemas/Rotate"
+        empty:
+          type: boolean
     ConfigItem:
       type: object
       properties:
@@ -335,6 +357,14 @@ components:
         - "OFF"
         - MANUAL
         - AUTOMATIC
+    Move:
+      type: object
+      properties:
+        trackPartId:
+          type: integer
+          format: int64
+        gridPosition:
+          $ref: "#/components/schemas/GridPosition"
     PRESENTATION:
       type: string
       enum:
@@ -384,6 +414,14 @@ components:
         state:
           $ref: "#/components/schemas/STATE2"
         filePath:
+          type: string
+    Rotate:
+      type: object
+      properties:
+        trackPartId:
+          type: integer
+          format: int64
+        value:
           type: string
     Route:
       type: object
@@ -718,14 +756,10 @@ components:
           format: int64
     TrackChangedEvent:
       type: object
-      required:
-        - trackParts
       description: Track update sent via WebSocket
       properties:
-        trackParts:
-          type: array
-          items:
-            $ref: "#/components/schemas/AbstractTrackPart"
+        dirty:
+          type: boolean
     TrackPartBlockEvent:
       type: object
       description: track status update sent via WebSocket
@@ -1544,6 +1578,21 @@ paths:
                 items:
                   $ref: "#/components/schemas/AbstractTrackPart"
       summary: List All
+    put:
+      tags:
+        - track
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ChangeTrackDto"
+        required: true
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+      summary: Change
   /api/track-block:
     get:
       tags:
@@ -1673,29 +1722,6 @@ paths:
         "200":
           description: OK
       summary: Delete
-  /api/track/{id}/move:
-    put:
-      tags:
-        - track
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/GridPosition"
-        required: true
-      responses:
-        "200":
-          description: OK
-        "400":
-          description: Bad Request
-      summary: Move
   /api/track/{id}/switch-signal:
     post:
       tags:

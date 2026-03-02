@@ -7,23 +7,30 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import java.util.Objects;
 import net.wbz.moba.controlcenter.EventBroadcaster;
+import net.wbz.moba.controlcenter.api.track.ChangeTrackDto;
 import net.wbz.moba.controlcenter.persist.entity.track.AbstractTrackPartEntity;
 import net.wbz.moba.controlcenter.persist.entity.track.BlockStraightEntity;
 import net.wbz.moba.controlcenter.persist.entity.track.BusDataConfigurationEntity;
+import net.wbz.moba.controlcenter.persist.entity.track.CurveEntity;
 import net.wbz.moba.controlcenter.persist.entity.track.GridPositionEntity;
 import net.wbz.moba.controlcenter.persist.entity.track.HasToggleFunctionEntity;
 import net.wbz.moba.controlcenter.persist.entity.track.SignalEntity;
+import net.wbz.moba.controlcenter.persist.entity.track.StraightEntity;
 import net.wbz.moba.controlcenter.persist.entity.track.TrackBlockEntity;
+import net.wbz.moba.controlcenter.persist.entity.track.TurnoutEntity;
 import net.wbz.moba.controlcenter.persist.repository.track.GridPositionRepository;
 import net.wbz.moba.controlcenter.persist.repository.track.TrackPartRepository;
 import net.wbz.moba.controlcenter.shared.track.model.AbstractTrackPart;
 import net.wbz.moba.controlcenter.shared.track.model.BlockStraight;
 import net.wbz.moba.controlcenter.shared.track.model.BusDataConfiguration;
+import net.wbz.moba.controlcenter.shared.track.model.Curve;
 import net.wbz.moba.controlcenter.shared.track.model.GridPosition;
 import net.wbz.moba.controlcenter.shared.track.model.HasToggleFunction;
 import net.wbz.moba.controlcenter.shared.track.model.Signal;
+import net.wbz.moba.controlcenter.shared.track.model.Straight;
 import net.wbz.moba.controlcenter.shared.track.model.TrackBlock;
 import net.wbz.moba.controlcenter.shared.track.model.TrackPartDataChangedEvent;
+import net.wbz.moba.controlcenter.shared.track.model.Turnout;
 
 /**
  * @author Daniel Tuerk
@@ -63,6 +70,34 @@ public class TrackPartManager {
             default:
                 throw new IllegalStateException("Unexpected value: " + updated);
         }
+    }
+
+    private void rotate(AbstractTrackPartEntity trackPartEntity, String value) {
+        switch (trackPartEntity) {
+            case StraightEntity straightEntity:
+                straightEntity.direction = Straight.DIRECTION.valueOf(value);
+                trackPartRepository.persist(straightEntity);
+                break;
+            case CurveEntity curveEntity:
+                curveEntity.direction = Curve.DIRECTION.valueOf(value);
+                trackPartRepository.persist(curveEntity);
+                break;
+            case TurnoutEntity turnoutEntity:
+                turnoutEntity.currentPresentation = Turnout.PRESENTATION.valueOf(value);
+                trackPartRepository.persist(turnoutEntity);
+            default:
+                throw new IllegalStateException("Unexpected value: " + trackPartEntity);
+        }
+    }
+
+    @Transactional
+    public void change(ChangeTrackDto dto) {
+        if (dto.isEmpty()) {
+            return;
+        }
+        // TODO add actions
+        dto.moveActions().forEach(action -> move(fetchEntityById(action.trackPartId()), action.gridPosition()));
+        dto.rotateActions().forEach(action -> rotate(fetchEntityById(action.trackPartId()), action.value()));
     }
 
     @Transactional
@@ -138,11 +173,8 @@ public class TrackPartManager {
         eventBroadcaster.fireEvent(new TrackPartDataChangedEvent(entity.id));
     }
 
-    @Transactional
-    public void move(AbstractTrackPart abstractTrackPart, GridPosition newGridPosition) {
+    private void move(AbstractTrackPartEntity trackPartEntity, GridPosition newGridPosition) {
         var existingGridPosEntity = gridPositionRepository.findByGridPosition(newGridPosition);
-        var trackPartEntity = trackPartRepository.findByIdOptional(abstractTrackPart.getId())
-            .orElseThrow(() -> new IllegalStateException("no track part with id " + abstractTrackPart.getId()));
 
         if (existingGridPosEntity == null) {
             // non-existing grid position can be applied
@@ -151,14 +183,14 @@ public class TrackPartManager {
             gridPosition.y = newGridPosition.getY();
             trackPartEntity.gridPosition = gridPosition;
 
-            persistTrackPart(trackPartEntity);
+            trackPartRepository.persist(trackPartEntity);
         } else {
             var byGridPositionId = trackPartRepository.findByGridPositionId(
                 existingGridPosEntity.id);
             if (byGridPositionId.isEmpty()) {
                 trackPartEntity.gridPosition = existingGridPosEntity;
 
-                persistTrackPart(trackPartEntity);
+                trackPartRepository.persist(trackPartEntity);
             } else {
                 if (!Objects.equals(byGridPositionId.get().id, existingGridPosEntity.id)) {
                     // ignore non-changed grid pos or throw error if assigned to other existing track part
@@ -170,4 +202,8 @@ public class TrackPartManager {
         }
     }
 
+    private AbstractTrackPartEntity fetchEntityById(Long trackPartId) {
+        return trackPartRepository.findByIdOptional(trackPartId)
+            .orElseThrow(() -> new IllegalStateException("no track part with id " + trackPartId));
+    }
 }

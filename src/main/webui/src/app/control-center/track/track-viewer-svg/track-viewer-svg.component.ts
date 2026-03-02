@@ -164,5 +164,9 @@ export class TrackViewerSvgComponent implements OnInit {
     return `M ${size} 0 L ${size} ${size} L 0 ${size}`;
   }
 
+  repaintTrackPart($event: TrackElement<any>) {
+    this.removeTrackPart($event);
+    this.addTrackPart(this.buildTrackPartElement($event.trackPart));
+  }
 }
 

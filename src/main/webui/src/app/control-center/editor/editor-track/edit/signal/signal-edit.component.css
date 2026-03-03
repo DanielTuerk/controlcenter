@@ -1,3 +1,6 @@
+.signalSvgContainer {
+  padding-top: 10px;
+}
 
 .small-field {
   width: calc(10ch + 18px);

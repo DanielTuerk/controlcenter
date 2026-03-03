@@ -37,29 +37,4 @@ public class SignalEntity extends StraightEntity {
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     public BusDataConfigurationEntity signalConfigWhite;
 
-    /**
-     * Block to detect an entering train which has to be stopped for occupied monitoring blocks.
-     */
-    @ManyToOne(fetch = FetchType.EAGER)
-    public TrackBlockEntity enteringBlock;
-
-    /**
-     * Block to start breaking. If it's {@code null} than the breaking is used in the stop block.
-     */
-    @ManyToOne(fetch = FetchType.EAGER)
-    public TrackBlockEntity breakingBlock;
-
-    /**
-     * Block to immediately stop the train.
-     */
-    @ManyToOne(fetch = FetchType.EAGER)
-    public TrackBlockEntity stopBlock;
-
-    /**
-     * Blocks which should be monitored to be free.
-     */
-    @ManyToOne(fetch = FetchType.EAGER)
-    public TrackBlockEntity monitoringBlock;
-
-
 }

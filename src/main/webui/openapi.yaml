@@ -615,14 +615,6 @@ components:
           $ref: "#/components/schemas/BusDataConfiguration"
         signalConfigWhite:
           $ref: "#/components/schemas/BusDataConfiguration"
-        enteringBlock:
-          $ref: "#/components/schemas/TrackBlock"
-        breakingBlock:
-          $ref: "#/components/schemas/TrackBlock"
-        stopBlock:
-          $ref: "#/components/schemas/TrackBlock"
-        monitoringBlock:
-          $ref: "#/components/schemas/TrackBlock"
         signalConfigurations:
           type: array
           items:

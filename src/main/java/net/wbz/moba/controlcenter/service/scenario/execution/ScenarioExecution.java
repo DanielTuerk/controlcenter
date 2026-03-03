@@ -491,21 +491,19 @@ abstract class ScenarioExecution implements Callable<Void> {
         LOG.infof("switch signal to HP1 %s", signal);
         trackViewerService.switchSignal(signal, FUNCTION.HP1);
 
-        if (signal.getMonitoringBlock() == null || signal.getMonitoringBlock().getBlockFunction() == null) {
-            // signal have no monitoring block and will never get the HP0 after drive
-            new Thread(() -> {
-                try {
-                    /*
-                     * Set to HP0 after delay to simulate a occupied monitoring block to switch the signal after the
-                     * train passed.
-                     */
-                    Thread.sleep(HP0_AFTER_TRAIN_PASS_DELAY_IN_MILLIS);
-                    trackViewerService.switchSignal(signal, FUNCTION.HP0);
-                } catch (InterruptedException e) {
-                    LOG.error("error during delayed HP0 switch", e);
-                }
-            }).start();
-        }
+        // signal have no monitoring block and will never get the HP0 after drive
+        new Thread(() -> {
+            try {
+                /*
+                 * Set to HP0 after delay to simulate a occupied monitoring block to switch the signal after the
+                 * train passed.
+                 */
+                Thread.sleep(HP0_AFTER_TRAIN_PASS_DELAY_IN_MILLIS);
+                trackViewerService.switchSignal(signal, FUNCTION.HP0);
+            } catch (InterruptedException e) {
+                LOG.error("error during delayed HP0 switch", e);
+            }
+        }).start();
     }
 
     private void startTrain(Train train, Integer startDrivingLevel) throws InterruptedException {

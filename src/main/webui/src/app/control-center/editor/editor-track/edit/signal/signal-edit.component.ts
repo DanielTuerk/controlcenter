@@ -2,7 +2,6 @@ import {Component, inject, OnInit, signal} from '@angular/core';
 import {Signal, TrackBlock, TYPE3} from "../../../../../../shared/openapi-gen";
 import {EditComponent} from "../base-edit-track-part.component";
 import {MatCard, MatCardContent, MatCardHeader, MatCardTitle} from "@angular/material/card";
-import {TrackBlockSelectComponent} from "../../../../common/track-block-select/track-block-select.component";
 import {TrackService} from "../../../../../shared/track.service";
 import {FormControl, FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {MatButtonToggle, MatButtonToggleGroup} from "@angular/material/button-toggle";
@@ -17,7 +16,6 @@ import {MatCheckbox} from "@angular/material/checkbox";
     MatCardHeader,
     MatCardTitle,
     MatCardContent,
-    TrackBlockSelectComponent,
     MatButtonToggle,
     MatButtonToggleGroup,
     FormsModule,
@@ -63,10 +61,6 @@ export class SignalEditComponent implements EditComponent<Signal>, OnInit {
   protected whiteBitFormField: FormControl<number | null> = new FormControl(null);
   protected whiteBitStateFormField: FormControl<boolean | null> = new FormControl(null);
 
-  protected selectedEnteringBlock: TrackBlock | null = null;
-  protected selectedBreakingBlock: TrackBlock | null = null;
-  protected selectedStopBlock: TrackBlock | null = null;
-  protected selectedMonitoringBlock: TrackBlock | null = null;
   private trackService = inject(TrackService);
   protected trackBlocks = signal<TrackBlock[]>([]);
   private signal: Signal | null = null;
@@ -75,18 +69,7 @@ export class SignalEditComponent implements EditComponent<Signal>, OnInit {
   ngOnInit(): void {
     this.trackService.loadTrackBlocks().subscribe(data => {
       this.trackBlocks.set(data);
-      this.updateSelectedTrackBlocks()
     });
-  }
-
-  private updateSelectedTrackBlocks() {
-    if (!this.signal || this.trackBlocks().length === 0) return;
-
-    const blocks = this.trackBlocks();
-    this.selectedEnteringBlock = blocks.find(b => b.id === this.signal!.enteringBlock?.id) ?? null;
-    this.selectedBreakingBlock = blocks.find(b => b.id === this.signal!.breakingBlock?.id) ?? null;
-    this.selectedStopBlock = blocks.find(b => b.id === this.signal!.stopBlock?.id) ?? null;
-    this.selectedMonitoringBlock = blocks.find(b => b.id === this.signal!.monitoringBlock?.id) ?? null;
   }
 
   formFields(): Object {
@@ -132,8 +115,6 @@ export class SignalEditComponent implements EditComponent<Signal>, OnInit {
     this.whiteAddressFormField.setValue(this.signal.signalConfigWhite?.address ?? null);
     this.whiteBitFormField.setValue(this.signal.signalConfigWhite?.bit ?? null);
     this.whiteBitStateFormField.setValue(this.signal.signalConfigWhite?.bitState ?? null);
-
-    this.updateSelectedTrackBlocks();
   }
 
   applyChanges(signal: Signal): Signal {
@@ -180,11 +161,6 @@ export class SignalEditComponent implements EditComponent<Signal>, OnInit {
     signal.signalConfigWhite.address = this.whiteAddressFormField.getRawValue() ?? undefined;
     signal.signalConfigWhite.bit = this.whiteBitFormField.getRawValue() ?? undefined;
     signal.signalConfigWhite.bitState = this.whiteBitStateFormField.getRawValue() ?? undefined;
-
-    signal.enteringBlock = this.selectedEnteringBlock ?? undefined;
-    signal.breakingBlock = this.selectedBreakingBlock ?? undefined;
-    signal.monitoringBlock = this.selectedMonitoringBlock ?? undefined;
-    signal.stopBlock = this.selectedStopBlock ?? undefined;
 
     return signal;
   }

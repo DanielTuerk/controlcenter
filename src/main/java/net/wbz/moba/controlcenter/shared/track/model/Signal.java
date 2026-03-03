@@ -23,10 +23,6 @@ public class Signal extends Straight {
     private BusDataConfiguration signalConfigYellow1;
     private BusDataConfiguration signalConfigYellow2;
     private BusDataConfiguration signalConfigWhite;
-    private TrackBlock enteringBlock;
-    private TrackBlock breakingBlock;
-    private TrackBlock stopBlock;
-    private TrackBlock monitoringBlock;
 
     public TYPE getType() {
         return type;
@@ -149,38 +145,6 @@ public class Signal extends Straight {
         this.signalConfigWhite = signalConfigWhite;
     }
 
-    public TrackBlock getBreakingBlock() {
-        return breakingBlock;
-    }
-
-    public void setBreakingBlock(TrackBlock breakingBlock) {
-        this.breakingBlock = breakingBlock;
-    }
-
-    public TrackBlock getStopBlock() {
-        return stopBlock;
-    }
-
-    public void setStopBlock(TrackBlock stopBlock) {
-        this.stopBlock = stopBlock;
-    }
-
-    public TrackBlock getMonitoringBlock() {
-        return monitoringBlock;
-    }
-
-    public void setMonitoringBlock(TrackBlock monitoringBlock) {
-        this.monitoringBlock = monitoringBlock;
-    }
-
-    public TrackBlock getEnteringBlock() {
-        return enteringBlock;
-    }
-
-    public void setEnteringBlock(TrackBlock enteringBlock) {
-        this.enteringBlock = enteringBlock;
-    }
-
     public Map<LIGHT, BusDataConfiguration> getSignalLightsConfigurations(TYPE type) {
         Map<LIGHT, BusDataConfiguration> lightConfigs = Maps.newHashMap();
         for (LIGHT light : type.getLights()) {
@@ -218,13 +182,7 @@ public class Signal extends Straight {
 
     @Override
     public String toString() {
-        return "Signal{" + "type=" + type
-            + ", id=" + getId()
-            + ", enteringBlock=" + enteringBlock
-            + ", breakingBlock=" + breakingBlock
-            + ", stopBlock=" + stopBlock
-            + ", monitoringBlock=" + monitoringBlock
-            + '}';
+        return "Signal{type=%s, id=%d}".formatted(type, getId());
     }
 
     /**

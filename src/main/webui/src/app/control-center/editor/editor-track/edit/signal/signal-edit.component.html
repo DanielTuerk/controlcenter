@@ -158,32 +158,3 @@
     </div>
   </mat-card-content>
 </mat-card>
-<mat-card appearance="outlined">
-  <mat-card-header>
-    <mat-card-title>Blocks</mat-card-title>
-  </mat-card-header>
-  <mat-card-content>
-    <br/>
-    <div>
-      <label>Entering Block: </label>
-      <app-track-block-select [trackBlocks]="trackBlocks()"
-                              [(selected)]="selectedEnteringBlock"></app-track-block-select>
-    </div>
-    <div>
-      <label>Breaking Block: </label>
-      <app-track-block-select [trackBlocks]="trackBlocks()"
-                              [(selected)]="selectedBreakingBlock"></app-track-block-select>
-    </div>
-    <div>
-      <label>Stop Block: </label>
-      <app-track-block-select [trackBlocks]="trackBlocks()" [(selected)]="selectedStopBlock"></app-track-block-select>
-    </div>
-    <div>
-      <label>Monitoring Block: </label>
-      <app-track-block-select [trackBlocks]="trackBlocks()"
-                              [(selected)]="selectedMonitoringBlock"></app-track-block-select>
-    </div>
-  </mat-card-content>
-</mat-card>
-
-

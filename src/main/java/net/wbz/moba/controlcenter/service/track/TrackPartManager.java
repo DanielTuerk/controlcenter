@@ -119,11 +119,6 @@ public class TrackPartManager {
             signalEntity.signalConfigYellow1 = getMergedBusDataConfig(signal.getSignalConfigYellow1());
             signalEntity.signalConfigYellow2 = getMergedBusDataConfig(signal.getSignalConfigYellow2());
 
-            signalEntity.breakingBlock = getMergedTrackBlockEntity(signal.getBreakingBlock());
-            signalEntity.enteringBlock = getMergedTrackBlockEntity(signal.getEnteringBlock());
-            signalEntity.monitoringBlock = getMergedTrackBlockEntity(signal.getMonitoringBlock());
-            signalEntity.stopBlock = getMergedTrackBlockEntity(signal.getStopBlock());
-
             persistTrackPart(signalEntity);
         } else {
             throw new IllegalStateException(

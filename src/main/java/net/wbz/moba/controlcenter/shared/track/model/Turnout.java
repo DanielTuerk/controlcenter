@@ -1,7 +1,6 @@
 package net.wbz.moba.controlcenter.shared.track.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.google.common.collect.Lists;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -13,8 +12,6 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
  */
 @Schema(description = "type for a track part")
 @Tag(ref = "track")
-
-@JsonTypeName("Signal")
 public class Turnout extends AbstractTrackPart implements HasToggleFunction {
 
     private Turnout.DIRECTION currentDirection;

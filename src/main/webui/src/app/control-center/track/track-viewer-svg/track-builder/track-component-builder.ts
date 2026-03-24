@@ -3,32 +3,46 @@ import {CurveBuilder} from "./component/curve";
 import {StraightBuilder} from "./component/straight";
 import {BlockStraightBuilder} from "./component/block-straight";
 import {SignalBuilder} from "./component/signal";
-import {AbstractTrackPart, TrackPartStateEvent} from "../../../../../shared/openapi-gen";
-import {inject, Injectable} from "@angular/core";
+import {
+  AbstractTrackPart,
+  BlockStraight,
+  Curve,
+  Signal,
+  Straight,
+  TrackPartStateEvent,
+  Turnout
+} from "../../../../../shared/openapi-gen";
+import {Injectable} from "@angular/core";
 
 @Injectable({providedIn: 'root'})
 export class TrackComponentBuilder {
-  turnoutBuilder = inject(TurnoutBuilder);
-  signalBuilder = inject(SignalBuilder);
-  straightBuilder = inject(StraightBuilder);
-  blockStraightBuilder = inject(BlockStraightBuilder);
-  curveBuilder = inject(CurveBuilder);
+  turnoutBuilder = new TurnoutBuilder();
+  signalBuilder = new SignalBuilder();
+  straightBuilder = new StraightBuilder();
+  blockStraightBuilder = new BlockStraightBuilder();
+  curveBuilder = new CurveBuilder();
 
   build(trackPart: AbstractTrackPart, event: TrackPartStateEvent | null = null) {
-    switch (trackPart.trackPartType) {
-      case 'Turnout':
-        return this.turnoutBuilder.build(trackPart,event);
-      case 'Signal':
-        return this.signalBuilder.build(trackPart, event);
-      case 'Straight':
-        return this.straightBuilder.build(trackPart,event);
-      case 'BlockStraight':
-        return this.blockStraightBuilder.build(trackPart,event);
-      case 'Curve':
-        return this.curveBuilder.build(trackPart,event);
-      default:
-        console.error("undefined trackPartType", trackPart);
-        throw new Error("unknown trackPartType: " + trackPart.trackPartType);
+    if ("trackPartType" in trackPart) {
+      switch (trackPart.trackPartType) {
+        case 'Turnout':
+          return this.turnoutBuilder.build(trackPart as Turnout, event);
+        case 'Signal':
+          return this.signalBuilder.build(trackPart as Signal, event);
+        case 'Straight':
+          return this.straightBuilder.build(trackPart as Straight, event);
+        case 'BlockStraight':
+          return this.blockStraightBuilder.build(trackPart as BlockStraight, event);
+        case 'Curve':
+          return this.curveBuilder.build(trackPart as Curve, event);
+        case 'Uncoupler':
+          // TODO Uncoupler
+          throw new Error("uncoupler not implemented!");
+        default:
+          console.error("undefined trackPartType", trackPart);
+          throw new Error("unknown trackPartType: " + trackPart.trackPartType);
+      }
     }
+    throw new Error("no trackPartType:" + trackPart);
   }
 }

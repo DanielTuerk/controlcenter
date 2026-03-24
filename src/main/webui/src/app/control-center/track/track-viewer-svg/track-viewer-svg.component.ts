@@ -168,5 +168,11 @@ export class TrackViewerSvgComponent implements OnInit {
     this.removeTrackPart($event);
     this.addTrackPart(this.buildTrackPartElement($event.trackPart));
   }
+
+  addNewTrackPart($event: TrackElement<any>) {
+    let element = this.buildTrackPartElement($event.trackPart);
+    this.addTrackPart(element);
+    return element;
+  }
 }
 

@@ -6,6 +6,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
@@ -30,6 +31,7 @@ public abstract class AbstractTrackPartEntity extends AbstractEntity {
      * The corresponding construction.
      */
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "CONSTRUCTION_ID", nullable = false)
     public ConstructionEntity construction;
 
     /**

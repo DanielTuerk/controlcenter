@@ -16,19 +16,21 @@ export class EditAction {
 
   editTrackPart($event: TrackElement<any>) {
     this.trackService.loadTrackPart($event.trackPart.id!).subscribe(trackPart => {
-      switch (trackPart.trackPartType) {
-        case 'Signal':
-          this.openEditDialog(trackPart as Signal, SignalEditComponent);
-          break;
-        case 'BlockStraight':
-          this.openEditDialog(trackPart as BlockStraight, TrackBlockEditComponent);
-          break;
-        case 'Turnout':
-          this.openEditDialog(trackPart as Turnout, ToggleFunctionEditComponent);
-          break;
-        case 'Uncoupler':
-          this.openEditDialog(trackPart as Uncoupler, ToggleFunctionEditComponent);
-          break;
+      if ("trackPartType" in trackPart) {
+        switch (trackPart.trackPartType) {
+          case 'Signal':
+            this.openEditDialog(trackPart as Signal, SignalEditComponent);
+            break;
+          case 'BlockStraight':
+            this.openEditDialog(trackPart as BlockStraight, TrackBlockEditComponent);
+            break;
+          case 'Turnout':
+            this.openEditDialog(trackPart as Turnout, ToggleFunctionEditComponent);
+            break;
+          case 'Uncoupler':
+            this.openEditDialog(trackPart as Uncoupler, ToggleFunctionEditComponent);
+            break;
+        }
       }
     });
   }

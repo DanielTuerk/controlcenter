@@ -130,13 +130,13 @@ export class RouteEditComponent implements OnInit {
           this.lastStart.svgElement.setAttribute('fill', this.originalBlockStraightFillColor!);
         }
         trackEvent.svgElement.setAttribute('fill', this.COLOR_START);
-        this.$route().start = trackEvent.trackPart;
+        this.$route().start = <BlockStraight>trackEvent.trackPart;
         this.lastStart = trackEvent;
 
         this.buildRouteOnTrack();
         break;
       case 'end:BlockStraight':
-        this.selectEndTrackBlock(trackEvent.trackPart).subscribe(result => {
+        this.selectEndTrackBlock(trackEvent.trackPart as BlockStraight).subscribe(result => {
           if (result) {
             this.originalBlockStraightFillColor = trackEvent.svgElement.getAttribute('fill');
             if (this.lastEnd) {

@@ -1,7 +1,7 @@
 import {Straight, TrackPartStateEvent} from "../../../../../../shared/openapi-gen";
 import {AbstractTrackComponentBuilder} from "../abstract-track-component-builder";
 
-export class StraightBuilder extends AbstractTrackComponentBuilder {
+export class StraightBuilder<T extends Straight> extends AbstractTrackComponentBuilder<T, TrackPartStateEvent> {
 
   doBuild(trackPart: Straight, baseX: number, baseY: number, event: TrackPartStateEvent | null = null): Element {
     let groupTransform = this.transformByDirection(trackPart.direction, baseX, baseY, AbstractTrackComponentBuilder.BASE_HEIGHT);

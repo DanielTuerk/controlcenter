@@ -4,6 +4,17 @@ components:
   schemas:
     AbstractTrackPart:
       type: object
+      required:
+      - trackPartType
+      oneOf:
+      - $ref: "#/components/schemas/BlockStraight"
+      - $ref: "#/components/schemas/Straight"
+      - $ref: "#/components/schemas/Curve"
+      - $ref: "#/components/schemas/Signal"
+      - $ref: "#/components/schemas/Turnout"
+      - $ref: "#/components/schemas/Uncoupler"
+      discriminator:
+        propertyName: trackPartType
       properties:
         id:
           type: integer
@@ -12,44 +23,26 @@ components:
           type: integer
           deprecated: true
           format: int64
-        trackPartType:
-          type: string
         gridPosition:
           $ref: "#/components/schemas/GridPosition"
+        trackPartType:
+          type: string
         rotationAngle:
           type: number
           format: double
     Add:
       type: object
+      required:
+      - trackPart
       properties:
         trackPart:
           $ref: "#/components/schemas/AbstractTrackPart"
     BlockStraight:
       type: object
       description: type for a track part
+      allOf:
+      - $ref: "#/components/schemas/Straight"
       properties:
-        id:
-          type: integer
-          format: int64
-        internalId:
-          type: integer
-          deprecated: true
-          format: int64
-        trackPartType:
-          type: string
-        gridPosition:
-          $ref: "#/components/schemas/GridPosition"
-        direction:
-          $ref: "#/components/schemas/DIRECTION"
-        lastGridPositions:
-          type: array
-          items:
-            $ref: "#/components/schemas/GridPosition"
-        rotationAngle:
-          type: number
-          format: double
-        vertical:
-          type: boolean
         blockLength:
           type: integer
           format: int32
@@ -182,7 +175,7 @@ components:
     CurrentConstructionChangeEvent:
       type: object
       required:
-        - construction
+      - construction
       description: Train status update sent via WebSocket
       properties:
         cacheKey:
@@ -191,6 +184,8 @@ components:
           $ref: "#/components/schemas/Construction"
     Curve:
       type: object
+      required:
+      - trackPartType
       description: type for a track part
       properties:
         id:
@@ -200,10 +195,10 @@ components:
           type: integer
           deprecated: true
           format: int64
-        trackPartType:
-          type: string
         gridPosition:
           $ref: "#/components/schemas/GridPosition"
+        trackPartType:
+          type: string
         direction:
           $ref: "#/components/schemas/DIRECTION1"
         nextGridPosition:
@@ -216,41 +211,41 @@ components:
     DEVICE_TYPE:
       type: string
       enum:
-        - SERIAL
-        - TEST
+      - SERIAL
+      - TEST
     DIRECTION:
       type: string
       enum:
-        - HORIZONTAL
-        - VERTICAL
+      - HORIZONTAL
+      - VERTICAL
     DIRECTION1:
       type: string
       enum:
-        - BOTTOM_RIGHT
-        - BOTTOM_LEFT
-        - TOP_LEFT
-        - TOP_RIGHT
+      - BOTTOM_RIGHT
+      - BOTTOM_LEFT
+      - TOP_LEFT
+      - TOP_RIGHT
     DIRECTION2:
       type: string
       enum:
-        - RIGHT
-        - LEFT
+      - RIGHT
+      - LEFT
     DRIVING_DIRECTION:
       type: string
       enum:
-        - FORWARD
-        - BACKWARD
+      - FORWARD
+      - BACKWARD
     DRIVING_DIRECTION1:
       type: string
       enum:
-        - FORWARD
-        - BACKWARD
+      - FORWARD
+      - BACKWARD
     DRIVING_LEVEL_ADJUST_TYPE:
       type: string
       enum:
-        - NONE
-        - ENTER
-        - EXIT
+      - NONE
+      - ENTER
+      - EXIT
     DeviceConnectionEvent:
       type: object
       description: bus status update sent via WebSocket
@@ -309,10 +304,10 @@ components:
     FUNCTION:
       type: string
       enum:
-        - HP0
-        - HP1
-        - HP2
-        - HP0_SH1
+      - HP0
+      - HP1
+      - HP2
+      - HP0_SH1
     FeedbackBlockEvent:
       type: object
       description: bus status update sent via WebSocket
@@ -354,11 +349,14 @@ components:
     MODE:
       type: string
       enum:
-        - "OFF"
-        - MANUAL
-        - AUTOMATIC
+      - "OFF"
+      - MANUAL
+      - AUTOMATIC
     Move:
       type: object
+      required:
+      - trackPartId
+      - gridPosition
       properties:
         trackPartId:
           type: integer
@@ -368,10 +366,10 @@ components:
     PRESENTATION:
       type: string
       enum:
-        - LEFT_TO_RIGHT
-        - RIGHT_TO_LEFT
-        - BOTTOM_TO_TOP
-        - TOP_TO_BOTTOM
+      - LEFT_TO_RIGHT
+      - RIGHT_TO_LEFT
+      - BOTTOM_TO_TOP
+      - TOP_TO_BOTTOM
     PlayerEvent:
       type: object
       description: bus status update sent via WebSocket
@@ -383,20 +381,20 @@ components:
     ROUTE_RUN_STATE:
       type: string
       enum:
-        - PREPARED
-        - RESERVED
-        - RUNNING
-        - FINISHED
-        - FAILED
+      - PREPARED
+      - RESERVED
+      - RUNNING
+      - FINISHED
+      - FAILED
     RUN_STATE:
       type: string
       enum:
-        - RUNNING
-        - IDLE
-        - PAUSED
-        - STOPPED
-        - SUCCESS
-        - ERROR
+      - RUNNING
+      - IDLE
+      - PAUSED
+      - STOPPED
+      - SUCCESS
+      - ERROR
     RailVoltageEvent:
       type: object
       description: railvoltage status update sent via WebSocket
@@ -417,6 +415,8 @@ components:
           type: string
     Rotate:
       type: object
+      required:
+      - trackPartId
       properties:
         trackPartId:
           type: integer
@@ -498,35 +498,35 @@ components:
     STATE:
       type: string
       enum:
-        - ENTER
-        - EXIT
+      - ENTER
+      - EXIT
     STATE1:
       type: string
       enum:
-        - START
-        - STOP
+      - START
+      - STOP
     STATE2:
       type: string
       enum:
-        - START
-        - STOP
+      - START
+      - STOP
     STATE3:
       type: string
       enum:
-        - UNKNOWN
-        - FREE
-        - USED
+      - UNKNOWN
+      - FREE
+      - USED
     SYSTEM_FORMAT:
       type: string
       enum:
-        - UNKNOWN
-        - ONLY_SX1
-        - SX1_SX2
-        - SX1_SX2_DCC
-        - ONLY_DCC
-        - SX1_SX2_MM
-        - ONLY_MM
-        - SX1_SX2_DCC_MM
+      - UNKNOWN
+      - ONLY_SX1
+      - SX1_SX2
+      - SX1_SX2_DCC
+      - ONLY_DCC
+      - SX1_SX2_MM
+      - ONLY_MM
+      - SX1_SX2_DCC_MM
     Scenario:
       type: object
       properties:
@@ -585,20 +585,9 @@ components:
     Signal:
       type: object
       description: type for a track part
+      allOf:
+      - $ref: "#/components/schemas/Straight"
       properties:
-        id:
-          type: integer
-          format: int64
-        internalId:
-          type: integer
-          deprecated: true
-          format: int64
-        trackPartType:
-          type: string
-        gridPosition:
-          $ref: "#/components/schemas/GridPosition"
-        direction:
-          $ref: "#/components/schemas/DIRECTION"
         type:
           $ref: "#/components/schemas/TYPE3"
         signalConfigRed1:
@@ -648,6 +637,8 @@ components:
           format: int64
     Straight:
       type: object
+      required:
+      - trackPartType
       description: type for a track part
       properties:
         id:
@@ -657,10 +648,10 @@ components:
           type: integer
           deprecated: true
           format: int64
-        trackPartType:
-          type: string
         gridPosition:
           $ref: "#/components/schemas/GridPosition"
+        trackPartType:
+          type: string
         direction:
           $ref: "#/components/schemas/DIRECTION"
     SystemFormatEvent:
@@ -674,26 +665,26 @@ components:
     TYPE:
       type: string
       enum:
-        - CONNECTED
-        - DISCONNECTED
+      - CONNECTED
+      - DISCONNECTED
     TYPE1:
       type: string
       enum:
-        - CREATE
-        - REMOVE
-        - MODIFY
+      - CREATE
+      - REMOVE
+      - MODIFY
     TYPE2:
       type: string
       enum:
-        - ARRIVAL
-        - DEPARTURE
+      - ARRIVAL
+      - DEPARTURE
     TYPE3:
       type: string
       enum:
-        - BLOCK
-        - ENTER
-        - EXIT
-        - BEFORE
+      - BLOCK
+      - ENTER
+      - EXIT
+      - BEFORE
     Track:
       type: object
       properties:
@@ -910,6 +901,8 @@ components:
           type: boolean
     Turnout:
       type: object
+      required:
+      - trackPartType
       description: type for a track part
       properties:
         id:
@@ -919,10 +912,10 @@ components:
           type: integer
           deprecated: true
           format: int64
-        trackPartType:
-          type: string
         gridPosition:
           $ref: "#/components/schemas/GridPosition"
+        trackPartType:
+          type: string
         currentDirection:
           $ref: "#/components/schemas/DIRECTION2"
         currentPresentation:
@@ -938,20 +931,9 @@ components:
     Uncoupler:
       type: object
       description: type for a track part
+      allOf:
+      - $ref: "#/components/schemas/Straight"
       properties:
-        id:
-          type: integer
-          format: int64
-        internalId:
-          type: integer
-          deprecated: true
-          format: int64
-        trackPartType:
-          type: string
-        gridPosition:
-          $ref: "#/components/schemas/GridPosition"
-        direction:
-          $ref: "#/components/schemas/DIRECTION"
         toggleFunction:
           $ref: "#/components/schemas/BusDataConfiguration"
         eventConfiguration:
@@ -962,7 +944,7 @@ components:
         clientId:
           type: string
 tags:
-  - name: Websocket DTOs
+- name: Websocket DTOs
 paths:
   /api/bus/bus-bit:
     post:
@@ -979,7 +961,7 @@ paths:
           description: Bad Request
       summary: Bus Data
       tags:
-        - Bus Resource
+      - Bus Resource
   /api/bus/bus-data:
     post:
       requestBody:
@@ -995,7 +977,7 @@ paths:
           description: Bad Request
       summary: Bus Data
       tags:
-        - Bus Resource
+      - Bus Resource
   /api/bus/railvoltage:
     post:
       responses:
@@ -1003,7 +985,7 @@ paths:
           description: OK
       summary: Update Rail Voltage
       tags:
-        - Bus Resource
+      - Bus Resource
     get:
       responses:
         "200":
@@ -1014,7 +996,7 @@ paths:
                 type: boolean
       summary: Fetch Railvoltage State
       tags:
-        - Bus Resource
+      - Bus Resource
   /api/bus/start-tracking-bus:
     post:
       requestBody:
@@ -1030,7 +1012,7 @@ paths:
           description: Bad Request
       summary: Start Tracking Bus
       tags:
-        - Bus Resource
+      - Bus Resource
   /api/bus/stop-tracking-bus:
     post:
       requestBody:
@@ -1046,7 +1028,7 @@ paths:
           description: Bad Request
       summary: Stop Tracking Bus
       tags:
-        - Bus Resource
+      - Bus Resource
   /api/bus/system-format:
     post:
       responses:
@@ -1054,7 +1036,7 @@ paths:
           description: OK
       summary: Switch System Format
       tags:
-        - Bus Resource
+      - Bus Resource
     get:
       responses:
         "200":
@@ -1065,7 +1047,7 @@ paths:
                 $ref: "#/components/schemas/SYSTEM_FORMAT"
       summary: Fetch System Format State
       tags:
-        - Bus Resource
+      - Bus Resource
   /api/config:
     get:
       responses:
@@ -1080,15 +1062,15 @@ paths:
                   $ref: "#/components/schemas/ConfigItem"
       summary: List All
       tags:
-        - Config Resource
+      - Config Resource
   /api/config/{key}:
     put:
       parameters:
-        - name: key
-          in: path
-          required: true
-          schema:
-            type: string
+      - name: key
+        in: path
+        required: true
+        schema:
+          type: string
       requestBody:
         content:
           text/plain:
@@ -1100,20 +1082,20 @@ paths:
           description: OK
       summary: Update
       tags:
-        - Config Resource
+      - Config Resource
     get:
       parameters:
-        - name: key
-          in: path
-          required: true
-          schema:
-            type: string
+      - name: key
+        in: path
+        required: true
+        schema:
+          type: string
       responses:
         "200":
           description: OK
       summary: Load Value
       tags:
-        - Config Resource
+      - Config Resource
   /api/constructions:
     get:
       responses:
@@ -1127,7 +1109,7 @@ paths:
                   $ref: "#/components/schemas/Construction"
       summary: List All
       tags:
-        - Construction Resource
+      - Construction Resource
     post:
       requestBody:
         content:
@@ -1142,16 +1124,16 @@ paths:
           description: Bad Request
       summary: Create
       tags:
-        - Construction Resource
+      - Construction Resource
   /api/constructions/{id}:
     put:
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
       requestBody:
         content:
           application/json:
@@ -1165,35 +1147,35 @@ paths:
           description: Bad Request
       summary: Update
       tags:
-        - Construction Resource
+      - Construction Resource
     get:
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
       responses:
         "200":
           description: OK
       summary: Get By Id
       tags:
-        - Construction Resource
+      - Construction Resource
     delete:
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
       responses:
         "200":
           description: OK
       summary: Delete
       tags:
-        - Construction Resource
+      - Construction Resource
   /api/current-construction:
     post:
       requestBody:
@@ -1208,14 +1190,14 @@ paths:
           description: OK
       summary: Set Current
       tags:
-        - Current Construction Resource
+      - Current Construction Resource
     get:
       responses:
         "200":
           description: OK
       summary: Get Current
       tags:
-        - Current Construction Resource
+      - Current Construction Resource
   /api/devices:
     get:
       responses:
@@ -1229,7 +1211,7 @@ paths:
                   $ref: "#/components/schemas/DeviceInfo"
       summary: List All
       tags:
-        - Device Resource
+      - Device Resource
     post:
       requestBody:
         content:
@@ -1244,7 +1226,7 @@ paths:
           description: Bad Request
       summary: Create
       tags:
-        - Device Resource
+      - Device Resource
   /api/devices/disconnect:
     post:
       responses:
@@ -1252,16 +1234,16 @@ paths:
           description: OK
       summary: Create
       tags:
-        - Device Resource
+      - Device Resource
   /api/devices/{id}:
     put:
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
       requestBody:
         content:
           application/json:
@@ -1275,50 +1257,50 @@ paths:
           description: Bad Request
       summary: Update
       tags:
-        - Device Resource
+      - Device Resource
     get:
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
       responses:
         "200":
           description: OK
       summary: Get By Id
       tags:
-        - Device Resource
+      - Device Resource
     delete:
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
       responses:
         "200":
           description: OK
       summary: Delete
       tags:
-        - Device Resource
+      - Device Resource
   /api/devices/{id}/connect:
     post:
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
       responses:
         "200":
           description: OK
       summary: Create
       tags:
-        - Device Resource
+      - Device Resource
   /api/routes:
     get:
       responses:
@@ -1332,7 +1314,7 @@ paths:
                   $ref: "#/components/schemas/Route"
       summary: List All
       tags:
-        - Route Resource
+      - Route Resource
     post:
       requestBody:
         content:
@@ -1347,7 +1329,7 @@ paths:
           description: Bad Request
       summary: Create
       tags:
-        - Route Resource
+      - Route Resource
   /api/routes/build-track:
     post:
       requestBody:
@@ -1363,16 +1345,16 @@ paths:
           description: Bad Request
       summary: Build Track
       tags:
-        - Route Resource
+      - Route Resource
   /api/routes/{id}:
     put:
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
       requestBody:
         content:
           application/json:
@@ -1386,35 +1368,35 @@ paths:
           description: Bad Request
       summary: Update
       tags:
-        - Route Resource
+      - Route Resource
     get:
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
       responses:
         "200":
           description: OK
       summary: Get By Id
       tags:
-        - Route Resource
+      - Route Resource
     delete:
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
       responses:
         "200":
           description: OK
       summary: Delete
       tags:
-        - Route Resource
+      - Route Resource
   /api/scenarios:
     get:
       responses:
@@ -1428,7 +1410,7 @@ paths:
                   $ref: "#/components/schemas/Scenario"
       summary: List All
       tags:
-        - Scenario Resource
+      - Scenario Resource
     post:
       requestBody:
         content:
@@ -1443,7 +1425,7 @@ paths:
           description: Bad Request
       summary: Create
       tags:
-        - Scenario Resource
+      - Scenario Resource
   /api/scenarios/schedule-all:
     post:
       responses:
@@ -1451,7 +1433,7 @@ paths:
           description: OK
       summary: Schedule All
       tags:
-        - Scenario Resource
+      - Scenario Resource
   /api/scenarios/stop-all:
     post:
       responses:
@@ -1459,16 +1441,16 @@ paths:
           description: OK
       summary: Stop All
       tags:
-        - Scenario Resource
+      - Scenario Resource
   /api/scenarios/{id}:
     put:
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
       requestBody:
         content:
           application/json:
@@ -1482,84 +1464,84 @@ paths:
           description: Bad Request
       summary: Update
       tags:
-        - Scenario Resource
+      - Scenario Resource
     get:
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
       responses:
         "200":
           description: OK
       summary: Get By Id
       tags:
-        - Scenario Resource
+      - Scenario Resource
     delete:
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
       responses:
         "200":
           description: OK
       summary: Delete
       tags:
-        - Scenario Resource
+      - Scenario Resource
   /api/scenarios/{id}/schedule:
     post:
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
       responses:
         "200":
           description: OK
       summary: Schedule
       tags:
-        - Scenario Resource
+      - Scenario Resource
   /api/scenarios/{id}/start:
     post:
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
       responses:
         "200":
           description: OK
       summary: Start
       tags:
-        - Scenario Resource
+      - Scenario Resource
   /api/scenarios/{id}/stop:
     post:
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
       responses:
         "200":
           description: OK
       summary: Stop
       tags:
-        - Scenario Resource
+      - Scenario Resource
   /api/track:
     get:
       tags:
-        - track
+      - track
       responses:
         "200":
           description: OK
@@ -1572,7 +1554,7 @@ paths:
       summary: List All
     put:
       tags:
-        - track
+      - track
       requestBody:
         content:
           application/json:
@@ -1588,7 +1570,7 @@ paths:
   /api/track-block:
     get:
       tags:
-        - track
+      - track
       responses:
         "200":
           description: OK
@@ -1601,7 +1583,7 @@ paths:
       summary: List All
     post:
       tags:
-        - track
+      - track
       requestBody:
         content:
           application/json:
@@ -1617,14 +1599,14 @@ paths:
   /api/track-block/{id}:
     put:
       tags:
-        - track
+      - track
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
       requestBody:
         content:
           application/json:
@@ -1639,28 +1621,28 @@ paths:
       summary: Update
     get:
       tags:
-        - track
+      - track
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
       responses:
         "200":
           description: OK
       summary: Get By Id
     delete:
       tags:
-        - track
+      - track
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
       responses:
         "200":
           description: OK
@@ -1668,48 +1650,50 @@ paths:
   /api/track/{id}:
     put:
       tags:
-        - track
+      - track
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
       requestBody:
         content:
           application/json:
             schema:
-              type: string
+              $ref: "#/components/schemas/AbstractTrackPart"
         required: true
       responses:
         "200":
           description: OK
+        "400":
+          description: Bad Request
       summary: Update
     get:
       tags:
-        - track
+      - track
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
       responses:
         "200":
           description: OK
       summary: Load Track Part
     delete:
       tags:
-        - track
+      - track
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
       responses:
         "200":
           description: OK
@@ -1717,14 +1701,14 @@ paths:
   /api/track/{id}/switch-signal:
     post:
       tags:
-        - track
+      - track
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
       requestBody:
         content:
           text/plain:
@@ -1738,14 +1722,14 @@ paths:
   /api/track/{id}/toggle:
     post:
       tags:
-        - track
+      - track
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
       responses:
         "200":
           description: OK
@@ -1763,7 +1747,7 @@ paths:
                   $ref: "#/components/schemas/Train"
       summary: List All
       tags:
-        - Train Resource
+      - Train Resource
     post:
       requestBody:
         content:
@@ -1778,16 +1762,16 @@ paths:
           description: Bad Request
       summary: Create
       tags:
-        - Train Resource
+      - Train Resource
   /api/trains/{id}:
     put:
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
       requestBody:
         content:
           application/json:
@@ -1801,44 +1785,44 @@ paths:
           description: Bad Request
       summary: Update
       tags:
-        - Train Resource
+      - Train Resource
     get:
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
       responses:
         "200":
           description: OK
       summary: Get By Id
       tags:
-        - Train Resource
+      - Train Resource
     delete:
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
       responses:
         "200":
           description: OK
       summary: Delete
       tags:
-        - Train Resource
+      - Train Resource
   /api/trains/{id}/direction:
     post:
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
       requestBody:
         content:
           text/plain:
@@ -1850,16 +1834,16 @@ paths:
           description: OK
       summary: Update Driving Direction
       tags:
-        - Train Resource
+      - Train Resource
   /api/trains/{id}/horn:
     post:
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
       requestBody:
         content:
           text/plain:
@@ -1871,16 +1855,16 @@ paths:
           description: OK
       summary: Toggle Horn
       tags:
-        - Train Resource
+      - Train Resource
   /api/trains/{id}/level:
     post:
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
       requestBody:
         content:
           text/plain:
@@ -1893,16 +1877,16 @@ paths:
           description: OK
       summary: Update Driving Direction
       tags:
-        - Train Resource
+      - Train Resource
   /api/trains/{id}/light:
     post:
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
       requestBody:
         content:
           text/plain:
@@ -1914,13 +1898,13 @@ paths:
           description: OK
       summary: Toggle Light
       tags:
-        - Train Resource
+      - Train Resource
   /docs:
     get:
       summary: WebSocket DTO example
       description: This documents the TrainUpdate DTO used in WebSocket messages.
       tags:
-        - Websocket DTOs
+      - Websocket DTOs
       responses:
         "200":
           description: OK

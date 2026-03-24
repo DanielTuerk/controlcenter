@@ -13,10 +13,5 @@ public class GridPositionRepository implements PanacheRepository<GridPositionEnt
 
     public GridPositionEntity findByGridPosition(GridPosition input) {
         return find("x=?1 AND y=?2", input.getX(), input.getY()).firstResultOptional().orElse(null);
-//        return getEntityManager().createQuery("SELECT g FROM GRID_POSITION g"
-//                + " WHERE g.x = :x AND g.y = :y", GridPositionEntity.class)
-//                .setParameter("x", input.getX())
-//                .setParameter("y", input.getY())
-//                .getSingleResult();
     }
 }

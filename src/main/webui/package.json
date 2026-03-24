@@ -8,7 +8,8 @@
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "generate:api": "rm -rf src/shared/openapi-gen && openapi-generator-cli generate -i openapi.yaml -g typescript-angular -o src/shared/openapi-gen"
+    "generate:api": "rm -rf src/shared/openapi-gen && openapi-generator-cli generate -i openapi.yaml -g typescript-angular -o src/shared/openapi-gen",
+    "generate:api-and-fetch": "curl -o openapi.yaml http://localhost:8080/q/openapi && rm -rf src/shared/openapi-gen && openapi-generator-cli generate -i openapi.yaml -g typescript-angular -o src/shared/openapi-gen"
   },
   "private": true,
   "dependencies": {

@@ -1,7 +1,6 @@
 package net.wbz.moba.controlcenter.api.track;
 
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
@@ -19,11 +18,8 @@ import net.wbz.moba.controlcenter.service.track.TrackPartManager;
 import net.wbz.moba.controlcenter.service.track.TrackProvider;
 import net.wbz.moba.controlcenter.service.track.TrackViewerService;
 import net.wbz.moba.controlcenter.shared.track.model.AbstractTrackPart;
-import net.wbz.moba.controlcenter.shared.track.model.BlockStraight;
 import net.wbz.moba.controlcenter.shared.track.model.Signal;
 import net.wbz.moba.controlcenter.shared.track.model.Signal.FUNCTION;
-import net.wbz.moba.controlcenter.shared.track.model.Turnout;
-import net.wbz.moba.controlcenter.shared.track.model.Uncoupler;
 import net.wbz.selectrix4java.device.DeviceAccessException;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import org.jboss.logging.Logger;
@@ -91,21 +87,8 @@ public class TrackResource {
 
     @PUT
     @Path("/{id}")
-    public Response update(@PathParam("id") Long id, String body) {
+    public Response update(@PathParam("id") Long id, AbstractTrackPart dto) {
         try {
-            final var mapper = new ObjectMapper();
-            final var node = mapper.readTree(body);
-            final var trackPartType = node.get("trackPartType").asText();
-
-            var target = switch (trackPartType) {
-                case "Signal" -> Signal.class;
-                case "Turnout" -> Turnout.class;
-                case "Uncoupler" -> Uncoupler.class;
-                case "BlockStraight" -> BlockStraight.class;
-                default -> throw new IllegalStateException("Unexpected value: " + trackPartType);
-            };
-            final var dto = mapper.treeToValue(node, target);
-
             trackPartManager.update(id, dto);
             return Response.ok().build();
         } catch (Exception e) {
@@ -121,6 +104,7 @@ public class TrackResource {
             trackProvider.markDirty();
             return Response.ok().build();
         } catch (IllegalStateException e) {
+            logger.error("Failed to update track part " + dto, e);
             return Response.status(Status.CONFLICT).build();
         }
     }
@@ -134,5 +118,6 @@ public class TrackResource {
             return Response.status(Status.NOT_FOUND).build();
         }
     }
+
 }
 

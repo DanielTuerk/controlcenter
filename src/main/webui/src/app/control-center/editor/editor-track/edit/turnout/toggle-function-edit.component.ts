@@ -4,10 +4,16 @@ import {MatFormField, MatInput} from "@angular/material/input";
 import {EditComponent} from "../base-edit-track-part.component";
 import {AbstractTrackPart, BusDataConfiguration} from "../../../../../../shared/openapi-gen";
 
-export class HasToggleFunction implements AbstractTrackPart {
-  id?: number;
+// export class HasToggleFunction implements AbstractTrackPart {
+//   id?: number;
+//   toggleFunction?: BusDataConfiguration;
+// }
+// export type HasToggleFunction = AbstractTrackPart & {
+//   toggleFunction?: BusDataConfiguration;
+// };
+export type HasToggleFunction = AbstractTrackPart & {
   toggleFunction?: BusDataConfiguration;
-}
+};
 
 @Component({
   selector: 'app-toggle-function',

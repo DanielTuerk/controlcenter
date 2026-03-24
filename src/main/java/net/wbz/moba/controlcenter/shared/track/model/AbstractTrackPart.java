@@ -2,14 +2,45 @@ package net.wbz.moba.controlcenter.shared.track.model;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import java.util.Collection;
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
 /**
  * @author Daniel Tuerk
  */
+@Schema(
+    discriminatorProperty = "trackPartType",
+    oneOf = {
+        BlockStraight.class,
+        Straight.class,
+        Curve.class,
+        Signal.class,
+        Turnout.class,
+        Uncoupler.class
+    }
+)
+@JsonTypeInfo(
+    use = JsonTypeInfo.Id.NAME,
+    include = JsonTypeInfo.As.PROPERTY,
+    property = "trackPartType"
+)
+@JsonSubTypes({
+    @JsonSubTypes.Type(value = BlockStraight.class, name = "BlockStraight"),
+    @JsonSubTypes.Type(value = Straight.class, name = "Straight"),
+    @JsonSubTypes.Type(value = Curve.class, name = "Curve"),
+    @JsonSubTypes.Type(value = Signal.class, name = "Signal"),
+    @JsonSubTypes.Type(value = Turnout.class, name = "Turnout"),
+    @JsonSubTypes.Type(value = Uncoupler.class, name = "Uncoupler")
+})
 public abstract class AbstractTrackPart extends AbstractDto {
 
-    private final String trackPartType = this.getClass().getSimpleName();
+    @Schema(required = true)
+    public String getTrackPartType() {
+        return this.getClass().getSimpleName();
+    }
+
     private GridPosition gridPosition;
 
     public GridPosition getGridPosition() {
@@ -46,7 +77,4 @@ public abstract class AbstractTrackPart extends AbstractDto {
         return 0;
     }
 
-    public String getTrackPartType() {
-        return trackPartType;
-    }
 }

@@ -22,15 +22,16 @@ import org.mapstruct.ReportingPolicy;
 public interface TrackPartMapper {
 
     Straight toDto(StraightEntity entity);
-
     BlockStraight toDto(BlockStraightEntity entity);
-
     Signal toDto(SignalEntity entity);
-
     Curve toDto(CurveEntity entity);
-
     Turnout toDto(TurnoutEntity entity);
-
     Uncoupler toDto(UncouplerEntity entity);
 
+    StraightEntity toEntity(Straight dto);
+    BlockStraightEntity toEntity(BlockStraight dto);
+    SignalEntity toEntity(Signal dto);
+    CurveEntity toEntity(Curve dto);
+    TurnoutEntity toEntity(Turnout dto);
+    UncouplerEntity toEntity(Uncoupler dto);
 }

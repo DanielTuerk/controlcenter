@@ -1,15 +1,18 @@
 import {AbstractTrackPart, TrackPartStateEvent} from "../../../../../shared/openapi-gen";
 
-export abstract class AbstractTrackComponentBuilder {
+export abstract class AbstractTrackComponentBuilder<
+  T extends AbstractTrackPart,
+  E extends TrackPartStateEvent
+> {
   private static SVG_NS = 'http://www.w3.org/2000/svg';
 
   public static TILE = 26;
   protected static BASE_HEIGHT = 8;
   protected static BASE_COLOR = 'white';
 
-  abstract doBuild<T extends AbstractTrackPart, E extends TrackPartStateEvent>(trackPart: T, baseX: number, baseY: number, event: E | null): Element;
+  abstract doBuild(trackPart: T, baseX: number, baseY: number, event: E | null): Element;
 
-  build<T extends AbstractTrackPart, E extends TrackPartStateEvent>(trackPart: T, event: E | null = null): Element {
+  build(trackPart: T, event: E | null = null): Element {
     if (!trackPart.gridPosition || (trackPart.gridPosition.x == null || trackPart.gridPosition.y == null)) {
       throw new Error("no grid position for track part: " + JSON.stringify(trackPart));
     }

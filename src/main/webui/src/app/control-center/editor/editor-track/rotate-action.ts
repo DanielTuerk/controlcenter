@@ -13,7 +13,7 @@ import {
 @Injectable({providedIn: 'root'})
 export class RotateAction {
 
-  private _unsavedRotateChanges: Map<number, string> = new Map();
+  private _unsavedRotateChanges: Map<AbstractTrackPart, string> = new Map();
 
   get unsavedRotateChanges() {
     return this._unsavedRotateChanges;
@@ -23,28 +23,30 @@ export class RotateAction {
     let trackPart = $event.trackPart;
     let newValue = this.apply(trackPart);
     if (newValue) {
-      this.unsavedRotateChanges.set(trackPart.id!, newValue);
+      this.unsavedRotateChanges.set(trackPart, newValue);
     }
     return $event;
   }
 
   private apply(trackPart: AbstractTrackPart): string | null {
-    switch (trackPart.trackPartType) {
-      case 'Straight':
-      case 'Signal':
-      case 'Uncoupler':
-      case 'BlockStraight':
-        let straight = trackPart as Straight;
-        straight.direction = this.nextValue(straight.direction, Object.values(DIRECTION));
-        return straight.direction;
-      case 'Curve':
-        let curve = trackPart as Curve;
-        curve.direction = this.nextValue(curve.direction, Object.values(DIRECTION1));
-        return curve.direction;
-      case 'Turnout':
-        let turnout = trackPart as Turnout;
-        turnout.currentPresentation = this.nextValue(turnout.currentPresentation, Object.values(PRESENTATION));
-        return turnout.currentPresentation;
+    if ("trackPartType" in trackPart) {
+      switch (trackPart.trackPartType) {
+        case 'Straight':
+        case 'Signal':
+        case 'Uncoupler':
+        case 'BlockStraight':
+          let straight = trackPart as Straight;
+          straight.direction = this.nextValue(straight.direction, Object.values(DIRECTION));
+          return straight.direction;
+        case 'Curve':
+          let curve = trackPart as Curve;
+          curve.direction = this.nextValue(curve.direction, Object.values(DIRECTION1));
+          return curve.direction;
+        case 'Turnout':
+          let turnout = trackPart as Turnout;
+          turnout.currentPresentation = this.nextValue(turnout.currentPresentation, Object.values(PRESENTATION));
+          return turnout.currentPresentation;
+      }
     }
     return null;
   }

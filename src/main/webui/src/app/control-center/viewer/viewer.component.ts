@@ -29,7 +29,7 @@ export class ViewerComponent {
     } else if ($trackElement.trackPart.trackPartType === 'Signal') {
       console.log(`switch signal ${$trackElement}`);
 
-      let signal: Signal = $trackElement.trackPart;
+      let signal: Signal = <Signal>$trackElement.trackPart;
 
       let newFuncState = FUNCTION.Hp0;
       switch (signal.type) {

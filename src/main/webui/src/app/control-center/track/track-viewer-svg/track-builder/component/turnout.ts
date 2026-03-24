@@ -1,7 +1,7 @@
 import {AbstractTrackComponentBuilder} from "../abstract-track-component-builder";
 import {DIRECTION2, PRESENTATION, TrackPartStateEvent, Turnout} from "../../../../../../shared/openapi-gen";
 
-export class TurnoutBuilder extends AbstractTrackComponentBuilder {
+export class TurnoutBuilder extends AbstractTrackComponentBuilder<Turnout, TrackPartStateEvent> {
 
   doBuild(trackPart: Turnout, baseX: number, baseY: number, event: TrackPartStateEvent | null = null): Element {
     const cx = baseX + AbstractTrackComponentBuilder.TILE / 2;

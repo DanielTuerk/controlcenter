@@ -19,7 +19,10 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
  * @author Daniel Tuerk
  */
 @JsonIgnoreProperties({"displayValue", "endGridPosition", "gridLength"})
-@Schema(description = "type for a track part")
+@Schema(
+    description = "type for a track part",
+    allOf = {Straight.class}
+)
 @Tag(ref = "track")
 public class BlockStraight extends Straight implements MultipleGridPosition {
 

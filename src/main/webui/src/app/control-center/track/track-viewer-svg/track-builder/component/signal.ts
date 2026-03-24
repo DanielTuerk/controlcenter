@@ -1,8 +1,15 @@
 import {AbstractTrackComponentBuilder} from "../abstract-track-component-builder";
-import {DIRECTION, FUNCTION, Signal, SignalFunctionStateEvent, TYPE3} from "../../../../../../shared/openapi-gen";
+import {
+  DIRECTION,
+  FUNCTION,
+  Signal,
+  SignalFunctionStateEvent,
+  TrackPartStateEvent,
+  TYPE3
+} from "../../../../../../shared/openapi-gen";
 import {StraightBuilder} from "./straight";
 
-export class SignalBuilder extends StraightBuilder {
+export class SignalBuilder extends StraightBuilder<Signal> {
 
   override doBuild(signalTrackPart: Signal, baseX: number, baseY: number, event: SignalFunctionStateEvent | null = null): Element {
     let straight = super.doBuild(signalTrackPart, baseX, baseY, event);
@@ -31,8 +38,7 @@ export class SignalBuilder extends StraightBuilder {
         case TYPE3.Exit:
           return this.createLightsForExit(event, cx, pixelShift, cy);
         case TYPE3.Before:
-          // TODO
-          return [this.createYellowLight(cx - pixelShift, cy), this.createGreenLight(cx + pixelShift, cy)];
+          return this.createLightsForBefore(event, cx, pixelShift, cy);
         default:
           throw Error(`invalid signal type: ${signalTrackPart.type}`)
       }
@@ -54,13 +60,22 @@ export class SignalBuilder extends StraightBuilder {
 
   private createLightsForBlock(event: SignalFunctionStateEvent | null, cx: number, pixelShift: number, cy: number) {
     if (!event) {
-      return [this.createRedLight(cx - pixelShift, cy, false), this.createGreenLight(cx + pixelShift, cy, false)];
+      return [
+        this.createRedLight(cx - pixelShift, cy, false),
+        this.createGreenLight(cx + pixelShift, cy, false)
+      ];
     }
     switch (event?.signalFunction) {
       case FUNCTION.Hp0:
-        return [this.createRedLight(cx - pixelShift, cy, true), this.createGreenLight(cx + pixelShift, cy, false)];
+        return [
+          this.createRedLight(cx - pixelShift, cy, true),
+          this.createGreenLight(cx + pixelShift, cy, false)
+        ];
       case FUNCTION.Hp1:
-        return [this.createRedLight(cx - pixelShift, cy, false), this.createGreenLight(cx + pixelShift, cy, true)];
+        return [
+          this.createRedLight(cx - pixelShift, cy, false),
+          this.createGreenLight(cx + pixelShift, cy, true)
+        ];
       default:
         throw Error(`invalid signal function ${event?.signalFunction} of signal: ${event?.signalId}`);
     }
@@ -92,6 +107,36 @@ export class SignalBuilder extends StraightBuilder {
           this.createRedLight(cx + pixelShift, cy + pixelShift),
           this.createGreenLight(cx - pixelShift, cy - pixelShift, true),
           this.createYellowLight(cx + pixelShift, cy - pixelShift, true)
+        ];
+      default:
+        throw Error(`invalid signal function ${event?.signalFunction} of signal: ${event?.signalId}`);
+    }
+  }
+
+  private createLightsForBefore(event: SignalFunctionStateEvent | null, cx: number, pixelShift: number, cy: number) {
+    if (!event) {
+      return [
+        this.createYellowLight(cx - pixelShift, cy),
+        this.createYellowLight(cx + pixelShift, cy),
+        this.createGreenLight(cx + pixelShift, cy - pixelShift),
+        this.createGreenLight(cx + pixelShift, cy - pixelShift),
+      ];
+    }
+    // TODO verify
+    switch (event?.signalFunction) {
+      case FUNCTION.Hp0:
+        return [
+          this.createYellowLight(cx - pixelShift, cy, true),
+          this.createYellowLight(cx + pixelShift, cy, true),
+          this.createGreenLight(cx + pixelShift, cy - pixelShift),
+          this.createGreenLight(cx + pixelShift, cy - pixelShift),
+        ];
+      case FUNCTION.Hp1:
+        return [
+          this.createYellowLight(cx - pixelShift, cy),
+          this.createYellowLight(cx + pixelShift, cy),
+          this.createGreenLight(cx + pixelShift, cy - pixelShift, true),
+          this.createGreenLight(cx + pixelShift, cy - pixelShift, true),
         ];
       default:
         throw Error(`invalid signal function ${event?.signalFunction} of signal: ${event?.signalId}`);
@@ -163,18 +208,4 @@ export class SignalBuilder extends StraightBuilder {
     return circle;
   }
 
-// private calcDegreeValue(trackPart: Signal, isLeft: boolean) {
-  //   switch (trackPart.currentPresentation) {
-  //     case PRESENTATION.LeftToRight:
-  //       return isLeft ? 180 : 0;
-  //     case PRESENTATION.RightToLeft:
-  //       return isLeft ? 0 : 180;
-  //     case PRESENTATION.BottomToTop:
-  //       return isLeft ? 270 : 90;
-  //     case PRESENTATION.TopToBottom:
-  //       return isLeft ? 90 : 270;
-  //     default:
-  //       throw Error(`invalid presentation value: ${trackPart.currentPresentation}`);
-  //   }
-  // }
 }

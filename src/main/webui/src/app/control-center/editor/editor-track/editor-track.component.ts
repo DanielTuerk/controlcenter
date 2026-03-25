@@ -51,6 +51,7 @@ export class EditorTrackComponent implements OnDestroy {
   protected onEditTypeChanged() {
     this.changeCursor();
 
+    this.addPanel.expanded = this.editType === EDIT_TYPE.ADD;
     if (this.editType === EDIT_TYPE.ADD) {
       this.initAddAction();
     }
@@ -72,7 +73,6 @@ export class EditorTrackComponent implements OnDestroy {
         });
       }
     );
-    this.addPanel.expanded = this.editType === EDIT_TYPE.ADD;
   }
 
   protected onTrackPartClicked($event: TrackElement<any>) {

@@ -12,21 +12,12 @@ import net.wbz.moba.controlcenter.persist.entity.track.AbstractTrackPartEntity;
 @ApplicationScoped
 public class TrackPartRepository implements PanacheRepository<AbstractTrackPartEntity> {
 
-
     public List<AbstractTrackPartEntity> findByConstructionId(Long constructionId) {
-        // TODO migrate
-        return getEntityManager().createQuery("SELECT t FROM AbstractTrackPartEntity t" + " WHERE t.construction.id = :construction",
-            AbstractTrackPartEntity.class).setParameter("construction", constructionId).getResultList();
+        return find("construction.id=?1", constructionId).stream().toList();
     }
 
     public Optional<AbstractTrackPartEntity> findByGridPositionId(long gridPositionId) {
         return find("gridPosition.id=?1", gridPositionId).firstResultOptional();
     }
-
-//    public List<AbstractTrackPartEntity> findByBlockId(Long blockId) {
-//        // TODO migrate
-//        return getEntityManager().createQuery("SELECT t FROM TRACK_PART t" + " WHERE t.trackBlock.id = :blockId",
-//            AbstractTrackPartEntity.class).setParameter("blockId", blockId).getResultList();
-//    }
 
 }

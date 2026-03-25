@@ -10,9 +10,11 @@ import {
   Signal,
   Straight,
   TrackPartStateEvent,
-  Turnout
+  Turnout,
+  Uncoupler
 } from "../../../../../shared/openapi-gen";
 import {Injectable} from "@angular/core";
+import {UncouplerBuilder} from "./component/uncoupler";
 
 @Injectable({providedIn: 'root'})
 export class TrackComponentBuilder {
@@ -21,6 +23,7 @@ export class TrackComponentBuilder {
   straightBuilder = new StraightBuilder();
   blockStraightBuilder = new BlockStraightBuilder();
   curveBuilder = new CurveBuilder();
+  uncouplerBuilder = new UncouplerBuilder();
 
   build(trackPart: AbstractTrackPart, event: TrackPartStateEvent | null = null) {
     if ("trackPartType" in trackPart) {
@@ -36,8 +39,7 @@ export class TrackComponentBuilder {
         case 'Curve':
           return this.curveBuilder.build(trackPart as Curve, event);
         case 'Uncoupler':
-          // TODO Uncoupler
-          throw new Error("uncoupler not implemented!");
+          return this.uncouplerBuilder.build(trackPart as Uncoupler, event);
         default:
           console.error("undefined trackPartType", trackPart);
           throw new Error("unknown trackPartType: " + trackPart.trackPartType);

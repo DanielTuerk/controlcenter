@@ -37,4 +37,8 @@ public class Uncoupler extends Straight implements HasToggleFunction {
         this.eventConfiguration = eventConfiguration;
     }
 
+    @Override
+    public String toString() {
+        return "Uncoupler{toggleFunction=%s, eventConfiguration=%s}".formatted(toggleFunction, eventConfiguration);
+    }
 }

@@ -6,6 +6,7 @@ import {SignalBuilder} from "../../track/track-viewer-svg/track-builder/componen
 import {StraightBuilder} from "../../track/track-viewer-svg/track-builder/component/straight";
 import {BlockStraightBuilder} from "../../track/track-viewer-svg/track-builder/component/block-straight";
 import {TrackElement} from "../../track/track-viewer-svg/track-element";
+import {UncouplerBuilder} from "../../track/track-viewer-svg/track-builder/component/uncoupler";
 
 @Injectable({providedIn: 'root'})
 export class AddAction {
@@ -15,6 +16,7 @@ export class AddAction {
   private signalBuilder = new SignalBuilder();
   private straightBuilder = new StraightBuilder();
   private blockStraightBuilder = new BlockStraightBuilder();
+  private uncouplerBuilder = new UncouplerBuilder();
 
   buildPaletteSvg(): TrackElement<any>[] {
     return [
@@ -41,7 +43,8 @@ export class AddAction {
       this.buildBlockStraight(DIRECTION.Horizontal, 8, 4),
       this.buildBlockStraight(DIRECTION.Vertical, 10, 4),
 
-      // TODO Uncoupler
+      this.buildUncoupler(DIRECTION.Horizontal, 12, 4),
+      this.buildUncoupler(DIRECTION.Vertical, 14, 4),
     ];
   }
 
@@ -108,6 +111,19 @@ export class AddAction {
     return {
       trackPart: trackPart,
       svgElement: this.turnoutBuilder.build(trackPart, null),
+      lastEvent: null
+    };
+  }
+
+  private buildUncoupler(direction: DIRECTION, x: number, y: number) {
+    let trackPart = {
+      trackPartType: 'Uncoupler',
+      gridPosition: {x: x, y: y},
+      direction: direction
+    };
+    return {
+      trackPart: trackPart,
+      svgElement: this.uncouplerBuilder.build(trackPart, null),
       lastEvent: null
     };
   }

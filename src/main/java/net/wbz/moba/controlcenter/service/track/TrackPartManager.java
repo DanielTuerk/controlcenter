@@ -76,6 +76,7 @@ public class TrackPartManager {
                 updateSignal(signal, existing);
                 break;
             case HasToggleFunction hasToggleFunction:
+                hasToggleFunction.getToggleFunction().setBus(1);
                 updateToggleFunction(hasToggleFunction, existing);
                 break;
             case BlockStraight blockStraight:

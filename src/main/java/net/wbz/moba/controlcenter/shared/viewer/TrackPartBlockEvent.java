@@ -6,10 +6,6 @@ import net.wbz.moba.controlcenter.shared.track.model.BusDataConfiguration;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
-/**
- * Created by Daniel on 18.04.2014.
- * TODO not used atm, remove?
- */
 @Schema(description = "track status update sent via WebSocket")
 @Tag(ref = "websocket")
 public class TrackPartBlockEvent implements StateEvent {

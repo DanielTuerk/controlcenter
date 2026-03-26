@@ -18,9 +18,7 @@ import net.wbz.moba.controlcenter.shared.bus.BusDataEvent;
 import org.jboss.logging.Logger;
 
 /**
- * TODO migrate (maybe using a lib/quarkus component)
- * <p>
- * Broadcaster for the events
+ * Broadcaster for the events send over websocket.
  *
  * @author Daniel Tuerk
  */

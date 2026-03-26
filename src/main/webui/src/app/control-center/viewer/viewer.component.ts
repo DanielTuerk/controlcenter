@@ -34,6 +34,7 @@ export class ViewerComponent {
       let newFuncState = FUNCTION.Hp0;
       switch (signal.type) {
         case TYPE3.Block:
+        case TYPE3.Before:
           if ($trackElement.lastEvent && 'signalFunction' in $trackElement.lastEvent) {
             if ($trackElement.lastEvent.signalFunction === FUNCTION.Hp0) {
               newFuncState = FUNCTION.Hp1;
@@ -58,10 +59,6 @@ export class ViewerComponent {
               this.trackService.switchSignal($trackElement.trackPart, func).subscribe();
             }
           });
-          break;
-        case TYPE3.Before:
-          // TODO
-          // this.trackService.switchSignal($trackElement.trackPart, newFuncState).subscribe();
           break;
         default:
           throw Error(`invalid signal type: ${signal.type}`)

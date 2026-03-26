@@ -5,6 +5,8 @@ import jakarta.enterprise.inject.Produces;
 import net.wbz.selectrix4java.device.DeviceManager;
 
 /**
+ * Quarkus bridge to allow injection of beans from library 'selectrix4java'.
+ *
  * @author Daniel Tuerk
  */
 @ApplicationScoped

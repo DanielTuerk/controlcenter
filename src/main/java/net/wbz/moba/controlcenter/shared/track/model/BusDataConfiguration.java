@@ -51,16 +51,18 @@ public class BusDataConfiguration extends AbstractDto {
         this.bit = bit;
     }
 
-    public Boolean getBitState() {
-        return bitState;
+    public boolean getBitState() {
+        return bitState != null && bitState;
     }
 
     public void setBitState(Boolean bitState) {
+        // TODO sollte der default 'false' sein?
         this.bitState = bitState == null ? true : bitState;
     }
 
     @JsonIgnore
     public boolean isValid() {
+        // TODO bitstate missing?
         return (bus != null && address != null && bit != null) && address > 0 && bit > 0 && bus > -1;
     }
 

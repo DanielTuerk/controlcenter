@@ -359,11 +359,12 @@ abstract class ScenarioExecution implements Callable<Void> {
                 route.getStart().getMiddleTrackBlock(),
                 route.getStart().getRightTrackBlock())
             .filter(Objects::nonNull)
-            .collect(Collectors.toList());
+            .toList();
         for (TrackBlock trackBlock : trackBlocks) {
             if (!trackBlock.getFeedback()) {
                 try {
-                    if (SelectrixHelper.getBlockModule(deviceManager.getConnectedDevice(), trackBlock)
+                    if (SelectrixHelper.getBlockModule(deviceManager.getConnectedDevice()
+                            .orElseThrow(() -> new DeviceAccessException("no connected device")), trackBlock)
                         .getLastReceivedBlockState(trackBlock.getBlockFunction().getBit())) {
                         return false;
                     }
@@ -386,7 +387,8 @@ abstract class ScenarioExecution implements Callable<Void> {
     private void checkForFreeBlocks(Set<TrackBlock> trackBlocks) throws RouteExecutionInterruptException,
         ScenarioExecutionInterruptException {
         try {
-            Device device = deviceManager.getConnectedDevice();
+            Device device = deviceManager.getConnectedDevice()
+                .orElseThrow(() -> new DeviceAccessException("no connected device"));
             for (TrackBlock trackBlock : trackBlocks) {
                 BusDataConfiguration blockFunction = trackBlock.getBlockFunction();
                 BusAddressIdentifier entry = new BusAddressIdentifier(blockFunction);
@@ -451,7 +453,8 @@ abstract class ScenarioExecution implements Callable<Void> {
 
     private void addBlockListener(BlockListener listener, BusDataConfiguration busDataConfiguration) throws
         DeviceAccessException {
-        Device device = deviceManager.getConnectedDevice();
+        final var device = deviceManager.getConnectedDevice()
+            .orElseThrow(() -> new DeviceAccessException("no connected device"));
         FeedbackBlockModule feedbackBlockModule = SelectrixHelper
             .getFeedbackBlockModule(device, new BusAddressIdentifier(busDataConfiguration));
 

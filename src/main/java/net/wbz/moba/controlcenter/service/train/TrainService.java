@@ -116,7 +116,8 @@ public class TrainService {
         if (level >= 0 && level <= 31) {
             int address = train.getAddress();
             try {
-                deviceManager.getConnectedDevice().getTrainModule((byte) address).setDrivingLevel(level);
+                deviceManager.getConnectedDevice().orElseThrow(() -> new RuntimeException("no connected device"))
+                    .getTrainModule((byte) address).setDrivingLevel(level);
             } catch (DeviceAccessException e) {
                 String msg = "can't change level of train " + train;
                 LOG.error(msg, e);
@@ -130,8 +131,9 @@ public class TrainService {
     public void toggleDrivingDirection(long id, boolean forward) {
         int address = getTrain(id).getAddress();
         try {
-            deviceManager.getConnectedDevice().getTrainModule((byte) address).setDirection(
-                forward ? TrainModule.DRIVING_DIRECTION.FORWARD : TrainModule.DRIVING_DIRECTION.BACKWARD);
+            deviceManager.getConnectedDevice().orElseThrow(() -> new RuntimeException("no connected device"))
+                .getTrainModule((byte) address)
+                .setDirection(forward ? TrainModule.DRIVING_DIRECTION.FORWARD : TrainModule.DRIVING_DIRECTION.BACKWARD);
         } catch (DeviceAccessException e) {
             String msg = "can't change level of train " + id;
             LOG.error(msg, e);
@@ -153,7 +155,8 @@ public class TrainService {
             BusDataConfiguration functionConfiguration = function.getConfiguration();
             // TODO remove bus nr quick fix
             functionConfiguration.setBus(trainModule.getBus());
-            trainModule.setFunctionState(deviceManager.getConnectedDevice()
+            trainModule.setFunctionState(
+                deviceManager.getConnectedDevice().orElseThrow(() -> new RuntimeException("no connected device"))
                     .getBusAddress(functionConfiguration.getBus(), functionConfiguration.getAddress()),
                 functionConfiguration.getBit(), state);
         } catch (DeviceAccessException e) {
@@ -178,7 +181,8 @@ public class TrainService {
     private TrainModule getTrainModule(long id, int... additionalAddresses) {
         int address = getTrain(id).getAddress();
         try {
-            return deviceManager.getConnectedDevice().getTrainModule(address, additionalAddresses);
+            return deviceManager.getConnectedDevice().orElseThrow(() -> new RuntimeException("no connected device"))
+                .getTrainModule(address, additionalAddresses);
         } catch (DeviceAccessException e) {
             throw new RuntimeException("can't found train for address");
         }
@@ -191,7 +195,8 @@ public class TrainService {
                 additionalAddresses.add(trainFunction.getConfiguration().getAddress());
             }
         }
-        return deviceManager.getConnectedDevice().getTrainModule(train.getAddressByte(),
+        return deviceManager.getConnectedDevice().orElseThrow(() -> new RuntimeException("no connected device"))
+            .getTrainModule(train.getAddressByte(),
             additionalAddresses.stream().mapToInt(Integer::intValue).toArray());
     }
 

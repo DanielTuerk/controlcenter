@@ -20,7 +20,6 @@ import net.wbz.moba.controlcenter.shared.scenario.RouteSequence;
 import net.wbz.moba.controlcenter.shared.track.model.BlockStraight;
 import net.wbz.moba.controlcenter.shared.track.model.BusDataConfiguration;
 import net.wbz.moba.controlcenter.shared.track.model.TrackBlock;
-import net.wbz.selectrix4java.device.Device;
 import net.wbz.selectrix4java.device.DeviceAccessException;
 import net.wbz.selectrix4java.device.DeviceManager;
 import org.jboss.logging.Logger;
@@ -96,11 +95,15 @@ public class RouteExecutionObserver {
      */
     private boolean allBlocksAreFree(Set<TrackBlock> trackBlocks) {
         try {
-            Device device = deviceManager.getConnectedDevice();
+            final var device$ = deviceManager.getConnectedDevice();
+            if (device$.isEmpty()) {
+                LOG.error("can't check blocks to reserve track, no connected device");
+                return false;
+            }
             for (TrackBlock trackBlock : trackBlocks) {
                 BusDataConfiguration blockFunction = trackBlock.getBlockFunction();
                 BusAddressIdentifier entry = new BusAddressIdentifier(blockFunction);
-                if (SelectrixHelper.getFeedbackBlockModule(device, entry)
+                if (SelectrixHelper.getFeedbackBlockModule(device$.get(), entry)
                     .getLastReceivedBlockState(blockFunction.getBit())) {
                     return false;
                 }

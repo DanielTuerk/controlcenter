@@ -1,10 +1,10 @@
 package net.wbz.moba.controlcenter.service.track;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import jakarta.enterprise.context.ApplicationScoped;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import net.wbz.moba.controlcenter.shared.bus.BusAddressBit;
 import net.wbz.moba.controlcenter.shared.track.model.BusDataConfiguration;
 import net.wbz.moba.controlcenter.shared.track.model.Signal;
@@ -17,7 +17,7 @@ import net.wbz.moba.controlcenter.shared.track.model.Signal.TYPE;
 @ApplicationScoped
 public class SignalStateService {
 
-    List<BusAddressBit> convertToLights(Signal signal, Signal.FUNCTION signalFunction) {
+    Set<BusAddressBit> convertToLights(Signal signal, Signal.FUNCTION signalFunction) {
         Map<LIGHT, BusAddressBit> availableLightConfig = Maps.newHashMap();
 
         Signal.TYPE signalType = signal.getType();
@@ -109,7 +109,7 @@ public class SignalStateService {
                 }
                 break;
         }
-        return Lists.newArrayList(availableLightConfig.values());
+        return new HashSet<>(availableLightConfig.values());
     }
 
     private BusAddressBit convertFunctionConfig(BusDataConfiguration configuration) {

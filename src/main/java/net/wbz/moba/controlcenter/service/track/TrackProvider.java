@@ -1,6 +1,7 @@
 package net.wbz.moba.controlcenter.service.track;
 
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.event.Event;
 import jakarta.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -38,15 +39,18 @@ public class TrackProvider {
     private final TrackPartMapper trackPartMapper;
     private final EventBroadcaster eventBroadcaster;
     private final ConstructionService constructionService;
+    private final Event<TrackChangedEvent> trackChangedEvent;
 
     @Inject
     public TrackProvider(ConstructionService constructionService,
         TrackPartRepository trackPartRepository,
         TrackPartMapper trackPartMapper,
-        EventBroadcaster eventBroadcaster) {
+        EventBroadcaster eventBroadcaster,
+        Event<TrackChangedEvent> trackChangedEvent) {
         this.trackPartRepository = trackPartRepository;
         this.trackPartMapper = trackPartMapper;
         this.eventBroadcaster = eventBroadcaster;
+        this.trackChangedEvent = trackChangedEvent;
 
         constructionService.addListener(construction -> {
             loadData(construction);
@@ -101,6 +105,9 @@ public class TrackProvider {
 
     public synchronized void markDirty() {
         cachedEntities.clear();
-        eventBroadcaster.fireEvent(new TrackChangedEvent(true));
+
+        final var changedEvent = new TrackChangedEvent(true);
+        trackChangedEvent.fire(changedEvent);
+        eventBroadcaster.fireEvent(changedEvent);
     }
 }

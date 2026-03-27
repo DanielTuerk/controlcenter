@@ -109,27 +109,27 @@ export class SignalBuilder extends StraightBuilder<Signal> {
   private lightsForBefore(event: SignalFunctionStateEvent | null, cx: number, pixelShift: number, cy: number) {
     if (!event) {
       return [
-        this.yellow(cx - pixelShift, cy),
-        this.yellow(cx + pixelShift, cy),
-        this.green(cx + pixelShift, cy - pixelShift),
-        this.green(cx + pixelShift, cy - pixelShift),
+        this.yellow(cx - pixelShift, cy+pixelShift),
+        this.yellow(cx + pixelShift, cy+pixelShift),
+        this.green(cx - pixelShift, cy -pixelShift),
+        this.green(cx + pixelShift, cy -pixelShift),
       ];
     }
     // TODO verify
     switch (event?.signalFunction) {
       case FUNCTION.Hp0:
         return [
-          this.yellow(cx - pixelShift, cy, true),
-          this.yellow(cx + pixelShift, cy, true),
-          this.green(cx + pixelShift, cy - pixelShift),
-          this.green(cx + pixelShift, cy - pixelShift),
+          this.yellow(cx - pixelShift, cy+pixelShift, true),
+          this.yellow(cx + pixelShift, cy+pixelShift, true),
+          this.green(cx - pixelShift, cy -pixelShift),
+          this.green(cx + pixelShift, cy -pixelShift),
         ];
       case FUNCTION.Hp1:
         return [
-          this.yellow(cx - pixelShift, cy),
-          this.yellow(cx + pixelShift, cy),
-          this.green(cx + pixelShift, cy - pixelShift, true),
-          this.green(cx + pixelShift, cy - pixelShift, true),
+          this.yellow(cx - pixelShift, cy+pixelShift),
+          this.yellow(cx + pixelShift, cy+pixelShift),
+          this.green(cx - pixelShift, cy -pixelShift, true),
+          this.green(cx + pixelShift, cy -pixelShift, true),
         ];
       default:
         throw Error(`invalid signal function ${event?.signalFunction} of signal: ${event?.signalId}`);

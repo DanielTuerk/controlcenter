@@ -124,43 +124,43 @@ export class SignalEditComponent implements EditComponent<Signal>, OnInit {
     signal.signalConfigRed1.bus = 1;
     signal.signalConfigRed1.address = this.red1AddressFormField.getRawValue() ?? undefined;
     signal.signalConfigRed1.bit = this.red1BitFormField.getRawValue() ?? undefined;
-    signal.signalConfigRed1.bitState = this.red1BitStateFormField.getRawValue() ?? undefined;
+    signal.signalConfigRed1.bitState = this.red1BitStateFormField.getRawValue() ?? false;
 
     if (!signal.signalConfigRed2) signal.signalConfigRed2 = {};
     signal.signalConfigRed2.bus = 1;
     signal.signalConfigRed2.address = this.red2AddressFormField.getRawValue() ?? undefined;
     signal.signalConfigRed2.bit = this.red2BitFormField.getRawValue() ?? undefined;
-    signal.signalConfigRed2.bitState = this.red2BitStateFormField.getRawValue() ?? undefined;
+    signal.signalConfigRed2.bitState = this.red2BitStateFormField.getRawValue() ?? false;
 
     if (!signal.signalConfigGreen1) signal.signalConfigGreen1 = {};
     signal.signalConfigGreen1.bus = 1;
     signal.signalConfigGreen1.address = this.green1AddressFormField.getRawValue() ?? undefined;
     signal.signalConfigGreen1.bit = this.green1BitFormField.getRawValue() ?? undefined;
-    signal.signalConfigGreen1.bitState = this.green1BitStateFormField.getRawValue() ?? undefined;
+    signal.signalConfigGreen1.bitState = this.green1BitStateFormField.getRawValue() ?? false;
 
     if (!signal.signalConfigGreen2) signal.signalConfigGreen2 = {};
     signal.signalConfigGreen2.bus = 1;
     signal.signalConfigGreen2.address = this.green2AddressFormField.getRawValue() ?? undefined;
     signal.signalConfigGreen2.bit = this.green2BitFormField.getRawValue() ?? undefined;
-    signal.signalConfigGreen2.bitState = this.green2BitStateFormField.getRawValue() ?? undefined;
+    signal.signalConfigGreen2.bitState = this.green2BitStateFormField.getRawValue() ?? false;
 
     if (!signal.signalConfigYellow1) signal.signalConfigYellow1 = {};
     signal.signalConfigYellow1.bus = 1;
     signal.signalConfigYellow1.address = this.yellow1AddressFormField.getRawValue() ?? undefined;
     signal.signalConfigYellow1.bit = this.yellow1BitFormField.getRawValue() ?? undefined;
-    signal.signalConfigYellow1.bitState = this.yellow1BitStateFormField.getRawValue() ?? undefined;
+    signal.signalConfigYellow1.bitState = this.yellow1BitStateFormField.getRawValue() ?? false;
 
     if (!signal.signalConfigYellow2) signal.signalConfigYellow2 = {};
     signal.signalConfigYellow2.bus = 1;
     signal.signalConfigYellow2.address = this.yellow2AddressFormField.getRawValue() ?? undefined;
     signal.signalConfigYellow2.bit = this.yellow2BitFormField.getRawValue() ?? undefined;
-    signal.signalConfigYellow2.bitState = this.yellow2BitStateFormField.getRawValue() ?? undefined;
+    signal.signalConfigYellow2.bitState = this.yellow2BitStateFormField.getRawValue() ?? false;
 
     if (!signal.signalConfigWhite) signal.signalConfigWhite = {};
     signal.signalConfigWhite.bus = 1;
     signal.signalConfigWhite.address = this.whiteAddressFormField.getRawValue() ?? undefined;
     signal.signalConfigWhite.bit = this.whiteBitFormField.getRawValue() ?? undefined;
-    signal.signalConfigWhite.bitState = this.whiteBitStateFormField.getRawValue() ?? undefined;
+    signal.signalConfigWhite.bitState = this.whiteBitStateFormField.getRawValue() ?? false;
 
     return signal;
   }

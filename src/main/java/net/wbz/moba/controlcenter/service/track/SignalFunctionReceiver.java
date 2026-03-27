@@ -1,5 +1,13 @@
 package net.wbz.moba.controlcenter.service.track;
 
+import static net.wbz.moba.controlcenter.shared.track.model.Signal.LIGHT.GREEN1;
+import static net.wbz.moba.controlcenter.shared.track.model.Signal.LIGHT.GREEN2;
+import static net.wbz.moba.controlcenter.shared.track.model.Signal.LIGHT.RED1;
+import static net.wbz.moba.controlcenter.shared.track.model.Signal.LIGHT.RED2;
+import static net.wbz.moba.controlcenter.shared.track.model.Signal.LIGHT.WHITE;
+import static net.wbz.moba.controlcenter.shared.track.model.Signal.LIGHT.YELLOW1;
+import static net.wbz.moba.controlcenter.shared.track.model.Signal.LIGHT.YELLOW2;
+
 import com.google.common.collect.Maps;
 import java.util.ArrayList;
 import java.util.List;
@@ -8,6 +16,7 @@ import net.wbz.moba.controlcenter.BusAddressIdentifier;
 import net.wbz.moba.controlcenter.EventBroadcaster;
 import net.wbz.moba.controlcenter.shared.track.model.BusDataConfiguration;
 import net.wbz.moba.controlcenter.shared.track.model.Signal;
+import net.wbz.moba.controlcenter.shared.track.model.Signal.LIGHT;
 import net.wbz.moba.controlcenter.shared.viewer.SignalFunctionStateEvent;
 import net.wbz.selectrix4java.bus.BusAddressBitListener;
 
@@ -24,7 +33,7 @@ class SignalFunctionReceiver {
     private final EventBroadcaster eventBroadcaster;
     private final Map<BusAddressIdentifier, List<BusAddressBitListener>> busAddressListeners = Maps.newConcurrentMap();
 
-    private final Map<Signal.LIGHT, Boolean> lightStates = Maps.newHashMap();
+    private final Map<LIGHT, Boolean> lightStates = Maps.newHashMap();
 
     /**
      * Flag to avoid multiple events for same function by received bit changes.
@@ -36,7 +45,7 @@ class SignalFunctionReceiver {
         this.eventBroadcaster = eventBroadcaster;
 
         // TODO refactor?
-        for (final Map.Entry<Signal.LIGHT, BusDataConfiguration> lightConfigs : signal
+        for (final Map.Entry<LIGHT, BusDataConfiguration> lightConfigs : signal
             .getSignalLightsConfigurations(signal.getType()).entrySet()) {
             // initial state 'off' for each light
             lightStates.put(lightConfigs.getKey(), false);
@@ -61,51 +70,65 @@ class SignalFunctionReceiver {
                             // check for new function by active lights
                             switch (signal.getType()) {
                                 case BLOCK:
-                                    if (on(Signal.LIGHT.RED1) && off(Signal.LIGHT.GREEN1)) {
+                                    if (on(RED1)
+                                        && off(GREEN1)) {
                                         fireFunction(Signal.FUNCTION.HP0);
-                                    } else if (off(Signal.LIGHT.RED1) && on(Signal.LIGHT.GREEN1)) {
+                                    } else if (on(GREEN1)
+                                        && off(RED1)) {
                                         fireFunction(Signal.FUNCTION.HP1);
                                     }
                                     break;
                                 case ENTER:
-                                    if (on(Signal.LIGHT.RED1) && off(Signal.LIGHT.GREEN1) && off(
-                                        Signal.LIGHT.YELLOW1)) {
+                                    if (on(RED1)
+                                        && off(GREEN1)
+                                        && off(YELLOW1)) {
                                         fireFunction(Signal.FUNCTION.HP0);
-                                    } else if (off(Signal.LIGHT.RED1) && on(Signal.LIGHT.GREEN1) && off(
-                                        Signal.LIGHT.YELLOW1)) {
+                                    } else if (off(RED1)
+                                        && on(GREEN1)
+                                        && off(YELLOW1)) {
                                         fireFunction(Signal.FUNCTION.HP1);
-                                    } else if (off(Signal.LIGHT.RED1) && on(Signal.LIGHT.GREEN1) && on(
-                                        Signal.LIGHT.YELLOW1)) {
+                                    } else if (off(RED1)
+                                        && on(GREEN1)
+                                        && on(YELLOW1)) {
                                         fireFunction(Signal.FUNCTION.HP2);
                                     }
                                     break;
                                 case EXIT:
-                                    if (on(Signal.LIGHT.RED1) && on(Signal.LIGHT.RED2) && off(Signal.LIGHT.WHITE)
-                                        && off(Signal.LIGHT.GREEN1) && off(Signal.LIGHT.YELLOW1)) {
+                                    if (on(RED1)
+                                        && on(RED2)
+                                        && off(WHITE)
+                                        && off(GREEN1)
+                                        && off(YELLOW1)) {
                                         fireFunction(Signal.FUNCTION.HP0);
-                                    } else if (off(Signal.LIGHT.RED1) && off(Signal.LIGHT.RED2) && off(
-                                        Signal.LIGHT.WHITE) && on(Signal.LIGHT.GREEN1) && off(
-                                        Signal.LIGHT.YELLOW1)) {
+                                    } else if (on(GREEN1)
+                                        && off(RED1)
+                                        && off(RED2)
+                                        && off(WHITE)
+                                        && off(YELLOW1)) {
                                         fireFunction(Signal.FUNCTION.HP1);
-                                    } else if (off(Signal.LIGHT.RED1) && off(Signal.LIGHT.RED2) && off(
-                                        Signal.LIGHT.WHITE) && on(Signal.LIGHT.GREEN1) && on(
-                                        Signal.LIGHT.YELLOW1)) {
+                                    } else if (on(GREEN1)
+                                        && on(YELLOW1)
+                                        && off(RED1)
+                                        && off(RED2)
+                                        && off(WHITE)) {
                                         fireFunction(Signal.FUNCTION.HP2);
-                                    } else if (on(Signal.LIGHT.RED1) && off(Signal.LIGHT.RED2) && on(
-                                        Signal.LIGHT.WHITE) && off(Signal.LIGHT.GREEN1) && off(
-                                        Signal.LIGHT.YELLOW1)) {
+                                    } else if (on(RED1)
+                                        && on(WHITE)
+                                        && off(RED2)
+                                        && off(GREEN1)
+                                        && off(YELLOW1)) {
                                         fireFunction(Signal.FUNCTION.HP0_SH1);
                                     }
                                     break;
                                 case BEFORE:
-                                    if (on(Signal.LIGHT.YELLOW1) && on(Signal.LIGHT.YELLOW2) && off(
-                                        Signal.LIGHT.GREEN1) && off(Signal.LIGHT.GREEN2)) {
+                                    if (on(YELLOW1) && on(YELLOW2) && off(
+                                        GREEN1) && off(GREEN2)) {
                                         fireFunction(Signal.FUNCTION.HP0);
-                                    } else if (off(Signal.LIGHT.YELLOW1) && off(Signal.LIGHT.YELLOW2) && on(
-                                        Signal.LIGHT.GREEN1) && on(Signal.LIGHT.GREEN2)) {
+                                    } else if (off(YELLOW1) && off(YELLOW2) && on(
+                                        GREEN1) && on(GREEN2)) {
                                         fireFunction(Signal.FUNCTION.HP1);
-                                    } else if (off(Signal.LIGHT.YELLOW1) && on(Signal.LIGHT.YELLOW2) && on(
-                                        Signal.LIGHT.GREEN1) && off(Signal.LIGHT.GREEN2)) {
+                                    } else if (off(YELLOW1) && on(YELLOW2) && on(
+                                        GREEN1) && off(GREEN2)) {
                                         fireFunction(Signal.FUNCTION.HP2);
                                     }
                                     break;
@@ -129,20 +152,20 @@ class SignalFunctionReceiver {
     /**
      * Check active state of the given light.
      *
-     * @param light {@link Signal.LIGHT}
+     * @param light {@link LIGHT}
      * @return {@code true} if on
      */
-    private boolean on(Signal.LIGHT light) {
+    private boolean on(LIGHT light) {
         return lightStates.get(light);
     }
 
     /**
      * Check inactive state of the given light.
      *
-     * @param light {@link Signal.LIGHT}
+     * @param light {@link LIGHT}
      * @return {@code true} if off
      */
-    private boolean off(Signal.LIGHT light) {
+    private boolean off(LIGHT light) {
         return !lightStates.get(light);
     }
 

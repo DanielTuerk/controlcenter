@@ -1,27 +1,23 @@
 package net.wbz.moba.controlcenter.service.track;
 
-import com.google.common.collect.Maps;
-import io.quarkus.runtime.Startup;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.event.Observes;
 import jakarta.inject.Inject;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import net.wbz.moba.controlcenter.BusAddressIdentifier;
-import net.wbz.moba.controlcenter.EventBroadcaster;
+import java.util.Set;
 import net.wbz.moba.controlcenter.shared.bus.BusAddressBit;
 import net.wbz.moba.controlcenter.shared.track.model.AbstractTrackPart;
 import net.wbz.moba.controlcenter.shared.track.model.BusDataConfiguration;
 import net.wbz.moba.controlcenter.shared.track.model.HasToggleFunction;
 import net.wbz.moba.controlcenter.shared.track.model.Signal;
-import net.wbz.moba.controlcenter.shared.viewer.TrackPartStateEvent;
+import net.wbz.moba.controlcenter.shared.track.model.TrackChangedEvent;
 import net.wbz.selectrix4java.bus.BusAddress;
-import net.wbz.selectrix4java.bus.BusAddressBitListener;
-import net.wbz.selectrix4java.bus.BusListener;
 import net.wbz.selectrix4java.device.Device;
 import net.wbz.selectrix4java.device.DeviceAccessException;
-import net.wbz.selectrix4java.device.DeviceConnectionListener;
 import net.wbz.selectrix4java.device.DeviceManager;
 import org.jboss.logging.Logger;
 
@@ -29,120 +25,38 @@ import org.jboss.logging.Logger;
  * TODO split class to multiples, e.g. trackpart vs signal or listener registration vs actions
  * @author Daniel Tuerk
  */
-@Startup
 @ApplicationScoped
 public class TrackViewerService {
 
-    /**
-     * Map for all {@link BusListener}s of a single {@link BusAddressIdentifier} to avoid duplicated listeners to
-     * register and to call from {@link net.wbz.selectrix4java.data.BusDataChannel}.
-     */
-    private final Map<BusAddressIdentifier, List<BusListener>> busAddressListenersOfTheCurrentTrack = Maps.newConcurrentMap();
 
     private final DeviceManager deviceManager;
-    private final EventBroadcaster eventBroadcaster;
+
     private final SignalStateService signalStateService;
+    private final TrackRegistration trackRegistration;
 
     private final Logger logger;
 
     @Inject
-    public TrackViewerService(DeviceManager deviceManager, TrackProvider trackProvider,
-        EventBroadcaster eventBroadcaster, TrackBlockRegistry trackBlockRegistry,
-        SignalStateService signalStateService, Logger logger) {
+    public TrackViewerService(DeviceManager deviceManager, SignalStateService signalStateService,
+        TrackRegistration trackRegistration, Logger logger) {
         this.deviceManager = deviceManager;
-        this.eventBroadcaster = eventBroadcaster;
         this.signalStateService = signalStateService;
+        this.trackRegistration = trackRegistration;
         this.logger = logger;
-
-        deviceManager.addDeviceConnectionListener(new DeviceConnectionListener() {
-            @Override
-            public void connected(Device device) {
-                var track = trackProvider.getTrack();
-                track.stream()
-                    .filter(t -> t instanceof HasToggleFunction)
-                    .forEach(t -> registerToggleFunctionOfTrackPart(t));
-
-                track.stream()
-                    .filter(t -> t instanceof Signal)
-                    .map(t -> (Signal) t)
-                    .forEach(t -> registerSignalFunction(t));
-
-                registerBusAddressListeners(device);
-            }
-
-            @Override
-            public void disconnected(Device device) {
-                try {
-                    trackBlockRegistry.removeListeners(device);
-                } catch (DeviceAccessException e) {
-                    logger.error("Failed to remove track block listeners for device " + device, e);
-                }
-                removeBusAddressListeners(device);
-                busAddressListenersOfTheCurrentTrack.clear();
-            }
-
-            private void registerBusAddressListeners(Device device) {
-                try {
-                    for (Map.Entry<BusAddressIdentifier, List<BusListener>> entry : busAddressListenersOfTheCurrentTrack
-                        .entrySet()) {
-                        device.getBusAddress(entry.getKey().getBus(), (byte) entry.getKey().getAddress())
-                            .addListeners(entry.getValue());
-                    }
-                } catch (DeviceAccessException e) {
-                    logger.error("can't register listeners to active device", e);
-                }
-
-                try {
-                    trackBlockRegistry.registerListeners(device);
-                } catch (DeviceAccessException e) {
-                    logger.error("can't register track block listeners to active device", e);
-                }
-
-            }
-
-            private void removeBusAddressListeners(Device device) {
-                try {
-                    for (Map.Entry<BusAddressIdentifier, List<BusListener>> entry : busAddressListenersOfTheCurrentTrack
-                        .entrySet()) {
-                        device.getBusAddress(entry.getKey().getBus(), (byte) entry.getKey().getAddress())
-                            .removeListeners(entry.getValue());
-                    }
-                } catch (DeviceAccessException e) {
-                    logger.error("can't remove listeners to active device", e);
-                }
-            }
-        });
     }
 
-    protected void registerToggleFunctionOfTrackPart(AbstractTrackPart trackPart) {
-        if (trackPart instanceof HasToggleFunction trackPartConfiguration) {
-            final var toggleFunction = trackPartConfiguration.getToggleFunction();
-            if (toggleFunction != null && toggleFunction.isValid()) {
-                addBusListener(toggleFunction, new BusAddressBitListener(toggleFunction.getBit()) {
-                    @Override
-                    public void bitChanged(boolean oldValue, boolean newValue) {
-                        eventBroadcaster.fireEvent(
-                            new TrackPartStateEvent(trackPart.getId(), toggleFunction, newValue));
-                    }
-                });
-            }
-        }
+    public void onSaved(@Observes TrackChangedEvent evt) {
+        logger.info("TrackChangedEvent: %s".formatted(evt));
+        trackRegistration.reregisterTrack();
     }
 
-    private void addBusListener(BusDataConfiguration trackPartConfiguration, BusListener listener) {
-        BusAddressIdentifier busAddressIdentifier = new BusAddressIdentifier(trackPartConfiguration.getBus(),
-            trackPartConfiguration.getAddress());
-        if (!busAddressListenersOfTheCurrentTrack.containsKey(busAddressIdentifier)) {
-            busAddressListenersOfTheCurrentTrack.put(busAddressIdentifier, new ArrayList<>());
-        }
-        busAddressListenersOfTheCurrentTrack.get(busAddressIdentifier).add(listener);
-    }
 
     public void toggleTrackPart(AbstractTrackPart trackPart) throws DeviceAccessException {
         if (trackPart instanceof HasToggleFunction) {
             var trackPartConfig = ((HasToggleFunction) trackPart).getToggleFunction();
             if (trackPartConfig != null && trackPartConfig.isValid()) {
                 final var busAddress = deviceManager.getConnectedDevice()
+                    .orElseThrow(() -> new DeviceAccessException("no connected device"))
                     .getBusAddress(trackPartConfig.getBus(), trackPartConfig.getAddress().byteValue());
                 if (busAddress.getBitState(trackPartConfig.getBit())) {
                     busAddress.clearBit(trackPartConfig.getBit());
@@ -155,7 +69,7 @@ public class TrackViewerService {
     }
 
     public void toggleTrackParts(Map<BusDataConfiguration, Boolean> trackPartStates) {
-        List<BusAddressBit> busAddressBits = new ArrayList<>();
+        Set<BusAddressBit> busAddressBits = new HashSet<>();
         for (final Entry<BusDataConfiguration, Boolean> entry : trackPartStates.entrySet()) {
             final var busDataConfiguration = entry.getKey();
             if (busDataConfiguration != null && busDataConfiguration.isValid()) {
@@ -166,9 +80,10 @@ public class TrackViewerService {
         sendTrackPartStates(busAddressBits);
     }
 
-    private synchronized void sendTrackPartStates(List<BusAddressBit> busAddressBits) {
+    private synchronized void sendTrackPartStates(Set<BusAddressBit> busAddressBits) {
         try {
-            Device connectedDevice = deviceManager.getConnectedDevice();
+            Device connectedDevice = deviceManager.getConnectedDevice()
+                .orElseThrow(() -> new DeviceAccessException("no connected device"));
 
             // collect addresses to change to avoid multiple send calls for single address
             List<BusAddress> busAddressesToUpdateData = new ArrayList<>();
@@ -203,17 +118,6 @@ public class TrackViewerService {
     public void switchSignal(Signal signal, Signal.FUNCTION signalFunction) {
         logger.debugf("switch signal %s to %s", signal, signalFunction);
         sendTrackPartStates(signalStateService.convertToLights(signal, signalFunction));
-    }
-
-    private void registerSignalFunction(Signal signal) {
-        Map<BusAddressIdentifier, List<BusAddressBitListener>> busAddressListeners = new SignalFunctionReceiver(signal,
-            eventBroadcaster).getBusAddressListeners();
-        for (Map.Entry<BusAddressIdentifier, List<BusAddressBitListener>> entry : busAddressListeners.entrySet()) {
-            if (!busAddressListenersOfTheCurrentTrack.containsKey(entry.getKey())) {
-                busAddressListenersOfTheCurrentTrack.put(entry.getKey(), new ArrayList<>());
-            }
-            busAddressListenersOfTheCurrentTrack.get(entry.getKey()).addAll(entry.getValue());
-        }
     }
 
 }

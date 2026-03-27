@@ -153,6 +153,7 @@ public class TrackPartManager {
             signalEntity.signalConfigRed2 = getMergedBusDataConfig(signal.getSignalConfigRed2());
             signalEntity.signalConfigYellow1 = getMergedBusDataConfig(signal.getSignalConfigYellow1());
             signalEntity.signalConfigYellow2 = getMergedBusDataConfig(signal.getSignalConfigYellow2());
+            signalEntity.signalConfigWhite = getMergedBusDataConfig(signal.getSignalConfigWhite());
 
             persistTrackPart(signalEntity);
         } else {

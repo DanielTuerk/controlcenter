@@ -70,7 +70,7 @@ public class TrackRegistration {
     }
 
     private void registerTrack(Device device) {
-        logger.debug("register track to: " + device);
+        logger.debug("register track to: " + device.getDeviceId());
         var track = trackProvider.getTrack();
         track.stream()
             .filter(t -> t instanceof HasToggleFunction)
@@ -85,7 +85,7 @@ public class TrackRegistration {
     }
 
     private void unregisterTrack(Device device) {
-        logger.debug("unregister track from: " + device);
+        logger.debug("unregister track from: " + device.getDeviceId());
         try {
             trackBlockRegistry.removeListeners(device);
         } catch (DeviceAccessException e) {

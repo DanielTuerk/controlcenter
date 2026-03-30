@@ -201,7 +201,7 @@ public class TrackPartManager {
     private void persistTrackPart(AbstractTrackPartEntity entity) {
         trackPartRepository.persist(entity);
         trackProvider.markDirty();
-        eventBroadcaster.fireEvent(new TrackPartDataChangedEvent(entity.id));
+//        eventBroadcaster.fireEvent(new TrackPartDataChangedEvent(entity.id)); TODO can be removed?
     }
 
     private void move(AbstractTrackPartEntity trackPartEntity, GridPosition newGridPosition) {

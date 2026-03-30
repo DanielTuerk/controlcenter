@@ -9,6 +9,6 @@ export class DeviceSubscription extends Subscription {
 
   readonly deviceConnection = this.createEventAccessor<DeviceConnectionEvent>('DeviceConnectionEvent');
   readonly deviceInfo = this.createEventAccessor<DeviceInfoEvent>('DeviceInfoEvent');
-  readonly deviceDataChanged = this.createEventAccessor<DeviceDataChangedEvent>('DeviceDataChangedEvent');
+  readonly deviceDataChanged = this.createEventAccessor<DeviceDataChangedEvent>('DeviceDataChangedEvent', true);
 
 }

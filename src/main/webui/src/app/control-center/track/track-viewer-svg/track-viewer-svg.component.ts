@@ -63,20 +63,15 @@ export class TrackViewerSvgComponent implements OnInit {
       this.loadTrack(elements);
 
       this.trackSubscription.trackChanged().subscribe(() => {
+        console.log("trackChanged");
         this.reloadTrack();
       });
 
       this.trackSubscription.trackPartDataChangedEvent().subscribe(() => {
+        console.log("trackPartDataChangedEvent");
         this.reloadTrack();
       });
 
-      // subscribe to state changes for track elements
-      this.trackSubscription.trackPartState().subscribe(event => {
-        this.consumeTrackEvent('trackPartState', event, event.trackPartId!);
-      });
-      this.trackSubscription.signalFunctionState().subscribe(event => {
-        this.consumeTrackEvent('signalFunctionState', event, event.signalId!);
-      });
     });
   }
 
@@ -106,6 +101,15 @@ export class TrackViewerSvgComponent implements OnInit {
     this.cdr.markForCheck();
 
     this.trackPartsReady.emit(this.loadedTrackParts);
+
+    // subscribe to state changes for track elements
+    this.trackSubscription.trackPartState().subscribe(event => {
+      this.consumeTrackEvent('trackPartState', event, event.trackPartId!);
+    });
+    this.trackSubscription.signalFunctionState().subscribe(event => {
+      this.consumeTrackEvent('signalFunctionState', event, event.signalId!);
+    });
+
     console.log("load finished");
   }
 

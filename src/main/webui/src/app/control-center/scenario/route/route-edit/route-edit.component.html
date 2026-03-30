@@ -27,6 +27,7 @@
         }
         <app-track-viewer-svg
           *ngIf="showViewer"
+          [overrideIsConnected]="true"
           (trackPartClicked)="onTrackPartClicked($event)"
           (trackPartsReady)="onTrackReady($event)"> style="overflow: auto">
         </app-track-viewer-svg>

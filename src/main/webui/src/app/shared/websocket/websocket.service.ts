@@ -11,22 +11,21 @@ export class WebSocketService {
   constructor(private ngZone: NgZone) {
   }
 
-  registerEventAndConsume<T>(eventKey: string): Observable<T> {
+  registerEventAndConsume<T>(eventKey: string, replay: boolean): Observable<T> {
     if (!this.subscriptions.has(eventKey)) {
-      this.subscriptions.set(eventKey, this.createSubject());
+      this.subscriptions.set(eventKey, this.createSubject(replay));
     }
     return this.consumeEvent<T>(eventKey);
   }
 
-  private createSubject() {
+  private createSubject(replay: boolean) {
     // TODO buffer need to be defined
-    return new ReplaySubject<any>(1000);
+    return new ReplaySubject<any>(replay ? 1000 : 1);
   }
 
-  consumeEvent<T>(eventKey: string): Observable<T> {
+  private consumeEvent<T>(eventKey: string): Observable<T> {
     if (!this.subscriptions.has(eventKey)) {
-      // optional: create subject lazily so late callers still get future events
-      this.subscriptions.set(eventKey, this.createSubject());
+      throw new Error(`no event registered for: ${eventKey}`)
     }
     return this.subscriptions.get(eventKey)!.asObservable() as Observable<T>;
   }
@@ -58,7 +57,7 @@ export class WebSocketService {
       // ensure we run inside Angular zone if UI updates depend on this
       this.ngZone.run(() => {
         if (!this.subscriptions.has(eventName)) {
-          this.subscriptions.set(eventName, this.createSubject());
+          this.subscriptions.set(eventName, this.createSubject('cacheKey' in payload));
         }
         this.subscriptions.get(eventName)!.next(payload);
       });

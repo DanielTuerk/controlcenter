@@ -20,6 +20,6 @@ export class BusSubscription extends Subscription {
   readonly systemFormat = this.createEventAccessor<SystemFormatEvent>('SystemFormatEvent');
   readonly player = this.createEventAccessor<PlayerEvent>('PlayerEvent');
   readonly recording = this.createEventAccessor<RecordingEvent>('RecordingEvent');
-  readonly busDataEvent = this.createEventAccessor<BusDataEvent>('BusDataEvent');
+  readonly busDataEvent = this.createEventAccessor<BusDataEvent>('BusDataEvent', true);
 
 }

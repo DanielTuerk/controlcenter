@@ -38,3 +38,8 @@ mat-card-footer, .mat-card-footer {
   gap: 16px;
   padding: 16px;
 }
+
+.icon {
+  font-size: medium;
+  display: contents;
+}

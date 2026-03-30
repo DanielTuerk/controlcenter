@@ -12,6 +12,7 @@ import {DRIVINGDIRECTION, Train} from "../../../../../shared/openapi-gen";
 import {RouterLink} from "@angular/router";
 import {FormsModule} from "@angular/forms";
 import {DeviceService} from "../../../../shared/device.service";
+import {TrainDirectionIcon} from "../../../common/trainDirectionIcon";
 
 export class TrainData {
   train: Train;
@@ -42,7 +43,8 @@ export class TrainData {
     NgForOf,
     RouterLink,
     FormsModule,
-    NgIf
+    NgIf,
+    TrainDirectionIcon
   ],
   templateUrl: './train.component.html',
   styleUrl: './train.component.css'

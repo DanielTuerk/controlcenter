@@ -6,8 +6,7 @@
       </div>
       <div class="title-bottom">
         <span>
-          <mat-icon *ngIf="!trainData.train.forward" class="icon">west</mat-icon>
-          <mat-icon *ngIf="trainData.train.forward" class="icon">east</mat-icon>
+          <train-direction-icon [train]="trainData.train"/>
         </span>
         <span>
           <mat-icon class="icon">speed</mat-icon>

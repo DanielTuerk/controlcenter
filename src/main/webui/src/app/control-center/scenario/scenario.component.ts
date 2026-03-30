@@ -9,6 +9,7 @@ import {MatDialog} from "@angular/material/dialog";
 import {ScenarioService} from "../../shared/scenario.service";
 import {ConfirmDialogComponent} from "../common/confirm-dialog/confirm-dialog.component";
 import {RouteComponent} from "./route/route.component";
+import {TrainDirectionIcon} from "../common/trainDirectionIcon";
 
 @Component({
   selector: 'app-scenario',
@@ -21,7 +22,8 @@ import {RouteComponent} from "./route/route.component";
     MatTableModule,
     MatIcon,
     MatButton,
-    RouteComponent
+    RouteComponent,
+    TrainDirectionIcon
   ],
   templateUrl: './scenario.component.html',
   styleUrl: './scenario.component.css'
@@ -29,7 +31,7 @@ import {RouteComponent} from "./route/route.component";
 export class ScenarioComponent implements OnInit {
   private scenarioService = inject(ScenarioService);
   scenarios = signal<Scenario[]>([]);
-  displayedColumns: string[] = ['id', 'name', 'cron', 'action'];
+  displayedColumns: string[] = ['id', 'name', 'train', 'cron', 'action'];
   readonly dialog = inject(MatDialog);
 
   ngOnInit() {

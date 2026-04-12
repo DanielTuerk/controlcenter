@@ -1,4 +1,4 @@
-import {Component, inject, input, OnInit, signal, ViewChild} from '@angular/core';
+import {Component, inject, input, signal, ViewChild} from '@angular/core';
 import {Router, RouterLink} from "@angular/router";
 import {MatCard, MatCardContent, MatCardFooter, MatCardHeader, MatCardTitle} from "@angular/material/card";
 import {FormBuilder, FormControl, FormsModule, ReactiveFormsModule} from "@angular/forms";
@@ -10,13 +10,16 @@ import {RouteService} from "../../../../shared/route.service";
 import {BlockStraight, Curve, GridPosition, Route, Straight} from "../../../../../shared/openapi-gen";
 import {MatCheckbox} from "@angular/material/checkbox";
 import {TrackViewerSvgComponent} from "../../../track/track-viewer-svg/track-viewer-svg.component";
-import {MatChip} from "@angular/material/chips";
 import {TrackElement} from "../../../track/track-viewer-svg/track-element";
 import {MatDialog} from "@angular/material/dialog";
 import {SelectTrackBlockComponent} from "./select-track-block/select-track-block.component";
 import {NgIf} from "@angular/common";
 import {SuccessIconComponent} from "../../../../shared/component/SuccessIconComponent";
 import {ErrorIconComponent} from "../../../../shared/component/ErrorIconComponent";
+import {finalize} from "rxjs";
+import {MatButtonToggle, MatButtonToggleChange, MatButtonToggleGroup} from "@angular/material/button-toggle";
+
+export enum SELECT_TYPE {START = 'start', END = 'end', WAYPOINT = 'waypoint'}
 
 @Component({
   selector: 'app-route-edit',
@@ -34,15 +37,17 @@ import {ErrorIconComponent} from "../../../../shared/component/ErrorIconComponen
     MatButton,
     MatCheckbox,
     TrackViewerSvgComponent,
-    MatChip,
     NgIf,
     SuccessIconComponent,
-    ErrorIconComponent
+    ErrorIconComponent,
+    MatButtonToggle,
+    MatButtonToggleGroup,
+    FormsModule
   ],
   templateUrl: './route-edit.component.html',
   styleUrl: './route-edit.component.css'
 })
-export class RouteEditComponent implements OnInit {
+export class RouteEditComponent {
 
   private routeService = inject(RouteService);
   private snackBar = inject(SnackBar);
@@ -61,25 +66,19 @@ export class RouteEditComponent implements OnInit {
   });
   readonly selectEndBlockDialog = inject(MatDialog);
 
+  protected selectType: SELECT_TYPE = SELECT_TYPE.START;
+
   protected COLOR_START = '#ec668c';
   protected COLOR_END = '#edb555';
-  protected COLOR_WAYPOINT = 'purple';
+  protected COLOR_WAYPOINT = '#55087c';
 
-  private selectionType: 'start' | 'end' | 'waypoint' | undefined;
   private lastStart: TrackElement<any> | undefined;
   private lastEnd: TrackElement<any> | undefined;
+  private trackElements: TrackElement<any>[] = [];
   protected trackStatus: boolean | undefined = undefined;
-  protected originalBlockStraightFillColor: string | null = '';
-  protected originalWaypointFillColor: string | null = '';
   protected showViewer = true;
 
   @ViewChild(TrackViewerSvgComponent) trackViewer!: TrackViewerSvgComponent;
-
-  ngOnInit() {
-    this.routeService.loadRoute(this.routeId()).subscribe(data => {
-      this.setRoute(data);
-    });
-  }
 
   onSubmit() {
     let routeToUpdate = this.$route();
@@ -109,90 +108,128 @@ export class RouteEditComponent implements OnInit {
     this.buildRouteOnTrack();
   }
 
-  protected selectTrackStart() {
-    this.selectionType = 'start';
-  }
-
-  protected selectTrackEnd() {
-    this.selectionType = 'end';
-  }
-
-  protected selectTrackWaypoint() {
-    this.selectionType = 'waypoint';
-  }
-
   protected onTrackPartClicked(trackEvent: TrackElement<any>) {
+    this.removeHighlight(trackEvent);
+
     // TODO cleanup code and maybe extract
-    switch (this.selectionType + ':' + trackEvent.trackPart.trackPartType) {
+    switch (this.selectType + ':' + trackEvent.trackPart.trackPartType) {
       case 'start:BlockStraight':
-        this.originalBlockStraightFillColor = trackEvent.svgElement.getAttribute('fill');
-        if (this.lastStart) {
-          this.lastStart.svgElement.setAttribute('fill', this.originalBlockStraightFillColor!);
-        }
-        trackEvent.svgElement.setAttribute('fill', this.COLOR_START);
         this.$route().start = <BlockStraight>trackEvent.trackPart;
         this.lastStart = trackEvent;
 
-        this.buildRouteOnTrack();
+        this.buildRouteOnTrack(true);
         break;
       case 'end:BlockStraight':
         this.selectEndTrackBlock(trackEvent.trackPart as BlockStraight).subscribe(result => {
           if (result) {
-            this.originalBlockStraightFillColor = trackEvent.svgElement.getAttribute('fill');
-            if (this.lastEnd) {
-              this.lastEnd.svgElement.setAttribute('fill', this.originalBlockStraightFillColor!);
-            }
-            trackEvent.svgElement.setAttribute('fill', this.COLOR_END);
-
             this.$route().end = result;
             this.lastEnd = trackEvent;
 
-            this.buildRouteOnTrack();
+            this.buildRouteOnTrack(true);
           }
         });
         break;
       case 'waypoint:Straight':
       case 'waypoint:Curve':
-        if (!this.originalWaypointFillColor) {
-          this.originalWaypointFillColor = trackEvent.svgElement.getAttribute('fill');
-        }
         if (this.$route().waypoints &&
           this.$route().waypoints!.find(waypoint =>
             this.equalGridPos(waypoint, trackEvent.trackPart.gridPosition))) {
+          this.$route().waypoints = this.$route().waypoints!.filter(
+            waypoint => !this.equalGridPos(waypoint, trackEvent.trackPart.gridPosition));
 
-          this.$route().waypoints = this.$route().waypoints!.filter(waypoint => !this.equalGridPos(waypoint, trackEvent.trackPart.gridPosition))
-          trackEvent.svgElement.setAttribute('fill', this.originalWaypointFillColor!);
+          this.buildRouteOnTrack(true);
         } else {
           let waypoint: Straight | Curve = trackEvent.trackPart;
           if (!this.$route().waypoints) {
             this.$route().waypoints = new Array<GridPosition>;
           }
           this.$route().waypoints!.push(waypoint.gridPosition!);
-          trackEvent.svgElement.setAttribute('fill', this.COLOR_WAYPOINT);
+
+          this.buildRouteOnTrack(true);
         }
-        this.buildRouteOnTrack();
         break;
     }
   }
 
-  private buildRouteOnTrack() {
-    this.routeService.buildTrack(this.$route()).subscribe({
+  private buildRouteOnTrack(repaint = false) {
+    this.routeService.buildTrack(this.$route())
+    .pipe(
+      finalize(() => {
+        if (repaint) this.repaintTrackViewer();
+      })
+    )
+    .subscribe({
       next: (track) => {
         this.trackStatus = true;
         this.$route().track = track;
-        this.repaintTrackViewer();
       },
       error: () => {
         this.trackStatus = false;
         this.$route().track = {};
-        this.repaintTrackViewer();
       }
-    })
+    });
   }
 
   private repaintTrackViewer() {
-    this.showViewer = false;
-    setTimeout(() => this.showViewer = true);
+    this.paintRoute(this.trackElements);
+  }
+
+  protected onTrackReady($event: TrackElement<any>[]) {
+    this.routeService.loadRoute(this.routeId()).subscribe(data => {
+      this.trackElements = $event;
+      this.setRoute(data);
+      this.paintRoute($event);
+    });
+  }
+
+  private paintRoute($event: TrackElement<any>[]) {
+    let route = this.$route();
+    $event.forEach(trackElement => {
+      this.removeHighlight(trackElement);
+
+      // highlight by type
+      let color = undefined;
+      if (trackElement.trackPart.id == route.start?.id
+        || (this.lastStart && trackElement.trackPart.id == this.lastStart.trackPart.id)) {
+        color = this.COLOR_START;
+      } else if (route.waypoints?.some(e => this.equalGridPos(e, trackElement.trackPart.gridPosition))) {
+        color = this.COLOR_WAYPOINT;
+      } else if ((route.end
+        && trackElement.trackPart.trackPartType === 'BlockStraight'
+          && (trackElement.trackPart as BlockStraight).allTrackBlocks?.some(trackBlock => trackBlock.id == route.end?.id))
+        || (this.lastEnd && trackElement.trackPart.id == this.lastEnd.trackPart.id)) {
+        color = this.COLOR_END;
+
+      } else if (route.track && route.track.gridPositions
+        && route.track.gridPositions.find(g => this.equalGridPos(g, trackElement.trackPart.gridPosition))) {
+        // find elements of track from route by grid pos
+        color = 'blue'
+      }
+      if (color) {
+        this.highlightTrackPart(trackElement.svgElement, color);
+      }
+    });
+  }
+
+  private removeHighlight(trackElement: TrackElement<any>) {
+    trackElement.svgElement
+    .querySelectorAll(".track-highlight")
+    .forEach(el => el.remove());
+  }
+
+  private highlightTrackPart(svgElement: Element, color: string) {
+    const bbox = (svgElement as SVGGraphicsElement).getBBox();
+    const highlight = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+    highlight.classList.add("track-highlight");
+    highlight.setAttribute('x', String(bbox.x));
+    highlight.setAttribute('y', String(bbox.y));
+    highlight.setAttribute('width', String(bbox.width));
+    highlight.setAttribute('height', String(bbox.height));
+    highlight.setAttribute('fill', color);
+    highlight.setAttribute('stroke', color);
+    highlight.setAttribute('stroke-width', '4');
+
+    svgElement.prepend(highlight);
   }
 
   protected selectEndTrackBlock(blockStraight: BlockStraight) {
@@ -201,32 +238,13 @@ export class RouteEditComponent implements OnInit {
     }).afterClosed();
   }
 
-  protected onTrackReady($event: TrackElement<any>[]) {
-    let route = this.$route();
-    $event.forEach(trackElement => {
-      // highlight by type
-      let color = undefined;
-      if (trackElement.trackPart.id == route.start?.id) {
-        color = this.COLOR_START;
-      } else if (route.waypoints?.some(e => this.equalGridPos(e, trackElement.trackPart.gridPosition))) {
-        color = this.COLOR_WAYPOINT;
-      } else if (route.end
-        && trackElement.trackPart.trackPartType === 'BlockStraight'
-        && (trackElement.trackPart as BlockStraight).allTrackBlocks?.some(trackBlock => trackBlock.id == route.end?.id)) {
-        color = this.COLOR_END;
-
-      } else if (route.track !== undefined && route.track.gridPositions
-        && route.track.gridPositions.find(g => this.equalGridPos(g, trackElement.trackPart.gridPosition))) {
-        // find elements of track from route by grid pos
-        color = 'blue'
-      }
-      if (color) {
-        trackElement.svgElement.setAttribute('fill', color);
-      }
-    })
-  }
-
   private equalGridPos(gridPos1: GridPosition | undefined, gridPos2: GridPosition | undefined) {
     return gridPos1 && gridPos2 && (gridPos1.x == gridPos2.x && gridPos1.y == gridPos2.y);
   }
+
+  onToggleChange(e: MatButtonToggleChange) {
+    this.selectType = e.value;
+  }
+
+  protected readonly SELECT_TYPE = SELECT_TYPE;
 }

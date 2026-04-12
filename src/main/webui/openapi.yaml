@@ -52,14 +52,21 @@ components:
           $ref: "#/components/schemas/TrackBlock"
         rightTrackBlock:
           $ref: "#/components/schemas/TrackBlock"
+        endGridPosition:
+          $ref: "#/components/schemas/GridPosition"
         allGridPositions:
           type: array
           items:
             $ref: "#/components/schemas/GridPosition"
+        gridLength:
+          type: integer
+          format: int32
         allTrackBlocks:
           type: array
           items:
             $ref: "#/components/schemas/TrackBlock"
+        displayValue:
+          type: string
     BusBitDto:
       type: object
       properties:
@@ -730,6 +737,8 @@ components:
           $ref: "#/components/schemas/DRIVING_LEVEL_ADJUST_TYPE"
         feedback:
           type: boolean
+        displayValue:
+          type: string
     TrackBlockDataChangedEvent:
       type: object
       description: Track-block update sent via WebSocket

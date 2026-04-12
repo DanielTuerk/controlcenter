@@ -1,6 +1,5 @@
 package net.wbz.moba.controlcenter.shared.track.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.google.common.collect.Lists;
 import java.util.Collection;
 import java.util.HashSet;
@@ -18,7 +17,6 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
  *
  * @author Daniel Tuerk
  */
-@JsonIgnoreProperties({"displayValue", "endGridPosition", "gridLength"})
 @Schema(
     description = "type for a track part",
     allOf = {Straight.class}

@@ -16,9 +16,18 @@
       </div>
       <div>
         <label>Track: </label>
-        <mat-chip [style.background-color]="COLOR_START" (click)="selectTrackStart()">Start</mat-chip>&nbsp;
-        <mat-chip [style.background-color]="COLOR_END" (click)="selectTrackEnd()">End</mat-chip>&nbsp;
-        <mat-chip [style.background-color]="COLOR_WAYPOINT" (click)="selectTrackWaypoint()">Waypoint</mat-chip>&nbsp;
+
+        <mat-button-toggle-group name="selectType"  (change)="onToggleChange($event)">
+          <mat-button-toggle [value]="SELECT_TYPE.START">
+            Start
+          </mat-button-toggle>
+          <mat-button-toggle [value]="SELECT_TYPE.END">
+            End
+          </mat-button-toggle>
+          <mat-button-toggle [value]="SELECT_TYPE.WAYPOINT">
+            Waypoint
+          </mat-button-toggle>
+        </mat-button-toggle-group>
         Status:
         @if (trackStatus) {
           <app-success-icon/>

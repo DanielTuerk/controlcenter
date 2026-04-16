@@ -158,3 +158,11 @@
     </div>
   </mat-card-content>
 </mat-card>
+<mat-card appearance="outlined">
+  <mat-card-content>
+    <div>
+      <label>Stop Block: </label>
+      <app-track-block-select [trackBlocks]="trackBlocks()" [(selected)]="selectedStopBlock"></app-track-block-select>
+    </div>
+  </mat-card-content>
+</mat-card>

@@ -50,7 +50,6 @@ public class TrackViewerService {
         trackRegistration.reregisterTrack();
     }
 
-
     public void toggleTrackPart(AbstractTrackPart trackPart) throws DeviceAccessException {
         if (trackPart instanceof HasToggleFunction) {
             var trackPartConfig = ((HasToggleFunction) trackPart).getToggleFunction();

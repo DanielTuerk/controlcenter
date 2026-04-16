@@ -37,4 +37,9 @@ public class SignalEntity extends StraightEntity {
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     public BusDataConfigurationEntity signalConfigWhite;
 
+    /**
+     * Block to immediately stop the train.
+     */
+    @ManyToOne(fetch = FetchType.EAGER)
+    public TrackBlockEntity stopBlock;
 }

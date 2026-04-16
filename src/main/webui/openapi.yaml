@@ -611,6 +611,8 @@ components:
           $ref: "#/components/schemas/BusDataConfiguration"
         signalConfigWhite:
           $ref: "#/components/schemas/BusDataConfiguration"
+        stopBlock:
+          $ref: "#/components/schemas/TrackBlock"
         signalConfigurations:
           type: array
           items:

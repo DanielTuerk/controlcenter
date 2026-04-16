@@ -155,6 +155,8 @@ public class TrackPartManager {
             signalEntity.signalConfigYellow2 = getMergedBusDataConfig(signal.getSignalConfigYellow2());
             signalEntity.signalConfigWhite = getMergedBusDataConfig(signal.getSignalConfigWhite());
 
+            signalEntity.stopBlock = getMergedTrackBlockEntity(signal.getStopBlock());
+
             persistTrackPart(signalEntity);
         } else {
             throw new IllegalStateException(
@@ -201,7 +203,6 @@ public class TrackPartManager {
     private void persistTrackPart(AbstractTrackPartEntity entity) {
         trackPartRepository.persist(entity);
         trackProvider.markDirty();
-//        eventBroadcaster.fireEvent(new TrackPartDataChangedEvent(entity.id)); TODO can be removed?
     }
 
     private void move(AbstractTrackPartEntity trackPartEntity, GridPosition newGridPosition) {

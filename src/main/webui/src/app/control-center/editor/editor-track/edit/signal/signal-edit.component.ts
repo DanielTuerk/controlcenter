@@ -8,6 +8,7 @@ import {MatButtonToggle, MatButtonToggleGroup} from "@angular/material/button-to
 import {MatFormField, MatInput, MatLabel} from "@angular/material/input";
 import {NgIf, NgSwitch, NgSwitchCase} from "@angular/common";
 import {MatCheckbox} from "@angular/material/checkbox";
+import {TrackBlockSelectComponent} from "../../../../common/track-block-select/track-block-select.component";
 
 @Component({
   selector: 'app-signal',
@@ -26,7 +27,8 @@ import {MatCheckbox} from "@angular/material/checkbox";
     NgIf,
     MatCheckbox,
     NgSwitch,
-    NgSwitchCase
+    NgSwitchCase,
+    TrackBlockSelectComponent
   ],
   templateUrl: './signal-edit.component.html',
   styleUrl: './signal-edit.component.css'
@@ -61,6 +63,8 @@ export class SignalEditComponent implements EditComponent<Signal>, OnInit {
   protected whiteBitFormField: FormControl<number | null> = new FormControl(null);
   protected whiteBitStateFormField: FormControl<boolean | null> = new FormControl(null);
 
+  protected selectedStopBlock: TrackBlock | null = null;
+
   private trackService = inject(TrackService);
   protected trackBlocks = signal<TrackBlock[]>([]);
   private signal: Signal | null = null;
@@ -69,7 +73,14 @@ export class SignalEditComponent implements EditComponent<Signal>, OnInit {
   ngOnInit(): void {
     this.trackService.loadTrackBlocks().subscribe(data => {
       this.trackBlocks.set(data);
+      this.updateSelectedTrackBlocks()
     });
+  }
+  private updateSelectedTrackBlocks() {
+    if (!this.signal || this.trackBlocks().length === 0) return;
+
+    const blocks = this.trackBlocks();
+    this.selectedStopBlock = blocks.find(b => b.id === this.signal!.stopBlock?.id) ?? null;
   }
 
   formFields(): Object {
@@ -115,6 +126,8 @@ export class SignalEditComponent implements EditComponent<Signal>, OnInit {
     this.whiteAddressFormField.setValue(this.signal.signalConfigWhite?.address ?? null);
     this.whiteBitFormField.setValue(this.signal.signalConfigWhite?.bit ?? null);
     this.whiteBitStateFormField.setValue(this.signal.signalConfigWhite?.bitState ?? null);
+
+    this.updateSelectedTrackBlocks();
   }
 
   applyChanges(signal: Signal): Signal {
@@ -161,6 +174,8 @@ export class SignalEditComponent implements EditComponent<Signal>, OnInit {
     signal.signalConfigWhite.address = this.whiteAddressFormField.getRawValue() ?? undefined;
     signal.signalConfigWhite.bit = this.whiteBitFormField.getRawValue() ?? undefined;
     signal.signalConfigWhite.bitState = this.whiteBitStateFormField.getRawValue() ?? false;
+
+    signal.stopBlock = this.selectedStopBlock ?? undefined;
 
     return signal;
   }

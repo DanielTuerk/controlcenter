@@ -9,7 +9,6 @@ import net.wbz.moba.controlcenter.shared.bus.BusAddressBit;
 import net.wbz.moba.controlcenter.shared.track.model.BusDataConfiguration;
 import net.wbz.moba.controlcenter.shared.track.model.Signal;
 import net.wbz.moba.controlcenter.shared.track.model.Signal.LIGHT;
-import net.wbz.moba.controlcenter.shared.track.model.Signal.TYPE;
 
 /**
  * @author Daniel Tuerk
@@ -30,84 +29,84 @@ public class SignalStateService {
                         !lightFunction.getBitState()));
             }
         }
+
         // set lights to 'on' for the signal function
-        switch (signalFunction) {
-            case HP0:
-                switch (signalType) {
-                    case BLOCK:
+        switch (signalType) {
+            case BLOCK:
+                switch (signalFunction) {
+                    case HP0:
                         availableLightConfig.put(Signal.LIGHT.RED1,
                             convertFunctionConfig(signal.getSignalConfiguration(Signal.LIGHT.RED1)));
                         break;
-                    case BEFORE:
+                    case HP1:
+                    case HP2:
+                        availableLightConfig.put(Signal.LIGHT.GREEN1,
+                            convertFunctionConfig(signal.getSignalConfiguration(Signal.LIGHT.GREEN1)));
+                        break;
+                }
+            case BEFORE:
+                switch (signalFunction) {
+                    case HP0:
                         availableLightConfig.put(Signal.LIGHT.YELLOW1,
                             convertFunctionConfig(signal.getSignalConfiguration(Signal.LIGHT.YELLOW1)));
                         availableLightConfig.put(Signal.LIGHT.YELLOW2,
                             convertFunctionConfig(signal.getSignalConfiguration(Signal.LIGHT.YELLOW2)));
                         break;
-                    case EXIT:
-                        availableLightConfig.put(Signal.LIGHT.RED1,
-                            convertFunctionConfig(signal.getSignalConfiguration(Signal.LIGHT.RED1)));
-                        availableLightConfig.put(Signal.LIGHT.RED2,
-                            convertFunctionConfig(signal.getSignalConfiguration(Signal.LIGHT.RED2)));
-                        break;
-                    case ENTER:
-                        availableLightConfig.put(Signal.LIGHT.RED1,
-                            convertFunctionConfig(signal.getSignalConfiguration(Signal.LIGHT.RED1)));
-                        break;
-                }
-                break;
-            case HP1:
-                switch (signalType) {
-                    case BLOCK:
-                        availableLightConfig.put(Signal.LIGHT.GREEN1,
-                            convertFunctionConfig(signal.getSignalConfiguration(Signal.LIGHT.GREEN1)));
-                        break;
-                    case BEFORE:
+                    case HP1:
                         availableLightConfig.put(Signal.LIGHT.GREEN1,
                             convertFunctionConfig(signal.getSignalConfiguration(Signal.LIGHT.GREEN1)));
                         availableLightConfig.put(Signal.LIGHT.GREEN2,
                             convertFunctionConfig(signal.getSignalConfiguration(Signal.LIGHT.GREEN2)));
                         break;
-                    case EXIT:
-                        availableLightConfig.put(Signal.LIGHT.GREEN1,
-                            convertFunctionConfig(signal.getSignalConfiguration(Signal.LIGHT.GREEN1)));
-                        break;
-                    case ENTER:
-                        availableLightConfig.put(Signal.LIGHT.GREEN1,
-                            convertFunctionConfig(signal.getSignalConfiguration(Signal.LIGHT.GREEN1)));
-                        break;
-                }
-                break;
-            case HP2:
-                switch (signalType) {
-                    case BEFORE:
+                    case HP2:
                         availableLightConfig.put(Signal.LIGHT.GREEN1,
                             convertFunctionConfig(signal.getSignalConfiguration(Signal.LIGHT.GREEN1)));
                         availableLightConfig.put(Signal.LIGHT.YELLOW2,
                             convertFunctionConfig(signal.getSignalConfiguration(Signal.LIGHT.YELLOW2)));
                         break;
-                    case EXIT:
+                }
+            case EXIT:
+                switch (signalFunction) {
+                    case HP0:
+                        availableLightConfig.put(Signal.LIGHT.RED1,
+                            convertFunctionConfig(signal.getSignalConfiguration(Signal.LIGHT.RED1)));
+                        availableLightConfig.put(Signal.LIGHT.RED2,
+                            convertFunctionConfig(signal.getSignalConfiguration(Signal.LIGHT.RED2)));
+                        break;
+                    case HP1:
+                        availableLightConfig.put(Signal.LIGHT.GREEN1,
+                            convertFunctionConfig(signal.getSignalConfiguration(Signal.LIGHT.GREEN1)));
+                        break;
+                    case HP2:
                         availableLightConfig.put(Signal.LIGHT.GREEN1,
                             convertFunctionConfig(signal.getSignalConfiguration(Signal.LIGHT.GREEN1)));
                         availableLightConfig.put(Signal.LIGHT.YELLOW1,
                             convertFunctionConfig(signal.getSignalConfiguration(Signal.LIGHT.YELLOW1)));
                         break;
-                    case ENTER:
+                    case HP0_SH1:
+                        availableLightConfig.put(LIGHT.RED1,
+                            convertFunctionConfig(signal.getSignalConfiguration(LIGHT.RED1)));
+                        availableLightConfig.put(LIGHT.WHITE,
+                            convertFunctionConfig(signal.getSignalConfiguration(LIGHT.WHITE)));
+                        break;
+                }
+            case ENTER:
+                switch (signalFunction) {
+                    case HP0:
+                        availableLightConfig.put(Signal.LIGHT.RED1,
+                            convertFunctionConfig(signal.getSignalConfiguration(Signal.LIGHT.RED1)));
+                        break;
+                    case HP1:
+                        availableLightConfig.put(Signal.LIGHT.GREEN1,
+                            convertFunctionConfig(signal.getSignalConfiguration(Signal.LIGHT.GREEN1)));
+                        break;
+                    case HP2:
                         availableLightConfig.put(Signal.LIGHT.GREEN1,
                             convertFunctionConfig(signal.getSignalConfiguration(Signal.LIGHT.GREEN1)));
                         availableLightConfig.put(Signal.LIGHT.YELLOW1,
                             convertFunctionConfig(signal.getSignalConfiguration(Signal.LIGHT.YELLOW1)));
                         break;
                 }
-                break;
-            case HP0_SH1:
-                if (signalType == TYPE.EXIT) {
-                    availableLightConfig.put(LIGHT.RED1,
-                        convertFunctionConfig(signal.getSignalConfiguration(LIGHT.RED1)));
-                    availableLightConfig.put(LIGHT.WHITE,
-                        convertFunctionConfig(signal.getSignalConfiguration(LIGHT.WHITE)));
-                }
-                break;
         }
         return new HashSet<>(availableLightConfig.values());
     }

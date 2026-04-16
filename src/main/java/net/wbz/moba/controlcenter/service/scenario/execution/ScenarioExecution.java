@@ -15,6 +15,7 @@ import java.util.stream.Stream;
 import net.wbz.moba.controlcenter.BusAddressIdentifier;
 import net.wbz.moba.controlcenter.SelectrixHelper;
 import net.wbz.moba.controlcenter.service.scenario.RouteListener;
+import net.wbz.moba.controlcenter.service.track.TrackProvider;
 import net.wbz.moba.controlcenter.service.track.TrackViewerService;
 import net.wbz.moba.controlcenter.service.train.TrainException;
 import net.wbz.moba.controlcenter.service.train.TrainManager;
@@ -24,6 +25,7 @@ import net.wbz.moba.controlcenter.shared.scenario.Route.ROUTE_RUN_STATE;
 import net.wbz.moba.controlcenter.shared.scenario.RouteSequence;
 import net.wbz.moba.controlcenter.shared.scenario.Scenario;
 import net.wbz.moba.controlcenter.shared.scenario.Scenario.RUN_STATE;
+import net.wbz.moba.controlcenter.shared.track.model.BlockStraight;
 import net.wbz.moba.controlcenter.shared.track.model.BusDataConfiguration;
 import net.wbz.moba.controlcenter.shared.track.model.Signal;
 import net.wbz.moba.controlcenter.shared.track.model.Signal.FUNCTION;
@@ -66,7 +68,8 @@ abstract class ScenarioExecution implements Callable<Void> {
     private final TrainManager trainManager;
     private final List<RouteListener> routeListeners;
     private final RouteExecutionObserver routeExecutionObserver;
-//    private final ExecutorService executor;
+    private final TrackProvider trackProvider;
+
     /**
      * Flag for stop called to scenario.
      */
@@ -78,7 +81,7 @@ abstract class ScenarioExecution implements Callable<Void> {
 
     ScenarioExecution(Scenario scenario, TrackViewerService trackViewerService, TrainService trainService,
         DeviceManager deviceManager, TrainManager trainManager, List<RouteListener> routeListeners,
-        RouteExecutionObserver routeExecutionObserver) {
+        RouteExecutionObserver routeExecutionObserver, TrackProvider trackProvider) {
         this.scenario = scenario;
         this.trackViewerService = trackViewerService;
         this.trainService = trainService;
@@ -86,6 +89,7 @@ abstract class ScenarioExecution implements Callable<Void> {
         this.trainManager = trainManager;
         this.routeListeners = routeListeners;
         this.routeExecutionObserver = routeExecutionObserver;
+        this.trackProvider = trackProvider;
     }
 
     @Override
@@ -185,7 +189,7 @@ abstract class ScenarioExecution implements Callable<Void> {
             }
             /*
               Remove the last running for the end of the scenario sequence.
-              Otherwise it will be only removed for the start of next route in the sequence which isn't available for
+              Otherwise, it will be only removed for the start of next route in the sequence which isn't available for
               the
               last route.
              */
@@ -234,7 +238,8 @@ abstract class ScenarioExecution implements Callable<Void> {
         }
 
         updateTrack(scenario, routeSequence.getRoute());
-        Optional.ofNullable(routeExecution.getSignal()).ifPresent(this::switchSignalToDrive);
+        Optional.ofNullable(routeExecution.getSignal()).ifPresent(signal -> switchSignalToDrive(signal,
+            routeExecution.getNextRouteSequence().getRoute().getStart()));
 
         final Train train = routeExecution.getTrain();
         if (train.getDrivingLevel() <= 0) {
@@ -268,7 +273,6 @@ abstract class ScenarioExecution implements Callable<Void> {
                 LOG.error("reserve next route", e);
             }
         }
-
     }
 
     /**
@@ -286,8 +290,9 @@ abstract class ScenarioExecution implements Callable<Void> {
                 routeExecutionObserver.addRunningRouteSequence(routeExecution.getNextRouteSequence());
             }
 
-            Optional<Signal> startSignal = findStartSignal(routeExecution.getNextRouteSequence().getRoute());
-            startSignal.ifPresent(signal -> trackViewerService.switchSignal(signal, FUNCTION.HP1));
+            findStartSignal(routeExecution.getNextRouteSequence().getRoute())
+                .ifPresent(signal -> switchSignalToDrive(signal,
+                    routeExecution.getNextRouteSequence().getRoute().getStart()));
         }
     }
 
@@ -410,25 +415,23 @@ abstract class ScenarioExecution implements Callable<Void> {
     }
 
     /**
-     * Find start signal of {@link Route} start block.
-     *
-     * TODO
+     * Find start signal of {@link Route}.
      *
      * @param route {@link Route}
      * @return {@link Signal}
-     * @deprecated aktuell findet der 2 an beiden enden und gibt nur 1 zurück, wenn der block auf beiden seiten ein
-     * signal hat.
      */
-    @Deprecated
     private Optional<Signal> findStartSignal(Route route) {
-        // TODO migrate
-//        for (Signal availableSignal : signalBlockRegistry.getSignals()) {
-//            if (availableSignal.getStopBlock() != null && route.getStart() != null) {
-//                if (route.getStart().getAllTrackBlocks().contains(availableSignal.getStopBlock())) {
-//                    return Optional.of(availableSignal);
-//                }
-//            }
-//        }
+        var signals = trackProvider.getTrack().stream()
+            .filter(trackPart -> trackPart instanceof Signal)
+            .map(trackPart -> (Signal) trackPart)
+            .collect(Collectors.toSet());
+        for (Signal availableSignal : signals) {
+            if (availableSignal.getStopBlock() != null && route.getStart() != null) {
+                if (route.getStart().getAllTrackBlocks().contains(availableSignal.getStopBlock())) {
+                    return Optional.of(availableSignal);
+                }
+            }
+        }
         return Optional.empty();
     }
 
@@ -490,9 +493,10 @@ abstract class ScenarioExecution implements Callable<Void> {
         }
     }
 
-    private void switchSignalToDrive(final Signal signal) {
-        LOG.infof("switch signal to HP1 %s", signal);
-        trackViewerService.switchSignal(signal, FUNCTION.HP1);
+    private void switchSignalToDrive(final Signal signal, BlockStraight startOfNextRoute) {
+        var signalFunction = nextSignalFunction(startOfNextRoute);
+        LOG.infof("switch signal to %s %s", signalFunction, signal);
+        trackViewerService.switchSignal(signal, signalFunction);
 
         // signal have no monitoring block and will never get the HP0 after drive
         new Thread(() -> {
@@ -507,6 +511,23 @@ abstract class ScenarioExecution implements Callable<Void> {
                 LOG.error("error during delayed HP0 switch", e);
             }
         }).start();
+    }
+
+    private FUNCTION nextSignalFunction(BlockStraight startOfNextRoute) {
+        if (startOfNextRoute != null && deviceManager.getConnectedDevice().isPresent()) {
+            var device = deviceManager.getConnectedDevice().get();
+            return startOfNextRoute.getAllTrackBlocks().stream().anyMatch(trackBlock -> {
+                try {
+                    return device.getBusAddress(trackBlock.getBlockFunction().getBus(),
+                            trackBlock.getBlockFunction().getAddress())
+                        .getBitState(trackBlock.getBlockFunction().getBit());
+                } catch (DeviceAccessException e) {
+                    LOG.error("cannot get device address for block of start", e);
+                    return false;
+                }
+            }) ? FUNCTION.HP2 : FUNCTION.HP1;
+        }
+        return FUNCTION.HP1;
     }
 
     private void startTrain(Train train, Integer startDrivingLevel) throws InterruptedException {
@@ -525,7 +546,7 @@ abstract class ScenarioExecution implements Callable<Void> {
                 // delay to end the route to let the train stop for a bit at the route end (or signal for next route)
                 Thread.sleep(FINISH_ROUTE_DELAY_MILLIS);
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                LOG.error("error during delayed HP0 switch", e);
             }
         }
         blockRunning = false;

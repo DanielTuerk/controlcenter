@@ -27,6 +27,8 @@ public class Signal extends Straight {
     private BusDataConfiguration signalConfigYellow2;
     private BusDataConfiguration signalConfigWhite;
 
+    private TrackBlock stopBlock;
+
     public TYPE getType() {
         return type;
     }
@@ -156,6 +158,14 @@ public class Signal extends Straight {
         return lightConfigs;
     }
 
+    public TrackBlock getStopBlock() {
+        return stopBlock;
+    }
+
+    public void setStopBlock(TrackBlock stopBlock) {
+        this.stopBlock = stopBlock;
+    }
+
     /**
      * Types of signal with corresponding mapping of the lights.
      */
@@ -185,7 +195,7 @@ public class Signal extends Straight {
 
     @Override
     public String toString() {
-        return "Signal{type=%s, id=%d}".formatted(type, getId());
+        return "Signal{type=%s, id=%d, stopBlock=%s}".formatted(type, getId(), stopBlock);
     }
 
     /**

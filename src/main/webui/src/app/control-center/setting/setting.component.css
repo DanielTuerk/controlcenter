@@ -1,4 +1,10 @@
-mat-sidenav {
-  width: 180px;
-}
+/*mat-sidenav {*/
+/*  width: 180px;*/
+/*}*/
 
+.mat-sidenav {
+  width: fit-content;
+  min-width: unset;
+  max-width: unset;
+  white-space: nowrap;
+}

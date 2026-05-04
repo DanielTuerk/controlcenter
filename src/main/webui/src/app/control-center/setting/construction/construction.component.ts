@@ -14,7 +14,7 @@ import {
 } from "@angular/material/table";
 import {MatIcon} from "@angular/material/icon";
 import {RouterLink} from "@angular/router";
-import {MatCard, MatCardContent, MatCardHeader, MatCardTitle} from "@angular/material/card";
+import {MatCardContent, MatCardHeader, MatCardTitle} from "@angular/material/card";
 import {Construction} from "../../../../shared/openapi-gen";
 import {MatDialog} from "@angular/material/dialog";
 import {ConstructionSubscription} from "../../../shared/websocket/construction.subscription";
@@ -43,7 +43,6 @@ import {MatGridList, MatGridTile} from "@angular/material/grid-list";
     MatRowDef,
     MatTable,
     RouterLink,
-    MatCard,
     MatCardContent,
     MatCardHeader,
     MatCardTitle,

@@ -3,7 +3,7 @@ import {DeviceInfo, TYPE} from "../../../../shared/openapi-gen";
 import {DeviceService} from "../../../shared/device.service";
 import {ConfirmDialogComponent} from "../../common/confirm-dialog/confirm-dialog.component";
 import {MatDialog} from "@angular/material/dialog";
-import {MatCard, MatCardContent, MatCardHeader, MatCardTitle} from "@angular/material/card";
+import {MatCardContent, MatCardHeader, MatCardTitle} from "@angular/material/card";
 import {
   MatCell,
   MatCellDef,
@@ -27,7 +27,6 @@ import {DeviceSubscription} from "../../../shared/websocket/device.subscription"
     MatCardContent,
     MatCardTitle,
     MatCardHeader,
-    MatCard,
     MatTable,
     MatButton,
     RouterLink,
@@ -62,7 +61,7 @@ export class DeviceComponent implements OnInit {
       this.isConnected = device.eventType === TYPE.Connected;
     });
 
-    this.deviceSubscription.deviceDataChanged().subscribe(event => {
+    this.deviceSubscription.deviceDataChanged().subscribe(() => {
       this.fetchDevices();
     });
   }

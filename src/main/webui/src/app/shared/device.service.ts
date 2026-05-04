@@ -1,9 +1,9 @@
 import {inject, Injectable, signal} from "@angular/core";
 import {HttpClient} from "@angular/common/http";
 import {SnackBar} from "../control-center/common/snack-bar.component";
-import {DeviceInfo, Scenario, TYPE} from "../../shared/openapi-gen";
+import {AvailableDevice, DeviceInfo, Scenario, TYPE} from "../../shared/openapi-gen";
 import {catchError} from "rxjs/operators";
-import {EMPTY, Observable} from "rxjs";
+import {EMPTY} from "rxjs";
 import {DeviceSubscription} from "./websocket/device.subscription";
 
 @Injectable({
@@ -36,13 +36,17 @@ export class DeviceService {
   }
 
   loadDevice(deviceId: Number) {
-    return this.httpClient.get<Scenario>('/api/devices/' + deviceId)
+    return this.httpClient.get<Scenario>('/api/devices/' + deviceId);
+  }
+
+  availableDevices() {
+    return this.httpClient.get<AvailableDevice[]>('/api/devices/available');
   }
 
   createDevice(device: DeviceInfo) {
     return this.httpClient.post('/api/devices/', device)
     .pipe(
-      catchError((err: any, caught: Observable<any>) => {
+      catchError((err: any) => {
         this.snackBar.showError(`can't create device: ${err.message}`);
         return EMPTY
       })
@@ -52,7 +56,7 @@ export class DeviceService {
   saveDevice(device: DeviceInfo) {
     return this.httpClient.put('/api/devices/' + device.id, device)
     .pipe(
-      catchError((err: any, caught: Observable<any>) => {
+      catchError((err: any) => {
         this.snackBar.showError(`can't save device ${device.id}: ${err.message}`);
         return EMPTY
       })

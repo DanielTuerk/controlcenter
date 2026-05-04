@@ -13,12 +13,14 @@ import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-import java.util.List;
 import net.wbz.moba.controlcenter.service.bus.DeviceManager;
 import net.wbz.moba.controlcenter.service.bus.DeviceService;
+import net.wbz.moba.controlcenter.shared.device.AvailableDevice;
 import net.wbz.moba.controlcenter.shared.device.DeviceInfo;
 import net.wbz.selectrix4java.device.DeviceAccessException;
 import org.jboss.logging.Logger;
+
+import java.util.List;
 
 @Path("/api/devices")
 @Produces(MediaType.APPLICATION_JSON)
@@ -35,6 +37,12 @@ public class DeviceResource {
     @GET
     public List<DeviceInfo> listAll() {
         return deviceManager.load();
+    }
+
+    @GET
+    @Path("/available")
+    public List<AvailableDevice> getAvailable() {
+        return deviceManager.getAvailable();
     }
 
     @GET

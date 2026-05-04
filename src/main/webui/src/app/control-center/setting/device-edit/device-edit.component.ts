@@ -1,22 +1,23 @@
 import {Component, inject, input, OnInit, signal} from '@angular/core';
 import {FormBuilder, FormControl, FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {MatButton} from "@angular/material/button";
-import {MatCard, MatCardContent, MatCardFooter, MatCardHeader, MatCardTitle} from "@angular/material/card";
+import {MatCardContent, MatCardFooter, MatCardHeader, MatCardTitle} from "@angular/material/card";
 import {FloatLabelType, MatFormField} from "@angular/material/form-field";
 import {MatInput} from "@angular/material/input";
 import {Router, RouterLink} from "@angular/router";
 import {DeviceService} from "../../../shared/device.service";
 import {SnackBar} from "../../common/snack-bar.component";
-import {DeviceInfo, DEVICETYPE} from "../../../../shared/openapi-gen";
+import {AvailableDevice, DeviceInfo, DEVICETYPE} from "../../../../shared/openapi-gen";
 import {MatOption} from "@angular/material/core";
 import {MatSelect} from "@angular/material/select";
+import {NgForOf} from "@angular/common";
+import {MatIcon} from "@angular/material/icon";
 
 @Component({
   selector: 'app-device-edit',
   imports: [
     FormsModule,
     MatButton,
-    MatCard,
     MatCardContent,
     MatCardFooter,
     MatCardHeader,
@@ -26,7 +27,9 @@ import {MatSelect} from "@angular/material/select";
     RouterLink,
     ReactiveFormsModule,
     MatOption,
-    MatSelect
+    MatSelect,
+    NgForOf,
+    MatIcon
   ],
   templateUrl: './device-edit.component.html',
   styleUrl: './device-edit.component.css'
@@ -41,6 +44,7 @@ export class DeviceEditComponent implements OnInit {
 
   deviceId = input.required<Number>();
   device = signal<DeviceInfo>({});
+  availableDevices = signal<AvailableDevice[]>([]);
 
   readonly hideRequiredControl = new FormControl(false);
   readonly floatLabelControl = new FormControl('auto' as FloatLabelType);
@@ -55,6 +59,7 @@ export class DeviceEditComponent implements OnInit {
     this.deviceService.loadDevice(this.deviceId()).subscribe(data => {
       this.setDevice(data);
     });
+    this.reloadAvailableDevices();
   }
 
   onSubmit() {
@@ -73,7 +78,7 @@ export class DeviceEditComponent implements OnInit {
     } else {
       observable = this.deviceService.saveDevice(deviceToUpdate);
     }
-    observable.subscribe(data => {
+    observable.subscribe(() => {
       this.snackBar.showSuccess(`device "${deviceToUpdate.key}" ${deviceToUpdate.id === undefined ? 'created' : 'updated'} successfully.`);
       this.router.navigate(['/cc/settings/device', {}]);
     })
@@ -85,4 +90,10 @@ export class DeviceEditComponent implements OnInit {
     this.form.controls.type.setValue(device.type!.valueOf())
   }
 
+  protected reloadAvailableDevices() {
+    this.availableDevices.set([]);
+    this.deviceService.availableDevices().subscribe(data => {
+      this.availableDevices.set(data);
+    })
+  }
 }

@@ -37,6 +37,13 @@ components:
       properties:
         trackPart:
           $ref: "#/components/schemas/AbstractTrackPart"
+    AvailableDevice:
+      type: object
+      properties:
+        port:
+          type: string
+        name:
+          type: string
     BlockStraight:
       type: object
       description: type for a track part
@@ -1280,6 +1287,20 @@ paths:
         "400":
           description: Bad Request
       summary: Create
+      tags:
+        - Device Resource
+  /api/devices/available:
+    get:
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/AvailableDevice"
+      summary: Get Available
       tags:
       - Device Resource
   /api/devices/disconnect:

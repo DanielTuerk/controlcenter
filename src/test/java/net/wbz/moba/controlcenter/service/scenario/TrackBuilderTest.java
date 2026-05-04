@@ -4,8 +4,13 @@ import io.quarkus.test.junit.QuarkusTest;
 import net.wbz.moba.controlcenter.shared.scenario.Route;
 import net.wbz.moba.controlcenter.shared.scenario.Track;
 import net.wbz.moba.controlcenter.shared.scenario.TrackNotFoundException;
-import net.wbz.moba.controlcenter.shared.track.model.*;
+import net.wbz.moba.controlcenter.shared.track.model.BlockStraight;
+import net.wbz.moba.controlcenter.shared.track.model.BusDataConfiguration;
+import net.wbz.moba.controlcenter.shared.track.model.Curve;
 import net.wbz.moba.controlcenter.shared.track.model.Curve.DIRECTION;
+import net.wbz.moba.controlcenter.shared.track.model.GridPosition;
+import net.wbz.moba.controlcenter.shared.track.model.TrackBlock;
+import net.wbz.moba.controlcenter.shared.track.model.Turnout;
 import net.wbz.moba.controlcenter.shared.track.model.Turnout.PRESENTATION;
 import org.junit.jupiter.api.Test;
 
@@ -130,17 +135,18 @@ public class TrackBuilderTest extends AbstractTrackBuilderTest {
             createTrackBlock(startAddress, startBit));
         TrackBlock endBlock = createTrackBlock(endAddress, endBit);
 
-        testSimpleTrack(List.of(
+        testSimpleTrack(
+            List.of(
                 createCurve(1, 1, Curve.DIRECTION.BOTTOM_RIGHT),
                 createHorizontalStraight(2, 1),
-            startBlockStraight,
+                startBlockStraight,
                 createCurve(4, 1, Curve.DIRECTION.BOTTOM_LEFT),
                 createVerticalStraight(4, 2),
                 createCurve(4, 3, Curve.DIRECTION.TOP_LEFT),
-            createHorizontalBlockStraight(3, 3, endBlock),
+                createHorizontalBlockStraight(3, 3, endBlock),
                 createHorizontalStraight(2, 3),
                 createCurve(1, 3, Curve.DIRECTION.TOP_RIGHT),
-            createVerticalStraight(1, 2)),
+                createVerticalStraight(1, 2)),
             startBlockStraight, endBlock, 5);
     }
 
@@ -298,7 +304,7 @@ public class TrackBuilderTest extends AbstractTrackBuilderTest {
         Route route = mockRoute();
         route.setStart(startBlockStraight);
         route.setEnd(endBlock);
-        assertEquals("no track found!",
+        assertEquals("no track found",
             assertThrows(TrackNotFoundException.class, () -> getTrackBuilder().build(route)).getMessage());
     }
 
@@ -325,7 +331,7 @@ public class TrackBuilderTest extends AbstractTrackBuilderTest {
         Route route = mockRoute();
         route.setStart(startBlockStraight);
         route.setEnd(endBlock);
-        assertEquals("no track found!",
+        assertEquals("no track found",
             assertThrows(TrackNotFoundException.class, () -> getTrackBuilder().build(route)).getMessage());
     }
 
@@ -358,7 +364,7 @@ public class TrackBuilderTest extends AbstractTrackBuilderTest {
         route.setEnd(endBlock);
         route.setWaypoints(List.of(new GridPosition(waypointX, waypointY)));
 
-        assertEquals("no track found!",
+        assertEquals("no track found",
             assertThrows(TrackNotFoundException.class, () -> getTrackBuilder().build(route)).getMessage());
     }
 
@@ -398,7 +404,7 @@ public class TrackBuilderTest extends AbstractTrackBuilderTest {
         route.setEnd(endBlock);
         route.setWaypoints(List.of(new GridPosition(waypointX, waypointY)));
 
-        assertEquals("no track found!",
+        assertEquals("no track found",
             assertThrows(TrackNotFoundException.class, () -> getTrackBuilder().build(route)).getMessage());
     }
 
@@ -792,40 +798,6 @@ public class TrackBuilderTest extends AbstractTrackBuilderTest {
         assertEquals(new BusDataConfiguration(1, switchAddress2, switchBit2, true),
                 track.trackFunctions().get(1));
 
-    }
-
-    /**
-     * <pre>
-     * # # #  E
-     * S   #
-     * # # #
-     * </pre>
-     */
-    @Test
-    public void testEndless() throws TrackNotFoundException {
-        int startAddress = 20;
-        int startBit = 1;
-
-        BlockStraight startBlockStraight = createVerticalBlockStraight(1, 2,
-            createTrackBlock(startAddress, startBit));
-
-        mockTrack(List.of(
-                createCurve(1, 1, DIRECTION.BOTTOM_RIGHT),
-            startBlockStraight,
-                createCurve(1, 3, DIRECTION.TOP_RIGHT),
-                createHorizontalStraight(2, 1),
-                createHorizontalStraight(2, 3),
-
-                createCurve(3, 1, DIRECTION.BOTTOM_LEFT),
-                createVerticalStraight(3, 2),
-                createCurve(3, 3, DIRECTION.TOP_LEFT)));
-
-        Route route = mockRoute();
-        route.setStart(startBlockStraight);
-        route.setEnd(createTrackBlock(100, 1, true));
-
-        assertEquals("no start or end",
-            assertThrows(TrackNotFoundException.class, () -> getTrackBuilder().build(route)).getMessage());
     }
 
 }

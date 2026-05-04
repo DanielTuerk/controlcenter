@@ -1,20 +1,19 @@
 package net.wbz.moba.controlcenter.api.train;
 
-import static io.restassured.RestAssured.given;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 import io.quarkus.test.InjectMock;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.ws.rs.core.MediaType;
-import java.util.List;
-import java.util.Optional;
 import net.wbz.moba.controlcenter.service.train.TrainManager;
 import net.wbz.moba.controlcenter.shared.train.Train;
 import org.junit.jupiter.api.Test;
+
+import java.util.List;
+import java.util.Optional;
+
+import static io.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
+import static org.mockito.Mockito.*;
 
 @QuarkusTest
 class TrainResourceTest {
@@ -31,7 +30,7 @@ class TrainResourceTest {
         when(trainManager.load()).thenReturn(List.of(train));
 
         given()
-            .when().get("/trains")
+            .when().get("/api/trains")
             .then()
             .statusCode(200)
             .body("$.size()", is(1))
@@ -47,7 +46,7 @@ class TrainResourceTest {
         when(trainManager.getById(1L)).thenReturn(Optional.of(train));
 
         given()
-            .when().get("/trains/1")
+            .when().get("/api/trains/1")
             .then()
             .statusCode(200)
             .body("name", equalTo("ICE"));
@@ -58,7 +57,7 @@ class TrainResourceTest {
         when(trainManager.getById(99L)).thenReturn(Optional.empty());
 
         given()
-            .when().get("/trains/99")
+            .when().get("/api/trains/99")
             .then()
             .statusCode(404);
     }
@@ -76,7 +75,7 @@ class TrainResourceTest {
         given()
             .contentType(MediaType.APPLICATION_JSON)
             .body(dto)
-            .when().post("/trains")
+            .when().post("/api/trains")
             .then()
             .statusCode(201)
             .body("id", equalTo(1))
@@ -92,7 +91,7 @@ class TrainResourceTest {
         given()
             .contentType(MediaType.APPLICATION_JSON)
             .body(dto)
-            .when().put("/trains/1")
+            .when().put("/api/trains/1")
             .then()
             .statusCode(200);
 
@@ -108,7 +107,7 @@ class TrainResourceTest {
         given()
             .contentType(MediaType.APPLICATION_JSON)
             .body(dto)
-            .when().put("/trains/99")
+            .when().put("/api/trains/99")
             .then()
             .statusCode(404);
     }
@@ -118,7 +117,7 @@ class TrainResourceTest {
         when(trainManager.deleteById(1L)).thenReturn(true);
 
         given()
-            .when().delete("/trains/1")
+            .when().delete("/api/trains/1")
             .then()
             .statusCode(204);
     }
@@ -128,7 +127,7 @@ class TrainResourceTest {
         when(trainManager.deleteById(99L)).thenReturn(false);
 
         given()
-            .when().delete("/trains/99")
+            .when().delete("/api/trains/99")
             .then()
             .statusCode(404);
     }

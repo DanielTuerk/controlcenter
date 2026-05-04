@@ -4,8 +4,8 @@ import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
 import org.junit.jupiter.api.Test;
 
-import static io.restassured.RestAssured.*;
-import static org.hamcrest.Matchers.*;
+import static io.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.equalTo;
 
 @QuarkusTest
 public class ConstructionResourceTest {
@@ -17,7 +17,7 @@ public class ConstructionResourceTest {
             .contentType(ContentType.JSON)
             .body("{\"name\":\"Bridge Project\"}")
             .when()
-            .post("/constructions")
+            .post("/api/constructions")
             .then()
             .statusCode(201)
             .body("name", equalTo("Bridge Project"))
@@ -28,7 +28,7 @@ public class ConstructionResourceTest {
         given()
             .pathParam("id", id.longValue())
             .when()
-            .get("/constructions/{id}")
+            .get("/api/constructions/{id}")
             .then()
             .statusCode(200)
             .body("name", equalTo("Bridge Project"));
@@ -41,7 +41,7 @@ public class ConstructionResourceTest {
             .contentType(ContentType.JSON)
             .body("{\"name\":\"Old Name\"}")
             .when()
-            .post("/constructions")
+            .post("/api/constructions")
             .then()
             .statusCode(201)
             .extract()
@@ -53,7 +53,7 @@ public class ConstructionResourceTest {
             .body("{\"name\":\"Updated Name\"}")
             .pathParam("id", id)
             .when()
-            .put("/constructions/{id}")
+            .put("/api/constructions/{id}")
             .then()
             .statusCode(200);
 
@@ -62,7 +62,7 @@ public class ConstructionResourceTest {
         given()
             .pathParam("id", id.longValue())
             .when()
-            .get("/constructions/{id}")
+            .get("/api/constructions/{id}")
             .then()
             .statusCode(200)
             .body("name", equalTo("Updated Name"));
@@ -75,7 +75,7 @@ public class ConstructionResourceTest {
             .contentType(ContentType.JSON)
             .body("{\"name\":\"To Be Deleted\"}")
             .when()
-            .post("/constructions")
+            .post("/api/constructions")
             .then()
             .statusCode(201)
             .extract()
@@ -85,7 +85,7 @@ public class ConstructionResourceTest {
         given()
             .pathParam("id", id)
             .when()
-            .delete("/constructions/{id}")
+            .delete("/api/constructions/{id}")
             .then()
             .statusCode(204);
 
@@ -93,7 +93,7 @@ public class ConstructionResourceTest {
         given()
             .pathParam("id", id)
             .when()
-            .get("/constructions/{id}")
+            .get("/api/constructions/{id}")
             .then()
             .statusCode(404);
     }

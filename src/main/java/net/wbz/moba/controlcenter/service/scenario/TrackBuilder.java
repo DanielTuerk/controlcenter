@@ -6,10 +6,24 @@ import net.wbz.moba.controlcenter.service.track.TrackProvider;
 import net.wbz.moba.controlcenter.shared.scenario.Route;
 import net.wbz.moba.controlcenter.shared.scenario.Track;
 import net.wbz.moba.controlcenter.shared.scenario.TrackNotFoundException;
-import net.wbz.moba.controlcenter.shared.track.model.*;
+import net.wbz.moba.controlcenter.shared.track.model.AbstractTrackPart;
+import net.wbz.moba.controlcenter.shared.track.model.BlockStraight;
+import net.wbz.moba.controlcenter.shared.track.model.BusDataConfiguration;
+import net.wbz.moba.controlcenter.shared.track.model.GridPosition;
+import net.wbz.moba.controlcenter.shared.track.model.MultipleGridPosition;
+import net.wbz.moba.controlcenter.shared.track.model.TrackBlock;
+import net.wbz.moba.controlcenter.shared.track.model.Turnout;
 import org.jboss.logging.Logger;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
@@ -115,17 +129,15 @@ public class TrackBuilder {
             AbstractTrackPart abstractTrackPart = positions.get(gridPosition);
 
             if ((i > 0 && i < loadedTrack.size() - 1)
-                && abstractTrackPart instanceof Turnout) {
+                && abstractTrackPart instanceof Turnout turnoutTrackPart) {
 
-                Turnout turnoutTrackPart = (Turnout) abstractTrackPart;
-
-                GridPosition nextPosition = track.gridPositions().get(i + 1);
-                GridPosition previousPosition = track.gridPositions().get(i - 1);
+                var nextPosition = track.gridPositions().get(i + 1);
+                var previousPosition = track.gridPositions().get(i - 1);
                 boolean state =
                     turnoutTrackPart.getNextGridPositionForStateBranch().equals(nextPosition)
                         || turnoutTrackPart.getNextGridPositionForStateBranch().equals(previousPosition);
 
-                BusDataConfiguration toggleFunction = turnoutTrackPart.getToggleFunction();
+                var toggleFunction = turnoutTrackPart.getToggleFunction();
                 if (toggleFunction != null) {
                     track.trackFunctions()
                         .add(new BusDataConfiguration(toggleFunction.getBus(), toggleFunction.getAddress(),
@@ -169,29 +181,32 @@ public class TrackBuilder {
 
     private Track buildTrack(Map<GridPosition, AbstractTrackPart> positions, GridPosition startPosition,
         GridPosition endPosition, List<GridPosition> waypoints, Long trackBuildId) throws TrackNotFoundException {
-        if (startPosition != null && endPosition != null) {
-            AbstractTrackPart abstractTrackPart = positions.get(startPosition);
-            LOG.trace("search forward routed tracks");
-            Set<Track> forwardRoutedTrack = searchPath(new Track(), new HashMap<>(positions), startPosition,
-                endPosition, abstractTrackPart.getNextGridPositions(null), trackBuildId);
-            LOG.tracef("finished forward routed tracks (%d)", forwardRoutedTrack.size());
-            LOG.trace("search backward routed tracks");
-            Set<Track> backwardRoutedTrack = searchPath(new Track(), new HashMap<>(positions), startPosition,
-                endPosition, abstractTrackPart.getLastGridPositions(), trackBuildId);
-            LOG.tracef("finished backward routed tracks (%d)", backwardRoutedTrack.size());
-
-            LOG.trace("search shortest track");
-            Track track = shortestTrack(forwardRoutedTrack, backwardRoutedTrack, waypoints);
-            LOG.trace("finished shortest track");
-
-            List<GridPosition> gridPositions = new ArrayList<>(List.of(startPosition));
-            gridPositions.addAll(track.gridPositions());
-            gridPositions.add(endPosition);
-            track.gridPositions().clear();
-            track.gridPositions().addAll(gridPositions);
-            return track;
+        if (startPosition == null) {
+            throw new TrackNotFoundException("no start grid pos");
         }
-        throw new TrackNotFoundException("no start or end");
+        if (endPosition == null) {
+            throw new TrackNotFoundException("no end grid pos");
+        }
+        var abstractTrackPart = positions.get(startPosition);
+        LOG.trace("search forward routed tracks");
+        Set<Track> forwardRoutedTrack = searchPath(new Track(), new HashMap<>(positions), startPosition,
+            endPosition, abstractTrackPart.getNextGridPositions(null), trackBuildId);
+        LOG.tracef("finished forward routed tracks (%d)", forwardRoutedTrack.size());
+        LOG.trace("search backward routed tracks");
+        Set<Track> backwardRoutedTrack = searchPath(new Track(), new HashMap<>(positions), startPosition,
+            endPosition, abstractTrackPart.getLastGridPositions(), trackBuildId);
+        LOG.tracef("finished backward routed tracks (%d)", backwardRoutedTrack.size());
+
+        LOG.trace("search shortest track");
+        Track track = shortestTrack(forwardRoutedTrack, backwardRoutedTrack, waypoints);
+        LOG.trace("finished shortest track");
+
+        List<GridPosition> gridPositions = new ArrayList<>(List.of(startPosition));
+        gridPositions.addAll(track.gridPositions());
+        gridPositions.add(endPosition);
+        track.gridPositions().clear();
+        track.gridPositions().addAll(gridPositions);
+        return track;
     }
 
     /**

@@ -11,7 +11,7 @@ import java.io.Serializable;
 public class TrackNotFoundException extends Exception implements Serializable {
 
     public TrackNotFoundException() {
-        this("no track found!");
+        this("no track found");
     }
 
     public TrackNotFoundException(String message) {

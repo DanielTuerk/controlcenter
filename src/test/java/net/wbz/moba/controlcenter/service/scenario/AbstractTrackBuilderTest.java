@@ -1,16 +1,7 @@
 package net.wbz.moba.controlcenter.service.scenario;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.when;
-
 import io.quarkus.test.InjectMock;
 import jakarta.inject.Inject;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.regex.Pattern;
 import net.wbz.moba.controlcenter.service.track.TrackProvider;
 import net.wbz.moba.controlcenter.shared.scenario.Route;
 import net.wbz.moba.controlcenter.shared.scenario.Track;
@@ -27,6 +18,15 @@ import net.wbz.moba.controlcenter.shared.track.model.Turnout;
 import net.wbz.moba.controlcenter.shared.track.model.Turnout.PRESENTATION;
 import org.junit.jupiter.api.BeforeEach;
 import org.mockito.Mockito;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Pattern;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
 
 /**
  * Test the {@link TrackBuilder} with different track layouts.
@@ -59,6 +59,7 @@ abstract class AbstractTrackBuilderTest {
     protected Route mockRoute() {
         Route mock = spy(Route.class);
         when(mock.getId()).thenReturn(1L);
+        when(mock.getName()).thenReturn("mock-route");
         return mock;
     }
 
@@ -119,6 +120,7 @@ abstract class AbstractTrackBuilderTest {
 
     Straight createStraight(int x, int y, DIRECTION direction) {
         Straight straight = new Straight();
+        straight.setId(System.nanoTime());
         straight.setDirection(direction);
         straight.setGridPosition(new GridPosition(x, y));
         return straight;
@@ -127,6 +129,7 @@ abstract class AbstractTrackBuilderTest {
     BlockStraight createBlockStraight(int x, int y, DIRECTION direction,
         int blockLength, TrackBlock trackBlock) {
         BlockStraight straight = new BlockStraight();
+        straight.setId(System.nanoTime());
         straight.setDirection(direction);
         straight.setGridPosition(new GridPosition(x, y));
         straight.setMiddleTrackBlock(trackBlock);
@@ -137,6 +140,7 @@ abstract class AbstractTrackBuilderTest {
     Turnout createTurnout(int x, int y, Turnout.DIRECTION direction, PRESENTATION presentation,
             BusDataConfiguration toggleFunction) {
         Turnout aTurnout = new Turnout();
+        aTurnout.setId(System.nanoTime());
         aTurnout.setCurrentPresentation(presentation);
         aTurnout.setCurrentDirection(direction);
         aTurnout.setGridPosition(new GridPosition(x, y));
@@ -146,25 +150,26 @@ abstract class AbstractTrackBuilderTest {
 
     Curve createCurve(int x, int y, Curve.DIRECTION direction) {
         Curve curve = new Curve();
+        curve.setId(System.nanoTime());
         curve.setDirection(direction);
         curve.setGridPosition(new GridPosition(x, y));
         return curve;
     }
 
     TrackBlock createTrackBlock(int address, int bit) {
-        TrackBlock trackBlock = new TrackBlock();
-        trackBlock.setBlockFunction(new BusDataConfiguration(1, address, bit, true));
-        return trackBlock;
+        return createTrackBlock(address, bit, true);
     }
 
     TrackBlock createTrackBlock(int address, int bit, boolean bitState) {
         TrackBlock trackBlock = new TrackBlock();
+        trackBlock.setId(System.nanoTime());
         trackBlock.setBlockFunction(new BusDataConfiguration(1, address, bit, bitState));
         return trackBlock;
     }
 
     BlockStraight createBlockStraight(int startAddress, int startBit, boolean state) {
         BlockStraight blockStraight = new BlockStraight();
+        blockStraight.setId(System.nanoTime());
         blockStraight.setMiddleTrackBlock(createTrackBlock(startAddress, startBit, state));
         return blockStraight;
     }

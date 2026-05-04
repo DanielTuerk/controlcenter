@@ -1,9 +1,10 @@
 package net.wbz.moba.controlcenter.service.train;
 
-import com.google.common.collect.Sets;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.NotFoundException;
+
+import java.util.HashSet;
 import java.util.Set;
 import net.wbz.moba.controlcenter.EventBroadcaster;
 import net.wbz.moba.controlcenter.shared.track.model.BusDataConfiguration;
@@ -189,7 +190,7 @@ public class TrainService {
     }
 
     private TrainModule getTrainModule(Train train, DeviceManager deviceManager) throws DeviceAccessException {
-        Set<Integer> additionalAddresses = Sets.newHashSet();
+        Set<Integer> additionalAddresses = new HashSet<>();
         for (TrainFunction trainFunction : train.getFunctions()) {
             if (trainFunction != null && trainFunction.getConfiguration() != null) {
                 additionalAddresses.add(trainFunction.getConfiguration().getAddress());

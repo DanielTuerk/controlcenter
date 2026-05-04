@@ -1,7 +1,8 @@
 package net.wbz.moba.controlcenter.shared.track.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.google.common.base.Objects;
+
+import java.util.Objects;
 
 
 /**
@@ -108,7 +109,7 @@ public class BusDataConfiguration extends AbstractDto {
      * @return {@code true} for same config on bus, address and bit
      */
     public boolean isSameConfig(BusDataConfiguration that) {
-        return Objects.equal(getBus(), that.getBus()) && Objects.equal(getAddress(), that.getAddress()) && Objects
-            .equal(getBit(), that.getBit());
+        return Objects.equals(getBus(), that.getBus()) && Objects.equals(getAddress(), that.getAddress()) && Objects
+            .equals(getBit(), that.getBit());
     }
 }

@@ -1,10 +1,7 @@
 package net.wbz.moba.controlcenter.service.track;
 
-import com.google.common.collect.Maps;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
-import java.util.Collection;
-import java.util.Map;
 import net.wbz.moba.controlcenter.BusAddressIdentifier;
 import net.wbz.moba.controlcenter.EventBroadcaster;
 import net.wbz.moba.controlcenter.SelectrixHelper;
@@ -23,6 +20,10 @@ import net.wbz.selectrix4java.device.Device;
 import net.wbz.selectrix4java.device.DeviceAccessException;
 import org.jboss.logging.Logger;
 
+import java.util.Collection;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 /**
  * Registry for available {@link TrackBlock}s to add the {@link FeedbackBlockListener}s for receiving the block states
  * and to adjust driving levels of trains entering or exiting the blocks.
@@ -40,8 +41,7 @@ public class TrackBlockRegistry {
     private final TrainService trainService;
     private final TrainManager trainManager;
 
-    private final Map<TrackBlock, FeedbackBlockListener> feedbackBlockListeners =
-            Maps.newConcurrentMap();
+    private final Map<TrackBlock, FeedbackBlockListener> feedbackBlockListeners = new ConcurrentHashMap<>();
     private Collection<TrackBlock> trackBlocks;
 
     @Inject

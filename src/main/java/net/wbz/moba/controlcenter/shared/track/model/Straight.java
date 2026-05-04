@@ -1,10 +1,11 @@
 package net.wbz.moba.controlcenter.shared.track.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.google.common.collect.Lists;
-import java.util.Collection;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
+
+import java.util.Collection;
+import java.util.List;
 
 /**
  * @author Daniel Tuerk
@@ -33,7 +34,7 @@ public class Straight extends AbstractTrackPart {
         } else {
             x++;
         }
-        return Lists.newArrayList(new GridPosition(x, y));
+        return List.of(new GridPosition(x, y));
     }
 
     @JsonIgnore
@@ -46,7 +47,7 @@ public class Straight extends AbstractTrackPart {
         } else {
             x--;
         }
-        return Lists.newArrayList(new GridPosition(x, y));
+        return List.of(new GridPosition(x, y));
     }
 
     @JsonIgnore

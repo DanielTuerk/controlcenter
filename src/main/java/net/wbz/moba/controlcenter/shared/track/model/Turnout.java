@@ -1,9 +1,10 @@
 package net.wbz.moba.controlcenter.shared.track.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.google.common.collect.Lists;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
+
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
@@ -151,7 +152,7 @@ public class Turnout extends AbstractTrackPart implements HasToggleFunction {
     @JsonIgnore
     @Override
     public Collection<GridPosition> getLastGridPositions() {
-        return Lists.newArrayList(getLastGridPosition());
+        return List.of(getLastGridPosition());
     }
 
     @JsonIgnore

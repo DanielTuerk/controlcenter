@@ -1,11 +1,12 @@
 package net.wbz.moba.controlcenter.service.scenario;
 
-import com.google.common.base.Strings;
+import net.wbz.moba.controlcenter.shared.scenario.Scenario;
+import org.mapstruct.ap.internal.util.Strings;
+import org.quartz.CronExpression;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import net.wbz.moba.controlcenter.shared.scenario.Scenario;
-import org.quartz.CronExpression;
 
 /**
  * @author Daniel Tuerk
@@ -15,7 +16,7 @@ public final class ScenarioUtil {
     private static final SimpleDateFormat FORMATTER = new SimpleDateFormat("HH:mm");
 
     public static String nextExecutionTime(Scenario scenario) {
-        if (!Strings.isNullOrEmpty(scenario.getCron())) {
+        if (Strings.isNotEmpty(scenario.getCron())) {
             try {
                 return FORMATTER.format(new CronExpression(scenario.getCron()).getNextValidTimeAfter(new Date()));
             } catch (ParseException e) {
@@ -26,7 +27,7 @@ public final class ScenarioUtil {
     }
 
     public static String arrivalTimeOfNextExecution(Scenario scenario, long addMillis) {
-        if (!Strings.isNullOrEmpty(scenario.getCron())) {
+        if (Strings.isNotEmpty(scenario.getCron())) {
             try {
                 Date nextValidTimeAfter = new CronExpression(scenario.getCron()).getNextValidTimeAfter(new Date());
                 nextValidTimeAfter.setTime(nextValidTimeAfter.getTime() + addMillis);
@@ -39,7 +40,7 @@ public final class ScenarioUtil {
     }
 
     public static Date getDateFromTimeText(String timeText) {
-        if(Strings.isNullOrEmpty(timeText)) {
+        if (Strings.isEmpty(timeText)) {
             return null;
         }
         try {

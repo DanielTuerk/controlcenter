@@ -1,8 +1,9 @@
 package net.wbz.moba.controlcenter.shared.track.model;
 
-import com.google.common.collect.Lists;
 
 import java.util.Collection;
+import java.util.List;
+
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
@@ -24,12 +25,12 @@ public class Curve extends AbstractTrackPart {
 
     @Override
     public Collection<GridPosition> getNextGridPositions(GridPosition previousPosition) {
-        return Lists.newArrayList(getNextGridPosition());
+        return List.of(getNextGridPosition());
     }
 
     @Override
     public Collection<GridPosition> getLastGridPositions() {
-        return Lists.newArrayList(getLastGridPosition());
+        return List.of(getLastGridPosition());
     }
 
     private GridPosition getNextGridPosition() {
@@ -75,18 +76,12 @@ public class Curve extends AbstractTrackPart {
 
     @Override
     public double getRotationAngle() {
-        switch (getDirection()) {
-            case BOTTOM_LEFT:
-                return 90d;
-            case BOTTOM_RIGHT:
-                return 0d;
-            case TOP_LEFT:
-                return 180d;
-            case TOP_RIGHT:
-                return 270d;
-            default:
-                return 0d;
-        }
+        return switch (getDirection()) {
+            case BOTTOM_LEFT -> 90d;
+            case TOP_LEFT -> 180d;
+            case TOP_RIGHT -> 270d;
+            default -> 0d;
+        };
     }
 
     @Override

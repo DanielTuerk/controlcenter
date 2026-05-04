@@ -1,7 +1,8 @@
 package net.wbz.moba.controlcenter.service.track;
 
-import com.google.common.collect.Maps;
 import jakarta.enterprise.context.ApplicationScoped;
+
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -17,7 +18,7 @@ import net.wbz.moba.controlcenter.shared.track.model.Signal.LIGHT;
 public class SignalStateService {
 
     Set<BusAddressBit> convertToLights(Signal signal, Signal.FUNCTION signalFunction) {
-        Map<LIGHT, BusAddressBit> availableLightConfig = Maps.newHashMap();
+        Map<LIGHT, BusAddressBit> availableLightConfig = new HashMap<>();
 
         Signal.TYPE signalType = signal.getType();
         // set all lights to 'off'

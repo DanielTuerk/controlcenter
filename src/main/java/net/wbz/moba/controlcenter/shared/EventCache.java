@@ -1,11 +1,12 @@
 package net.wbz.moba.controlcenter.shared;
 
-import com.google.common.collect.Maps;
 import jakarta.enterprise.context.ApplicationScoped;
+import net.wbz.moba.controlcenter.shared.device.DeviceConnectionEvent;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
-import net.wbz.moba.controlcenter.shared.device.DeviceConnectionEvent;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Cache for {@link StateEvent}s. Each event will be cached by the class name and the {@link StateEvent#getCacheKey()}.
@@ -18,7 +19,7 @@ public class EventCache {
     /**
      * Cached events by event class name. Entries contains the events by the cache key.
      */
-    private final Map<String, Map<String, StateEvent>> cachedEvents = Maps.newConcurrentMap();
+    private final Map<String, Map<String, StateEvent>> cachedEvents = new ConcurrentHashMap<>();
 
     /**
      * Add the given event to the cache. Already existing event will be overridden.
@@ -29,7 +30,7 @@ public class EventCache {
     public <E extends StateEvent> void addEvent(final E event) {
         String key = event.getClass().getName();
         if (!cachedEvents.containsKey(key)) {
-            cachedEvents.put(key, Maps.newConcurrentMap());
+            cachedEvents.put(key, new ConcurrentHashMap<>());
         }
         String cacheKey = event.getCacheKey();
         cachedEvents.get(key).put(cacheKey, event);

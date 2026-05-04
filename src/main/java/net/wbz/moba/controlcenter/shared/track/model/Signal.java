@@ -1,10 +1,13 @@
 package net.wbz.moba.controlcenter.shared.track.model;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
@@ -82,8 +85,17 @@ public class Signal extends Straight {
     }
 
     public List<BusDataConfiguration> getSignalConfigurations() {
-        return Lists.newArrayList(signalConfigRed1, signalConfigRed2, signalConfigGreen1, signalConfigGreen2,
-            signalConfigYellow1, signalConfigYellow2, signalConfigWhite);
+        return Stream.of(
+                        signalConfigRed1,
+                        signalConfigRed2,
+                        signalConfigGreen1,
+                        signalConfigGreen2,
+                        signalConfigYellow1,
+                        signalConfigYellow2,
+                        signalConfigWhite
+                )
+                .filter(Objects::nonNull)
+                .collect(Collectors.toCollection(ArrayList::new));
     }
 
     public List<BusDataConfiguration> getSignalConfigurations(TYPE type) {
@@ -151,7 +163,7 @@ public class Signal extends Straight {
     }
 
     public Map<LIGHT, BusDataConfiguration> getSignalLightsConfigurations(TYPE type) {
-        Map<LIGHT, BusDataConfiguration> lightConfigs = Maps.newHashMap();
+        Map<LIGHT, BusDataConfiguration> lightConfigs = new HashMap<>();
         for (LIGHT light : type.getLights()) {
             lightConfigs.put(light, getSignalConfiguration(light));
         }

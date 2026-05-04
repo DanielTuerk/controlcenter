@@ -1,8 +1,8 @@
 package net.wbz.moba.controlcenter.shared.track.model;
 
-import com.google.common.collect.Lists;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -42,7 +42,7 @@ public class BlockStraight extends Straight implements MultipleGridPosition {
         } else {
             x += blockLength;
         }
-        return Lists.newArrayList(new GridPosition(x, y));
+        return List.of(new GridPosition(x, y));
     }
 
     @Override
@@ -75,7 +75,7 @@ public class BlockStraight extends Straight implements MultipleGridPosition {
             }
             positions.add(end);
         } else {
-            return Lists.newArrayList(start, end);
+            return List.of(start, end);
         }
         return positions;
     }

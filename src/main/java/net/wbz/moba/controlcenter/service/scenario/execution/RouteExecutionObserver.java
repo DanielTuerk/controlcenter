@@ -1,16 +1,7 @@
 package net.wbz.moba.controlcenter.service.scenario.execution;
 
-import com.google.common.collect.Collections2;
-import com.google.common.collect.Lists;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 import net.wbz.moba.controlcenter.BusAddressIdentifier;
 import net.wbz.moba.controlcenter.SelectrixHelper;
 import net.wbz.moba.controlcenter.service.track.TrackProvider;
@@ -23,6 +14,14 @@ import net.wbz.moba.controlcenter.shared.track.model.TrackBlock;
 import net.wbz.selectrix4java.device.DeviceAccessException;
 import net.wbz.selectrix4java.device.DeviceManager;
 import org.jboss.logging.Logger;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Observer for the running routes in a {@link ScenarioExecution}. The observer hold all running routes and must be used
@@ -133,11 +132,10 @@ public class RouteExecutionObserver {
      * @return depending running {@link RouteSequence}s
      */
     private Collection<RouteSequence> getDependingRunningRoutes(final Route route) {
-        List<RouteSequence> unfiltered = Lists.newArrayList(runningRouteSequences);
-        return Collections2.filter(unfiltered, input -> !route.equals(input.getRoute())
+        return runningRouteSequences.stream().filter(input -> !route.equals(input.getRoute())
             // add as dependent if routes have the same track block or function
             && (containsSameTrackBlock(route, input.getRoute()) || containsSameTrackFunctions(input.getRoute(),
-            route)));
+                route))).collect(Collectors.toSet());
     }
 
     /**
@@ -151,7 +149,7 @@ public class RouteExecutionObserver {
         // collect all track blocks of left route
         List<TrackBlock> runningTrackBlocks = new ArrayList<>();
         if (routeToStart.getTrack() != null) {
-            runningTrackBlocks.addAll(routeToStart.getTrack().getTrackBlocks());
+            runningTrackBlocks.addAll(routeToStart.getTrack().trackBlocks());
         }
         runningTrackBlocks.addAll(getTrackBlocksForBlockStraightsOfTrackBlock(routeToStart.getEnd()));
 
@@ -161,7 +159,7 @@ public class RouteExecutionObserver {
             .anyMatch(x -> getTrackBlocksForBlockStraightsOfTrackBlock(other.getEnd()).contains(x))) {
             return true;
         }
-        for (TrackBlock blockToCheck : other.getTrack().getTrackBlocks()) {
+        for (TrackBlock blockToCheck : other.getTrack().trackBlocks()) {
             if (runningTrackBlocks.contains(blockToCheck)) {
                 return true;
             }
@@ -189,9 +187,9 @@ public class RouteExecutionObserver {
      * @return {@code true} if a single track function {@link BusDataConfiguration} is the same in both routes
      */
     private boolean containsSameTrackFunctions(Route left, Route right) {
-        for (BusDataConfiguration trackFunction : right.getTrack().getTrackFunctions()) {
+        for (BusDataConfiguration trackFunction : right.getTrack().trackFunctions()) {
             if (trackFunction != null) {
-                for (BusDataConfiguration busDataConfiguration : left.getTrack().getTrackFunctions()) {
+                for (BusDataConfiguration busDataConfiguration : left.getTrack().trackFunctions()) {
                     if (busDataConfiguration != null && busDataConfiguration.isSameConfig(trackFunction)) {
                         return true;
                     }

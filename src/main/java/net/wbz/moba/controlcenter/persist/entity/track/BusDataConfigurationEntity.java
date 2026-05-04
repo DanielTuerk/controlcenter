@@ -1,10 +1,11 @@
 package net.wbz.moba.controlcenter.persist.entity.track;
 
-import com.google.common.base.Objects;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import net.wbz.moba.controlcenter.persist.entity.AbstractEntity;
+
+import java.util.Objects;
 
 
 /**
@@ -45,13 +46,13 @@ public class BusDataConfigurationEntity extends AbstractEntity {
         if (o == null || getClass() != o.getClass())
             return false;
         BusDataConfigurationEntity that = (BusDataConfigurationEntity) o;
-        return Objects.equal(bus, that.bus) &&
-                Objects.equal(address, that.address) &&
-                Objects.equal(bit, that.bit);
+        return Objects.equals(bus, that.bus) &&
+                Objects.equals(address, that.address) &&
+                Objects.equals(bit, that.bit);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(bus, address, bit);
+        return Objects.hash(bus, address, bit);
     }
 }

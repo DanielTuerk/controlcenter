@@ -5,9 +5,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
-import com.google.common.collect.Lists;
 import io.quarkus.test.InjectMock;
 import jakarta.inject.Inject;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 import net.wbz.moba.controlcenter.service.track.TrackProvider;
@@ -73,8 +74,8 @@ abstract class AbstractTrackBuilderTest {
 
         Track track = trackBuilder.build(route);
         assertEquals(expectedLength, track.getLength());
-        assertEquals(0, track.getTrackBlocks().size());
-        assertEquals(0, track.getTrackFunctions().size());
+        assertEquals(0, track.trackBlocks().size());
+        assertEquals(0, track.trackFunctions().size());
     }
 
     void testTurnout(int switchAddress,
@@ -86,10 +87,10 @@ abstract class AbstractTrackBuilderTest {
 
         Track track = trackBuilder.build(route);
         assertEquals(expectedTrackLength, track.getLength());
-        assertEquals(0, track.getTrackBlocks().size());
-        assertEquals(1, track.getTrackFunctions().size());
+        assertEquals(0, track.trackBlocks().size());
+        assertEquals(1, track.trackFunctions().size());
         assertEquals(new BusDataConfiguration(1, switchAddress, switchBit, switchTargetBitState),
-            track.getTrackFunctions().getFirst());
+            track.trackFunctions().getFirst());
     }
 
     Straight createHorizontalStraight(int x, int y) {
@@ -169,7 +170,7 @@ abstract class AbstractTrackBuilderTest {
     }
 
     void mockTrack(List<? extends AbstractTrackPart> trackParts) {
-        when(trackProvider.getTrack()).thenReturn(Lists.newArrayList(trackParts));
+        when(trackProvider.getTrack()).thenReturn(new ArrayList<>(trackParts));
     }
 
     TrackBuilder getTrackBuilder() {

@@ -2,7 +2,6 @@ package net.wbz.moba.controlcenter.service.scenario;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import com.google.common.collect.Lists;
 import io.quarkus.test.junit.QuarkusTest;
 import java.util.List;
 import net.wbz.moba.controlcenter.shared.scenario.Route;
@@ -95,7 +94,7 @@ public class TrackBuilderBlockStraightTest extends AbstractTrackBuilderTest {
             createTrackBlock(startAddress, startBit));
         TrackBlock endBlock = createTrackBlock(endAddress, endBit);
 
-        testSimpleTrack(Lists.newArrayList(
+        testSimpleTrack(List.of(
             createHorizontalBlockStraight(1, 1, 2, endBlock),
             createHorizontalStraight(3, 1),
             startBlockStraight),
@@ -167,7 +166,7 @@ public class TrackBuilderBlockStraightTest extends AbstractTrackBuilderTest {
         Curve curve = createCurve(9, 5, DIRECTION.TOP_LEFT);
         curve.setId(6L);
 
-        List<AbstractTrackPart> trackParts = Lists.newArrayList(
+        List<AbstractTrackPart> trackParts = List.of(
             startBlockStraight2,
             endBlockStraight,
             horizontalStraight,
@@ -181,8 +180,8 @@ public class TrackBuilderBlockStraightTest extends AbstractTrackBuilderTest {
 
         Track track = getTrackBuilder().build(route);
         assertEquals(trackParts.size(), track.getLength());
-        assertEquals(0, track.getTrackBlocks().size());
-        assertEquals(0, track.getTrackFunctions().size());
+        assertEquals(0, track.trackBlocks().size());
+        assertEquals(0, track.trackFunctions().size());
     }
 
     private void testBlockLengthBackwardVertical(int startAddress, int startBit, int endAddress, int endBit,
@@ -192,7 +191,7 @@ public class TrackBuilderBlockStraightTest extends AbstractTrackBuilderTest {
             createTrackBlock(startAddress, startBit));
         TrackBlock endBlock = createTrackBlock(endAddress, endBit);
 
-        testSimpleTrack(Lists.newArrayList(
+        testSimpleTrack(List.of(
             createVerticalBlockStraight(1, 1, endBlock),
             createVerticalStraight(1, 2),
             startBlockStraight),
@@ -206,7 +205,7 @@ public class TrackBuilderBlockStraightTest extends AbstractTrackBuilderTest {
             createTrackBlock(startAddress, startBit));
         TrackBlock endBlock = createTrackBlock(endAddress, endBit);
 
-        testSimpleTrack(Lists.newArrayList(
+        testSimpleTrack(List.of(
             startBlockStraight,
             createHorizontalStraight(1 + blockLength, 1),
             createHorizontalBlockStraight(2 + blockLength, 1, endBlock)),
@@ -221,7 +220,7 @@ public class TrackBuilderBlockStraightTest extends AbstractTrackBuilderTest {
             createTrackBlock(startAddress, startBit));
         TrackBlock endBlock = createTrackBlock(endAddress, endBit);
 
-        testSimpleTrack(Lists.newArrayList(
+        testSimpleTrack(List.of(
             startBlockStraight,
             createVerticalStraight(1, 1 + blockLength),
             createVerticalBlockStraight(1, 2 + blockLength, endBlock)),
@@ -236,7 +235,7 @@ public class TrackBuilderBlockStraightTest extends AbstractTrackBuilderTest {
             createTrackBlock(startAddress, startBit));
         TrackBlock endBlock = createTrackBlock(endAddress, endBit);
 
-        testSimpleTrack(Lists.newArrayList(
+        testSimpleTrack(List.of(
             createHorizontalBlockStraight(1, 1, endBlock),
             createHorizontalStraight(2, 1),
             startBlockStraight),

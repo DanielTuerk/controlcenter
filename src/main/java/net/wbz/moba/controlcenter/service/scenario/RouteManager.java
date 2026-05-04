@@ -3,10 +3,6 @@ package net.wbz.moba.controlcenter.service.scenario;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 import net.wbz.moba.controlcenter.EventBroadcaster;
 import net.wbz.moba.controlcenter.persist.entity.RouteEntity;
 import net.wbz.moba.controlcenter.persist.entity.track.BlockStraightEntity;
@@ -21,6 +17,11 @@ import net.wbz.moba.controlcenter.shared.scenario.RoutesChangedEvent;
 import net.wbz.moba.controlcenter.shared.scenario.Scenario;
 import net.wbz.moba.controlcenter.shared.scenario.TrackNotFoundException;
 import org.jboss.logging.Logger;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Manager to access the {@link Scenario}s from database. The data is cached. TODO cache Stations
@@ -151,16 +152,17 @@ public class RouteManager {
         LOG.debug("load routes from database");
 
         routes.clear();
-        routes.addAll(routeRepository.listAll().stream().map(routeMapper::toDto).toList());
-        LOG.debug("build tracks");
-
-        for (Route route : routes) {
-            try {
-                route.setTrack(trackBuilder.build(route));
-            } catch (TrackNotFoundException e) {
-                LOG.error("can't build track of route: %s (%s)".formatted(route, e.getMessage()));
-            }
-        }
+        routes.addAll(routeRepository.listAll().stream()
+                .map(routeMapper::toDto)
+                .peek(route -> {
+                    try {
+                        route.setTrack(trackBuilder.build(route));
+                    } catch (TrackNotFoundException e) {
+                        LOG.error("can't build track of route: %s (%s)".formatted(route, e.getMessage()));
+                    }
+                })
+                .toList()
+        );
         LOG.debug("tracks finished");
     }
 

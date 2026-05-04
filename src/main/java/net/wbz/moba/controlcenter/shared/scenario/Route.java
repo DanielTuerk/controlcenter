@@ -102,7 +102,7 @@ public class Route extends AbstractDto {
         Set<TrackBlock> trackBlocks = new HashSet<>();
         Track track = getTrack();
         if (track != null) {
-            trackBlocks.addAll(track.getTrackBlocks());
+            trackBlocks.addAll(track.trackBlocks());
         }
         trackBlocks.add(getEnd());
         return trackBlocks;

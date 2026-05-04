@@ -1,29 +1,19 @@
 package net.wbz.moba.controlcenter.service.scenario;
 
-import com.google.common.base.Strings;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
 import net.wbz.moba.controlcenter.service.scenario.execution.ScenarioExecutor;
 import net.wbz.moba.controlcenter.shared.scenario.Scenario;
 import net.wbz.moba.controlcenter.shared.scenario.Scenario.MODE;
 import net.wbz.moba.controlcenter.shared.scenario.Scenario.RUN_STATE;
-import net.wbz.moba.controlcenter.shared.train.Train;
 import net.wbz.selectrix4java.device.DeviceManager;
 import org.jboss.logging.Logger;
-import org.quartz.CronScheduleBuilder;
-import org.quartz.JobBuilder;
-import org.quartz.JobDetail;
-import org.quartz.JobKey;
-import org.quartz.Scheduler;
-import org.quartz.SchedulerException;
-import org.quartz.Trigger;
-import org.quartz.TriggerBuilder;
-import org.quartz.TriggerKey;
+import org.mapstruct.ap.internal.util.Strings;
+import org.quartz.*;
 import org.quartz.impl.StdSchedulerFactory;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author Daniel Tuerk
@@ -57,7 +47,7 @@ public class ScenarioService {
 
     @Inject
     public ScenarioService(ScenarioManager scenarioManager, DeviceManager deviceManager,
-        ScenarioExecutor scenarioExecutor) {
+                           ScenarioExecutor scenarioExecutor) {
         this.scenarioManager = scenarioManager;
         this.deviceManager = deviceManager;
         this.scenarioExecutor = scenarioExecutor;
@@ -87,17 +77,17 @@ public class ScenarioService {
         if (scenario.getRunState() != RUN_STATE.RUNNING) {
             var scenarioId = scenario.getId();
             String cron = scenario.getCron();
-            if (!Strings.isNullOrEmpty(cron)) {
+            if (!Strings.isEmpty(cron)) {
 
                 JobDetail job = JobBuilder.newJob(ScheduleScenarioJob.class)
-                    .withIdentity(JobKey.jobKey(JOB_SCENARIO_PREFIX + scenarioId))
-                    .usingJobData("scenario", scenarioId).build();
+                        .withIdentity(JobKey.jobKey(JOB_SCENARIO_PREFIX + scenarioId))
+                        .usingJobData("scenario", scenarioId).build();
 
                 TriggerKey triggerKey = TriggerKey.triggerKey(TRIGGER_SCENARIO_PREFIX + scenarioId);
                 scenarioTriggerKeys.put(scenarioId, triggerKey);
 
                 Trigger trigger = TriggerBuilder.newTrigger().withIdentity(triggerKey)
-                    .withSchedule(CronScheduleBuilder.cronSchedule(cron)).forJob(job).build();
+                        .withSchedule(CronScheduleBuilder.cronSchedule(cron)).forJob(job).build();
 
                 scenarioExecutor.scheduleScenario(scenario);
 
@@ -114,7 +104,7 @@ public class ScenarioService {
             }
         } else {
             LOG.warn("Can't schedule scenario: %s - not in IDLE state (actual %s)".formatted(scenario,
-                scenario.getRunState()));
+                    scenario.getRunState()));
         }
     }
 

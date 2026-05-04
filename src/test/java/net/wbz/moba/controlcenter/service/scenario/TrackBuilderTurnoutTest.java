@@ -1,8 +1,5 @@
 package net.wbz.moba.controlcenter.service.scenario;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
-import com.google.common.collect.Lists;
 import io.quarkus.test.junit.QuarkusTest;
 import net.wbz.moba.controlcenter.shared.scenario.TrackNotFoundException;
 import net.wbz.moba.controlcenter.shared.track.model.BlockStraight;
@@ -14,6 +11,10 @@ import net.wbz.moba.controlcenter.shared.track.model.Turnout;
 import net.wbz.moba.controlcenter.shared.track.model.Turnout.PRESENTATION;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * Test {@link TrackBuilder} for {@link Turnout}.
@@ -47,7 +48,7 @@ public class TrackBuilderTurnoutTest extends AbstractTrackBuilderTest {
     public void testTurnout_LeftToRight_Left_Straight() throws TrackNotFoundException {
         BlockStraight startBlockStraight = createHorizontalBlockStraight(1, 1, startBlock);
 
-        mockTrack(Lists.newArrayList(
+        mockTrack(List.of(
             startBlockStraight,
             createHorizontalStraight(2, 1),
             createTurnout(3, 1, Turnout.DIRECTION.LEFT, PRESENTATION.LEFT_TO_RIGHT, new BusDataConfiguration(1,
@@ -69,7 +70,7 @@ public class TrackBuilderTurnoutTest extends AbstractTrackBuilderTest {
     public void testTurnout_LeftToRight_Left_Branch() throws TrackNotFoundException {
         BlockStraight startBlockStraight = createHorizontalBlockStraight(1, 1, startBlock);
 
-        mockTrack(Lists.newArrayList(
+        mockTrack(List.of(
             startBlockStraight,
             createHorizontalStraight(2, 1),
             createTurnout(3, 1, Turnout.DIRECTION.LEFT, PRESENTATION.LEFT_TO_RIGHT, new BusDataConfiguration(1,
@@ -91,7 +92,7 @@ public class TrackBuilderTurnoutTest extends AbstractTrackBuilderTest {
     public void testTurnout_LeftToRight_Right_Straight() throws TrackNotFoundException {
         BlockStraight startBlockStraight = createHorizontalBlockStraight(4, 1, startBlock);
 
-        mockTrack(Lists.newArrayList(
+        mockTrack(List.of(
             createHorizontalBlockStraight(1, 1, endBlock),
             createHorizontalStraight(2, 1),
             createTurnout(3, 1, Turnout.DIRECTION.RIGHT, PRESENTATION.LEFT_TO_RIGHT, new BusDataConfiguration(1,
@@ -113,7 +114,7 @@ public class TrackBuilderTurnoutTest extends AbstractTrackBuilderTest {
     public void testTurnout_LeftToRight_Right_Branch() throws TrackNotFoundException {
         BlockStraight startBlockStraight = createHorizontalBlockStraight(1, 1, startBlock);
 
-        mockTrack(Lists.newArrayList(
+        mockTrack(List.of(
             startBlockStraight,
             createHorizontalStraight(2, 1),
             createTurnout(3, 1, Turnout.DIRECTION.RIGHT, PRESENTATION.LEFT_TO_RIGHT, new BusDataConfiguration(1,
@@ -136,7 +137,7 @@ public class TrackBuilderTurnoutTest extends AbstractTrackBuilderTest {
     public void testTurnout_RightToLeft_Right_Straight() throws TrackNotFoundException {
         BlockStraight startBlockStraight = createHorizontalBlockStraight(4, 2, startBlock);
 
-        mockTrack(Lists.newArrayList(
+        mockTrack(List.of(
             createHorizontalStraight(1, 1),
             createCurve(2, 1, DIRECTION.BOTTOM_LEFT),
             createHorizontalBlockStraight(1, 2, endBlock),
@@ -158,7 +159,7 @@ public class TrackBuilderTurnoutTest extends AbstractTrackBuilderTest {
     public void testTurnout_RightToLeft_Right_Branch() throws TrackNotFoundException {
         BlockStraight startBlockStraight = createHorizontalBlockStraight(4, 2, startBlock);
 
-        mockTrack(Lists.newArrayList(
+        mockTrack(List.of(
             createHorizontalBlockStraight(1, 1, endBlock),
             createCurve(2, 1, DIRECTION.BOTTOM_LEFT),
             createHorizontalStraight(1, 2),
@@ -180,7 +181,7 @@ public class TrackBuilderTurnoutTest extends AbstractTrackBuilderTest {
     public void testTurnout_RightToLeft_Left_Straight() throws TrackNotFoundException {
         BlockStraight startBlockStraight = createHorizontalBlockStraight(4, 1, startBlock);
 
-        mockTrack(Lists.newArrayList(
+        mockTrack(List.of(
             createHorizontalBlockStraight(1, 1, endBlock),
             createTurnout(2, 1, Turnout.DIRECTION.LEFT, PRESENTATION.RIGHT_TO_LEFT, new BusDataConfiguration(1,
                 switchAddress, switchBit, true)),
@@ -202,7 +203,7 @@ public class TrackBuilderTurnoutTest extends AbstractTrackBuilderTest {
     public void testTurnout_RightToLeft_Left_Branch() throws TrackNotFoundException {
         BlockStraight startBlockStraight = createHorizontalBlockStraight(4, 1, startBlock);
 
-        mockTrack(Lists.newArrayList(
+        mockTrack(List.of(
             createHorizontalStraight(1, 1),
             createTurnout(2, 1, Turnout.DIRECTION.LEFT, PRESENTATION.RIGHT_TO_LEFT, new BusDataConfiguration(1,
                 switchAddress, switchBit, true)),
@@ -226,7 +227,7 @@ public class TrackBuilderTurnoutTest extends AbstractTrackBuilderTest {
     public void testTurnout_TopToBottom_Right_Straight() throws TrackNotFoundException {
         BlockStraight startBlockStraight = createVerticalBlockStraight(2, 1, startBlock);
 
-        mockTrack(Lists.newArrayList(
+        mockTrack(List.of(
             startBlockStraight,
             createCurve(1, 2, DIRECTION.BOTTOM_RIGHT),
             createTurnout(2, 2, Turnout.DIRECTION.RIGHT, PRESENTATION.TOP_TO_BOTTOM, new BusDataConfiguration(1,
@@ -250,7 +251,7 @@ public class TrackBuilderTurnoutTest extends AbstractTrackBuilderTest {
     public void testTurnout_TopToBottom_Right_Branch() throws TrackNotFoundException {
         BlockStraight startBlockStraight = createVerticalBlockStraight(2, 1, startBlock);
 
-        mockTrack(Lists.newArrayList(
+        mockTrack(List.of(
             startBlockStraight,
             createCurve(1, 2, DIRECTION.BOTTOM_RIGHT),
             createTurnout(2, 2, Turnout.DIRECTION.RIGHT, PRESENTATION.TOP_TO_BOTTOM, new BusDataConfiguration(1,
@@ -274,7 +275,7 @@ public class TrackBuilderTurnoutTest extends AbstractTrackBuilderTest {
     public void testTurnout_TopToBottom_Left_Straight() throws TrackNotFoundException {
         BlockStraight startBlockStraight = createVerticalBlockStraight(1, 1, startBlock);
 
-        mockTrack(Lists.newArrayList(
+        mockTrack(List.of(
             startBlockStraight,
             createTurnout(1, 2, Turnout.DIRECTION.LEFT, PRESENTATION.TOP_TO_BOTTOM, new BusDataConfiguration(1,
                 switchAddress, switchBit, true)),
@@ -298,7 +299,7 @@ public class TrackBuilderTurnoutTest extends AbstractTrackBuilderTest {
     public void testTurnout_TopToBottom_Left_Branch() throws TrackNotFoundException {
         BlockStraight startBlockStraight = createVerticalBlockStraight(1, 1, startBlock);
 
-        mockTrack(Lists.newArrayList(
+        mockTrack(List.of(
             startBlockStraight,
             createTurnout(1, 2, Turnout.DIRECTION.LEFT, PRESENTATION.TOP_TO_BOTTOM, new BusDataConfiguration(1,
                 switchAddress, switchBit, true)),
@@ -322,7 +323,7 @@ public class TrackBuilderTurnoutTest extends AbstractTrackBuilderTest {
     public void testTurnout_BottomToTop_Right_Straight() throws TrackNotFoundException {
         BlockStraight startBlockStraight = createVerticalBlockStraight(1, 4, startBlock);
 
-        mockTrack(Lists.newArrayList(
+        mockTrack(List.of(
             createVerticalBlockStraight(1, 1, endBlock),
             createVerticalStraight(2, 1),
             createTurnout(1, 2, Turnout.DIRECTION.RIGHT, PRESENTATION.BOTTOM_TO_TOP, new BusDataConfiguration(1,
@@ -346,7 +347,7 @@ public class TrackBuilderTurnoutTest extends AbstractTrackBuilderTest {
     public void testTurnout_BottomToTop_Right_Branch() throws TrackNotFoundException {
         BlockStraight startBlockStraight = createVerticalBlockStraight(1, 4, startBlock);
 
-        mockTrack(Lists.newArrayList(
+        mockTrack(List.of(
             createVerticalStraight(1, 1),
             createVerticalBlockStraight(2, 1, endBlock),
             createTurnout(1, 2, Turnout.DIRECTION.RIGHT, PRESENTATION.BOTTOM_TO_TOP, new BusDataConfiguration(1,
@@ -370,7 +371,7 @@ public class TrackBuilderTurnoutTest extends AbstractTrackBuilderTest {
     public void testTurnout_LeftToRight_Exception() throws TrackNotFoundException {
         BlockStraight startBlockStraight = createVerticalBlockStraight(1, 4, startBlock);
 
-        mockTrack(Lists.newArrayList(
+        mockTrack(List.of(
             createVerticalStraight(1, 1),
             createVerticalBlockStraight(2, 1, endBlock),
             createTurnout(1, 2, Turnout.DIRECTION.RIGHT, PRESENTATION.LEFT_TO_RIGHT, new BusDataConfiguration(1,
@@ -395,7 +396,7 @@ public class TrackBuilderTurnoutTest extends AbstractTrackBuilderTest {
     public void testTurnout_BottomToTop_Left_Straight() throws TrackNotFoundException {
         BlockStraight startBlockStraight = createVerticalBlockStraight(2, 4, startBlock);
 
-        mockTrack(Lists.newArrayList(
+        mockTrack(List.of(
             createVerticalStraight(1, 1),
             createVerticalBlockStraight(2, 1, endBlock),
             createCurve(1, 2, DIRECTION.TOP_RIGHT),
@@ -419,7 +420,7 @@ public class TrackBuilderTurnoutTest extends AbstractTrackBuilderTest {
     public void testTurnout_BottomToTop_Left_Branch() throws TrackNotFoundException {
         BlockStraight startBlockStraight = createVerticalBlockStraight(2, 4, startBlock);
 
-        mockTrack(Lists.newArrayList(
+        mockTrack(List.of(
             createVerticalBlockStraight(1, 1, endBlock),
             createVerticalStraight(2, 1),
             createCurve(1, 2, DIRECTION.TOP_RIGHT),

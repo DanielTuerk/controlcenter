@@ -1,17 +1,5 @@
 package net.wbz.moba.controlcenter.service.track;
 
-import static net.wbz.moba.controlcenter.shared.track.model.Signal.LIGHT.GREEN1;
-import static net.wbz.moba.controlcenter.shared.track.model.Signal.LIGHT.GREEN2;
-import static net.wbz.moba.controlcenter.shared.track.model.Signal.LIGHT.RED1;
-import static net.wbz.moba.controlcenter.shared.track.model.Signal.LIGHT.RED2;
-import static net.wbz.moba.controlcenter.shared.track.model.Signal.LIGHT.WHITE;
-import static net.wbz.moba.controlcenter.shared.track.model.Signal.LIGHT.YELLOW1;
-import static net.wbz.moba.controlcenter.shared.track.model.Signal.LIGHT.YELLOW2;
-
-import com.google.common.collect.Maps;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 import net.wbz.moba.controlcenter.BusAddressIdentifier;
 import net.wbz.moba.controlcenter.EventBroadcaster;
 import net.wbz.moba.controlcenter.shared.track.model.BusDataConfiguration;
@@ -19,6 +7,14 @@ import net.wbz.moba.controlcenter.shared.track.model.Signal;
 import net.wbz.moba.controlcenter.shared.track.model.Signal.LIGHT;
 import net.wbz.moba.controlcenter.shared.viewer.SignalFunctionStateEvent;
 import net.wbz.selectrix4java.bus.BusAddressBitListener;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
+import static net.wbz.moba.controlcenter.shared.track.model.Signal.LIGHT.*;
 
 /**
  * Register busAddressListeners to update the current signal function by bus data. Each signal function change will
@@ -31,9 +27,9 @@ class SignalFunctionReceiver {
 
     private final Signal signal;
     private final EventBroadcaster eventBroadcaster;
-    private final Map<BusAddressIdentifier, List<BusAddressBitListener>> busAddressListeners = Maps.newConcurrentMap();
+    private final Map<BusAddressIdentifier, List<BusAddressBitListener>> busAddressListeners = new ConcurrentHashMap<>();
 
-    private final Map<LIGHT, Boolean> lightStates = Maps.newHashMap();
+    private final Map<LIGHT, Boolean> lightStates = new HashMap<>();
 
     /**
      * Flag to avoid multiple events for same function by received bit changes.

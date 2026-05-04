@@ -1,9 +1,8 @@
 package net.wbz.moba.controlcenter.shared.train;
 
-import com.google.common.collect.Sets;
-
 import java.util.HashSet;
 import java.util.Set;
+
 import net.wbz.moba.controlcenter.shared.track.model.AbstractDto;
 import net.wbz.moba.controlcenter.shared.track.model.TrackBlock;
 
@@ -76,8 +75,8 @@ public class Train extends AbstractDto {
 
     public boolean isCurrentlyInBlock(TrackBlock... trackBlock) {
         return currentBlocks.stream()
-            .filter(TrackBlock::getFeedback)
-            .anyMatch(Sets.newHashSet(trackBlock)::contains);
+                .filter(TrackBlock::getFeedback)
+                .anyMatch(Set.of(trackBlock)::contains);
     }
 
     public boolean isPresentOnTrack() {

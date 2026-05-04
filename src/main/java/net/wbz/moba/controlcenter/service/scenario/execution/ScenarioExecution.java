@@ -257,7 +257,7 @@ abstract class ScenarioExecution implements Callable<Void> {
         }
 
         // register block listener for each block on the track to try to reserve the next route immediately
-        for (TrackBlock trackBlock : routeExecution.getRouteSequence().getRoute().getTrack().getTrackBlocks()) {
+        for (TrackBlock trackBlock : routeExecution.getRouteSequence().getRoute().getTrack().trackBlocks()) {
             try {
                 addBlockListener(new BlockListener() {
                     @Override
@@ -577,7 +577,7 @@ abstract class ScenarioExecution implements Callable<Void> {
     private void updateTrack(Scenario scenario, Route route) {
         LOG.infof("update the track for scenario %s with start route: %", scenario.getName(), route.getName());
         Map<BusDataConfiguration, Boolean> trackPartStates = new HashMap<>();
-        for (BusDataConfiguration routeBlockPart : route.getTrack().getTrackFunctions()) {
+        for (BusDataConfiguration routeBlockPart : route.getTrack().trackFunctions()) {
             trackPartStates.put(routeBlockPart, routeBlockPart.getBitState());
         }
         trackViewerService.toggleTrackParts(trackPartStates);

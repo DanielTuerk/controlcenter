@@ -63,7 +63,7 @@ public class TrackProvider {
         if (cachedEntities.isEmpty()) {
             constructionService.getCurrentConstruction().ifPresent(this::loadData);
         }
-        return cachedEntities;
+        return new ArrayList<>(cachedEntities);
     }
 
     public Optional<AbstractTrackPart> getTrackPart(Long trackPartId) {

@@ -1,7 +1,7 @@
 package net.wbz.moba.controlcenter.shared.track.model;
 
-import com.google.common.base.Strings;
 import net.wbz.moba.controlcenter.shared.constrution.Construction;
+import org.mapstruct.ap.internal.util.Strings;
 
 /**
  * @author Daniel Tuerk
@@ -93,7 +93,7 @@ public class TrackBlock extends AbstractDto {
     }
 
     public String getDisplayValue() {
-        return (Strings.isNullOrEmpty(name) ? "-" : name) + " (" + (blockFunction != null ? String
+        return (Strings.isEmpty(name) ? "-" : name) + " (" + (blockFunction != null ? String
             .valueOf(blockFunction.getAddress()) : "-") + ", " + (blockFunction != null ? blockFunction.getBit()
             : "-") + ")";
     }

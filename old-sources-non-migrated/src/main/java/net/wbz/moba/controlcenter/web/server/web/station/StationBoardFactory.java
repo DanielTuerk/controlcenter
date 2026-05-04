@@ -13,7 +13,7 @@ import net.wbz.moba.controlcenter.web.server.web.scenario.ScenarioStatisticManag
 @Singleton
 class StationBoardFactory {
 
-    private final Map<Long, StationBoard> stationBoardsOfStationId = Maps.newConcurrentMap();
+    private final Map<Long, StationBoard> stationBoardsOfStationId = new ConcurrentHashMap();
     private final ScenarioStatisticManager scenarioStatisticManager;
     private final EventBroadcaster eventBroadcaster;
 

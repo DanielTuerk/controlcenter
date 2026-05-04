@@ -1,12 +1,13 @@
 package net.wbz.moba.controlcenter.service.track;
 
-import com.google.common.collect.Maps;
 import io.quarkus.runtime.Startup;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 import net.wbz.moba.controlcenter.BusAddressIdentifier;
 import net.wbz.moba.controlcenter.EventBroadcaster;
 import net.wbz.moba.controlcenter.shared.track.model.AbstractTrackPart;
@@ -33,7 +34,8 @@ public class TrackRegistration {
      * Map for all {@link BusListener}s of a single {@link BusAddressIdentifier} to avoid duplicated listeners to
      * register and to call from {@link net.wbz.selectrix4java.data.BusDataChannel}.
      */
-    private final Map<BusAddressIdentifier, List<BusListener>> busAddressListenersOfTheCurrentTrack = Maps.newConcurrentMap();
+    private final Map<BusAddressIdentifier, List<BusListener>> busAddressListenersOfTheCurrentTrack =
+            new ConcurrentHashMap<>();
 
     private final Logger logger;
     private final DeviceManager deviceManager;

@@ -2,7 +2,7 @@ import {inject, signal} from "@angular/core";
 import {HttpClient} from "@angular/common/http";
 import {Router} from "@angular/router";
 import {SnackBar} from "../control-center/common/snack-bar.component";
-import {Construction, Scenario} from "../../shared/openapi-gen";
+import {Construction, ConstructionDto, Scenario} from "../../shared/openapi-gen";
 import {catchError} from "rxjs/operators";
 import {EMPTY} from "rxjs";
 
@@ -71,7 +71,7 @@ export class ConstructionService {
     return this.httpClient.get<Scenario>('/api/constructions/' + constructionId)
   }
 
-  createConstruction(construction: Construction) {
+  createConstruction(construction: ConstructionDto) {
     return this.httpClient.post('/api/constructions/', construction)
     .pipe(
       catchError((err: any) => {

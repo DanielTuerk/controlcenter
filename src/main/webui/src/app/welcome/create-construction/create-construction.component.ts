@@ -1,5 +1,6 @@
-import {Component} from '@angular/core';
+import {Component, inject} from '@angular/core';
 import {FormControl, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
+import {ConstructionService} from "../../shared/construction.service";
 
 @Component({
   selector: 'app-create-construction',
@@ -8,6 +9,8 @@ import {FormControl, FormGroup, ReactiveFormsModule, Validators} from "@angular/
   styleUrl: './create-construction.component.css'
 })
 export class CreateConstructionComponent {
+  private constructionService = inject(ConstructionService);
+
   form = new FormGroup({
     name: new FormControl('', Validators.required)
   });
@@ -17,9 +20,13 @@ export class CreateConstructionComponent {
   }
 
   onSubmit() {
-    // TODO
     if(this.form.valid) {
-      console.log('ok');
+      this.constructionService.createConstruction({name: this.form.controls.name.value!})
+        .subscribe(data => {
+          console.log(data);
+          this.constructionService.selectCurrentConstruction(data)
+            .subscribe();
+        })
     }
   }
 }

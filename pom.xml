@@ -18,17 +18,23 @@
 
 
   <properties>
-    <maven.compiler.release>25</maven.compiler.release>
+    <maven.compiler.release>21</maven.compiler.release>
+
+
+      <!-- Native Image -->
+      <quarkus.native.builder-image>
+        quay.io/quarkus/ubi9-quarkus-mandrel-builder-image:jdk-21
+      </quarkus.native.builder-image>
 
     <compiler-plugin.version>3.14.0</compiler-plugin.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
     <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
-    <quarkus.platform.version>3.34.6</quarkus.platform.version>
+    <quarkus.platform.version>3.35.2</quarkus.platform.version>
     <skipITs>true</skipITs>
     <surefire-plugin.version>3.5.4</surefire-plugin.version>
-    <mapstruct.version>1.5.5.Final</mapstruct.version>
+    <mapstruct.version>1.6.3</mapstruct.version>
   </properties>
 
   <dependencyManagement>
@@ -100,7 +106,6 @@
     <dependency>
       <groupId>org.mapstruct</groupId>
       <artifactId>mapstruct-processor</artifactId>
-      <version>${mapstruct.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -141,7 +146,7 @@
               <goal>build</goal>
               <goal>generate-code</goal>
               <goal>generate-code-tests</goal>
-              <goal>native-image-agent</goal>
+<!--              <goal>native-image-agent</goal>-->
             </goals>
           </execution>
         </executions>
@@ -184,7 +189,7 @@
         </executions>
         <configuration>
           <systemPropertyVariables>
-            <native.image.path>${project.build.directory}/${project.build.finalName}-runner</native.image.path>
+<!--            <native.image.path>${project.build.directory}/${project.build.finalName}-runner</native.image.path>-->
             <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
             <maven.home>${maven.home}</maven.home>
           </systemPropertyVariables>
@@ -194,19 +199,4 @@
     </plugins>
   </build>
 
-  <profiles>
-    <profile>
-      <id>native</id>
-      <activation>
-        <property>
-          <name>native</name>
-        </property>
-      </activation>
-      <properties>
-        <quarkus.package.jar.enabled>false</quarkus.package.jar.enabled>
-        <skipITs>false</skipITs>
-        <quarkus.native.enabled>true</quarkus.native.enabled>
-      </properties>
-    </profile>
-  </profiles>
 </project>

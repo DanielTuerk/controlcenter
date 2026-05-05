@@ -16,15 +16,13 @@
     </developer>
   </developers>
 
-
   <properties>
     <maven.compiler.release>21</maven.compiler.release>
 
-
-      <!-- Native Image -->
-      <quarkus.native.builder-image>
-        quay.io/quarkus/ubi9-quarkus-mandrel-builder-image:jdk-21
-      </quarkus.native.builder-image>
+    <!-- Native Image -->
+    <quarkus.native.builder-image>
+      quay.io/quarkus/ubi9-quarkus-mandrel-builder-image:jdk-21
+    </quarkus.native.builder-image>
 
     <compiler-plugin.version>3.14.0</compiler-plugin.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -189,7 +187,6 @@
         </executions>
         <configuration>
           <systemPropertyVariables>
-<!--            <native.image.path>${project.build.directory}/${project.build.finalName}-runner</native.image.path>-->
             <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
             <maven.home>${maven.home}</maven.home>
           </systemPropertyVariables>

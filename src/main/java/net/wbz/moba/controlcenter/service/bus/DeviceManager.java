@@ -1,6 +1,5 @@
 package net.wbz.moba.controlcenter.service.bus;
 
-import com.fazecast.jSerialComm.SerialPort;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityNotFoundException;
@@ -12,11 +11,11 @@ import net.wbz.moba.controlcenter.persist.repository.DeviceInfoRepository;
 import net.wbz.moba.controlcenter.shared.device.AvailableDevice;
 import net.wbz.moba.controlcenter.shared.device.DeviceDataChangedEvent;
 import net.wbz.moba.controlcenter.shared.device.DeviceInfo;
+import net.wbz.selectrix4java.jna.SerialPortLister;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * @author Daniel Tuerk
@@ -75,9 +74,9 @@ public class DeviceManager {
     }
 
     public List<AvailableDevice> getAvailable() {
-        return Stream.of(SerialPort.getCommPorts())
-                .map(serialPort -> new AvailableDevice(serialPort.getSystemPortName(),
-                        serialPort.getDescriptivePortName()))
+        return SerialPortLister.list().stream()
+            .map(serialPort -> new AvailableDevice(serialPort.path(),
+                serialPort.name()))
                 .toList();
     }
 }

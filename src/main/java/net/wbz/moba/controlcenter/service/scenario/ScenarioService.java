@@ -1,5 +1,6 @@
 package net.wbz.moba.controlcenter.service.scenario;
 
+import io.quarkus.runtime.util.StringUtil;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import net.wbz.moba.controlcenter.service.scenario.execution.ScenarioExecutor;
@@ -8,8 +9,15 @@ import net.wbz.moba.controlcenter.shared.scenario.Scenario.MODE;
 import net.wbz.moba.controlcenter.shared.scenario.Scenario.RUN_STATE;
 import net.wbz.selectrix4java.device.DeviceManager;
 import org.jboss.logging.Logger;
-import org.mapstruct.ap.internal.util.Strings;
-import org.quartz.*;
+import org.quartz.CronScheduleBuilder;
+import org.quartz.JobBuilder;
+import org.quartz.JobDetail;
+import org.quartz.JobKey;
+import org.quartz.Scheduler;
+import org.quartz.SchedulerException;
+import org.quartz.Trigger;
+import org.quartz.TriggerBuilder;
+import org.quartz.TriggerKey;
 import org.quartz.impl.StdSchedulerFactory;
 
 import java.util.HashMap;
@@ -77,7 +85,7 @@ public class ScenarioService {
         if (scenario.getRunState() != RUN_STATE.RUNNING) {
             var scenarioId = scenario.getId();
             String cron = scenario.getCron();
-            if (!Strings.isEmpty(cron)) {
+            if (!StringUtil.isNullOrEmpty(cron)) {
 
                 JobDetail job = JobBuilder.newJob(ScheduleScenarioJob.class)
                         .withIdentity(JobKey.jobKey(JOB_SCENARIO_PREFIX + scenarioId))

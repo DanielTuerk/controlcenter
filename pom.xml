@@ -20,11 +20,9 @@
     <maven.compiler.release>21</maven.compiler.release>
 
     <!-- Native Image -->
-    <quarkus.native.builder-image>
-      quay.io/quarkus/ubi9-quarkus-mandrel-builder-image:jdk-21
+    <quarkus.native.builder-image>quay.io/quarkus/ubi9-quarkus-mandrel-builder-image:jdk-21
     </quarkus.native.builder-image>
-    <quarkus.native.additional-build-args>
-      --initialize-at-run-time=com.fazecast.jSerialComm.SerialPort
+    <quarkus.native.additional-build-args>--initialize-at-run-time=com.fazecast.jSerialComm.SerialPort
     </quarkus.native.additional-build-args>
     <quarkus.native.container-build>true</quarkus.native.container-build>
 
@@ -190,7 +188,6 @@
               <goal>build</goal>
               <goal>generate-code</goal>
               <goal>generate-code-tests</goal>
-<!--              <goal>native-image-agent</goal>-->
             </goals>
           </execution>
         </executions>
@@ -239,7 +236,72 @@
           <argLine>@{argLine}</argLine>
         </configuration>
       </plugin>
+
+      <!-- Frontend -->
+      <plugin>
+        <executions>
+          <execution>
+            <id>install node and npm</id>
+            <goals>
+              <goal>install-node-and-npm</goal>
+            </goals>
+            <phase>generate-resources</phase>
+            <configuration>
+              <nodeVersion>v20.0.0</nodeVersion>
+            </configuration>
+          </execution>
+
+          <execution>
+            <id>npm build</id>
+            <goals>
+              <goal>npm</goal>
+            </goals>
+            <phase>generate-resources</phase>
+            <configuration>
+              <arguments>run build</arguments>
+            </configuration>
+          </execution>
+
+        </executions>
+        <groupId>com.github.eirslett</groupId>
+        <artifactId>frontend-maven-plugin</artifactId>
+
+        <version>1.15.0</version>
+
+        <configuration>
+          <workingDirectory>frontend</workingDirectory>
+        </configuration>
+      </plugin>
+
+      <!-- Copy build output into Quarkus -->
+      <plugin>
+        <artifactId>maven-resources-plugin</artifactId>
+        <version>3.3.1</version>
+
+        <executions>
+          <execution>
+            <id>copy-frontend</id>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>
+                ${project.basedir}/src/main/resources/META-INF/resources
+              </outputDirectory>
+              <resources>
+                <resource>
+                  <directory>frontend/dist/essentials-practice/browser</directory>
+                  <filtering>false</filtering>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
     </plugins>
+
   </build>
 
 </project>

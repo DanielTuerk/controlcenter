@@ -4,3 +4,8 @@
 target/
 
 data/
+
+frontend/dist
+frontend/node
+frontend/node_modules
+src/main/resources/META-INF/resources

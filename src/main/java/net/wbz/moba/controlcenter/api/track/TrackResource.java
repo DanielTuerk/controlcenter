@@ -1,6 +1,7 @@
 package net.wbz.moba.controlcenter.api.track;
 
 
+import io.smallrye.common.annotation.Blocking;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
@@ -28,6 +29,7 @@ import org.jboss.logging.Logger;
 @Path("/api/track")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
+@Blocking
 public class TrackResource {
 
     @Inject

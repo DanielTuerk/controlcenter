@@ -1,6 +1,7 @@
 package net.wbz.moba.controlcenter.api.device;
 
 
+import io.smallrye.common.annotation.Blocking;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.Consumes;
@@ -25,6 +26,7 @@ import java.util.List;
 @Path("/api/devices")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
+@Blocking
 public class DeviceResource {
 
     private static final Logger LOGGER = Logger.getLogger(DeviceService.class);

@@ -1,5 +1,6 @@
 package net.wbz.moba.controlcenter.api.scenario;
 
+import io.smallrye.common.annotation.Blocking;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.Consumes;
@@ -23,6 +24,7 @@ import net.wbz.moba.controlcenter.shared.scenario.Scenario;
 @Path("/api/scenarios")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
+@Blocking
 public class ScenarioResource {
 
     @Inject

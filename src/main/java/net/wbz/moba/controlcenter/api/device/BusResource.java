@@ -1,6 +1,7 @@
 package net.wbz.moba.controlcenter.api.device;
 
 
+import io.smallrye.common.annotation.Blocking;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
@@ -18,6 +19,7 @@ import org.jboss.logging.Logger;
 @Path("/api/bus")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
+@Blocking
 public class BusResource {
 
     @Inject

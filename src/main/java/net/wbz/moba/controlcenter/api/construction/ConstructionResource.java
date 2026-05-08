@@ -1,6 +1,7 @@
 package net.wbz.moba.controlcenter.api.construction;
 
 
+import io.smallrye.common.annotation.Blocking;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.Consumes;
@@ -22,6 +23,7 @@ import net.wbz.moba.controlcenter.shared.constrution.Construction;
 @Path("/api/constructions")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
+@Blocking
 public class ConstructionResource {
 
     @Inject

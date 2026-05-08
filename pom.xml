@@ -20,10 +20,8 @@
     <maven.compiler.release>21</maven.compiler.release>
 
     <!-- Native Image -->
-    <quarkus.native.builder-image>quay.io/quarkus/ubi9-quarkus-mandrel-builder-image:jdk-21
-    </quarkus.native.builder-image>
-    <quarkus.native.additional-build-args>--initialize-at-run-time=com.fazecast.jSerialComm.SerialPort
-    </quarkus.native.additional-build-args>
+    <quarkus.native.builder-image>quay.io/quarkus/ubi9-quarkus-mandrel-builder-image:jdk-21</quarkus.native.builder-image>
+    <quarkus.native.additional-build-args>--initialize-at-run-time=com.fazecast.jSerialComm.SerialPort</quarkus.native.additional-build-args>
     <quarkus.native.container-build>true</quarkus.native.container-build>
 
     <compiler-plugin.version>3.14.0</compiler-plugin.version>
@@ -113,19 +111,15 @@
     </dependency>
     <dependency>
       <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-resteasy-jackson</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>io.quarkus</groupId>
       <artifactId>quarkus-arc</artifactId>
     </dependency>
     <dependency>
       <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-resteasy</artifactId>
+      <artifactId>quarkus-hibernate-orm-panache</artifactId>
     </dependency>
     <dependency>
       <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-hibernate-orm-panache</artifactId>
+      <artifactId>quarkus-hibernate-validator</artifactId>
     </dependency>
     <dependency>
       <groupId>io.quarkus</groupId>
@@ -139,6 +133,18 @@
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-quartz</artifactId>
     </dependency>
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-websockets-next</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-rest</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-rest-jackson</artifactId>
+    </dependency>
 
     <dependency>
       <groupId>org.mapstruct</groupId>
@@ -150,10 +156,7 @@
       <artifactId>mapstruct-processor</artifactId>
       <scope>provided</scope>
     </dependency>
-    <dependency>
-      <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-websockets-next</artifactId>
-    </dependency>
+
 
     <!--    Test-->
     <dependency>
@@ -161,7 +164,6 @@
       <artifactId>quarkus-junit</artifactId>
       <scope>test</scope>
     </dependency>
-
     <dependency>
       <groupId>io.rest-assured</groupId>
       <artifactId>rest-assured</artifactId>
@@ -286,9 +288,7 @@
               <goal>copy-resources</goal>
             </goals>
             <configuration>
-              <outputDirectory>
-                ${project.basedir}/src/main/resources/META-INF/resources
-              </outputDirectory>
+              <outputDirectory>${project.basedir}/src/main/resources/META-INF/resources</outputDirectory>
               <resources>
                 <resource>
                   <directory>frontend/dist/essentials-practice/browser</directory>

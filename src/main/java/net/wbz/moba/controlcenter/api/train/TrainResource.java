@@ -1,5 +1,6 @@
 package net.wbz.moba.controlcenter.api.train;
 
+import io.smallrye.common.annotation.Blocking;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.Consumes;
@@ -22,6 +23,7 @@ import net.wbz.moba.controlcenter.shared.train.Train.DRIVING_DIRECTION;
 @Path("/api/trains")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
+@Blocking
 public class TrainResource {
 
     @Inject

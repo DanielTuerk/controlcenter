@@ -1,6 +1,7 @@
 package net.wbz.moba.controlcenter.api.track;
 
 
+import io.smallrye.common.annotation.Blocking;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.Consumes;
@@ -24,6 +25,7 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 @Path("/api/track-block")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
+@Blocking
 public class TrackBlockResource {
 
     @Inject

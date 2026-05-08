@@ -1,5 +1,6 @@
 package net.wbz.moba.controlcenter.api.config;
 
+import io.smallrye.common.annotation.Blocking;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
@@ -19,6 +20,7 @@ import net.wbz.moba.controlcenter.shared.config.ConfigNotAvailableException;
  */
 @Path("/api/config")
 @Consumes(MediaType.TEXT_PLAIN)
+@Blocking
 public class ConfigResource {
 
     @Inject

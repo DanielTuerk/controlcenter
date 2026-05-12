@@ -1,13 +1,10 @@
 package net.wbz.moba.controlcenter.service.scenario;
 
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.event.Event;
+import jakarta.enterprise.event.Observes;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 import net.wbz.moba.controlcenter.EventBroadcaster;
 import net.wbz.moba.controlcenter.persist.entity.ScenarioEntity;
 import net.wbz.moba.controlcenter.persist.repository.RouteSequenceRepository;
@@ -16,7 +13,14 @@ import net.wbz.moba.controlcenter.persist.repository.TrainRepository;
 import net.wbz.moba.controlcenter.shared.scenario.RouteSequence;
 import net.wbz.moba.controlcenter.shared.scenario.Scenario;
 import net.wbz.moba.controlcenter.shared.scenario.ScenarioDataChangedEvent;
+import net.wbz.moba.controlcenter.shared.train.TrainDataChangedEvent;
 import org.jboss.logging.Logger;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Manager to access the {@link Scenario}s from database. The data is cached. TODO cache Stations
@@ -39,26 +43,32 @@ public class ScenarioManager {
     private final EventBroadcaster eventBroadcaster;
     private final ScenarioMapper dataMapper;
     private final ScenarioMapper scenarioMapper;
-    private final RouteSequenceMapper routeSequenceDataMapper;
     private final TrainRepository trainRepository;
     private final RouteManager routeManager;
+    private final Event<ScenarioDataChangedEvent> scenarioDataChangedEvent;
 
     @Inject
     public ScenarioManager(ScenarioRepository scenarioRepository, RouteSequenceRepository routeSequenceRepository,
-        ScenarioStatisticManager scenarioStatisticManager,
-        EventBroadcaster eventBroadcaster, ScenarioMapper dataMapper, ScenarioMapper scenarioMapper,
-        RouteSequenceMapper routeSequenceMapper, TrainRepository trainRepository, RouteManager routeManager) {
+                           ScenarioStatisticManager scenarioStatisticManager, EventBroadcaster eventBroadcaster,
+                           ScenarioMapper dataMapper, ScenarioMapper scenarioMapper,
+                           TrainRepository trainRepository, RouteManager routeManager,
+                           Event<ScenarioDataChangedEvent> scenarioDataChangedEvent) {
         this.scenarioRepository = scenarioRepository;
         this.routeSequenceRepository = routeSequenceRepository;
         this.scenarioStatisticManager = scenarioStatisticManager;
         this.eventBroadcaster = eventBroadcaster;
         this.dataMapper = dataMapper;
         this.scenarioMapper = scenarioMapper;
-        this.routeSequenceDataMapper = routeSequenceMapper;
         this.trainRepository = trainRepository;
         this.routeManager = routeManager;
+        this.scenarioDataChangedEvent = scenarioDataChangedEvent;
 
         routeManager.addListener(() -> updateRoutesOfScenarios(getScenarios()));
+    }
+
+    public void onTrainDataChanged(@Observes TrainDataChangedEvent event) {
+        LOG.infof("Train data changed for ID: %s, refreshing scenarios...", event.getItemId());
+        loadScenariosFromDatabase();
     }
 
     public synchronized List<Scenario> getScenarios() {
@@ -67,6 +77,7 @@ public class ScenarioManager {
         }
         return scenarios;
     }
+
 
     public Scenario getScenarioById(long scenarioId) {
         for (Scenario scenario : getScenarios()) {
@@ -100,8 +111,7 @@ public class ScenarioManager {
         // update scenario for created routes
         scenarioRepository.persist(scenarioEntity);
 
-        loadScenariosFromDatabase();
-        fireScenariosChanged(scenarioEntity.id);
+        loadScenariosFromDatabaseAndThrowEvent();
 
         return scenarioMapper.toDto(scenarioEntity);
     }
@@ -110,16 +120,15 @@ public class ScenarioManager {
      * Delete the {@link Scenario} for the given id and reload the cached data.
      *
      * @param scenarioId id of {@link Scenario} to delete
-     * @return
+     * @return {@code true} if deleted, otherwise {@code false}
      */
     @Transactional
     public boolean deleteScenario(long scenarioId) {
         if (scenarioRepository.findByIdOptional(scenarioId).isPresent()) {
             routeSequenceRepository.deleteByScenario(scenarioId);
-        scenarioStatisticManager.deleteEntriesOfScenario(scenarioId);
+            scenarioStatisticManager.deleteEntriesOfScenario(scenarioId);
             scenarioRepository.deleteById(scenarioId);
-        loadScenariosFromDatabase();
-        fireScenariosChanged(scenarioId);
+            loadScenariosFromDatabaseAndThrowEvent();
             return true;
         }
         return false;
@@ -145,8 +154,14 @@ public class ScenarioManager {
         createOrUpdateRouteSequences(scenario.getRouteSequences(), scenarioEntity);
 
         scenarioRepository.persist(scenarioEntity);
+        loadScenariosFromDatabaseAndThrowEvent();
+    }
+
+    private void loadScenariosFromDatabaseAndThrowEvent() {
         loadScenariosFromDatabase();
-        fireScenariosChanged(scenarioId);
+        final var event = new ScenarioDataChangedEvent();
+        scenarioDataChangedEvent.fire(event);
+        eventBroadcaster.fireEvent(event);
     }
 
     private void loadScenariosFromDatabase() {
@@ -195,10 +210,6 @@ public class ScenarioManager {
 //
 //        // set to actual merged entities
 //        scenarioEntity.routeSequences = entities;
-    }
-
-    private void fireScenariosChanged(long scenarioId) {
-        eventBroadcaster.fireEvent(new ScenarioDataChangedEvent(scenarioId));
     }
 
     public Optional<Scenario> getById(Long id) {

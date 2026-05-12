@@ -13,7 +13,6 @@ import net.wbz.moba.controlcenter.shared.bus.FeedbackBlockEvent;
 import net.wbz.moba.controlcenter.shared.track.model.BusDataConfiguration;
 import net.wbz.moba.controlcenter.shared.track.model.TrackBlock;
 import net.wbz.moba.controlcenter.shared.track.model.TrackBlock.DRIVING_LEVEL_ADJUST_TYPE;
-import net.wbz.moba.controlcenter.shared.train.Train;
 import net.wbz.moba.controlcenter.shared.viewer.TrackPartBlockEvent;
 import net.wbz.selectrix4java.block.FeedbackBlockListener;
 import net.wbz.selectrix4java.block.FeedbackBlockModule;
@@ -23,17 +22,16 @@ import org.jboss.logging.Logger;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Registry for available {@link TrackBlock}s to add the {@link FeedbackBlockListener}s for receiving the block states
  * and to adjust driving levels of trains entering or exiting the blocks.
- * Also the current position of the train is set.
+ * Also, the current position of the train is observed in {@link #trackBlocks}.
  * 
- * @see Train#getCurrentBlocks()
  * @author Daniel Tuerk
  */
 @Singleton
@@ -57,9 +55,8 @@ public class TrackBlockRegistry {
         this.trainService = trainService;
         this.trainManager = trainManager;
 
-        constructionService.addListener(construction -> {
-            initBlocks(trackBlockManager.fetch(construction.getId()));
-        });
+        constructionService.addListener(construction ->
+            initBlocks(trackBlockManager.fetch(construction.getId())));
     }
 
     public Collection<TrackBlock> getTrackBlocks() {
@@ -122,16 +119,17 @@ public class TrackBlockRegistry {
 
     public void registerListeners(Device device) throws DeviceAccessException {
         for (Map.Entry<TrackBlock, FeedbackBlockListener> entry : feedbackBlockListeners.entrySet()) {
-            FeedbackBlockModule feedbackBlockModule = getFeedbackBlockModule(device,
-                getBusAddressIdentifier(entry.getKey().getBlockFunction()));
-            feedbackBlockModule.addFeedbackBlockListener(entry.getValue());
+            getFeedbackBlockModule(device, getBusAddressIdentifier(entry.getKey().getBlockFunction()))
+                .ifPresent(feedbackBlockModule ->
+                    feedbackBlockModule.addFeedbackBlockListener(entry.getValue()));
         }
     }
 
     public void removeListeners(Device device) throws DeviceAccessException {
         for (Map.Entry<TrackBlock, FeedbackBlockListener> entry : feedbackBlockListeners.entrySet()) {
             getFeedbackBlockModule(device, getBusAddressIdentifier(entry.getKey().getBlockFunction()))
-                .removeFeedbackBlockListener(entry.getValue());
+                .ifPresent(feedbackBlockModule ->
+                    feedbackBlockModule.removeFeedbackBlockListener(entry.getValue()));
         }
     }
 
@@ -142,9 +140,10 @@ public class TrackBlockRegistry {
             );
     }
 
-    private FeedbackBlockModule getFeedbackBlockModule(Device device, BusAddressIdentifier entry) throws
+    private Optional<FeedbackBlockModule> getFeedbackBlockModule(Device device, BusAddressIdentifier entry) throws
         DeviceAccessException {
-        return SelectrixHelper.getFeedbackBlockModule(device, entry);
+        return device.isConnected() ? Optional.of(SelectrixHelper.getFeedbackBlockModule(device, entry))
+            : Optional.empty();
     }
 
     private boolean checkBlockFunction(TrackBlock trackBlock) {

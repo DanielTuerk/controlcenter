@@ -45,10 +45,11 @@ export class TrainEditComponent implements OnInit {
   });
 
   ngOnInit() {
-
-    this.trainService.loadTrain(this.trainId()).subscribe(data => {
-      this.setTrain(data);
-    });
+    if (this.trainId() && this.trainId().toString() != "create") {
+      this.trainService.loadTrain(this.trainId()).subscribe(data => {
+        this.setTrain(data);
+      });
+    }
   }
 
   onSubmit() {
@@ -66,7 +67,7 @@ export class TrainEditComponent implements OnInit {
       observable = this.trainService.saveTrain(trainToUpdate);
       operation='updated'
     }
-    observable.subscribe(data => {
+    observable.subscribe(() => {
       this.snackBar.showSuccess(`train "${trainToUpdate.name}" ${operation} successfully.`);
       this.router.navigate(['/cc/train', {}]);
     })

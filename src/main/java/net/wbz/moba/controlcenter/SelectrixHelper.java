@@ -10,6 +10,7 @@ import net.wbz.selectrix4java.device.DeviceAccessException;
  * @author Daniel Tuerk
  */
 public class SelectrixHelper {
+
     public static FeedbackBlockModule getFeedbackBlockModule(Device device,
             BusAddressIdentifier entry) throws DeviceAccessException {
         return device.getFeedbackBlockModule(

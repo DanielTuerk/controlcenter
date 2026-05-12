@@ -1,11 +1,13 @@
 package net.wbz.moba.controlcenter.service.train;
 
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.event.Observes;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.NotFoundException;
 import net.wbz.moba.controlcenter.EventBroadcaster;
 import net.wbz.moba.controlcenter.shared.track.model.BusDataConfiguration;
 import net.wbz.moba.controlcenter.shared.train.Train;
+import net.wbz.moba.controlcenter.shared.train.TrainDataChangedEvent;
 import net.wbz.moba.controlcenter.shared.train.TrainDrivingDirectionEvent;
 import net.wbz.moba.controlcenter.shared.train.TrainDrivingLevelEvent;
 import net.wbz.moba.controlcenter.shared.train.TrainFunction;
@@ -13,7 +15,6 @@ import net.wbz.moba.controlcenter.shared.train.TrainFunctionStateEvent;
 import net.wbz.moba.controlcenter.shared.train.TrainHornStateEvent;
 import net.wbz.moba.controlcenter.shared.train.TrainInstance;
 import net.wbz.moba.controlcenter.shared.train.TrainLightStateEvent;
-import net.wbz.moba.controlcenter.shared.train.TrainStatus;
 import net.wbz.selectrix4java.device.Device;
 import net.wbz.selectrix4java.device.DeviceAccessException;
 import net.wbz.selectrix4java.device.DeviceConnectionListener;
@@ -22,7 +23,9 @@ import net.wbz.selectrix4java.train.TrainDataListener;
 import net.wbz.selectrix4java.train.TrainModule;
 import org.jboss.logging.Logger;
 
+import java.util.Comparator;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -37,7 +40,7 @@ public class TrainService {
     private final TrainManager trainManager;
     private final DeviceManager deviceManager;
     private final EventBroadcaster eventBroadcaster;
-    private final Set<TrainInstance> trainInstances;
+    private final List<TrainInstance> trainInstances;
 
     @Inject
     public TrainService(TrainManager trainManager, DeviceManager deviceManager, EventBroadcaster eventBroadcaster) {
@@ -47,7 +50,8 @@ public class TrainService {
 
         trainInstances = trainManager.load().stream()
             .map(TrainInstance::of)
-            .collect(Collectors.toSet());
+            .sorted(Comparator.comparing(x -> x.train().getName()))
+            .collect(Collectors.toList());
 
         deviceManager.addDeviceConnectionListener(new DeviceConnectionListener() {
             @Override
@@ -70,8 +74,29 @@ public class TrainService {
     }
 
     public TrainInstance trainInstanceByTrain(Train train) {
-        return trainInstances.stream().filter(trainInstance -> trainInstance.train() == train).findFirst()
+        return trainInstances.stream().filter(trainInstance -> trainInstance.train().getId().equals(train.getId())).findFirst()
             .orElseThrow(() -> new NotFoundException("no train instance for train %d exists".formatted(train.getId())));
+    }
+
+    public void onTrainDataChanged(@Observes TrainDataChangedEvent event) {
+        LOG.infof("Train data changed for ID: %s, refreshing service state...", event.getItemId());
+
+        trainManager.getById(event.getItemId())
+            .ifPresentOrElse(train -> {
+                LOG.infof("Train data found for ID: %s, refreshing train instance...", event.getItemId());
+                var updatedInstance = TrainInstance.of(train);
+                trainInstances.removeIf(instance -> instance.train().getId().equals(train.getId()));
+                trainInstances.add(updatedInstance);
+                trainInstances.sort(Comparator.comparing(trainInstance -> trainInstance.train().getName()));
+
+                if (deviceManager.isConnected()) {
+                    try {
+                        reregisterConsumer(updatedInstance, deviceManager);
+                    } catch (DeviceAccessException e) {
+                        LOG.error("can't register consumer for train {}", updatedInstance.train(), e);
+                    }
+                }
+            }, () -> trainInstances.removeIf(y -> y.train().getId() == event.itemId));
     }
 
     private void reregisterConsumer(final TrainInstance trainInstance, DeviceManager deviceManager) throws DeviceAccessException {
@@ -166,10 +191,12 @@ public class TrainService {
     }
 
     public void toggleHorn(long id, boolean on) {
+        // TODO refactor to functionState
         getTrainModule(id).setHorn(on);
     }
 
     public void toggleLight(long id, boolean on) {
+        // TODO refactor to functionState
         getTrainModule(id).setLight(on);
     }
 

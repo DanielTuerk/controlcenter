@@ -9,19 +9,27 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
  *
  * @author Daniel Tuerk
  */
-@Schema(description = "Train status update sent via WebSocket")
+@Schema(description = "Trains update sent via WebSocket")
 @Tag(ref = "websocket")
 public class TrainDataChangedEvent extends AbstractItemEvent {
+    public enum TYPE {CREATE, UPDATE, DELETE}
 
-    public TrainDataChangedEvent(long trainId) {
+    private final TYPE type;
+
+    public TrainDataChangedEvent(long trainId, TYPE type) {
         super(trainId);
+        this.type = type;
     }
 
-    public TrainDataChangedEvent() {
+    public TYPE getType() {
+        return type;
     }
 
     @Override
     public String toString() {
-        return "TrainDataChangedEvent{} " + super.toString();
+        return "TrainDataChangedEvent{" +
+            "type=" + type +
+            ", itemId=" + itemId +
+            '}';
     }
 }

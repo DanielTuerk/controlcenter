@@ -29,7 +29,7 @@ class WaitForFreeTrackCallable implements Runnable {
     @Override
     public void run() {
         final Route route = routeExecution.getRouteSequence().getRoute();
-        LOG.infof("train (%s) request free track: %s", routeExecution.getTrain(), route);
+        LOG.infof("train request free track to start: %s", route.getName());
 
         routeExecutionObserver.addRunningRouteSequence(routeExecution.getRouteSequence());
 
@@ -43,7 +43,7 @@ class WaitForFreeTrackCallable implements Runnable {
                 try {
                     Thread.sleep(TIME_TO_WAIT_IN_MILLIS);
                 } catch (InterruptedException e) {
-                    LOG.error("interrupted wait free track of train: %s".formatted(routeExecution.getTrain()), e);
+                    LOG.error("interrupted wait free track of route: %s".formatted(route.getName()), e);
                 }
             }
         }

@@ -33,6 +33,8 @@ public class TrainManager {
     private final TrainMapper trainMapper;
     private final EventBroadcaster eventBroadcaster;
 
+    // TODO missing change listener / events
+
     @Inject
     public TrainManager(TrainRepository trainRepository, TrainMapper trainMapper, EventBroadcaster eventBroadcaster) {
         this.trainRepository = trainRepository;
@@ -58,9 +60,9 @@ public class TrainManager {
     }
 
     private void reloadData(Long id) {
-        // TODO
         cachedTrains.clear();
         getTrains();
+        // TODO server side
         eventBroadcaster.fireEvent(new TrainDataChangedEvent(id));
     }
 

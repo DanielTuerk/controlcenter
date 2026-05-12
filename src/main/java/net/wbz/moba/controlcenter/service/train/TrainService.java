@@ -3,9 +3,6 @@ package net.wbz.moba.controlcenter.service.train;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.NotFoundException;
-
-import java.util.HashSet;
-import java.util.Set;
 import net.wbz.moba.controlcenter.EventBroadcaster;
 import net.wbz.moba.controlcenter.shared.track.model.BusDataConfiguration;
 import net.wbz.moba.controlcenter.shared.train.Train;
@@ -14,7 +11,9 @@ import net.wbz.moba.controlcenter.shared.train.TrainDrivingLevelEvent;
 import net.wbz.moba.controlcenter.shared.train.TrainFunction;
 import net.wbz.moba.controlcenter.shared.train.TrainFunctionStateEvent;
 import net.wbz.moba.controlcenter.shared.train.TrainHornStateEvent;
+import net.wbz.moba.controlcenter.shared.train.TrainInstance;
 import net.wbz.moba.controlcenter.shared.train.TrainLightStateEvent;
+import net.wbz.moba.controlcenter.shared.train.TrainStatus;
 import net.wbz.selectrix4java.device.Device;
 import net.wbz.selectrix4java.device.DeviceAccessException;
 import net.wbz.selectrix4java.device.DeviceConnectionListener;
@@ -22,6 +21,10 @@ import net.wbz.selectrix4java.device.DeviceManager;
 import net.wbz.selectrix4java.train.TrainDataListener;
 import net.wbz.selectrix4java.train.TrainModule;
 import org.jboss.logging.Logger;
+
+import java.util.HashSet;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Implementation of the {@link TrainService}.
@@ -34,6 +37,7 @@ public class TrainService {
     private final TrainManager trainManager;
     private final DeviceManager deviceManager;
     private final EventBroadcaster eventBroadcaster;
+    private final Set<TrainInstance> trainInstances;
 
     @Inject
     public TrainService(TrainManager trainManager, DeviceManager deviceManager, EventBroadcaster eventBroadcaster) {
@@ -41,50 +45,64 @@ public class TrainService {
         this.deviceManager = deviceManager;
         this.eventBroadcaster = eventBroadcaster;
 
+        trainInstances = trainManager.load().stream()
+            .map(TrainInstance::of)
+            .collect(Collectors.toSet());
+
         deviceManager.addDeviceConnectionListener(new DeviceConnectionListener() {
             @Override
             public void connected(Device device) {
-                try {
-                    for (final Train train : trainManager.load()) {
-                        reregisterConsumer(train, deviceManager);
+                trainInstances.forEach(trainInstance -> {
+                    try {
+                        // TODO re-register or add/remove for changes trains are missing
+                        reregisterConsumer(trainInstance, deviceManager);
+                    } catch (DeviceAccessException e) {
+                        LOG.error("can't register consumer for train {}", trainInstance.train(), e);
                     }
-                } catch (DeviceAccessException e) {
-                    LOG.error("can't register consumer for device {}", device, e);
-                }
+                });
             }
 
             @Override
             public void disconnected(Device device) {
-
+                // TODO remove all listeners
             }
         });
     }
 
-    private void reregisterConsumer(final Train train, DeviceManager deviceManager) throws DeviceAccessException {
-        if (train.getAddressByte() >= 0 && deviceManager.isConnected()) {
-            TrainModule trainModule = getTrainModule(train, deviceManager);
+    public TrainInstance trainInstanceByTrain(Train train) {
+        return trainInstances.stream().filter(trainInstance -> trainInstance.train() == train).findFirst()
+            .orElseThrow(() -> new NotFoundException("no train instance for train %d exists".formatted(train.getId())));
+    }
+
+    private void reregisterConsumer(final TrainInstance trainInstance, DeviceManager deviceManager) throws DeviceAccessException {
+        if (trainInstance.train().getAddressByte() >= 0 && deviceManager.isConnected()) {
+            TrainModule trainModule = getTrainModule(trainInstance.train(), deviceManager);
             trainModule.removeAllTrainDataListeners();
             trainModule.addTrainDataListener(new TrainDataListener() {
                 @Override
                 public void drivingLevelChanged(int i) {
-                    train.setDrivingLevel(i);
-                    eventBroadcaster.fireEvent(new TrainDrivingLevelEvent(train.getId(), i));
+                    trainInstance.trainStatus().setDrivingLevel(i);
+                    eventBroadcaster.fireEvent(new TrainDrivingLevelEvent(trainInstance.train().getId(), i));
                 }
 
                 @Override
                 public void drivingDirectionChanged(TrainModule.DRIVING_DIRECTION driving_direction) {
-                    train.setForward(driving_direction == TrainModule.DRIVING_DIRECTION.FORWARD);
-                    eventBroadcaster.fireEvent(new TrainDrivingDirectionEvent(train.getId(),
+                    trainInstance.trainStatus().setDirection(switch (driving_direction) {
+                        case FORWARD -> Train.DRIVING_DIRECTION.FORWARD;
+                        case BACKWARD -> Train.DRIVING_DIRECTION.BACKWARD;
+                    });
+                    eventBroadcaster.fireEvent(new TrainDrivingDirectionEvent(trainInstance.train().getId(),
                         TrainDrivingDirectionEvent.DRIVING_DIRECTION.valueOf(driving_direction.name())));
                 }
 
                 @Override
                 public void functionStateChanged(int functionAddress, int functionBit, boolean active) {
-                    for (TrainFunction trainFunction : train.getFunctions()) {
+                    for (TrainFunction trainFunction : trainInstance.train().getFunctions()) {
                         if (trainFunction.getConfiguration().getAddress() == functionAddress
                             && trainFunction.getConfiguration().getBit() == functionBit) {
                             eventBroadcaster
-                                .fireEvent(new TrainFunctionStateEvent(train.getId(), trainFunction, active));
+                                .fireEvent(new TrainFunctionStateEvent(trainInstance.train().getId(),
+                                    trainFunction, active));
                             break;
                         }
                     }
@@ -92,21 +110,26 @@ public class TrainService {
 
                 @Override
                 public void lightStateChanged(boolean state) {
-                    eventBroadcaster.fireEvent(new TrainLightStateEvent(train.getId(), state));
+                    // TODO migrate to train function
+                    eventBroadcaster.fireEvent(new TrainLightStateEvent(trainInstance.train().getId(), state));
                 }
 
                 @Override
                 public void hornStateChanged(boolean state) {
-                    eventBroadcaster.fireEvent(new TrainHornStateEvent(train.getId(), state));
+                    // TODO migrate to train function
+                    eventBroadcaster.fireEvent(new TrainHornStateEvent(trainInstance.train().getId(), state));
                 }
             });
         }
     }
 
     public void updateAutomaticDrivingLevel(Train train, int level) {
-        if (train.getDrivingLevel() > 0) {
-            updateDrivingLevel(train.getId(), level);
-        }
+        trainInstances.stream().filter(trainInstance -> trainInstance.train().getId().equals(train.getId())).findFirst()
+            .ifPresent(trainInstance -> {
+                if (trainInstance.trainStatus().getDrivingLevel() > 0) {
+                    updateDrivingLevel(train.getId(), level);
+                }
+            });
     }
 
     public void updateDrivingLevel(long id, int level) {

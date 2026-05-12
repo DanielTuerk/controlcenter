@@ -1,5 +1,6 @@
 package net.wbz.moba.controlcenter.service.track;
 
+import io.vertx.core.impl.ConcurrentHashSet;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import net.wbz.moba.controlcenter.BusAddressIdentifier;
@@ -20,8 +21,11 @@ import net.wbz.selectrix4java.device.Device;
 import net.wbz.selectrix4java.device.DeviceAccessException;
 import org.jboss.logging.Logger;
 
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -43,6 +47,8 @@ public class TrackBlockRegistry {
 
     private final Map<TrackBlock, FeedbackBlockListener> feedbackBlockListeners = new ConcurrentHashMap<>();
     private Collection<TrackBlock> trackBlocks;
+
+    private final Map<TrackBlock, Set<Long>> trainsOnBlocks = new ConcurrentHashMap<>();
 
     @Inject
     public TrackBlockRegistry(EventBroadcaster eventBroadcaster, TrainService trainService,
@@ -129,6 +135,13 @@ public class TrackBlockRegistry {
         }
     }
 
+    public boolean isCurrentlyInBlock(Long trainId, TrackBlock... trackBlocks) {
+        return Arrays.stream(trackBlocks)
+            .anyMatch(block ->
+                trainsOnBlocks.getOrDefault(block, Set.of()).contains(trainId)
+            );
+    }
+
     private FeedbackBlockModule getFeedbackBlockModule(Device device, BusAddressIdentifier entry) throws
         DeviceAccessException {
         return SelectrixHelper.getFeedbackBlockModule(device, entry);
@@ -150,10 +163,11 @@ public class TrackBlockRegistry {
             log.warnf("no train with address '%d' found for block number: %d (%s)",
                 trainAddress, blockNumber, trackBlock);
         } else {
+            var trainsOnThisBlock = trainsOnBlocks.computeIfAbsent(trackBlock, k -> new ConcurrentHashSet<>());
             if (enterBlock) {
-                train$.get().addCurrentBlock(trackBlock);
+                trainsOnThisBlock.add(train$.get().getId());
             } else {
-                train$.get().removeCurrentBlock(trackBlock);
+                trainsOnThisBlock.remove(train$.get().getId());
             }
             // update automatic driving level
             DRIVING_LEVEL_ADJUST_TYPE adjustType = trackBlock.getDrivingLevelAdjustType();

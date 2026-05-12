@@ -11,15 +11,9 @@ import net.wbz.moba.controlcenter.shared.track.model.TrackBlock;
  */
 public class Train extends AbstractDto {
 
-    /**
-     * Set of {@link TrackBlock}s which the train is actual located.
-     */
-    private Set<TrackBlock> currentBlocks = new HashSet<>();
     private Integer address;
     private String name;
     private Set<TrainFunction> functions;
-    private int drivingLevel = 0;
-    private boolean forward;
 
     public Integer getAddress() {
         return address;
@@ -33,13 +27,6 @@ public class Train extends AbstractDto {
         return address != null ? address.byteValue() : (byte) -1;
     }
 
-    public int getDrivingLevel() {
-        return drivingLevel;
-    }
-
-    public void setDrivingLevel(int drivingLevel) {
-        this.drivingLevel = drivingLevel;
-    }
 
     public String getName() {
         return name;
@@ -47,14 +34,6 @@ public class Train extends AbstractDto {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public boolean isForward() {
-        return forward;
-    }
-
-    public void setForward(boolean forward) {
-        this.forward = forward;
     }
 
     public Set<TrainFunction> getFunctions() {
@@ -65,37 +44,14 @@ public class Train extends AbstractDto {
         this.functions = functions;
     }
 
-    public synchronized void addCurrentBlock(TrackBlock trackBlock) {
-        currentBlocks.add(trackBlock);
-    }
-
-    public synchronized void removeCurrentBlock(TrackBlock trackBlock) {
-        currentBlocks.remove(trackBlock);
-    }
-
-    public boolean isCurrentlyInBlock(TrackBlock... trackBlock) {
-        return currentBlocks.stream()
-                .filter(TrackBlock::getFeedback)
-                .anyMatch(Set.of(trackBlock)::contains);
-    }
-
-    public boolean isPresentOnTrack() {
-        return !currentBlocks.isEmpty();
-    }
-
-    public Set<TrackBlock> getCurrentBlocks() {
-        return currentBlocks;
-    }
-
     @Override
     public String toString() {
         final StringBuffer sb = new StringBuffer("Train{");
-        sb.append("currentBlocks=").append(currentBlocks);
         sb.append(", address=").append(address);
         sb.append(", name='").append(name).append('\'');
         sb.append(", functions=").append(functions);
-        sb.append(", drivingLevel=").append(drivingLevel);
-        sb.append(", forward=").append(forward);
+//        sb.append(", drivingLevel=").append(drivingLevel);
+//        sb.append(", forward=").append(forward);
         sb.append('}');
         return sb.toString();
     }

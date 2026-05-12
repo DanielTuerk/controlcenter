@@ -1,24 +1,12 @@
 package net.wbz.moba.controlcenter.service.scenario.execution;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import net.wbz.moba.controlcenter.BusAddressIdentifier;
 import net.wbz.moba.controlcenter.SelectrixHelper;
 import net.wbz.moba.controlcenter.service.scenario.RouteListener;
+import net.wbz.moba.controlcenter.service.track.TrackBlockRegistry;
 import net.wbz.moba.controlcenter.service.track.TrackProvider;
 import net.wbz.moba.controlcenter.service.track.TrackViewerService;
 import net.wbz.moba.controlcenter.service.train.TrainException;
-import net.wbz.moba.controlcenter.service.train.TrainManager;
 import net.wbz.moba.controlcenter.service.train.TrainService;
 import net.wbz.moba.controlcenter.shared.scenario.Route;
 import net.wbz.moba.controlcenter.shared.scenario.Route.ROUTE_RUN_STATE;
@@ -32,12 +20,26 @@ import net.wbz.moba.controlcenter.shared.track.model.Signal.FUNCTION;
 import net.wbz.moba.controlcenter.shared.track.model.TrackBlock;
 import net.wbz.moba.controlcenter.shared.train.Train;
 import net.wbz.moba.controlcenter.shared.train.Train.DRIVING_DIRECTION;
+import net.wbz.moba.controlcenter.shared.train.TrainInstance;
 import net.wbz.selectrix4java.block.BlockListener;
 import net.wbz.selectrix4java.block.FeedbackBlockModule;
 import net.wbz.selectrix4java.device.Device;
 import net.wbz.selectrix4java.device.DeviceAccessException;
 import net.wbz.selectrix4java.device.DeviceManager;
 import org.jboss.logging.Logger;
+
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * The execution of a {@link Scenario} started by the {@link ScenarioExecutor}. Update the run state of the {@link
@@ -65,10 +67,11 @@ abstract class ScenarioExecution implements Callable<Void> {
     private final TrainService trainService;
     private final DeviceManager deviceManager;
     private final Map<FeedbackBlockModule, List<BlockListener>> blockListeners = new ConcurrentHashMap<>();
-    private final TrainManager trainManager;
+    private final TrainInstance trainInstance;
     private final List<RouteListener> routeListeners;
     private final RouteExecutionObserver routeExecutionObserver;
     private final TrackProvider trackProvider;
+    private final TrackBlockRegistry trackBlockRegistry;
 
     /**
      * Flag for stop called to scenario.
@@ -80,16 +83,17 @@ abstract class ScenarioExecution implements Callable<Void> {
     private volatile boolean blockRunning = false;
 
     ScenarioExecution(Scenario scenario, TrackViewerService trackViewerService, TrainService trainService,
-        DeviceManager deviceManager, TrainManager trainManager, List<RouteListener> routeListeners,
-        RouteExecutionObserver routeExecutionObserver, TrackProvider trackProvider) {
+                      DeviceManager deviceManager, List<RouteListener> routeListeners,
+                      RouteExecutionObserver routeExecutionObserver, TrackProvider trackProvider, TrackBlockRegistry trackBlockRegistry) {
         this.scenario = scenario;
         this.trackViewerService = trackViewerService;
         this.trainService = trainService;
         this.deviceManager = deviceManager;
-        this.trainManager = trainManager;
+        this.trainInstance = trainService.trainInstanceByTrain(scenario.getTrain());
         this.routeListeners = routeListeners;
         this.routeExecutionObserver = routeExecutionObserver;
         this.trackProvider = trackProvider;
+        this.trackBlockRegistry = trackBlockRegistry;
     }
 
     @Override
@@ -241,10 +245,9 @@ abstract class ScenarioExecution implements Callable<Void> {
         Optional.ofNullable(routeExecution.getSignal()).ifPresent(signal -> switchSignalToDrive(signal,
             routeExecution.getNextRouteSequence().getRoute().getStart()));
 
-        final Train train = routeExecution.getTrain();
-        if (train.getDrivingLevel() <= 0) {
+        if (trainInstance.trainStatus().getDrivingLevel() <= 0) {
             try {
-                startTrain(train, scenario.getStartDrivingLevel());
+                startTrain(trainInstance.train(), scenario.getStartDrivingLevel());
             } catch (InterruptedException e) {
                 throw new RouteExecutionInterruptException("start route interrupted", e);
             }
@@ -338,7 +341,7 @@ abstract class ScenarioExecution implements Callable<Void> {
         NoTrainInStartBlockException, ScenarioExecutionInterruptException, TrainException {
         Route route = routeSequence.getRoute();
 
-        Train train = getTrain();
+        Train train = trainInstance.train();
 
         // detect train
         if ((isFirstRoute || !isAnyRouteRunning) && trainIsNotInStartBlock(route, train)) {
@@ -356,7 +359,7 @@ abstract class ScenarioExecution implements Callable<Void> {
             routeSequence.getRoute().setRunState(ROUTE_RUN_STATE.PREPARED);
         }
         Optional<Signal> signal = findStartSignal(route);
-        return new RouteExecution(routeSequence, previousRouteSequence, nextRouteSequence, train, signal.orElse(null));
+        return new RouteExecution(routeSequence, previousRouteSequence, nextRouteSequence, signal.orElse(null));
     }
 
     private boolean trainIsNotInStartBlock(Route route, Train train) throws ScenarioExecutionInterruptException {
@@ -379,11 +382,11 @@ abstract class ScenarioExecution implements Callable<Void> {
             }
         }
 
-        return !train.isCurrentlyInBlock(trackBlocks.toArray(new TrackBlock[0]));
+        return !trackBlockRegistry.isCurrentlyInBlock(train.getId(), trackBlocks.toArray(new TrackBlock[0]));
     }
 
     /**
-     * Check that all given {@link TrackBlock}s are free. If not a exception is thrown.
+     * Check that all given {@link TrackBlock}s are free. If not an exception is thrown.
      *
      * @param trackBlocks {@link TrackBlock}s to check
      * @throws ScenarioExecutionInterruptException no connection
@@ -407,11 +410,6 @@ abstract class ScenarioExecution implements Callable<Void> {
         } catch (DeviceAccessException e) {
             throw new ScenarioExecutionInterruptException("no connected device", e);
         }
-    }
-
-    private Train getTrain() throws TrainException {
-        var trainId = scenario.getTrain().getId();
-        return trainManager.getById(trainId).orElseThrow(() -> new TrainException("no train for id: " + trainId));
     }
 
     /**
@@ -553,11 +551,7 @@ abstract class ScenarioExecution implements Callable<Void> {
     }
 
     private void stopTrain() {
-        try {
-            trainService.updateDrivingLevel(getTrain(), 0);
-        } catch (TrainException e) {
-            LOG.error("error stoping during train", e);
-        }
+        trainService.updateDrivingLevel(trainInstance.train(), 0);
     }
 
     private void tearDownRouteExecution() {

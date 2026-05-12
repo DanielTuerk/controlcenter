@@ -12,7 +12,7 @@ public class TrainFunction extends AbstractDto {
 
     private String alias;
     private BusDataConfiguration configuration;
-    private boolean active;
+//    private boolean active;
 
     public BusDataConfiguration getConfiguration() {
         return configuration;
@@ -22,13 +22,13 @@ public class TrainFunction extends AbstractDto {
         this.configuration = configuration;
     }
 
-    public boolean isActive() {
-        return active;
-    }
-
-    public void setActive(boolean active) {
-        this.active = active;
-    }
+//    public boolean isActive() {
+//        return active;
+//    }
+//
+//    public void setActive(boolean active) {
+//        this.active = active;
+//    }
 
     public String getAlias() {
         return alias;

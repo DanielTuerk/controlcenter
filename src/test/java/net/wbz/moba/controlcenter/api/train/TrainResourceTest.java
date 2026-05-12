@@ -5,6 +5,7 @@ import io.quarkus.test.junit.QuarkusTest;
 import jakarta.ws.rs.core.MediaType;
 import net.wbz.moba.controlcenter.service.train.TrainManager;
 import net.wbz.moba.controlcenter.shared.train.Train;
+import org.jspecify.annotations.NonNull;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -23,9 +24,7 @@ class TrainResourceTest {
 
     @Test
     void testListAll() {
-        var train = new Train();
-        train.setId(1L);
-        train.setName("ICE");
+        var train = createTrain();
 
         when(trainManager.load()).thenReturn(List.of(train));
 
@@ -37,11 +36,17 @@ class TrainResourceTest {
             .body("[0].name", equalTo("ICE"));
     }
 
-    @Test
-    void testGetById_found() {
-        var train = new Train();
+    private static @NonNull Train createTrain() {
+        Train train = new Train();
         train.setId(1L);
         train.setName("ICE");
+        train.setAddress(0);
+        return train;
+    }
+
+    @Test
+    void testGetById_found() {
+        var train = createTrain();
 
         when(trainManager.getById(1L)).thenReturn(Optional.of(train));
 
@@ -66,9 +71,7 @@ class TrainResourceTest {
     void testCreate() {
         var dto = new TrainDto("ICE", 1);
 
-        var created = new Train();
-        created.setId(1L);
-        created.setName("ICE");
+        var created = createTrain();
 
         when(trainManager.create(any())).thenReturn(created);
 

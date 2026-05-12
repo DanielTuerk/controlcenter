@@ -10,6 +10,7 @@ import net.wbz.moba.controlcenter.EventBroadcaster;
 import net.wbz.moba.controlcenter.service.scenario.RouteListener;
 import net.wbz.moba.controlcenter.service.scenario.ScenarioStateListener;
 import net.wbz.moba.controlcenter.service.scenario.ScenarioUtil;
+import net.wbz.moba.controlcenter.service.track.TrackBlockRegistry;
 import net.wbz.moba.controlcenter.service.track.TrackProvider;
 import net.wbz.moba.controlcenter.service.track.TrackViewerService;
 import net.wbz.moba.controlcenter.service.train.TrainManager;
@@ -38,6 +39,8 @@ public class ScenarioExecutor {
     private final DeviceManager deviceManager;
     private final TrackProvider trackProvider;
     private final RouteExecutionObserver routeExecutionObserver;
+    private final TrackBlockRegistry trackBlockRegistry;
+
     /**
      * Broadcaster for client side event handling of state changes.
      */
@@ -60,7 +63,7 @@ public class ScenarioExecutor {
         TrainManager trainManager, DeviceManager deviceManager,
         EventBroadcaster eventBroadcaster,
         ScenarioRouteEventBroadcaster scenarioRouteEventBroadcaster, TrackProvider trackProvider,
-            RouteExecutionObserver routeExecutionObserver) {
+            RouteExecutionObserver routeExecutionObserver, TrackBlockRegistry trackBlockRegistry) {
         this.trackViewerService = trackViewerService;
         this.trainService = trainService;
         this.trainManager = trainManager;
@@ -68,6 +71,7 @@ public class ScenarioExecutor {
         this.eventBroadcaster = eventBroadcaster;
         this.trackProvider = trackProvider;
         this.routeExecutionObserver = routeExecutionObserver;
+        this.trackBlockRegistry=trackBlockRegistry;
 
         // TODO migrate
 //        ThreadFactory namedThreadFactory = new ThreadFactoryBuilder().setNameFormat(getClass().getSimpleName() + "-%d")
@@ -96,7 +100,8 @@ public class ScenarioExecutor {
     public synchronized void startScenario(Scenario scenario) {
         if (!executionsByScenarioId.containsKey(scenario.getId())) {
             final ScenarioExecution scenarioExecution = new ScenarioExecution(scenario, trackViewerService,
-                trainService, deviceManager, trainManager, routeListeners, routeExecutionObserver, trackProvider) {
+                trainService, deviceManager, routeListeners, routeExecutionObserver, trackProvider,
+                trackBlockRegistry) {
                 @Override
                 protected void scenarioExecutionFinished(Scenario scenario) {
                     finishExecution(scenario);

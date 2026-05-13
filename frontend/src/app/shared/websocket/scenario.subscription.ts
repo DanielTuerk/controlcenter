@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {
-  RoutesChangedEvent,
+  RouteDataChangedEvent,
   RouteStateEvent,
   ScenarioDataChangedEvent,
   ScenarioStateEvent
@@ -12,7 +12,7 @@ import {Subscription} from "./subscription";
 })
 export class ScenarioSubscription extends Subscription {
 
-  readonly routesChanged = this.createEventAccessor<RoutesChangedEvent>('RoutesChangedEvent', false);
+  readonly routesChanged = this.createEventAccessor<RouteDataChangedEvent>('RouteDataChangedEvent', false);
   readonly scenarioDataChanged = this.createEventAccessor<ScenarioDataChangedEvent>('ScenarioDataChangedEvent', false);
 
   readonly routeStateChanged = this.createEventAccessor<RouteStateEvent>('RouteStateEvent', true);

@@ -20,7 +20,7 @@ import net.wbz.moba.controlcenter.shared.track.model.Signal;
 public class SignalEntity extends StraightEntity {
 
     @Enumerated(EnumType.ORDINAL)
-    public Signal.TYPE type;
+    public Signal.SIGNAL_TYPE type;
 
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     public BusDataConfigurationEntity signalConfigRed1;

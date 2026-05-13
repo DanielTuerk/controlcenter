@@ -1,5 +1,5 @@
 import {Injectable} from "@angular/core";
-import {DIRECTION, DIRECTION1, DIRECTION2, PRESENTATION, TYPE3} from "../../../../shared/openapi-gen";
+import {DIRECTION, DIRECTION1, DIRECTION2, PRESENTATION, SIGNALTYPE} from "../../../../shared/openapi-gen";
 import {CurveBuilder} from "../../track/track-viewer-svg/track-builder/component/curve";
 import {TurnoutBuilder} from "../../track/track-viewer-svg/track-builder/component/turnout";
 import {SignalBuilder} from "../../track/track-viewer-svg/track-builder/component/signal";
@@ -64,7 +64,7 @@ export class AddAction {
   private buildSignal(direction: DIRECTION, x: number, y: number) {
     let trackPart = {
       trackPartType: 'Signal',
-      type: TYPE3.Block,
+      type: SIGNALTYPE.Block,
       gridPosition: {x: x, y: y},
       direction: direction
     };

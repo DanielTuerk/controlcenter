@@ -1,5 +1,5 @@
 import {Component, inject, OnInit, signal} from '@angular/core';
-import {Signal, TrackBlock, TYPE3} from "../../../../../../shared/openapi-gen";
+import {Signal, SIGNALTYPE, TrackBlock} from "../../../../../../shared/openapi-gen";
 import {EditComponent} from "../base-edit-track-part.component";
 import {MatCard, MatCardContent, MatCardHeader, MatCardTitle} from "@angular/material/card";
 import {TrackService} from "../../../../../shared/track.service";
@@ -68,7 +68,7 @@ export class SignalEditComponent implements EditComponent<Signal>, OnInit {
   private trackService = inject(TrackService);
   protected trackBlocks = signal<TrackBlock[]>([]);
   private signal: Signal | null = null;
-  protected selectedSignalType: TYPE3 = TYPE3.Block;
+  protected selectedSignalType: SIGNALTYPE = SIGNALTYPE.Block;
 
   ngOnInit(): void {
     this.trackService.loadTrackBlocks().subscribe(data => {
@@ -180,5 +180,5 @@ export class SignalEditComponent implements EditComponent<Signal>, OnInit {
     return signal;
   }
 
-  protected readonly TYPE3 = TYPE3;
+  protected readonly SIGNALTYPE = SIGNALTYPE;
 }

@@ -18,11 +18,15 @@ export class TrainData {
   train: Train;
   horn: boolean;
   light: boolean;
+  drivingLevel: number = 0;
+  forward: boolean = true;
 
-  constructor(train: Train, horn: boolean, light: boolean) {
+  constructor(train: Train, horn: boolean, light: boolean, drivingLevel: number, forward: boolean) {
     this.train = train;
     this.horn = horn;
     this.light = light;
+    this.drivingLevel = drivingLevel;
+    this.forward = forward;
   }
 }
 
@@ -58,7 +62,7 @@ export class TrainComponent implements OnInit {
   ngOnInit() {
     this.trainService.loadTrains().subscribe(data => {
       this.trains.set(data.map(train => {
-        return new TrainData(train, false, false);
+        return new TrainData(train, false, false, 0, true);
       }));
 
       this.trainSubscription.trainDataChanged().subscribe(() => {
@@ -72,7 +76,7 @@ export class TrainComponent implements OnInit {
               find.train = updatedTrain;
               updatedTrainData.push(find);
             } else {
-              updatedTrainData.push(new TrainData(updatedTrain, false, false));
+              updatedTrainData.push(new TrainData(updatedTrain, false, false, 0, true));
             }
           });
           this.trains.set(updatedTrainData);
@@ -82,11 +86,11 @@ export class TrainComponent implements OnInit {
       this.trainSubscription.trainDrivingDirection().subscribe(data => {
         let direction = data.direction;
         if (direction) {
-          this.getTrain(data.itemId).forward = direction === DRIVINGDIRECTION.Forward;
+          this.getTrainData(data.itemId).forward = direction === DRIVINGDIRECTION.Forward;
         }
       });
       this.trainSubscription.trainDrivingLevel().subscribe(data => {
-        this.getTrain(data.itemId).drivingLevel = data.speed ?? 0;
+        this.getTrainData(data.itemId).drivingLevel = data.speed ?? 0;
       });
       this.trainSubscription.trainLightState().subscribe(data => {
         this.getTrainData(data.itemId).light = data.state!;
@@ -102,9 +106,9 @@ export class TrainComponent implements OnInit {
     return this.trains().find(e => e.train.id == id)!;
   }
 
-  private getTrain(id: Number | undefined): Train {
-    return this.getTrainData(id).train;
-  }
+  // private getTrain(id: Number | undefined): Train {
+  //   return this.getTrainData(id).train;
+  // }
 
   protected stopTrain(train: Train) {
     this.changeDrivingLevel(train, 0);
@@ -122,9 +126,9 @@ export class TrainComponent implements OnInit {
     this.trainService.toggleHorn(train, !(this.getTrainData(train.id).horn)).subscribe();
   }
 
-  protected drivingDirectionChanged(train: Train) {
-    this.trainService.toggleDirection(train,
-      train.forward ? DRIVINGDIRECTION.Forward : DRIVINGDIRECTION.Backward)
+  protected drivingDirectionChanged(trainData: TrainData) {
+    this.trainService.toggleDirection(trainData.train,
+      trainData.forward ? DRIVINGDIRECTION.Forward : DRIVINGDIRECTION.Backward)
     .subscribe();
   }
 }

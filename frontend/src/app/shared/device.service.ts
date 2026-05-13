@@ -1,7 +1,7 @@
 import {inject, Injectable, signal} from "@angular/core";
 import {HttpClient} from "@angular/common/http";
 import {SnackBar} from "../control-center/common/snack-bar.component";
-import {AvailableDevice, DeviceInfo, Scenario, TYPE} from "../../shared/openapi-gen";
+import {AvailableDevice, DeviceInfo, Scenario} from "../../shared/openapi-gen";
 import {catchError} from "rxjs/operators";
 import {EMPTY} from "rxjs";
 import {DeviceSubscription} from "./websocket/device.subscription";
@@ -21,7 +21,7 @@ export class DeviceService {
   init() {
     this.deviceSubscription.deviceConnection().subscribe($event => {
       console.log("device connection changed", {device: $event});
-      this._isConnected.set($event.eventType === TYPE.Connected);
+      this._isConnected.set($event.connected!);
     });
   }
 

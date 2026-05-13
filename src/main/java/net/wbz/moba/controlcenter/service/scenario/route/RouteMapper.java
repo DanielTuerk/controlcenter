@@ -1,4 +1,4 @@
-package net.wbz.moba.controlcenter.service.scenario;
+package net.wbz.moba.controlcenter.service.scenario.route;
 
 import net.wbz.moba.controlcenter.persist.entity.RouteEntity;
 import net.wbz.moba.controlcenter.shared.scenario.Route;

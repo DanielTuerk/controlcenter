@@ -2,16 +2,6 @@ package net.wbz.moba.controlcenter.service.bus;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import net.wbz.moba.controlcenter.EventBroadcaster;
 import net.wbz.moba.controlcenter.shared.bus.BusDataEvent;
 import net.wbz.moba.controlcenter.shared.bus.PlayerEvent;
@@ -22,6 +12,17 @@ import net.wbz.selectrix4java.device.Device;
 import net.wbz.selectrix4java.device.Device.SYSTEM_FORMAT;
 import net.wbz.selectrix4java.device.DeviceAccessException;
 import org.jboss.logging.Logger;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * @author Daniel Tuerk
@@ -163,13 +164,13 @@ public class BusService {
                 @Override
                 public void playbackStarted() {
                     LOGGER.info("playback started");
-                    eventBroadcaster.fireEvent(new PlayerEvent(PlayerEvent.STATE.START));
+                    eventBroadcaster.fireEvent(new PlayerEvent(PlayerEvent.PLAYER_STATE.START));
                 }
 
                 @Override
                 public void playbackStopped() {
                     LOGGER.info("playback stopped");
-                    eventBroadcaster.fireEvent(new PlayerEvent(PlayerEvent.STATE.STOP));
+                    eventBroadcaster.fireEvent(new PlayerEvent(PlayerEvent.PLAYER_STATE.STOP));
                 }
             });
             try {

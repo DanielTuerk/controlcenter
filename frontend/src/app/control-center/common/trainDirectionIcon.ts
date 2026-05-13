@@ -1,7 +1,7 @@
 import {Component, Input} from '@angular/core';
 import {MatIconModule} from '@angular/material/icon';
-import {Train} from "../../../shared/openapi-gen";
 import {NgIf} from "@angular/common";
+import {TrainData} from "../viewer/control/train/train.component";
 
 @Component({
   selector: 'train-direction-icon',
@@ -12,11 +12,11 @@ import {NgIf} from "@angular/common";
   `
 })
 export class TrainDirectionIcon {
-  @Input() train: Train | undefined;
+  @Input() trainData: TrainData | undefined;
 
   get icon() {
-    if (this.train) {
-      return this.train.forward ? 'arrow_forward' : 'arrow_backward';
+    if (this.trainData) {
+      return this.trainData.forward ? 'arrow_forward' : 'arrow_backward';
     }
     return null;
   }

@@ -1,5 +1,5 @@
 import {AbstractTrackComponentBuilder} from "../abstract-track-component-builder";
-import {DIRECTION, FUNCTION, Signal, SignalFunctionStateEvent, TYPE3} from "../../../../../../shared/openapi-gen";
+import {DIRECTION, FUNCTION, Signal, SignalFunctionStateEvent, SIGNALTYPE} from "../../../../../../shared/openapi-gen";
 import {StraightBuilder} from "./straight";
 
 export class SignalBuilder extends StraightBuilder<Signal> {
@@ -24,13 +24,13 @@ export class SignalBuilder extends StraightBuilder<Signal> {
     const lights: SVGElement[] = (() => {
       const pixelShift = 4.5;
       switch (signalTrackPart.type) {
-        case TYPE3.Block:
+        case SIGNALTYPE.Block:
           return this.lightsForBlock(event, cx, pixelShift, cy);
-        case TYPE3.Enter:
+        case SIGNALTYPE.Enter:
           return this.lightsForEnter(event, cx, pixelShift, cy);
-        case TYPE3.Exit:
+        case SIGNALTYPE.Exit:
           return this.lightsForExit(event, cx, pixelShift, cy);
-        case TYPE3.Before:
+        case SIGNALTYPE.Before:
           return this.lightsForBefore(event, cx, pixelShift, cy);
         default:
           throw Error(`invalid signal type: ${signalTrackPart.type}`)

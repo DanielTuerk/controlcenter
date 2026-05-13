@@ -12,16 +12,15 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 @Schema(description = "Trains update sent via WebSocket")
 @Tag(ref = "websocket")
 public class TrainDataChangedEvent extends AbstractItemEvent {
-    public enum TYPE {CREATE, UPDATE, DELETE}
 
-    private final TYPE type;
+    private final ACTION_TYPE type;
 
-    public TrainDataChangedEvent(long trainId, TYPE type) {
+    public TrainDataChangedEvent(long trainId, ACTION_TYPE type) {
         super(trainId);
         this.type = type;
     }
 
-    public TYPE getType() {
+    public ACTION_TYPE getType() {
         return type;
     }
 

@@ -21,7 +21,7 @@ public class TrainEntity extends AbstractEntity {
 
     public String name;
 
-    @OneToMany(mappedBy = "train", cascade = {CascadeType.ALL}, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "train", cascade = {CascadeType.ALL}, fetch = FetchType.EAGER)
     public Set<TrainFunctionEntity> functions;
 
 }

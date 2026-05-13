@@ -1,15 +1,15 @@
 package net.wbz.moba.controlcenter.service.track;
 
 import jakarta.enterprise.context.ApplicationScoped;
+import net.wbz.moba.controlcenter.shared.bus.BusAddressBit;
+import net.wbz.moba.controlcenter.shared.track.model.BusDataConfiguration;
+import net.wbz.moba.controlcenter.shared.track.model.Signal;
+import net.wbz.moba.controlcenter.shared.track.model.Signal.LIGHT;
 
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import net.wbz.moba.controlcenter.shared.bus.BusAddressBit;
-import net.wbz.moba.controlcenter.shared.track.model.BusDataConfiguration;
-import net.wbz.moba.controlcenter.shared.track.model.Signal;
-import net.wbz.moba.controlcenter.shared.track.model.Signal.LIGHT;
 
 /**
  * @author Daniel Tuerk
@@ -20,7 +20,7 @@ public class SignalStateService {
     Set<BusAddressBit> convertToLights(Signal signal, Signal.FUNCTION signalFunction) {
         Map<LIGHT, BusAddressBit> availableLightConfig = new HashMap<>();
 
-        Signal.TYPE signalType = signal.getType();
+        Signal.SIGNAL_TYPE signalType = signal.getType();
         // set all lights to 'off'
         for (Signal.LIGHT light : signalType.getLights()) {
             BusDataConfiguration lightFunction = signal.getSignalConfiguration(light);

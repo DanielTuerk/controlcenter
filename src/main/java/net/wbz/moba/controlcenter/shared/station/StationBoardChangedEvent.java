@@ -13,27 +13,27 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 @Tag(ref = "websocket")
 public class StationBoardChangedEvent implements Event {
 
-    public enum TYPE {
+    public enum CATEGORY {
         ARRIVAL, DEPARTURE
     }
 
-    private TYPE type;
+    private CATEGORY CATEGORY;
     private long stationId;
 
     public StationBoardChangedEvent() {
     }
 
-    public StationBoardChangedEvent(TYPE type, long stationId) {
-        this.type = type;
+    public StationBoardChangedEvent(CATEGORY CATEGORY, long stationId) {
+        this.CATEGORY = CATEGORY;
         this.stationId = stationId;
     }
 
-    public TYPE getType() {
-        return type;
+    public CATEGORY getType() {
+        return CATEGORY;
     }
 
-    public void setType(TYPE type) {
-        this.type = type;
+    public void setType(CATEGORY CATEGORY) {
+        this.CATEGORY = CATEGORY;
     }
 
     public long getStationId() {
@@ -46,7 +46,7 @@ public class StationBoardChangedEvent implements Event {
 
     @Override
     public String toString() {
-        return "StationBoardChangedEvent{" + "type=" + type
+        return "StationBoardChangedEvent{" + "type=" + CATEGORY
             + ", stationId=" + stationId
             + '}';
     }

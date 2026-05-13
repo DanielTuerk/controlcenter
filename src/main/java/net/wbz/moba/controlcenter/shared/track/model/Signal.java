@@ -1,5 +1,8 @@
 package net.wbz.moba.controlcenter.shared.track.model;
 
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
+import org.eclipse.microprofile.openapi.annotations.tags.Tag;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -7,9 +10,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import org.eclipse.microprofile.openapi.annotations.media.Schema;
-import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 /**
  * @author Daniel Tuerk
@@ -21,7 +21,7 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 @Tag(ref = "track")
 public class Signal extends Straight {
 
-    private TYPE type;
+    private SIGNAL_TYPE type;
     private BusDataConfiguration signalConfigRed1;
     private BusDataConfiguration signalConfigRed2;
     private BusDataConfiguration signalConfigGreen1;
@@ -32,11 +32,11 @@ public class Signal extends Straight {
 
     private TrackBlock stopBlock;
 
-    public TYPE getType() {
+    public SIGNAL_TYPE getType() {
         return type;
     }
 
-    public void setType(TYPE type) {
+    public void setType(SIGNAL_TYPE type) {
         this.type = type;
     }
 
@@ -56,54 +56,6 @@ public class Signal extends Straight {
             case YELLOW2 -> signalConfigYellow2;
             case WHITE -> signalConfigWhite;
         };
-    }
-
-    public void updateSignalConfiguration(LIGHT light, BusDataConfiguration busDataConfiguration) {
-        switch (light) {
-            case RED1:
-                signalConfigRed1 = busDataConfiguration;
-                break;
-            case RED2:
-                signalConfigRed2 = busDataConfiguration;
-                break;
-            case GREEN1:
-                signalConfigGreen1 = busDataConfiguration;
-                break;
-            case GREEN2:
-                signalConfigGreen2 = busDataConfiguration;
-                break;
-            case YELLOW1:
-                signalConfigYellow1 = busDataConfiguration;
-                break;
-            case YELLOW2:
-                signalConfigYellow2 = busDataConfiguration;
-                break;
-            case WHITE:
-                signalConfigWhite = busDataConfiguration;
-                break;
-        }
-    }
-
-    public List<BusDataConfiguration> getSignalConfigurations() {
-        return Stream.of(
-                        signalConfigRed1,
-                        signalConfigRed2,
-                        signalConfigGreen1,
-                        signalConfigGreen2,
-                        signalConfigYellow1,
-                        signalConfigYellow2,
-                        signalConfigWhite
-                )
-                .filter(Objects::nonNull)
-                .collect(Collectors.toCollection(ArrayList::new));
-    }
-
-    public List<BusDataConfiguration> getSignalConfigurations(TYPE type) {
-        List<BusDataConfiguration> configs = new ArrayList<>();
-        for (LIGHT light : type.getLights()) {
-            configs.add(getSignalConfiguration(light));
-        }
-        return configs;
     }
 
     public BusDataConfiguration getSignalConfigRed1() {
@@ -162,7 +114,7 @@ public class Signal extends Straight {
         this.signalConfigWhite = signalConfigWhite;
     }
 
-    public Map<LIGHT, BusDataConfiguration> getSignalLightsConfigurations(TYPE type) {
+    public Map<LIGHT, BusDataConfiguration> getSignalLightsConfigurations(SIGNAL_TYPE type) {
         Map<LIGHT, BusDataConfiguration> lightConfigs = new HashMap<>();
         for (LIGHT light : type.getLights()) {
             lightConfigs.put(light, getSignalConfiguration(light));
@@ -181,7 +133,7 @@ public class Signal extends Straight {
     /**
      * Types of signal with corresponding mapping of the lights.
      */
-    public enum TYPE {
+    public enum SIGNAL_TYPE {
         BLOCK(new LIGHT[]{LIGHT.RED1, LIGHT.GREEN1}),
         ENTER(new LIGHT[]{LIGHT.RED1, LIGHT.GREEN1, LIGHT.YELLOW1}),
         EXIT(new LIGHT[]{LIGHT.RED1, LIGHT.RED2, LIGHT.GREEN1, LIGHT.YELLOW1, LIGHT.WHITE}),
@@ -189,7 +141,7 @@ public class Signal extends Straight {
 
         private final LIGHT[] lights;
 
-        TYPE(LIGHT[] lights) {
+        SIGNAL_TYPE(LIGHT[] lights) {
             this.lights = lights;
         }
 

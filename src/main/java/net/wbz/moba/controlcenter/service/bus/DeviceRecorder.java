@@ -2,7 +2,6 @@ package net.wbz.moba.controlcenter.service.bus;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import java.nio.file.Path;
 import net.wbz.moba.controlcenter.EventBroadcaster;
 import net.wbz.moba.controlcenter.service.LocalFileService;
 import net.wbz.moba.controlcenter.shared.bus.RecordingEvent;
@@ -10,6 +9,8 @@ import net.wbz.selectrix4java.data.recording.IsRecordable;
 import net.wbz.selectrix4java.device.Device;
 import net.wbz.selectrix4java.device.DeviceAccessException;
 import org.jboss.logging.Logger;
+
+import java.nio.file.Path;
 
 /**
  * @author Daniel Tuerk
@@ -40,7 +41,7 @@ public class DeviceRecorder {
         }
         if (!recordable.isRecording()) {
             try {
-                eventBroadcaster.fireEvent(new RecordingEvent(RecordingEvent.STATE.START));
+                eventBroadcaster.fireEvent(new RecordingEvent(RecordingEvent.RECORDING_STATE.START));
                 recordable.startRecording(destinationFolder);
             } catch (DeviceAccessException e) {
                 LOGGER.error("can't start recording", e);
@@ -52,7 +53,7 @@ public class DeviceRecorder {
         if (recordable != null) {
             try {
                 Path record = recordable.stopRecording();
-                eventBroadcaster.fireEvent(new RecordingEvent(RecordingEvent.STATE.STOP, record.toString()));
+                eventBroadcaster.fireEvent(new RecordingEvent(RecordingEvent.RECORDING_STATE.STOP, record.toString()));
             } catch (DeviceAccessException e) {
                 LOGGER.error("can't stop recording", e);
             }

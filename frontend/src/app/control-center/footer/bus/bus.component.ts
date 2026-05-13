@@ -3,7 +3,7 @@ import {MatSlideToggle} from "@angular/material/slide-toggle";
 import {BusSubscription} from "../../../shared/websocket/bus.subscription";
 import {BusService} from "../../../shared/bus.service";
 import {DeviceSubscription} from "../../../shared/websocket/device.subscription";
-import {BusDataDto, SYSTEMFORMAT, TYPE} from "../../../../shared/openapi-gen";
+import {BusDataDto, SYSTEMFORMAT} from "../../../../shared/openapi-gen";
 import {MatButton, MatIconButton} from "@angular/material/button";
 import {MatIcon} from "@angular/material/icon";
 import {RouterLink} from "@angular/router";
@@ -42,7 +42,7 @@ export class BusComponent implements OnInit {
       this.railVoltageEnabled = event.state ? event.state : false;
     });
     this.deviceSubscription.deviceConnection().subscribe(device => {
-      this.isConnected = device.eventType === TYPE.Connected;
+      this.isConnected = device.connected!;
     });
   }
 

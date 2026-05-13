@@ -6,6 +6,7 @@ package net.wbz.moba.controlcenter.shared;
  * @author Daniel Tuerk
  */
 public class AbstractItemEvent implements Event {
+    public enum ACTION_TYPE {CREATE, UPDATE, DELETE}
 
     public long itemId = -1;
 

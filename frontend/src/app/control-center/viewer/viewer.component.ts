@@ -3,7 +3,7 @@ import {TrackViewerSvgComponent} from "../track/track-viewer-svg/track-viewer-sv
 import {ControlComponent} from "./control/control.component";
 import {TrackElement} from "../track/track-viewer-svg/track-element";
 import {TrackService} from "../../shared/track.service";
-import {FUNCTION, Signal, TYPE3} from "../../../shared/openapi-gen";
+import {FUNCTION, Signal, SIGNALTYPE} from "../../../shared/openapi-gen";
 import {MatDialog} from "@angular/material/dialog";
 import {SelectSignalFunctionComponent} from "./select-signal-func/select-signal-func.component";
 
@@ -33,8 +33,8 @@ export class ViewerComponent {
 
       let newFuncState = FUNCTION.Hp0;
       switch (signal.type) {
-        case TYPE3.Block:
-        case TYPE3.Before:
+        case SIGNALTYPE.Block:
+        case SIGNALTYPE.Before:
           if ($trackElement.lastEvent && 'signalFunction' in $trackElement.lastEvent) {
             if ($trackElement.lastEvent.signalFunction === FUNCTION.Hp0) {
               newFuncState = FUNCTION.Hp1;
@@ -42,7 +42,7 @@ export class ViewerComponent {
           }
           this.trackService.switchSignal($trackElement.trackPart, newFuncState).subscribe();
           break;
-        case TYPE3.Enter:
+        case SIGNALTYPE.Enter:
           this.selectSignalFuncDialog.open(SelectSignalFunctionComponent, {
             data: [FUNCTION.Hp0, FUNCTION.Hp1, FUNCTION.Hp2]
           }).afterClosed().subscribe((func) => {
@@ -51,7 +51,7 @@ export class ViewerComponent {
             }
           });
           break;
-        case TYPE3.Exit:
+        case SIGNALTYPE.Exit:
           this.selectSignalFuncDialog.open(SelectSignalFunctionComponent, {
             data: [FUNCTION.Hp0, FUNCTION.Hp1, FUNCTION.Hp2, FUNCTION.Hp0Sh1]
           }).afterClosed().subscribe((func) => {

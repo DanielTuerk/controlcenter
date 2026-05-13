@@ -1,15 +1,16 @@
 package net.wbz.moba.controlcenter.service.track;
 
 import io.vertx.core.impl.ConcurrentHashSet;
+import jakarta.enterprise.event.Observes;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import net.wbz.moba.controlcenter.BusAddressIdentifier;
 import net.wbz.moba.controlcenter.EventBroadcaster;
 import net.wbz.moba.controlcenter.SelectrixHelper;
-import net.wbz.moba.controlcenter.service.constrution.ConstructionService;
 import net.wbz.moba.controlcenter.service.train.TrainManager;
 import net.wbz.moba.controlcenter.service.train.TrainService;
 import net.wbz.moba.controlcenter.shared.bus.FeedbackBlockEvent;
+import net.wbz.moba.controlcenter.shared.constrution.CurrentConstructionChangeEvent;
 import net.wbz.moba.controlcenter.shared.track.model.BusDataConfiguration;
 import net.wbz.moba.controlcenter.shared.track.model.TrackBlock;
 import net.wbz.moba.controlcenter.shared.track.model.TrackBlock.DRIVING_LEVEL_ADJUST_TYPE;
@@ -31,17 +32,18 @@ import java.util.concurrent.ConcurrentHashMap;
  * Registry for available {@link TrackBlock}s to add the {@link FeedbackBlockListener}s for receiving the block states
  * and to adjust driving levels of trains entering or exiting the blocks.
  * Also, the current position of the train is observed in {@link #trackBlocks}.
- * 
+ * TODO migrate to cached dataProvider
  * @author Daniel Tuerk
  */
 @Singleton
 public class TrackBlockRegistry {
 
-    private static final Logger log = Logger.getLogger(TrackBlockRegistry.class);
+    private static final Logger LOG = Logger.getLogger(TrackBlockRegistry.class);
 
     private final EventBroadcaster eventBroadcaster;
     private final TrainService trainService;
     private final TrainManager trainManager;
+    private final TrackBlockManager trackBlockManager;
 
     private final Map<TrackBlock, FeedbackBlockListener> feedbackBlockListeners = new ConcurrentHashMap<>();
     private Collection<TrackBlock> trackBlocks;
@@ -50,13 +52,17 @@ public class TrackBlockRegistry {
 
     @Inject
     public TrackBlockRegistry(EventBroadcaster eventBroadcaster, TrainService trainService,
-        TrainManager trainManager, ConstructionService constructionService, TrackBlockManager trackBlockManager) {
+                              TrainManager trainManager, TrackBlockManager trackBlockManager) {
         this.eventBroadcaster = eventBroadcaster;
         this.trainService = trainService;
         this.trainManager = trainManager;
+        this.trackBlockManager = trackBlockManager;
+    }
 
-        constructionService.addListener(construction ->
-            initBlocks(trackBlockManager.fetch(construction.getId())));
+    //    @CacheInvalidateAll(cacheName = CACHE)
+    public void onCurrentConstructionChanged(@Observes CurrentConstructionChangeEvent event) {
+        LOG.infof("current construction changed for ID: %s, refreshing track blocks...", event.construction().getId());
+        initBlocks(trackBlockManager.fetch(event.construction().getId()));
     }
 
     public Collection<TrackBlock> getTrackBlocks() {
@@ -71,7 +77,7 @@ public class TrackBlockRegistry {
     }
 
     private void initBlocks(Collection<TrackBlock> trackBlocks) {
-        log.debug("init track blocks");
+        LOG.debug("init track blocks");
         this.trackBlocks = trackBlocks;
         feedbackBlockListeners.clear();
         for (final TrackBlock trackBlock : trackBlocks) {
@@ -110,7 +116,7 @@ public class TrackBlockRegistry {
 
                     private void fireBlockEvent(boolean bitState) {
                         eventBroadcaster.fireEvent(new TrackPartBlockEvent(blockFunction,
-                            bitState ? TrackPartBlockEvent.STATE.USED : TrackPartBlockEvent.STATE.FREE));
+                            bitState ? TrackPartBlockEvent.BLOCK_STATE.USED : TrackPartBlockEvent.BLOCK_STATE.FREE));
                     }
                 });
             }
@@ -159,7 +165,7 @@ public class TrackBlockRegistry {
         // update current block of the train
         var train$ = trainManager.getByAddress(trainAddress);
         if (train$.isEmpty()) {
-            log.warnf("no train with address '%d' found for block number: %d (%s)",
+            LOG.warnf("no train with address '%d' found for block number: %d (%s)",
                 trainAddress, blockNumber, trackBlock);
         } else {
             var trainsOnThisBlock = trainsOnBlocks.computeIfAbsent(trackBlock, k -> new ConcurrentHashSet<>());

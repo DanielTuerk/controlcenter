@@ -14,13 +14,14 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
-import java.util.List;
-import net.wbz.moba.controlcenter.service.scenario.RouteManager;
 import net.wbz.moba.controlcenter.service.scenario.TrackBuilder;
+import net.wbz.moba.controlcenter.service.scenario.route.RouteManager;
 import net.wbz.moba.controlcenter.shared.scenario.Route;
 import net.wbz.moba.controlcenter.shared.scenario.TrackNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.List;
 
 /**
  * @author Daniel Tuerk
@@ -52,7 +53,6 @@ public class RouteResource {
         return Response.ok(byId.get()).build();
     }
 
-
     @POST
     @Path("/build-track")
     public Response buildTrack(Route route) {
@@ -66,21 +66,19 @@ public class RouteResource {
 
     @POST
     @Transactional
-    public Response create(Route created) {
-        var route = routeManager.createRoute(created);
+    public Response create(Route route) {
         return Response.status(Response.Status.CREATED)
-            .entity(route)
+            .entity(routeManager.createRoute(route))
             .build();
     }
 
     @PUT
     @Path("/{id}")
     public Response update(@PathParam("id") Long id, Route updated) {
-        if (!routeManager.existsById(id)) {
+        if (routeManager.notExistsById(id)) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
-        routeManager.updateRoute(id, updated);
-        return Response.ok().build();
+        return Response.ok(routeManager.updateRoute(id, updated)).build();
     }
 
     @DELETE

@@ -1,5 +1,5 @@
 import {Component, inject, OnInit, signal} from '@angular/core';
-import {DeviceInfo, TYPE} from "../../../../shared/openapi-gen";
+import {DeviceInfo} from "../../../../shared/openapi-gen";
 import {DeviceService} from "../../../shared/device.service";
 import {ConfirmDialogComponent} from "../../common/confirm-dialog/confirm-dialog.component";
 import {MatDialog} from "@angular/material/dialog";
@@ -58,7 +58,7 @@ export class DeviceComponent implements OnInit {
     this.fetchDevices();
 
     this.deviceSubscription.deviceConnection().subscribe(device => {
-      this.isConnected = device.eventType === TYPE.Connected;
+      this.isConnected = device.connected!;
     });
 
     this.deviceSubscription.deviceDataChanged().subscribe(() => {

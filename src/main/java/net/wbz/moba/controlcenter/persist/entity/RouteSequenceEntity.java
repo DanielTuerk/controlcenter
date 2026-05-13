@@ -1,6 +1,7 @@
 package net.wbz.moba.controlcenter.persist.entity;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
@@ -17,7 +18,7 @@ public class RouteSequenceEntity extends AbstractEntity {
     @ManyToOne
     public ScenarioEntity scenario;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     public RouteEntity route;
 
     /**

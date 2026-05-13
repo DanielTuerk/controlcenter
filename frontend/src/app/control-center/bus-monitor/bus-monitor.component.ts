@@ -1,6 +1,5 @@
 import {Component, inject, OnDestroy, OnInit} from '@angular/core';
 import {DecimalPipe, NgForOf, NgIf} from "@angular/common";
-import {TYPE} from "../../../shared/openapi-gen";
 import {DeviceSubscription} from "../../shared/websocket/device.subscription";
 import {BusService} from "../../shared/bus.service";
 import {WebSocketService} from "../../shared/websocket/websocket.service";
@@ -37,10 +36,9 @@ export class BusMonitorComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.deviceSubscription.deviceConnection().subscribe(device => {
-      if (device.eventType === TYPE.Connected) {
+      if (device.connected) {
         this.busService.startTrackingBus(this.webSocketService.getClientId());
-      }
-      if (device.eventType !== TYPE.Connected) {
+      } else {
         this.busService.stopTrackingBus(this.webSocketService.getClientId());
       }
     });

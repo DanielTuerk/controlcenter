@@ -6,11 +6,11 @@
       </div>
       <div class="title-bottom">
         <span>
-          <train-direction-icon [train]="trainData.train"/>
+          <train-direction-icon [trainData]="trainData"/>
         </span>
         <span>
           <mat-icon class="icon">speed</mat-icon>
-          {{ trainData.train.drivingLevel }}</span>
+          {{ trainData.drivingLevel }}</span>
         <span>
           <mat-icon *ngIf="trainData.light" class="icon">lightbulb</mat-icon>
           <mat-icon *ngIf="trainData.horn" class="icon">volume_up</mat-icon>
@@ -20,9 +20,9 @@
   </mat-expansion-panel-header>
 
   <div>
-    <mat-button-toggle-group [(ngModel)]="trainData.train.forward"
+    <mat-button-toggle-group [(ngModel)]="trainData.forward"
                              [disabled]="!isConnected()"
-                             (ngModelChange)="drivingDirectionChanged(trainData.train)"
+                             (ngModelChange)="drivingDirectionChanged(trainData)"
                              name="fontStyle" aria-label="Font Style"
                              hideSingleSelectionIndicator="true">
       <mat-button-toggle [value]="false">

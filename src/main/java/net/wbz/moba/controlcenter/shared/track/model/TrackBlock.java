@@ -1,7 +1,6 @@
 package net.wbz.moba.controlcenter.shared.track.model;
 
 import io.quarkus.runtime.util.StringUtil;
-import net.wbz.moba.controlcenter.shared.constrution.Construction;
 
 /**
  * @author Daniel Tuerk
@@ -9,7 +8,6 @@ import net.wbz.moba.controlcenter.shared.constrution.Construction;
 public class TrackBlock extends AbstractDto {
 
     private BusDataConfiguration blockFunction;
-    private Construction construction;
     private String name;
     private Integer forwardTargetDrivingLevel;
     /**
@@ -30,14 +28,6 @@ public class TrackBlock extends AbstractDto {
             blockFunction.setBus(1);
         }
         this.blockFunction = blockFunction;
-    }
-
-    public Construction getConstruction() {
-        return construction;
-    }
-
-    public void setConstruction(Construction construction) {
-        this.construction = construction;
     }
 
     public String getName() {
@@ -83,7 +73,6 @@ public class TrackBlock extends AbstractDto {
     @Override
     public String toString() {
         return "TrackBlock{" + "blockFunction=" + blockFunction
-            + ", construction=" + construction
             + ", name='" + name + '\''
             + ", forwardTargetDrivingLevel=" + forwardTargetDrivingLevel
             + ", backwardTargetDrivingLevel=" + backwardTargetDrivingLevel

@@ -13,10 +13,11 @@ import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-import java.util.List;
 import net.wbz.moba.controlcenter.service.scenario.ScenarioManager;
 import net.wbz.moba.controlcenter.service.scenario.ScenarioService;
 import net.wbz.moba.controlcenter.shared.scenario.Scenario;
+
+import java.util.List;
 
 /**
  * @author Daniel Tuerk
@@ -40,30 +41,28 @@ public class ScenarioResource {
     @GET
     @Path("/{id}")
     public Response getById(@PathParam("id") Long id) {
-        var byId = scenarioManager.getById(id);
-        if (byId.isEmpty()) {
+        final var scenario$ = scenarioManager.getScenarioById(id);
+        if (scenario$.isEmpty()) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
-        return Response.ok(byId.get()).build();
+        return Response.ok(scenario$.get()).build();
     }
 
     @POST
     @Transactional
-    public Response create(Scenario created) {
-        var construction = scenarioManager.createScenario(created);
+    public Response create(Scenario scenario) {
         return Response.status(Response.Status.CREATED)
-            .entity(construction)
+            .entity(scenarioManager.createScenario(scenario))
             .build();
     }
 
     @PUT
     @Path("/{id}")
     public Response update(@PathParam("id") Long id, Scenario updated) {
-        if (!scenarioManager.existsById(id)) {
+        if (scenarioManager.notExistsById(id)) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
-        scenarioManager.updateScenario(id, updated);
-        return Response.ok().build();
+        return Response.ok(scenarioManager.updateScenario(id, updated)).build();
     }
 
     @DELETE
@@ -72,28 +71,29 @@ public class ScenarioResource {
         boolean deleted = scenarioManager.deleteScenario(id);
         if (deleted) {
             return Response.noContent().build();
-        } else {
-            return Response.status(Response.Status.NOT_FOUND).build();
         }
+        return Response.status(Response.Status.NOT_FOUND).build();
     }
 
     @POST
     @Path("/{id}/start")
     public Response start(@PathParam("id") Long id) {
-        if (!scenarioManager.existsById(id)) {
+        final var scenario$ = scenarioManager.getScenarioById(id);
+        if (scenario$.isEmpty()) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
-        scenarioService.start(scenarioManager.getScenarioById(id));
+        scenarioService.start(scenario$.get());
         return Response.ok().build();
     }
 
     @POST
     @Path("/{id}/stop")
     public Response stop(@PathParam("id") Long id) {
-        if (!scenarioManager.existsById(id)) {
+        final var scenario$ = scenarioManager.getScenarioById(id);
+        if (scenario$.isEmpty()) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
-        scenarioService.stop(scenarioManager.getScenarioById(id));
+        scenarioService.stop(scenario$.get());
         return Response.ok().build();
     }
 
@@ -107,10 +107,11 @@ public class ScenarioResource {
     @POST
     @Path("/{id}/schedule")
     public Response schedule(@PathParam("id") Long id) {
-        if (!scenarioManager.existsById(id)) {
+        final var scenario$ = scenarioManager.getScenarioById(id);
+        if (scenario$.isEmpty()) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
-        scenarioService.schedule(scenarioManager.getScenarioById(id));
+        scenarioService.schedule(scenario$.get());
         return Response.ok().build();
     }
 

@@ -2,12 +2,8 @@ package net.wbz.moba.controlcenter.service.track;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Event;
+import jakarta.enterprise.event.Observes;
 import jakarta.inject.Inject;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
 import net.wbz.moba.controlcenter.EventBroadcaster;
 import net.wbz.moba.controlcenter.persist.entity.track.AbstractTrackPartEntity;
 import net.wbz.moba.controlcenter.persist.entity.track.BlockStraightEntity;
@@ -19,11 +15,19 @@ import net.wbz.moba.controlcenter.persist.entity.track.UncouplerEntity;
 import net.wbz.moba.controlcenter.persist.repository.track.TrackPartRepository;
 import net.wbz.moba.controlcenter.service.constrution.ConstructionService;
 import net.wbz.moba.controlcenter.shared.constrution.Construction;
+import net.wbz.moba.controlcenter.shared.constrution.CurrentConstructionChangeEvent;
 import net.wbz.moba.controlcenter.shared.track.model.AbstractTrackPart;
 import net.wbz.moba.controlcenter.shared.track.model.TrackChangedEvent;
 import org.jboss.logging.Logger;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+
 /**
+ * TODO migrate to cached dataProvider
  * @author Daniel Tuerk
  */
 @ApplicationScoped
@@ -51,12 +55,14 @@ public class TrackProvider {
         this.trackPartMapper = trackPartMapper;
         this.eventBroadcaster = eventBroadcaster;
         this.trackChangedEvent = trackChangedEvent;
-
-        constructionService.addListener(construction -> {
-            loadData(construction);
-            eventBroadcaster.fireEvent(new TrackChangedEvent(false));
-        });
         this.constructionService = constructionService;
+    }
+
+    //    @CacheInvalidateAll(cacheName = CACHE)
+    public void onCurrentConstructionChanged(@Observes CurrentConstructionChangeEvent event) {
+        LOG.infof("current construction changed for ID: %s, refreshing track...", event.construction().getId());
+        loadData(event.construction());
+        eventBroadcaster.fireEvent(new TrackChangedEvent(false));
     }
 
     public Collection<AbstractTrackPart> getTrack() {

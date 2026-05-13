@@ -2,18 +2,13 @@ package net.wbz.moba.controlcenter.service.scenario.execution;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
 import net.wbz.moba.controlcenter.EventBroadcaster;
-import net.wbz.moba.controlcenter.service.scenario.RouteListener;
 import net.wbz.moba.controlcenter.service.scenario.ScenarioStateListener;
 import net.wbz.moba.controlcenter.service.scenario.ScenarioUtil;
+import net.wbz.moba.controlcenter.service.scenario.route.RouteListener;
 import net.wbz.moba.controlcenter.service.track.TrackBlockRegistry;
 import net.wbz.moba.controlcenter.service.track.TrackProvider;
 import net.wbz.moba.controlcenter.service.track.TrackViewerService;
-import net.wbz.moba.controlcenter.service.train.TrainManager;
 import net.wbz.moba.controlcenter.service.train.TrainService;
 import net.wbz.moba.controlcenter.shared.scenario.Scenario;
 import net.wbz.moba.controlcenter.shared.scenario.Scenario.MODE;
@@ -21,6 +16,11 @@ import net.wbz.moba.controlcenter.shared.scenario.Scenario.RUN_STATE;
 import net.wbz.moba.controlcenter.shared.scenario.ScenarioStateEvent;
 import net.wbz.selectrix4java.device.DeviceManager;
 import org.jboss.logging.Logger;
+
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Executor to start and stop {@link Scenario}s.
@@ -31,11 +31,9 @@ import org.jboss.logging.Logger;
 public class ScenarioExecutor {
 
     private static final Logger LOG = Logger.getLogger(ScenarioExecutor.class);
-//    private final ExecutorService taskExecutor;
 
     private final TrackViewerService trackViewerService;
     private final TrainService trainService;
-    private final TrainManager trainManager;
     private final DeviceManager deviceManager;
     private final TrackProvider trackProvider;
     private final RouteExecutionObserver routeExecutionObserver;
@@ -60,23 +58,16 @@ public class ScenarioExecutor {
 
     @Inject
     ScenarioExecutor(TrackViewerService trackViewerService, TrainService trainService,
-        TrainManager trainManager, DeviceManager deviceManager,
-        EventBroadcaster eventBroadcaster,
+                     DeviceManager deviceManager, EventBroadcaster eventBroadcaster,
         ScenarioRouteEventBroadcaster scenarioRouteEventBroadcaster, TrackProvider trackProvider,
             RouteExecutionObserver routeExecutionObserver, TrackBlockRegistry trackBlockRegistry) {
         this.trackViewerService = trackViewerService;
         this.trainService = trainService;
-        this.trainManager = trainManager;
         this.deviceManager = deviceManager;
         this.eventBroadcaster = eventBroadcaster;
         this.trackProvider = trackProvider;
         this.routeExecutionObserver = routeExecutionObserver;
-        this.trackBlockRegistry=trackBlockRegistry;
-
-        // TODO migrate
-//        ThreadFactory namedThreadFactory = new ThreadFactoryBuilder().setNameFormat(getClass().getSimpleName() + "-%d")
-//                .build();
-//        taskExecutor = Executors.newCachedThreadPool(namedThreadFactory);
+        this.trackBlockRegistry = trackBlockRegistry;
 
         routeListeners.add(scenarioRouteEventBroadcaster);
     }

@@ -2,10 +2,13 @@
 openapi: 3.1.0
 components:
   schemas:
+    ACTION_TYPE:
+      type: string
+      enum:
+        - CREATE
+        - UPDATE
+        - DELETE
     AbstractTrackPart:
-      type: object
-      required:
-      - trackPartType
       oneOf:
       - $ref: "#/components/schemas/BlockStraight"
       - $ref: "#/components/schemas/Straight"
@@ -15,14 +18,15 @@ components:
       - $ref: "#/components/schemas/Uncoupler"
       discriminator:
         propertyName: trackPartType
+      type: object
       properties:
         id:
           type: integer
           format: int64
         internalId:
           type: integer
-          deprecated: true
           format: int64
+          deprecated: true
         gridPosition:
           $ref: "#/components/schemas/GridPosition"
         trackPartType:
@@ -30,6 +34,8 @@ components:
         rotationAngle:
           type: number
           format: double
+      required:
+        - trackPartType
     Add:
       type: object
       required:
@@ -44,11 +50,17 @@ components:
           type: string
         name:
           type: string
+    BLOCK_STATE:
+      type: string
+      enum:
+        - UNKNOWN
+        - FREE
+        - USED
     BlockStraight:
-      type: object
-      description: type for a track part
       allOf:
       - $ref: "#/components/schemas/Straight"
+      description: type for a track part
+      type: object
       properties:
         blockLength:
           type: integer
@@ -96,8 +108,8 @@ components:
           format: int64
         internalId:
           type: integer
-          deprecated: true
           format: int64
+          deprecated: true
         bus:
           type: integer
           format: int32
@@ -122,8 +134,8 @@ components:
           type: integer
           format: int32
     BusDataEvent:
-      type: object
       description: bus data update sent via WebSocket
+      type: object
       properties:
         bus:
           type: integer
@@ -136,6 +148,11 @@ components:
           format: int32
         cacheKey:
           type: string
+    CATEGORY:
+      type: string
+      enum:
+        - ARRIVAL
+        - DEPARTURE
     ChangeTrackDto:
       type: object
       properties:
@@ -168,15 +185,15 @@ components:
           format: int64
         internalId:
           type: integer
-          deprecated: true
           format: int64
+          deprecated: true
         name:
           type: string
         inAutomaticMode:
           type: boolean
     ConstructionDataChangedEvent:
-      type: object
       description: Construction update sent via WebSocket
+      type: object
       properties:
         itemId:
           type: integer
@@ -187,28 +204,26 @@ components:
         name:
           type: string
     CurrentConstructionChangeEvent:
-      type: object
-      required:
-      - construction
       description: Train status update sent via WebSocket
+      type: object
       properties:
         cacheKey:
           type: string
         construction:
           $ref: "#/components/schemas/Construction"
-    Curve:
-      type: object
       required:
-      - trackPartType
+        - construction
+    Curve:
       description: type for a track part
+      type: object
       properties:
         id:
           type: integer
           format: int64
         internalId:
           type: integer
-          deprecated: true
           format: int64
+          deprecated: true
         gridPosition:
           $ref: "#/components/schemas/GridPosition"
         trackPartType:
@@ -222,6 +237,8 @@ components:
         rotationAngle:
           type: number
           format: double
+      required:
+        - trackPartType
     DEVICE_TYPE:
       type: string
       enum:
@@ -261,18 +278,18 @@ components:
       - ENTER
       - EXIT
     DeviceConnectionEvent:
-      type: object
       description: bus status update sent via WebSocket
+      type: object
       properties:
         deviceInfo:
           $ref: "#/components/schemas/DeviceInfo"
-        eventType:
-          $ref: "#/components/schemas/TYPE"
+        connected:
+          type: boolean
         cacheKey:
           type: string
     DeviceDataChangedEvent:
-      type: object
       description: Device update sent via WebSocket
+      type: object
       properties:
         itemId:
           type: integer
@@ -285,8 +302,8 @@ components:
           format: int64
         internalId:
           type: integer
-          deprecated: true
           format: int64
+          deprecated: true
         key:
           type: string
         type:
@@ -294,13 +311,13 @@ components:
         connected:
           type: boolean
     DeviceInfoEvent:
-      type: object
       description: bus status update sent via WebSocket
+      type: object
       properties:
         deviceInfo:
           $ref: "#/components/schemas/DeviceInfo"
         eventType:
-          $ref: "#/components/schemas/TYPE1"
+          $ref: "#/components/schemas/TYPE"
     EventConfiguration:
       type: object
       properties:
@@ -309,8 +326,8 @@ components:
           format: int64
         internalId:
           type: integer
-          deprecated: true
           format: int64
+          deprecated: true
         stateOnConfig:
           $ref: "#/components/schemas/BusDataConfiguration"
         stateOffConfig:
@@ -323,8 +340,8 @@ components:
       - HP2
       - HP0_SH1
     FeedbackBlockEvent:
-      type: object
       description: bus status update sent via WebSocket
+      type: object
       properties:
         bus:
           type: integer
@@ -352,8 +369,8 @@ components:
           format: int64
         internalId:
           type: integer
-          deprecated: true
           format: int64
+          deprecated: true
         x:
           type: integer
           format: int32
@@ -377,6 +394,11 @@ components:
           format: int64
         gridPosition:
           $ref: "#/components/schemas/GridPosition"
+    PLAYER_STATE:
+      type: string
+      enum:
+        - START
+        - STOP
     PRESENTATION:
       type: string
       enum:
@@ -385,13 +407,18 @@ components:
       - BOTTOM_TO_TOP
       - TOP_TO_BOTTOM
     PlayerEvent:
-      type: object
       description: bus status update sent via WebSocket
+      type: object
       properties:
         cacheKey:
           type: string
         state:
-          $ref: "#/components/schemas/STATE1"
+          $ref: "#/components/schemas/PLAYER_STATE"
+    RECORDING_STATE:
+      type: string
+      enum:
+        - START
+        - STOP
     ROUTE_RUN_STATE:
       type: string
       enum:
@@ -410,21 +437,21 @@ components:
       - SUCCESS
       - ERROR
     RailVoltageEvent:
-      type: object
       description: railvoltage status update sent via WebSocket
+      type: object
       properties:
         cacheKey:
           type: string
         state:
           type: boolean
     RecordingEvent:
-      type: object
       description: bus status update sent via WebSocket
+      type: object
       properties:
         cacheKey:
           type: string
         state:
-          $ref: "#/components/schemas/STATE2"
+          $ref: "#/components/schemas/RECORDING_STATE"
         filePath:
           type: string
     Rotate:
@@ -445,8 +472,8 @@ components:
           format: int64
         internalId:
           type: integer
-          deprecated: true
           format: int64
+          deprecated: true
         name:
           type: string
         start:
@@ -468,6 +495,15 @@ components:
           uniqueItems: true
           items:
             $ref: "#/components/schemas/TrackBlock"
+    RouteDataChangedEvent:
+      description: route update sent via WebSocket
+      type: object
+      properties:
+        itemId:
+          type: integer
+          format: int64
+        type:
+          $ref: "#/components/schemas/ACTION_TYPE"
     RouteSequence:
       type: object
       properties:
@@ -476,8 +512,8 @@ components:
           format: int64
         internalId:
           type: integer
-          deprecated: true
           format: int64
+          deprecated: true
         position:
           type: integer
           format: int32
@@ -487,8 +523,8 @@ components:
           type: integer
           format: int32
     RouteStateEvent:
-      type: object
       description: scenario status update sent via WebSocket
+      type: object
       properties:
         scenarioId:
           type: integer
@@ -502,34 +538,18 @@ components:
           type: string
         cacheKey:
           type: string
-    RoutesChangedEvent:
-      type: object
-      description: scenario status update sent via WebSocket
-      properties:
-        itemId:
-          type: integer
-          format: int64
+    SIGNAL_TYPE:
+      type: string
+      enum:
+        - BLOCK
+        - ENTER
+        - EXIT
+        - BEFORE
     STATE:
       type: string
       enum:
-      - ENTER
-      - EXIT
-    STATE1:
-      type: string
-      enum:
-      - START
-      - STOP
-    STATE2:
-      type: string
-      enum:
-      - START
-      - STOP
-    STATE3:
-      type: string
-      enum:
-      - UNKNOWN
-      - FREE
-      - USED
+        - ENTER
+        - EXIT
     SYSTEM_FORMAT:
       type: string
       enum:
@@ -549,8 +569,8 @@ components:
           format: int64
         internalId:
           type: integer
-          deprecated: true
           format: int64
+          deprecated: true
         name:
           type: string
         cron:
@@ -577,15 +597,17 @@ components:
         mode:
           $ref: "#/components/schemas/MODE"
     ScenarioDataChangedEvent:
-      type: object
       description: scenario status update sent via WebSocket
+      type: object
       properties:
         itemId:
           type: integer
           format: int64
+        type:
+          $ref: "#/components/schemas/ACTION_TYPE"
     ScenarioStateEvent:
-      type: object
       description: scenario status update sent via WebSocket
+      type: object
       properties:
         itemId:
           type: integer
@@ -597,13 +619,13 @@ components:
         nextScheduleTimeText:
           type: string
     Signal:
-      type: object
-      description: type for a track part
       allOf:
       - $ref: "#/components/schemas/Straight"
+      description: type for a track part
+      type: object
       properties:
         type:
-          $ref: "#/components/schemas/TYPE3"
+          $ref: "#/components/schemas/SIGNAL_TYPE"
         signalConfigRed1:
           $ref: "#/components/schemas/BusDataConfiguration"
         signalConfigRed2:
@@ -625,8 +647,8 @@ components:
           items:
             $ref: "#/components/schemas/BusDataConfiguration"
     SignalFunctionStateEvent:
-      type: object
       description: track status update sent via WebSocket
+      type: object
       properties:
         signalId:
           type: integer
@@ -636,43 +658,45 @@ components:
         cacheKey:
           type: string
     StationBoardChangedEvent:
-      type: object
       description: station status update sent via WebSocket
+      type: object
       properties:
-        type:
-          $ref: "#/components/schemas/TYPE2"
+        CATEGORY:
+          $ref: "#/components/schemas/CATEGORY"
         stationId:
           type: integer
           format: int64
+        type:
+          $ref: "#/components/schemas/CATEGORY"
     StationDataChangedEvent:
-      type: object
       description: station status update sent via WebSocket
+      type: object
       properties:
         itemId:
           type: integer
           format: int64
     Straight:
-      type: object
-      required:
-      - trackPartType
       description: type for a track part
+      type: object
       properties:
         id:
           type: integer
           format: int64
         internalId:
           type: integer
-          deprecated: true
           format: int64
+          deprecated: true
         gridPosition:
           $ref: "#/components/schemas/GridPosition"
         trackPartType:
           type: string
         direction:
           $ref: "#/components/schemas/DIRECTION"
+      required:
+        - trackPartType
     SystemFormatEvent:
-      type: object
       description: system format update sent via WebSocket
+      type: object
       properties:
         cacheKey:
           type: string
@@ -681,26 +705,9 @@ components:
     TYPE:
       type: string
       enum:
-      - CONNECTED
-      - DISCONNECTED
-    TYPE1:
-      type: string
-      enum:
       - CREATE
       - REMOVE
       - MODIFY
-    TYPE2:
-      type: string
-      enum:
-      - ARRIVAL
-      - DEPARTURE
-    TYPE3:
-      type: string
-      enum:
-      - BLOCK
-      - ENTER
-      - EXIT
-      - BEFORE
     Track:
       type: object
       properties:
@@ -728,12 +735,10 @@ components:
           format: int64
         internalId:
           type: integer
-          deprecated: true
           format: int64
+          deprecated: true
         blockFunction:
           $ref: "#/components/schemas/BusDataConfiguration"
-        construction:
-          $ref: "#/components/schemas/Construction"
         name:
           type: string
         forwardTargetDrivingLevel:
@@ -749,38 +754,38 @@ components:
         displayValue:
           type: string
     TrackBlockDataChangedEvent:
-      type: object
       description: Track-block update sent via WebSocket
+      type: object
       properties:
         itemId:
           type: integer
           format: int64
     TrackChangedEvent:
-      type: object
       description: Track update sent via WebSocket
+      type: object
       properties:
         dirty:
           type: boolean
     TrackPartBlockEvent:
-      type: object
       description: track status update sent via WebSocket
+      type: object
       properties:
         config:
           $ref: "#/components/schemas/BusDataConfiguration"
         state:
-          $ref: "#/components/schemas/STATE3"
+          $ref: "#/components/schemas/BLOCK_STATE"
         cacheKey:
           type: string
     TrackPartDataChangedEvent:
-      type: object
       description: Track-part update sent via WebSocket
+      type: object
       properties:
         itemId:
           type: integer
           format: int64
     TrackPartStateEvent:
-      type: object
       description: track status update sent via WebSocket
+      type: object
       properties:
         configuration:
           $ref: "#/components/schemas/BusDataConfiguration"
@@ -801,13 +806,8 @@ components:
           format: int64
         internalId:
           type: integer
-          deprecated: true
           format: int64
-        currentBlocks:
-          type: array
-          uniqueItems: true
-          items:
-            $ref: "#/components/schemas/TrackBlock"
+          deprecated: true
         address:
           type: integer
           format: int32
@@ -818,26 +818,21 @@ components:
           uniqueItems: true
           items:
             $ref: "#/components/schemas/TrainFunction"
-        drivingLevel:
-          type: integer
-          format: int32
-        forward:
-          type: boolean
         addressByte:
           type: integer
           format: int8
-        presentOnTrack:
-          type: boolean
     TrainDataChangedEvent:
+      description: Trains update sent via WebSocket
       type: object
-      description: Train status update sent via WebSocket
       properties:
         itemId:
           type: integer
           format: int64
+        type:
+          $ref: "#/components/schemas/ACTION_TYPE"
     TrainDrivingDirectionEvent:
-      type: object
       description: Train status update sent via WebSocket
+      type: object
       properties:
         itemId:
           type: integer
@@ -847,8 +842,8 @@ components:
         direction:
           $ref: "#/components/schemas/DRIVING_DIRECTION"
     TrainDrivingLevelEvent:
-      type: object
       description: Train status update sent via WebSocket
+      type: object
       properties:
         itemId:
           type: integer
@@ -874,17 +869,15 @@ components:
           format: int64
         internalId:
           type: integer
-          deprecated: true
           format: int64
+          deprecated: true
         alias:
           type: string
         configuration:
           $ref: "#/components/schemas/BusDataConfiguration"
-        active:
-          type: boolean
     TrainFunctionStateEvent:
-      type: object
       description: Train status update sent via WebSocket
+      type: object
       properties:
         itemId:
           type: integer
@@ -896,8 +889,8 @@ components:
         cacheKey:
           type: string
     TrainHornStateEvent:
-      type: object
       description: Train status update sent via WebSocket
+      type: object
       properties:
         itemId:
           type: integer
@@ -907,8 +900,8 @@ components:
         state:
           type: boolean
     TrainLightStateEvent:
-      type: object
       description: Train status update sent via WebSocket
+      type: object
       properties:
         itemId:
           type: integer
@@ -918,18 +911,16 @@ components:
         state:
           type: boolean
     Turnout:
-      type: object
-      required:
-      - trackPartType
       description: type for a track part
+      type: object
       properties:
         id:
           type: integer
           format: int64
         internalId:
           type: integer
-          deprecated: true
           format: int64
+          deprecated: true
         gridPosition:
           $ref: "#/components/schemas/GridPosition"
         trackPartType:
@@ -946,11 +937,13 @@ components:
           $ref: "#/components/schemas/GridPosition"
         nextGridPositionForStateBranchToRight:
           $ref: "#/components/schemas/GridPosition"
+      required:
+        - trackPartType
     Uncoupler:
-      type: object
-      description: type for a track part
       allOf:
       - $ref: "#/components/schemas/Straight"
+      description: type for a track part
+      type: object
       properties:
         toggleFunction:
           $ref: "#/components/schemas/BusDataConfiguration"

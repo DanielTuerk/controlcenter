@@ -9,7 +9,7 @@ import net.wbz.moba.controlcenter.EventBroadcaster;
 import net.wbz.moba.controlcenter.api.train.TrainDto;
 import net.wbz.moba.controlcenter.persist.entity.TrainEntity;
 import net.wbz.moba.controlcenter.persist.repository.TrainRepository;
-import net.wbz.moba.controlcenter.service.constrution.ConstructionManager;
+import net.wbz.moba.controlcenter.shared.AbstractItemEvent;
 import net.wbz.moba.controlcenter.shared.train.Train;
 import net.wbz.moba.controlcenter.shared.train.TrainDataChangedEvent;
 import org.jboss.logging.Logger;
@@ -26,7 +26,7 @@ import java.util.Optional;
 @ApplicationScoped
 public class TrainManager {
 
-    private static final Logger LOG = Logger.getLogger(ConstructionManager.class);
+    private static final Logger LOG = Logger.getLogger(TrainManager.class);
 
     private final List<Train> cachedTrains = new ArrayList<>();
     private final TrainRepository trainRepository;
@@ -151,14 +151,14 @@ public class TrainManager {
         trainRepository.getTrainById(id).map(trainMapper::toDto)
             .ifPresent(cachedTrains::add);
 
-        fireEvent(id, TrainDataChangedEvent.TYPE.CREATE);
+        fireEvent(id, AbstractItemEvent.ACTION_TYPE.CREATE);
     }
 
     private void removeDeleted(Long id) {
         LOG.debugf("remove deleted train with id %d", id);
         cachedTrains.stream().filter(train -> train.getId().equals(id)).findFirst()
             .ifPresent(cachedTrains::remove);
-        fireEvent(id, TrainDataChangedEvent.TYPE.DELETE);
+        fireEvent(id, AbstractItemEvent.ACTION_TYPE.DELETE);
     }
 
     private void reloadUpdated(Long id) {
@@ -169,10 +169,10 @@ public class TrainManager {
         trainRepository.getTrainById(id).map(trainMapper::toDto)
             .ifPresent(cachedTrains::add);
 
-        fireEvent(id, TrainDataChangedEvent.TYPE.UPDATE);
+        fireEvent(id, AbstractItemEvent.ACTION_TYPE.UPDATE);
     }
 
-    private void fireEvent(Long id, TrainDataChangedEvent.TYPE type) {
+    private void fireEvent(Long id, AbstractItemEvent.ACTION_TYPE type) {
         var event = new TrainDataChangedEvent(id, type);
         trainDataEvent.fire(event);
         eventBroadcaster.fireEvent(event);

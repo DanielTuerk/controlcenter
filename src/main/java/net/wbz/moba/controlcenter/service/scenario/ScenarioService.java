@@ -138,7 +138,8 @@ public class ScenarioService {
      * @param scenarioId id of {@link Scenario}
      */
     public synchronized void foobarStartScheduledScenario(long scenarioId) {
-        Scenario scenario = scenarioManager.getScenarioById(scenarioId);
+        Scenario scenario = scenarioManager.getScenarioById(scenarioId).orElseThrow(
+            () -> new RuntimeException("no scenario found for id: %d".formatted(scenarioId)));
         LOG.infof("Start scheduled scenario: %s", scenario);
         if (scenario.getMode() != MODE.AUTOMATIC) {
             LOG.error("Scenario ({" + scenario + "}) not in {" + MODE.AUTOMATIC.name() + "} mode to schedule!");

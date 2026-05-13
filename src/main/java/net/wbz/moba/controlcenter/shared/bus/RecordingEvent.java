@@ -11,21 +11,19 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 @Tag(ref = "websocket")
 public class RecordingEvent implements StateEvent {
 
-    private STATE state;
+    private final RECORDING_STATE state;
     private String filePath;
-    public RecordingEvent() {
-    }
 
-    public RecordingEvent(STATE state) {
+    public RecordingEvent(RECORDING_STATE state) {
         this.state = state;
     }
 
-    public RecordingEvent(STATE state, String filePath) {
+    public RecordingEvent(RECORDING_STATE state, String filePath) {
         this.state = state;
         this.filePath = filePath;
     }
 
-    public STATE getState() {
+    public RECORDING_STATE getState() {
         return state;
     }
 
@@ -50,7 +48,7 @@ public class RecordingEvent implements StateEvent {
         return java.util.Objects.hash(super.hashCode(), getFilePath());
     }
 
-    public enum STATE {
+    public enum RECORDING_STATE {
         START, STOP
     }
 }

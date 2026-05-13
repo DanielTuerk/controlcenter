@@ -1,21 +1,20 @@
 package net.wbz.moba.controlcenter.shared.viewer;
 
-import java.util.Objects;
 import net.wbz.moba.controlcenter.shared.StateEvent;
 import net.wbz.moba.controlcenter.shared.track.model.BusDataConfiguration;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
+
+import java.util.Objects;
 
 @Schema(description = "track status update sent via WebSocket")
 @Tag(ref = "websocket")
 public class TrackPartBlockEvent implements StateEvent {
 
     private BusDataConfiguration config;
-    private STATE state;
-    public TrackPartBlockEvent() {
-    }
+    private BLOCK_STATE state;
 
-    public TrackPartBlockEvent(BusDataConfiguration config, STATE state) {
+    public TrackPartBlockEvent(BusDataConfiguration config, BLOCK_STATE state) {
         this.config = config;
         this.state = state;
     }
@@ -28,11 +27,11 @@ public class TrackPartBlockEvent implements StateEvent {
         this.config = config;
     }
 
-    public STATE getState() {
+    public BLOCK_STATE getState() {
         return state;
     }
 
-    public void setState(STATE state) {
+    public void setState(BLOCK_STATE state) {
         this.state = state;
     }
 
@@ -64,7 +63,7 @@ public class TrackPartBlockEvent implements StateEvent {
         return "TrackPartBlockEvent{" + "config=" + config + ", state=" + state + '}';
     }
 
-    public enum STATE {
+    public enum BLOCK_STATE {
         UNKNOWN, FREE, USED
     }
 }

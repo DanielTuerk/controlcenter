@@ -70,8 +70,7 @@ public class DeviceResource {
         if (!deviceManager.existsById(id)) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
-        deviceManager.update(id, updated);
-        return Response.ok().build();
+        return Response.ok(deviceManager.update(id, updated)).build();
     }
 
     @DELETE

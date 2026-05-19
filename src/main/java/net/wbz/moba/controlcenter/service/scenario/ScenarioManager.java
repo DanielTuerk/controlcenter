@@ -3,6 +3,7 @@ package net.wbz.moba.controlcenter.service.scenario;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Event;
 import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import net.wbz.moba.controlcenter.EventBroadcaster;
 import net.wbz.moba.controlcenter.shared.AbstractItemEvent;
 import net.wbz.moba.controlcenter.shared.scenario.Scenario;
@@ -52,6 +53,7 @@ public class ScenarioManager {
             .collect(Collectors.toList());
     }
 
+    @Transactional
     public Scenario createScenario(Scenario scenario) {
         final var entity = dataProvider.createScenario(scenario);
         fireEvent(entity.id, AbstractItemEvent.ACTION_TYPE.CREATE);
@@ -64,6 +66,7 @@ public class ScenarioManager {
      * @param scenarioId id of {@link Scenario} to delete
      * @return {@code true} if deleted, otherwise {@code false}
      */
+    @Transactional
     public boolean deleteScenario(Long scenarioId) {
         if (dataProvider.deleteScenario(scenarioId)) {
             fireEvent(scenarioId, AbstractItemEvent.ACTION_TYPE.DELETE);
@@ -77,6 +80,7 @@ public class ScenarioManager {
      *
      * @param scenario {@link Scenario} to update in database
      */
+    @Transactional
     public Scenario updateScenario(Long scenarioId, Scenario scenario) {
         final var scenarioEntity = dataProvider.updateScenario(scenarioId, scenario);
         fireEvent(scenarioEntity.id, AbstractItemEvent.ACTION_TYPE.UPDATE);

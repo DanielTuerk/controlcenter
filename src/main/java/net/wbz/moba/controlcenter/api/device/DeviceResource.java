@@ -3,7 +3,6 @@ package net.wbz.moba.controlcenter.api.device;
 
 import io.smallrye.common.annotation.Blocking;
 import jakarta.inject.Inject;
-import jakarta.transaction.Transactional;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
@@ -58,7 +57,6 @@ public class DeviceResource {
     }
 
     @POST
-    @Transactional
     public Response create(DeviceInfo created) {
         var deviceInfo = deviceManager.create(created);
         return Response.status(Response.Status.CREATED)

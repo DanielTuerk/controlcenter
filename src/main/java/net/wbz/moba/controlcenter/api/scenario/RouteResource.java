@@ -2,7 +2,6 @@ package net.wbz.moba.controlcenter.api.scenario;
 
 import io.smallrye.common.annotation.Blocking;
 import jakarta.inject.Inject;
-import jakarta.transaction.Transactional;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
@@ -65,7 +64,6 @@ public class RouteResource {
     }
 
     @POST
-    @Transactional
     public Response create(Route route) {
         return Response.status(Response.Status.CREATED)
             .entity(routeManager.createRoute(route))

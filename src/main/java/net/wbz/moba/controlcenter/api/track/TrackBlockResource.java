@@ -3,7 +3,6 @@ package net.wbz.moba.controlcenter.api.track;
 
 import io.smallrye.common.annotation.Blocking;
 import jakarta.inject.Inject;
-import jakarta.transaction.Transactional;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
@@ -14,12 +13,13 @@ import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-import java.util.Collection;
 import net.wbz.moba.controlcenter.service.constrution.ConstructionService;
 import net.wbz.moba.controlcenter.service.track.TrackBlockManager;
 import net.wbz.moba.controlcenter.shared.constrution.Construction;
 import net.wbz.moba.controlcenter.shared.track.model.TrackBlock;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
+
+import java.util.Collection;
 
 @Tag(ref = "track")
 @Path("/api/track-block")
@@ -49,7 +49,6 @@ public class TrackBlockResource {
     }
 
     @POST
-    @Transactional
     public Response create(TrackBlock dto) {
         return Response.status(Response.Status.CREATED)
             .entity(trackBlockManager.create(currentConstruction().getId(), dto))
@@ -58,7 +57,6 @@ public class TrackBlockResource {
 
     @PUT
     @Path("/{id}")
-    @Transactional
     public Response update(@PathParam("id") Long id, TrackBlock dto) {
         if (!trackBlockManager.existsById(id)) {
             return Response.status(Response.Status.NOT_FOUND).build();
@@ -69,7 +67,6 @@ public class TrackBlockResource {
 
     @DELETE
     @Path("/{id}")
-    @Transactional
     public Response delete(@PathParam("id") Long id) {
         boolean deleted = trackBlockManager.deleteById(id);
         if (deleted) {

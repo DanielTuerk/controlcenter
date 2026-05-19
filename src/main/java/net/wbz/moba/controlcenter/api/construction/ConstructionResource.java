@@ -3,7 +3,6 @@ package net.wbz.moba.controlcenter.api.construction;
 
 import io.smallrye.common.annotation.Blocking;
 import jakarta.inject.Inject;
-import jakarta.transaction.Transactional;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
@@ -14,11 +13,12 @@ import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-import java.util.List;
-import java.util.Objects;
 import net.wbz.moba.controlcenter.service.constrution.ConstructionManager;
 import net.wbz.moba.controlcenter.service.constrution.ConstructionService;
 import net.wbz.moba.controlcenter.shared.constrution.Construction;
+
+import java.util.List;
+import java.util.Objects;
 
 @Path("/api/constructions")
 @Produces(MediaType.APPLICATION_JSON)
@@ -47,7 +47,6 @@ public class ConstructionResource {
     }
 
     @POST
-    @Transactional
     public Response create(ConstructionDto created) {
         var construction = constructionManager.create(created);
         return Response.status(Response.Status.CREATED)

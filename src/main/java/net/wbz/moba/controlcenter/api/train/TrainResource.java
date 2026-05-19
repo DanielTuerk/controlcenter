@@ -59,8 +59,7 @@ public class TrainResource {
         if (!trainManager.existsById(id)) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
-        trainManager.update(id, dto);
-        return Response.ok().build();
+        return Response.ok(trainManager.update(id, dto)).build();
     }
 
     @DELETE

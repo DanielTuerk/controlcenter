@@ -68,7 +68,7 @@ public class BaseIt {
         assertTrue(connectionLatch.await(10, TimeUnit.SECONDS), "WebSocket connection timeout");
     }
 
-    protected <E extends Event> void verifyReceivedEvent(Class<E> eventClazz, String messageContains) {
+    protected <E extends Event> void verifyReceivedEvent(Class<E> eventClazz, String... messageContains) {
         await()
             .atMost(5, TimeUnit.SECONDS)
             .pollInterval(50, TimeUnit.MILLISECONDS)
@@ -76,7 +76,7 @@ public class BaseIt {
                 synchronized (messageLock) {
                     return receivedMessages.stream().peek(msg -> LOG.debug("Received WebSocket message: {}", msg))
                         .anyMatch(msg -> msg.startsWith(eventClazz.getSimpleName() + ": ")
-                            && msg.contains(messageContains));
+                            && java.util.Arrays.stream(messageContains).allMatch(msg::contains));
                 }
             });
     }

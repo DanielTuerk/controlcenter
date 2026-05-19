@@ -3,20 +3,17 @@ package net.wbz.moba.controlcenter.service.train;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Event;
 import jakarta.inject.Inject;
-import jakarta.persistence.EntityNotFoundException;
-import jakarta.transaction.Transactional;
 import net.wbz.moba.controlcenter.EventBroadcaster;
 import net.wbz.moba.controlcenter.api.train.TrainDto;
 import net.wbz.moba.controlcenter.persist.entity.TrainEntity;
-import net.wbz.moba.controlcenter.persist.repository.TrainRepository;
 import net.wbz.moba.controlcenter.shared.AbstractItemEvent;
 import net.wbz.moba.controlcenter.shared.train.Train;
 import net.wbz.moba.controlcenter.shared.train.TrainDataChangedEvent;
 import org.jboss.logging.Logger;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Manager to access the {@link TrainEntity}s from database.
@@ -28,19 +25,18 @@ public class TrainManager {
 
     private static final Logger LOG = Logger.getLogger(TrainManager.class);
 
-    private final List<Train> cachedTrains = new ArrayList<>();
-    private final TrainRepository trainRepository;
     private final TrainMapper trainMapper;
     private final EventBroadcaster eventBroadcaster;
     private final Event<TrainDataChangedEvent> trainDataEvent;
+    private final TrainDataProvider dataProvider;
 
     @Inject
-    public TrainManager(TrainRepository trainRepository, TrainMapper trainMapper, EventBroadcaster eventBroadcaster,
-                        Event<TrainDataChangedEvent> trainDataEvent) {
-        this.trainRepository = trainRepository;
+    public TrainManager(TrainMapper trainMapper, EventBroadcaster eventBroadcaster,
+                        Event<TrainDataChangedEvent> trainDataEvent, TrainDataProvider dataProvider) {
         this.trainMapper = trainMapper;
         this.eventBroadcaster = eventBroadcaster;
         this.trainDataEvent = trainDataEvent;
+        this.dataProvider = dataProvider;
     }
 
     /**
@@ -49,7 +45,9 @@ public class TrainManager {
      * @return list of {@link Train}s
      */
     public List<Train> load() {
-        return getTrains();
+        return dataProvider.getTrains().stream()
+            .map(trainMapper::toDto)
+            .collect(Collectors.toList());
     }
 
     /**
@@ -59,16 +57,9 @@ public class TrainManager {
      * @param dto data to create the {@link Train}
      * @return created {@link Train}
      */
-    @Transactional
     public Train create(TrainDto dto) {
-        TrainEntity entity = new TrainEntity();
-        entity.name = dto.name();
-        entity.address = dto.address();
-
-        // TODO train functions
-
-        trainRepository.persist(entity);
-        fetchCreated(entity.id);
+        var entity = dataProvider.createTrain(dto);
+        fireEvent(entity.id, AbstractItemEvent.ACTION_TYPE.CREATE);
         return trainMapper.toDto(entity);
     }
 
@@ -77,18 +68,12 @@ public class TrainManager {
      *
      * @param id      id of the {@link Train}
      * @param updated data to update
+     * @return updated {@link TrainEntity}
      */
-    @Transactional
-    public void update(Long id, TrainDto updated) {
-        TrainEntity existing = trainRepository.findById(id);
-        if (existing == null) {
-            throw new EntityNotFoundException();
-        }
-        existing.name = updated.name();
-        existing.address = updated.address();
-        // TODO train functions
-
-        reloadUpdated(id);
+    public TrainEntity update(Long id, TrainDto updated) {
+        final var entity = dataProvider.updateTrain(id, updated);
+        fireEvent(id, AbstractItemEvent.ACTION_TYPE.UPDATE);
+        return entity;
     }
 
     /**
@@ -97,10 +82,9 @@ public class TrainManager {
      * @param id id of the {@link Train}
      * @return {@link boolean} true if deleted, otherwise false
      */
-    @Transactional
     public boolean deleteById(Long id) {
-        var state = trainRepository.deleteById(id);
-        removeDeleted(id);
+        var state = dataProvider.deleteTrain(id);
+        fireEvent(id, AbstractItemEvent.ACTION_TYPE.DELETE);
         return state;
     }
 
@@ -111,7 +95,7 @@ public class TrainManager {
      * @return {@link boolean} true if exists, otherwise false
      */
     public boolean existsById(Long id) {
-        return cachedTrains.stream().anyMatch(train -> train.getId().equals(id));
+        return getById(id).isPresent();
     }
 
     /**
@@ -121,7 +105,7 @@ public class TrainManager {
      * @return {@link Train} of given id
      */
     public Optional<Train> getById(long id) {
-        return getTrains().stream().filter(train -> train.getId().equals(id)).findFirst();
+        return load().stream().filter(train -> train.getId().equals(id)).findFirst();
     }
 
     /**
@@ -131,45 +115,7 @@ public class TrainManager {
      * @return {@link Train} of given address
      */
     public Optional<Train> getByAddress(int address) {
-        return getTrains().stream().filter(train -> train.getAddress().equals(address)).findFirst();
-    }
-
-    private List<Train> getTrains() {
-        if (cachedTrains.isEmpty()) {
-            LOG.debugf("load from database");
-            cachedTrains.addAll(
-                trainRepository.getTrains().stream()
-                    .map(trainMapper::toDto)
-                    .toList()
-            );
-        }
-        return cachedTrains;
-    }
-
-    private void fetchCreated(Long id) {
-        LOG.debugf("fetch created train with id %d", id);
-        trainRepository.getTrainById(id).map(trainMapper::toDto)
-            .ifPresent(cachedTrains::add);
-
-        fireEvent(id, AbstractItemEvent.ACTION_TYPE.CREATE);
-    }
-
-    private void removeDeleted(Long id) {
-        LOG.debugf("remove deleted train with id %d", id);
-        cachedTrains.stream().filter(train -> train.getId().equals(id)).findFirst()
-            .ifPresent(cachedTrains::remove);
-        fireEvent(id, AbstractItemEvent.ACTION_TYPE.DELETE);
-    }
-
-    private void reloadUpdated(Long id) {
-        LOG.debugf("reload updated train with id %d", id);
-        cachedTrains.stream()
-            .filter(train -> train.getId().equals(id)).findFirst()
-            .ifPresent(cachedTrains::remove);
-        trainRepository.getTrainById(id).map(trainMapper::toDto)
-            .ifPresent(cachedTrains::add);
-
-        fireEvent(id, AbstractItemEvent.ACTION_TYPE.UPDATE);
+        return load().stream().filter(train -> train.getAddress().equals(address)).findFirst();
     }
 
     private void fireEvent(Long id, AbstractItemEvent.ACTION_TYPE type) {

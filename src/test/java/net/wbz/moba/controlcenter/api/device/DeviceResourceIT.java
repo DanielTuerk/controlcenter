@@ -203,35 +203,7 @@ class DeviceResourceIT extends BaseIt {
 
     @Test
     @Order(10)
-    void testConnectDevice() {
-        // Use the seeded TEST device from import-test-data.sql (key = "TEST")
-        var json = given()
-            .when().get("/api/devices")
-            .then()
-            .statusCode(200)
-            .extract()
-            .jsonPath();
-        Long deviceId = json.getLong("find { it.key == 'TEST' }.id");
-        String deviceKey = "TEST";
-
-        int status = given()
-            .pathParam("id", deviceId)
-            .when()
-            .post("/api/devices/{id}/connect")
-            .then()
-            .extract()
-            .statusCode();
-
-        if (status == 200) {
-            // Verify connection event for the TEST device
-            verifyReceivedEvent(DeviceConnectionEvent.class, "\"connected\":true");
-            verifyReceivedEvent(DeviceConnectionEvent.class, "\"key\":\"" + deviceKey + "\"");
-        }
-    }
-
-    @Test
-    @Order(11)
-    void testDisconnectDevice() {
+    void testConnectAndDisconnectDevice() {
         // Ensure the TEST device is connected first
         var json = given()
             .when().get("/api/devices")
@@ -241,26 +213,25 @@ class DeviceResourceIT extends BaseIt {
             .jsonPath();
         Long deviceId = json.getLong("find { it.key == 'TEST' }.id");
 
-        int connectStatus = given()
+        given()
+            .contentType(ContentType.JSON)
             .pathParam("id", deviceId)
             .when()
             .post("/api/devices/{id}/connect")
             .then()
-            .extract()
-            .statusCode();
+            .statusCode(200);
+
+        verifyReceivedEvent(DeviceConnectionEvent.class, "\"connected\":true", "\"key\":\"TEST\"");
 
         // Now disconnect
-        int disconnectStatus = given()
+        given()
+            .contentType(ContentType.JSON)
             .when()
             .post("/api/devices/disconnect")
             .then()
-            .extract()
-            .statusCode();
+            .statusCode(200);
 
-        if (connectStatus == 200 && disconnectStatus == 200) {
             // Verify disconnected event
-            verifyReceivedEvent(DeviceConnectionEvent.class, "\"connected\":false");
-            verifyReceivedEvent(DeviceConnectionEvent.class, "\"key\":\"TEST\"");
-        }
+        verifyReceivedEvent(DeviceConnectionEvent.class, "\"connected\":false", "\"key\":\"TEST\"");
     }
 }

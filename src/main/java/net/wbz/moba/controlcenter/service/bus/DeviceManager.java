@@ -1,6 +1,7 @@
 package net.wbz.moba.controlcenter.service.bus;
 
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.event.Event;
 import jakarta.inject.Inject;
 import net.wbz.moba.controlcenter.EventBroadcaster;
 import net.wbz.moba.controlcenter.persist.entity.DeviceInfoEntity;
@@ -25,17 +26,25 @@ public class DeviceManager {
     EventBroadcaster eventBroadcaster;
     @Inject
     DeviceDataProvider dataProvider;
+    @Inject
+    Event<DeviceDataChangedEvent> deviceDataChangedEvent;
 
     public DeviceInfo create(DeviceInfo construction) {
         var entity = dataProvider.createDevice(construction);
-        eventBroadcaster.fireEvent(new DeviceDataChangedEvent(entity.id));
+        fireEvent(entity.id);
         return deviceInfoMapper.toDto(entity);
     }
 
     public DeviceInfoEntity update(Long id, DeviceInfo updated) {
         final var entity = dataProvider.updateDevice(id, updated);
-        eventBroadcaster.fireEvent(new DeviceDataChangedEvent(id));
+        fireEvent(id);
         return entity;
+    }
+
+    private void fireEvent(Long id) {
+        final var event = new DeviceDataChangedEvent(id);
+        deviceDataChangedEvent.fire(event);
+        eventBroadcaster.fireEvent(event);
     }
 
     public List<DeviceInfo> load() {
@@ -52,7 +61,7 @@ public class DeviceManager {
 
     public boolean deleteById(Long id) {
         var state = dataProvider.deleteDevice(id);
-        eventBroadcaster.fireEvent(new DeviceDataChangedEvent(id));
+        fireEvent(id);
         return state;
     }
 

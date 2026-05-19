@@ -86,17 +86,17 @@ public class DeviceResource {
 
     @POST
     @Path("/{id}/connect")
-    public Response create(@PathParam("id") Long id) {
+    public Response connect(@PathParam("id") Long id) {
         var byId = deviceManager.getById(id);
         if (byId.isEmpty()) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
-        deviceService.changeDevice(byId.get());
         try {
+            deviceService.changeDevice(byId.get());
             deviceService.connect();
             return Response.ok().build();
         } catch (DeviceAccessException e) {
-            var message = "can't connect active device: %d".formatted(id);
+            var message = "can't connect device: %d".formatted(id);
             LOGGER.error(message, e);
             return Response.status(500, message).build();
         }
@@ -104,9 +104,15 @@ public class DeviceResource {
 
     @POST
     @Path("/disconnect")
-    public Response create() {
-        deviceService.disconnect();
-        return Response.ok().build();
+    public Response disconnect() {
+        try {
+            deviceService.disconnect();
+            return Response.ok().build();
+        } catch (DeviceAccessException e) {
+            var message = "can't disconnect active device";
+            LOGGER.error(message, e);
+            return Response.status(500, message).build();
+        }
     }
 
 }

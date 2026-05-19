@@ -1,11 +1,14 @@
 package net.wbz.moba.controlcenter.service.bus;
 
+import io.quarkus.runtime.Startup;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.event.Observes;
 import jakarta.inject.Inject;
 import net.wbz.moba.controlcenter.EventBroadcaster;
 import net.wbz.moba.controlcenter.shared.bus.RailVoltageEvent;
 import net.wbz.moba.controlcenter.shared.bus.SystemFormatEvent;
 import net.wbz.moba.controlcenter.shared.device.DeviceConnectionEvent;
+import net.wbz.moba.controlcenter.shared.device.DeviceDataChangedEvent;
 import net.wbz.moba.controlcenter.shared.device.DeviceInfo;
 import net.wbz.selectrix4java.device.Device;
 import net.wbz.selectrix4java.device.DeviceAccessException;
@@ -22,6 +25,7 @@ import java.util.Optional;
 /**
  * @author Daniel Tuerk
  */
+@Startup
 @ApplicationScoped
 public class DeviceService {
 
@@ -48,24 +52,32 @@ public class DeviceService {
         systemFormatListener = systemFormat -> eventBroadcaster.fireEvent(new SystemFormatEvent(systemFormat));
     }
 
-    public void changeDevice(DeviceInfo deviceInfo) {
-        activeDevice = selectrixDeviceManager.getDeviceById(deviceInfo.getKey());
+    public void onDeviceDataChanged(@Observes DeviceDataChangedEvent evt) {
+        LOGGER.info("DeviceDataChangedEvent: %s".formatted(evt));
+
+        initConnectionListener();
+    }
+
+    public void changeDevice(DeviceInfo deviceInfo) throws DeviceAccessException {
+        activeDevice = selectrixDeviceManager.getDeviceById(deviceInfo.getKey())
+            .orElseThrow(() -> new DeviceAccessException("no device registered for key: %s available: %s"
+                .formatted(deviceInfo.getKey(), selectrixDeviceManager.getDevices())));
         activeDeviceInfo = deviceInfo;
     }
 
     public void connect() throws DeviceAccessException {
-        if (activeDevice != null && !activeDevice.isConnected()) {
-                activeDevice.connect();
-        }
+        if (activeDevice == null) throw new DeviceAccessException("no active device");
+        if (activeDevice.isConnected()) throw new DeviceAccessException("device already connected");
+        activeDevice.connect();
     }
 
-    public void disconnect() {
-        if (activeDevice != null && activeDevice.isConnected()) {
-            try {
-                activeDevice.disconnect();
-            } catch (DeviceAccessException e) {
-                LOGGER.error("disconnect", e);
-            }
+    public void disconnect() throws DeviceAccessException {
+        if (activeDevice == null) throw new DeviceAccessException("no active device");
+        if (!activeDevice.isConnected()) throw new DeviceAccessException("device not connected");
+        try {
+            activeDevice.disconnect();
+        } catch (DeviceAccessException e) {
+            LOGGER.error("disconnect", e);
         }
     }
 
@@ -74,10 +86,8 @@ public class DeviceService {
     }
 
     private void initConnectionListener() {
-        for (DeviceInfo deviceInfo : deviceManager.load()) {
-            // TODO - values from config
-            registerDevice(deviceInfo);
-        }
+        LOGGER.debug("init connection listeners");
+        reregisterDevices();
 
         selectrixDeviceManager.addDeviceConnectionListener(new DeviceConnectionListener() {
             @Override
@@ -108,11 +118,15 @@ public class DeviceService {
         });
     }
 
-    private void registerDevice(DeviceInfo deviceInfo) {
-        Device device = selectrixDeviceManager
-            .createDevice(DEVICE_TYPE.valueOf(deviceInfo.getType().name()), deviceInfo.getKey(),
+    private void reregisterDevices() {
+        selectrixDeviceManager.getDevices().forEach(selectrixDeviceManager::removeDevice);
+        deviceManager.load().forEach(deviceInfo -> {
+            Device device = selectrixDeviceManager.createDevice(
+                DEVICE_TYPE.valueOf(deviceInfo.getType().name()),
+                deviceInfo.getKey(),
                 SerialDevice.DEFAULT_BAUD_RATE_FCC);
-        selectrixDeviceManager.registerDevice(device);
+            selectrixDeviceManager.registerDevice(device);
+        });
     }
 
 }

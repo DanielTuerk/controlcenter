@@ -1,8 +1,7 @@
-package net.wbz.moba.controlcenter.api.train;
+package net.wbz.moba.controlcenter.it;
 
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
-import net.wbz.moba.controlcenter.it.BaseIt;
 import net.wbz.moba.controlcenter.shared.train.TrainDataChangedEvent;
 import net.wbz.moba.controlcenter.shared.train.TrainDrivingDirectionEvent;
 import net.wbz.moba.controlcenter.shared.train.TrainDrivingLevelEvent;
@@ -18,7 +17,7 @@ import static org.hamcrest.Matchers.*;
 
 @QuarkusTest
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-class TrainResourceIT extends BaseIt {
+class TrainResourceTest extends BaseIt {
 
     @Test
     @Order(1)

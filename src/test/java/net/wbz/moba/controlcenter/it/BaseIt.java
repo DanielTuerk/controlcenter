@@ -17,7 +17,7 @@ import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
-public class BaseIt {
+class BaseIt {
     private static final Logger LOG = LoggerFactory.getLogger(BaseIt.class);
 
     private static final String WEBSOCKET_URL = "ws://localhost:8081/websocket";
@@ -68,7 +68,7 @@ public class BaseIt {
         assertTrue(connectionLatch.await(10, TimeUnit.SECONDS), "WebSocket connection timeout");
     }
 
-    protected <E extends Event> void verifyReceivedEvent(Class<E> eventClazz, String... messageContains) {
+    <E extends Event> void verifyReceivedEvent(Class<E> eventClazz, String... messageContains) {
         await()
             .atMost(5, TimeUnit.SECONDS)
             .pollInterval(50, TimeUnit.MILLISECONDS)

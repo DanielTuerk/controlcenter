@@ -1,8 +1,7 @@
-package net.wbz.moba.controlcenter.api.construction;
+package net.wbz.moba.controlcenter.it;
 
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
-import net.wbz.moba.controlcenter.it.BaseIt;
 import net.wbz.moba.controlcenter.shared.constrution.ConstructionDataChangedEvent;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
@@ -14,11 +13,11 @@ import static org.hamcrest.Matchers.*;
 
 @QuarkusTest
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-class ConstructionResourceIT extends BaseIt {
+class ConstructionResourceTest extends BaseIt {
 
     @Test
     @Order(1)
-    void testListAllConstructions() throws Exception {
+    void testListAllConstructions() {
         given()
             .when().get("/api/constructions")
             .then()
@@ -51,7 +50,7 @@ class ConstructionResourceIT extends BaseIt {
 
     @Test
     @Order(3)
-    void testGetConstructionById_NotFound() throws Exception {
+    void testGetConstructionById_NotFound() {
         given()
             .pathParam("id", 999L)
             .when().get("/api/constructions/{id}")
@@ -61,7 +60,7 @@ class ConstructionResourceIT extends BaseIt {
 
     @Test
     @Order(4)
-    void testCreateConstruction() throws Exception {
+    void testCreateConstruction() {
         // Get initial count
         int initialCount = given()
             .when().get("/api/constructions")
@@ -98,7 +97,7 @@ class ConstructionResourceIT extends BaseIt {
 
     @Test
     @Order(5)
-    void testUpdateConstruction() throws Exception {
+    void testUpdateConstruction() {
         // Get first construction ID
         Long constructionId = given()
             .when().get("/api/constructions")
@@ -132,7 +131,7 @@ class ConstructionResourceIT extends BaseIt {
 
     @Test
     @Order(6)
-    void testUpdateConstruction_NotFound() throws Exception {
+    void testUpdateConstruction_NotFound() {
         given()
             .contentType(ContentType.JSON)
             .body("{\"name\":\"Updated Construction\"}")
@@ -145,7 +144,7 @@ class ConstructionResourceIT extends BaseIt {
 
     @Test
     @Order(7)
-    void testDeleteConstruction() throws Exception {
+    void testDeleteConstruction() {
         // Create a new construction specifically for deletion test
         Long constructionId = given()
             .contentType(ContentType.JSON)
@@ -179,7 +178,7 @@ class ConstructionResourceIT extends BaseIt {
 
     @Test
     @Order(8)
-    void testDeleteConstruction_CurrentConstruction() throws Exception {
+    void testDeleteConstruction_CurrentConstruction() {
         // Get first construction ID (assuming it's not the current one)
         Long constructionId = given()
             .when().get("/api/constructions")
@@ -200,7 +199,7 @@ class ConstructionResourceIT extends BaseIt {
 
     @Test
     @Order(9)
-    void testDeleteConstruction_NotFound() throws Exception {
+    void testDeleteConstruction_NotFound() {
         given()
             .pathParam("id", 999L)
             .when()

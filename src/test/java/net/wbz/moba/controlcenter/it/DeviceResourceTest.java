@@ -1,8 +1,7 @@
-package net.wbz.moba.controlcenter.api.device;
+package net.wbz.moba.controlcenter.it;
 
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
-import net.wbz.moba.controlcenter.it.BaseIt;
 import net.wbz.moba.controlcenter.shared.device.DeviceConnectionEvent;
 import net.wbz.moba.controlcenter.shared.device.DeviceDataChangedEvent;
 import org.junit.jupiter.api.MethodOrderer;
@@ -15,7 +14,7 @@ import static org.hamcrest.Matchers.*;
 
 @QuarkusTest
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-class DeviceResourceIT extends BaseIt {
+class DeviceResourceTest extends BaseIt {
 
     @Test
     @Order(1)

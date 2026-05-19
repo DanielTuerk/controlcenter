@@ -60,8 +60,7 @@ public class ConstructionResource {
         if (!constructionManager.existsById(id)) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
-        constructionManager.update(id, updated);
-        return Response.ok().build();
+        return Response.ok(constructionManager.update(id, updated)).build();
     }
 
     @DELETE

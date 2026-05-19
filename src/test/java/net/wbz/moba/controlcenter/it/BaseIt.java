@@ -24,6 +24,7 @@ class BaseIt {
     private static WebSocketClient webSocketClient;
     private static final List<String> receivedMessages = new ArrayList<>();
     private static final Object messageLock = new Object();
+    private static volatile String clientId;
 
     @BeforeAll
     static void setUp() throws Exception {
@@ -53,8 +54,13 @@ class BaseIt {
 
             @Override
             public void onMessage(String message) {
-                synchronized (messageLock) {
-                    receivedMessages.add(message);
+                if (message != null && message.startsWith("clientId: ")) {
+                    clientId = message.substring("clientId: ".length()).trim();
+                    LOG.debug("Received WebSocket clientId: {}", clientId);
+                } else {
+                    synchronized (messageLock) {
+                        receivedMessages.add(message);
+                    }
                 }
             }
 
@@ -79,6 +85,14 @@ class BaseIt {
                             && java.util.Arrays.stream(messageContains).allMatch(msg::contains));
                 }
             });
+    }
+
+    static String getClientId() {
+        await()
+            .atMost(5, TimeUnit.SECONDS)
+            .pollInterval(50, TimeUnit.MILLISECONDS)
+            .until(() -> clientId != null && !clientId.isBlank());
+        return clientId;
     }
 
 }

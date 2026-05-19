@@ -3,23 +3,16 @@ package net.wbz.moba.controlcenter.api.construction;
 
 import io.smallrye.common.annotation.Blocking;
 import jakarta.inject.Inject;
-import jakarta.transaction.Transactional;
 import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
-import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
-import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
-import java.util.List;
 import net.wbz.moba.controlcenter.service.constrution.ConstructionManager;
 import net.wbz.moba.controlcenter.service.constrution.ConstructionService;
-import net.wbz.moba.controlcenter.shared.constrution.Construction;
 
 @Path("/api/current-construction")
 @Produces(MediaType.APPLICATION_JSON)

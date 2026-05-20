@@ -3,7 +3,6 @@ package net.wbz.moba.controlcenter.it;
 import net.wbz.moba.controlcenter.shared.Event;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
-import org.junit.jupiter.api.BeforeAll;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,32 +16,26 @@ import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
-class BaseIt {
-    private static final Logger LOG = LoggerFactory.getLogger(BaseIt.class);
+class WebSocketEventReceiver {
+    private static final Logger LOG = LoggerFactory.getLogger(WebSocketEventReceiver.class);
 
     private static final String WEBSOCKET_URL = "ws://localhost:8081/websocket";
-    private static WebSocketClient webSocketClient;
-    private static final List<String> receivedMessages = new ArrayList<>();
-    private static final Object messageLock = new Object();
-    private static volatile String clientId;
+    private final List<String> receivedMessages = new ArrayList<>();
+    private final Object messageLock = new Object();
+    private volatile String clientId;
 
-    @BeforeAll
-    static void setUp() throws Exception {
+    WebSocketEventReceiver() {
         ensureWebSocketConnected();
     }
 
     /**
      * Helper method to connect to WebSocket and initialize it for all tests.
      */
-    private static void ensureWebSocketConnected() throws Exception {
-        if (webSocketClient != null && webSocketClient.isOpen()) {
-            return;
-        }
-
+    private void ensureWebSocketConnected() {
         receivedMessages.clear();
         CountDownLatch connectionLatch = new CountDownLatch(1);
 
-        webSocketClient = new WebSocketClient(URI.create(WEBSOCKET_URL)) {
+        final WebSocketClient webSocketClient = new WebSocketClient(URI.create(WEBSOCKET_URL)) {
             @Override
             public void onOpen(ServerHandshake handshakedata) {
                 connectionLatch.countDown();
@@ -71,7 +64,11 @@ class BaseIt {
         };
 
         webSocketClient.connect();
-        assertTrue(connectionLatch.await(10, TimeUnit.SECONDS), "WebSocket connection timeout");
+        try {
+            assertTrue(connectionLatch.await(10, TimeUnit.SECONDS), "WebSocket connection timeout");
+        } catch (InterruptedException e) {
+            throw new RuntimeException("error by starting awaitility", e);
+        }
     }
 
     <E extends Event> void verifyReceivedEvent(Class<E> eventClazz, String... messageContains) {
@@ -80,19 +77,18 @@ class BaseIt {
             .pollInterval(50, TimeUnit.MILLISECONDS)
             .until(() -> {
                 synchronized (messageLock) {
-                    return receivedMessages.stream().peek(msg -> LOG.debug("Received WebSocket message: {}", msg))
+                    return receivedMessages.stream().peek(msg -> LOG.info("Received WebSocket message: {}", msg))
                         .anyMatch(msg -> msg.startsWith(eventClazz.getSimpleName() + ": ")
                             && java.util.Arrays.stream(messageContains).allMatch(msg::contains));
                 }
             });
     }
 
-    static String getClientId() {
+    String getClientId() {
         await()
             .atMost(5, TimeUnit.SECONDS)
             .pollInterval(50, TimeUnit.MILLISECONDS)
             .until(() -> clientId != null && !clientId.isBlank());
         return clientId;
     }
-
 }

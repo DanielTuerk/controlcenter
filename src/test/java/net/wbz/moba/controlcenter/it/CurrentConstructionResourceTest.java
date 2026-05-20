@@ -13,7 +13,8 @@ import static org.hamcrest.Matchers.*;
 
 @QuarkusTest
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-class CurrentConstructionResourceTest extends BaseIt {
+class CurrentConstructionResourceTest {
+    private static final WebSocketEventReceiver EVENT_RECEIVER = new WebSocketEventReceiver();
 
     @Test
     @Order(1)
@@ -50,7 +51,7 @@ class CurrentConstructionResourceTest extends BaseIt {
             .body("name", notNullValue());
 
         // verify websocket event for current construction change has been emitted
-        verifyReceivedEvent(CurrentConstructionChangeEvent.class);
+        EVENT_RECEIVER.verifyReceivedEvent(CurrentConstructionChangeEvent.class);
 
         // verify GET returns the same current construction
         given()
@@ -98,7 +99,7 @@ class CurrentConstructionResourceTest extends BaseIt {
 
         // verify GET now returns the updated current construction
         // and a change event was broadcasted over websocket
-        verifyReceivedEvent(CurrentConstructionChangeEvent.class);
+        EVENT_RECEIVER.verifyReceivedEvent(CurrentConstructionChangeEvent.class);
         given()
         .when()
             .get("/api/current-construction")

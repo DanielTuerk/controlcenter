@@ -14,7 +14,8 @@ import static org.hamcrest.Matchers.*;
 
 @QuarkusTest
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-class DeviceResourceTest extends BaseIt {
+class DeviceResourceTest {
+    private static final WebSocketEventReceiver EVENT_RECEIVER = new WebSocketEventReceiver();
 
     @Test
     @Order(1)
@@ -94,7 +95,7 @@ class DeviceResourceTest extends BaseIt {
             .getLong("id");
 
         // Verify WebSocket event was received
-        verifyReceivedEvent(DeviceDataChangedEvent.class, "\"itemId\":" + createdId);
+        EVENT_RECEIVER.verifyReceivedEvent(DeviceDataChangedEvent.class, "\"itemId\":" + createdId);
 
         // Verify created
         given()
@@ -131,7 +132,7 @@ class DeviceResourceTest extends BaseIt {
             .body("key", equalTo("IT-DEVICE-UPDATED"));
 
         // Verify WebSocket event was received for update
-        verifyReceivedEvent(DeviceDataChangedEvent.class, "\"itemId\":" + deviceId);
+        EVENT_RECEIVER.verifyReceivedEvent(DeviceDataChangedEvent.class, "\"itemId\":" + deviceId);
 
         // Verify update
         given()
@@ -179,7 +180,7 @@ class DeviceResourceTest extends BaseIt {
             .statusCode(204);
 
         // Verify delete event
-        verifyReceivedEvent(DeviceDataChangedEvent.class, "\"itemId\":" + deviceId);
+        EVENT_RECEIVER.verifyReceivedEvent(DeviceDataChangedEvent.class, "\"itemId\":" + deviceId);
 
         // Verify it is gone
         given()
@@ -203,34 +204,11 @@ class DeviceResourceTest extends BaseIt {
     @Test
     @Order(10)
     void testConnectAndDisconnectDevice() {
-        // Ensure the TEST device is connected first
-        var json = given()
-            .when().get("/api/devices")
-            .then()
-            .statusCode(200)
-            .extract()
-            .jsonPath();
-        Long deviceId = json.getLong("find { it.key == 'TEST' }.id");
-
-        given()
-            .contentType(ContentType.JSON)
-            .pathParam("id", deviceId)
-            .when()
-            .post("/api/devices/{id}/connect")
-            .then()
-            .statusCode(200);
-
-        verifyReceivedEvent(DeviceConnectionEvent.class, "\"connected\":true", "\"key\":\"TEST\"");
+        ItUtil.connectTestDevice();
+        EVENT_RECEIVER.verifyReceivedEvent(DeviceConnectionEvent.class, "\"connected\":true", "\"key\":\"TEST\"");
 
         // Now disconnect
-        given()
-            .contentType(ContentType.JSON)
-            .when()
-            .post("/api/devices/disconnect")
-            .then()
-            .statusCode(200);
-
-            // Verify disconnected event
-        verifyReceivedEvent(DeviceConnectionEvent.class, "\"connected\":false", "\"key\":\"TEST\"");
+        ItUtil.disconnectTestDevice();
+        EVENT_RECEIVER.verifyReceivedEvent(DeviceConnectionEvent.class, "\"connected\":false", "\"key\":\"TEST\"");
     }
 }

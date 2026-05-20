@@ -1,41 +1,30 @@
 package net.wbz.moba.controlcenter.it;
 
 import io.quarkus.test.junit.QuarkusTest;
+import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import net.wbz.moba.controlcenter.shared.bus.BusDataEvent;
 import net.wbz.moba.controlcenter.shared.bus.RailVoltageEvent;
 import net.wbz.moba.controlcenter.shared.bus.SystemFormatEvent;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 
 import static io.restassured.RestAssured.given;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.notNullValue;
 
 @QuarkusTest
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-class BusResourceTest extends BaseIt {
+class BusResourceTest {
 
-    @Test
-    @Order(1)
-    void testConnectTestDevice() {
-        // Connect the seeded TEST device so bus operations can work
-        Long deviceId = given()
-            .when().get("/api/devices")
-            .then()
-            .statusCode(200)
-            .extract()
-            .jsonPath()
-            .getLong("find { it.key == 'TEST' }.id");
+    private static final WebSocketEventReceiver EVENT_RECEIVER = new WebSocketEventReceiver();
 
-        given()
-            .contentType(ContentType.JSON)
-            .pathParam("id", deviceId)
-            .when()
-            .post("/api/devices/{id}/connect")
-            .then()
-            .statusCode(200);
+    @BeforeAll
+    public static void beforeAll() {
+        RestAssured.port = 8081;
+        ItUtil.connectTestDevice();
     }
 
     @Test
@@ -58,7 +47,7 @@ class BusResourceTest extends BaseIt {
             .statusCode(200);
 
         // Verify a RailVoltageEvent was received (no need to assert payload content here)
-        verifyReceivedEvent(RailVoltageEvent.class);
+        EVENT_RECEIVER.verifyReceivedEvent(RailVoltageEvent.class);
     }
 
     @Test
@@ -81,13 +70,13 @@ class BusResourceTest extends BaseIt {
             .statusCode(200);
 
         // Verify a SystemFormatEvent was received
-        verifyReceivedEvent(SystemFormatEvent.class);
+        EVENT_RECEIVER.verifyReceivedEvent(SystemFormatEvent.class);
     }
 
     @Test
     @Order(6)
     void testStartTrackingBus() {
-        String clientId = BaseIt.getClientId();
+        String clientId = EVENT_RECEIVER.getClientId();
 
         given()
             .contentType(ContentType.JSON)
@@ -102,7 +91,7 @@ class BusResourceTest extends BaseIt {
     void testSendBusDataAndVerifyEvent() {
         // write a byte to dispatch a BusDataEvent to our client
         int bus = 0;
-        int address = 1;
+        int address = 98;
         int value = 12;
 
         given()
@@ -113,14 +102,14 @@ class BusResourceTest extends BaseIt {
             .statusCode(200);
 
         // Verify BusDataEvent targeted to our websocket client (type + bus/address are sufficient)
-        verifyReceivedEvent(BusDataEvent.class, "\"bus\":" + bus, "\"address\":" + address);
+        EVENT_RECEIVER.verifyReceivedEvent(BusDataEvent.class, "\"bus\":" + bus, "\"address\":" + address);
     }
 
     @Test
     @Order(8)
     void testSendBusBitAndVerifyEvent() {
         int bus = 0;
-        int address = 2;
+        int address = 99;
         int bit = 4;
         boolean state = true;
 
@@ -132,13 +121,13 @@ class BusResourceTest extends BaseIt {
             .statusCode(200);
 
         // Verify BusDataEvent (we only assert type + bus/address)
-        verifyReceivedEvent(BusDataEvent.class, "\"bus\":" + bus, "\"address\":" + address);
+        EVENT_RECEIVER.verifyReceivedEvent(BusDataEvent.class, "\"bus\":" + bus, "\"address\":" + address);
     }
 
     @Test
     @Order(9)
     void testStopTrackingBus() {
-        String clientId = BaseIt.getClientId();
+        String clientId = EVENT_RECEIVER.getClientId();
 
         given()
             .contentType(ContentType.JSON)

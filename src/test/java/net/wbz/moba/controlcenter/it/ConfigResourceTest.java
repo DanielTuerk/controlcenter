@@ -12,7 +12,7 @@ import static org.hamcrest.Matchers.*;
 
 @QuarkusTest
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-class ConfigResourceTest extends BaseIt {
+class ConfigResourceTest {
 
     private static final String TEST_KEY = "it.test.key";
     private static final String UNKNOWN_KEY = "unknown.key.for.404";

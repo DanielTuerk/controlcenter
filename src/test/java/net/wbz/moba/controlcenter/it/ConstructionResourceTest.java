@@ -13,7 +13,8 @@ import static org.hamcrest.Matchers.*;
 
 @QuarkusTest
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-class ConstructionResourceTest extends BaseIt {
+class ConstructionResourceTest {
+    private static final WebSocketEventReceiver EVENT_RECEIVER = new WebSocketEventReceiver();
 
     @Test
     @Order(1)
@@ -84,7 +85,7 @@ class ConstructionResourceTest extends BaseIt {
             .getLong("id");
 
         // Verify WebSocket event was received
-        verifyReceivedEvent(ConstructionDataChangedEvent.class, "\"itemId\":" + constructionId);
+        EVENT_RECEIVER.verifyReceivedEvent(ConstructionDataChangedEvent.class, "\"itemId\":" + constructionId);
 
         // Verify it was created by checking count increased
         given()
@@ -118,7 +119,7 @@ class ConstructionResourceTest extends BaseIt {
             .statusCode(200);
 
         // Verify WebSocket event was received
-        verifyReceivedEvent(ConstructionDataChangedEvent.class, "\"itemId\":" + constructionId);
+        EVENT_RECEIVER.verifyReceivedEvent(ConstructionDataChangedEvent.class, "\"itemId\":" + constructionId);
 
         // Verify update by getting the construction
         given()
@@ -166,7 +167,7 @@ class ConstructionResourceTest extends BaseIt {
             .statusCode(204);
 
         // Verify WebSocket event was received for deletion
-        verifyReceivedEvent(ConstructionDataChangedEvent.class, "\"itemId\":" + constructionId);
+        EVENT_RECEIVER.verifyReceivedEvent(ConstructionDataChangedEvent.class, "\"itemId\":" + constructionId);
 
         // Verify deletion by trying to get it
         given()

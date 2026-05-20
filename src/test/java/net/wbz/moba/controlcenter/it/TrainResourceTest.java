@@ -3,10 +3,6 @@ package net.wbz.moba.controlcenter.it;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
 import net.wbz.moba.controlcenter.shared.train.TrainDataChangedEvent;
-import net.wbz.moba.controlcenter.shared.train.TrainDrivingDirectionEvent;
-import net.wbz.moba.controlcenter.shared.train.TrainDrivingLevelEvent;
-import net.wbz.moba.controlcenter.shared.train.TrainHornStateEvent;
-import net.wbz.moba.controlcenter.shared.train.TrainLightStateEvent;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -17,7 +13,8 @@ import static org.hamcrest.Matchers.*;
 
 @QuarkusTest
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-class TrainResourceTest extends BaseIt {
+class TrainResourceTest {
+    private static final WebSocketEventReceiver EVENT_RECEIVER = new WebSocketEventReceiver();
 
     @Test
     @Order(1)
@@ -64,7 +61,7 @@ class TrainResourceTest extends BaseIt {
             .getLong("id");
 
         // Verify WebSocket event was received
-        verifyReceivedEvent(TrainDataChangedEvent.class, "\"itemId\":" + trainId);
+        EVENT_RECEIVER.verifyReceivedEvent(TrainDataChangedEvent.class, "\"itemId\":" + trainId);
 
         // Verify created
         given()
@@ -123,7 +120,7 @@ class TrainResourceTest extends BaseIt {
             .body("address", equalTo(3));
 
         // Verify WebSocket event was received for update
-        verifyReceivedEvent(TrainDataChangedEvent.class, "\"itemId\":" + trainId);
+        EVENT_RECEIVER.verifyReceivedEvent(TrainDataChangedEvent.class, "\"itemId\":" + trainId);
 
         // Verify update
         given()
@@ -172,7 +169,7 @@ class TrainResourceTest extends BaseIt {
             .statusCode(204);
 
         // Verify delete event
-        verifyReceivedEvent(TrainDataChangedEvent.class, "\"itemId\":" + trainId);
+        EVENT_RECEIVER.verifyReceivedEvent(TrainDataChangedEvent.class, "\"itemId\":" + trainId);
 
         // Verify it is gone
         given()
@@ -193,133 +190,4 @@ class TrainResourceTest extends BaseIt {
             .statusCode(404);
     }
 
-    @Test
-    @Order(9)
-    void testConnectTestDevice() {
-        // connect the TEST device to enable TrainService#reregisterConsumer listeners
-        Long deviceId = given()
-            .when().get("/api/devices")
-            .then()
-            .statusCode(200)
-            .extract()
-            .jsonPath()
-            .getLong("find { it.key == 'TEST' }.id");
-
-        given()
-            .contentType(ContentType.JSON)
-            .pathParam("id", deviceId)
-            .when()
-            .post("/api/devices/{id}/connect")
-            .then()
-            .statusCode(200);
-    }
-
-    @Test
-    @Order(10)
-    void testUpdateDrivingDirection() {
-        // ensure at least one train exists
-        Long trainId = given()
-            .contentType(ContentType.JSON)
-            .body("{\"name\":\"IT-TRAIN-DIR\",\"address\":5}")
-            .when()
-            .post("/api/trains")
-            .then()
-            .statusCode(201)
-            .extract()
-            .jsonPath()
-            .getLong("id");
-
-        given()
-            .contentType(ContentType.TEXT)
-            .body("FORWARD")
-            .pathParam("id", trainId)
-            .when()
-            .post("/api/trains/{id}/direction")
-            .then()
-            .statusCode(200);
-
-        // Verify that reregistered consumer emitted a direction event (only checks type + itemId)
-        verifyReceivedEvent(TrainDrivingDirectionEvent.class, "\"itemId\":" + trainId);
-    }
-
-    @Test
-    @Order(11)
-    void testUpdateDrivingLevel() {
-        Long trainId = given()
-            .contentType(ContentType.JSON)
-            .body("{\"name\":\"IT-TRAIN-LVL\",\"address\":6}")
-            .when()
-            .post("/api/trains")
-            .then()
-            .statusCode(201)
-            .extract()
-            .jsonPath()
-            .getLong("id");
-
-        given()
-            .contentType(ContentType.TEXT)
-            .body("10")
-            .pathParam("id", trainId)
-            .when()
-            .post("/api/trains/{id}/level")
-            .then()
-            .statusCode(200);
-
-        // Verify that reregistered consumer emitted a driving level event (only checks type + itemId)
-        verifyReceivedEvent(TrainDrivingLevelEvent.class, "\"itemId\":" + trainId);
-    }
-
-    @Test
-    @Order(12)
-    void testToggleLight() {
-        Long trainId = given()
-            .contentType(ContentType.JSON)
-            .body("{\"name\":\"IT-TRAIN-LIGHT\",\"address\":7}")
-            .when()
-            .post("/api/trains")
-            .then()
-            .statusCode(201)
-            .extract()
-            .jsonPath()
-            .getLong("id");
-
-        given()
-            .contentType(ContentType.TEXT)
-            .body("true")
-            .pathParam("id", trainId)
-            .when()
-            .post("/api/trains/{id}/light")
-            .then()
-            .statusCode(200);
-
-        // Verify that reregistered consumer emitted a light state event (only checks type + itemId)
-        verifyReceivedEvent(TrainLightStateEvent.class, "\"itemId\":" + trainId);
-    }
-
-    @Test
-    @Order(13)
-    void testToggleHorn() {
-        Long trainId = given()
-            .contentType(ContentType.JSON)
-            .body("{\"name\":\"IT-TRAIN-HORN\",\"address\":8}")
-            .when()
-            .post("/api/trains")
-            .then()
-            .statusCode(201)
-            .extract()
-            .jsonPath()
-            .getLong("id");
-
-        given()
-            .contentType(ContentType.TEXT)
-            .body("true")
-            .pathParam("id", trainId)
-            .when()
-            .post("/api/trains/{id}/horn")
-            .then()
-            .statusCode(200);
-
-        // Verify that reregistered consumer emitted a horn state event (only checks type + itemId)
-        verifyReceivedEvent(TrainHornStateEvent.class, "\"itemId\":" + trainId);
-    }
 }

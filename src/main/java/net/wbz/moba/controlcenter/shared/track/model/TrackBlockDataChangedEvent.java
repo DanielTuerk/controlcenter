@@ -12,14 +12,16 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 @Schema(description = "Track-block update sent via WebSocket")
 @Tag(ref = "websocket")
 public class TrackBlockDataChangedEvent extends AbstractItemEvent {
+    private final ACTION_TYPE type;
 
-    public TrackBlockDataChangedEvent(long trackBlockId) {
-        super(trackBlockId);
+    public TrackBlockDataChangedEvent(long trainId, ACTION_TYPE type) {
+        super(trainId);
+        this.type = type;
     }
 
-    public TrackBlockDataChangedEvent() {
+    public ACTION_TYPE getType() {
+        return type;
     }
-
     @Override
     public String toString() {
         return "TrackBlockDataChangedEvent{} " + super.toString();

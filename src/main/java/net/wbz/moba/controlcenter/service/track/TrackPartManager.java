@@ -22,6 +22,7 @@ import net.wbz.moba.controlcenter.persist.repository.ConstructionRepository;
 import net.wbz.moba.controlcenter.persist.repository.track.GridPositionRepository;
 import net.wbz.moba.controlcenter.persist.repository.track.TrackPartRepository;
 import net.wbz.moba.controlcenter.service.constrution.ConstructionService;
+import net.wbz.moba.controlcenter.service.track.block.TrackBlockMapper;
 import net.wbz.moba.controlcenter.shared.track.model.AbstractTrackPart;
 import net.wbz.moba.controlcenter.shared.track.model.BlockStraight;
 import net.wbz.moba.controlcenter.shared.track.model.BusDataConfiguration;
@@ -36,7 +37,6 @@ import net.wbz.moba.controlcenter.shared.track.model.TrackPartDataChangedEvent;
 import net.wbz.moba.controlcenter.shared.track.model.Turnout;
 import net.wbz.moba.controlcenter.shared.track.model.Turnout.PRESENTATION;
 import net.wbz.moba.controlcenter.shared.track.model.Uncoupler;
-import org.jboss.logging.Logger;
 
 /**
  * @author Daniel Tuerk
@@ -44,8 +44,6 @@ import org.jboss.logging.Logger;
 @ApplicationScoped
 public class TrackPartManager {
 
-    @Inject
-    Logger logger;
     @Inject
     EventBroadcaster eventBroadcaster;
     @Inject

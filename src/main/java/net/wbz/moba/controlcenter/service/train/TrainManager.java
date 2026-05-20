@@ -9,7 +9,6 @@ import net.wbz.moba.controlcenter.persist.entity.TrainEntity;
 import net.wbz.moba.controlcenter.shared.AbstractItemEvent;
 import net.wbz.moba.controlcenter.shared.train.Train;
 import net.wbz.moba.controlcenter.shared.train.TrainDataChangedEvent;
-import org.jboss.logging.Logger;
 
 import java.util.List;
 import java.util.Optional;
@@ -22,8 +21,6 @@ import java.util.stream.Collectors;
  */
 @ApplicationScoped
 public class TrainManager {
-
-    private static final Logger LOG = Logger.getLogger(TrainManager.class);
 
     private final TrainMapper trainMapper;
     private final EventBroadcaster eventBroadcaster;
@@ -70,10 +67,10 @@ public class TrainManager {
      * @param updated data to update
      * @return updated {@link TrainEntity}
      */
-    public TrainEntity update(Long id, TrainDto updated) {
+    public Train update(Long id, TrainDto updated) {
         final var entity = dataProvider.updateTrain(id, updated);
         fireEvent(id, AbstractItemEvent.ACTION_TYPE.UPDATE);
-        return entity;
+        return trainMapper.toDto(entity);
     }
 
     /**

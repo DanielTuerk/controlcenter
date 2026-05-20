@@ -1,48 +1,47 @@
-package net.wbz.moba.controlcenter.service.track;
+package net.wbz.moba.controlcenter.service.track.block;
 
+import io.quarkus.cache.CacheInvalidateAll;
+import io.quarkus.cache.CacheResult;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-import net.wbz.moba.controlcenter.EventBroadcaster;
 import net.wbz.moba.controlcenter.persist.entity.track.TrackBlockEntity;
 import net.wbz.moba.controlcenter.persist.repository.ConstructionRepository;
 import net.wbz.moba.controlcenter.persist.repository.track.TrackBlockRepository;
+import net.wbz.moba.controlcenter.service.track.BusDataConfigMapper;
 import net.wbz.moba.controlcenter.shared.track.model.TrackBlock;
-import net.wbz.moba.controlcenter.shared.track.model.TrackBlockDataChangedEvent;
 
-/**
- * @author Daniel Tuerk
- */
+import java.util.List;
+import java.util.Optional;
+
 @ApplicationScoped
-public class TrackBlockManager {
+public class TrackBlockDataProvider {
+    private static final String CACHE = "track-block-cache";
 
     @Inject
     TrackBlockRepository trackBlockRepository;
     @Inject
-    TrackBlockMapper trackBlockMapper;
+    BusDataConfigMapper busDataConfigMapper;
     @Inject
     ConstructionRepository constructionRepository;
     @Inject
-    EventBroadcaster eventBroadcaster;
-    @Inject
-    BusDataConfigMapper busDataConfigMapper;
-    @Inject
     EntityManager entityManager;
 
-    public List<TrackBlock> fetch(Long constructionId) {
-        return trackBlockRepository.findByConstructionId(constructionId).stream()
-            .map(trackBlockEntity -> trackBlockMapper.toDto(trackBlockEntity)).collect(
-                Collectors.toList());
+    @CacheResult(cacheName = CACHE)
+    public List<TrackBlockEntity> load(Long constructionId) {
+        return trackBlockRepository.findByConstructionId(constructionId);
     }
 
+    public Optional<TrackBlockEntity> getById(Long trackBlockId) {
+        return trackBlockRepository.findByIdOptional(trackBlockId);
+    }
+
+    @CacheInvalidateAll(cacheName = CACHE)
     @Transactional
-    public TrackBlock create(Long constructionId, TrackBlock dto) {
-        TrackBlockEntity entity = new TrackBlockEntity();
+    public TrackBlockEntity create(Long constructionId, TrackBlock dto) {
+        var entity = new TrackBlockEntity();
         entity.name = dto.getName();
         entity.construction = constructionRepository.findById(constructionId);
         entity.feedback = dto.getFeedback();
@@ -52,12 +51,12 @@ public class TrackBlockManager {
         entity.backwardTargetDrivingLevel = dto.getBackwardTargetDrivingLevel();
 
         trackBlockRepository.persist(entity);
-        eventBroadcaster.fireEvent(new TrackBlockDataChangedEvent(entity.id));
-        return trackBlockMapper.toDto(entity);
+        return entity;
     }
 
+    @CacheInvalidateAll(cacheName = CACHE)
     @Transactional
-    public void update(Long id, TrackBlock updated) {
+    public TrackBlockEntity update(Long id, TrackBlock updated) {
         var existing = trackBlockRepository.findById(id);
         if (existing == null) {
             throw new EntityNotFoundException();
@@ -68,23 +67,12 @@ public class TrackBlockManager {
         existing.drivingLevelAdjustType = updated.getDrivingLevelAdjustType();
         existing.forwardTargetDrivingLevel = updated.getForwardTargetDrivingLevel();
         existing.backwardTargetDrivingLevel = updated.getBackwardTargetDrivingLevel();
-
-        eventBroadcaster.fireEvent(new TrackBlockDataChangedEvent(existing.id));
+        return existing;
     }
 
+    @CacheInvalidateAll(cacheName = CACHE)
     @Transactional
     public boolean deleteById(Long id) {
-        var state = trackBlockRepository.deleteById(id);
-        eventBroadcaster.fireEvent(new TrackBlockDataChangedEvent(id));
-        return state;
-    }
-
-    public boolean existsById(Long id) {
-        return trackBlockRepository.findByIdOptional(id).isPresent();
-    }
-
-    public Optional<TrackBlock> getById(Long trackBlockId) {
-        return trackBlockRepository.findByIdOptional(trackBlockId)
-            .map(trackBlockEntity -> trackBlockMapper.toDto(trackBlockEntity));
+        return trackBlockRepository.deleteById(id);
     }
 }

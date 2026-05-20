@@ -1,4 +1,4 @@
-package net.wbz.moba.controlcenter.service.track;
+package net.wbz.moba.controlcenter.service.track.block;
 
 import io.vertx.core.impl.ConcurrentHashSet;
 import jakarta.enterprise.event.Observes;
@@ -31,8 +31,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Registry for available {@link TrackBlock}s to add the {@link FeedbackBlockListener}s for receiving the block states
  * and to adjust driving levels of trains entering or exiting the blocks.
- * Also, the current position of the train is observed in {@link #trackBlocks}.
- * TODO migrate to cached dataProvider
+ *
  * @author Daniel Tuerk
  */
 @Singleton
@@ -40,45 +39,25 @@ public class TrackBlockRegistry {
 
     private static final Logger LOG = Logger.getLogger(TrackBlockRegistry.class);
 
-    private final EventBroadcaster eventBroadcaster;
-    private final TrainService trainService;
-    private final TrainManager trainManager;
-    private final TrackBlockManager trackBlockManager;
+    @Inject
+    EventBroadcaster eventBroadcaster;
+    @Inject
+    TrainService trainService;
+    @Inject
+    TrainManager trainManager;
+    @Inject
+    TrackBlockManager trackBlockManager;
 
     private final Map<TrackBlock, FeedbackBlockListener> feedbackBlockListeners = new ConcurrentHashMap<>();
-    private Collection<TrackBlock> trackBlocks;
-
     private final Map<TrackBlock, Set<Long>> trainsOnBlocks = new ConcurrentHashMap<>();
 
-    @Inject
-    public TrackBlockRegistry(EventBroadcaster eventBroadcaster, TrainService trainService,
-                              TrainManager trainManager, TrackBlockManager trackBlockManager) {
-        this.eventBroadcaster = eventBroadcaster;
-        this.trainService = trainService;
-        this.trainManager = trainManager;
-        this.trackBlockManager = trackBlockManager;
-    }
-
-    //    @CacheInvalidateAll(cacheName = CACHE)
     public void onCurrentConstructionChanged(@Observes CurrentConstructionChangeEvent event) {
         LOG.infof("current construction changed for ID: %s, refreshing track blocks...", event.construction().getId());
         initBlocks(trackBlockManager.fetch(event.construction().getId()));
     }
 
-    public Collection<TrackBlock> getTrackBlocks() {
-        return trackBlocks;
-    }
-
-    private void addFeedbackBlockListener(TrackBlock trackBlock,
-        FeedbackBlockListener feedbackBlockListener) {
-        if (!feedbackBlockListeners.containsKey(trackBlock)) {
-            feedbackBlockListeners.put(trackBlock, feedbackBlockListener);
-        }
-    }
-
     private void initBlocks(Collection<TrackBlock> trackBlocks) {
         LOG.debug("init track blocks");
-        this.trackBlocks = trackBlocks;
         feedbackBlockListeners.clear();
         for (final TrackBlock trackBlock : trackBlocks) {
 
@@ -120,6 +99,13 @@ public class TrackBlockRegistry {
                     }
                 });
             }
+        }
+    }
+
+    private void addFeedbackBlockListener(TrackBlock trackBlock,
+                                          FeedbackBlockListener feedbackBlockListener) {
+        if (!feedbackBlockListeners.containsKey(trackBlock)) {
+            feedbackBlockListeners.put(trackBlock, feedbackBlockListener);
         }
     }
 

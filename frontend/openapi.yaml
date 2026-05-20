@@ -5,9 +5,9 @@ components:
     ACTION_TYPE:
       type: string
       enum:
-        - CREATE
-        - UPDATE
-        - DELETE
+      - CREATE
+      - UPDATE
+      - DELETE
     AbstractTrackPart:
       oneOf:
       - $ref: "#/components/schemas/BlockStraight"
@@ -35,7 +35,7 @@ components:
           type: number
           format: double
       required:
-        - trackPartType
+      - trackPartType
     Add:
       type: object
       required:
@@ -53,9 +53,9 @@ components:
     BLOCK_STATE:
       type: string
       enum:
-        - UNKNOWN
-        - FREE
-        - USED
+      - UNKNOWN
+      - FREE
+      - USED
     BlockStraight:
       allOf:
       - $ref: "#/components/schemas/Straight"
@@ -151,8 +151,8 @@ components:
     CATEGORY:
       type: string
       enum:
-        - ARRIVAL
-        - DEPARTURE
+      - ARRIVAL
+      - DEPARTURE
     ChangeTrackDto:
       type: object
       properties:
@@ -212,7 +212,7 @@ components:
         construction:
           $ref: "#/components/schemas/Construction"
       required:
-        - construction
+      - construction
     Curve:
       description: type for a track part
       type: object
@@ -238,7 +238,7 @@ components:
           type: number
           format: double
       required:
-        - trackPartType
+      - trackPartType
     DEVICE_TYPE:
       type: string
       enum:
@@ -397,8 +397,8 @@ components:
     PLAYER_STATE:
       type: string
       enum:
-        - START
-        - STOP
+      - START
+      - STOP
     PRESENTATION:
       type: string
       enum:
@@ -417,8 +417,8 @@ components:
     RECORDING_STATE:
       type: string
       enum:
-        - START
-        - STOP
+      - START
+      - STOP
     ROUTE_RUN_STATE:
       type: string
       enum:
@@ -541,15 +541,15 @@ components:
     SIGNAL_TYPE:
       type: string
       enum:
-        - BLOCK
-        - ENTER
-        - EXIT
-        - BEFORE
+      - BLOCK
+      - ENTER
+      - EXIT
+      - BEFORE
     STATE:
       type: string
       enum:
-        - ENTER
-        - EXIT
+      - ENTER
+      - EXIT
     SYSTEM_FORMAT:
       type: string
       enum:
@@ -642,10 +642,6 @@ components:
           $ref: "#/components/schemas/BusDataConfiguration"
         stopBlock:
           $ref: "#/components/schemas/TrackBlock"
-        signalConfigurations:
-          type: array
-          items:
-            $ref: "#/components/schemas/BusDataConfiguration"
     SignalFunctionStateEvent:
       description: track status update sent via WebSocket
       type: object
@@ -693,7 +689,7 @@ components:
         direction:
           $ref: "#/components/schemas/DIRECTION"
       required:
-        - trackPartType
+      - trackPartType
     SystemFormatEvent:
       description: system format update sent via WebSocket
       type: object
@@ -760,6 +756,8 @@ components:
         itemId:
           type: integer
           format: int64
+        type:
+          $ref: "#/components/schemas/ACTION_TYPE"
     TrackChangedEvent:
       description: Track update sent via WebSocket
       type: object
@@ -938,7 +936,7 @@ components:
         nextGridPositionForStateBranchToRight:
           $ref: "#/components/schemas/GridPosition"
       required:
-        - trackPartType
+      - trackPartType
     Uncoupler:
       allOf:
       - $ref: "#/components/schemas/Straight"
@@ -1281,7 +1279,7 @@ paths:
           description: Bad Request
       summary: Create
       tags:
-        - Device Resource
+      - Device Resource
   /api/devices/available:
     get:
       responses:
@@ -1304,7 +1302,7 @@ paths:
           content:
             application/json:
               schema: {}
-      summary: Create
+      summary: Disconnect
       tags:
       - Device Resource
   /api/devices/{id}:
@@ -1382,7 +1380,7 @@ paths:
           content:
             application/json:
               schema: {}
-      summary: Create
+      summary: Connect
       tags:
       - Device Resource
   /api/routes:

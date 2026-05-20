@@ -338,7 +338,7 @@ abstract class ScenarioExecution implements Callable<Void> {
      */
     private RouteExecution prepare(final RouteSequence routeSequence, final RouteSequence previousRouteSequence,
         RouteSequence nextRouteSequence, boolean isFirstRoute, boolean isAnyRouteRunning) throws
-        NoTrainInStartBlockException, ScenarioExecutionInterruptException, TrainException {
+        NoTrainInStartBlockException, ScenarioExecutionInterruptException {
         Route route = routeSequence.getRoute();
 
         Train train = trainInstance.train();

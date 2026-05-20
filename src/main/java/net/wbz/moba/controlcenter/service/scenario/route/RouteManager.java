@@ -73,7 +73,6 @@ public class RouteManager {
      * @param routeId id of {@link Route} to delete
      */
     public boolean deleteRoute(long routeId) {
-
         if (dataProvider.deleteRoute(routeId)) {
             fireEvent(routeId, AbstractItemEvent.ACTION_TYPE.DELETE);
             return true;

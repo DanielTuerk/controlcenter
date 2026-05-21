@@ -2,6 +2,7 @@ package net.wbz.moba.controlcenter.service.bus;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import lombok.extern.slf4j.Slf4j;
 import net.wbz.moba.controlcenter.EventBroadcaster;
 import net.wbz.moba.controlcenter.shared.bus.BusDataEvent;
 import net.wbz.moba.controlcenter.shared.bus.PlayerEvent;
@@ -11,7 +12,6 @@ import net.wbz.selectrix4java.data.recording.BusDataPlayerListener;
 import net.wbz.selectrix4java.device.Device;
 import net.wbz.selectrix4java.device.Device.SYSTEM_FORMAT;
 import net.wbz.selectrix4java.device.DeviceAccessException;
-import org.jboss.logging.Logger;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -27,10 +27,10 @@ import java.util.stream.Stream;
 /**
  * @author Daniel Tuerk
  */
+@Slf4j
 @ApplicationScoped
 public class BusService {
 
-    private static final Logger LOGGER = Logger.getLogger(BusService.class);
     private final EventBroadcaster eventBroadcaster;
     private final DeviceRecorder deviceRecorder;
     private BusDataPlayer busDataPlayer;
@@ -53,7 +53,7 @@ public class BusService {
             try {
                 return device.getRailVoltage();
             } catch (DeviceAccessException e) {
-                LOGGER.error("can't read rail voltage", e);
+                log.error("can't read rail voltage", e);
                 return false;
             }
             })
@@ -66,7 +66,7 @@ public class BusService {
                 try {
                     return device.getActualSystemFormat();
                 } catch (DeviceAccessException e) {
-                    LOGGER.error("can't read actual system format", e);
+                    log.error("can't read actual system format", e);
                     return SYSTEM_FORMAT.UNKNOWN;
                 }
             })
@@ -79,7 +79,7 @@ public class BusService {
                 try {
                     device.setRailVoltage(!device.getRailVoltage());
                 } catch (DeviceAccessException e) {
-                    LOGGER.error("can't toggle rail voltage", e);
+                    log.error("can't toggle rail voltage", e);
                 }
             });
     }
@@ -128,7 +128,7 @@ public class BusService {
                     device.getBusAddress(busNr, (byte) address).clearBit(bit).send();
                 }
             } catch (DeviceAccessException e) {
-                LOGGER.error(String.format("can't send data (bus: %d, address: %d, bit: %d)", busNr, address, bit), e);
+                log.error("can't send data (bus: {}, address: {}, bit: {})", busNr, address, bit, e);
             }
             });
     }
@@ -138,9 +138,7 @@ public class BusService {
                 try {
                     device.getBusAddress(busNr, (byte) address).sendData((byte) data);
                 } catch (DeviceAccessException e) {
-                    LOGGER.error(
-                        String.format("can't send data (bus: %d, address: %d, data: %d)", busNr, address, data),
-                        e);
+                    log.error("can't send data (bus: {}, address: {}, data: {})", busNr, address, data, e);
                 }
             }
         );
@@ -163,20 +161,20 @@ public class BusService {
             busDataPlayer.addListener(new BusDataPlayerListener() {
                 @Override
                 public void playbackStarted() {
-                    LOGGER.info("playback started");
+                    log.info("playback started");
                     eventBroadcaster.fireEvent(new PlayerEvent(PlayerEvent.PLAYER_STATE.START));
                 }
 
                 @Override
                 public void playbackStopped() {
-                    LOGGER.info("playback stopped");
+                    log.info("playback stopped");
                     eventBroadcaster.fireEvent(new PlayerEvent(PlayerEvent.PLAYER_STATE.STOP));
                 }
             });
             try {
                 busDataPlayer.start(Paths.get(absoluteFilePath));
             } catch (Exception e) {
-                LOGGER.error("can't start player", e);
+                log.error("can't start player", e);
             }
         });
     }
@@ -192,7 +190,7 @@ public class BusService {
                 .map(Path::toString)
                 .collect(Collectors.toList());
         } catch (IOException e) {
-            LOGGER.error("check files of records", e);
+            log.error("check files of records", e);
         }
         return List.of();
     }

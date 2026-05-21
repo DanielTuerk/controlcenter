@@ -3,6 +3,7 @@ package net.wbz.moba.controlcenter.service.scenario.route;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Event;
 import jakarta.inject.Inject;
+import lombok.extern.slf4j.Slf4j;
 import net.wbz.moba.controlcenter.EventBroadcaster;
 import net.wbz.moba.controlcenter.service.scenario.TrackBuilder;
 import net.wbz.moba.controlcenter.shared.AbstractItemEvent;
@@ -10,7 +11,6 @@ import net.wbz.moba.controlcenter.shared.scenario.Route;
 import net.wbz.moba.controlcenter.shared.scenario.RouteDataChangedEvent;
 import net.wbz.moba.controlcenter.shared.scenario.Scenario;
 import net.wbz.moba.controlcenter.shared.scenario.TrackNotFoundException;
-import org.jboss.logging.Logger;
 
 import java.util.List;
 import java.util.Optional;
@@ -21,9 +21,9 @@ import java.util.stream.Collectors;
  *
  * @author Daniel Tuerk
  */
+@Slf4j
 @ApplicationScoped
 public class RouteManager {
-    private static final Logger LOG = Logger.getLogger(RouteManager.class);
 
     private final EventBroadcaster eventBroadcaster;
     private final RouteMapper routeMapper;
@@ -49,7 +49,7 @@ public class RouteManager {
                 try {
                     route.setTrack(trackBuilder.build(route));
                 } catch (TrackNotFoundException e) {
-                    LOG.error("can't build track of route: %s (%s)".formatted(route, e.getMessage()));
+                    log.error("can't build track of route: {} ({})", route, e.getMessage());
                 }
             })
             .collect(Collectors.toList());

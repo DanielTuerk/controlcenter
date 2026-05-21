@@ -5,17 +5,17 @@ import io.quarkus.cache.CacheResult;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
 import net.wbz.moba.controlcenter.api.construction.ConstructionDto;
 import net.wbz.moba.controlcenter.persist.entity.ConstructionEntity;
 import net.wbz.moba.controlcenter.persist.repository.ConstructionRepository;
-import org.jboss.logging.Logger;
 
 import java.util.List;
 
+@Slf4j
 @ApplicationScoped
 public class ConstructionDataProvider {
 
-    private static final Logger LOG = Logger.getLogger(ConstructionDataProvider.class);
     private static final String CACHE = "constructions-cache";
 
     private final ConstructionRepository constructionRepository;
@@ -29,7 +29,7 @@ public class ConstructionDataProvider {
      */
     @CacheResult(cacheName = CACHE)
     public List<ConstructionEntity> getConstructions() {
-        LOG.debug("load constructions from database");
+        log.debug("load constructions from database");
         return constructionRepository.listAll();
     }
 

@@ -8,24 +8,25 @@ import io.quarkus.websockets.next.WebSocket;
 import io.quarkus.websockets.next.WebSocketConnection;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import java.util.Set;
-import java.util.concurrent.CopyOnWriteArraySet;
-import java.util.stream.Collectors;
+import lombok.extern.slf4j.Slf4j;
 import net.wbz.moba.controlcenter.shared.Event;
 import net.wbz.moba.controlcenter.shared.EventCache;
 import net.wbz.moba.controlcenter.shared.StateEvent;
 import net.wbz.moba.controlcenter.shared.bus.BusDataEvent;
-import org.jboss.logging.Logger;
+
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.stream.Collectors;
 
 /**
  * Broadcaster for the events send over websocket.
  *
  * @author Daniel Tuerk
  */
+@Slf4j
 @WebSocket(path = "/websocket")
 @ApplicationScoped
 public class EventBroadcaster {
-    private static final Logger LOG = Logger.getLogger(EventBroadcaster.class);
 
     private final EventCache eventCache;
     private final Set<WebSocketConnection> connections = new CopyOnWriteArraySet<>();
@@ -40,13 +41,13 @@ public class EventBroadcaster {
     @OnOpen
     public void onOpen(WebSocketConnection connection) {
         connections.add(connection);
-        LOG.debugf("Client connected: %s", connection.id());
+        log.debug("Client connected: {}", connection.id());
 
         connection.sendText("clientId: %s".formatted(connection.id()))
             .subscribe().with(
                 unused -> {
                 },
-                failure -> LOG.error("failed to sent clientId to {}", connection.id(), failure)
+                failure -> log.error("failed to sent clientId to {}", connection.id(), failure)
             );
         // TODO after server restart, the client need to be triggered to reload, maybe page refresh because the eventchache is empty and by that the server is restarted
 
@@ -60,7 +61,7 @@ public class EventBroadcaster {
     @OnClose
     public void onClose(WebSocketConnection connection) {
         connections.remove(connection);
-        LOG.debugf("Client disconnected: %s", connection.id());
+        log.debug("Client disconnected: {}", connection.id());
     }
 
     @OnBinaryMessage
@@ -95,17 +96,17 @@ public class EventBroadcaster {
                 try {
                     if (event.getClass() != BusDataEvent.class) {
                         // avoid log spam
-                        LOG.debugf("sending %s to %s".formatted(event, connection.id()));
+                        log.debug("sending {} to {}", event, connection.id());
                     }
                     connection.sendText(
                             "%s: %s".formatted(event.getClass().getSimpleName(), json))
                         .subscribe().with(
                             unused -> {
                             },
-                            failure -> LOG.error("failed to sent event to {}", connection.id(), failure)
+                            failure -> log.error("failed to sent event to {}", connection.id(), failure)
                         );
                 } catch (Exception e) {
-                    LOG.debugf(e, "Failed to send event to %s", connection.id());
+                    log.debug("Failed to send event to {}", connection.id(), e);
                 }
             });
         } catch (Exception e) {

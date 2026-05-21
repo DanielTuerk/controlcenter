@@ -13,25 +13,24 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
+import lombok.extern.slf4j.Slf4j;
 import net.wbz.moba.controlcenter.service.scenario.TrackBuilder;
 import net.wbz.moba.controlcenter.service.scenario.route.RouteManager;
 import net.wbz.moba.controlcenter.shared.scenario.Route;
 import net.wbz.moba.controlcenter.shared.scenario.TrackNotFoundException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
 /**
  * @author Daniel Tuerk
  */
+@Slf4j
 @Path("/api/routes")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @Blocking
 public class RouteResource {
 
-    private static final Logger log = LoggerFactory.getLogger(RouteResource.class);
     @Inject
     RouteManager routeManager;
     @Inject

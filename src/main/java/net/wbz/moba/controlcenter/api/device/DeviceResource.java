@@ -13,22 +13,22 @@ import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import lombok.extern.slf4j.Slf4j;
 import net.wbz.moba.controlcenter.service.bus.DeviceManager;
 import net.wbz.moba.controlcenter.service.bus.DeviceService;
 import net.wbz.moba.controlcenter.shared.device.AvailableDevice;
 import net.wbz.moba.controlcenter.shared.device.DeviceInfo;
 import net.wbz.selectrix4java.device.DeviceAccessException;
-import org.jboss.logging.Logger;
 
 import java.util.List;
 
+@Slf4j
 @Path("/api/devices")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @Blocking
 public class DeviceResource {
 
-    private static final Logger LOGGER = Logger.getLogger(DeviceService.class);
 
     @Inject
     DeviceManager deviceManager;
@@ -97,7 +97,7 @@ public class DeviceResource {
             return Response.ok().build();
         } catch (DeviceAccessException e) {
             var message = "can't connect device: %d".formatted(id);
-            LOGGER.error(message, e);
+            log.error(message, e);
             return Response.status(500, message).build();
         }
     }
@@ -110,7 +110,7 @@ public class DeviceResource {
             return Response.ok().build();
         } catch (DeviceAccessException e) {
             var message = "can't disconnect active device";
-            LOGGER.error(message, e);
+            log.error(message, e);
             return Response.status(500, message).build();
         }
     }

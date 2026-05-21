@@ -5,6 +5,7 @@ import io.quarkus.cache.CacheResult;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Observes;
 import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
 import net.wbz.moba.controlcenter.persist.entity.ScenarioEntity;
 import net.wbz.moba.controlcenter.persist.repository.RouteSequenceRepository;
 import net.wbz.moba.controlcenter.persist.repository.ScenarioRepository;
@@ -13,15 +14,14 @@ import net.wbz.moba.controlcenter.shared.scenario.RouteDataChangedEvent;
 import net.wbz.moba.controlcenter.shared.scenario.RouteSequence;
 import net.wbz.moba.controlcenter.shared.scenario.Scenario;
 import net.wbz.moba.controlcenter.shared.train.TrainDataChangedEvent;
-import org.jboss.logging.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 @ApplicationScoped
 public class ScenarioDataProvider {
 
-    private static final Logger LOG = Logger.getLogger(ScenarioDataProvider.class);
     private static final String CACHE = "scenarios-cache";
 
     private final RouteSequenceRepository routeSequenceRepository;
@@ -39,12 +39,12 @@ public class ScenarioDataProvider {
 
     @CacheInvalidateAll(cacheName = CACHE)
     public void onRoutesChanged(@Observes RouteDataChangedEvent event) {
-        LOG.infof("Route data changed for ID: %s, refreshing scenarios...", event.getItemId());
+        log.info("Route data changed for ID: {}, refreshing scenarios...", event.getItemId());
     }
 
     @CacheInvalidateAll(cacheName = CACHE)
     public void onTrainDataChanged(@Observes TrainDataChangedEvent event) {
-        LOG.infof("Train data changed for ID: %s, refreshing scenarios...", event.getItemId());
+        log.info("Train data changed for ID: {}, refreshing scenarios...", event.getItemId());
     }
 
     /**
@@ -54,7 +54,7 @@ public class ScenarioDataProvider {
      */
     @CacheResult(cacheName = CACHE)
     public List<ScenarioEntity> getScenarios() {
-        LOG.debug("load scenarios from database");
+        log.debug("load scenarios from database");
         return scenarioRepository.listAll();
     }
 

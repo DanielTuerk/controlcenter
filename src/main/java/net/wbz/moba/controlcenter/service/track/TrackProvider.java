@@ -4,6 +4,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Event;
 import jakarta.enterprise.event.Observes;
 import jakarta.inject.Inject;
+import lombok.extern.slf4j.Slf4j;
 import net.wbz.moba.controlcenter.EventBroadcaster;
 import net.wbz.moba.controlcenter.persist.entity.track.AbstractTrackPartEntity;
 import net.wbz.moba.controlcenter.persist.entity.track.BlockStraightEntity;
@@ -18,7 +19,6 @@ import net.wbz.moba.controlcenter.shared.constrution.Construction;
 import net.wbz.moba.controlcenter.shared.constrution.CurrentConstructionChangeEvent;
 import net.wbz.moba.controlcenter.shared.track.model.AbstractTrackPart;
 import net.wbz.moba.controlcenter.shared.track.model.TrackChangedEvent;
-import org.jboss.logging.Logger;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -30,10 +30,9 @@ import java.util.Optional;
  * TODO migrate to cached dataProvider
  * @author Daniel Tuerk
  */
+@Slf4j
 @ApplicationScoped
 public class TrackProvider {
-
-    private static final Logger LOG = Logger.getLogger(TrackProvider.class);
 
     /**
      * Cached and transformed entities for track of current {@link Construction}.
@@ -60,7 +59,7 @@ public class TrackProvider {
 
     //    @CacheInvalidateAll(cacheName = CACHE)
     public void onCurrentConstructionChanged(@Observes CurrentConstructionChangeEvent event) {
-        LOG.infof("current construction changed for ID: %s, refreshing track...", event.construction().getId());
+        log.info("current construction changed for ID: {}, refreshing track...", event.construction().getId());
         loadData(event.construction());
         eventBroadcaster.fireEvent(new TrackChangedEvent(false));
     }
@@ -94,10 +93,10 @@ public class TrackProvider {
 
     private void loadTrackPartData(Construction construction) {
         cachedEntities.clear();
-        LOG.info("load track parts from db");
+        log.info("load track parts from db");
 
         List<AbstractTrackPartEntity> result = trackPartRepository.findByConstructionId(construction.getId());
-        LOG.infof("return track parts (%d)", result.size());
+        log.info("return track parts ({})", result.size());
         cachedEntities.addAll(result.stream().map(x -> switch (x) {
             case CurveEntity e -> trackPartMapper.toDto(e);
             case TurnoutEntity e -> trackPartMapper.toDto(e);

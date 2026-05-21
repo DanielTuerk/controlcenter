@@ -5,18 +5,18 @@ import io.quarkus.cache.CacheResult;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
 import net.wbz.moba.controlcenter.persist.entity.DeviceInfoEntity;
 import net.wbz.moba.controlcenter.persist.entity.DeviceInfoEntity.DEVICE_TYPE;
 import net.wbz.moba.controlcenter.persist.repository.DeviceInfoRepository;
 import net.wbz.moba.controlcenter.shared.device.DeviceInfo;
-import org.jboss.logging.Logger;
 
 import java.util.List;
 
+@Slf4j
 @ApplicationScoped
 public class DeviceDataProvider {
 
-    private static final Logger LOG = Logger.getLogger(DeviceDataProvider.class);
     private static final String CACHE = "devices-cache";
 
     private final DeviceInfoRepository deviceInfoRepository;
@@ -30,7 +30,7 @@ public class DeviceDataProvider {
      */
     @CacheResult(cacheName = CACHE)
     public List<DeviceInfoEntity> getDevices() {
-        LOG.debug("load devices from database");
+        log.debug("load devices from database");
         return deviceInfoRepository.listAll();
     }
 

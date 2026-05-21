@@ -2,13 +2,13 @@ package net.wbz.moba.controlcenter.service.constrution;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import lombok.extern.slf4j.Slf4j;
 import net.wbz.moba.controlcenter.EventBroadcaster;
 import net.wbz.moba.controlcenter.api.construction.ConstructionDto;
 import net.wbz.moba.controlcenter.persist.entity.ConstructionEntity;
 import net.wbz.moba.controlcenter.persist.repository.ConstructionRepository;
 import net.wbz.moba.controlcenter.shared.constrution.Construction;
 import net.wbz.moba.controlcenter.shared.constrution.ConstructionDataChangedEvent;
-import org.jboss.logging.Logger;
 
 import java.util.List;
 import java.util.Optional;
@@ -17,10 +17,9 @@ import java.util.stream.Collectors;
 /**
  * @author Daniel Tuerk
  */
+@Slf4j
 @ApplicationScoped
 public class ConstructionManager {
-
-    private static final Logger LOG = Logger.getLogger(ConstructionManager.class);
 
     @Inject
     ConstructionRepository constructionRepository; // kept for other services that might use it directly

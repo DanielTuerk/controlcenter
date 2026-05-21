@@ -2,23 +2,23 @@ package net.wbz.moba.controlcenter.service.bus;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import lombok.extern.slf4j.Slf4j;
 import net.wbz.moba.controlcenter.EventBroadcaster;
 import net.wbz.moba.controlcenter.service.LocalFileService;
 import net.wbz.moba.controlcenter.shared.bus.RecordingEvent;
 import net.wbz.selectrix4java.data.recording.IsRecordable;
 import net.wbz.selectrix4java.device.Device;
 import net.wbz.selectrix4java.device.DeviceAccessException;
-import org.jboss.logging.Logger;
 
 import java.nio.file.Path;
 
 /**
  * @author Daniel Tuerk
  */
+@Slf4j
 @ApplicationScoped
 public class DeviceRecorder {
 
-    private static final Logger LOGGER = Logger.getLogger(DeviceRecorder.class);
     private static final String FOLDER = "/record/";
 
     private final EventBroadcaster eventBroadcaster;
@@ -44,7 +44,7 @@ public class DeviceRecorder {
                 eventBroadcaster.fireEvent(new RecordingEvent(RecordingEvent.RECORDING_STATE.START));
                 recordable.startRecording(destinationFolder);
             } catch (DeviceAccessException e) {
-                LOGGER.error("can't start recording", e);
+                log.error("can't start recording", e);
             }
         }
     }
@@ -55,7 +55,7 @@ public class DeviceRecorder {
                 Path record = recordable.stopRecording();
                 eventBroadcaster.fireEvent(new RecordingEvent(RecordingEvent.RECORDING_STATE.STOP, record.toString()));
             } catch (DeviceAccessException e) {
-                LOGGER.error("can't stop recording", e);
+                log.error("can't stop recording", e);
             }
         }
     }

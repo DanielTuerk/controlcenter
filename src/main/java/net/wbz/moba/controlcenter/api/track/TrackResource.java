@@ -14,7 +14,7 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
-import java.util.Collection;
+import lombok.extern.slf4j.Slf4j;
 import net.wbz.moba.controlcenter.service.track.TrackPartManager;
 import net.wbz.moba.controlcenter.service.track.TrackProvider;
 import net.wbz.moba.controlcenter.service.track.TrackViewerService;
@@ -23,8 +23,10 @@ import net.wbz.moba.controlcenter.shared.track.model.Signal;
 import net.wbz.moba.controlcenter.shared.track.model.Signal.FUNCTION;
 import net.wbz.selectrix4java.device.DeviceAccessException;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
-import org.jboss.logging.Logger;
 
+import java.util.Collection;
+
+@Slf4j
 @Tag(ref = "track")
 @Path("/api/track")
 @Produces(MediaType.APPLICATION_JSON)
@@ -36,8 +38,7 @@ public class TrackResource {
     TrackProvider trackProvider;
     @Inject
     TrackViewerService trackViewerService;
-    @Inject
-    Logger logger;
+
     @Inject
     TrackPartManager trackPartManager;
 
@@ -67,7 +68,7 @@ public class TrackResource {
             trackViewerService.toggleTrackPart($trackPart.get());
             return Response.ok().build();
         } catch (DeviceAccessException e) {
-            logger.errorf("Failed to toggle track part " + trackPartId, e);
+            log.error("Failed to toggle track part {}", trackPartId, e);
             return Response.status(Status.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -94,7 +95,7 @@ public class TrackResource {
             trackPartManager.update(id, dto);
             return Response.ok().build();
         } catch (Exception e) {
-            logger.error("Failed to update track part " + id, e);
+            log.error("Failed to update track part: {}", id, e);
             return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
     }
@@ -106,7 +107,7 @@ public class TrackResource {
             trackProvider.markDirty();
             return Response.ok().build();
         } catch (IllegalStateException e) {
-            logger.error("Failed to update track part " + dto, e);
+            log.error("Failed to update track part: {}", dto, e);
             return Response.status(Status.CONFLICT).build();
         }
     }

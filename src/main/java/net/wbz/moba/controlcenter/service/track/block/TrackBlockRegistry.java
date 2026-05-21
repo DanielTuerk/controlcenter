@@ -4,6 +4,7 @@ import io.vertx.core.impl.ConcurrentHashSet;
 import jakarta.enterprise.event.Observes;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
+import lombok.extern.slf4j.Slf4j;
 import net.wbz.moba.controlcenter.BusAddressIdentifier;
 import net.wbz.moba.controlcenter.EventBroadcaster;
 import net.wbz.moba.controlcenter.SelectrixHelper;
@@ -19,7 +20,6 @@ import net.wbz.selectrix4java.block.FeedbackBlockListener;
 import net.wbz.selectrix4java.block.FeedbackBlockModule;
 import net.wbz.selectrix4java.device.Device;
 import net.wbz.selectrix4java.device.DeviceAccessException;
-import org.jboss.logging.Logger;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -34,10 +34,9 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  * @author Daniel Tuerk
  */
+@Slf4j
 @Singleton
 public class TrackBlockRegistry {
-
-    private static final Logger LOG = Logger.getLogger(TrackBlockRegistry.class);
 
     @Inject
     EventBroadcaster eventBroadcaster;
@@ -52,12 +51,12 @@ public class TrackBlockRegistry {
     private final Map<TrackBlock, Set<Long>> trainsOnBlocks = new ConcurrentHashMap<>();
 
     public void onCurrentConstructionChanged(@Observes CurrentConstructionChangeEvent event) {
-        LOG.infof("current construction changed for ID: %s, refreshing track blocks...", event.construction().getId());
+        log.info("current construction changed for ID: {}, refreshing track blocks...", event.construction().getId());
         initBlocks(trackBlockManager.fetch(event.construction().getId()));
     }
 
     private void initBlocks(Collection<TrackBlock> trackBlocks) {
-        LOG.debug("init track blocks");
+        log.debug("init track blocks");
         feedbackBlockListeners.clear();
         for (final TrackBlock trackBlock : trackBlocks) {
 
@@ -151,7 +150,7 @@ public class TrackBlockRegistry {
         // update current block of the train
         var train$ = trainManager.getByAddress(trainAddress);
         if (train$.isEmpty()) {
-            LOG.warnf("no train with address '%d' found for block number: %d (%s)",
+            log.warn("no train with address '{}' found for block number: {} ({})",
                 trainAddress, blockNumber, trackBlock);
         } else {
             var trainsOnThisBlock = trainsOnBlocks.computeIfAbsent(trackBlock, k -> new ConcurrentHashSet<>());

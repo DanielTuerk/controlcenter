@@ -1,10 +1,9 @@
 package net.wbz.moba.controlcenter.it;
 
+import lombok.extern.slf4j.Slf4j;
 import net.wbz.moba.controlcenter.shared.Event;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.net.URI;
 import java.util.ArrayList;
@@ -16,8 +15,8 @@ import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
+@Slf4j
 class WebSocketEventReceiver {
-    private static final Logger LOG = LoggerFactory.getLogger(WebSocketEventReceiver.class);
 
     private static final String WEBSOCKET_URL = "ws://localhost:8081/websocket";
     private final List<String> receivedMessages = new ArrayList<>();
@@ -49,7 +48,7 @@ class WebSocketEventReceiver {
             public void onMessage(String message) {
                 if (message != null && message.startsWith("clientId: ")) {
                     clientId = message.substring("clientId: ".length()).trim();
-                    LOG.debug("Received WebSocket clientId: {}", clientId);
+                    log.debug("Received WebSocket clientId: {}", clientId);
                 } else {
                     synchronized (messageLock) {
                         receivedMessages.add(message);
@@ -77,7 +76,7 @@ class WebSocketEventReceiver {
             .pollInterval(50, TimeUnit.MILLISECONDS)
             .until(() -> {
                 synchronized (messageLock) {
-                    return receivedMessages.stream().peek(msg -> LOG.info("Received WebSocket message: {}", msg))
+                    return receivedMessages.stream().peek(msg -> log.info("Received WebSocket message: {}", msg))
                         .anyMatch(msg -> msg.startsWith(eventClazz.getSimpleName() + ": ")
                             && java.util.Arrays.stream(messageContains).allMatch(msg::contains));
                 }

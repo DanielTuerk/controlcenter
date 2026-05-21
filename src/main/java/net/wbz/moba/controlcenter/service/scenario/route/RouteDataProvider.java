@@ -6,6 +6,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Observes;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
 import net.wbz.moba.controlcenter.persist.entity.RouteEntity;
 import net.wbz.moba.controlcenter.persist.entity.track.BlockStraightEntity;
 import net.wbz.moba.controlcenter.persist.repository.RouteRepository;
@@ -15,16 +16,15 @@ import net.wbz.moba.controlcenter.persist.repository.track.TrackBlockRepository;
 import net.wbz.moba.controlcenter.persist.repository.track.TrackPartRepository;
 import net.wbz.moba.controlcenter.shared.constrution.CurrentConstructionChangeEvent;
 import net.wbz.moba.controlcenter.shared.scenario.Route;
-import org.jboss.logging.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @ApplicationScoped
 public class RouteDataProvider {
 
-    private static final Logger LOG = Logger.getLogger(RouteDataProvider.class);
     private static final String CACHE = "routes-cache";
 
     private final RouteSequenceRepository routeSequenceDao;
@@ -46,7 +46,7 @@ public class RouteDataProvider {
 
     @CacheInvalidateAll(cacheName = CACHE)
     public void onCurrentConstructionChanged(@Observes CurrentConstructionChangeEvent event) {
-        LOG.infof("current construction changed for ID: %s, refreshing routes...", event.construction().getId());
+        log.info("current construction changed for ID: {}, refreshing routes...", event.construction().getId());
     }
 
     @CacheResult(cacheName = CACHE)
@@ -82,7 +82,7 @@ public class RouteDataProvider {
             routeRepository.deleteById(routeId);
             return true;
         } else {
-            LOG.error("can't delete route, still in use of scenario");
+            log.error("can't delete route, still in use of scenario");
             return false;
         }
     }

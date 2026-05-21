@@ -1,18 +1,18 @@
 package net.wbz.moba.controlcenter.service.scenario.execution;
 
+import lombok.extern.slf4j.Slf4j;
 import net.wbz.moba.controlcenter.shared.scenario.Route;
 import net.wbz.moba.controlcenter.shared.scenario.Scenario;
 import net.wbz.moba.controlcenter.shared.scenario.Scenario.RUN_STATE;
-import org.jboss.logging.Logger;
 
 /**
  * Wait for a free track for the {@link RouteExecution} of the {@link Scenario}.
  *
  * @author Daniel Tuerk
  */
+@Slf4j
 class WaitForFreeTrackCallable implements Runnable {
 
-    private static final Logger LOG = Logger.getLogger(WaitForFreeTrackCallable.class);
     private static final long TIME_TO_WAIT_IN_MILLIS = 500L;
 
     private final RouteExecution routeExecution;
@@ -29,7 +29,7 @@ class WaitForFreeTrackCallable implements Runnable {
     @Override
     public void run() {
         final Route route = routeExecution.getRouteSequence().getRoute();
-        LOG.infof("train request free track to start: %s", route.getName());
+        log.info("train request free track to start: {}", route.getName());
 
         routeExecutionObserver.addRunningRouteSequence(routeExecution.getRouteSequence());
 
@@ -43,7 +43,7 @@ class WaitForFreeTrackCallable implements Runnable {
                 try {
                     Thread.sleep(TIME_TO_WAIT_IN_MILLIS);
                 } catch (InterruptedException e) {
-                    LOG.error("interrupted wait free track of route: %s".formatted(route.getName()), e);
+                    log.error("interrupted wait free track of route: {}", route.getName(), e);
                 }
             }
         }

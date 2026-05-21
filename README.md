@@ -11,8 +11,13 @@ For more information feel free to contact me, the current state is NOT ready to 
 
 Build: ```mvn package```
 
+Build native executable of control-center:
 
-# Quakus
+```
+mvn clean package -Dquarkus.native.enabled=true -Dquarkus.native.container-build=true -Pwith-frontend
+```
+
+# Quarkus
 
 This project uses Quarkus, the Supersonic Subatomic Java Framework.
 

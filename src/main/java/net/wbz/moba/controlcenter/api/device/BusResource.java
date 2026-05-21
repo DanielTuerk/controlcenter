@@ -11,11 +11,12 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
+import lombok.extern.slf4j.Slf4j;
 import net.wbz.moba.controlcenter.service.bus.BusService;
 import net.wbz.selectrix4java.device.Device.SYSTEM_FORMAT;
 import net.wbz.selectrix4java.device.DeviceAccessException;
-import org.jboss.logging.Logger;
 
+@Slf4j
 @Path("/api/bus")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
@@ -24,8 +25,6 @@ public class BusResource {
 
     @Inject
     BusService busService;
-    @Inject
-    Logger logger;
 
     @GET
     @Path("/railvoltage")
@@ -75,7 +74,7 @@ public class BusResource {
             busService.startTrackingBus(wsClient.clientId());
             return Response.ok().build();
         } catch (DeviceAccessException e) {
-            logger.error("Failed to start tracking bus", e);
+            log.error("Failed to start tracking bus", e);
             return Response.status(Status.UNAVAILABLE_FOR_LEGAL_REASONS).build();
         }
     }
@@ -87,7 +86,7 @@ public class BusResource {
             busService.stopTrackingBus(wsClient.clientId());
             return Response.ok().build();
         } catch (DeviceAccessException e) {
-            logger.error("Failed to stop tracking bus", e);
+            log.error("Failed to stop tracking bus", e);
             return Response.status(Status.UNAVAILABLE_FOR_LEGAL_REASONS).build();
         }
     }

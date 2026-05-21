@@ -4,6 +4,7 @@ import io.quarkus.runtime.Startup;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Observes;
 import jakarta.inject.Inject;
+import lombok.extern.slf4j.Slf4j;
 import net.wbz.moba.controlcenter.EventBroadcaster;
 import net.wbz.moba.controlcenter.shared.bus.RailVoltageEvent;
 import net.wbz.moba.controlcenter.shared.bus.SystemFormatEvent;
@@ -18,18 +19,17 @@ import net.wbz.selectrix4java.device.DeviceManager.DEVICE_TYPE;
 import net.wbz.selectrix4java.device.RailVoltageListener;
 import net.wbz.selectrix4java.device.SystemFormatListener;
 import net.wbz.selectrix4java.device.serial.SerialDevice;
-import org.jboss.logging.Logger;
 
 import java.util.Optional;
 
 /**
  * @author Daniel Tuerk
  */
+@Slf4j
 @Startup
 @ApplicationScoped
 public class DeviceService {
 
-    private static final Logger LOGGER = Logger.getLogger(DeviceService.class);
     private final DeviceManager selectrixDeviceManager;
     private final net.wbz.moba.controlcenter.service.bus.DeviceManager deviceManager;
     private final EventBroadcaster eventBroadcaster;
@@ -53,7 +53,7 @@ public class DeviceService {
     }
 
     public void onDeviceDataChanged(@Observes DeviceDataChangedEvent evt) {
-        LOGGER.info("DeviceDataChangedEvent: %s".formatted(evt));
+        log.info("DeviceDataChangedEvent: {}", evt);
 
         initConnectionListener();
     }
@@ -77,7 +77,7 @@ public class DeviceService {
         try {
             activeDevice.disconnect();
         } catch (DeviceAccessException e) {
-            LOGGER.error("disconnect", e);
+            log.error("disconnect", e);
         }
     }
 
@@ -86,7 +86,7 @@ public class DeviceService {
     }
 
     private void initConnectionListener() {
-        LOGGER.debug("init connection listeners");
+        log.debug("init connection listeners");
         reregisterDevices();
 
         selectrixDeviceManager.addDeviceConnectionListener(new DeviceConnectionListener() {

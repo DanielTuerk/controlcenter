@@ -5,17 +5,17 @@ import io.quarkus.cache.CacheResult;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
 import net.wbz.moba.controlcenter.api.train.TrainDto;
 import net.wbz.moba.controlcenter.persist.entity.TrainEntity;
 import net.wbz.moba.controlcenter.persist.repository.TrainRepository;
-import org.jboss.logging.Logger;
 
 import java.util.List;
 
+@Slf4j
 @ApplicationScoped
 public class TrainDataProvider {
 
-    private static final Logger LOG = Logger.getLogger(TrainDataProvider.class);
     private static final String CACHE = "trains-cache";
 
     private final TrainRepository trainRepository;
@@ -29,7 +29,7 @@ public class TrainDataProvider {
      */
     @CacheResult(cacheName = CACHE)
     public List<TrainEntity> getTrains() {
-        LOG.debug("load trains from database");
+        log.debug("load trains from database");
         return trainRepository.getTrains();
     }
 

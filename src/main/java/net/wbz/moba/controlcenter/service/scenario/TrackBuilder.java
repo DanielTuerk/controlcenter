@@ -2,6 +2,9 @@ package net.wbz.moba.controlcenter.service.scenario;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import net.wbz.moba.controlcenter.service.track.TrackProvider;
 import net.wbz.moba.controlcenter.shared.scenario.Route;
 import net.wbz.moba.controlcenter.shared.scenario.Track;
@@ -13,7 +16,6 @@ import net.wbz.moba.controlcenter.shared.track.model.GridPosition;
 import net.wbz.moba.controlcenter.shared.track.model.MultipleGridPosition;
 import net.wbz.moba.controlcenter.shared.track.model.TrackBlock;
 import net.wbz.moba.controlcenter.shared.track.model.Turnout;
-import org.jboss.logging.Logger;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -32,10 +34,10 @@ import java.util.stream.Collectors;
  *
  * @author Daniel Tuerk
  */
+@Slf4j
 @ApplicationScoped
 public class TrackBuilder {
 
-    private static final Logger LOG = Logger.getLogger(TrackBuilder.class);
 
     /**
      * Timeout to build the track.
@@ -47,9 +49,8 @@ public class TrackBuilder {
      */
     private final Map<Long, Long> routeStartTimeMillis = new ConcurrentHashMap<>();
 
-    /**
-     * Flag to enable the timeout by {@link #TIMEOUT_IN_MILLIS}.
-     */
+    @Setter
+    @Getter
     private boolean timeoutEnabled = true;
 
     @Inject
@@ -93,7 +94,7 @@ public class TrackBuilder {
 
         final long trackBuildId = System.nanoTime();
 
-        LOG.debugf("start build track: %s (%d)", route.getName(), route.getId());
+        log.debug("start build track: {} ({})", route.getName(), route.getId());
         routeStartTimeMillis.put(trackBuildId, System.currentTimeMillis());
         Map<GridPosition, AbstractTrackPart> positions = new HashMap<>();
         GridPosition startPosition = null;
@@ -111,8 +112,7 @@ public class TrackBuilder {
                 positions.put(((MultipleGridPosition) trackPart).getEndGridPosition(), trackPart);
             }
 
-            if (trackPart instanceof BlockStraight) {
-                BlockStraight blockStraight = (BlockStraight) trackPart;
+            if (trackPart instanceof final BlockStraight blockStraight) {
                 if (isOneTrackBlockTheSame(route.getStart(), blockStraight)) {
                     startPosition = trackPart.getGridPosition();
                 } else if (isBlockPresent(route.getEnd(), blockStraight)) {
@@ -145,27 +145,9 @@ public class TrackBuilder {
                 }
             }
         }
-        LOG.debugf("finished build track: %s (%d) in %d ms", route.getName(), route.getId(),
+        log.debug("finished build track: {} ({}) in {} ms", route.getName(), route.getId(),
             currentExecutionTime(trackBuildId));
         return track;
-    }
-
-    /**
-     * State for the active timout to build a {@link Track}.
-     *
-     * @return {@code false} if disabled
-     */
-    public boolean isTimeoutEnabled() {
-        return timeoutEnabled;
-    }
-
-    /**
-     * Enable or disable the timeout to build a {@link Track}
-     *
-     * @param timeoutEnabled {@code false} to disable
-     */
-    public void setTimeoutEnabled(boolean timeoutEnabled) {
-        this.timeoutEnabled = timeoutEnabled;
     }
 
     /**
@@ -188,18 +170,18 @@ public class TrackBuilder {
             throw new TrackNotFoundException("no end grid pos");
         }
         var abstractTrackPart = positions.get(startPosition);
-        LOG.trace("search forward routed tracks");
+        log.trace("search forward routed tracks");
         Set<Track> forwardRoutedTrack = searchPath(new Track(), new HashMap<>(positions), startPosition,
             endPosition, abstractTrackPart.getNextGridPositions(null), trackBuildId);
-        LOG.tracef("finished forward routed tracks (%d)", forwardRoutedTrack.size());
-        LOG.trace("search backward routed tracks");
+        log.trace("finished forward routed tracks ({})", forwardRoutedTrack.size());
+        log.trace("search backward routed tracks");
         Set<Track> backwardRoutedTrack = searchPath(new Track(), new HashMap<>(positions), startPosition,
             endPosition, abstractTrackPart.getLastGridPositions(), trackBuildId);
-        LOG.tracef("finished backward routed tracks (%d)", backwardRoutedTrack.size());
+        log.trace("finished backward routed tracks ({})", backwardRoutedTrack.size());
 
-        LOG.trace("search shortest track");
+        log.trace("search shortest track");
         Track track = shortestTrack(forwardRoutedTrack, backwardRoutedTrack, waypoints);
-        LOG.trace("finished shortest track");
+        log.trace("finished shortest track");
 
         List<GridPosition> gridPositions = new ArrayList<>(List.of(startPosition));
         gridPositions.addAll(track.gridPositions());
@@ -276,7 +258,7 @@ public class TrackBuilder {
                     lastGridPositions.addAll(trackPartOfNextPos.getNextGridPositions(startPosition));
                     for (GridPosition lastGridPosition : lastGridPositions) {
                         if (checkLastPositionIsStartPosition(positions, startPosition, lastGridPosition)) {
-                            LOG.trace("apply pos: " + startPosition);
+                            log.trace("apply pos: {}", startPosition);
                             positionsCopy.remove(startPosition);
 
                             // next pos of track or replace the fake pos from the block length with the original one

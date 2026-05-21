@@ -2,6 +2,7 @@ package net.wbz.moba.controlcenter.service.scenario.execution;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import lombok.extern.slf4j.Slf4j;
 import net.wbz.moba.controlcenter.EventBroadcaster;
 import net.wbz.moba.controlcenter.service.scenario.ScenarioStateListener;
 import net.wbz.moba.controlcenter.service.scenario.ScenarioUtil;
@@ -15,7 +16,6 @@ import net.wbz.moba.controlcenter.shared.scenario.Scenario.MODE;
 import net.wbz.moba.controlcenter.shared.scenario.Scenario.RUN_STATE;
 import net.wbz.moba.controlcenter.shared.scenario.ScenarioStateEvent;
 import net.wbz.selectrix4java.device.DeviceManager;
-import org.jboss.logging.Logger;
 
 import java.util.List;
 import java.util.Map;
@@ -27,10 +27,9 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * 
  * @author Daniel Tuerk
  */
+@Slf4j
 @ApplicationScoped
 public class ScenarioExecutor {
-
-    private static final Logger LOG = Logger.getLogger(ScenarioExecutor.class);
 
     private final TrackViewerService trackViewerService;
     private final TrainService trainService;
@@ -104,7 +103,7 @@ public class ScenarioExecutor {
             Thread thread = new Thread(new ScenarioCallable(scenarioExecution));
             thread.start();
         } else {
-            LOG.errorf("scenario %s already running!", scenario);
+            log.error("scenario {} already running!", scenario);
         }
     }
 

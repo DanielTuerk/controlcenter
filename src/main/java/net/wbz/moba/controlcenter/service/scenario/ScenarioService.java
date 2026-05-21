@@ -3,12 +3,12 @@ package net.wbz.moba.controlcenter.service.scenario;
 import io.quarkus.runtime.util.StringUtil;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import lombok.extern.slf4j.Slf4j;
 import net.wbz.moba.controlcenter.service.scenario.execution.ScenarioExecutor;
 import net.wbz.moba.controlcenter.shared.scenario.Scenario;
 import net.wbz.moba.controlcenter.shared.scenario.Scenario.MODE;
 import net.wbz.moba.controlcenter.shared.scenario.Scenario.RUN_STATE;
 import net.wbz.selectrix4java.device.DeviceManager;
-import org.jboss.logging.Logger;
 import org.quartz.CronScheduleBuilder;
 import org.quartz.JobBuilder;
 import org.quartz.JobDetail;
@@ -26,12 +26,12 @@ import java.util.Map;
 /**
  * @author Daniel Tuerk
  */
+@Slf4j
 @ApplicationScoped
 public class ScenarioService {
 
     private static final String JOB_SCENARIO_PREFIX = "job-scenario-";
     private static final String TRIGGER_SCENARIO_PREFIX = "trigger-scenario-";
-    private static final Logger LOG = Logger.getLogger(ScenarioService.class);
 
     /**
      * TODO REMOVE this ugly hack.
@@ -102,17 +102,16 @@ public class ScenarioService {
                 // Tell quartz to schedule the job using our trigger
                 try {
                     scheduler.scheduleJob(job, trigger);
-                    LOG.info("scenario (%s) scheduled: %s".formatted(scenario, cron));
+                    log.info("scenario ({}) scheduled: {}", scenario, cron);
                 } catch (SchedulerException e) {
-                    LOG.error("error by schedule job", e);
+                    log.error("error by schedule job", e);
                 }
 
             } else {
-                LOG.error("no cron expression");
+                log.error("no cron expression");
             }
         } else {
-            LOG.warn("Can't schedule scenario: %s - not in IDLE state (actual %s)".formatted(scenario,
-                    scenario.getRunState()));
+            log.warn("Can't schedule scenario: {} - not in IDLE state (actual {})", scenario, scenario.getRunState());
         }
     }
 
@@ -122,7 +121,7 @@ public class ScenarioService {
 
     public void stop(Scenario scenario) {
         var scenarioId = scenario.getId();
-        LOG.debugf("stop scenario: %s", scenarioId);
+        log.debug("stop scenario: {}", scenarioId);
         unscheduleScenario(scenarioId);
         scenarioExecutor.stopScenario(scenario);
         scenario.setMode(MODE.OFF);
@@ -140,9 +139,9 @@ public class ScenarioService {
     public synchronized void foobarStartScheduledScenario(long scenarioId) {
         Scenario scenario = scenarioManager.getScenarioById(scenarioId).orElseThrow(
             () -> new RuntimeException("no scenario found for id: %d".formatted(scenarioId)));
-        LOG.infof("Start scheduled scenario: %s", scenario);
+        log.info("Start scheduled scenario: {}", scenario);
         if (scenario.getMode() != MODE.AUTOMATIC) {
-            LOG.error("Scenario ({" + scenario + "}) not in {" + MODE.AUTOMATIC.name() + "} mode to schedule!");
+            log.error("Scenario ({}) not in {} mode to schedule!", scenario, MODE.AUTOMATIC.name());
             // stop execution if scenario not anymore in automatic mode
             unscheduleScenario(scenarioId);
         }
@@ -164,7 +163,7 @@ public class ScenarioService {
             if (scenario.getRunState() != RUN_STATE.RUNNING) {
                 scenarioExecutor.startScenario(scenario);
             } else {
-                LOG.error("scenario already running");
+                log.error("scenario already running");
             }
         }
     }
@@ -174,7 +173,7 @@ public class ScenarioService {
             try {
                 scheduler.unscheduleJob(scenarioTriggerKeys.get(scenarioId));
             } catch (SchedulerException e) {
-                LOG.error("can't unschedule job for trigger key of scenario id: " + scenarioId);
+                log.error("can't unschedule job for trigger key of scenario id: " + scenarioId);
             }
         }
     }

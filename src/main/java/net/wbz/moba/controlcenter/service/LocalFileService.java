@@ -1,10 +1,9 @@
 package net.wbz.moba.controlcenter.service;
 
 import jakarta.inject.Singleton;
+
 import java.io.File;
 import java.nio.file.Path;
-import net.wbz.moba.controlcenter.service.constrution.ConstructionManager;
-import org.jboss.logging.Logger;
 
 /**
  * @author Daniel Tuerk
@@ -12,7 +11,6 @@ import org.jboss.logging.Logger;
 @Singleton
 public class LocalFileService {
 
-    private static final Logger LOG = Logger.getLogger(ConstructionManager.class);
     private static final String ROOT_FOLDER = "/.moba/";
 
     private final String userHome;

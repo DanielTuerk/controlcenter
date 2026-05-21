@@ -3,12 +3,7 @@ package net.wbz.moba.controlcenter.service.track;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Observes;
 import jakarta.inject.Inject;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
+import lombok.extern.slf4j.Slf4j;
 import net.wbz.moba.controlcenter.shared.bus.BusAddressBit;
 import net.wbz.moba.controlcenter.shared.track.model.AbstractTrackPart;
 import net.wbz.moba.controlcenter.shared.track.model.BusDataConfiguration;
@@ -19,34 +14,37 @@ import net.wbz.selectrix4java.bus.BusAddress;
 import net.wbz.selectrix4java.device.Device;
 import net.wbz.selectrix4java.device.DeviceAccessException;
 import net.wbz.selectrix4java.device.DeviceManager;
-import org.jboss.logging.Logger;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 /**
  * TODO split class to multiples, e.g. trackpart vs signal or listener registration vs actions
  * @author Daniel Tuerk
  */
+@Slf4j
 @ApplicationScoped
 public class TrackViewerService {
-
 
     private final DeviceManager deviceManager;
 
     private final SignalStateService signalStateService;
     private final TrackRegistration trackRegistration;
 
-    private final Logger logger;
-
     @Inject
     public TrackViewerService(DeviceManager deviceManager, SignalStateService signalStateService,
-        TrackRegistration trackRegistration, Logger logger) {
+                              TrackRegistration trackRegistration) {
         this.deviceManager = deviceManager;
         this.signalStateService = signalStateService;
         this.trackRegistration = trackRegistration;
-        this.logger = logger;
     }
 
     public void onSaved(@Observes TrackChangedEvent evt) {
-        logger.info("TrackChangedEvent: %s".formatted(evt));
+        log.info("TrackChangedEvent: {}", evt);
         trackRegistration.reregisterTrack();
     }
 
@@ -109,13 +107,13 @@ public class TrackViewerService {
 
         } catch (DeviceAccessException e) {
             String msg = "can't change data of addresses";
-            logger.errorf(msg, e);
+            log.error(msg, e);
             throw new RuntimeException(msg);
         }
     }
 
     public void switchSignal(Signal signal, Signal.FUNCTION signalFunction) {
-        logger.debugf("switch signal %s to %s", signal, signalFunction);
+        log.debug("switch signal {} to {}", signal, signalFunction);
         sendTrackPartStates(signalStateService.convertToLights(signal, signalFunction));
     }
 

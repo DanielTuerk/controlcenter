@@ -3,6 +3,7 @@ package net.wbz.moba.controlcenter.service.track;
 import io.quarkus.runtime.Startup;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import lombok.extern.slf4j.Slf4j;
 import net.wbz.moba.controlcenter.BusAddressIdentifier;
 import net.wbz.moba.controlcenter.EventBroadcaster;
 import net.wbz.moba.controlcenter.service.track.block.TrackBlockRegistry;
@@ -17,7 +18,6 @@ import net.wbz.selectrix4java.device.Device;
 import net.wbz.selectrix4java.device.DeviceAccessException;
 import net.wbz.selectrix4java.device.DeviceConnectionListener;
 import net.wbz.selectrix4java.device.DeviceManager;
-import org.jboss.logging.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,6 +27,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * @author Daniel Tuerk
  */
+@Slf4j
 @Startup
 @ApplicationScoped
 public class TrackRegistration {
@@ -38,16 +39,14 @@ public class TrackRegistration {
     private final Map<BusAddressIdentifier, List<BusListener>> busAddressListenersOfTheCurrentTrack =
             new ConcurrentHashMap<>();
 
-    private final Logger logger;
     private final DeviceManager deviceManager;
     private final TrackProvider trackProvider;
     private final EventBroadcaster eventBroadcaster;
     private final TrackBlockRegistry trackBlockRegistry;
 
     @Inject
-    public TrackRegistration(Logger logger, DeviceManager deviceManager, TrackProvider trackProvider,
+    public TrackRegistration(DeviceManager deviceManager, TrackProvider trackProvider,
         EventBroadcaster eventBroadcaster, TrackBlockRegistry trackBlockRegistry) {
-        this.logger = logger;
         this.deviceManager = deviceManager;
         this.trackProvider = trackProvider;
         this.eventBroadcaster = eventBroadcaster;
@@ -73,7 +72,7 @@ public class TrackRegistration {
     }
 
     private void registerTrack(Device device) {
-        logger.debug("register track to: " + device.getDeviceId());
+        log.debug("register track to: " + device.getDeviceId());
         var track = trackProvider.getTrack();
         track.stream()
             .filter(t -> t instanceof HasToggleFunction)
@@ -88,11 +87,11 @@ public class TrackRegistration {
     }
 
     private void unregisterTrack(Device device) {
-        logger.debug("unregister track from: " + device.getDeviceId());
+        log.debug("unregister track from: " + device.getDeviceId());
         try {
             trackBlockRegistry.removeListeners(device);
         } catch (DeviceAccessException e) {
-            logger.error("Failed to remove track block listeners for device " + device, e);
+            log.error("Failed to remove track block listeners for device " + device, e);
         }
         removeBusAddressListeners(device);
         busAddressListenersOfTheCurrentTrack.clear();
@@ -106,13 +105,13 @@ public class TrackRegistration {
                     .addListeners(entry.getValue());
             }
         } catch (DeviceAccessException e) {
-            logger.error("can't register listeners to active device", e);
+            log.error("can't register listeners to active device", e);
         }
 
         try {
             trackBlockRegistry.registerListeners(device);
         } catch (DeviceAccessException e) {
-            logger.error("can't register track block listeners to active device", e);
+            log.error("can't register track block listeners to active device", e);
         }
 
     }
@@ -125,7 +124,7 @@ public class TrackRegistration {
                     .removeListeners(entry.getValue());
             }
         } catch (DeviceAccessException e) {
-            logger.error("can't remove listeners to active device", e);
+            log.error("can't remove listeners to active device", e);
         }
     }
 

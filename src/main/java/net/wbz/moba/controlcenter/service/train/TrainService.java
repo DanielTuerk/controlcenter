@@ -4,6 +4,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Observes;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.NotFoundException;
+import lombok.extern.slf4j.Slf4j;
 import net.wbz.moba.controlcenter.EventBroadcaster;
 import net.wbz.moba.controlcenter.shared.track.model.BusDataConfiguration;
 import net.wbz.moba.controlcenter.shared.train.Train;
@@ -21,7 +22,6 @@ import net.wbz.selectrix4java.device.DeviceConnectionListener;
 import net.wbz.selectrix4java.device.DeviceManager;
 import net.wbz.selectrix4java.train.TrainDataListener;
 import net.wbz.selectrix4java.train.TrainModule;
-import org.jboss.logging.Logger;
 
 import java.util.Comparator;
 import java.util.HashSet;
@@ -32,10 +32,9 @@ import java.util.stream.Collectors;
 /**
  * Implementation of the {@link TrainService}.
  */
+@Slf4j
 @ApplicationScoped
 public class TrainService {
-
-    private static final Logger LOG = Logger.getLogger(TrainService.class);
 
     private final TrainManager trainManager;
     private final DeviceManager deviceManager;
@@ -61,7 +60,7 @@ public class TrainService {
                         // TODO re-register or add/remove for changes trains are missing
                         reregisterConsumer(trainInstance, deviceManager);
                     } catch (DeviceAccessException e) {
-                        LOG.error("can't register consumer for train {}", trainInstance.train(), e);
+                        log.error("can't register consumer for train {}", trainInstance.train(), e);
                     }
                 });
             }
@@ -79,11 +78,11 @@ public class TrainService {
     }
 
     public void onTrainDataChanged(@Observes TrainDataChangedEvent event) {
-        LOG.infof("Train data changed for ID: %s, refreshing service state...", event.getItemId());
+        log.info("Train data changed for ID: {}, refreshing service state...", event.getItemId());
 
         trainManager.getById(event.getItemId())
             .ifPresentOrElse(train -> {
-                LOG.infof("Train data found for ID: %s, refreshing train instance...", event.getItemId());
+                log.info("Train data found for ID: {}, refreshing train instance...", event.getItemId());
                 var updatedInstance = TrainInstance.of(train);
                 trainInstances.removeIf(instance -> instance.train().getId().equals(train.getId()));
                 trainInstances.add(updatedInstance);
@@ -93,7 +92,7 @@ public class TrainService {
                     try {
                         reregisterConsumer(updatedInstance, deviceManager);
                     } catch (DeviceAccessException e) {
-                        LOG.error("can't register consumer for train {}", updatedInstance.train(), e);
+                        log.error("can't register consumer for train {}", updatedInstance.train(), e);
                     }
                 }
             }, () -> trainInstances.removeIf(y -> y.train().getId() == event.itemId));
@@ -169,7 +168,7 @@ public class TrainService {
                     .getTrainModule((byte) address).setDrivingLevel(level);
             } catch (DeviceAccessException e) {
                 String msg = "can't change level of train " + train;
-                LOG.error(msg, e);
+                log.error(msg, e);
                 throw new RuntimeException(msg);
             }
         } else {
@@ -185,7 +184,7 @@ public class TrainService {
                 .setDirection(forward ? TrainModule.DRIVING_DIRECTION.FORWARD : TrainModule.DRIVING_DIRECTION.BACKWARD);
         } catch (DeviceAccessException e) {
             String msg = "can't change level of train " + id;
-            LOG.error(msg, e);
+            log.error(msg, e);
             throw new RuntimeException(msg);
         }
     }
@@ -212,7 +211,7 @@ public class TrainService {
                 functionConfiguration.getBit(), state);
         } catch (DeviceAccessException e) {
             String msg = String.format("can't change state of function %s of train %d", function.getAlias(), id);
-            LOG.error(msg, e);
+            log.error(msg, e);
             throw new RuntimeException(msg);
         }
     }

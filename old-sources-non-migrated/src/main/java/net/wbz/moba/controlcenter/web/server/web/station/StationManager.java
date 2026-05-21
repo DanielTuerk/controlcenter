@@ -15,7 +15,6 @@ import net.wbz.moba.controlcenter.web.server.persist.scenario.StationPlatformEnt
 import net.wbz.moba.controlcenter.shared.station.Station;
 import net.wbz.moba.controlcenter.shared.station.StationDataChangedEvent;
 import net.wbz.moba.controlcenter.shared.station.StationPlatform;
-import org.jboss.logging.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -25,8 +24,6 @@ import org.slf4j.LoggerFactory;
  */
 @Singleton
 public class StationManager {
-
-    private static final Logger LOG = Logger.getLogger(StationManager.class);
 
     /**
      * Cached {@link Station}s from persistence.
@@ -130,13 +127,13 @@ public class StationManager {
     }
 
     private void loadStationsFromDatabase() {
-        LOG.debug("load stations from database");
+        log.debug("load stations from database");
         stations.clear();
         stations.addAll(stationDataMapper.transformSource(stationDao.listAll()));
     }
 
     private void loadStationPlatformsFromDatabase() {
-        LOG.debug("load station platforms from database");
+        log.debug("load station platforms from database");
         stationPlatforms.clear();
         stationPlatforms.addAll(stationPlatformDataMapper.transformSource(stationPlatformDao.listAll()));
     }

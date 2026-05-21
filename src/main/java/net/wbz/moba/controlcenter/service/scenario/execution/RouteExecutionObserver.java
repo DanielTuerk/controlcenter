@@ -2,6 +2,7 @@ package net.wbz.moba.controlcenter.service.scenario.execution;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import lombok.extern.slf4j.Slf4j;
 import net.wbz.moba.controlcenter.BusAddressIdentifier;
 import net.wbz.moba.controlcenter.SelectrixHelper;
 import net.wbz.moba.controlcenter.service.track.TrackProvider;
@@ -13,7 +14,6 @@ import net.wbz.moba.controlcenter.shared.track.model.BusDataConfiguration;
 import net.wbz.moba.controlcenter.shared.track.model.TrackBlock;
 import net.wbz.selectrix4java.device.DeviceAccessException;
 import net.wbz.selectrix4java.device.DeviceManager;
-import org.jboss.logging.Logger;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -30,10 +30,10 @@ import java.util.stream.Collectors;
  *
  * @author Daniel Tuerk
  */
+@Slf4j
 @ApplicationScoped
 public class RouteExecutionObserver {
 
-    private static final Logger LOG = Logger.getLogger(RouteExecutionObserver.class);
 
     private final TrackProvider trackProvider;
     /**
@@ -96,7 +96,7 @@ public class RouteExecutionObserver {
         try {
             final var device$ = deviceManager.getConnectedDevice();
             if (device$.isEmpty()) {
-                LOG.error("can't check blocks to reserve track, no connected device");
+                log.error("can't check blocks to reserve track, no connected device");
                 return false;
             }
             for (TrackBlock trackBlock : trackBlocks) {
@@ -108,19 +108,19 @@ public class RouteExecutionObserver {
                 }
             }
         } catch (DeviceAccessException e) {
-            LOG.error("can't check blocks to reserve track", e);
+            log.error("can't check blocks to reserve track", e);
             return false;
         }
         return true;
     }
 
     void addRunningRouteSequence(RouteSequence routeSequence) {
-        LOG.debugf("addRunningRouteSequence: {}", routeSequence);
+        log.debug("addRunningRouteSequence: {}", routeSequence);
         runningRouteSequences.add(routeSequence);
     }
 
     void removeRunningRouteSequence(RouteSequence routeSequence) {
-        LOG.debugf("removeRunningRouteSequence: {}", routeSequence);
+        log.debug("removeRunningRouteSequence: {}", routeSequence);
         runningRouteSequences.remove(routeSequence);
     }
 

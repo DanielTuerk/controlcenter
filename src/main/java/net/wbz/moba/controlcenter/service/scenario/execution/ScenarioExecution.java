@@ -1,5 +1,6 @@
 package net.wbz.moba.controlcenter.service.scenario.execution;
 
+import lombok.extern.slf4j.Slf4j;
 import net.wbz.moba.controlcenter.BusAddressIdentifier;
 import net.wbz.moba.controlcenter.SelectrixHelper;
 import net.wbz.moba.controlcenter.service.scenario.route.RouteListener;
@@ -25,7 +26,6 @@ import net.wbz.selectrix4java.block.FeedbackBlockModule;
 import net.wbz.selectrix4java.device.Device;
 import net.wbz.selectrix4java.device.DeviceAccessException;
 import net.wbz.selectrix4java.device.DeviceManager;
-import org.jboss.logging.Logger;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -46,9 +46,9 @@ import java.util.stream.Stream;
  *
  * @author Daniel Tuerk
  */
+@Slf4j
 abstract class ScenarioExecution implements Callable<Void> {
 
-    private static final Logger LOG = Logger.getLogger(ScenarioExecution.class);
     /**
      * Delay to start the {@link Train} for a started {@link Route}.
      */
@@ -117,7 +117,7 @@ abstract class ScenarioExecution implements Callable<Void> {
             List<RouteSequence> routeSequences = scenario.getRouteSequences();
             routeSequences.sort(Comparator.comparingInt(RouteSequence::getPosition));
 
-            LOG.infof("start scenario %s", scenario);
+            log.info("start scenario {}", scenario);
             // flag for the first route to try to start
             boolean isFirstRoute = true;
             // indicate that just a single route started for execution
@@ -126,13 +126,13 @@ abstract class ScenarioExecution implements Callable<Void> {
             RouteSequence previousRouteSequence = null;
             for (RouteSequence routeSequence : routeSequences) {
                 if (stopped) {
-                    LOG.infof("stop scenario %s", scenario);
+                    log.info("stop scenario {}", scenario);
                     finishScenarioExecution(RUN_STATE.STOPPED);
                     cleanupRunningRouteInSequence(previousRouteSequence);
                     return;
                 }
 
-                LOG.infof("start route sequence %s", routeSequence);
+                log.info("start route sequence {}", routeSequence);
 
                 blockRunning = true;
                 // get next route
@@ -174,19 +174,19 @@ abstract class ScenarioExecution implements Callable<Void> {
                     anyRouteExecutedSuccessful = true;
                 } catch (ScenarioExecutionInterruptException | RouteExecutionInterruptException e) {
                     String msg = "execution error of route sequence at pos: " + routeSequence.getPosition();
-                    LOG.error(msg, e);
+                    log.error(msg, e);
                     fireRouteErrorState(routeSequence, e.getMessage());
                     // scenario can't be executed and will be stopped
                     stop();
                 } catch (NoTrainInStartBlockException e) {
-                    LOG.info(e.getMessage());
+                    log.info(e.getMessage());
                     fireRouteErrorState(routeSequence, e.getMessage());
                     cleanupRunningRouteInSequence(routeSequence);
                     // route interrupted but try to execute next route
                 } finally {
                     tearDownRouteExecution();
                 }
-                LOG.infof("finished route sequence %s", routeSequence);
+                log.info("finished route sequence {}", routeSequence);
 
                 isFirstRoute = false;
             }
@@ -207,7 +207,7 @@ abstract class ScenarioExecution implements Callable<Void> {
             }
         } catch (Exception e) {
             // catch unexpected errors and stop the scenario to also stop the trains
-            LOG.error("error in by scenario execution of: " + scenario, e);
+            log.error("error in by scenario execution of: " + scenario, e);
             finishScenarioExecution(RUN_STATE.ERROR);
             stop();
         } finally {
@@ -225,7 +225,7 @@ abstract class ScenarioExecution implements Callable<Void> {
      * Stop the execution by the next route block in the route sequence.
      */
     void stop() {
-        LOG.info("stop");
+        log.info("stop");
         stopped = true;
         stopTrain();
         scenario.setRunState(RUN_STATE.STOPPED);
@@ -273,7 +273,7 @@ abstract class ScenarioExecution implements Callable<Void> {
                     }
                 }, trackBlock.getBlockFunction());
             } catch (DeviceAccessException e) {
-                LOG.error("reserve next route", e);
+                log.error("reserve next route", e);
             }
         }
     }
@@ -314,7 +314,7 @@ abstract class ScenarioExecution implements Callable<Void> {
 
     private void finishScenarioExecution(RUN_STATE runState) {
         scenario.setRunState(runState);
-        LOG.infof("finished scenario %s", scenario);
+        log.info("finished scenario {}", scenario);
 
         new Thread(() -> scenarioExecutionFinished(scenario)).start();
     }
@@ -445,7 +445,7 @@ abstract class ScenarioExecution implements Callable<Void> {
         BlockListener blockListener = new RouteEndBlockListener(route) {
             @Override
             protected void trainEnterRouteEnd() {
-                LOG.infof("route finished %s", routeExecution);
+                log.info("route finished {}", routeExecution);
                 routeFinished(routeExecution.getNextRouteSequence());
             }
         };
@@ -493,7 +493,7 @@ abstract class ScenarioExecution implements Callable<Void> {
 
     private void switchSignalToDrive(final Signal signal, BlockStraight startOfNextRoute) {
         var signalFunction = nextSignalFunction(startOfNextRoute);
-        LOG.infof("switch signal to %s %s", signalFunction, signal);
+        log.info("switch signal to {} {}", signalFunction, signal);
         trackViewerService.switchSignal(signal, signalFunction);
 
         // signal have no monitoring block and will never get the HP0 after drive
@@ -506,7 +506,7 @@ abstract class ScenarioExecution implements Callable<Void> {
                 Thread.sleep(HP0_AFTER_TRAIN_PASS_DELAY_IN_MILLIS);
                 trackViewerService.switchSignal(signal, FUNCTION.HP0);
             } catch (InterruptedException e) {
-                LOG.error("error during delayed HP0 switch", e);
+                log.error("error during delayed HP0 switch", e);
             }
         }).start();
     }
@@ -520,7 +520,7 @@ abstract class ScenarioExecution implements Callable<Void> {
                             trackBlock.getBlockFunction().getAddress())
                         .getBitState(trackBlock.getBlockFunction().getBit());
                 } catch (DeviceAccessException e) {
-                    LOG.error("cannot get device address for block of start", e);
+                    log.error("cannot get device address for block of start", e);
                     return false;
                 }
             }) ? FUNCTION.HP2 : FUNCTION.HP1;
@@ -532,7 +532,7 @@ abstract class ScenarioExecution implements Callable<Void> {
         // delay the start of the train
         Thread.sleep(START_TRAIN_DELAY_MILLIS);
         // start train
-        LOG.infof("start train to drive %s", train);
+        log.info("start train to drive {}", train);
         trainService.updateDrivingLevel(train.getId(),
             startDrivingLevel != null ? startDrivingLevel : DEFAULT_START_DRIVING_LEVEL);
     }
@@ -544,7 +544,7 @@ abstract class ScenarioExecution implements Callable<Void> {
                 // delay to end the route to let the train stop for a bit at the route end (or signal for next route)
                 Thread.sleep(FINISH_ROUTE_DELAY_MILLIS);
             } catch (InterruptedException e) {
-                LOG.error("error during delayed HP0 switch", e);
+                log.error("error during delayed HP0 switch", e);
             }
         }
         blockRunning = false;
@@ -569,7 +569,7 @@ abstract class ScenarioExecution implements Callable<Void> {
      * @param route current {@link Route}
      */
     private void updateTrack(Scenario scenario, Route route) {
-        LOG.infof("update the track for scenario %s with start route: %", scenario.getName(), route.getName());
+        log.info("update the track for scenario {} with start route: {}", scenario.getName(), route.getName());
         Map<BusDataConfiguration, Boolean> trackPartStates = new HashMap<>();
         for (BusDataConfiguration routeBlockPart : route.getTrack().trackFunctions()) {
             trackPartStates.put(routeBlockPart, routeBlockPart.getBitState());

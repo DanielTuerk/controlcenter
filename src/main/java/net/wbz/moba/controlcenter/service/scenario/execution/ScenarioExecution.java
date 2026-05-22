@@ -1,5 +1,8 @@
 package net.wbz.moba.controlcenter.service.scenario.execution;
 
+import io.smallrye.mutiny.Multi;
+import io.smallrye.mutiny.TimeoutException;
+import io.smallrye.mutiny.Uni;
 import lombok.extern.slf4j.Slf4j;
 import net.wbz.moba.controlcenter.BusAddressIdentifier;
 import net.wbz.moba.controlcenter.SelectrixHelper;
@@ -27,6 +30,7 @@ import net.wbz.selectrix4java.device.Device;
 import net.wbz.selectrix4java.device.DeviceAccessException;
 import net.wbz.selectrix4java.device.DeviceManager;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -37,6 +41,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -65,6 +70,7 @@ abstract class ScenarioExecution implements Callable<Void> {
     private final TrackViewerService trackViewerService;
     private final TrainService trainService;
     private final DeviceManager deviceManager;
+    private final ExecutorService executorService;
     private final Map<FeedbackBlockModule, List<BlockListener>> blockListeners = new ConcurrentHashMap<>();
     private final TrainInstance trainInstance;
     private final List<RouteListener> routeListeners;
@@ -83,11 +89,12 @@ abstract class ScenarioExecution implements Callable<Void> {
 
     ScenarioExecution(Scenario scenario, TrackViewerService trackViewerService, TrainService trainService,
                       DeviceManager deviceManager, List<RouteListener> routeListeners,
-                      RouteExecutionObserver routeExecutionObserver, TrackProvider trackProvider, TrackBlockRegistry trackBlockRegistry) {
+                      RouteExecutionObserver routeExecutionObserver, TrackProvider trackProvider, TrackBlockRegistry trackBlockRegistry, ExecutorService executorService) {
         this.scenario = scenario;
         this.trackViewerService = trackViewerService;
         this.trainService = trainService;
         this.deviceManager = deviceManager;
+        this.executorService = executorService;
         this.trainInstance = trainService.trainInstanceByTrain(scenario.getTrain());
         this.routeListeners = routeListeners;
         this.routeExecutionObserver = routeExecutionObserver;
@@ -207,7 +214,7 @@ abstract class ScenarioExecution implements Callable<Void> {
             }
         } catch (Exception e) {
             // catch unexpected errors and stop the scenario to also stop the trains
-            log.error("error in by scenario execution of: " + scenario, e);
+            log.error("error in by scenario execution of: {}", scenario, e);
             finishScenarioExecution(RUN_STATE.ERROR);
             stop();
         } finally {
@@ -246,11 +253,7 @@ abstract class ScenarioExecution implements Callable<Void> {
             routeExecution.getNextRouteSequence().getRoute().getStart()));
 
         if (trainInstance.trainStatus().getDrivingLevel() <= 0) {
-            try {
-                startTrain(trainInstance.train(), scenario.getStartDrivingLevel());
-            } catch (InterruptedException e) {
-                throw new RouteExecutionInterruptException("start route interrupted", e);
-            }
+            startTrain(trainInstance.train(), scenario.getStartDrivingLevel());
         }
 
         reserveNextRouteForCurrentRoute(routeExecution);
@@ -316,7 +319,7 @@ abstract class ScenarioExecution implements Callable<Void> {
         scenario.setRunState(runState);
         log.info("finished scenario {}", scenario);
 
-        new Thread(() -> scenarioExecutionFinished(scenario)).start();
+        executorService.submit(() -> scenarioExecutionFinished(scenario));
     }
 
     /**
@@ -474,21 +477,47 @@ abstract class ScenarioExecution implements Callable<Void> {
         trainService.toggleLight(train.getId(), true);
     }
 
+    static final class ScenarioStopped extends RuntimeException {
+        ScenarioStopped(String msg) {
+            super(msg);
+        }
+    }
+
     private void waitForFreeTrack(RouteExecution routeExecution) throws ScenarioExecutionInterruptException {
         for (RouteListener routeListener : routeListeners) {
             routeListener.routeWaitingToStart(scenario, routeExecution.getRouteSequence());
         }
 
-//        Future<Void> future = executor
-//            .submit(new WaitForFreeTrackCallable(routeExecutionObserver, scenario, routeExecution));
-        Thread thread = new Thread(new WaitForFreeTrackCallable(routeExecutionObserver, scenario, routeExecution));
-        thread.start();
+        routeExecutionObserver.addRunningRouteSequence(routeExecution.getRouteSequence());
+
+        final Route route = routeExecution.getRouteSequence().getRoute();
+        log.info("train request free track to start: {}", route.getName());
+
         try {
-            thread.join();
-        } catch (InterruptedException e) {
-//        } catch (InterruptedException | ExecutionException e) {
-            throw new ScenarioExecutionInterruptException("wait for free track interrupted", e);
+            Multi.createFrom().ticks().every(Duration.ofMillis(500))
+                .select().first(tick -> scenario.getRunState() != RUN_STATE.STOPPED)
+                .onItem().transform(tick ->
+                    routeExecutionObserver.checkAndReserveNextRunningRoute(
+                        routeExecution.getRouteSequence(),
+                        routeExecution.getPreviousRouteSequence()
+                    )
+                )
+                .select().where(Boolean.TRUE::equals)
+                .select().first()
+                .toUni()
+                // could be null for the case that the scenario is stopped while waiting for the free track
+                .onItem().ifNull().failWith(
+                    () -> new ScenarioStopped("wait for free track aborted (scenario stopped)"))
+                .replaceWithVoid()
+                .await().atMost(Duration.ofMinutes(5));
+        } catch (ScenarioStopped e) {
+            throw new ScenarioExecutionInterruptException("aborted (stopped)", e);
+        } catch (TimeoutException e) {
+            throw new ScenarioExecutionInterruptException("timed out", e);
+        } catch (RuntimeException e) {
+            throw new ScenarioExecutionInterruptException("failed", e);
         }
+
     }
 
     private void switchSignalToDrive(final Signal signal, BlockStraight startOfNextRoute) {
@@ -497,7 +526,7 @@ abstract class ScenarioExecution implements Callable<Void> {
         trackViewerService.switchSignal(signal, signalFunction);
 
         // signal have no monitoring block and will never get the HP0 after drive
-        new Thread(() -> {
+        executorService.submit(() -> {
             try {
                 /*
                  * Set to HP0 after delay to simulate a occupied monitoring block to switch the signal after the
@@ -508,7 +537,7 @@ abstract class ScenarioExecution implements Callable<Void> {
             } catch (InterruptedException e) {
                 log.error("error during delayed HP0 switch", e);
             }
-        }).start();
+        });
     }
 
     private FUNCTION nextSignalFunction(BlockStraight startOfNextRoute) {
@@ -528,13 +557,22 @@ abstract class ScenarioExecution implements Callable<Void> {
         return FUNCTION.HP1;
     }
 
-    private void startTrain(Train train, Integer startDrivingLevel) throws InterruptedException {
-        // delay the start of the train
-        Thread.sleep(START_TRAIN_DELAY_MILLIS);
-        // start train
-        log.info("start train to drive {}", train);
-        trainService.updateDrivingLevel(train.getId(),
-            startDrivingLevel != null ? startDrivingLevel : DEFAULT_START_DRIVING_LEVEL);
+    private void startTrain(Train train, Integer startDrivingLevel) {
+
+        Uni.createFrom().voidItem().onItem()
+            // delay the start of the train
+            .delayIt().by(Duration.ofMillis(START_TRAIN_DELAY_MILLIS))
+            .invoke(() -> {
+                // start train
+                log.info("start train to drive {}", train);
+                trainService.updateDrivingLevel(train.getId(),
+                    startDrivingLevel != null ? startDrivingLevel : DEFAULT_START_DRIVING_LEVEL);
+            })
+            .subscribe()
+            .with(ignored -> log.debug("train ({}) started after delay", train.getName()),
+                failure -> log.error("failed to start train with delay", failure)
+            )
+        ;
     }
 
     private void routeFinished(RouteSequence nextRouteSequence) {

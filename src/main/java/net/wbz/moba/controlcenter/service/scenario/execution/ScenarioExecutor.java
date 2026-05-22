@@ -1,7 +1,7 @@
 package net.wbz.moba.controlcenter.service.scenario.execution;
 
+import io.quarkus.virtual.threads.VirtualThreads;
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import net.wbz.moba.controlcenter.EventBroadcaster;
 import net.wbz.moba.controlcenter.service.scenario.ScenarioStateListener;
@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ExecutorService;
 
 /**
  * Executor to start and stop {@link Scenario}s.
@@ -37,11 +38,9 @@ public class ScenarioExecutor {
     private final TrackProvider trackProvider;
     private final RouteExecutionObserver routeExecutionObserver;
     private final TrackBlockRegistry trackBlockRegistry;
-
-    /**
-     * Broadcaster for client side event handling of state changes.
-     */
     private final EventBroadcaster eventBroadcaster;
+    private final ExecutorService executorService;
+
     /**
      * Running executions of each scenario by id.
      */
@@ -55,18 +54,19 @@ public class ScenarioExecutor {
      */
     private final List<RouteListener> routeListeners = new CopyOnWriteArrayList<>();
 
-    @Inject
-    ScenarioExecutor(TrackViewerService trackViewerService, TrainService trainService,
-                     DeviceManager deviceManager, EventBroadcaster eventBroadcaster,
-        ScenarioRouteEventBroadcaster scenarioRouteEventBroadcaster, TrackProvider trackProvider,
-            RouteExecutionObserver routeExecutionObserver, TrackBlockRegistry trackBlockRegistry) {
+    ScenarioExecutor(ScenarioRouteEventBroadcaster scenarioRouteEventBroadcaster,
+                     TrackViewerService trackViewerService, TrainService trainService,
+                     DeviceManager deviceManager, TrackProvider trackProvider,
+                     RouteExecutionObserver routeExecutionObserver, TrackBlockRegistry trackBlockRegistry,
+                     EventBroadcaster eventBroadcaster, @VirtualThreads ExecutorService executorService) {
         this.trackViewerService = trackViewerService;
         this.trainService = trainService;
         this.deviceManager = deviceManager;
-        this.eventBroadcaster = eventBroadcaster;
         this.trackProvider = trackProvider;
         this.routeExecutionObserver = routeExecutionObserver;
         this.trackBlockRegistry = trackBlockRegistry;
+        this.eventBroadcaster = eventBroadcaster;
+        this.executorService = executorService;
 
         routeListeners.add(scenarioRouteEventBroadcaster);
     }
@@ -90,7 +90,7 @@ public class ScenarioExecutor {
         if (!executionsByScenarioId.containsKey(scenario.getId())) {
             final ScenarioExecution scenarioExecution = new ScenarioExecution(scenario, trackViewerService,
                 trainService, deviceManager, routeListeners, routeExecutionObserver, trackProvider,
-                trackBlockRegistry) {
+                trackBlockRegistry, executorService) {
                 @Override
                 protected void scenarioExecutionFinished(Scenario scenario) {
                     finishExecution(scenario);
@@ -98,10 +98,7 @@ public class ScenarioExecutor {
                 }
             };
             executionsByScenarioId.put(scenario.getId(), scenarioExecution);
-            // TODO migrate
-//            taskExecutor.submit(new ScenarioCallable(scenarioExecution));
-            Thread thread = new Thread(new ScenarioCallable(scenarioExecution));
-            thread.start();
+            executorService.submit(scenarioExecution);
         } else {
             log.error("scenario {} already running!", scenario);
         }

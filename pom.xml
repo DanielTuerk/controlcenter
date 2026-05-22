@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
 
@@ -21,10 +20,8 @@
         <maven.compiler.release>21</maven.compiler.release>
 
         <!-- Native Image -->
-        <quarkus.native.builder-image>quay.io/quarkus/ubi9-quarkus-mandrel-builder-image:jdk-21
-        </quarkus.native.builder-image>
-        <quarkus.native.additional-build-args>--initialize-at-run-time=com.fazecast.jSerialComm.SerialPort
-        </quarkus.native.additional-build-args>
+        <quarkus.native.builder-image>quay.io/quarkus/ubi9-quarkus-mandrel-builder-image:jdk-21</quarkus.native.builder-image>
+        <quarkus.native.additional-build-args>--initialize-at-run-time=com.fazecast.jSerialComm.SerialPort</quarkus.native.additional-build-args>
         <quarkus.native.container-build>true</quarkus.native.container-build>
 
         <compiler-plugin.version>3.14.0</compiler-plugin.version>
@@ -155,6 +152,10 @@
 
 
         <!--    Test-->
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-virtual-threads</artifactId>
+        </dependency>
         <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-junit</artifactId>

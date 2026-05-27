@@ -5,13 +5,13 @@ package net.wbz.moba.controlcenter.service.scenario.execution;
  * 
  * @author Daniel Tuerk
  */
-class ScenarioExecutionInterruptException extends Exception {
+class ScenarioExecutionInterruptException extends RuntimeException {
 
     ScenarioExecutionInterruptException(String message) {
         super(message);
     }
 
-    ScenarioExecutionInterruptException(String message, Exception e) {
+    ScenarioExecutionInterruptException(String message, Throwable e) {
         super(message, e);
     }
 }

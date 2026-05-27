@@ -143,6 +143,10 @@ public class Route extends AbstractDto {
         /**
          * Execution failed
          */
-        FAILED
+        FAILED,
+        /**
+         * Execution skipped
+         */
+        SKIPPED
     }
 }

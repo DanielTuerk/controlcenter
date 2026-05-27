@@ -20,6 +20,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -57,14 +58,14 @@ public class RouteExecutionObserver {
      * @return {@code true} if the track was free and the given route is reserved.
      */
     synchronized boolean checkAndReserveNextRunningRoute(RouteSequence routeSequence,
-        RouteSequence previousRouteSequence) {
+                                                         Optional<RouteSequence> previousRouteSequence) {
         Route route = routeSequence.getRoute();
         Collection<RouteSequence> dependingRunningRoutes = getDependingRunningRoutes(route);
 
         // previous given one is running, which will be now removed to start next route in the sequence
-        dependingRunningRoutes.remove(previousRouteSequence);
+        previousRouteSequence.ifPresent(dependingRunningRoutes::remove);
 
-        // all are prepared, than start with one by setting state RESERVED to avoid dead lock of routes
+        // all are prepared, then start with one by setting state RESERVED to avoid deadlock of routes
         boolean allDependingRoutesHaveStatePrepared = dependingRunningRoutes.stream()
             .allMatch(x -> x.getRoute().getRunState() == ROUTE_RUN_STATE.PREPARED);
 

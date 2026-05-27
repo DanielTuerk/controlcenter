@@ -145,15 +145,16 @@ public class ScenarioService {
             // stop execution if scenario not anymore in automatic mode
             unscheduleScenario(scenarioId);
         }
-        // reset state to schedule for next scheduled execution unless the job is unscheduled
-        scenarioExecutor.addScenarioStateListener(new DefaultScenarioStateListener() {
-            @Override
-            public void scenarioFinished(Scenario scenario) {
-                if (scenario.getMode() == MODE.AUTOMATIC) {
-                    scenarioExecutor.scheduleScenario(scenario);
-                }
-            }
-        });
+        // TODO should be wrong
+//        // reset state to schedule for next scheduled execution unless the job is unscheduled
+//        scenarioExecutor.addScenarioStateListener(new DefaultScenarioStateListener() {
+//            @Override
+//            public void scenarioFinished(Scenario scenario) {
+//                if (scenario.getMode() == MODE.AUTOMATIC) {
+//                    scenarioExecutor.scheduleScenario(scenario);
+//                }
+//            }
+//        });
 
         startScenario(scenario);
     }

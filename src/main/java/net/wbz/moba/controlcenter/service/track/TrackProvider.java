@@ -17,7 +17,9 @@ import net.wbz.moba.controlcenter.persist.repository.track.TrackPartRepository;
 import net.wbz.moba.controlcenter.service.constrution.ConstructionService;
 import net.wbz.moba.controlcenter.shared.constrution.Construction;
 import net.wbz.moba.controlcenter.shared.constrution.CurrentConstructionChangeEvent;
+import net.wbz.moba.controlcenter.shared.scenario.Route;
 import net.wbz.moba.controlcenter.shared.track.model.AbstractTrackPart;
+import net.wbz.moba.controlcenter.shared.track.model.Signal;
 import net.wbz.moba.controlcenter.shared.track.model.TrackChangedEvent;
 
 import java.util.ArrayList;
@@ -25,6 +27,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * TODO migrate to cached dataProvider
@@ -114,5 +117,26 @@ public class TrackProvider {
         final var changedEvent = new TrackChangedEvent(true);
         trackChangedEvent.fire(changedEvent);
         eventBroadcaster.fireEvent(changedEvent);
+    }
+
+    /**
+     * Find start signal of {@link Route}.
+     *
+     * @param route {@link Route}
+     * @return {@link Signal}
+     */
+    public Optional<Signal> findStartSignal(Route route) {
+        var signals = getTrack().stream()
+            .filter(trackPart -> trackPart instanceof Signal)
+            .map(trackPart -> (Signal) trackPart)
+            .collect(Collectors.toSet());
+        for (Signal availableSignal : signals) {
+            if (availableSignal.getStopBlock() != null && route.getStart() != null) {
+                if (route.getStart().getAllTrackBlocks().contains(availableSignal.getStopBlock())) {
+                    return Optional.of(availableSignal);
+                }
+            }
+        }
+        return Optional.empty();
     }
 }

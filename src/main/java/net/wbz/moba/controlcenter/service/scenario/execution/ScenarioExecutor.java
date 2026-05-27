@@ -1,7 +1,9 @@
 package net.wbz.moba.controlcenter.service.scenario.execution;
 
 import io.quarkus.virtual.threads.VirtualThreads;
+import io.smallrye.mutiny.subscription.Cancellable;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.event.Event;
 import lombok.extern.slf4j.Slf4j;
 import net.wbz.moba.controlcenter.EventBroadcaster;
 import net.wbz.moba.controlcenter.service.scenario.ScenarioStateListener;
@@ -40,11 +42,13 @@ public class ScenarioExecutor {
     private final TrackBlockRegistry trackBlockRegistry;
     private final EventBroadcaster eventBroadcaster;
     private final ExecutorService executorService;
+    private final ExecuteRouteSequence executeRouteSequence;
+    private final Event<ScenarioStateEvent> scenarioStateEvent;
 
     /**
      * Running executions of each scenario by id.
      */
-    private final Map<Long, ScenarioExecution> executionsByScenarioId = new ConcurrentHashMap<>();
+    private final Map<Long, Cancellable> executionsByScenarioId = new ConcurrentHashMap<>();
     /**
      * Server side listeners for state changes.
      */
@@ -58,7 +62,7 @@ public class ScenarioExecutor {
                      TrackViewerService trackViewerService, TrainService trainService,
                      DeviceManager deviceManager, TrackProvider trackProvider,
                      RouteExecutionObserver routeExecutionObserver, TrackBlockRegistry trackBlockRegistry,
-                     EventBroadcaster eventBroadcaster, @VirtualThreads ExecutorService executorService) {
+                     EventBroadcaster eventBroadcaster, @VirtualThreads ExecutorService executorService, ExecuteRouteSequence executeRouteSequence, Event<ScenarioStateEvent> scenarioStateEvent) {
         this.trackViewerService = trackViewerService;
         this.trainService = trainService;
         this.deviceManager = deviceManager;
@@ -67,6 +71,8 @@ public class ScenarioExecutor {
         this.trackBlockRegistry = trackBlockRegistry;
         this.eventBroadcaster = eventBroadcaster;
         this.executorService = executorService;
+        this.executeRouteSequence = executeRouteSequence;
+        this.scenarioStateEvent = scenarioStateEvent;
 
         routeListeners.add(scenarioRouteEventBroadcaster);
     }
@@ -88,19 +94,25 @@ public class ScenarioExecutor {
      */
     public synchronized void startScenario(Scenario scenario) {
         if (!executionsByScenarioId.containsKey(scenario.getId())) {
-            final ScenarioExecution scenarioExecution = new ScenarioExecution(scenario, trackViewerService,
-                trainService, deviceManager, routeListeners, routeExecutionObserver, trackProvider,
-                trackBlockRegistry, executorService) {
-                @Override
-                protected void scenarioExecutionFinished(Scenario scenario) {
+            fireEvent(scenario.getId(), RUN_STATE.RUNNING);
+            final ScenarioExecution scenarioExecution = new ScenarioExecution(scenario,
+                trainService, deviceManager, trackProvider,
+                trackBlockRegistry, executeRouteSequence);
+            executionsByScenarioId.put(scenario.getId(), scenarioExecution.start2(scenario)
+                .runSubscriptionOn(executorService)
+                .subscribe()
+                .with(waitUntilFinished -> {
+                    log.debug("scenario execution finished with state: {}", waitUntilFinished);
                     finishExecution(scenario);
-                    fireEvent(scenario);
-                }
-            };
-            executionsByScenarioId.put(scenario.getId(), scenarioExecution);
-            executorService.submit(scenarioExecution);
+                    fireEvent(scenario.getId(), waitUntilFinished);
+                }, failure -> {
+                    log.error("scenario execution failed: {}", failure.getMessage(), failure);
+                    finishExecution(scenario);
+                    fireEvent(scenario.getId(), RUN_STATE.ERROR);
+                }));
         } else {
-            log.error("scenario {} already running!", scenario);
+            // TODO missing event
+            log.error("scenario '{}' already running!", scenario.getName());
         }
     }
 
@@ -112,11 +124,13 @@ public class ScenarioExecutor {
     public synchronized void stopScenario(Scenario scenario) {
         Long scenarioId = scenario.getId();
         if (executionsByScenarioId.containsKey(scenarioId)) {
-            ScenarioExecution scenarioExecution = executionsByScenarioId.get(scenarioId);
-            scenarioExecution.stop();
+            var scenarioExecution = executionsByScenarioId.get(scenarioId);
+            scenarioExecution.cancel();
         } else {
+            // TODO really?
             scenario.setRunState(RUN_STATE.STOPPED);
         }
+        // TODO sollte von der execution schon kommen?
         fireEvent(scenario);
     }
 
@@ -167,4 +181,9 @@ public class ScenarioExecutor {
             scenario.getRunState() != RUN_STATE.STOPPED ? ScenarioUtil.nextExecutionTime(scenario) : null));
     }
 
+    private void fireEvent(Long scenarioId, RUN_STATE state) {
+        final var event = new ScenarioStateEvent(scenarioId, state, null);
+        scenarioStateEvent.fire(event);
+        eventBroadcaster.fireEvent(event);
+    }
 }

@@ -47,7 +47,7 @@ public class Train extends AbstractDto {
     @Override
     public String toString() {
         final StringBuffer sb = new StringBuffer("Train{");
-        sb.append(", address=").append(address);
+        sb.append("address=").append(address);
         sb.append(", name='").append(name).append('\'');
         sb.append(", functions=").append(functions);
 //        sb.append(", drivingLevel=").append(drivingLevel);

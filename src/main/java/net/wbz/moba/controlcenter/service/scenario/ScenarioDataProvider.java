@@ -6,10 +6,15 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Observes;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
+import net.wbz.moba.controlcenter.persist.entity.ConstructionEntity;
 import net.wbz.moba.controlcenter.persist.entity.ScenarioEntity;
+import net.wbz.moba.controlcenter.persist.repository.ConstructionRepository;
 import net.wbz.moba.controlcenter.persist.repository.RouteSequenceRepository;
 import net.wbz.moba.controlcenter.persist.repository.ScenarioRepository;
 import net.wbz.moba.controlcenter.persist.repository.TrainRepository;
+import net.wbz.moba.controlcenter.service.constrution.ConstructionService;
+import net.wbz.moba.controlcenter.shared.constrution.Construction;
+import net.wbz.moba.controlcenter.shared.constrution.CurrentConstructionChangeEvent;
 import net.wbz.moba.controlcenter.shared.scenario.RouteDataChangedEvent;
 import net.wbz.moba.controlcenter.shared.scenario.RouteSequence;
 import net.wbz.moba.controlcenter.shared.scenario.Scenario;
@@ -28,13 +33,23 @@ public class ScenarioDataProvider {
     private final ScenarioRepository scenarioRepository;
     private final ScenarioStatisticManager scenarioStatisticManager;
     private final TrainRepository trainRepository;
+    private final ConstructionService constructionService;
+    private final ConstructionRepository constructionRepository;
 
     public ScenarioDataProvider(RouteSequenceRepository routeSequenceRepository, ScenarioRepository scenarioRepository,
-                                ScenarioStatisticManager scenarioStatisticManager, TrainRepository trainRepository) {
+                                ScenarioStatisticManager scenarioStatisticManager, TrainRepository trainRepository,
+                                ConstructionService constructionService, ConstructionRepository constructionRepository) {
         this.routeSequenceRepository = routeSequenceRepository;
         this.scenarioRepository = scenarioRepository;
         this.scenarioStatisticManager = scenarioStatisticManager;
         this.trainRepository = trainRepository;
+        this.constructionService = constructionService;
+        this.constructionRepository = constructionRepository;
+    }
+
+    @CacheInvalidateAll(cacheName = CACHE)
+    public void onCurrentConstructionChanged(@Observes CurrentConstructionChangeEvent event) {
+        log.info("current construction changed for ID: {}, clear cache...", event.construction().getId());
     }
 
     @CacheInvalidateAll(cacheName = CACHE)
@@ -48,14 +63,16 @@ public class ScenarioDataProvider {
     }
 
     /**
-     * Load scenarios from database and cache the result.
+     * Load scenarios from the database and cache the result.
      *
      * @return list of {@link ScenarioEntity}s
      */
     @CacheResult(cacheName = CACHE)
     public List<ScenarioEntity> getScenarios() {
         log.debug("load scenarios from database");
-        return scenarioRepository.listAll();
+        return constructionService.getCurrentConstruction()
+            .map(construction -> scenarioRepository.listAll(construction.getId()))
+            .orElse(List.of());
     }
 
     /**
@@ -69,6 +86,7 @@ public class ScenarioDataProvider {
     public ScenarioEntity createScenario(Scenario scenario) {
         // save scenario without route mapping
         var scenarioEntity = new ScenarioEntity();
+        scenarioEntity.construction = currentConstructionEntity();
         scenarioEntity.name = scenario.getName();
         scenarioEntity.cron = scenario.getCron();
         if (scenario.getTrain() != null) {
@@ -112,7 +130,7 @@ public class ScenarioDataProvider {
     /**
      * Update the given {@link Scenario} and reload the cached data.
      *
-     * @param scenario {@link Scenario} to update in database
+     * @param scenario {@link Scenario} to update in the database
      * @return updated entity
      */
     @CacheInvalidateAll(cacheName = CACHE)
@@ -132,6 +150,13 @@ public class ScenarioDataProvider {
 
         scenarioRepository.persist(scenarioEntity);
         return scenarioEntity;
+    }
+
+    private ConstructionEntity currentConstructionEntity() {
+        return constructionRepository.findById(
+            constructionService.getCurrentConstruction()
+                .map(Construction::getId)
+                .orElse(null));
     }
 
     private void createOrUpdateRouteSequences(List<RouteSequence> routeSequences, ScenarioEntity scenarioEntity) {

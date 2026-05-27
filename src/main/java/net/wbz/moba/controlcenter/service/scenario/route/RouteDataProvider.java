@@ -7,13 +7,17 @@ import jakarta.enterprise.event.Observes;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
+import net.wbz.moba.controlcenter.persist.entity.ConstructionEntity;
 import net.wbz.moba.controlcenter.persist.entity.RouteEntity;
 import net.wbz.moba.controlcenter.persist.entity.track.BlockStraightEntity;
+import net.wbz.moba.controlcenter.persist.repository.ConstructionRepository;
 import net.wbz.moba.controlcenter.persist.repository.RouteRepository;
 import net.wbz.moba.controlcenter.persist.repository.RouteSequenceRepository;
 import net.wbz.moba.controlcenter.persist.repository.track.GridPositionRepository;
 import net.wbz.moba.controlcenter.persist.repository.track.TrackBlockRepository;
 import net.wbz.moba.controlcenter.persist.repository.track.TrackPartRepository;
+import net.wbz.moba.controlcenter.service.constrution.ConstructionService;
+import net.wbz.moba.controlcenter.shared.constrution.Construction;
 import net.wbz.moba.controlcenter.shared.constrution.CurrentConstructionChangeEvent;
 import net.wbz.moba.controlcenter.shared.scenario.Route;
 
@@ -32,16 +36,21 @@ public class RouteDataProvider {
     private final TrackBlockRepository trackBlockRepository;
     private final TrackPartRepository trackPartRepository;
     private final GridPositionRepository gridPositionRepository;
+    private final ConstructionService constructionService;
+    private final ConstructionRepository constructionRepository;
 
     @Inject
     public RouteDataProvider(RouteSequenceRepository routeSequenceDao, RouteRepository routeRepository,
                              TrackBlockRepository trackBlockRepository, TrackPartRepository trackPartRepository,
-                             GridPositionRepository gridPositionRepository) {
+                             GridPositionRepository gridPositionRepository, ConstructionService constructionService,
+                             ConstructionRepository constructionRepository) {
         this.routeSequenceDao = routeSequenceDao;
         this.routeRepository = routeRepository;
         this.trackBlockRepository = trackBlockRepository;
         this.trackPartRepository = trackPartRepository;
         this.gridPositionRepository = gridPositionRepository;
+        this.constructionService = constructionService;
+        this.constructionRepository = constructionRepository;
     }
 
     @CacheInvalidateAll(cacheName = CACHE)
@@ -51,13 +60,16 @@ public class RouteDataProvider {
 
     @CacheResult(cacheName = CACHE)
     public synchronized List<RouteEntity> getRoutes() {
-        return routeRepository.listAll();
+        return constructionService.getCurrentConstruction()
+            .map(construction -> routeRepository.listAll(construction.getId()))
+            .orElse(List.of());
     }
 
     @CacheInvalidateAll(cacheName = CACHE)
     @Transactional
     public RouteEntity createRoute(Route route) {
         final var toCreate = new RouteEntity();
+        toCreate.construction = currentConstructionEntity();
         fillEntityFromRoute(route, toCreate);
 
         routeRepository.persist(toCreate);
@@ -87,6 +99,12 @@ public class RouteDataProvider {
         }
     }
 
+    private ConstructionEntity currentConstructionEntity() {
+        return constructionRepository.findById(
+            constructionService.getCurrentConstruction()
+                .map(Construction::getId)
+                .orElse(null));
+    }
 
     private void fillEntityFromRoute(Route route, RouteEntity toUpdate) {
         toUpdate.name = route.getName();

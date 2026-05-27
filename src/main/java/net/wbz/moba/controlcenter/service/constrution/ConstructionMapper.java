@@ -14,4 +14,5 @@ public interface ConstructionMapper {
     @Mapping(target = "inAutomaticMode", ignore = true)
     Construction toDto(ConstructionEntity entity);
 
+    ConstructionEntity toEntity(Construction construction);
 }

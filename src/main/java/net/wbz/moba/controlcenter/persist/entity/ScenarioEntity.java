@@ -5,8 +5,9 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import java.util.List;
 import net.wbz.moba.controlcenter.shared.train.Train;
+
+import java.util.List;
 
 /**
  * @author Daniel Tuerk
@@ -18,6 +19,9 @@ public class ScenarioEntity extends AbstractEntity {
     public String name;
 
     public String cron;
+
+    @ManyToOne
+    public ConstructionEntity construction;
 
     /**
      * TODO also looking for position on track - drive to possible start point, or resume on actual pos

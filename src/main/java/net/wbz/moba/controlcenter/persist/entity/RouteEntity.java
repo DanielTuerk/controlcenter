@@ -1,15 +1,16 @@
 package net.wbz.moba.controlcenter.persist.entity;
 
-import jakarta.persistence.Table;
-import java.util.List;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import net.wbz.moba.controlcenter.persist.entity.track.BlockStraightEntity;
 import net.wbz.moba.controlcenter.persist.entity.track.GridPositionEntity;
 import net.wbz.moba.controlcenter.persist.entity.track.TrackBlockEntity;
+
+import java.util.List;
 
 /**
  * TODO station und stopover sind sehr ähnlich, hier wird auch was abstraktes für start und ziel gebraucht
@@ -19,6 +20,9 @@ import net.wbz.moba.controlcenter.persist.entity.track.TrackBlockEntity;
 @Entity
 @Table(name = "SCENARIO_ROUTE")
 public class RouteEntity extends AbstractEntity {
+
+    @ManyToOne
+    public ConstructionEntity construction;
 
     /**
      * TODO validations

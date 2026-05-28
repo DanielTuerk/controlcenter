@@ -1,18 +1,14 @@
 package net.wbz.moba.controlcenter.service.constrution;
 
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import net.wbz.moba.controlcenter.EventBroadcaster;
 import net.wbz.moba.controlcenter.api.construction.ConstructionDto;
-import net.wbz.moba.controlcenter.persist.entity.ConstructionEntity;
-import net.wbz.moba.controlcenter.persist.repository.ConstructionRepository;
 import net.wbz.moba.controlcenter.shared.constrution.Construction;
 import net.wbz.moba.controlcenter.shared.constrution.ConstructionDataChangedEvent;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * @author Daniel Tuerk
@@ -21,40 +17,32 @@ import java.util.stream.Collectors;
 @ApplicationScoped
 public class ConstructionManager {
 
-    @Inject
-    ConstructionRepository constructionRepository; // kept for other services that might use it directly
-    @Inject
-    ConstructionMapper constructionMapper;
-    @Inject
-    EventBroadcaster eventBroadcaster;
-    @Inject
-    ConstructionDataProvider dataProvider;
+    private final EventBroadcaster eventBroadcaster;
+    private final ConstructionDataProvider dataProvider;
 
-    public Construction create(ConstructionDto construction) {
-        ConstructionEntity entity = dataProvider.createConstruction(construction);
-
-        eventBroadcaster.fireEvent(new ConstructionDataChangedEvent(entity.id));
-
-        return constructionMapper.toDto(entity);
+    public ConstructionManager(EventBroadcaster eventBroadcaster, ConstructionDataProvider dataProvider) {
+        this.eventBroadcaster = eventBroadcaster;
+        this.dataProvider = dataProvider;
     }
 
-    public ConstructionEntity update(Long id, ConstructionDto updated) {
-        final var entity = dataProvider.updateConstruction(id, updated);
+    public Construction create(ConstructionDto construction) {
+        var id = dataProvider.createConstruction(construction);
 
         eventBroadcaster.fireEvent(new ConstructionDataChangedEvent(id));
-        return entity;
+
+        return dataProvider.getConstruction(id).orElseThrow(() ->
+            new IllegalStateException("Construction with id " + id + " not found after create"));
+    }
+
+    public Construction update(Long id, ConstructionDto updated) {
+        dataProvider.updateConstruction(id, updated);
+        eventBroadcaster.fireEvent(new ConstructionDataChangedEvent(id));
+        return dataProvider.getConstruction(id).orElseThrow(() ->
+            new IllegalStateException("Construction with id " + id + " not found after update"));
     }
 
     public List<Construction> load() {
-        return dataProvider.getConstructions().stream()
-            .map(constructionMapper::toDto)
-            .collect(Collectors.toList());
-    }
-
-    public Optional<Construction> getById(Long id) {
-        return load().stream()
-            .filter(construction -> id.equals(construction.getId()))
-            .findFirst();
+        return dataProvider.getConstructions();
     }
 
     public boolean deleteById(Long id) {
@@ -64,7 +52,10 @@ public class ConstructionManager {
     }
 
     public boolean existsById(Long id) {
-        return getById(id).isPresent();
+        return dataProvider.getConstruction(id).isPresent();
     }
 
+    public Optional<Construction> getById(Long id) {
+        return dataProvider.getConstruction(id);
+    }
 }

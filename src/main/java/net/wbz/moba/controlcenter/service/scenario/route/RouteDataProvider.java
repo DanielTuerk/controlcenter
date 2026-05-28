@@ -17,9 +17,11 @@ import net.wbz.moba.controlcenter.persist.repository.track.GridPositionRepositor
 import net.wbz.moba.controlcenter.persist.repository.track.TrackBlockRepository;
 import net.wbz.moba.controlcenter.persist.repository.track.TrackPartRepository;
 import net.wbz.moba.controlcenter.service.constrution.ConstructionService;
+import net.wbz.moba.controlcenter.service.scenario.TrackBuilder;
 import net.wbz.moba.controlcenter.shared.constrution.Construction;
 import net.wbz.moba.controlcenter.shared.constrution.CurrentConstructionChangeEvent;
 import net.wbz.moba.controlcenter.shared.scenario.Route;
+import net.wbz.moba.controlcenter.shared.scenario.TrackNotFoundException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,12 +40,14 @@ public class RouteDataProvider {
     private final GridPositionRepository gridPositionRepository;
     private final ConstructionService constructionService;
     private final ConstructionRepository constructionRepository;
+    private final RouteMapper routeMapper;
+    private final TrackBuilder trackBuilder;
 
     @Inject
     public RouteDataProvider(RouteSequenceRepository routeSequenceDao, RouteRepository routeRepository,
                              TrackBlockRepository trackBlockRepository, TrackPartRepository trackPartRepository,
                              GridPositionRepository gridPositionRepository, ConstructionService constructionService,
-                             ConstructionRepository constructionRepository) {
+                             ConstructionRepository constructionRepository, RouteMapper routeMapper, TrackBuilder trackBuilder) {
         this.routeSequenceDao = routeSequenceDao;
         this.routeRepository = routeRepository;
         this.trackBlockRepository = trackBlockRepository;
@@ -51,6 +55,8 @@ public class RouteDataProvider {
         this.gridPositionRepository = gridPositionRepository;
         this.constructionService = constructionService;
         this.constructionRepository = constructionRepository;
+        this.routeMapper = routeMapper;
+        this.trackBuilder = trackBuilder;
     }
 
     @CacheInvalidateAll(cacheName = CACHE)
@@ -59,32 +65,40 @@ public class RouteDataProvider {
     }
 
     @CacheResult(cacheName = CACHE)
-    public synchronized List<RouteEntity> getRoutes() {
+    public List<Route> getRoutes() {
         return constructionService.getCurrentConstruction()
             .map(construction -> routeRepository.listAll(construction.getId()))
-            .orElse(List.of());
+            .orElse(List.of())
+            .stream().map(routeMapper::toDto)
+            .peek(route -> {
+                try {
+                    route.setTrack(trackBuilder.build(route));
+                } catch (TrackNotFoundException e) {
+                    log.error("can't build track of route: {} ({})", route, e.getMessage());
+                }
+            })
+            .collect(Collectors.toList());
     }
 
     @CacheInvalidateAll(cacheName = CACHE)
     @Transactional
-    public RouteEntity createRoute(Route route) {
+    public Long createRoute(Route route) {
         final var toCreate = new RouteEntity();
         toCreate.construction = currentConstructionEntity();
         fillEntityFromRoute(route, toCreate);
 
         routeRepository.persist(toCreate);
-        return toCreate;
+        return toCreate.id;
     }
 
     @CacheInvalidateAll(cacheName = CACHE)
     @Transactional
-    public RouteEntity updateRoute(Long id, Route route) {
+    public void updateRoute(Long id, Route route) {
         final var toUpdate = routeRepository.findById(id);
 
         fillEntityFromRoute(route, toUpdate);
 
         routeRepository.persist(toUpdate);
-        return toUpdate;
     }
 
     @CacheInvalidateAll(cacheName = CACHE)

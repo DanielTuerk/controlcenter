@@ -12,7 +12,6 @@ import net.wbz.moba.controlcenter.shared.train.TrainDataChangedEvent;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * Manager to access the {@link TrainEntity}s from database.
@@ -22,15 +21,13 @@ import java.util.stream.Collectors;
 @ApplicationScoped
 public class TrainManager {
 
-    private final TrainMapper trainMapper;
     private final EventBroadcaster eventBroadcaster;
     private final Event<TrainDataChangedEvent> trainDataEvent;
     private final TrainDataProvider dataProvider;
 
     @Inject
-    public TrainManager(TrainMapper trainMapper, EventBroadcaster eventBroadcaster,
-                        Event<TrainDataChangedEvent> trainDataEvent, TrainDataProvider dataProvider) {
-        this.trainMapper = trainMapper;
+    public TrainManager(EventBroadcaster eventBroadcaster, Event<TrainDataChangedEvent> trainDataEvent,
+                        TrainDataProvider dataProvider) {
         this.eventBroadcaster = eventBroadcaster;
         this.trainDataEvent = trainDataEvent;
         this.dataProvider = dataProvider;
@@ -42,9 +39,7 @@ public class TrainManager {
      * @return list of {@link Train}s
      */
     public List<Train> load() {
-        return dataProvider.getTrains().stream()
-            .map(trainMapper::toDto)
-            .collect(Collectors.toList());
+        return dataProvider.getTrains();
     }
 
     /**
@@ -55,9 +50,10 @@ public class TrainManager {
      * @return created {@link Train}
      */
     public Train create(TrainDto dto) {
-        var entity = dataProvider.createTrain(dto);
-        fireEvent(entity.id, AbstractItemEvent.ACTION_TYPE.CREATE);
-        return trainMapper.toDto(entity);
+        var id = dataProvider.createTrain(dto);
+        fireEvent(id, AbstractItemEvent.ACTION_TYPE.CREATE);
+        return dataProvider.getById(id).orElseThrow(() ->
+            new IllegalArgumentException("created train not found: " + id));
     }
 
     /**
@@ -68,9 +64,10 @@ public class TrainManager {
      * @return updated {@link TrainEntity}
      */
     public Train update(Long id, TrainDto updated) {
-        final var entity = dataProvider.updateTrain(id, updated);
+        dataProvider.updateTrain(id, updated);
         fireEvent(id, AbstractItemEvent.ACTION_TYPE.UPDATE);
-        return trainMapper.toDto(entity);
+        return dataProvider.getById(id).orElseThrow(() ->
+            new IllegalArgumentException("updated train not found: " + id));
     }
 
     /**

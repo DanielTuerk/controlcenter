@@ -15,6 +15,6 @@ public class RouteSequenceRepository implements PanacheRepository<RouteSequenceE
     }
 
     public boolean routeUsedInScenario(Long routeId) {
-        return !list("route.id=?1", routeId).isEmpty();
+        return !list("routeId=?1", routeId).isEmpty();
     }
 }

@@ -12,6 +12,7 @@ import net.wbz.moba.controlcenter.persist.repository.DeviceInfoRepository;
 import net.wbz.moba.controlcenter.shared.device.DeviceInfo;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @ApplicationScoped
@@ -20,18 +21,22 @@ public class DeviceDataProvider {
     private static final String CACHE = "devices-cache";
 
     private final DeviceInfoRepository deviceInfoRepository;
+    private final DeviceInfoMapper deviceInfoMapper;
 
-    public DeviceDataProvider(DeviceInfoRepository deviceInfoRepository) {
+    public DeviceDataProvider(DeviceInfoRepository deviceInfoRepository, DeviceInfoMapper deviceInfoMapper) {
         this.deviceInfoRepository = deviceInfoRepository;
+        this.deviceInfoMapper = deviceInfoMapper;
     }
 
     /**
-     * Load all devices from database and cache the result.
+     * Load all devices from the database and cache the result.
      */
     @CacheResult(cacheName = CACHE)
-    public List<DeviceInfoEntity> getDevices() {
+    public List<DeviceInfo> getDevices() {
         log.debug("load devices from database");
-        return deviceInfoRepository.listAll();
+        return deviceInfoRepository.listAll().stream()
+            .map(deviceInfoMapper::toDto)
+            .collect(Collectors.toList());
     }
 
     /**
@@ -39,12 +44,12 @@ public class DeviceDataProvider {
      */
     @CacheInvalidateAll(cacheName = CACHE)
     @Transactional
-    public DeviceInfoEntity createDevice(DeviceInfo device) {
+    public Long createDevice(DeviceInfo device) {
         DeviceInfoEntity entity = new DeviceInfoEntity();
         entity.key = device.getKey();
         entity.type = DEVICE_TYPE.valueOf(device.getType().name());
         deviceInfoRepository.persist(entity);
-        return entity;
+        return entity.id;
     }
 
     /**
@@ -52,14 +57,14 @@ public class DeviceDataProvider {
      */
     @CacheInvalidateAll(cacheName = CACHE)
     @Transactional
-    public DeviceInfoEntity updateDevice(Long id, DeviceInfo updated) {
+    public void updateDevice(Long id, DeviceInfo updated) {
         DeviceInfoEntity existing = deviceInfoRepository.findById(id);
         if (existing == null) {
             throw new EntityNotFoundException();
         }
         existing.key = updated.getKey();
         existing.type = DEVICE_TYPE.valueOf(updated.getType().name());
-        return existing;
+        deviceInfoRepository.persist(existing);
     }
 
     /**

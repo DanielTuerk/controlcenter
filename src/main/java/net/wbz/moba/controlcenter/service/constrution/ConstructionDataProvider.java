@@ -9,8 +9,11 @@ import lombok.extern.slf4j.Slf4j;
 import net.wbz.moba.controlcenter.api.construction.ConstructionDto;
 import net.wbz.moba.controlcenter.persist.entity.ConstructionEntity;
 import net.wbz.moba.controlcenter.persist.repository.ConstructionRepository;
+import net.wbz.moba.controlcenter.shared.constrution.Construction;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Slf4j
 @ApplicationScoped
@@ -19,18 +22,22 @@ public class ConstructionDataProvider {
     private static final String CACHE = "constructions-cache";
 
     private final ConstructionRepository constructionRepository;
+    private final ConstructionMapper constructionMapper;
 
-    public ConstructionDataProvider(ConstructionRepository constructionRepository) {
+    public ConstructionDataProvider(ConstructionRepository constructionRepository, ConstructionMapper constructionMapper) {
         this.constructionRepository = constructionRepository;
+        this.constructionMapper = constructionMapper;
     }
 
     /**
      * Load all constructions from database and cache the result.
      */
     @CacheResult(cacheName = CACHE)
-    public List<ConstructionEntity> getConstructions() {
+    public List<Construction> getConstructions() {
         log.debug("load constructions from database");
-        return constructionRepository.listAll();
+        return constructionRepository.listAll().stream()
+            .map(constructionMapper::toDto)
+            .collect(Collectors.toList());
     }
 
     /**
@@ -38,11 +45,11 @@ public class ConstructionDataProvider {
      */
     @CacheInvalidateAll(cacheName = CACHE)
     @Transactional
-    public ConstructionEntity createConstruction(ConstructionDto construction) {
+    public Long createConstruction(ConstructionDto construction) {
         var entity = new ConstructionEntity();
         entity.name = construction.name();
         constructionRepository.persist(entity);
-        return entity;
+        return entity.id;
     }
 
     /**
@@ -50,13 +57,13 @@ public class ConstructionDataProvider {
      */
     @CacheInvalidateAll(cacheName = CACHE)
     @Transactional
-    public ConstructionEntity updateConstruction(Long id, ConstructionDto updated) {
+    public void updateConstruction(Long id, ConstructionDto updated) {
         var existing = constructionRepository.findById(id);
         if (existing == null) {
             throw new EntityNotFoundException();
         }
         existing.name = updated.name();
-        return existing;
+        constructionRepository.persist(existing);
     }
 
     /**
@@ -66,5 +73,11 @@ public class ConstructionDataProvider {
     @Transactional
     public boolean deleteConstruction(Long id) {
         return constructionRepository.deleteById(id);
+    }
+
+    public Optional<Construction> getConstruction(Long id) {
+        return getConstructions().stream()
+            .filter(c -> c.getId().equals(id))
+            .findFirst();
     }
 }

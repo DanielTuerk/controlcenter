@@ -107,6 +107,8 @@ public class ExecuteRouteSequence {
 //            .onItem().invoke(this::finishRoute)
 
             .replaceWith(Route.ROUTE_RUN_STATE.FINISHED)
+            .onFailure(NoTrackForRouteException.class)
+            .recoverWithItem(Route.ROUTE_RUN_STATE.FAILED)
 
             .onFailure(NoTrainInStartBlockException.class)
             .recoverWithItem(Route.ROUTE_RUN_STATE.SKIPPED)
@@ -160,6 +162,10 @@ public class ExecuteRouteSequence {
                 final var route = model.routeSequence().getRoute();
 
                 final var train = model.train();
+
+                if (!route.hasTrack()) {
+                    return Uni.createFrom().failure(new NoTrackForRouteException(route));
+                }
 
                 boolean shouldCheckTrainInStartBlock = model.previousRouteSequence().isEmpty() || model.previousRouteSequence()
                     .map(prev -> prev.getRoute().getRunState() == Route.ROUTE_RUN_STATE.SKIPPED)

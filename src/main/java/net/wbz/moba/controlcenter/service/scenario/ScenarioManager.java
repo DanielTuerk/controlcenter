@@ -10,7 +10,6 @@ import net.wbz.moba.controlcenter.shared.scenario.ScenarioDataChangedEvent;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * @author Daniel Tuerk
@@ -19,16 +18,15 @@ import java.util.stream.Collectors;
 public class ScenarioManager {
 
     private final EventBroadcaster eventBroadcaster;
-    private final ScenarioMapper dataMapper;
+
     private final Event<ScenarioDataChangedEvent> scenarioDataChangedEvent;
     private final ScenarioDataProvider dataProvider;
 
     @Inject
-    public ScenarioManager(EventBroadcaster eventBroadcaster, ScenarioMapper dataMapper,
+    public ScenarioManager(EventBroadcaster eventBroadcaster,
                            Event<ScenarioDataChangedEvent> scenarioDataChangedEvent,
                            ScenarioDataProvider dataProvider) {
         this.eventBroadcaster = eventBroadcaster;
-        this.dataMapper = dataMapper;
         this.scenarioDataChangedEvent = scenarioDataChangedEvent;
         this.dataProvider = dataProvider;
     }
@@ -47,15 +45,13 @@ public class ScenarioManager {
     }
 
     public List<Scenario> getScenarios() {
-        return dataProvider.getScenarios().stream()
-            .map(dataMapper::toDto)
-            .collect(Collectors.toList());
+        return dataProvider.getScenarios();
     }
 
     public Scenario createScenario(Scenario scenario) {
-        final var entity = dataProvider.createScenario(scenario);
-        fireEvent(entity.id, AbstractItemEvent.ACTION_TYPE.CREATE);
-        return dataMapper.toDto(entity);
+        final var created = dataProvider.createScenario(scenario);
+        fireEvent(created.getId(), AbstractItemEvent.ACTION_TYPE.CREATE);
+        return created;
     }
 
     /**
@@ -78,9 +74,9 @@ public class ScenarioManager {
      * @param scenario {@link Scenario} to update in database
      */
     public Scenario updateScenario(Long scenarioId, Scenario scenario) {
-        final var scenarioEntity = dataProvider.updateScenario(scenarioId, scenario);
-        fireEvent(scenarioEntity.id, AbstractItemEvent.ACTION_TYPE.UPDATE);
-        return dataMapper.toDto(scenarioEntity);
+        final var updated = dataProvider.updateScenario(scenarioId, scenario);
+        fireEvent(updated.getId(), AbstractItemEvent.ACTION_TYPE.UPDATE);
+        return updated;
     }
 
     private void fireEvent(Long id, AbstractItemEvent.ACTION_TYPE type) {

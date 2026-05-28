@@ -4,7 +4,6 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Event;
 import jakarta.inject.Inject;
 import net.wbz.moba.controlcenter.EventBroadcaster;
-import net.wbz.moba.controlcenter.persist.entity.DeviceInfoEntity;
 import net.wbz.moba.controlcenter.shared.device.AvailableDevice;
 import net.wbz.moba.controlcenter.shared.device.DeviceDataChangedEvent;
 import net.wbz.moba.controlcenter.shared.device.DeviceInfo;
@@ -12,7 +11,6 @@ import net.wbz.selectrix4java.jna.SerialPortLister;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * @author Daniel Tuerk
@@ -21,8 +19,6 @@ import java.util.stream.Collectors;
 public class DeviceManager {
 
     @Inject
-    DeviceInfoMapper deviceInfoMapper;
-    @Inject
     EventBroadcaster eventBroadcaster;
     @Inject
     DeviceDataProvider dataProvider;
@@ -30,15 +26,17 @@ public class DeviceManager {
     Event<DeviceDataChangedEvent> deviceDataChangedEvent;
 
     public DeviceInfo create(DeviceInfo construction) {
-        var entity = dataProvider.createDevice(construction);
-        fireEvent(entity.id);
-        return deviceInfoMapper.toDto(entity);
+        var id = dataProvider.createDevice(construction);
+        fireEvent(id);
+        return getById(id).orElseThrow(() ->
+            new IllegalStateException("Device with id " + id + " not found after create"));
     }
 
-    public DeviceInfoEntity update(Long id, DeviceInfo updated) {
-        final var entity = dataProvider.updateDevice(id, updated);
+    public DeviceInfo update(Long id, DeviceInfo updated) {
+        dataProvider.updateDevice(id, updated);
         fireEvent(id);
-        return entity;
+        return getById(id).orElseThrow(() ->
+            new IllegalStateException("Device with id " + id + " not found after update"));
     }
 
     private void fireEvent(Long id) {
@@ -48,9 +46,7 @@ public class DeviceManager {
     }
 
     public List<DeviceInfo> load() {
-        return dataProvider.getDevices().stream()
-            .map(deviceInfoMapper::toDto)
-            .collect(Collectors.toList());
+        return dataProvider.getDevices();
     }
 
     public Optional<DeviceInfo> getById(Long id) {

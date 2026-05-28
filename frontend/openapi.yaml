@@ -427,6 +427,7 @@ components:
       - RUNNING
       - FINISHED
       - FAILED
+      - SKIPPED
     RUN_STATE:
       type: string
       enum:

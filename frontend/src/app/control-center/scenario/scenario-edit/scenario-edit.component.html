@@ -11,9 +11,33 @@
         </mat-form-field>
       </div>
       <div>
-        <label>Address: </label>
+        <label>Cron: </label>
         <mat-form-field>
           <input matInput required [formControl]="form.controls.cron"/>
+        </mat-form-field>
+      </div>
+      <div>
+        <label>Train: </label>
+        <mat-form-field>
+          <mat-select required formControlName="train">
+            <mat-option *ngFor="let opt of trains()" [value]="opt"> {{ opt.name }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div>
+        <label>driving direction</label>
+        <mat-form-field>
+          <mat-select required formControlName="drivingDirection">
+            <mat-option *ngFor="let opt of [DRIVINGDIRECTION1.Forward, DRIVINGDIRECTION1.Backward]"
+                        [value]="opt"> {{ opt }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div>
+        <label>driving level: </label>
+        <mat-form-field>
+          <input matInput [formControl]="form.controls.drivingLevel"/>
         </mat-form-field>
       </div>
     </mat-card-content>

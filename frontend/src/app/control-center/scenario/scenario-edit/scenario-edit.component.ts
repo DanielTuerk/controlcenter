@@ -5,9 +5,14 @@ import {FormBuilder, FormControl, FormsModule, ReactiveFormsModule} from "@angul
 import {MatFormField, MatInput} from "@angular/material/input";
 import {FloatLabelType} from "@angular/material/form-field";
 import {MatButton} from "@angular/material/button";
-import {Scenario} from "../../../../shared/openapi-gen";
+import {DRIVINGDIRECTION, DRIVINGDIRECTION1, Scenario, SIGNALTYPE, Train} from "../../../../shared/openapi-gen";
 import {SnackBar} from "../../common/snack-bar.component";
 import {ScenarioService} from "../../../shared/scenario.service";
+import {TrainService} from "../../../shared/train.service";
+import {TrainSubscription} from "../../../shared/websocket/train.subscription";
+import {MatOption} from "@angular/material/core";
+import {MatSelect} from "@angular/material/select";
+import {NgForOf} from "@angular/common";
 
 @Component({
   selector: 'app-scenario-edit',
@@ -22,7 +27,10 @@ import {ScenarioService} from "../../../shared/scenario.service";
     MatFormField,
     FormsModule,
     MatCardFooter,
-    MatButton
+    MatButton,
+    MatOption,
+    MatSelect,
+    NgForOf
   ],
   templateUrl: './scenario-edit.component.html',
   styleUrl: './scenario-edit.component.css'
@@ -30,10 +38,13 @@ import {ScenarioService} from "../../../shared/scenario.service";
 export class ScenarioEditComponent implements OnInit {
   scenarioId = input.required<Number>();
   private scenarioService = inject(ScenarioService);
+  private trainService = inject(TrainService);
   private snackBar = inject(SnackBar);
   private router = inject(Router);
+  private trainSubscription = inject(TrainSubscription);
 
   scenario = signal<Scenario>({});
+  trains = signal<Train[]>([]);
 
   readonly hideRequiredControl = new FormControl(false);
   readonly floatLabelControl = new FormControl('auto' as FloatLabelType);
@@ -41,7 +52,10 @@ export class ScenarioEditComponent implements OnInit {
     hideRequired: this.hideRequiredControl,
     floatLabel: this.floatLabelControl,
     name: '',
-    cron: ''
+    cron: '',
+    train: new FormControl<Train | null>(null),
+    drivingDirection: new FormControl<DRIVINGDIRECTION1 | null>(null),
+    drivingLevel: 0,
   });
 
   ngOnInit() {
@@ -50,12 +64,26 @@ export class ScenarioEditComponent implements OnInit {
         this.setScenario(data);
       });
     }
+    this.trainSubscription.trainDataChanged().subscribe(() => {
+      this.loadTrains();
+    });
+    this.loadTrains();
+  }
+
+  private loadTrains() {
+    this.trainService.loadTrains().subscribe(data => {
+      this.trains.set(data);
+      this.form.controls.train.setValue(this.trains().find(b => b.id === this.scenario().train?.id) ?? null)
+    });
   }
 
   onSubmit() {
     let scenarioToUpdate = this.scenario();
     scenarioToUpdate.name = this.form.controls.name.getRawValue()!
     scenarioToUpdate.cron = this.form.controls.cron.getRawValue()!
+    scenarioToUpdate.train = this.form.controls.train.getRawValue()!
+    scenarioToUpdate.trainDrivingDirection = this.form.controls.drivingDirection.getRawValue()!
+    scenarioToUpdate.startDrivingLevel = this.form.controls.drivingLevel.getRawValue()!
 
     let observable;
     let operation;
@@ -76,5 +104,12 @@ export class ScenarioEditComponent implements OnInit {
     this.scenario.set(scenario);
     this.form.controls.name.setValue(scenario.name!)
     this.form.controls.cron.setValue(scenario.cron!)
+    this.form.controls.train.setValue(this.trains().find(b => b.id === scenario.train?.id) ?? null)
+    this.form.controls.drivingDirection.setValue(scenario.trainDrivingDirection!)
+    this.form.controls.drivingLevel.setValue(scenario.startDrivingLevel!)
   }
+
+  protected readonly SIGNALTYPE = SIGNALTYPE;
+  protected readonly DRIVINGDIRECTION = DRIVINGDIRECTION;
+  protected readonly DRIVINGDIRECTION1 = DRIVINGDIRECTION1;
 }

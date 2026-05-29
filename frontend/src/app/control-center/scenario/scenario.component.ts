@@ -4,7 +4,7 @@ import {MatCard, MatCardContent, MatCardHeader, MatCardTitle} from "@angular/mat
 import {MatTableModule} from "@angular/material/table";
 import {MatIcon} from "@angular/material/icon";
 import {RouterLink} from "@angular/router";
-import {Scenario} from "../../../shared/openapi-gen";
+import {DRIVINGDIRECTION1, Scenario} from "../../../shared/openapi-gen";
 import {MatDialog} from "@angular/material/dialog";
 import {ScenarioService} from "../../shared/scenario.service";
 import {ConfirmDialogComponent} from "../common/confirm-dialog/confirm-dialog.component";
@@ -61,4 +61,6 @@ export class ScenarioComponent implements OnInit {
       }
     });
   }
+
+  protected readonly DRIVINGDIRECTION1 = DRIVINGDIRECTION1;
 }

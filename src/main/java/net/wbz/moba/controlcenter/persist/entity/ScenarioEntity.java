@@ -1,9 +1,11 @@
 package net.wbz.moba.controlcenter.persist.entity;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OrderBy;
 import jakarta.persistence.Table;
 import net.wbz.moba.controlcenter.shared.train.Train;
 
@@ -44,7 +46,8 @@ public class ScenarioEntity extends AbstractEntity {
      * Route to drive from start to end station.
      * TODO: interstations aren't supported yet
      */
-    @OneToMany(mappedBy = "scenario", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "scenario", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OrderBy("position ASC")
     public List<RouteSequenceEntity> routeSequences;
 
     public Long stationPlatformStartId;

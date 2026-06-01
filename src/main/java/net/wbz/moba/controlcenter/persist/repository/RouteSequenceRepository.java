@@ -4,6 +4,8 @@ import io.quarkus.hibernate.orm.panache.PanacheRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import net.wbz.moba.controlcenter.persist.entity.RouteSequenceEntity;
 
+import java.util.List;
+
 /**
  * @author Daniel Tuerk
  */
@@ -16,5 +18,9 @@ public class RouteSequenceRepository implements PanacheRepository<RouteSequenceE
 
     public boolean routeUsedInScenario(Long routeId) {
         return !list("routeId=?1", routeId).isEmpty();
+    }
+
+    public List<RouteSequenceEntity> findByScenario(Long scenarioId) {
+        return list("scenario.id=?1", scenarioId);
     }
 }

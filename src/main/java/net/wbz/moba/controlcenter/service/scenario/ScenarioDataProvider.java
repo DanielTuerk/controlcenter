@@ -7,6 +7,7 @@ import jakarta.enterprise.event.Observes;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import net.wbz.moba.controlcenter.persist.entity.ConstructionEntity;
+import net.wbz.moba.controlcenter.persist.entity.RouteSequenceEntity;
 import net.wbz.moba.controlcenter.persist.entity.ScenarioEntity;
 import net.wbz.moba.controlcenter.persist.repository.ConstructionRepository;
 import net.wbz.moba.controlcenter.persist.repository.RouteSequenceRepository;
@@ -152,6 +153,7 @@ public class ScenarioDataProvider {
         scenarioEntity.stationPlatformEndId = scenario.getStationPlatformEndId();
         scenarioEntity.trainDrivingDirection = scenario.getTrainDrivingDirection();
 
+//        scenarioEntity.routeSequences = scenario.getRouteSequences().stream().map(routeSequenceMapper::toEntity).collect(Collectors.toList());
         createOrUpdateRouteSequences(scenario.getRouteSequences(), scenarioEntity);
 
         scenarioRepository.persist(scenarioEntity);
@@ -165,40 +167,35 @@ public class ScenarioDataProvider {
                 .orElse(null));
     }
 
-//    private Scenario updateTrackForRoutes(Scenario scenario) {
-//        scenario.getRouteSequences().forEach(routeSequence -> {
-//            try {
-//                routeSequence.getRoute().setTrack(trackBuilder.build(routeSequence.getRoute()));
-//            } catch (TrackNotFoundException e) {
-//                log.error("can't build track of route sequence: {} ({})", routeSequence, e.getMessage());
-//            }
-//        });
-//        return scenario;
-//    }
 
     private void createOrUpdateRouteSequences(List<RouteSequence> routeSequences, ScenarioEntity scenarioEntity) {
-        // create or update route sequences
-        // TODO migrate (RESTful)
-//        List<RouteSequenceEntity> entities = new ArrayList<>();
-//        for (RouteSequence routeBlockPart : routeSequences) {
-//            RouteSequenceEntity routeEntity = routeSequenceDataMapper.transformTarget(routeBlockPart);
-//            routeEntity.scenario = scenarioEntity;
-//            if (routeBlockPart.getId() == null) {
-//                routeEntity = routeSequenceRepository.create(routeEntity);
-//            } else {
-//                routeSequenceRepository.update(routeEntity);
-//            }
-//            entities.add(routeEntity);
-//        }
-//        // delete removed route sequences
-//        List<RouteSequenceEntity> routeSequenceEntities = new ArrayList<>(
-//            routeSequenceRepository.findByScenario(scenarioEntity.id));
-//        routeSequenceEntities.removeAll(entities);
-//        for (RouteSequenceEntity routeSequenceEntity : routeSequenceEntities) {
-//            routeSequenceRepository.delete(routeSequenceEntity);
-//        }
-//
-//        // set to actual merged entities
-//        scenarioEntity.routeSequences = entities;
+        final var ids = routeSequences.stream()
+            .map(RouteSequence::getId)
+            .collect(Collectors.toSet());
+        routeSequenceRepository.findByScenario(scenarioEntity.id).stream()
+            .filter(routeSequenceEntity -> !ids.contains(routeSequenceEntity.id))
+            .forEach(entity -> {
+                scenarioEntity.routeSequences.remove(entity);
+                routeSequenceRepository.delete(entity);
+            });
+
+        routeSequences.forEach(routeSequence -> {
+            RouteSequenceEntity routeEntity;
+            if (routeSequence.getId() != null) {
+                routeEntity = routeSequenceRepository.findById(routeSequence.getId());
+                if (routeEntity == null) {
+                    throw new IllegalStateException("RouteSequenceEntity not found: " + routeSequence.getId());
+                }
+            } else {
+                routeEntity = new RouteSequenceEntity();
+            }
+            routeEntity.scenario = scenarioEntity;
+            routeEntity.routeId = routeSequence.getRoute().getId();
+            routeEntity.position = routeSequence.getPosition();
+            routeEntity.endDelayInSeconds = routeSequence.getEndDelayInSeconds();
+            routeSequenceRepository.persist(routeEntity);
+            scenarioEntity.routeSequences.add(routeEntity);
+        });
+
     }
 }

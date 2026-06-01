@@ -18,13 +18,13 @@
         <label>Track: </label>
 
         <mat-button-toggle-group name="selectType"  (change)="onToggleChange($event)">
-          <mat-button-toggle [value]="SELECT_TYPE.START">
+            <mat-button-toggle [value]="SELECT_TYPE.START" [style.background-color]="COLOR_START">
             Start
           </mat-button-toggle>
-          <mat-button-toggle [value]="SELECT_TYPE.END">
+            <mat-button-toggle [value]="SELECT_TYPE.END" [style.background-color]="COLOR_END">
             End
           </mat-button-toggle>
-          <mat-button-toggle [value]="SELECT_TYPE.WAYPOINT">
+            <mat-button-toggle [value]="SELECT_TYPE.WAYPOINT" [style.background-color]="COLOR_WAYPOINT">
             Waypoint
           </mat-button-toggle>
         </mat-button-toggle-group>

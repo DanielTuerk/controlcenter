@@ -1,6 +1,6 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import RouteEditComponent from './route-edit.component';
+import {RouteEditComponent} from './route-edit.component';
 
 describe('RouteEditComponent', () => {
   let component: RouteEditComponent;

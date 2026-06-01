@@ -165,7 +165,7 @@ export class RouteEditComponent {
       },
       error: () => {
         this.trackStatus = false;
-        this.$route().track = {};
+        this.$route().track = undefined;
       }
     });
   }

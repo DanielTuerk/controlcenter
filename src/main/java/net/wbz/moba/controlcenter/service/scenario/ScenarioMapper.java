@@ -7,13 +7,18 @@ import net.wbz.moba.controlcenter.shared.scenario.RouteSequence;
 import net.wbz.moba.controlcenter.shared.scenario.Scenario;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingConstants;
 
 import java.util.List;
 
 /**
  * @author Daniel Tuerk
  */
-@Mapper(componentModel = "cdi", uses = {RouteSequenceMapper.class})
+
+@Mapper(
+    componentModel = MappingConstants.ComponentModel.JAKARTA_CDI,
+    uses = RouteSequenceMapper.class
+)
 public interface ScenarioMapper {
 
     @Mapping(target = "runState", ignore = true)

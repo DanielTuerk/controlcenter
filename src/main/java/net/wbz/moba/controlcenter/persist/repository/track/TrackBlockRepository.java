@@ -13,7 +13,7 @@ import net.wbz.moba.controlcenter.persist.entity.track.TrackBlockEntity;
 public class TrackBlockRepository implements PanacheRepository<TrackBlockEntity> {
 
     public List<TrackBlockEntity> findByConstructionId(Long constructionId) {
-        return list("construction.id=?1", Sort.by("name"), constructionId);
+        return list("constructionId=?1", Sort.by("name"), constructionId);
     }
 
 }

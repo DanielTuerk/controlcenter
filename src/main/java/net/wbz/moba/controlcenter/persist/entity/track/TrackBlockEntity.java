@@ -10,7 +10,6 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import net.wbz.moba.controlcenter.persist.entity.AbstractEntity;
-import net.wbz.moba.controlcenter.persist.entity.ConstructionEntity;
 import net.wbz.moba.controlcenter.shared.track.model.TrackBlock.DRIVING_LEVEL_ADJUST_TYPE;
 
 /**
@@ -29,11 +28,11 @@ public class TrackBlockEntity extends AbstractEntity {
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     public BusDataConfigurationEntity blockFunction;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    public ConstructionEntity construction;
+    @Column(name = "construction_id", nullable = false)
+    public Long constructionId;
 
     /**
-     * Display name for the block.
+     * Display-name for the block.
      */
     public String name;
 

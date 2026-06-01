@@ -18,7 +18,6 @@ import net.wbz.moba.controlcenter.persist.entity.track.SignalEntity;
 import net.wbz.moba.controlcenter.persist.entity.track.StraightEntity;
 import net.wbz.moba.controlcenter.persist.entity.track.TrackBlockEntity;
 import net.wbz.moba.controlcenter.persist.entity.track.TurnoutEntity;
-import net.wbz.moba.controlcenter.persist.repository.ConstructionRepository;
 import net.wbz.moba.controlcenter.persist.repository.track.GridPositionRepository;
 import net.wbz.moba.controlcenter.persist.repository.track.TrackPartRepository;
 import net.wbz.moba.controlcenter.service.constrution.ConstructionService;
@@ -62,8 +61,6 @@ public class TrackPartManager {
     GridPositionRepository gridPositionRepository;
     @Inject
     ConstructionService constructionService;
-    @Inject
-    ConstructionRepository constructionRepository;
 
     @Transactional
     public void update(Long id, AbstractTrackPart updated) {
@@ -117,7 +114,10 @@ public class TrackPartManager {
     private void add(Add action) {
         action.trackPart().setId(null);
         var entity = switch (action.trackPart()) {
-            case BlockStraight blockStraight -> trackPartMapper.toEntity(blockStraight);
+            case BlockStraight blockStraight -> {
+                if (blockStraight.getBlockLength() == 0) blockStraight.setBlockLength(1);
+                yield trackPartMapper.toEntity(blockStraight);
+            }
             case Signal signal -> trackPartMapper.toEntity(signal);
             case Uncoupler uncoupler -> trackPartMapper.toEntity(uncoupler);
             case Turnout turnout -> trackPartMapper.toEntity(turnout);
@@ -126,10 +126,9 @@ public class TrackPartManager {
             default -> throw new IllegalStateException("Unexpected track part type: " + action.trackPart());
         };
         entity.id = null; // TODO ugly: set to null to trigger insert and ignore the negative temp id from UI
-        entity.construction = constructionRepository.findById(
-            constructionService.getCurrentConstruction()
+        entity.constructionId = constructionService.getCurrentConstruction()
                 .orElseThrow(() -> new IllegalStateException("no current construction"))
-                .getId());
+            .getId();
         trackPartRepository.persist(entity);
     }
 
@@ -220,18 +219,19 @@ public class TrackPartManager {
 
             trackPartRepository.persist(trackPartEntity);
         } else {
-            var byGridPositionId = trackPartRepository.findByGridPositionId(
-                existingGridPosEntity.id);
-            if (byGridPositionId.isEmpty()) {
+            // TODO add warning if grid position is already assigned to another track part
+//            var byGridPositionId = trackPartRepository.findByGridPositionId(
+//                existingGridPosEntity.id);
+//            if (byGridPositionId.isEmpty()) {
                 trackPartEntity.gridPosition = existingGridPosEntity;
 
                 trackPartRepository.persist(trackPartEntity);
-            } else {
-                // ignore non-changed grid pos or throw error if assigned to other existing track part
-                throw new IllegalStateException(
-                    "target position (%s) already assigned to track part with id %d".formatted(newGridPosition,
-                        existingGridPosEntity.id));
-            }
+//            } else {
+//                // ignore non-changed grid pos or throw error if assigned to other existing track part
+//                throw new IllegalStateException(
+//                    "target position (%s) already assigned to track part with id %d".formatted(newGridPosition,
+//                        existingGridPosEntity.id));
+//            }
         }
     }
 

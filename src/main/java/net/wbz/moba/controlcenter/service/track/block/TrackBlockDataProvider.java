@@ -3,12 +3,10 @@ package net.wbz.moba.controlcenter.service.track.block;
 import io.quarkus.cache.CacheInvalidateAll;
 import io.quarkus.cache.CacheResult;
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import net.wbz.moba.controlcenter.persist.entity.track.TrackBlockEntity;
-import net.wbz.moba.controlcenter.persist.repository.ConstructionRepository;
 import net.wbz.moba.controlcenter.persist.repository.track.TrackBlockRepository;
 import net.wbz.moba.controlcenter.service.track.BusDataConfigMapper;
 import net.wbz.moba.controlcenter.shared.track.model.TrackBlock;
@@ -20,14 +18,16 @@ import java.util.Optional;
 public class TrackBlockDataProvider {
     private static final String CACHE = "track-block-cache";
 
-    @Inject
-    TrackBlockRepository trackBlockRepository;
-    @Inject
-    BusDataConfigMapper busDataConfigMapper;
-    @Inject
-    ConstructionRepository constructionRepository;
-    @Inject
-    EntityManager entityManager;
+    private final TrackBlockRepository trackBlockRepository;
+    private final BusDataConfigMapper busDataConfigMapper;
+    private final EntityManager entityManager;
+
+    public TrackBlockDataProvider(TrackBlockRepository trackBlockRepository, BusDataConfigMapper busDataConfigMapper,
+                                  EntityManager entityManager) {
+        this.trackBlockRepository = trackBlockRepository;
+        this.busDataConfigMapper = busDataConfigMapper;
+        this.entityManager = entityManager;
+    }
 
     @CacheResult(cacheName = CACHE)
     public List<TrackBlockEntity> load(Long constructionId) {
@@ -43,7 +43,7 @@ public class TrackBlockDataProvider {
     public TrackBlockEntity create(Long constructionId, TrackBlock dto) {
         var entity = new TrackBlockEntity();
         entity.name = dto.getName();
-        entity.construction = constructionRepository.findById(constructionId);
+        entity.constructionId = constructionId;
         entity.feedback = dto.getFeedback();
         entity.blockFunction = busDataConfigMapper.toEntity(dto.getBlockFunction());
         entity.drivingLevelAdjustType = dto.getDrivingLevelAdjustType();

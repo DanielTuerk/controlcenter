@@ -1,7 +1,9 @@
-package net.wbz.moba.controlcenter.it;
+package net.wbz.moba.controlcenter.it.resource;
 
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
+import net.wbz.moba.controlcenter.it.ItUtil;
+import net.wbz.moba.controlcenter.it.WebSocketEventReceiver;
 import net.wbz.moba.controlcenter.shared.viewer.TrackPartStateEvent;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
@@ -23,9 +25,9 @@ class TrackResourceToggleTrackPartTest {
 
     @Test
     void toggleTurnoutAndVerifyEvent() {
-        ItUtil.setCurrentConstruction();
+        final var constructionId = ItUtil.setCurrentConstruction();
         ItUtil.connectTestDevice();
-        var turnoutId = createTurnoutWithToggleFunction();
+        var turnoutId = createTurnoutWithToggleFunction(constructionId);
 
         given()
             .contentType(ContentType.JSON)
@@ -44,21 +46,35 @@ class TrackResourceToggleTrackPartTest {
         );
     }
 
-    private long createTurnoutWithToggleFunction() {
+    private long createTurnoutWithToggleFunction(Long constructionId) {
         // Create a Turnout at (4,4) with a valid toggle function (bus=0,address=4,bit=1)
-        String payload = "{" +
-            "\"addActions\":[{" +
-            "\"trackPart\":{" +
-            "\"trackPartType\":\"Turnout\"," +
-            "\"gridPosition\":{\"x\":4,\"y\":4}," +
-            "\"currentDirection\":\"RIGHT\"," +
-            "\"currentPresentation\":\"LEFT_TO_RIGHT\"," +
-            "\"toggleFunction\":{\"bus\":1,\"address\":4,\"bit\":1,\"bitState\":true}" +
-            "}" +
-            "}]," +
-            "\"moveActions\":[]," +
-            "\"rotateActions\":[]" +
-            "}";
+        String payload = """
+            {
+              "addActions": [
+                {
+                  "trackPart": {
+                    "constructionId": %d,
+                    "trackPartType": "Turnout",
+                    "gridPosition": {
+                      "x": 4,
+                      "y": 4
+                    },
+                    "currentDirection": "RIGHT",
+                    "currentPresentation": "LEFT_TO_RIGHT",
+                    "toggleFunction": {
+                      "bus": 1,
+                      "address": 4,
+                      "bit": 1,
+                      "bitState": true
+                    }
+                  }
+                }
+              ],
+              "moveActions": [],
+              "rotateActions": []
+            }
+            """.formatted(constructionId);
+
 
         given()
             .contentType(ContentType.JSON)

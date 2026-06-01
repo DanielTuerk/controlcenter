@@ -7,7 +7,7 @@ import static org.hamcrest.Matchers.equalTo;
 
 public class ItUtil {
 
-    static void setCurrentConstruction() {
+    public static Long setCurrentConstruction() {
         Long constructionId = given()
             .when().get("/api/constructions")
             .then()
@@ -24,9 +24,10 @@ public class ItUtil {
             .then()
             .statusCode(200)
             .body("id", equalTo(constructionId.intValue()));
+        return constructionId;
     }
 
-    static void connectTestDevice() {
+    public static void connectTestDevice() {
         disconnectTestDevice(false);
         var deviceId = given()
             .when().get("/api/devices")
@@ -45,11 +46,11 @@ public class ItUtil {
             .statusCode(200);
     }
 
-    static void disconnectTestDevice() {
+    public static void disconnectTestDevice() {
         disconnectTestDevice(true);
     }
 
-    static void disconnectTestDevice(boolean verify) {
+    public static void disconnectTestDevice(boolean verify) {
         final var then = given()
             .contentType(ContentType.JSON)
             .when()

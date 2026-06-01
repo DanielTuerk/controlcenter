@@ -1,8 +1,10 @@
-package net.wbz.moba.controlcenter.it;
+package net.wbz.moba.controlcenter.it.resource;
 
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import net.wbz.moba.controlcenter.it.ItUtil;
+import net.wbz.moba.controlcenter.it.WebSocketEventReceiver;
 import net.wbz.moba.controlcenter.shared.bus.BusDataEvent;
 import net.wbz.moba.controlcenter.shared.track.model.TrackChangedEvent;
 import org.junit.jupiter.api.BeforeAll;

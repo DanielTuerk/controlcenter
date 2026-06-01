@@ -1,7 +1,9 @@
-package net.wbz.moba.controlcenter.it;
+package net.wbz.moba.controlcenter.it.resource;
 
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
+import net.wbz.moba.controlcenter.it.ItUtil;
+import net.wbz.moba.controlcenter.it.WebSocketEventReceiver;
 import net.wbz.moba.controlcenter.shared.device.DeviceConnectionEvent;
 import net.wbz.moba.controlcenter.shared.device.DeviceDataChangedEvent;
 import org.junit.jupiter.api.MethodOrderer;

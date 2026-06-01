@@ -1,9 +1,11 @@
-package net.wbz.moba.controlcenter.it;
+package net.wbz.moba.controlcenter.it.resource;
 
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import net.wbz.moba.controlcenter.shared.scenario.ScenarioDataChangedEvent;
+import net.wbz.moba.controlcenter.it.ItUtil;
+import net.wbz.moba.controlcenter.it.WebSocketEventReceiver;
+import net.wbz.moba.controlcenter.shared.scenario.RouteDataChangedEvent;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
@@ -15,7 +17,7 @@ import static org.hamcrest.Matchers.*;
 
 @QuarkusTest
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-class ScenarioResourceTest {
+class RouteResourceTest {
     private static final WebSocketEventReceiver EVENT_RECEIVER = new WebSocketEventReceiver();
 
     @BeforeAll
@@ -26,9 +28,9 @@ class ScenarioResourceTest {
 
     @Test
     @Order(1)
-    void testListAllScenarios() {
+    void testListAllRoutes() {
         given()
-            .when().get("/api/scenarios")
+            .when().get("/api/routes")
             .then()
             .statusCode(200)
             .body("$", isA(java.util.List.class));
@@ -36,19 +38,19 @@ class ScenarioResourceTest {
 
     @Test
     @Order(2)
-    void testGetScenarioById_NotFound() {
+    void testGetRouteById_NotFound() {
         given()
             .pathParam("id", 999L)
-            .when().get("/api/scenarios/{id}")
+            .when().get("/api/routes/{id}")
             .then()
             .statusCode(404);
     }
 
     @Test
     @Order(3)
-    void testCreateScenario() {
+    void testCreateRoute() {
         int initialCount = given()
-            .when().get("/api/scenarios")
+            .when().get("/api/routes")
             .then()
             .statusCode(200)
             .extract()
@@ -56,35 +58,35 @@ class ScenarioResourceTest {
             .getList("$")
             .size();
 
-        var scenarioId = given()
+        var routeId = given()
             .contentType(ContentType.JSON)
-            .body("{\"name\":\"IT-SCENARIO-1\",\"mode\":\"MANUAL\",\"routeSequences\":[]}")
+            .body("{\"name\":\"IT-ROUTE-1\",\"oneway\":true,\"waypoints\":[]}")
             .when()
-            .post("/api/scenarios")
+            .post("/api/routes")
             .then()
             .statusCode(201)
-            .body("name", equalTo("IT-SCENARIO-1"))
+            .body("name", equalTo("IT-ROUTE-1"))
             .extract()
             .jsonPath()
             .getLong("id");
 
         // Verify WebSocket event was received with CREATE action type
-        EVENT_RECEIVER.verifyReceivedEvent(ScenarioDataChangedEvent.class, "\"itemId\":" + scenarioId, "\"type\":\"CREATE\"");
+        EVENT_RECEIVER.verifyReceivedEvent(RouteDataChangedEvent.class, "\"itemId\":" + routeId, "\"type\":\"CREATE\"");
 
         // Verify created
         given()
-            .when().get("/api/scenarios")
+            .when().get("/api/routes")
             .then()
             .statusCode(200)
             .body("$", hasSize(initialCount + 1))
-            .body("find { it.name == 'IT-SCENARIO-1' }.name", equalTo("IT-SCENARIO-1"));
+            .body("find { it.name == 'IT-ROUTE-1' }.name", equalTo("IT-ROUTE-1"));
     }
 
     @Test
     @Order(4)
-    void testGetScenarioById_Found() {
-        Long scenarioId = given()
-            .when().get("/api/scenarios")
+    void testGetRouteById_Found() {
+        Long routeId = given()
+            .when().get("/api/routes")
             .then()
             .statusCode(200)
             .extract()
@@ -92,23 +94,23 @@ class ScenarioResourceTest {
             .getLong("[0].id");
 
         given()
-            .pathParam("id", scenarioId)
-            .when().get("/api/scenarios/{id}")
+            .pathParam("id", routeId)
+            .when().get("/api/routes/{id}")
             .then()
             .statusCode(200)
-            .body("id", equalTo(scenarioId.intValue()))
+            .body("id", equalTo(routeId.intValue()))
             .body("name", notNullValue());
     }
 
     @Test
     @Order(5)
-    void testUpdateScenario() {
-        // Create dedicated scenario for update
-        Long scenarioId = given()
+    void testUpdateRoute() {
+        // Create dedicated route for update
+        Long routeId = given()
             .contentType(ContentType.JSON)
-            .body("{\"name\":\"IT-SCENARIO-TO-UPDATE\",\"mode\":\"MANUAL\",\"routeSequences\":[]}")
+            .body("{\"name\":\"IT-ROUTE-TO-UPDATE\",\"oneway\":true,\"waypoints\":[]}")
             .when()
-            .post("/api/scenarios")
+            .post("/api/routes")
             .then()
             .statusCode(201)
             .extract()
@@ -117,48 +119,50 @@ class ScenarioResourceTest {
 
         given()
             .contentType(ContentType.JSON)
-            .body("{\"name\":\"IT-SCENARIO-UPDATED\",\"mode\":\"MANUAL\",\"cron\":\"0 0 0 * * ?\",\"routeSequences\":[],\"train\":{\"id\":1,\"name\":\"TEST\",\"address\":1}}")
-            .pathParam("id", scenarioId)
+            .body("{\"name\":\"IT-ROUTE-UPDATED\",\"oneway\":false,\"waypoints\":[]}")
+            .pathParam("id", routeId)
             .when()
-            .put("/api/scenarios/{id}")
+            .put("/api/routes/{id}")
             .then()
             .statusCode(200)
-            .body("name", equalTo("IT-SCENARIO-UPDATED"));
+            .body("name", equalTo("IT-ROUTE-UPDATED"))
+            .body("oneway", equalTo(false));
 
         // Verify WebSocket event was received for update with UPDATE action type
-        EVENT_RECEIVER.verifyReceivedEvent(ScenarioDataChangedEvent.class, "\"itemId\":" + scenarioId, "\"type\":\"UPDATE\"");
+        EVENT_RECEIVER.verifyReceivedEvent(RouteDataChangedEvent.class, "\"itemId\":" + routeId, "\"type\":\"UPDATE\"");
 
         // Verify update
         given()
-            .pathParam("id", scenarioId)
-            .when().get("/api/scenarios/{id}")
+            .pathParam("id", routeId)
+            .when().get("/api/routes/{id}")
             .then()
             .statusCode(200)
-            .body("name", equalTo("IT-SCENARIO-UPDATED"));
+            .body("name", equalTo("IT-ROUTE-UPDATED"))
+            .body("oneway", equalTo(false));
     }
 
     @Test
     @Order(6)
-    void testUpdateScenario_NotFound() {
+    void testUpdateRoute_NotFound() {
         given()
             .contentType(ContentType.JSON)
-            .body("{\"name\":\"NOT-EXIST\",\"mode\":\"MANUAL\",\"routeSequences\":[]}")
+            .body("{\"name\":\"NOT-EXIST\",\"oneway\":true,\"waypoints\":[]}")
             .pathParam("id", 999L)
             .when()
-            .put("/api/scenarios/{id}")
+            .put("/api/routes/{id}")
             .then()
             .statusCode(404);
     }
 
     @Test
     @Order(7)
-    void testDeleteScenario() {
-        // Create a scenario to delete
-        Long scenarioId = given()
+    void testDeleteRoute() {
+        // Create a route to delete
+        Long routeId = given()
             .contentType(ContentType.JSON)
-            .body("{\"name\":\"IT-SCENARIO-TO-DELETE\",\"mode\":\"MANUAL\",\"routeSequences\":[]}")
+            .body("{\"name\":\"IT-ROUTE-TO-DELETE\",\"oneway\":true,\"waypoints\":[]}")
             .when()
-            .post("/api/scenarios")
+            .post("/api/routes")
             .then()
             .statusCode(201)
             .extract()
@@ -167,33 +171,46 @@ class ScenarioResourceTest {
 
         // Delete
         given()
-            .pathParam("id", scenarioId)
+            .pathParam("id", routeId)
             .when()
-            .delete("/api/scenarios/{id}")
+            .delete("/api/routes/{id}")
             .then()
             .statusCode(204);
 
         // Verify delete event with DELETE action type
-        EVENT_RECEIVER.verifyReceivedEvent(ScenarioDataChangedEvent.class, "\"itemId\":" + scenarioId, "\"type\":\"DELETE\"");
+        EVENT_RECEIVER.verifyReceivedEvent(RouteDataChangedEvent.class, "\"itemId\":" + routeId, "\"type\":\"DELETE\"");
 
         // Verify it is gone
         given()
-            .pathParam("id", scenarioId)
-            .when().get("/api/scenarios/{id}")
+            .pathParam("id", routeId)
+            .when().get("/api/routes/{id}")
             .then()
             .statusCode(404);
     }
 
     @Test
     @Order(8)
-    void testDeleteScenario_NotFound() {
+    void testDeleteRoute_NotFound() {
         given()
+            .contentType(ContentType.JSON)
             .pathParam("id", 999L)
             .when()
-            .delete("/api/scenarios/{id}")
+            .delete("/api/routes/{id}")
             .then()
             .statusCode(404);
     }
 
+    @Test
+    @Order(9)
+    void testBuildTrack_RouteNotFound() {
+        // Try to build track for a non-existent route
+        given()
+            .contentType(ContentType.JSON)
+            .body("{\"id\":999,\"name\":\"ROUTE-NOT-EXIST\",\"oneway\":true,\"waypoints\":[]}")
+            .when()
+            .post("/api/routes/build-track")
+            .then()
+            .statusCode(406);
+    }
 }
 

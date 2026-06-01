@@ -126,9 +126,11 @@ public class TrackPartManager {
             default -> throw new IllegalStateException("Unexpected track part type: " + action.trackPart());
         };
         entity.id = null; // TODO ugly: set to null to trigger insert and ignore the negative temp id from UI
-        entity.constructionId = constructionService.getCurrentConstruction()
-                .orElseThrow(() -> new IllegalStateException("no current construction"))
+        final var constructionId = constructionService.getCurrentConstruction()
+            .orElseThrow(() -> new IllegalStateException("no current construction"))
             .getId();
+        entity.constructionId = constructionId;
+        entity.gridPosition.constructionId = constructionId;
         trackPartRepository.persist(entity);
     }
 

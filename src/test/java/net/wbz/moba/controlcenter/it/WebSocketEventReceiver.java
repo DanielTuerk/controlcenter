@@ -16,15 +16,36 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 @Slf4j
-class WebSocketEventReceiver {
+public class WebSocketEventReceiver {
 
     private static final String WEBSOCKET_URL = "ws://localhost:8081/websocket";
     private final List<String> receivedMessages = new ArrayList<>();
     private final Object messageLock = new Object();
     private volatile String clientId;
 
-    WebSocketEventReceiver() {
+    public WebSocketEventReceiver() {
         ensureWebSocketConnected();
+    }
+
+    public <E extends Event> void verifyReceivedEvent(Class<E> eventClazz, String... messageContains) {
+        await()
+            .atMost(5, TimeUnit.SECONDS)
+            .pollInterval(50, TimeUnit.MILLISECONDS)
+            .until(() -> {
+                synchronized (messageLock) {
+                    return receivedMessages.stream().peek(msg -> log.info("Received WebSocket message: {}", msg))
+                        .anyMatch(msg -> msg.startsWith(eventClazz.getSimpleName() + ": ")
+                            && java.util.Arrays.stream(messageContains).allMatch(msg::contains));
+                }
+            });
+    }
+
+    public String getClientId() {
+        await()
+            .atMost(5, TimeUnit.SECONDS)
+            .pollInterval(50, TimeUnit.MILLISECONDS)
+            .until(() -> clientId != null && !clientId.isBlank());
+        return clientId;
     }
 
     /**
@@ -68,26 +89,5 @@ class WebSocketEventReceiver {
         } catch (InterruptedException e) {
             throw new RuntimeException("error by starting awaitility", e);
         }
-    }
-
-    <E extends Event> void verifyReceivedEvent(Class<E> eventClazz, String... messageContains) {
-        await()
-            .atMost(5, TimeUnit.SECONDS)
-            .pollInterval(50, TimeUnit.MILLISECONDS)
-            .until(() -> {
-                synchronized (messageLock) {
-                    return receivedMessages.stream().peek(msg -> log.info("Received WebSocket message: {}", msg))
-                        .anyMatch(msg -> msg.startsWith(eventClazz.getSimpleName() + ": ")
-                            && java.util.Arrays.stream(messageContains).allMatch(msg::contains));
-                }
-            });
-    }
-
-    String getClientId() {
-        await()
-            .atMost(5, TimeUnit.SECONDS)
-            .pollInterval(50, TimeUnit.MILLISECONDS)
-            .until(() -> clientId != null && !clientId.isBlank());
-        return clientId;
     }
 }

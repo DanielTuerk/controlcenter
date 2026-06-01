@@ -1,7 +1,9 @@
-package net.wbz.moba.controlcenter.it;
+package net.wbz.moba.controlcenter.it.resource;
 
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
+import net.wbz.moba.controlcenter.it.ItUtil;
+import net.wbz.moba.controlcenter.it.WebSocketEventReceiver;
 import net.wbz.moba.controlcenter.shared.train.TrainDrivingDirectionEvent;
 import net.wbz.moba.controlcenter.shared.train.TrainDrivingLevelEvent;
 import net.wbz.moba.controlcenter.shared.train.TrainHornStateEvent;

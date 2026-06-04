@@ -82,7 +82,7 @@ class TrainResourceTest {
             .statusCode(200)
             .extract()
             .jsonPath()
-            .getLong("[0].id");
+            .getLong("[0].routeSequenceId");
 
         given()
             .pathParam("id", trainId)

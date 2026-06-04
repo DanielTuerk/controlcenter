@@ -1,5 +1,7 @@
 package net.wbz.moba.controlcenter.service.train;
 
+import io.quarkus.runtime.Startup;
+import io.smallrye.common.annotation.Blocking;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Observes;
 import jakarta.inject.Inject;
@@ -33,6 +35,8 @@ import java.util.stream.Collectors;
  * Implementation of the {@link TrainService}.
  */
 @Slf4j
+@Blocking
+@Startup
 @ApplicationScoped
 public class TrainService {
 
@@ -159,6 +163,7 @@ public class TrainService {
     public void updateDrivingLevel(long id, int level) {
         updateDrivingLevel(getTrain(id), level);
     }
+
 
     public void updateDrivingLevel(Train train, int level) {
         if (level >= 0 && level <= 31) {

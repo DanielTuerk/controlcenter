@@ -32,21 +32,13 @@ class BusResourceTest {
     @Test
     @Order(2)
     void testFetchRailVoltage() {
-        given()
-            .when().get("/api/bus/railvoltage")
-            .then()
-            .statusCode(200)
-            .body(notNullValue());
+        ItUtil.fetchRailVoltage();
     }
 
     @Test
     @Order(3)
     void testToggleRailVoltageAndVerifyEvent() {
-        given()
-            .contentType(ContentType.JSON)
-            .when().post("/api/bus/railvoltage")
-            .then()
-            .statusCode(200);
+        ItUtil.toggleRailvoltage();
 
         // Verify a RailVoltageEvent was received (no need to assert payload content here)
         EVENT_RECEIVER.verifyReceivedEvent(RailVoltageEvent.class);
@@ -96,12 +88,7 @@ class BusResourceTest {
         int address = 98;
         int value = 12;
 
-        given()
-            .contentType(ContentType.JSON)
-            .body("{\"bus\":" + bus + ",\"address\":" + address + ",\"value\":" + value + "}")
-            .when().post("/api/bus/bus-data")
-            .then()
-            .statusCode(200);
+        ItUtil.sendBusData(bus, address, value);
 
         // Verify BusDataEvent targeted to our websocket client (type + bus/address are sufficient)
         EVENT_RECEIVER.verifyReceivedEvent(BusDataEvent.class, "\"bus\":" + bus, "\"address\":" + address);
@@ -117,7 +104,13 @@ class BusResourceTest {
 
         given()
             .contentType(ContentType.JSON)
-            .body("{\"bus\":" + bus + ",\"address\":" + address + ",\"bit\":" + bit + ",\"state\":" + state + "}")
+            .body("""
+                {
+                    "bus":%d,
+                    "address":%d,
+                    "bit":%d,
+                    "state":%s
+                }""".formatted(bus, address, bit, state))
             .when().post("/api/bus/bus-bit")
             .then()
             .statusCode(200);

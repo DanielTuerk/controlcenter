@@ -1,4 +1,4 @@
-package net.wbz.moba.controlcenter.service.scenario.execution;
+package net.wbz.moba.controlcenter.service.scenario.execution.route;
 
 import net.wbz.moba.controlcenter.shared.scenario.Route;
 import net.wbz.selectrix4java.block.BlockListener;
@@ -6,7 +6,7 @@ import net.wbz.selectrix4java.block.FeedbackBlockListener;
 
 /**
  * Implementation of {@link FeedbackBlockListener} for the end block of the {@link Route}.
- * If the train enter the end block, the listener will call the {@link #trainEnterRouteEnd()}.
+ * If the train enters the end block, the listener will call the {@link #trainEnterRouteEnd()}.
  * There could be any train to trigger the occupied state but the block is reserved for the train of the
  * {@link net.wbz.moba.controlcenter.shared.scenario.Scenario} and there should be no other one during the
  * execution.
@@ -36,7 +36,7 @@ abstract class RouteEndBlockListener implements BlockListener {
     }
 
     /**
-     * Train reach the end block of the route.
+     * The train reached the end block of the route.
      */
     protected abstract void trainEnterRouteEnd();
 

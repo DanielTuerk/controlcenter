@@ -30,7 +30,7 @@ class CurrentConstructionResourceTest {
     @Test
     @Order(2)
     void testSetCurrent_WithValidId_ThenVerifyGet() {
-        // obtain an existing construction id
+        // obtain an existing construction routeSequenceId
         Long firstId = given()
             .when().get("/api/constructions")
             .then()
@@ -80,7 +80,7 @@ class CurrentConstructionResourceTest {
     @Test
     @Order(4)
     void testChangeCurrent_ToAnotherValidId() {
-        // get another existing construction id (different from the first)
+        // get another existing construction routeSequenceId (different from the first)
         Long secondId = given()
             .when().get("/api/constructions")
             .then()

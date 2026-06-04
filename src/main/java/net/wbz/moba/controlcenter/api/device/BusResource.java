@@ -8,6 +8,7 @@ import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
@@ -66,6 +67,16 @@ public class BusResource {
         return Response.ok().build();
     }
 
+    @GET
+    @Path("/bus-address-data")
+    public Response busData(@QueryParam("bus") int bus, @QueryParam("address") int address) {
+        try {
+            return Response.ok(busService.fetchBusData(bus, address)).build();
+        } catch (DeviceAccessException e) {
+            log.error("Failed to fetch bus data", e);
+            return Response.status(Status.UNAVAILABLE_FOR_LEGAL_REASONS).build();
+        }
+    }
 
     @POST
     @Path("/start-tracking-bus")

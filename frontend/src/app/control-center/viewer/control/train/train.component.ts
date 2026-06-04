@@ -106,10 +106,6 @@ export class TrainComponent implements OnInit {
     return this.trains().find(e => e.train.id == id)!;
   }
 
-  // private getTrain(id: Number | undefined): Train {
-  //   return this.getTrainData(id).train;
-  // }
-
   protected stopTrain(train: Train) {
     this.changeDrivingLevel(train, 0);
   }

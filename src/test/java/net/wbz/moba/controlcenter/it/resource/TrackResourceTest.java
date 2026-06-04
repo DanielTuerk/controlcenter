@@ -81,7 +81,7 @@ class TrackResourceTest {
     @Test
     @Order(4)
     void testListContainsCreatedStraight_AndGetById() {
-        // extract id of the just created straight at (1,1)
+        // extract routeSequenceId of the just created straight at (1,1)
         createdTrackPartId = given()
             .when().get("/api/track")
             .then()
@@ -89,7 +89,7 @@ class TrackResourceTest {
             .body("find { it.trackPartType == 'Straight' && it.gridPosition.x == 1 && it.gridPosition.y == 1 }", notNullValue())
             .extract()
             .jsonPath()
-            .getLong("find { it.trackPartType == 'Straight' && it.gridPosition.x == 1 && it.gridPosition.y == 1 }.id");
+            .getLong("find { it.trackPartType == 'Straight' && it.gridPosition.x == 1 && it.gridPosition.y == 1 }.routeSequenceId");
 
         given()
             .pathParam("id", createdTrackPartId)
@@ -133,7 +133,7 @@ class TrackResourceTest {
             .then()
             .statusCode(200);
 
-        // 3) Find the created turnout id at (2,2)
+        // 3) Find the created turnout routeSequenceId at (2,2)
         Long turnoutId = given()
             .when().get("/api/track")
             .then()
@@ -141,7 +141,7 @@ class TrackResourceTest {
             .body("find { it.trackPartType == 'Turnout' && it.gridPosition.x == 2 && it.gridPosition.y == 2 }", notNullValue())
             .extract()
             .jsonPath()
-            .getLong("find { it.trackPartType == 'Turnout' && it.gridPosition.x == 2 && it.gridPosition.y == 2 }.id");
+            .getLong("find { it.trackPartType == 'Turnout' && it.gridPosition.x == 2 && it.gridPosition.y == 2 }.routeSequenceId");
 
         // 4) Toggle it; on CI some environments may not provide a real device and respond 500
         int toggleStatus = given()

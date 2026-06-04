@@ -144,6 +144,11 @@ public class BusService {
         );
     }
 
+    public int fetchBusData(int busNr, int address) throws DeviceAccessException {
+        final var notConnected = deviceService.getConnectedDevice().orElseThrow(() -> new DeviceAccessException("not connected"));
+        return Byte.valueOf(notConnected.getBusAddress(busNr, (byte) address).getData()).intValue();
+    }
+
     public void startRecording(String fileName) {
         deviceService.getConnectedDevice()
             .ifPresent(device -> deviceRecorder.startRecording(device, null));

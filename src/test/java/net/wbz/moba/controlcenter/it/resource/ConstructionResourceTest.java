@@ -39,7 +39,7 @@ class ConstructionResourceTest {
             .statusCode(200)
             .extract()
             .jsonPath()
-            .getLong("[0].id");
+            .getLong("[0].routeSequenceId");
 
         given()
             .pathParam("id", constructionId)
@@ -107,7 +107,7 @@ class ConstructionResourceTest {
             .statusCode(200)
             .extract()
             .jsonPath()
-            .getLong("[0].id");
+            .getLong("[0].routeSequenceId");
 
         // Update the construction
         given()
@@ -188,7 +188,7 @@ class ConstructionResourceTest {
             .statusCode(200)
             .extract()
             .jsonPath()
-            .getLong("[0].id");
+            .getLong("[0].routeSequenceId");
 
         // Try to delete - this might fail if it's the current construction or has dependencies
         given()

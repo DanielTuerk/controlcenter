@@ -51,7 +51,7 @@ class TrackResourceSignalSwitchTest {
             .then()
             .statusCode(200);
 
-        // Find created signal id
+        // Find created signal routeSequenceId
         signalId = given()
             .when().get("/api/track")
             .then()
@@ -59,7 +59,7 @@ class TrackResourceSignalSwitchTest {
             .body("find { it.trackPartType == 'Signal' && it.gridPosition.x == 3 && it.gridPosition.y == 3 }", notNullValue())
             .extract()
             .jsonPath()
-            .getLong("find { it.trackPartType == 'Signal' && it.gridPosition.x == 3 && it.gridPosition.y == 3 }.id");
+            .getLong("find { it.trackPartType == 'Signal' && it.gridPosition.x == 3 && it.gridPosition.y == 3 }.routeSequenceId");
     }
 
     @Test

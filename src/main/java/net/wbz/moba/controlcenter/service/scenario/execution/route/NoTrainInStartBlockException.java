@@ -1,4 +1,4 @@
-package net.wbz.moba.controlcenter.service.scenario.execution;
+package net.wbz.moba.controlcenter.service.scenario.execution.route;
 
 import net.wbz.moba.controlcenter.shared.track.model.BlockStraight;
 import net.wbz.moba.controlcenter.shared.track.model.TrackBlock;

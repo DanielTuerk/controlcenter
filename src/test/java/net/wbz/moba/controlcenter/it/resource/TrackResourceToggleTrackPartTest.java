@@ -38,7 +38,7 @@ class TrackResourceToggleTrackPartTest {
             .statusCode(200);
 
         // Verify TrackPartStateEvent received for this turnoutId and configuration
-        // We assert the id and parts of the configuration (bus/address) to avoid coupling to state value
+        // We assert the routeSequenceId and parts of the configuration (bus/address) to avoid coupling to state value
         EVENT_RECEIVER.verifyReceivedEvent(
             TrackPartStateEvent.class,
             "\"trackPartId\":" + turnoutId,
@@ -46,7 +46,7 @@ class TrackResourceToggleTrackPartTest {
         );
     }
 
-    private long createTurnoutWithToggleFunction(Long constructionId) {
+    private long createTurnoutWithToggleFunction(int constructionId) {
         // Create a Turnout at (4,4) with a valid toggle function (bus=0,address=4,bit=1)
         String payload = """
             {
@@ -84,7 +84,7 @@ class TrackResourceToggleTrackPartTest {
             .then()
             .statusCode(200);
 
-        // Capture created turnout id
+        // Capture created turnout routeSequenceId
         return given()
             .when().get("/api/track")
             .then()
@@ -92,6 +92,6 @@ class TrackResourceToggleTrackPartTest {
             .body("find { it.trackPartType == 'Turnout' && it.gridPosition.x == 4 && it.gridPosition.y == 4 }", notNullValue())
             .extract()
             .jsonPath()
-            .getLong("find { it.trackPartType == 'Turnout' && it.gridPosition.x == 4 && it.gridPosition.y == 4 }.id");
+            .getLong("find { it.trackPartType == 'Turnout' && it.gridPosition.x == 4 && it.gridPosition.y == 4 }.routeSequenceId");
     }
 }

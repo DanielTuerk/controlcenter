@@ -6,7 +6,7 @@ import jakarta.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import net.wbz.moba.controlcenter.BusAddressIdentifier;
 import net.wbz.moba.controlcenter.EventBroadcaster;
-import net.wbz.moba.controlcenter.service.track.block.TrackBlockRegistry;
+import net.wbz.moba.controlcenter.service.track.block.FeedbackTrackBlockRegistry;
 import net.wbz.moba.controlcenter.shared.track.model.AbstractTrackPart;
 import net.wbz.moba.controlcenter.shared.track.model.BusDataConfiguration;
 import net.wbz.moba.controlcenter.shared.track.model.HasToggleFunction;
@@ -42,15 +42,15 @@ public class TrackRegistration {
     private final DeviceManager deviceManager;
     private final TrackProvider trackProvider;
     private final EventBroadcaster eventBroadcaster;
-    private final TrackBlockRegistry trackBlockRegistry;
+    private final FeedbackTrackBlockRegistry feedbackTrackBlockRegistry;
 
     @Inject
     public TrackRegistration(DeviceManager deviceManager, TrackProvider trackProvider,
-        EventBroadcaster eventBroadcaster, TrackBlockRegistry trackBlockRegistry) {
+                             EventBroadcaster eventBroadcaster, FeedbackTrackBlockRegistry feedbackTrackBlockRegistry) {
         this.deviceManager = deviceManager;
         this.trackProvider = trackProvider;
         this.eventBroadcaster = eventBroadcaster;
-        this.trackBlockRegistry = trackBlockRegistry;
+        this.feedbackTrackBlockRegistry = feedbackTrackBlockRegistry;
         deviceManager.addDeviceConnectionListener(new DeviceConnectionListener() {
             @Override
             public void connected(Device device) {
@@ -89,7 +89,7 @@ public class TrackRegistration {
     private void unregisterTrack(Device device) {
         log.debug("unregister track from: " + device.getDeviceId());
         try {
-            trackBlockRegistry.removeListeners(device);
+            feedbackTrackBlockRegistry.removeListeners(device);
         } catch (DeviceAccessException e) {
             log.error("Failed to remove track block listeners for device " + device, e);
         }
@@ -109,7 +109,7 @@ public class TrackRegistration {
         }
 
         try {
-            trackBlockRegistry.registerListeners(device);
+            feedbackTrackBlockRegistry.registerListeners(device);
         } catch (DeviceAccessException e) {
             log.error("can't register track block listeners to active device", e);
         }

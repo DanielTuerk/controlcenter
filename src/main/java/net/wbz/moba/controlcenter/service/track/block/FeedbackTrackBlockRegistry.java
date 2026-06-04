@@ -2,7 +2,6 @@ package net.wbz.moba.controlcenter.service.track.block;
 
 import io.vertx.core.impl.ConcurrentHashSet;
 import jakarta.enterprise.event.Observes;
-import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
 import net.wbz.moba.controlcenter.BusAddressIdentifier;
@@ -16,6 +15,8 @@ import net.wbz.moba.controlcenter.shared.track.model.BusDataConfiguration;
 import net.wbz.moba.controlcenter.shared.track.model.TrackBlock;
 import net.wbz.moba.controlcenter.shared.track.model.TrackBlock.DRIVING_LEVEL_ADJUST_TYPE;
 import net.wbz.moba.controlcenter.shared.viewer.TrackPartBlockEvent;
+import net.wbz.selectrix4java.block.BlockListener;
+import net.wbz.selectrix4java.block.BlockModule;
 import net.wbz.selectrix4java.block.FeedbackBlockListener;
 import net.wbz.selectrix4java.block.FeedbackBlockModule;
 import net.wbz.selectrix4java.device.Device;
@@ -36,19 +37,23 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 @Slf4j
 @Singleton
-public class TrackBlockRegistry {
+public class FeedbackTrackBlockRegistry {
 
-    @Inject
-    EventBroadcaster eventBroadcaster;
-    @Inject
-    TrainService trainService;
-    @Inject
-    TrainManager trainManager;
-    @Inject
-    TrackBlockManager trackBlockManager;
+    private final EventBroadcaster eventBroadcaster;
+    private final TrainService trainService;
+    private final TrainManager trainManager;
+    private final TrackBlockManager trackBlockManager;
 
-    private final Map<TrackBlock, FeedbackBlockListener> feedbackBlockListeners = new ConcurrentHashMap<>();
+    private final Map<TrackBlock, BlockListener> feedbackBlockListeners = new ConcurrentHashMap<>();
     private final Map<TrackBlock, Set<Long>> trainsOnBlocks = new ConcurrentHashMap<>();
+
+    public FeedbackTrackBlockRegistry(EventBroadcaster eventBroadcaster, TrainService trainService,
+                                      TrainManager trainManager, TrackBlockManager trackBlockManager) {
+        this.eventBroadcaster = eventBroadcaster;
+        this.trainService = trainService;
+        this.trainManager = trainManager;
+        this.trackBlockManager = trackBlockManager;
+    }
 
     public void onCurrentConstructionChanged(@Observes CurrentConstructionChangeEvent event) {
         log.info("current construction changed for ID: {}, refreshing track blocks...", event.construction().getId());
@@ -62,65 +67,93 @@ public class TrackBlockRegistry {
 
             if (checkBlockFunction(trackBlock)) {
 
-                final BusDataConfiguration blockFunction = trackBlock.getBlockFunction();
-                addFeedbackBlockListener(trackBlock, new FeedbackBlockListener() {
-                    @Override
-                    public void trainEnterBlock(int blockNumber, int trainAddress, boolean forward) {
-                        if (blockNumber == blockFunction.getBit()) {
-                            handleTrainOnBlock(true, blockNumber, trainAddress, forward, trackBlock);
+                final var blockFunction = trackBlock.getBlockFunction();
+                if (trackBlock.getFeedback()) {
+                    addBlockListener(trackBlock, new FeedbackBlockListener() {
+                        @Override
+                        public void trainEnterBlock(int blockNumber, int trainAddress, boolean forward) {
+                            if (blockNumber == blockFunction.getBit()) {
+                                handleTrainOnBlock(true, blockNumber, trainAddress, forward, trackBlock);
+                            }
                         }
-                    }
 
-                    @Override
-                    public void trainLeaveBlock(int blockNumber, int trainAddress, boolean forward) {
-                        if (blockNumber == blockFunction.getBit()) {
-                            handleTrainOnBlock(false, blockNumber, trainAddress, forward, trackBlock);
+                        @Override
+                        public void trainLeaveBlock(int blockNumber, int trainAddress, boolean forward) {
+                            if (blockNumber == blockFunction.getBit()) {
+                                handleTrainOnBlock(false, blockNumber, trainAddress, forward, trackBlock);
+                            }
                         }
-                    }
 
-                    @Override
-                    public void blockOccupied(int blockNr) {
-                        if (blockNr == blockFunction.getBit()) {
-                            fireBlockEvent(true);
+                        @Override
+                        public void blockOccupied(int blockNr) {
+                            if (blockNr == blockFunction.getBit()) {
+                                fireBlockEvent(true, blockFunction);
+                            }
                         }
-                    }
 
-                    @Override
-                    public void blockFreed(int blockNr) {
-                        if (blockNr == blockFunction.getBit()) {
-                            fireBlockEvent(false);
+                        @Override
+                        public void blockFreed(int blockNr) {
+                            if (blockNr == blockFunction.getBit()) {
+                                fireBlockEvent(false, blockFunction);
+                            }
                         }
-                    }
+                    });
+                } else {
+                    addBlockListener(trackBlock, new BlockListener() {
 
-                    private void fireBlockEvent(boolean bitState) {
-                        eventBroadcaster.fireEvent(new TrackPartBlockEvent(blockFunction,
-                            bitState ? TrackPartBlockEvent.BLOCK_STATE.USED : TrackPartBlockEvent.BLOCK_STATE.FREE));
-                    }
-                });
+                        @Override
+                        public void blockOccupied(int blockNr) {
+                            if (blockNr == blockFunction.getBit()) {
+                                fireBlockEvent(true, blockFunction);
+                            }
+                        }
+
+                        @Override
+                        public void blockFreed(int blockNr) {
+                            if (blockNr == blockFunction.getBit()) {
+                                fireBlockEvent(false, blockFunction);
+                            }
+                        }
+                    });
+                }
             }
         }
     }
 
-    private void addFeedbackBlockListener(TrackBlock trackBlock,
-                                          FeedbackBlockListener feedbackBlockListener) {
+    private void fireBlockEvent(boolean bitState, BusDataConfiguration blockFunction) {
+        eventBroadcaster.fireEvent(new TrackPartBlockEvent(blockFunction,
+            bitState ? TrackPartBlockEvent.BLOCK_STATE.USED : TrackPartBlockEvent.BLOCK_STATE.FREE));
+    }
+
+    private void addBlockListener(TrackBlock trackBlock, BlockListener blockListener) {
         if (!feedbackBlockListeners.containsKey(trackBlock)) {
-            feedbackBlockListeners.put(trackBlock, feedbackBlockListener);
+            feedbackBlockListeners.put(trackBlock, blockListener);
         }
     }
 
     public void registerListeners(Device device) throws DeviceAccessException {
-        for (Map.Entry<TrackBlock, FeedbackBlockListener> entry : feedbackBlockListeners.entrySet()) {
-            getFeedbackBlockModule(device, getBusAddressIdentifier(entry.getKey().getBlockFunction()))
-                .ifPresent(feedbackBlockModule ->
-                    feedbackBlockModule.addFeedbackBlockListener(entry.getValue()));
+        for (Map.Entry<TrackBlock, BlockListener> entry : feedbackBlockListeners.entrySet()) {
+            if (entry.getValue() instanceof FeedbackBlockListener) {
+                getFeedbackBlockModule(device, getBusAddressIdentifier(entry.getKey().getBlockFunction()))
+                    .ifPresent(feedbackBlockModule ->
+                        feedbackBlockModule.addFeedbackBlockListener((FeedbackBlockListener) entry.getValue()));
+            } else {
+                getBlockModule(device, getBusAddressIdentifier(entry.getKey().getBlockFunction()))
+                    .ifPresent(blockModule -> blockModule.addBlockListener(entry.getValue()));
+            }
         }
     }
 
     public void removeListeners(Device device) throws DeviceAccessException {
-        for (Map.Entry<TrackBlock, FeedbackBlockListener> entry : feedbackBlockListeners.entrySet()) {
-            getFeedbackBlockModule(device, getBusAddressIdentifier(entry.getKey().getBlockFunction()))
-                .ifPresent(feedbackBlockModule ->
-                    feedbackBlockModule.removeFeedbackBlockListener(entry.getValue()));
+        for (Map.Entry<TrackBlock, BlockListener> entry : feedbackBlockListeners.entrySet()) {
+            if (entry.getValue() instanceof FeedbackBlockListener) {
+                getFeedbackBlockModule(device, getBusAddressIdentifier(entry.getKey().getBlockFunction()))
+                    .ifPresent(feedbackBlockModule ->
+                        feedbackBlockModule.removeFeedbackBlockListener((FeedbackBlockListener) entry.getValue()));
+            } else {
+                getBlockModule(device, getBusAddressIdentifier(entry.getKey().getBlockFunction()))
+                    .ifPresent(blockModule -> blockModule.removeBlockListener(entry.getValue()));
+            }
         }
     }
 
@@ -136,6 +169,14 @@ public class TrackBlockRegistry {
         return device.isConnected() ? Optional.of(SelectrixHelper.getFeedbackBlockModule(device, entry))
             : Optional.empty();
     }
+
+
+    private Optional<BlockModule> getBlockModule(Device device, BusAddressIdentifier entry) throws
+        DeviceAccessException {
+        return device.isConnected() ? Optional.of(SelectrixHelper.getBlockModule(device, entry))
+            : Optional.empty();
+    }
+
 
     private boolean checkBlockFunction(TrackBlock trackBlock) {
         return trackBlock != null && trackBlock.getBlockFunction() != null && trackBlock.getBlockFunction().isValid();

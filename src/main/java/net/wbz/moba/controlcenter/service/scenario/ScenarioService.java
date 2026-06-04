@@ -1,5 +1,6 @@
 package net.wbz.moba.controlcenter.service.scenario;
 
+import io.quarkus.runtime.Startup;
 import io.quarkus.runtime.util.StringUtil;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -7,7 +8,6 @@ import lombok.extern.slf4j.Slf4j;
 import net.wbz.moba.controlcenter.service.scenario.execution.ScenarioExecutor;
 import net.wbz.moba.controlcenter.shared.scenario.Scenario;
 import net.wbz.moba.controlcenter.shared.scenario.Scenario.MODE;
-import net.wbz.moba.controlcenter.shared.scenario.Scenario.RUN_STATE;
 import net.wbz.selectrix4java.device.DeviceManager;
 import org.quartz.CronScheduleBuilder;
 import org.quartz.JobBuilder;
@@ -28,6 +28,7 @@ import java.util.Map;
  */
 @Slf4j
 @ApplicationScoped
+@Startup
 public class ScenarioService {
 
     private static final String JOB_SCENARIO_PREFIX = "job-scenario-";
@@ -76,13 +77,15 @@ public class ScenarioService {
     }
 
     public void start(Scenario scenario) {
+        // TODO refactor mode, remove from scenario
         scenario.setMode(MODE.MANUAL);
 
         startScenario(scenario);
     }
 
     public void schedule(Scenario scenario) {
-        if (scenario.getRunState() != RUN_STATE.RUNNING) {
+        // TODO scheduled
+//        if (scenario.getRunState() != RUN_STATE.RUNNING) {
             var scenarioId = scenario.getId();
             String cron = scenario.getCron();
             if (!StringUtil.isNullOrEmpty(cron)) {
@@ -110,9 +113,9 @@ public class ScenarioService {
             } else {
                 log.error("no cron expression");
             }
-        } else {
-            log.warn("Can't schedule scenario: {} - not in IDLE state (actual {})", scenario, scenario.getRunState());
-        }
+//        } else {
+//            log.warn("Can't schedule scenario: {} - not in IDLE state (actual {})", scenario, scenario.getRunState());
+//        }
     }
 
     public void scheduleAll() {
@@ -161,11 +164,9 @@ public class ScenarioService {
 
     private void startScenario(final Scenario scenario) {
         if (deviceManager.isConnected()) {
-            if (scenario.getRunState() != RUN_STATE.RUNNING) {
-                scenarioExecutor.startScenario(scenario);
-            } else {
-                log.error("scenario already running");
-            }
+            scenarioExecutor.startScenario(scenario);
+        } else {
+            log.error("can't start scenario - no device connected");
         }
     }
 
@@ -174,7 +175,7 @@ public class ScenarioService {
             try {
                 scheduler.unscheduleJob(scenarioTriggerKeys.get(scenarioId));
             } catch (SchedulerException e) {
-                log.error("can't unschedule job for trigger key of scenario id: " + scenarioId);
+                log.error("can't unschedule job for trigger key of scenario id: {}", scenarioId);
             }
         }
     }

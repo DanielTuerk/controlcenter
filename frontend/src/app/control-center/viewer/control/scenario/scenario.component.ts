@@ -7,6 +7,7 @@ import {MatIcon} from "@angular/material/icon";
 import {MatMiniFabButton} from "@angular/material/button";
 import {DeviceService} from "../../../../shared/device.service";
 import {ScenarioSubscription} from "../../../../shared/websocket/scenario.subscription";
+import {CronExpressionParser} from "cron-parser";
 
 export class RouteData {
   id: number;
@@ -24,16 +25,17 @@ export class ScenarioData {
   scenarioId: number;
   name: string;
   runState: RUNSTATE | null;
+  cron: string | null;
   scheduledExecutionTimeAsText: string;
   routes: Array<RouteData>;
 
-  constructor(scenarioId: number, name: string, runState: RUNSTATE | null, scheduledExecutionTimeAsText: string,
-              routes: Array<RouteData>) {
+  constructor(scenarioId: number, name: string, runState: RUNSTATE | null, routes: Array<RouteData>) {
     this.scenarioId = scenarioId;
     this.name = name;
     this.runState = runState;
-    this.scheduledExecutionTimeAsText = scheduledExecutionTimeAsText;
     this.routes = routes;
+    this.scheduledExecutionTimeAsText = '-- : --';
+    this.cron = null
   }
 }
 
@@ -52,8 +54,10 @@ export class ScenarioData {
   styleUrl: './scenario.component.css'
 })
 export class ScenarioComponent implements OnInit {
+  private static readonly EMPTY_TIME_TEXT = '--:--';
   private scenarioService = inject(ScenarioService);
   private scenarioSubscription = inject(ScenarioSubscription);
+
   protected scenarios = signal<ScenarioData[]>([]);
 
   protected isConnected = inject(DeviceService).isConnected;
@@ -65,14 +69,26 @@ export class ScenarioComponent implements OnInit {
       this.scenarioSubscription.scenarioDataChanged().subscribe(() => {
         this.reloadScenarioData();
       });
-      this.scenarioSubscription.routesChanged().subscribe(() => {
+      this.scenarioSubscription.scenariosChanged().subscribe(() => {
         this.reloadScenarioData();
+      });
+
+      this.scenarioSubscription.scenarioSchedule().subscribe((event) => {
+        let scenarioById = this.scenarioById(event.scenarioId!);
+
+        let scheduled = event.on ?? false;
+        if (scheduled) {
+          scenarioById!.cron = event.cron!;
+        } else {
+          scenarioById!.cron = null;
+        }
+        scenarioById!.scheduledExecutionTimeAsText = this.timeStringFromCron(scenarioById!.cron);
       });
 
       this.scenarioSubscription.scenarioStateChanged().subscribe((event) => {
         let scenarioById = this.scenarioById(event.itemId!);
         scenarioById!.runState = event.state ?? null;
-        scenarioById!.scheduledExecutionTimeAsText = event.nextScheduleTimeText ?? '-- : --';
+        scenarioById!.scheduledExecutionTimeAsText = this.timeStringFromCron(scenarioById!.cron);
       });
       this.scenarioSubscription.routeStateChanged().subscribe((event) => {
         if (event.state === ROUTERUNSTATE.Failed) {
@@ -86,7 +102,9 @@ export class ScenarioComponent implements OnInit {
     })
   }
 
-  private readonly EMPTY_TIME_TEXT = '--:--';
+  private timeStringFromCron(cron: string | null): string {
+    return cron === null ? ScenarioComponent.EMPTY_TIME_TEXT : this.cronToFixedTime(cron!);
+  }
 
   private mapData(data: Scenario[]) {
     this.scenarios.set(data.map(scenario => {
@@ -101,7 +119,6 @@ export class ScenarioComponent implements OnInit {
         scenario.id!,
         scenario.name!,
         null,
-        this.EMPTY_TIME_TEXT,
         routes!
       );
     }));
@@ -137,5 +154,29 @@ export class ScenarioComponent implements OnInit {
     this.scenarioService.stopAll();
   }
 
-  protected readonly RUNSTATE = RUNSTATE;
+  protected canBeStarted(scenarioId: number) {
+    return this.isConnected() &&
+      (this.scenarioById(scenarioId)?.runState !== RUNSTATE.Running
+        && this.scenarioById(scenarioId)?.runState !== RUNSTATE.Scheduled);
+  }
+
+  protected canBeScheduled(scenarioId: number) {
+    return this.canBeStarted(scenarioId);
+  }
+
+  protected canBeStopped(scenarioId: number) {
+    return this.isConnected() &&
+      (this.scenarioById(scenarioId)?.runState === RUNSTATE.Running
+        || this.scenarioById(scenarioId)?.runState === RUNSTATE.Scheduled);
+  }
+
+  private cronToFixedTime(cron: string): string {
+    const interval = CronExpressionParser.parse(cron);
+    const nextDate = interval.next().toDate();
+
+    const hours = String(nextDate.getHours()).padStart(2, '0');
+    const minutes = String(nextDate.getMinutes()).padStart(2, '0');
+
+    return `${hours}:${minutes}`;
+  }
 }

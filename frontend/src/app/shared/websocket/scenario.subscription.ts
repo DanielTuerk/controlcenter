@@ -3,6 +3,7 @@ import {
   RouteDataChangedEvent,
   RouteStateEvent,
   ScenarioDataChangedEvent,
+  ScenarioScheduleEvent,
   ScenarioStateEvent
 } from "../../../shared/openapi-gen";
 import {Subscription} from "./subscription";
@@ -12,10 +13,13 @@ import {Subscription} from "./subscription";
 })
 export class ScenarioSubscription extends Subscription {
 
-  readonly routesChanged = this.createEventAccessor<RouteDataChangedEvent>('RouteDataChangedEvent', false);
   readonly scenarioDataChanged = this.createEventAccessor<ScenarioDataChangedEvent>('ScenarioDataChangedEvent', false);
-
-  readonly routeStateChanged = this.createEventAccessor<RouteStateEvent>('RouteStateEvent', true);
+  readonly scenariosChanged = this.createEventAccessor<ScenarioDataChangedEvent>('ScenariosChangedEvent', false);
   readonly scenarioStateChanged = this.createEventAccessor<ScenarioStateEvent>('ScenarioStateEvent', true);
+  readonly scenarioSchedule = this.createEventAccessor<ScenarioScheduleEvent>('ScenarioScheduleEvent', true);
+
+  readonly routesChanged = this.createEventAccessor<RouteDataChangedEvent>('RoutesChangedEvent', false);
+  readonly routeDataChanged = this.createEventAccessor<RouteDataChangedEvent>('RouteDataChangedEvent', false);
+  readonly routeStateChanged = this.createEventAccessor<RouteStateEvent>('RouteStateEvent', true);
 
 }

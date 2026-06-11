@@ -538,6 +538,12 @@ components:
           type: string
         cacheKey:
           type: string
+    RoutesChangedEvent:
+      description: routes changed update sent via WebSocket
+      type: object
+      properties:
+        dirty:
+          type: boolean
     SIGNAL_TYPE:
       type: string
       enum:
@@ -601,6 +607,19 @@ components:
           format: int64
         type:
           $ref: "#/components/schemas/ACTION_TYPE"
+    ScenarioScheduleEvent:
+      description: scenario scheduling state sent via WebSocket
+      type: object
+      properties:
+        scenarioId:
+          type: integer
+          format: int64
+        "on":
+          type: boolean
+        cron:
+          type:
+            - string
+            - "null"
     ScenarioStateEvent:
       description: scenario status update sent via WebSocket
       type: object
@@ -614,6 +633,12 @@ components:
           $ref: "#/components/schemas/RUN_STATE"
         nextScheduleTimeText:
           type: string
+    ScenariosChangedEvent:
+      description: scenarios changed update sent via WebSocket
+      type: object
+      properties:
+        dirty:
+          type: boolean
     Signal:
       allOf:
       - $ref: "#/components/schemas/Straight"

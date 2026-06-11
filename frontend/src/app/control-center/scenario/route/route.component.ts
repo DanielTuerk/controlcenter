@@ -61,6 +61,9 @@ export class RouteComponent implements OnInit {
   readonly dialog = inject(MatDialog);
 
   ngOnInit() {
+    this.scenarioSubscription.routeDataChanged().subscribe(() => {
+      this.loadRoutes();
+    });
     this.scenarioSubscription.routesChanged().subscribe(() => {
       this.loadRoutes();
     });

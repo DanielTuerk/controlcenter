@@ -41,6 +41,9 @@ export class ScenarioComponent implements OnInit {
     this.scenarioSubscription.scenarioDataChanged().subscribe(() => {
       this.loadData();
     });
+    this.scenarioSubscription.scenariosChanged().subscribe(() => {
+      this.loadData();
+    });
     this.loadData();
   }
 

@@ -7,6 +7,7 @@ import jakarta.enterprise.event.Observes;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
+import net.wbz.moba.controlcenter.EventBroadcaster;
 import net.wbz.moba.controlcenter.persist.entity.ConstructionEntity;
 import net.wbz.moba.controlcenter.persist.entity.RouteEntity;
 import net.wbz.moba.controlcenter.persist.entity.track.BlockStraightEntity;
@@ -21,6 +22,7 @@ import net.wbz.moba.controlcenter.service.scenario.TrackBuilder;
 import net.wbz.moba.controlcenter.shared.constrution.Construction;
 import net.wbz.moba.controlcenter.shared.constrution.CurrentConstructionChangeEvent;
 import net.wbz.moba.controlcenter.shared.scenario.Route;
+import net.wbz.moba.controlcenter.shared.scenario.RoutesChangedEvent;
 import net.wbz.moba.controlcenter.shared.scenario.TrackNotFoundException;
 
 import java.util.ArrayList;
@@ -42,12 +44,13 @@ public class RouteDataProvider {
     private final ConstructionRepository constructionRepository;
     private final RouteMapper routeMapper;
     private final TrackBuilder trackBuilder;
+    private final EventBroadcaster eventBroadcaster;
 
     @Inject
     public RouteDataProvider(RouteSequenceRepository routeSequenceDao, RouteRepository routeRepository,
                              TrackBlockRepository trackBlockRepository, TrackPartRepository trackPartRepository,
                              GridPositionRepository gridPositionRepository, ConstructionService constructionService,
-                             ConstructionRepository constructionRepository, RouteMapper routeMapper, TrackBuilder trackBuilder) {
+                             ConstructionRepository constructionRepository, RouteMapper routeMapper, TrackBuilder trackBuilder, EventBroadcaster eventBroadcaster) {
         this.routeSequenceDao = routeSequenceDao;
         this.routeRepository = routeRepository;
         this.trackBlockRepository = trackBlockRepository;
@@ -57,11 +60,13 @@ public class RouteDataProvider {
         this.constructionRepository = constructionRepository;
         this.routeMapper = routeMapper;
         this.trackBuilder = trackBuilder;
+        this.eventBroadcaster = eventBroadcaster;
     }
 
     @CacheInvalidateAll(cacheName = CACHE)
     public void onCurrentConstructionChanged(@Observes CurrentConstructionChangeEvent event) {
         log.info("current construction changed for ID: {}, refreshing routes...", event.construction().getId());
+        eventBroadcaster.fireEvent(new RoutesChangedEvent(false));
     }
 
     @CacheResult(cacheName = CACHE)

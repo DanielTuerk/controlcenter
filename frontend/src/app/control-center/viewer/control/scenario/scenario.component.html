@@ -28,15 +28,15 @@
   </mat-expansion-panel-header>
   <div class="control-group">
     <button mat-mini-fab (click)="scheduleScenario(scenario.scenarioId)"
-            [disabled]="!isConnected() || scenario.runState===RUNSTATE.Running">
+            [disabled]="!canBeScheduled(scenario.scenarioId)">
       <mat-icon>schedule_send</mat-icon>
     </button>
     <button mat-mini-fab (click)="startScenario(scenario.scenarioId)"
-            [disabled]="!isConnected()|| scenario.runState===RUNSTATE.Running">
+            [disabled]="!canBeStarted(scenario.scenarioId)">
       <mat-icon>play_circle</mat-icon>
     </button>
     <button mat-mini-fab (click)="stopScenario(scenario.scenarioId)"
-            [disabled]="!isConnected()|| scenario.runState!==RUNSTATE.Running">
+            [disabled]="!canBeStopped(scenario.scenarioId)">
       <mat-icon>stop</mat-icon>
     </button>
   </div>

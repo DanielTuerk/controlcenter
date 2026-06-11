@@ -6,6 +6,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Observes;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
+import net.wbz.moba.controlcenter.EventBroadcaster;
 import net.wbz.moba.controlcenter.persist.entity.ConstructionEntity;
 import net.wbz.moba.controlcenter.persist.entity.RouteSequenceEntity;
 import net.wbz.moba.controlcenter.persist.entity.ScenarioEntity;
@@ -19,6 +20,7 @@ import net.wbz.moba.controlcenter.shared.constrution.CurrentConstructionChangeEv
 import net.wbz.moba.controlcenter.shared.scenario.RouteDataChangedEvent;
 import net.wbz.moba.controlcenter.shared.scenario.RouteSequence;
 import net.wbz.moba.controlcenter.shared.scenario.Scenario;
+import net.wbz.moba.controlcenter.shared.scenario.ScenariosChangedEvent;
 import net.wbz.moba.controlcenter.shared.train.TrainDataChangedEvent;
 
 import java.util.ArrayList;
@@ -38,11 +40,12 @@ public class ScenarioDataProvider {
     private final ConstructionService constructionService;
     private final ConstructionRepository constructionRepository;
     private final ScenarioMapper dataMapper;
+    private final EventBroadcaster eventBroadcaster;
 
     public ScenarioDataProvider(RouteSequenceRepository routeSequenceRepository, ScenarioRepository scenarioRepository,
                                 ScenarioStatisticManager scenarioStatisticManager, TrainRepository trainRepository,
                                 ConstructionService constructionService, ConstructionRepository constructionRepository,
-                                ScenarioMapper dataMapper) {
+                                ScenarioMapper dataMapper, EventBroadcaster eventBroadcaster) {
         this.routeSequenceRepository = routeSequenceRepository;
         this.scenarioRepository = scenarioRepository;
         this.scenarioStatisticManager = scenarioStatisticManager;
@@ -50,21 +53,25 @@ public class ScenarioDataProvider {
         this.constructionService = constructionService;
         this.constructionRepository = constructionRepository;
         this.dataMapper = dataMapper;
+        this.eventBroadcaster = eventBroadcaster;
     }
 
     @CacheInvalidateAll(cacheName = CACHE)
     public void onCurrentConstructionChanged(@Observes CurrentConstructionChangeEvent event) {
         log.info("current construction changed for ID: {}, clear cache...", event.construction().getId());
+        fireScenariosChangedEvent();
     }
 
     @CacheInvalidateAll(cacheName = CACHE)
     public void onRoutesChanged(@Observes RouteDataChangedEvent event) {
         log.info("Route data changed for ID: {}, refreshing scenarios...", event.getItemId());
+        fireScenariosChangedEvent();
     }
 
     @CacheInvalidateAll(cacheName = CACHE)
     public void onTrainDataChanged(@Observes TrainDataChangedEvent event) {
         log.info("Train data changed for ID: {}, refreshing scenarios...", event.getItemId());
+        fireScenariosChangedEvent();
     }
 
     /**
@@ -153,11 +160,14 @@ public class ScenarioDataProvider {
         scenarioEntity.stationPlatformEndId = scenario.getStationPlatformEndId();
         scenarioEntity.trainDrivingDirection = scenario.getTrainDrivingDirection();
 
-//        scenarioEntity.routeSequences = scenario.getRouteSequences().stream().map(routeSequenceMapper::toEntity).collect(Collectors.toList());
         createOrUpdateRouteSequences(scenario.getRouteSequences(), scenarioEntity);
 
         scenarioRepository.persist(scenarioEntity);
         return dataMapper.toDto(scenarioEntity);
+    }
+
+    private void fireScenariosChangedEvent() {
+        eventBroadcaster.fireEvent(new ScenariosChangedEvent(false));
     }
 
     private ConstructionEntity currentConstructionEntity() {

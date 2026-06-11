@@ -10,5 +10,4 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 @Schema(description = "Track update sent via WebSocket")
 @Tag(ref = "websocket")
 public record TrackChangedEvent(boolean dirty) implements Event {
-
 }

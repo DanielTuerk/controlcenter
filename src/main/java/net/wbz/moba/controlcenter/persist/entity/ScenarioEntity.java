@@ -25,10 +25,6 @@ public class ScenarioEntity extends AbstractEntity {
     @ManyToOne
     public ConstructionEntity construction;
 
-    /**
-     * TODO also looking for position on track - drive to possible start point, or resume on actual pos
-     * TODO check existing on track
-     */
     @ManyToOne
     public TrainEntity train;
 
@@ -42,10 +38,6 @@ public class ScenarioEntity extends AbstractEntity {
      */
     public Integer startDrivingLevel;
 
-    /**
-     * Route to drive from start to end station.
-     * TODO: interstations aren't supported yet
-     */
     @OneToMany(mappedBy = "scenario", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @OrderBy("position ASC")
     public List<RouteSequenceEntity> routeSequences;

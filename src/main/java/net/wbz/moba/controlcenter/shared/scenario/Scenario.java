@@ -8,6 +8,7 @@ import net.wbz.moba.controlcenter.shared.train.Train;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author Daniel Tuerk
@@ -49,29 +50,8 @@ public class Scenario extends AbstractDto {
          */
         FAILED
     }
-    /**
-     * Mode of the scenario execution.
-     */
-    public enum MODE {
-        /**
-         * Scenario is inactive.
-         */
-        OFF,
-        /**
-         * Scenario started manually for a single execution.
-         */
-        MANUAL,
-        /**
-         * Scenario is in automatic mode to execute on trigger by configured cron.
-         */
-        AUTOMATIC
-    }
     private String name;
     private String cron;
-    /**
-     * TODO also looking for position on track - drive to possible start point, or resume on actual pos TODO check
-     * existing on track
-     */
     private Train train;
     private Train.DRIVING_DIRECTION trainDrivingDirection;
     private Integer startDrivingLevel;
@@ -79,7 +59,6 @@ public class Scenario extends AbstractDto {
     private List<RouteSequence> routeSequences;
     private Long stationPlatformStartId;
     private Long stationPlatformEndId;
-    // TODO not persisted, needed here?
 
     public List<RouteSequence> getRouteSequences() {
         if (routeSequences == null) {
@@ -90,10 +69,16 @@ public class Scenario extends AbstractDto {
 
     @Override
     public String toString() {
-        return "Scenario{" + "name='" + name + '\'' +
+        return "Scenario{" +
+            "id=" + getId() + '\'' +
+            ", name='" + name + '\'' +
             ", cron='" + cron + '\'' +
             ", train=" + train +
+            ", trainDrivingDirection=" + trainDrivingDirection +
+            ", startDrivingLevel=" + startDrivingLevel +
+            ", routeSequences=" + routeSequences.stream().map(RouteSequence::getId).collect(Collectors.toSet()) +
+            ", stationPlatformStartId=" + stationPlatformStartId +
+            ", stationPlatformEndId=" + stationPlatformEndId +
             '}';
     }
-
 }

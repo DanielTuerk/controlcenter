@@ -2,8 +2,8 @@ package net.wbz.moba.controlcenter.it.resource;
 
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
+import net.wbz.moba.controlcenter.it.BaseIt;
 import net.wbz.moba.controlcenter.it.ItUtil;
-import net.wbz.moba.controlcenter.it.WebSocketEventReceiver;
 import net.wbz.moba.controlcenter.shared.viewer.SignalFunctionStateEvent;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
@@ -20,8 +20,7 @@ import static org.hamcrest.Matchers.notNullValue;
  */
 @QuarkusTest
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-class TrackResourceSignalSwitchTest {
-    private static final WebSocketEventReceiver EVENT_RECEIVER = new WebSocketEventReceiver();
+class TrackResourceSignalSwitchTest extends BaseIt {
 
     private static Long signalId;
 
@@ -59,7 +58,7 @@ class TrackResourceSignalSwitchTest {
             .body("find { it.trackPartType == 'Signal' && it.gridPosition.x == 3 && it.gridPosition.y == 3 }", notNullValue())
             .extract()
             .jsonPath()
-            .getLong("find { it.trackPartType == 'Signal' && it.gridPosition.x == 3 && it.gridPosition.y == 3 }.routeSequenceId");
+            .getLong("find { it.trackPartType == 'Signal' && it.gridPosition.x == 3 && it.gridPosition.y == 3 }.id");
     }
 
     @Test

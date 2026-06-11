@@ -48,6 +48,11 @@ public class TrainResource {
 
     @POST
     public Response create(TrainDto dto) {
+        if (trainManager.getByAddress(dto.address()).isPresent()) {
+            return Response.status(Response.Status.CONFLICT)
+                .entity("train with address %d already exists!".formatted(dto.address()))
+                .build();
+        }
         return Response.status(Response.Status.CREATED)
             .entity(trainManager.create(dto))
             .build();
@@ -58,6 +63,12 @@ public class TrainResource {
     public Response update(@PathParam("id") Long id, TrainDto dto) {
         if (!trainManager.existsById(id)) {
             return Response.status(Response.Status.NOT_FOUND).build();
+        }
+        final var byAddress$ = trainManager.getByAddress(dto.address());
+        if (byAddress$.isPresent() && !byAddress$.get().getId().equals(id)) {
+            return Response.status(Response.Status.CONFLICT)
+                .entity("train with address %d already exists!".formatted(dto.address()))
+                .build();
         }
         return Response.ok(trainManager.update(id, dto)).build();
     }

@@ -94,13 +94,13 @@ export class ScenarioComponent implements OnInit {
         return new RouteData(
           routeSequence.id!,
           routeSequence.route?.name!,
-          routeSequence.route?.runState ?? null
+          null
         );
       });
       return new ScenarioData(
         scenario.id!,
         scenario.name!,
-        scenario.runState ?? null,
+        null,
         this.EMPTY_TIME_TEXT,
         routes!
       );

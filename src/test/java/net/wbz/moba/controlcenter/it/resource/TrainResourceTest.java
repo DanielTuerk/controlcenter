@@ -2,7 +2,7 @@ package net.wbz.moba.controlcenter.it.resource;
 
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
-import net.wbz.moba.controlcenter.it.WebSocketEventReceiver;
+import net.wbz.moba.controlcenter.it.BaseIt;
 import net.wbz.moba.controlcenter.shared.train.TrainDataChangedEvent;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
@@ -14,8 +14,7 @@ import static org.hamcrest.Matchers.*;
 
 @QuarkusTest
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-class TrainResourceTest {
-    private static final WebSocketEventReceiver EVENT_RECEIVER = new WebSocketEventReceiver();
+class TrainResourceTest extends BaseIt {
 
     @Test
     @Order(1)
@@ -82,7 +81,7 @@ class TrainResourceTest {
             .statusCode(200)
             .extract()
             .jsonPath()
-            .getLong("[0].routeSequenceId");
+            .getLong("[0].id");
 
         given()
             .pathParam("id", trainId)

@@ -377,12 +377,6 @@ components:
         "y":
           type: integer
           format: int32
-    MODE:
-      type: string
-      enum:
-      - "OFF"
-      - MANUAL
-      - AUTOMATIC
     Move:
       type: object
       required:
@@ -428,15 +422,17 @@ components:
       - FINISHED
       - FAILED
       - SKIPPED
+      - CANCELED
     RUN_STATE:
       type: string
       enum:
+      - NONE
+      - SCHEDULED
       - RUNNING
-      - IDLE
       - PAUSED
       - STOPPED
       - SUCCESS
-      - ERROR
+      - FAILED
     RailVoltageEvent:
       description: railvoltage status update sent via WebSocket
       type: object
@@ -487,11 +483,14 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/GridPosition"
-        runState:
-          $ref: "#/components/schemas/ROUTE_RUN_STATE"
         track:
           $ref: "#/components/schemas/Track"
         allTrackBlocksToDrive:
+          type: array
+          uniqueItems: true
+          items:
+            $ref: "#/components/schemas/TrackBlock"
+        allTrackBlocks:
           type: array
           uniqueItems: true
           items:
@@ -593,10 +592,6 @@ components:
         stationPlatformEndId:
           type: integer
           format: int64
-        runState:
-          $ref: "#/components/schemas/RUN_STATE"
-        mode:
-          $ref: "#/components/schemas/MODE"
     ScenarioDataChangedEvent:
       description: scenario status update sent via WebSocket
       type: object
@@ -956,6 +951,28 @@ components:
 tags:
 - name: Websocket DTOs
 paths:
+  /api/bus/bus-address-data:
+    get:
+      parameters:
+      - name: address
+        in: query
+        schema:
+          type: integer
+          format: int32
+      - name: bus
+        in: query
+        schema:
+          type: integer
+          format: int32
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: {}
+      summary: Bus Data
+      tags:
+      - Bus Resource
   /api/bus/bus-bit:
     post:
       requestBody:

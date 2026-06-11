@@ -59,12 +59,17 @@ public class Route extends AbstractDto {
      * @return {@link TrackBlock}s
      */
     public Set<TrackBlock> getAllTrackBlocks() {
-        Set<TrackBlock> trackBlocks = new HashSet<>(start.getAllTrackBlocks());
+        var trackBlocks = new HashSet<TrackBlock>();
+        if (start != null) {
+            trackBlocks.addAll(start.getAllTrackBlocks());
+        }
         var track = getTrack();
         if (track != null) {
             trackBlocks.addAll(track.trackBlocks());
         }
-        trackBlocks.add(getEnd());
+        if (end != null) {
+            trackBlocks.add(end);
+        }
         return trackBlocks;
     }
 

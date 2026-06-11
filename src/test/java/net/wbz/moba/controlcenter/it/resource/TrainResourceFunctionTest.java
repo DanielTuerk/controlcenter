@@ -2,13 +2,14 @@ package net.wbz.moba.controlcenter.it.resource;
 
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
+import net.wbz.moba.controlcenter.it.BaseIt;
+import net.wbz.moba.controlcenter.it.BaseTestData;
 import net.wbz.moba.controlcenter.it.ItUtil;
-import net.wbz.moba.controlcenter.it.WebSocketEventReceiver;
 import net.wbz.moba.controlcenter.shared.train.TrainDrivingDirectionEvent;
 import net.wbz.moba.controlcenter.shared.train.TrainDrivingLevelEvent;
 import net.wbz.moba.controlcenter.shared.train.TrainHornStateEvent;
 import net.wbz.moba.controlcenter.shared.train.TrainLightStateEvent;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
@@ -17,28 +18,17 @@ import static io.restassured.RestAssured.given;
 
 @QuarkusTest
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-class TrainResourceFunctionTest {
-    private static final WebSocketEventReceiver EVENT_RECEIVER = new WebSocketEventReceiver();
+class TrainResourceFunctionTest extends BaseIt {
 
-    @BeforeAll
-    public static void beforeAll() {
+    @BeforeEach
+    public void beforeAll() {
         ItUtil.connectTestDevice();
     }
 
     @Test
     void testUpdateDrivingDirection() {
         // ensure at least one train exists
-        Long trainId = given()
-            .contentType(ContentType.JSON)
-            .body("{\"name\":\"IT-TRAIN-DIR\",\"address\":5}")
-            .when()
-            .post("/api/trains")
-            .then()
-            .statusCode(201)
-            .extract()
-            .jsonPath()
-            .getLong("id");
-
+        final var trainId = BaseTestData.TRAIN1.id();
         given()
             .contentType(ContentType.TEXT)
             .body("FORWARD")
@@ -54,16 +44,7 @@ class TrainResourceFunctionTest {
 
     @Test
     void testUpdateDrivingLevel() {
-        Long trainId = given()
-            .contentType(ContentType.JSON)
-            .body("{\"name\":\"IT-TRAIN-LVL\",\"address\":6}")
-            .when()
-            .post("/api/trains")
-            .then()
-            .statusCode(201)
-            .extract()
-            .jsonPath()
-            .getLong("id");
+        var trainId = BaseTestData.TRAIN1.id();
 
         given()
             .contentType(ContentType.TEXT)
@@ -80,16 +61,7 @@ class TrainResourceFunctionTest {
 
     @Test
     void testToggleLight() {
-        Long trainId = given()
-            .contentType(ContentType.JSON)
-            .body("{\"name\":\"IT-TRAIN-LIGHT\",\"address\":7}")
-            .when()
-            .post("/api/trains")
-            .then()
-            .statusCode(201)
-            .extract()
-            .jsonPath()
-            .getLong("id");
+        var trainId = BaseTestData.TRAIN1.id();
 
         given()
             .contentType(ContentType.TEXT)
@@ -106,16 +78,7 @@ class TrainResourceFunctionTest {
 
     @Test
     void testToggleHorn() {
-        Long trainId = given()
-            .contentType(ContentType.JSON)
-            .body("{\"name\":\"IT-TRAIN-HORN\",\"address\":8}")
-            .when()
-            .post("/api/trains")
-            .then()
-            .statusCode(201)
-            .extract()
-            .jsonPath()
-            .getLong("id");
+        var trainId = BaseTestData.TRAIN1.id();
 
         given()
             .contentType(ContentType.TEXT)

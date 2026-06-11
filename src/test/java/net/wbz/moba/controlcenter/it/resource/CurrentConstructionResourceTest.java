@@ -2,7 +2,7 @@ package net.wbz.moba.controlcenter.it.resource;
 
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
-import net.wbz.moba.controlcenter.it.WebSocketEventReceiver;
+import net.wbz.moba.controlcenter.it.BaseIt;
 import net.wbz.moba.controlcenter.shared.constrution.CurrentConstructionChangeEvent;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
@@ -14,8 +14,7 @@ import static org.hamcrest.Matchers.*;
 
 @QuarkusTest
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-class CurrentConstructionResourceTest {
-    private static final WebSocketEventReceiver EVENT_RECEIVER = new WebSocketEventReceiver();
+class CurrentConstructionResourceTest extends BaseIt {
 
     @Test
     @Order(1)

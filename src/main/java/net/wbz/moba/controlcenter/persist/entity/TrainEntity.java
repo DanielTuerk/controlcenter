@@ -1,6 +1,7 @@
 package net.wbz.moba.controlcenter.persist.entity;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.OneToMany;
@@ -17,6 +18,7 @@ import java.util.Set;
 @Table(name = "TRAIN")
 public class TrainEntity extends AbstractEntity {
 
+    @Column(unique = true)
     public Integer address;
 
     public String name;

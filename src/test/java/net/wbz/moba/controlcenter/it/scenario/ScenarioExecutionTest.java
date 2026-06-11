@@ -4,8 +4,8 @@ import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
 import io.smallrye.mutiny.tuples.Tuple2;
 import lombok.extern.slf4j.Slf4j;
+import net.wbz.moba.controlcenter.it.BaseIt;
 import net.wbz.moba.controlcenter.it.ItUtil;
-import net.wbz.moba.controlcenter.it.WebSocketEventReceiver;
 import net.wbz.moba.controlcenter.shared.bus.FeedbackBlockEvent;
 import net.wbz.moba.controlcenter.shared.scenario.Route;
 import net.wbz.moba.controlcenter.shared.scenario.RouteStateEvent;
@@ -31,8 +31,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @Slf4j
 @QuarkusTest
-public class ScenarioExecutionTest {
-    private static final WebSocketEventReceiver EVENT_RECEIVER = new WebSocketEventReceiver();
+public class ScenarioExecutionTest extends BaseIt {
     private static final Map<Integer, Set<Tuple2<Integer, Integer>>> TRAIN_BLOCKS = new HashMap<>();
 
     @BeforeEach
@@ -45,6 +44,7 @@ public class ScenarioExecutionTest {
         Thread.sleep(3000L);
         EVENT_RECEIVER.reset();
     }
+
 
     @AfterEach
     public void afterEach() {
@@ -256,7 +256,7 @@ public class ScenarioExecutionTest {
         runScenario(ScenarioTestData.LEFT_TO_RIGHT);
     }
 
-    private static void runScenario(ScenarioTestData.Scenario scenario) {
+    private void runScenario(ScenarioTestData.Scenario scenario) {
         // place train in start block
         final var firstBlock = scenario.routes().getFirst().blocks().getFirst();
         trainEnterBlock(scenario.train().address(), firstBlock.address(), firstBlock.number());
@@ -320,7 +320,7 @@ public class ScenarioExecutionTest {
         verifyScenarioStateEvent(scenario.id(), Scenario.RUN_STATE.SUCCESS);
     }
 
-    private static void trainEnterBlock(int trainAddress, int blockAddress, int blockNumber) {
+    private void trainEnterBlock(int trainAddress, int blockAddress, int blockNumber) {
         if (!TRAIN_BLOCKS.containsKey(trainAddress)) {
             TRAIN_BLOCKS.put(trainAddress, new HashSet<>());
         }
@@ -328,12 +328,12 @@ public class ScenarioExecutionTest {
         placeTrainInBlock(trainAddress, blockAddress, blockNumber, FeedbackBlockEvent.STATE.ENTER);
     }
 
-    private static void trainLeaveBlock(int trainAddress, int blockAddress, int blockNumber) {
+    private void trainLeaveBlock(int trainAddress, int blockAddress, int blockNumber) {
         TRAIN_BLOCKS.get(trainAddress).remove(Tuple2.of(blockAddress, blockNumber));
         placeTrainInBlock(trainAddress, blockAddress, blockNumber, FeedbackBlockEvent.STATE.EXIT);
     }
 
-    private static void placeTrainInBlock(int trainAddress, int blockAddress, int blockNumber, FeedbackBlockEvent.STATE state) {
+    private void placeTrainInBlock(int trainAddress, int blockAddress, int blockNumber, FeedbackBlockEvent.STATE state) {
         updateBlockState(blockAddress, blockNumber, state == FeedbackBlockEvent.STATE.EXIT);
 
         // block number
@@ -351,27 +351,27 @@ public class ScenarioExecutionTest {
         assertEquals(blockNumber, feedbackBlockEvent.getBlock());
     }
 
-    private static void updateBlockState(int blockAddress, int blockNumber, boolean free) {
+    private void updateBlockState(int blockAddress, int blockNumber, boolean free) {
         final var currentBlockValue = BigInteger.valueOf(ItUtil.fetchBusData(1, blockAddress));
         ItUtil.sendBusData(1, blockAddress, free ? currentBlockValue.clearBit(blockNumber - 1).intValue() :
             currentBlockValue.setBit(blockNumber - 1).intValue()
         );
     }
 
-    private static void verifyTrainSpeed(int trainId, int expected) {
+    private void verifyTrainSpeed(int trainId, int expected) {
         final var trainDrivingLevelEvent = EVENT_RECEIVER.catchEvent(TrainDrivingLevelEvent.class, "\"itemId\":%d".formatted(trainId));
         assertEquals(trainId, trainDrivingLevelEvent.getItemId());
         assertEquals(expected, trainDrivingLevelEvent.getSpeed(), "wrong speed for train: %s".formatted(trainId));
     }
 
-    private static void verifyTrainLight(int trainId, boolean expected) {
-        final var trainDrivingLevelEvent = EVENT_RECEIVER.catchEvent(TrainLightStateEvent.class);
+    private void verifyTrainLight(int trainId, boolean expected) {
+        final var trainDrivingLevelEvent = EVENT_RECEIVER.catchEvent(TrainLightStateEvent.class, "{\"itemId\":%d".formatted(trainId));
         assertEquals(trainId, trainDrivingLevelEvent.getItemId());
         assertEquals(expected, trainDrivingLevelEvent.isState(), "wrong light state for train: %s".formatted(trainId));
     }
 
-    private static void verifyTrainDrivingDirection(int trainId, TrainDrivingDirectionEvent.DRIVING_DIRECTION expected) {
-        final var trainDrivingLevelEvent = EVENT_RECEIVER.catchEvent(TrainDrivingDirectionEvent.class);
+    private void verifyTrainDrivingDirection(int trainId, TrainDrivingDirectionEvent.DRIVING_DIRECTION expected) {
+        final var trainDrivingLevelEvent = EVENT_RECEIVER.catchEvent(TrainDrivingDirectionEvent.class, "{\"itemId\":%d".formatted(trainId));
         assertEquals(trainId, trainDrivingLevelEvent.getItemId());
         assertEquals(expected, trainDrivingLevelEvent.getDirection(), "wrong direction of train: %s".formatted(trainId));
     }
@@ -394,17 +394,17 @@ public class ScenarioExecutionTest {
             .statusCode(200);
     }
 
-    private static void verifyScenarioStateEvent(long scenarioId, Scenario.RUN_STATE runState) {
+    private void verifyScenarioStateEvent(long scenarioId, Scenario.RUN_STATE runState) {
         final var scenarioStateEvent = EVENT_RECEIVER.catchEvent(ScenarioStateEvent.class);
         assertEquals(scenarioId, scenarioStateEvent.itemId);
         assertEquals(runState, scenarioStateEvent.state);
     }
 
-    private static void verifyRouteStateEvent(long scenarioId, long routeSequenceId, Route.ROUTE_RUN_STATE runState) {
+    private void verifyRouteStateEvent(long scenarioId, long routeSequenceId, Route.ROUTE_RUN_STATE runState) {
         verifyRouteStateEvent(scenarioId, routeSequenceId, runState, null);
     }
 
-    private static void verifyRouteStateEvent(long scenarioId, long routeSequenceId, Route.ROUTE_RUN_STATE runState, String message) {
+    private void verifyRouteStateEvent(long scenarioId, long routeSequenceId, Route.ROUTE_RUN_STATE runState, String message) {
         final var scenarioStateEvent = EVENT_RECEIVER.catchEvent(RouteStateEvent.class, "\"scenarioId\":%d".formatted(scenarioId));
         assertEquals(scenarioId, scenarioStateEvent.getScenarioId());
         assertEquals(routeSequenceId, scenarioStateEvent.getRouteSequenceId());

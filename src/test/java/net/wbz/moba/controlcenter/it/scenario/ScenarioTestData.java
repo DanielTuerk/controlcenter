@@ -1,14 +1,17 @@
 package net.wbz.moba.controlcenter.it.scenario;
 
+import net.wbz.moba.controlcenter.it.BaseTestData;
 import net.wbz.moba.controlcenter.shared.train.TrainDrivingDirectionEvent;
 
 import java.util.List;
 
+import static net.wbz.moba.controlcenter.it.BaseTestData.TRAIN1;
+import static net.wbz.moba.controlcenter.it.BaseTestData.TRAIN2;
+
 public class ScenarioTestData {
 
-
     public static Scenario LEFT_TO_RIGHT = new Scenario(9601L,
-        new Scenario.Train(10001, 5), 10, TrainDrivingDirectionEvent.DRIVING_DIRECTION.FORWARD,
+        TRAIN1, 10, TrainDrivingDirectionEvent.DRIVING_DIRECTION.FORWARD,
         List.of(
             new Scenario.Route(6401L,
                 List.of(
@@ -24,8 +27,9 @@ public class ScenarioTestData {
             )
         )
     );
+
     public static Scenario RIGHT_TO_LEFT = new Scenario(9602L,
-        new Scenario.Train(10002, 6), 12, TrainDrivingDirectionEvent.DRIVING_DIRECTION.BACKWARD,
+        TRAIN2, 12, TrainDrivingDirectionEvent.DRIVING_DIRECTION.BACKWARD,
         List.of(
             new Scenario.Route(3201L,
                 List.of(
@@ -43,13 +47,11 @@ public class ScenarioTestData {
     );
 
     public record Scenario(long id,
-                           Train train,
+                           BaseTestData.Train train,
                            int drivingLevel,
                            TrainDrivingDirectionEvent.DRIVING_DIRECTION drivingDirection,
                            List<Route> routes
     ) {
-        public record Train(int id, int address) {
-        }
 
         public record Route(long routeSequenceId, List<Block> blocks
         ) {

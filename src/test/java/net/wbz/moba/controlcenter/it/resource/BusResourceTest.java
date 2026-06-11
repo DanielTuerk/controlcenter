@@ -3,8 +3,8 @@ package net.wbz.moba.controlcenter.it.resource;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import net.wbz.moba.controlcenter.it.BaseIt;
 import net.wbz.moba.controlcenter.it.ItUtil;
-import net.wbz.moba.controlcenter.it.WebSocketEventReceiver;
 import net.wbz.moba.controlcenter.shared.bus.BusDataEvent;
 import net.wbz.moba.controlcenter.shared.bus.RailVoltageEvent;
 import net.wbz.moba.controlcenter.shared.bus.SystemFormatEvent;
@@ -19,9 +19,7 @@ import static org.hamcrest.Matchers.notNullValue;
 
 @QuarkusTest
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-class BusResourceTest {
-
-    private static final WebSocketEventReceiver EVENT_RECEIVER = new WebSocketEventReceiver();
+class BusResourceTest extends BaseIt {
 
     @BeforeAll
     public static void beforeAll() {
@@ -122,11 +120,9 @@ class BusResourceTest {
     @Test
     @Order(9)
     void testStopTrackingBus() {
-        String clientId = EVENT_RECEIVER.getClientId();
-
         given()
             .contentType(ContentType.JSON)
-            .body("{\"clientId\":\"" + clientId + "\"}")
+            .body("{\"clientId\":\"%s\"}".formatted(EVENT_RECEIVER.getClientId()))
             .when().post("/api/bus/stop-tracking-bus")
             .then()
             .statusCode(200);

@@ -3,8 +3,8 @@ package net.wbz.moba.controlcenter.it.resource;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import net.wbz.moba.controlcenter.it.BaseIt;
 import net.wbz.moba.controlcenter.it.ItUtil;
-import net.wbz.moba.controlcenter.it.WebSocketEventReceiver;
 import net.wbz.moba.controlcenter.shared.scenario.ScenarioDataChangedEvent;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.MethodOrderer;
@@ -17,8 +17,7 @@ import static org.hamcrest.Matchers.*;
 
 @QuarkusTest
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-class ScenarioResourceTest {
-    private static final WebSocketEventReceiver EVENT_RECEIVER = new WebSocketEventReceiver();
+class ScenarioResourceTest extends BaseIt {
 
     @BeforeAll
     public static void beforeAll() {
@@ -60,7 +59,7 @@ class ScenarioResourceTest {
 
         var scenarioId = given()
             .contentType(ContentType.JSON)
-            .body("{\"name\":\"IT-SCENARIO-1\",\"mode\":\"MANUAL\",\"routeSequences\":[]}")
+            .body("{\"name\":\"IT-SCENARIO-1\",\"routeSequences\":[]}")
             .when()
             .post("/api/scenarios")
             .then()
@@ -91,7 +90,7 @@ class ScenarioResourceTest {
             .statusCode(200)
             .extract()
             .jsonPath()
-            .getLong("[0].routeSequenceId");
+            .getLong("[0].id");
 
         given()
             .pathParam("id", scenarioId)

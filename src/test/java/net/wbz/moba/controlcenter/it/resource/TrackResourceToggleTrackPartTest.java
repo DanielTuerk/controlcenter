@@ -2,8 +2,8 @@ package net.wbz.moba.controlcenter.it.resource;
 
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
+import net.wbz.moba.controlcenter.it.BaseIt;
 import net.wbz.moba.controlcenter.it.ItUtil;
-import net.wbz.moba.controlcenter.it.WebSocketEventReceiver;
 import net.wbz.moba.controlcenter.shared.viewer.TrackPartStateEvent;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
@@ -20,8 +20,7 @@ import static org.hamcrest.Matchers.notNullValue;
  */
 @QuarkusTest
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-class TrackResourceToggleTrackPartTest {
-    private static final WebSocketEventReceiver EVENT_RECEIVER = new WebSocketEventReceiver();
+class TrackResourceToggleTrackPartTest extends BaseIt {
 
     @Test
     void toggleTurnoutAndVerifyEvent() {
@@ -92,6 +91,6 @@ class TrackResourceToggleTrackPartTest {
             .body("find { it.trackPartType == 'Turnout' && it.gridPosition.x == 4 && it.gridPosition.y == 4 }", notNullValue())
             .extract()
             .jsonPath()
-            .getLong("find { it.trackPartType == 'Turnout' && it.gridPosition.x == 4 && it.gridPosition.y == 4 }.routeSequenceId");
+            .getLong("find { it.trackPartType == 'Turnout' && it.gridPosition.x == 4 && it.gridPosition.y == 4 }.id");
     }
 }

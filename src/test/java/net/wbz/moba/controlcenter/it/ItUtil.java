@@ -15,7 +15,7 @@ public class ItUtil {
             .statusCode(200)
             .extract()
             .jsonPath()
-            .getInt("[0].routeSequenceId");
+            .getInt("[0].id");
 
         setCurrentConstruction(constructionId);
         return constructionId;
@@ -87,17 +87,10 @@ public class ItUtil {
             toggleRailvoltage();
             // the initial one
             eventReceiver.verifyReceivedEvent(RailVoltageEvent.class, "state");
-//            eventReceiver.verifyReceivedEvent(RailVoltageEvent.class, "state");
             final var railVoltageEvent = eventReceiver.catchEvent(RailVoltageEvent.class);
             if (!railVoltageEvent.isState()) {
                 throw new RuntimeException("Rail voltage not enabled after toggle");
             }
-//            try {
-//                Thread.sleep(3000L);
-//
-//            } catch (InterruptedException e) {
-//                throw new RuntimeException(e);
-//            }
             eventReceiver.reset();
         }
     }

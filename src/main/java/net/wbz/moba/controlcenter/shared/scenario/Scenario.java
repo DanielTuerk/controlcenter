@@ -80,7 +80,6 @@ public class Scenario extends AbstractDto {
     private Long stationPlatformStartId;
     private Long stationPlatformEndId;
     // TODO not persisted, needed here?
-    private MODE mode = MODE.OFF;
 
     public List<RouteSequence> getRouteSequences() {
         if (routeSequences == null) {
@@ -94,7 +93,6 @@ public class Scenario extends AbstractDto {
         return "Scenario{" + "name='" + name + '\'' +
             ", cron='" + cron + '\'' +
             ", train=" + train +
-            ", mode=" + mode +
             '}';
     }
 

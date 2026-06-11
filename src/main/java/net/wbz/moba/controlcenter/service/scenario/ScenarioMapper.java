@@ -6,7 +6,6 @@ import net.wbz.moba.controlcenter.service.scenario.route.RouteSequenceMapper;
 import net.wbz.moba.controlcenter.shared.scenario.RouteSequence;
 import net.wbz.moba.controlcenter.shared.scenario.Scenario;
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;
 
 import java.util.List;
@@ -21,8 +20,6 @@ import java.util.List;
 )
 public interface ScenarioMapper {
 
-    @Mapping(target = "runState", ignore = true)
-    @Mapping(target = "mode", ignore = true)
     Scenario toDto(ScenarioEntity entity);
 
     List<RouteSequence> map(List<RouteSequenceEntity> entities);

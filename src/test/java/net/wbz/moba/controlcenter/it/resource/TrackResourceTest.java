@@ -3,8 +3,8 @@ package net.wbz.moba.controlcenter.it.resource;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import net.wbz.moba.controlcenter.it.BaseIt;
 import net.wbz.moba.controlcenter.it.ItUtil;
-import net.wbz.moba.controlcenter.it.WebSocketEventReceiver;
 import net.wbz.moba.controlcenter.shared.bus.BusDataEvent;
 import net.wbz.moba.controlcenter.shared.track.model.TrackChangedEvent;
 import org.junit.jupiter.api.BeforeAll;
@@ -18,11 +18,9 @@ import static org.hamcrest.Matchers.*;
 
 @QuarkusTest
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-class TrackResourceTest {
-    private static final WebSocketEventReceiver EVENT_RECEIVER = new WebSocketEventReceiver();
+class TrackResourceTest extends BaseIt {
 
     private static Long createdTrackPartId;
-
 
     @BeforeAll
     public static void beforeAll() {
@@ -89,7 +87,7 @@ class TrackResourceTest {
             .body("find { it.trackPartType == 'Straight' && it.gridPosition.x == 1 && it.gridPosition.y == 1 }", notNullValue())
             .extract()
             .jsonPath()
-            .getLong("find { it.trackPartType == 'Straight' && it.gridPosition.x == 1 && it.gridPosition.y == 1 }.routeSequenceId");
+            .getLong("find { it.trackPartType == 'Straight' && it.gridPosition.x == 1 && it.gridPosition.y == 1 }.id");
 
         given()
             .pathParam("id", createdTrackPartId)
@@ -141,7 +139,7 @@ class TrackResourceTest {
             .body("find { it.trackPartType == 'Turnout' && it.gridPosition.x == 2 && it.gridPosition.y == 2 }", notNullValue())
             .extract()
             .jsonPath()
-            .getLong("find { it.trackPartType == 'Turnout' && it.gridPosition.x == 2 && it.gridPosition.y == 2 }.routeSequenceId");
+            .getLong("find { it.trackPartType == 'Turnout' && it.gridPosition.x == 2 && it.gridPosition.y == 2 }.id");
 
         // 4) Toggle it; on CI some environments may not provide a real device and respond 500
         int toggleStatus = given()

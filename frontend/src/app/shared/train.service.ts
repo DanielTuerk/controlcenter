@@ -1,5 +1,5 @@
 import {inject, Injectable} from "@angular/core";
-import {HttpClient} from "@angular/common/http";
+import {HttpClient, HttpErrorResponse} from "@angular/common/http";
 import {SnackBar} from "../control-center/common/snack-bar.component";
 import {EMPTY, Observable} from "rxjs";
 import {catchError} from "rxjs/operators";
@@ -17,8 +17,8 @@ export class TrainService {
   loadTrains(): Observable<Train[]> {
     return this.httpClient.get<Train[]>('/api/trains')
     .pipe(
-      catchError((err: any) => {
-        this.snackBar.showError(`can't load trains: ${err.message}`);
+      catchError((err: HttpErrorResponse) => {
+        this.snackBar.showError(`can't load trains: ${err.error}`);
         return EMPTY
       })
     )
@@ -31,8 +31,8 @@ export class TrainService {
   createTrain(train: Train) {
     return this.httpClient.post('/api/trains/', train)
     .pipe(
-      catchError((err: any) => {
-        this.snackBar.showError(`can't create train: ${err.message}`);
+      catchError((err: HttpErrorResponse) => {
+        this.snackBar.showError(`can't create train: ${err.error}`);
         return EMPTY
       })
     )
@@ -41,8 +41,8 @@ export class TrainService {
   saveTrain(train: Train) {
     return this.httpClient.put('/api/trains/' + train.id, train)
     .pipe(
-      catchError((err: any) => {
-        this.snackBar.showError(`can't save train ${train.id}: ${err.message}`);
+      catchError((err: HttpErrorResponse) => {
+        this.snackBar.showError(`can't save train ${train.id}: ${err.error}`);
         return EMPTY
       })
     )
@@ -54,8 +54,8 @@ export class TrainService {
       next: () => {
         this.snackBar.showSuccess(`train ${trainId} deleted`);
       },
-      error: (error) => {
-        this.snackBar.showError(`can't delete train ${trainId}: ${error.message}`);
+      error: (error:HttpErrorResponse) => {
+        this.snackBar.showError(`can't delete train ${trainId}: ${error.error}`);
       }
     });
   }
@@ -63,8 +63,8 @@ export class TrainService {
   toggleDirection(train: Train, direction: DRIVINGDIRECTION) {
     return this.httpClient.post(`/api/trains/${train.id}/direction`, `${direction}`)
     .pipe(
-      catchError((err: any) => {
-        this.snackBar.showError(`can't change direction of train: ${err.message}`);
+      catchError((err: HttpErrorResponse) => {
+        this.snackBar.showError(`can't change direction of train: ${err.error}`);
         return EMPTY
       })
     )
@@ -73,8 +73,8 @@ export class TrainService {
   changeDrivingLevel(train: Train, level: number) {
     return this.httpClient.post(`/api/trains/${train.id}/level`, `${level}`)
     .pipe(
-      catchError((err: any) => {
-        this.snackBar.showError(`can't change level of train: ${err.message}`);
+      catchError((err: HttpErrorResponse) => {
+        this.snackBar.showError(`can't change level of train: ${err.error}`);
         return EMPTY
       })
     )
@@ -83,8 +83,8 @@ export class TrainService {
   toggleLight(train: Train, state: boolean) {
     return this.httpClient.post(`/api/trains/${train.id}/light`, `${state}`)
     .pipe(
-      catchError((err: any) => {
-        this.snackBar.showError(`can't change light of train: ${err.message}`);
+      catchError((err: HttpErrorResponse) => {
+        this.snackBar.showError(`can't change light of train: ${err.error}`);
         return EMPTY
       })
     )
@@ -93,8 +93,8 @@ export class TrainService {
   toggleHorn(train: Train, state: boolean) {
     return this.httpClient.post(`/api/trains/${train.id}/horn`, `${state}`)
     .pipe(
-      catchError((err: any) => {
-        this.snackBar.showError(`can't change horn of train: ${err.message}`);
+      catchError((err: HttpErrorResponse) => {
+        this.snackBar.showError(`can't change horn of train: ${err.error}`);
         return EMPTY
       })
     )

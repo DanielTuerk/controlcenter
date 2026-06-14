@@ -50,12 +50,6 @@ components:
           type: string
         name:
           type: string
-    BLOCK_STATE:
-      type: string
-      enum:
-      - UNKNOWN
-      - FREE
-      - USED
     BlockStraight:
       allOf:
       - $ref: "#/components/schemas/Straight"
@@ -339,28 +333,14 @@ components:
       - HP1
       - HP2
       - HP0_SH1
-    FeedbackBlockEvent:
-      description: bus status update sent via WebSocket
+    FeedbackBlockData:
       type: object
       properties:
-        bus:
+        trainAddress:
           type: integer
           format: int32
-        address:
-          type: integer
-          format: int32
-        block:
-          type: integer
-          format: int32
-        train:
-          type: integer
-          format: int32
-        direction:
-          type: boolean
-        state:
-          $ref: "#/components/schemas/STATE"
-        cacheKey:
-          type: string
+        trainDirection:
+          $ref: "#/components/schemas/DRIVING_DIRECTION1"
     GridPosition:
       type: object
       properties:
@@ -551,11 +531,6 @@ components:
       - ENTER
       - EXIT
       - BEFORE
-    STATE:
-      type: string
-      enum:
-      - ENTER
-      - EXIT
     SYSTEM_FORMAT:
       type: string
       enum:
@@ -817,14 +792,12 @@ components:
       description: track status update sent via WebSocket
       type: object
       properties:
-        configuration:
-          $ref: "#/components/schemas/BusDataConfiguration"
-        state:
-          type: boolean
         trackPartId:
           type: integer
           format: int64
-        "on":
+        configuration:
+          $ref: "#/components/schemas/BusDataConfiguration"
+        state:
           type: boolean
         cacheKey:
           type: string

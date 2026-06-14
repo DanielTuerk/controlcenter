@@ -43,6 +43,22 @@ export abstract class AbstractTrackComponentBuilder<
     return rect;
   }
 
+  protected text(msg: string, x: number, y: number, groupTransform: string | null) {
+    const text = this.createElement('text') as SVGTextElement;
+    text.setAttribute('x', `${x + 10}`);
+    text.setAttribute('y', `${y + 20}`);
+    text.setAttribute('fill', 'black');
+
+    text.setAttribute('font-size', '11');
+
+    if (groupTransform != null) {
+      text.setAttribute('transform', `${groupTransform}`);
+    }
+
+    text.textContent = msg;
+    return text;
+  }
+
   protected createElement(qualifiedName: string):SVGElement {
     return <SVGElement>document.createElementNS(AbstractTrackComponentBuilder.SVG_NS, qualifiedName);
   }

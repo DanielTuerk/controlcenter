@@ -19,7 +19,8 @@ export class TrackSubscription extends Subscription {
   readonly trackPartDataChangedEvent = this.createEventAccessor<TrackPartDataChangedEvent>('TrackPartDataChangedEvent');
 
   readonly signalFunctionState = this.createEventAccessor<SignalFunctionStateEvent>('SignalFunctionStateEvent', true);
-  readonly trackPartBlock = this.createEventAccessor<TrackPartBlockEvent>('TrackPartBlockEvent');
   readonly trackPartState = this.createEventAccessor<TrackPartStateEvent>('TrackPartStateEvent');
+
+  readonly trackPartBlock = this.createEventAccessor<TrackPartBlockEvent>('TrackPartBlockEvent');
 
 }

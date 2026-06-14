@@ -109,6 +109,9 @@ export class TrackViewerSvgComponent implements OnInit {
     this.trackSubscription.signalFunctionState().subscribe(event => {
       this.consumeTrackEvent('signalFunctionState', event, event.signalId!);
     });
+    this.trackSubscription.trackPartBlock().subscribe(event => {
+      this.consumeTrackEvent('trackPartBlock', event, event.trackPartId!);
+    });
 
     console.log("load finished");
   }

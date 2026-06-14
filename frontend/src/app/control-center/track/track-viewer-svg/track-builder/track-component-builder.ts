@@ -22,7 +22,7 @@ export class TrackComponentBuilder {
   turnoutBuilder = new TurnoutBuilder();
   signalBuilder = new SignalBuilder();
   straightBuilder = new StraightBuilder();
-  blockStraightBuilder = new BlockStraightBuilder();
+  blockStraightBuilder = new BlockStraightBuilder(inject(TrainService));
   curveBuilder = new CurveBuilder();
   uncouplerBuilder = new UncouplerBuilder();
 

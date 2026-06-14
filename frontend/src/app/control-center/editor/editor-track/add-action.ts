@@ -1,22 +1,12 @@
-import {Injectable} from "@angular/core";
+import {inject, Injectable} from "@angular/core";
 import {DIRECTION, DIRECTION1, DIRECTION2, PRESENTATION, SIGNALTYPE} from "../../../../shared/openapi-gen";
-import {CurveBuilder} from "../../track/track-viewer-svg/track-builder/component/curve";
-import {TurnoutBuilder} from "../../track/track-viewer-svg/track-builder/component/turnout";
-import {SignalBuilder} from "../../track/track-viewer-svg/track-builder/component/signal";
-import {StraightBuilder} from "../../track/track-viewer-svg/track-builder/component/straight";
-import {BlockStraightBuilder} from "../../track/track-viewer-svg/track-builder/component/block-straight";
 import {TrackElement} from "../../track/track-viewer-svg/track-element";
-import {UncouplerBuilder} from "../../track/track-viewer-svg/track-builder/component/uncoupler";
+import {TrackComponentBuilder} from "../../track/track-viewer-svg/track-builder/track-component-builder";
 
 @Injectable({providedIn: 'root'})
 export class AddAction {
 
-  private curveBuilder = new CurveBuilder();
-  private turnoutBuilder = new TurnoutBuilder();
-  private signalBuilder = new SignalBuilder();
-  private straightBuilder = new StraightBuilder();
-  private blockStraightBuilder = new BlockStraightBuilder();
-  private uncouplerBuilder = new UncouplerBuilder();
+  private trackComponentBuilder = inject(TrackComponentBuilder)
 
   buildPaletteSvg(): TrackElement<any>[] {
     return [
@@ -56,7 +46,7 @@ export class AddAction {
     };
     return {
       trackPart: trackPart,
-      svgElement: this.curveBuilder.build(trackPart, null),
+      svgElement: this.trackComponentBuilder.build(trackPart, null),
       lastEvent: null
     };
   }
@@ -70,7 +60,7 @@ export class AddAction {
     };
     return {
       trackPart: trackPart,
-      svgElement: this.signalBuilder.build(trackPart, null),
+      svgElement: this.trackComponentBuilder.build(trackPart, null),
       lastEvent: null
     };
   }
@@ -83,7 +73,7 @@ export class AddAction {
     };
     return {
       trackPart: trackPart,
-      svgElement: this.straightBuilder.build(trackPart, null),
+      svgElement: this.trackComponentBuilder.build(trackPart, null),
       lastEvent: null
     };
   }
@@ -96,7 +86,7 @@ export class AddAction {
     };
     return {
       trackPart: trackPart,
-      svgElement: this.blockStraightBuilder.build(trackPart, null),
+      svgElement: this.trackComponentBuilder.build(trackPart, null),
       lastEvent: null
     };
   }
@@ -110,7 +100,7 @@ export class AddAction {
     };
     return {
       trackPart: trackPart,
-      svgElement: this.turnoutBuilder.build(trackPart, null),
+      svgElement: this.trackComponentBuilder.build(trackPart, null),
       lastEvent: null
     };
   }
@@ -123,7 +113,7 @@ export class AddAction {
     };
     return {
       trackPart: trackPart,
-      svgElement: this.uncouplerBuilder.build(trackPart, null),
+      svgElement: this.trackComponentBuilder.build(trackPart, null),
       lastEvent: null
     };
   }

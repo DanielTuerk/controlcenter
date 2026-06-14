@@ -6,7 +6,6 @@ import io.smallrye.mutiny.tuples.Tuple2;
 import lombok.extern.slf4j.Slf4j;
 import net.wbz.moba.controlcenter.it.BaseIt;
 import net.wbz.moba.controlcenter.it.ItUtil;
-import net.wbz.moba.controlcenter.shared.bus.FeedbackBlockEvent;
 import net.wbz.moba.controlcenter.shared.scenario.Route;
 import net.wbz.moba.controlcenter.shared.scenario.RouteStateEvent;
 import net.wbz.moba.controlcenter.shared.scenario.Scenario;
@@ -14,6 +13,7 @@ import net.wbz.moba.controlcenter.shared.scenario.ScenarioStateEvent;
 import net.wbz.moba.controlcenter.shared.train.TrainDrivingDirectionEvent;
 import net.wbz.moba.controlcenter.shared.train.TrainDrivingLevelEvent;
 import net.wbz.moba.controlcenter.shared.train.TrainLightStateEvent;
+import net.wbz.moba.controlcenter.shared.viewer.TrackPartBlockEvent;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -27,7 +27,7 @@ import java.util.Map;
 import java.util.Set;
 
 import static io.restassured.RestAssured.given;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 @Slf4j
 @QuarkusTest
@@ -263,7 +263,7 @@ public class ScenarioExecutionTest extends BaseIt {
 
         startScenario(scenario.id());
 
-        verifyTrainLight(scenario.train().id(), true);
+        verifyTrainLight(scenario.train().id());
         if (scenario.drivingDirection() == TrainDrivingDirectionEvent.DRIVING_DIRECTION.FORWARD) {
             verifyTrainDrivingDirection(scenario.train().id(), scenario.drivingDirection());
         }
@@ -325,36 +325,40 @@ public class ScenarioExecutionTest extends BaseIt {
             TRAIN_BLOCKS.put(trainAddress, new HashSet<>());
         }
         TRAIN_BLOCKS.get(trainAddress).add(Tuple2.of(blockAddress, blockNumber));
-        placeTrainInBlock(trainAddress, blockAddress, blockNumber, FeedbackBlockEvent.STATE.ENTER);
+        placeTrainInBlock(trainAddress, blockAddress, blockNumber, true);
     }
 
     private void trainLeaveBlock(int trainAddress, int blockAddress, int blockNumber) {
         TRAIN_BLOCKS.get(trainAddress).remove(Tuple2.of(blockAddress, blockNumber));
-        placeTrainInBlock(trainAddress, blockAddress, blockNumber, FeedbackBlockEvent.STATE.EXIT);
+        placeTrainInBlock(trainAddress, blockAddress, blockNumber, false);
     }
 
-    private void placeTrainInBlock(int trainAddress, int blockAddress, int blockNumber, FeedbackBlockEvent.STATE state) {
-        updateBlockState(blockAddress, blockNumber, state == FeedbackBlockEvent.STATE.EXIT);
+    private void placeTrainInBlock(int trainAddress, int blockAddress, int blockNumber, boolean occupied) {
+        updateBlockState(blockAddress, blockNumber, occupied);
 
         // block number
         final var bigInteger = BigInteger.valueOf(blockNumber - 1)
             // driving direction
             .setBit(4);
-        ItUtil.sendBusData(1, blockAddress + 1, state == FeedbackBlockEvent.STATE.ENTER
-            ? bigInteger.setBit(3).intValue() : bigInteger.intValue());
+        ItUtil.sendBusData(1, blockAddress + 1, occupied ? bigInteger.setBit(3).intValue() : bigInteger.intValue());
         ItUtil.sendBusData(1, blockAddress + 2, trainAddress);
 
-        final var feedbackBlockEvent = EVENT_RECEIVER.catchEvent(FeedbackBlockEvent.class);
-        assertEquals(trainAddress, feedbackBlockEvent.getTrain());
-        assertEquals(state, feedbackBlockEvent.getState());
-        assertEquals(blockAddress, feedbackBlockEvent.getAddress());
-        assertEquals(blockNumber, feedbackBlockEvent.getBlock());
+        final var feedbackBlockEvent = getFeedbackBlockEvent();
+        assertNotNull(feedbackBlockEvent.feedbackData(), "no feedback data for block: %s".formatted(blockAddress));
+        assertEquals(trainAddress, feedbackBlockEvent.feedbackData().trainAddress());
+        assertEquals(occupied, feedbackBlockEvent.occupied());
+        assertEquals(blockAddress, feedbackBlockEvent.blockAddress());
+        assertEquals(blockNumber, feedbackBlockEvent.blockNumber());
     }
 
-    private void updateBlockState(int blockAddress, int blockNumber, boolean free) {
+    private static TrackPartBlockEvent getFeedbackBlockEvent() {
+        return EVENT_RECEIVER.catchEvent(TrackPartBlockEvent.class, s -> !s.contains("\"feedbackData\":null"));
+    }
+
+    private void updateBlockState(int blockAddress, int blockNumber, boolean occupied) {
         final var currentBlockValue = BigInteger.valueOf(ItUtil.fetchBusData(1, blockAddress));
-        ItUtil.sendBusData(1, blockAddress, free ? currentBlockValue.clearBit(blockNumber - 1).intValue() :
-            currentBlockValue.setBit(blockNumber - 1).intValue()
+        ItUtil.sendBusData(1, blockAddress, occupied ? currentBlockValue.setBit(blockNumber - 1).intValue() :
+            currentBlockValue.clearBit(blockNumber - 1).intValue()
         );
     }
 
@@ -364,10 +368,10 @@ public class ScenarioExecutionTest extends BaseIt {
         assertEquals(expected, trainDrivingLevelEvent.getSpeed(), "wrong speed for train: %s".formatted(trainId));
     }
 
-    private void verifyTrainLight(int trainId, boolean expected) {
-        final var trainDrivingLevelEvent = EVENT_RECEIVER.catchEvent(TrainLightStateEvent.class, "{\"itemId\":%d".formatted(trainId));
+    private void verifyTrainLight(int trainId) {
+        final var trainDrivingLevelEvent = EVENT_RECEIVER.catchEvent(TrainLightStateEvent.class, s -> s.contains("{\"itemId\":%d".formatted(trainId)));
         assertEquals(trainId, trainDrivingLevelEvent.getItemId());
-        assertEquals(expected, trainDrivingLevelEvent.isState(), "wrong light state for train: %s".formatted(trainId));
+        assertTrue(trainDrivingLevelEvent.isState(), "wrong light state for train: %s".formatted(trainId));
     }
 
     private void verifyTrainDrivingDirection(int trainId, TrainDrivingDirectionEvent.DRIVING_DIRECTION expected) {

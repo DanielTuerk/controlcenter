@@ -8,7 +8,7 @@ export class UncouplerBuilder extends StraightBuilder<Uncoupler> {
     const group = this.createElement('g');
     group.appendChild(super.doBuild(trackPart, baseX, baseY, event));
 
-    const isOn = event !== null && event.on;
+    const isOn = event !== null && event.state;
     const height = isOn ? AbstractTrackComponentBuilder.TILE / 1.5 : AbstractTrackComponentBuilder.TILE / 2;
     const width = AbstractTrackComponentBuilder.TILE / 2;
     const color = isOn ? 'blue' : 'gray';

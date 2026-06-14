@@ -1,7 +1,6 @@
 import {Injectable} from '@angular/core';
 import {
   BusDataEvent,
-  FeedbackBlockEvent,
   PlayerEvent,
   RailVoltageEvent,
   RecordingEvent,
@@ -13,8 +12,6 @@ import {Subscription} from "./subscription";
   providedIn: 'root'
 })
 export class BusSubscription extends Subscription {
-
-  readonly feedbackBlockEvent = this.createEventAccessor<FeedbackBlockEvent>('FeedbackBlockEvent');
 
   readonly railvoltage = this.createEventAccessor<RailVoltageEvent>('RailVoltageEvent');
   readonly systemFormat = this.createEventAccessor<SystemFormatEvent>('SystemFormatEvent');

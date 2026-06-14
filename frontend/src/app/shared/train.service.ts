@@ -1,7 +1,7 @@
 import {inject, Injectable} from "@angular/core";
 import {HttpClient, HttpErrorResponse} from "@angular/common/http";
 import {SnackBar} from "../control-center/common/snack-bar.component";
-import {EMPTY, Observable} from "rxjs";
+import {EMPTY, Observable, tap} from "rxjs";
 import {catchError} from "rxjs/operators";
 import {DRIVINGDIRECTION, Train} from "../../shared/openapi-gen";
 
@@ -13,11 +13,22 @@ export class TrainService {
   private snackBar = inject(SnackBar);
 
   private httpClient = inject(HttpClient);
+  private cachedTrains: Train[] = [];
+
+  cachedTrainByAddress(address: number): Train | undefined {
+    return this.cachedTrains.find(train => {
+      return train.address === address;
+    });
+  }
 
   loadTrains(): Observable<Train[]> {
     return this.httpClient.get<Train[]>('/api/trains')
-    .pipe(
-      catchError((err: HttpErrorResponse) => {
+      .pipe(
+        tap((trains: Train[]) => {
+          this.cachedTrains = trains;
+        }),
+
+        catchError((err: HttpErrorResponse) => {
         this.snackBar.showError(`can't load trains: ${err.error}`);
         return EMPTY
       })

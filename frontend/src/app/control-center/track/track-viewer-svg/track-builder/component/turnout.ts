@@ -32,7 +32,7 @@ export class TurnoutBuilder extends AbstractTrackComponentBuilder<Turnout, Track
 
     let transform = `rotate(${this.calcDegreeValue(trackPart, isLeft)} ${cx} ${cy})`;
 
-    if (event !== null && event.on) {
+    if (event !== null && event.state) {
       group.appendChild(this.basePolygon(straightRectPoints, 'grey', transform));
       group.appendChild(this.basePolygon(turnTrapPoints, 'white', transform));
     } else {

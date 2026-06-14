@@ -7,13 +7,15 @@ import lombok.extern.slf4j.Slf4j;
 import net.wbz.moba.controlcenter.BusAddressIdentifier;
 import net.wbz.moba.controlcenter.EventBroadcaster;
 import net.wbz.moba.controlcenter.SelectrixHelper;
+import net.wbz.moba.controlcenter.service.track.TrackProvider;
 import net.wbz.moba.controlcenter.service.train.TrainManager;
 import net.wbz.moba.controlcenter.service.train.TrainService;
-import net.wbz.moba.controlcenter.shared.bus.FeedbackBlockEvent;
 import net.wbz.moba.controlcenter.shared.constrution.CurrentConstructionChangeEvent;
+import net.wbz.moba.controlcenter.shared.track.model.BlockStraight;
 import net.wbz.moba.controlcenter.shared.track.model.BusDataConfiguration;
 import net.wbz.moba.controlcenter.shared.track.model.TrackBlock;
 import net.wbz.moba.controlcenter.shared.track.model.TrackBlock.DRIVING_LEVEL_ADJUST_TYPE;
+import net.wbz.moba.controlcenter.shared.train.Train;
 import net.wbz.moba.controlcenter.shared.viewer.TrackPartBlockEvent;
 import net.wbz.selectrix4java.block.BlockListener;
 import net.wbz.selectrix4java.block.BlockModule;
@@ -43,16 +45,18 @@ public class FeedbackTrackBlockRegistry {
     private final TrainService trainService;
     private final TrainManager trainManager;
     private final TrackBlockManager trackBlockManager;
+    private final TrackProvider trackProvider;
 
     private final Map<TrackBlock, BlockListener> feedbackBlockListeners = new ConcurrentHashMap<>();
     private final Map<TrackBlock, Set<Long>> trainsOnBlocks = new ConcurrentHashMap<>();
 
     public FeedbackTrackBlockRegistry(EventBroadcaster eventBroadcaster, TrainService trainService,
-                                      TrainManager trainManager, TrackBlockManager trackBlockManager) {
+                                      TrainManager trainManager, TrackBlockManager trackBlockManager, TrackProvider trackProvider) {
         this.eventBroadcaster = eventBroadcaster;
         this.trainService = trainService;
         this.trainManager = trainManager;
         this.trackBlockManager = trackBlockManager;
+        this.trackProvider = trackProvider;
     }
 
     public void onCurrentConstructionChanged(@Observes CurrentConstructionChangeEvent event) {
@@ -87,14 +91,14 @@ public class FeedbackTrackBlockRegistry {
                         @Override
                         public void blockOccupied(int blockNr) {
                             if (blockNr == blockFunction.getBit()) {
-                                fireBlockEvent(true, blockFunction);
+                                fireBlockEvent(trackBlock, true);
                             }
                         }
 
                         @Override
                         public void blockFreed(int blockNr) {
                             if (blockNr == blockFunction.getBit()) {
-                                fireBlockEvent(false, blockFunction);
+                                fireBlockEvent(trackBlock, false);
                             }
                         }
                     });
@@ -104,14 +108,14 @@ public class FeedbackTrackBlockRegistry {
                         @Override
                         public void blockOccupied(int blockNr) {
                             if (blockNr == blockFunction.getBit()) {
-                                fireBlockEvent(true, blockFunction);
+                                fireBlockEvent(trackBlock, true);
                             }
                         }
 
                         @Override
                         public void blockFreed(int blockNr) {
                             if (blockNr == blockFunction.getBit()) {
-                                fireBlockEvent(false, blockFunction);
+                                fireBlockEvent(trackBlock, false);
                             }
                         }
                     });
@@ -120,9 +124,23 @@ public class FeedbackTrackBlockRegistry {
         }
     }
 
-    private void fireBlockEvent(boolean bitState, BusDataConfiguration blockFunction) {
-        eventBroadcaster.fireEvent(new TrackPartBlockEvent(blockFunction,
-            bitState ? TrackPartBlockEvent.BLOCK_STATE.USED : TrackPartBlockEvent.BLOCK_STATE.FREE));
+    private void fireBlockEvent(TrackBlock trackBlock, boolean bitState) {
+        fireBlockEvent(trackBlock, bitState, null);
+    }
+
+    private void fireBlockEvent(TrackBlock trackBlock, boolean bitState,
+                                TrackPartBlockEvent.FeedbackBlockData feedbackBlockData) {
+        final var trackPartId = trackProvider.getTrack().stream().filter(trackPart -> {
+                if (trackPart instanceof BlockStraight) {
+                    return ((BlockStraight) trackPart).getAllTrackBlocks().contains(trackBlock);
+                }
+                return false;
+            }).findFirst()
+            .orElseThrow(() -> new IllegalArgumentException("TrackPart not found for TrackBlock([%d])"
+                .formatted(trackBlock.getId())))
+            .getId();
+        eventBroadcaster.fireEvent(new TrackPartBlockEvent(trackPartId, trackBlock.getBlockFunction().getAddress(),
+            trackBlock.getBlockFunction().getBit(), bitState, feedbackBlockData));
     }
 
     private void addBlockListener(TrackBlock trackBlock, BlockListener blockListener) {
@@ -213,11 +231,10 @@ public class FeedbackTrackBlockRegistry {
                 }
             }
             // fire position event of train to clients
-            eventBroadcaster.fireEvent(new FeedbackBlockEvent(
-                enterBlock ? FeedbackBlockEvent.STATE.ENTER : FeedbackBlockEvent.STATE.EXIT,
-                trackBlock.getBlockFunction().getBus(),
-                trackBlock.getBlockFunction().getAddress(),
-                blockNumber, trainAddress, forward));
+            fireBlockEvent(trackBlock,
+                enterBlock,
+                new TrackPartBlockEvent.FeedbackBlockData(trainAddress,
+                    forward ? Train.DRIVING_DIRECTION.FORWARD : Train.DRIVING_DIRECTION.BACKWARD));
         }
     }
 

@@ -12,7 +12,7 @@ export class StraightBuilder<T extends Straight> extends AbstractTrackComponentB
     if (direction === 'VERTICAL') {
       const cx = baseX + AbstractTrackComponentBuilder.TILE / 2;
       const cy = baseY + height / 2;
-      return `rotate(90 ${cx} ${cy})`;
+      return `rotate( 90 ${cx} ${cy})`;
     }
     return null;
   }

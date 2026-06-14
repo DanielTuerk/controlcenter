@@ -13,8 +13,9 @@ import {
   Turnout,
   Uncoupler
 } from "../../../../../shared/openapi-gen";
-import {Injectable} from "@angular/core";
+import {inject, Injectable} from "@angular/core";
 import {UncouplerBuilder} from "./component/uncoupler";
+import {TrainService} from "../../../../shared/train.service";
 
 @Injectable({providedIn: 'root'})
 export class TrackComponentBuilder {

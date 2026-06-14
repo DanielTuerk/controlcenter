@@ -17,6 +17,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Predicate;
 
 import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -49,13 +50,13 @@ public class WebSocketEventReceiver {
         return catchEvent(eventClazz, null);
     }
 
-    public <E extends Event> E catchEvent(Class<E> eventClazz, String filter) {
+    public <E extends Event> E catchEvent(Class<E> eventClazz, Predicate<String> filter) {
         final AtomicReference<E> eventReference = new AtomicReference<>();
         awaitMessage(DEFAULT_TIMEOUT_IN_SECONDS, () -> List.copyOf(receivedMessages)
             // filter by event
             .stream()
             .filter(s -> s.startsWith(eventClazz.getSimpleName() + ": ")
-                && (filter == null || s.contains(filter)))
+                && (filter == null || filter.test(s)))
             .findFirst()
             // map to object and remove from list to avoid multiple catches of the same event
             .map(x -> {

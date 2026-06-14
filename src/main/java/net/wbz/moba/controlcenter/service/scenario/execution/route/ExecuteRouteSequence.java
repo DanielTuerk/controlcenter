@@ -171,9 +171,12 @@ public class ExecuteRouteSequence {
             })
             .runSubscriptionOn(Infrastructure.getDefaultWorkerPool())
             .onItem()
-            // wait a bit before end the action to be sure that the train is physically stopped
             .delayIt().by(Duration.ofMillis(FINISH_ROUTE_DELAY_MILLIS))
-            .invoke(() -> log.info("train stop called: {}", train.getName()));
+            // wait a bit before end the action to be sure that the train is physically stopped
+            .call(() -> {
+                log.info("train stop called: {}", train.getName());
+                return Uni.createFrom().voidItem();
+            });
     }
 
     /**
@@ -275,6 +278,8 @@ public class ExecuteRouteSequence {
                 return (Void) null;
             })
             .chain(() -> Multi.createFrom().ticks().every(Duration.ofMillis(500))
+                // observer calls for each item are blocking
+                .emitOn(Infrastructure.getDefaultWorkerPool())
                 .onItem().transform(tick ->
                     routeExecutionObserver.checkAndReserveNextRunningRoute(executeRouteModel.scenarioId(),
                         executeRouteModel.routeSequence(),
@@ -335,12 +340,16 @@ public class ExecuteRouteSequence {
 
                                 if (shouldStopTrain) {
                                     stopTrain(routeExecution.train())
-                                        // release after the train is stopped, to avoid calling next route actions to early
-                                        .eventually(() -> emitter.complete(null))
                                         .subscribe().with(
-                                        unused -> log.debug("train stopped after route end: {}", routeExecution.train()),
-                                        failure -> log.error("failed to stop train after route end: {}", routeExecution.train(), failure)
-                                    );
+                                            unused -> {
+                                                emitter.complete(null);
+                                                log.debug("train stopped after route end: {}", routeExecution.train());
+                                            },
+                                            failure -> {
+                                                log.error("failed to stop train after route end: {}", routeExecution.train(), failure);
+                                                emitter.fail(failure); // falls sinnvoll in deinem Kontext
+                                            }
+                                        );
                                 } else {
                                     emitter.complete(null);
                                 }

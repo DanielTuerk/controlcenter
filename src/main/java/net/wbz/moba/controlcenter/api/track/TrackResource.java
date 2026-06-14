@@ -104,7 +104,6 @@ public class TrackResource {
     public Response change(ChangeTrackDto dto) {
         try {
             trackPartManager.change(dto);
-            trackProvider.markDirty();
             return Response.ok().build();
         } catch (IllegalStateException e) {
             log.error("Failed to update track part: {}", dto, e);

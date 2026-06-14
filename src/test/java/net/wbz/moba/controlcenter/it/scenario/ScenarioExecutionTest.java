@@ -123,8 +123,8 @@ public class ScenarioExecutionTest extends BaseIt {
     void testRunScenario_blockBetweenOccupied() {
         final var scenario = ScenarioTestData.LEFT_TO_RIGHT;
 
-        updateBlockState(60, 1, false);
-        updateBlockState(70, 2, false);
+        updateBlockState(60, 1, true);
+        updateBlockState(70, 2, true);
 
         // place train in start block
         trainEnterBlock(scenario.train().address(), 50, 1);
@@ -135,7 +135,7 @@ public class ScenarioExecutionTest extends BaseIt {
         verifyRouteStateEvent(scenario.id(), 6401L, Route.ROUTE_RUN_STATE.PREPARED);
 
         // free the next block
-        updateBlockState(60, 1, true);
+        updateBlockState(60, 1, false);
 
         verifyRouteStateEvent(scenario.id(), 6401L, Route.ROUTE_RUN_STATE.RESERVED);
         verifyRouteStateEvent(scenario.id(), 6401L, Route.ROUTE_RUN_STATE.RUNNING);
@@ -153,7 +153,7 @@ public class ScenarioExecutionTest extends BaseIt {
         // 2nd route
         verifyRouteStateEvent(scenario.id(), 6402L, Route.ROUTE_RUN_STATE.PREPARED);
 
-        updateBlockState(70, 2, true);
+        updateBlockState(70, 2, false);
 
         verifyRouteStateEvent(scenario.id(), 6402L, Route.ROUTE_RUN_STATE.RESERVED);
         verifyRouteStateEvent(scenario.id(), 6402L, Route.ROUTE_RUN_STATE.RUNNING);
@@ -359,7 +359,7 @@ public class ScenarioExecutionTest extends BaseIt {
     }
 
     private void verifyTrainSpeed(int trainId, int expected) {
-        final var trainDrivingLevelEvent = EVENT_RECEIVER.catchEvent(TrainDrivingLevelEvent.class, "\"itemId\":%d".formatted(trainId));
+        final var trainDrivingLevelEvent = EVENT_RECEIVER.catchEvent(TrainDrivingLevelEvent.class, s -> s.contains("\"itemId\":%d".formatted(trainId)));
         assertEquals(trainId, trainDrivingLevelEvent.getItemId());
         assertEquals(expected, trainDrivingLevelEvent.getSpeed(), "wrong speed for train: %s".formatted(trainId));
     }
@@ -371,7 +371,7 @@ public class ScenarioExecutionTest extends BaseIt {
     }
 
     private void verifyTrainDrivingDirection(int trainId, TrainDrivingDirectionEvent.DRIVING_DIRECTION expected) {
-        final var trainDrivingLevelEvent = EVENT_RECEIVER.catchEvent(TrainDrivingDirectionEvent.class, "{\"itemId\":%d".formatted(trainId));
+        final var trainDrivingLevelEvent = EVENT_RECEIVER.catchEvent(TrainDrivingDirectionEvent.class, s -> s.contains("{\"itemId\":%d".formatted(trainId)));
         assertEquals(trainId, trainDrivingLevelEvent.getItemId());
         assertEquals(expected, trainDrivingLevelEvent.getDirection(), "wrong direction of train: %s".formatted(trainId));
     }
@@ -405,7 +405,7 @@ public class ScenarioExecutionTest extends BaseIt {
     }
 
     private void verifyRouteStateEvent(long scenarioId, long routeSequenceId, Route.ROUTE_RUN_STATE runState, String message) {
-        final var scenarioStateEvent = EVENT_RECEIVER.catchEvent(RouteStateEvent.class, "\"scenarioId\":%d".formatted(scenarioId));
+        final var scenarioStateEvent = EVENT_RECEIVER.catchEvent(RouteStateEvent.class, s -> s.contains("\"scenarioId\":%d".formatted(scenarioId)));
         assertEquals(scenarioId, scenarioStateEvent.getScenarioId());
         assertEquals(routeSequenceId, scenarioStateEvent.getRouteSequenceId());
         assertEquals(runState, scenarioStateEvent.getState());

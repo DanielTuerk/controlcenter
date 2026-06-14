@@ -789,10 +789,21 @@ components:
       description: track status update sent via WebSocket
       type: object
       properties:
-        config:
-          $ref: "#/components/schemas/BusDataConfiguration"
-        state:
-          $ref: "#/components/schemas/BLOCK_STATE"
+        trackPartId:
+          type: integer
+          format: int64
+        blockAddress:
+          type: integer
+          format: int64
+        blockNumber:
+          type: integer
+          format: int32
+        occupied:
+          type: boolean
+        feedbackData:
+          anyOf:
+            - $ref: "#/components/schemas/FeedbackBlockData"
+            - type: "null"
         cacheKey:
           type: string
     TrackPartDataChangedEvent:

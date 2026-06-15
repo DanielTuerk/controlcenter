@@ -4,6 +4,7 @@ package net.wbz.moba.controlcenter.service.config;
 import io.quarkus.runtime.Startup;
 import io.quarkus.runtime.StartupEvent;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.context.control.ActivateRequestContext;
 import jakarta.enterprise.event.Observes;
 import jakarta.transaction.Transactional;
 import net.wbz.moba.controlcenter.api.config.ConfigItem;
@@ -41,7 +42,6 @@ public class ConfigService {
     public ConfigService(ConfigRepository configRepository, ConfigMapper configMapper) {
         this.configRepository = configRepository;
         this.configMapper = configMapper;
-
     }
 
     @Transactional
@@ -51,16 +51,7 @@ public class ConfigService {
         createIfNotExists(all, START_TRAIN_DELAY_SECONDS, "3");
         createIfNotExists(all, FINISH_ROUTE_DELAY_SECONDS, "3");
         createIfNotExists(all, DEFAULT_START_DRIVING_LEVEL, "10");
-        createIfNotExists(all, WAIT_FOR_FREE_TACK_TIMEOUT_IN_MINUTES, "5");
-    }
-
-    private void createIfNotExists(Set<ConfigItem> all, String key, String defaultValue) {
-        if (all.stream().noneMatch(configItem -> configItem.key().equals(key))) {
-            final var entity = new ConfigValueEntity();
-            entity.key = key;
-            entity.value = defaultValue;
-            configRepository.persist(entity);
-        }
+        createIfNotExists(all, WAIT_FOR_FREE_TACK_TIMEOUT_IN_MINUTES, "10");
     }
 
     public Set<ConfigItem> findAll() {
@@ -69,6 +60,7 @@ public class ConfigService {
             .collect(Collectors.toSet());
     }
 
+    @ActivateRequestContext
     public String loadValue(String configKey) throws ConfigNotAvailableException {
         return configRepository.findByIdOptional(configKey)
             .orElseThrow(() -> new ConfigNotAvailableException(configKey))
@@ -106,5 +98,14 @@ public class ConfigService {
 
     public long getWaitForFreeTackTimeoutInMinutes() {
         return Long.parseLong(loadValue(WAIT_FOR_FREE_TACK_TIMEOUT_IN_MINUTES));
+    }
+
+    private void createIfNotExists(Set<ConfigItem> all, String key, String defaultValue) {
+        if (all.stream().noneMatch(configItem -> configItem.key().equals(key))) {
+            final var entity = new ConfigValueEntity();
+            entity.key = key;
+            entity.value = defaultValue;
+            configRepository.persist(entity);
+        }
     }
 }

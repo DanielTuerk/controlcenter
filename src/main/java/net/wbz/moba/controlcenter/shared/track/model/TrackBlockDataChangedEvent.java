@@ -1,5 +1,6 @@
 package net.wbz.moba.controlcenter.shared.track.model;
 
+import lombok.Getter;
 import net.wbz.moba.controlcenter.shared.AbstractItemEvent;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
@@ -9,6 +10,7 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
  *
  * @author Daniel Tuerk
  */
+@Getter
 @Schema(description = "Track-block update sent via WebSocket")
 @Tag(ref = "websocket")
 public class TrackBlockDataChangedEvent extends AbstractItemEvent {
@@ -19,9 +21,6 @@ public class TrackBlockDataChangedEvent extends AbstractItemEvent {
         this.type = type;
     }
 
-    public ACTION_TYPE getType() {
-        return type;
-    }
     @Override
     public String toString() {
         return "TrackBlockDataChangedEvent{} " + super.toString();

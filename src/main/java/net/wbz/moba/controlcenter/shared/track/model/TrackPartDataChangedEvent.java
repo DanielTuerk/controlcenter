@@ -17,9 +17,6 @@ public class TrackPartDataChangedEvent extends AbstractItemEvent {
         super(trackPartId);
     }
 
-    public TrackPartDataChangedEvent() {
-    }
-
     @Override
     public String toString() {
         return "TrackPartDataChangedEvent{} " + super.toString();

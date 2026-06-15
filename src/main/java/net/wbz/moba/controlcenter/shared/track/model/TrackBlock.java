@@ -1,26 +1,30 @@
 package net.wbz.moba.controlcenter.shared.track.model;
 
 import io.quarkus.runtime.util.StringUtil;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * @author Daniel Tuerk
  */
+@Getter
 public class TrackBlock extends AbstractDto {
 
     private BusDataConfiguration blockFunction;
+    @Setter
     private String name;
+    @Setter
     private Integer forwardTargetDrivingLevel;
     /**
      * @see #forwardTargetDrivingLevel for 'backward'.
      */
+    @Setter
     private Integer backwardTargetDrivingLevel;
+    @Setter
     private DRIVING_LEVEL_ADJUST_TYPE drivingLevelAdjustType;
 
+    @Setter
     private Boolean feedback;
-
-    public BusDataConfiguration getBlockFunction() {
-        return blockFunction;
-    }
 
     public void setBlockFunction(BusDataConfiguration blockFunction) {
         if (blockFunction != null) {
@@ -28,46 +32,6 @@ public class TrackBlock extends AbstractDto {
             blockFunction.setBus(1);
         }
         this.blockFunction = blockFunction;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public Integer getForwardTargetDrivingLevel() {
-        return forwardTargetDrivingLevel;
-    }
-
-    public void setForwardTargetDrivingLevel(Integer forwardTargetDrivingLevel) {
-        this.forwardTargetDrivingLevel = forwardTargetDrivingLevel;
-    }
-
-    public Integer getBackwardTargetDrivingLevel() {
-        return backwardTargetDrivingLevel;
-    }
-
-    public void setBackwardTargetDrivingLevel(Integer backwardTargetDrivingLevel) {
-        this.backwardTargetDrivingLevel = backwardTargetDrivingLevel;
-    }
-
-    public DRIVING_LEVEL_ADJUST_TYPE getDrivingLevelAdjustType() {
-        return drivingLevelAdjustType;
-    }
-
-    public void setDrivingLevelAdjustType(DRIVING_LEVEL_ADJUST_TYPE drivingLevelAdjustType) {
-        this.drivingLevelAdjustType = drivingLevelAdjustType;
-    }
-
-    public Boolean getFeedback() {
-        return feedback;
-    }
-
-    public void setFeedback(Boolean feedback) {
-        this.feedback = feedback;
     }
 
     @Override

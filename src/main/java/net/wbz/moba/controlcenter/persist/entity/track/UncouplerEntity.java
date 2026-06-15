@@ -5,6 +5,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * @author Daniel Tuerk
@@ -18,16 +20,10 @@ public class UncouplerEntity extends StraightEntity implements HasToggleFunction
     /**
      * BusDataConfigurationEntity to toggle the {@link AbstractTrackPartEntity} by an event.
      */
+    @Getter
+    @Setter
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     public EventConfigurationEntity eventConfiguration;
-
-    public EventConfigurationEntity getEventConfiguration() {
-        return eventConfiguration;
-    }
-
-    public void setEventConfiguration(EventConfigurationEntity eventConfigurationEntity) {
-        eventConfiguration = eventConfigurationEntity;
-    }
 
     @Override
     public BusDataConfigurationEntity getToggleFunctionConfiguration() {

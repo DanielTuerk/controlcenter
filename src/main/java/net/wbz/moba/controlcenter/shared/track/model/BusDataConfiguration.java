@@ -1,6 +1,8 @@
 package net.wbz.moba.controlcenter.shared.track.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.Objects;
 
@@ -10,10 +12,16 @@ import java.util.Objects;
  */
 public class BusDataConfiguration extends AbstractDto {
 
+    @Setter
+    @Getter
     private Integer bus;
 
+    @Setter
+    @Getter
     private Integer address;
 
+    @Setter
+    @Getter
     private Integer bit;
 
     private Boolean bitState;
@@ -28,37 +36,12 @@ public class BusDataConfiguration extends AbstractDto {
     public BusDataConfiguration() {
     }
 
-    public Integer getBus() {
-        return bus;
-    }
-
-    public void setBus(Integer bus) {
-        this.bus = bus;
-    }
-
-    public Integer getAddress() {
-        return address;
-    }
-
-    public void setAddress(Integer address) {
-        this.address = address;
-    }
-
-    public Integer getBit() {
-        return bit;
-    }
-
-    public void setBit(Integer bit) {
-        this.bit = bit;
-    }
-
     public boolean getBitState() {
         return bitState != null && bitState;
     }
 
     public void setBitState(Boolean bitState) {
-        // TODO sollte der default 'false' sein?
-        this.bitState = bitState == null ? true : bitState;
+        this.bitState = bitState == null || bitState;
     }
 
     @JsonIgnore
@@ -74,13 +57,7 @@ public class BusDataConfiguration extends AbstractDto {
 
     @Override
     public String toString() {
-        final StringBuffer sb = new StringBuffer("BusDataConfiguration{");
-        sb.append("bus=").append(bus);
-        sb.append(", address=").append(address);
-        sb.append(", bit=").append(bit);
-        sb.append(", bitState=").append(bitState);
-        sb.append('}');
-        return sb.toString();
+        return "BusDataConfiguration{bus=%d, address=%d, bit=%d, bitState=%s}".formatted(bus, address, bit, bitState);
     }
 
     @Override

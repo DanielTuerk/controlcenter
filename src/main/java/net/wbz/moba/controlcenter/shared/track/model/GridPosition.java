@@ -1,10 +1,14 @@
 package net.wbz.moba.controlcenter.shared.track.model;
 
 
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * @author Daniel Tuerk
  */
+@Setter
+@Getter
 public class GridPosition extends AbstractDto {
 
     private int x;
@@ -16,22 +20,6 @@ public class GridPosition extends AbstractDto {
     }
 
     public GridPosition() {
-    }
-
-    public int getX() {
-        return x;
-    }
-
-    public void setX(int x) {
-        this.x = x;
-    }
-
-    public int getY() {
-        return y;
-    }
-
-    public void setY(int y) {
-        this.y = y;
     }
 
     @Override
@@ -56,7 +44,4 @@ public class GridPosition extends AbstractDto {
         return "GridPosition{" + "x=" + x + ", y=" + y + '}';
     }
 
-    public boolean isSame(GridPosition gridPosition) {
-        return gridPosition != null && gridPosition.getX() == x && gridPosition.getY() == y;
-    }
 }

@@ -1,12 +1,14 @@
 package net.wbz.moba.controlcenter.shared.track.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.Getter;
+import lombok.Setter;
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
+import org.eclipse.microprofile.openapi.annotations.tags.Tag;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
-import org.eclipse.microprofile.openapi.annotations.media.Schema;
-import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 /**
  * @author Daniel Tuerk
@@ -15,26 +17,14 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 @Tag(ref = "track")
 public class Turnout extends AbstractTrackPart implements HasToggleFunction {
 
+    @Setter
+    @Getter
     private Turnout.DIRECTION currentDirection;
+    @Setter
+    @Getter
     private Turnout.PRESENTATION currentPresentation;
     private BusDataConfiguration toggleFunction;
     private EventConfiguration eventConfiguration;
-
-    public DIRECTION getCurrentDirection() {
-        return currentDirection;
-    }
-
-    public void setCurrentDirection(DIRECTION currentDirection) {
-        this.currentDirection = currentDirection;
-    }
-
-    public PRESENTATION getCurrentPresentation() {
-        return currentPresentation;
-    }
-
-    public void setCurrentPresentation(PRESENTATION currentPresentation) {
-        this.currentPresentation = currentPresentation;
-    }
 
     @Override
     public BusDataConfiguration getToggleFunction() {
@@ -79,13 +69,10 @@ public class Turnout extends AbstractTrackPart implements HasToggleFunction {
 
     @JsonIgnore
     public GridPosition getNextGridPositionForStateBranch() {
-        switch (currentDirection) {
-            case RIGHT:
-                return getNextGridPositionForStateBranchToRight();
-            case LEFT:
-                return getNextGridPositionForStateBranchToLeft();
-        }
-        throw new RuntimeException("unknown direction: " + currentDirection.name());
+        return switch (currentDirection) {
+            case RIGHT -> getNextGridPositionForStateBranchToRight();
+            case LEFT -> getNextGridPositionForStateBranchToLeft();
+        };
     }
 
     private GridPosition getNextGridPositionForStateBranchToLeft() {
@@ -185,18 +172,12 @@ public class Turnout extends AbstractTrackPart implements HasToggleFunction {
     @JsonIgnore
     @Override
     public double getRotationAngle() {
-        switch (getCurrentPresentation()) {
-            case LEFT_TO_RIGHT:
-                return 0d;
-            case RIGHT_TO_LEFT:
-                return 180d;
-            case BOTTOM_TO_TOP:
-                return 270d;
-            case TOP_TO_BOTTOM:
-                return 90d;
-            default:
-                return 0d;
-        }
+        return switch (getCurrentPresentation()) {
+            case RIGHT_TO_LEFT -> 180d;
+            case BOTTOM_TO_TOP -> 270d;
+            case TOP_TO_BOTTOM -> 90d;
+            default -> 0d;
+        };
     }
 
     public enum DIRECTION {
@@ -207,7 +188,4 @@ public class Turnout extends AbstractTrackPart implements HasToggleFunction {
         LEFT_TO_RIGHT, RIGHT_TO_LEFT, BOTTOM_TO_TOP, TOP_TO_BOTTOM
     }
 
-    public enum STATE {
-        STRAIGHT, BRANCH
-    }
 }

@@ -1,6 +1,8 @@
 package net.wbz.moba.controlcenter.shared.track.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.Getter;
+import lombok.Setter;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
@@ -10,19 +12,13 @@ import java.util.List;
 /**
  * @author Daniel Tuerk
  */
+@Setter
+@Getter
 @Schema(description = "type for a track part")
 @Tag(ref = "track")
 public class Straight extends AbstractTrackPart {
 
     private Straight.DIRECTION direction;
-
-    public DIRECTION getDirection() {
-        return direction;
-    }
-
-    public void setDirection(DIRECTION direction) {
-        this.direction = direction;
-    }
 
     @JsonIgnore
     @Override

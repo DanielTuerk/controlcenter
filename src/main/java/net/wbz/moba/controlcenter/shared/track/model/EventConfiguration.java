@@ -1,30 +1,18 @@
 package net.wbz.moba.controlcenter.shared.track.model;
 
 
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * @author Daniel Tuerk
  */
+@Setter
+@Getter
 public class EventConfiguration extends AbstractDto {
 
     private BusDataConfiguration stateOnConfig;
     private BusDataConfiguration stateOffConfig;
-
-    public BusDataConfiguration getStateOnConfig() {
-        return stateOnConfig;
-    }
-
-    public void setStateOnConfig(BusDataConfiguration stateOnConfig) {
-        this.stateOnConfig = stateOnConfig;
-    }
-
-    public BusDataConfiguration getStateOffConfig() {
-        return stateOffConfig;
-    }
-
-    public void setStateOffConfig(BusDataConfiguration stateOffConfig) {
-        this.stateOffConfig = stateOffConfig;
-    }
 
     @Override
     public String toString() {

@@ -1,14 +1,15 @@
 package net.wbz.moba.controlcenter.shared.track.model;
 
 
+import lombok.Setter;
 import net.wbz.moba.controlcenter.shared.Identity;
 
 /**
- * DTO which represents a entity from persist layer.
+ * DTO, which represents an entity from a persisting layer.
  *
  * @author Daniel Tuerk
  */
-@Deprecated
+@Setter
 public abstract class AbstractDto implements Identity {
 
     /**
@@ -21,10 +22,6 @@ public abstract class AbstractDto implements Identity {
         return id;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -34,12 +31,12 @@ public abstract class AbstractDto implements Identity {
             return false;
         }
         AbstractDto that = (AbstractDto) o;
-        return java.util.Objects.equals(getInternalId(), that.getInternalId());
+        return java.util.Objects.equals(getId(), that.getId());
     }
 
     @Override
     public int hashCode() {
-        return java.util.Objects.hash(getInternalId());
+        return java.util.Objects.hash(getId());
     }
 
     @Override
@@ -47,8 +44,4 @@ public abstract class AbstractDto implements Identity {
         return "AbstractDto{" + "id=" + id + '}';
     }
 
-    @Deprecated
-    private Long getInternalId() {
-        return id;
-    }
 }

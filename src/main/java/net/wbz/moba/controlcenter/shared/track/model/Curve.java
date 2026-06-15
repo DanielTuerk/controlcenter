@@ -1,27 +1,23 @@
 package net.wbz.moba.controlcenter.shared.track.model;
 
 
-import java.util.Collection;
-import java.util.List;
-
+import lombok.Getter;
+import lombok.Setter;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
+
+import java.util.Collection;
+import java.util.List;
 
 /**
  * @author Daniel Tuerk
  */
+@Setter
+@Getter
 @Schema(description = "type for a track part")
 @Tag(ref = "track")
 public class Curve extends AbstractTrackPart {
     private DIRECTION direction;
-
-    public DIRECTION getDirection() {
-        return direction;
-    }
-
-    public void setDirection(DIRECTION direction) {
-        this.direction = direction;
-    }
 
     @Override
     public Collection<GridPosition> getNextGridPositions(GridPosition previousPosition) {

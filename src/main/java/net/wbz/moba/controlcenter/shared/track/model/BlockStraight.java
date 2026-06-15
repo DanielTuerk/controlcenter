@@ -1,15 +1,15 @@
 package net.wbz.moba.controlcenter.shared.track.model;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
+import lombok.Getter;
+import lombok.Setter;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Trackpart which is a {@link Straight} in a custom blockLength to display a {@link TrackBlock} with information about the
@@ -17,6 +17,8 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
  *
  * @author Daniel Tuerk
  */
+@Setter
+@Getter
 @Schema(
     description = "type for a track part",
     allOf = {Straight.class}
@@ -24,6 +26,7 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 @Tag(ref = "track")
 public class BlockStraight extends Straight implements MultipleGridPosition {
 
+    // needed for jmapper
     private int blockLength;
 
     private TrackBlock leftTrackBlock;
@@ -58,28 +61,6 @@ public class BlockStraight extends Straight implements MultipleGridPosition {
         return new GridPosition(x, y);
     }
 
-    public Collection<GridPosition> getAllGridPositions() {
-        final Set<GridPosition> positions = new HashSet<>();
-        GridPosition start = getGridPosition();
-        GridPosition end = getEndGridPosition();
-        if (getBlockLength() > 1) {
-            switch (getDirection()) {
-                case HORIZONTAL:
-                    IntStream.range(start.getX(), end.getX())
-                        .forEach(x -> positions.add(new GridPosition(x, start.getY())));
-                    break;
-                case VERTICAL:
-                    IntStream.range(start.getY(), end.getY())
-                        .forEach(y -> positions.add(new GridPosition(start.getX(), y)));
-                    break;
-            }
-            positions.add(end);
-        } else {
-            return List.of(start, end);
-        }
-        return positions;
-    }
-
     /**
      * Return the block length which can be set as value or calculated. The length depends on the blocks. Each block
      * will increase the min length by 1.
@@ -103,57 +84,9 @@ public class BlockStraight extends Straight implements MultipleGridPosition {
         return Math.max(blockLength, minLength);
     }
 
-    public void setBlockLength(int blockLength) {
-        this.blockLength = blockLength;
-    }
-
-    public int getBlockLength() {
-        // needed for jmapper
-        return blockLength;
-    }
-
-    public TrackBlock getLeftTrackBlock() {
-        return leftTrackBlock;
-    }
-
-    public void setLeftTrackBlock(TrackBlock leftTrackBlock) {
-        this.leftTrackBlock = leftTrackBlock;
-    }
-
-    public TrackBlock getMiddleTrackBlock() {
-        return middleTrackBlock;
-    }
-
-    public void setMiddleTrackBlock(TrackBlock middleTrackBlock) {
-        this.middleTrackBlock = middleTrackBlock;
-    }
-
-    public TrackBlock getRightTrackBlock() {
-        return rightTrackBlock;
-    }
-
-    public void setRightTrackBlock(TrackBlock rightTrackBlock) {
-        this.rightTrackBlock = rightTrackBlock;
-    }
-
     public Collection<TrackBlock> getAllTrackBlocks() {
         return Stream.of(leftTrackBlock, middleTrackBlock, rightTrackBlock).filter(Objects::nonNull)
             .collect(Collectors.toList());
-    }
-
-    public String getDisplayValue() {
-        var sb = new StringBuilder();
-        if (leftTrackBlock != null) {
-            sb.append("left:").append(leftTrackBlock.getDisplayValue()).append(System.lineSeparator());
-        }
-        if (middleTrackBlock != null) {
-            sb.append("middle:").append(middleTrackBlock.getDisplayValue()).append(System.lineSeparator());
-        }
-        if (rightTrackBlock != null) {
-            sb.append("right:").append(rightTrackBlock.getDisplayValue());
-        }
-
-        return sb.toString();
     }
 
     @Override

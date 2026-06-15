@@ -1,0 +1,43 @@
+<mat-card-header>
+  <mat-card-title>Scenarios</mat-card-title>
+</mat-card-header>
+<mat-card-content>
+  <mat-list>
+    <mat-list-item>
+      <app-config-input
+        [configKey]="HP_0_AFTER_TRAIN_PASS_DELAY_IN_SECONDS"
+        label="Delay in seconds to switch back the signal to HP0 after the train passed">
+      </app-config-input>
+    </mat-list-item>
+
+    <mat-list-item>
+      <app-config-input
+        [configKey]="START_TRAIN_DELAY_SECONDS"
+        label="Delay in seconds to start the train for a started route">
+      </app-config-input>
+    </mat-list-item>
+
+    <mat-list-item>
+      <app-config-input
+        [configKey]="FINISH_ROUTE_DELAY_SECONDS"
+        label="Delay in seconds to finish the route after train stop was called">
+      </app-config-input>
+    </mat-list-item>
+
+    <mat-list-item>
+      <app-config-input
+        [configKey]="DEFAULT_START_DRIVING_LEVEL"
+        label="Default driving level of train by starting a route">
+      </app-config-input>
+    </mat-list-item>
+
+    <mat-list-item>
+      <app-config-input
+        [configKey]="WAIT_FOR_FREE_TACK_TIMEOUT_IN_MINUTES"
+        label="Minutes to wait for a free track">
+      </app-config-input>
+    </mat-list-item>
+
+  </mat-list>
+
+</mat-card-content>

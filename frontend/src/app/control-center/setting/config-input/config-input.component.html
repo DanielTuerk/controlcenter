@@ -1,0 +1,19 @@
+<div class="config-input">
+  @if (label) {
+    <label>{{ label }}: </label>
+  }
+
+  <input
+    [type]="type"
+    [formControl]="control"
+    [placeholder]="placeholder"
+  />
+
+  @if (loading) {
+    <small>loading...</small>
+  }
+
+  @if (saving) {
+    <small>saving...</small>
+  }
+</div>

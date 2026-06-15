@@ -4,6 +4,7 @@ import io.smallrye.mutiny.Uni;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
+import net.wbz.moba.controlcenter.service.config.ConfigService;
 import net.wbz.moba.controlcenter.service.track.TrackViewerService;
 import net.wbz.moba.controlcenter.shared.track.model.BlockStraight;
 import net.wbz.moba.controlcenter.shared.track.model.Signal;
@@ -16,15 +17,15 @@ import java.time.Duration;
 @ApplicationScoped
 class SwitchSignalToDrive {
 
-    private static final long HP0_AFTER_TRAIN_PASS_DELAY_IN_MILLIS = 15000L;
-
     private final DeviceManager deviceManager;
     private final TrackViewerService trackViewerService;
+    private final ConfigService configService;
 
     @Inject
-    SwitchSignalToDrive(DeviceManager deviceManager, TrackViewerService trackViewerService) {
+    SwitchSignalToDrive(DeviceManager deviceManager, TrackViewerService trackViewerService, ConfigService configService) {
         this.deviceManager = deviceManager;
         this.trackViewerService = trackViewerService;
+        this.configService = configService;
     }
 
     Uni<Void> call(final Signal signal, BlockStraight startOfNextRoute) {
@@ -32,16 +33,10 @@ class SwitchSignalToDrive {
         log.info("switch signal to {} {}", signalFunction, signal);
         trackViewerService.switchSignal(signal, signalFunction);
 
+        // switch back to HP0 after delay
         return Uni.createFrom().voidItem().onItem()
-            // the signal have no monitoring block and will never get the HP0 after drive
-            .delayIt().by(Duration.ofMillis(HP0_AFTER_TRAIN_PASS_DELAY_IN_MILLIS))
-            .invoke(() -> {
-                /*
-                 * Set to HP0 after delay to simulate a occupied monitoring block to switch the signal after the
-                 * train passed.
-                 */
-                trackViewerService.switchSignal(signal, Signal.FUNCTION.HP0);
-            });
+            .delayIt().by(Duration.ofSeconds(configService.getHp0AfterTrainPassDelayInSeconds()))
+            .invoke(() -> trackViewerService.switchSignal(signal, Signal.FUNCTION.HP0));
     }
 
     private Signal.FUNCTION nextSignalFunction(BlockStraight startOfNextRoute) {

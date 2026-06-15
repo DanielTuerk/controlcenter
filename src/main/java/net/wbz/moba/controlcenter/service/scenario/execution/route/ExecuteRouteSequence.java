@@ -9,6 +9,7 @@ import jakarta.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import net.wbz.moba.controlcenter.BusAddressIdentifier;
 import net.wbz.moba.controlcenter.SelectrixHelper;
+import net.wbz.moba.controlcenter.service.config.ConfigService;
 import net.wbz.moba.controlcenter.service.scenario.execution.ExecuteRouteModel;
 import net.wbz.moba.controlcenter.service.scenario.execution.NoConnectedDeviceException;
 import net.wbz.moba.controlcenter.service.scenario.execution.ScenarioExecutionInterruptException;
@@ -35,25 +36,6 @@ import java.util.stream.Stream;
 @Slf4j
 @ApplicationScoped
 public class ExecuteRouteSequence {
-    /**
-     * Delay to start the {@link Train} for a started {@link Route}.
-     * TODO config value
-     */
-    private static final int START_TRAIN_DELAY_MILLIS = 3000;
-
-    /**
-     * Delay to wait to finish the {@link Route} for a stopped {@link Train} at {@link Route} end.
-     * TODO config value
-     */
-    private static final int FINISH_ROUTE_DELAY_MILLIS = 3000;
-    /**
-     * TODO config value
-     */
-    private static final int DEFAULT_START_DRIVING_LEVEL = 10;
-    /**
-     * TODO config value
-     */
-    public static final int WAIT_FOR_FREE_TACK_TIMEOUT = 5;
 
     private final TrainService trainService;
     private final RouteExecutionObserver routeExecutionObserver;
@@ -63,6 +45,7 @@ public class ExecuteRouteSequence {
     private final SwitchStartSignalOfRouteToDrive switchStartSignalOfRouteToDrive;
     private final RouteReservationCoordinator routeReservationCoordinator;
     private final RouteStateEventPublisher routeStateEventPublisher;
+    private final ConfigService configService;
 
     @Inject
     public ExecuteRouteSequence(TrainService trainService,
@@ -72,7 +55,7 @@ public class ExecuteRouteSequence {
                                 FeedbackTrackBlockRegistry feedbackTrackBlockRegistry,
                                 SwitchStartSignalOfRouteToDrive switchStartSignalOfRouteToDrive,
                                 RouteReservationCoordinator routeReservationCoordinator,
-                                RouteStateEventPublisher routeStateEventPublisher) {
+                                RouteStateEventPublisher routeStateEventPublisher, ConfigService configService) {
         this.trainService = trainService;
         this.routeExecutionObserver = routeExecutionObserver;
         this.trackViewerService = trackViewerService;
@@ -81,6 +64,7 @@ public class ExecuteRouteSequence {
         this.switchStartSignalOfRouteToDrive = switchStartSignalOfRouteToDrive;
         this.routeReservationCoordinator = routeReservationCoordinator;
         this.routeStateEventPublisher = routeStateEventPublisher;
+        this.configService = configService;
     }
 
     record Result(Route.ROUTE_RUN_STATE state, Optional<String> message) {
@@ -171,7 +155,7 @@ public class ExecuteRouteSequence {
             })
             .runSubscriptionOn(Infrastructure.getDefaultWorkerPool())
             .onItem()
-            .delayIt().by(Duration.ofMillis(FINISH_ROUTE_DELAY_MILLIS))
+            .delayIt().by(Duration.ofSeconds(configService.getFinishRouteDelaySeconds()))
             // wait a bit before end the action to be sure that the train is physically stopped
             .call(() -> {
                 log.info("train stop called: {}", train.getName());
@@ -291,7 +275,7 @@ public class ExecuteRouteSequence {
                 .toUni()
                 .replaceWithVoid()
                 .ifNoItem()
-                .after(Duration.ofMinutes(WAIT_FOR_FREE_TACK_TIMEOUT))
+                .after(Duration.ofMinutes(configService.getWaitForFreeTackTimeoutInMinutes()))
                 .fail()
             )
 
@@ -416,11 +400,12 @@ public class ExecuteRouteSequence {
     private Uni<Void> startTrain(Train train, Integer startDrivingLevel) {
         return Uni.createFrom().voidItem().onItem()
             // delay the start of the train
-            .delayIt().by(Duration.ofMillis(START_TRAIN_DELAY_MILLIS))
+            .delayIt().by(Duration.ofSeconds(configService.getStartTrainDelaySeconds()))
             .emitOn(Infrastructure.getDefaultWorkerPool())
             .chain(() -> Uni.createFrom().item(() -> {
                 log.info("start train to drive {}", train);
-                trainService.updateDrivingLevel(train.getId(), startDrivingLevel != null ? startDrivingLevel : DEFAULT_START_DRIVING_LEVEL);
+                trainService.updateDrivingLevel(train.getId(),
+                    startDrivingLevel != null ? startDrivingLevel : configService.getDefaultStartDrivingLevel());
                 return null;
             }));
     }

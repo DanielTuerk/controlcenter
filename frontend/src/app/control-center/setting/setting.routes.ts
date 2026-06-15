@@ -4,6 +4,7 @@ import {DeviceEditComponent} from "./device-edit/device-edit.component";
 import {CommonComponent} from "./common/common.component";
 import {ConstructionComponent} from "./construction/construction.component";
 import {ConstructionEditComponent} from "./construction/construction-edit/construction-edit.component";
+import {ScenarioComponent} from "./scenario/scenario.component";
 
 export const routes: Routes = [
   {
@@ -25,5 +26,9 @@ export const routes: Routes = [
   {
     path: 'construction/:constructionId',
     component: ConstructionEditComponent
+  },
+  {
+    path: 'scenario',
+    component: ScenarioComponent
   },
 ];

@@ -16,7 +16,7 @@ public class ConfigValueEntity {
     @Column(name = "config_key")
     public String key;
 
-    @Column(name = "config_value")
+    @Column(name = "config_value", nullable = false)
     public String value;
 
 }

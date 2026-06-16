@@ -13,6 +13,7 @@ import net.wbz.moba.controlcenter.shared.track.model.Straight;
 import net.wbz.moba.controlcenter.shared.track.model.Turnout;
 import net.wbz.moba.controlcenter.shared.track.model.Uncoupler;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
 
 /**
@@ -21,7 +22,10 @@ import org.mapstruct.ReportingPolicy;
 @Mapper(componentModel = "cdi", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface TrackPartMapper {
 
+    @Mapping(target = "lastGridPositions", ignore = true)
     Straight toDto(StraightEntity entity);
+    @Mapping(target = "allTrackBlocks", ignore = true)
+    @Mapping(target = "lastGridPositions", ignore = true)
     BlockStraight toDto(BlockStraightEntity entity);
     Signal toDto(SignalEntity entity);
     Curve toDto(CurveEntity entity);

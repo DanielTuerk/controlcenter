@@ -93,11 +93,8 @@ public class DeviceService {
             @Override
             public void connected(Device device) {
                 if (device.equals(activeDevice)) {
-                    final DeviceInfo deviceInfo = activeDeviceInfo;
-                    deviceInfo.setConnected(true);
                     // fire initial rail voltage state
-                    eventBroadcaster
-                        .fireEvent(new DeviceConnectionEvent(deviceInfo, true));
+                    eventBroadcaster.fireEvent(new DeviceConnectionEvent(activeDeviceInfo, true));
                     // add listener to receive state change
                     device.addRailVoltageListener(railVoltageListener);
                     device.addSystemFormatListener(systemFormatListener);
@@ -107,10 +104,7 @@ public class DeviceService {
             @Override
             public void disconnected(Device device) {
                 if (device.equals(activeDevice)) {
-                    DeviceInfo deviceInfo = activeDeviceInfo;
-                    deviceInfo.setConnected(false);
-                    eventBroadcaster
-                        .fireEvent(new DeviceConnectionEvent(deviceInfo, false));
+                    eventBroadcaster.fireEvent(new DeviceConnectionEvent(activeDeviceInfo, false));
                     device.removeRailVoltageListener(railVoltageListener);
                     device.removeSystemFormatListener(systemFormatListener);
                 }

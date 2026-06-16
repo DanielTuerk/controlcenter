@@ -26,7 +26,6 @@ import java.util.stream.Stream;
 @Tag(ref = "track")
 public class BlockStraight extends Straight implements MultipleGridPosition {
 
-    // needed for jmapper
     private int blockLength;
 
     private TrackBlock leftTrackBlock;

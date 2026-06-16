@@ -16,9 +16,6 @@ public class DeviceInfoEntity extends AbstractEntity {
         SERIAL, TEST
     }
 
-//    @Transient
-//    private boolean connected;
-
     @Column(name = "device_key")
     public String key;
     

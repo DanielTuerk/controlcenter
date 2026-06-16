@@ -29,10 +29,6 @@ public class Route extends AbstractDto {
      */
     private Track track;
 
-    public void addWaypoint(GridPosition gridPosition) {
-        waypoints.add(gridPosition);
-    }
-
     public boolean hasTrack() {
         return track != null;
     }
@@ -50,26 +46,6 @@ public class Route extends AbstractDto {
             trackBlocks.addAll(track.trackBlocks());
         }
         trackBlocks.add(getEnd());
-        return trackBlocks;
-    }
-
-    /**
-     * Return all {@link TrackBlock}s for this {@link Route} which includes end and start block.
-     *
-     * @return {@link TrackBlock}s
-     */
-    public Set<TrackBlock> getAllTrackBlocks() {
-        var trackBlocks = new HashSet<TrackBlock>();
-        if (start != null) {
-            trackBlocks.addAll(start.getAllTrackBlocks());
-        }
-        var track = getTrack();
-        if (track != null) {
-            trackBlocks.addAll(track.trackBlocks());
-        }
-        if (end != null) {
-            trackBlocks.add(end);
-        }
         return trackBlocks;
     }
 

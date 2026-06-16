@@ -23,10 +23,6 @@ components:
         id:
           type: integer
           format: int64
-        internalId:
-          type: integer
-          format: int64
-          deprecated: true
         gridPosition:
           $ref: "#/components/schemas/GridPosition"
         trackPartType:
@@ -67,10 +63,6 @@ components:
           $ref: "#/components/schemas/TrackBlock"
         endGridPosition:
           $ref: "#/components/schemas/GridPosition"
-        allGridPositions:
-          type: array
-          items:
-            $ref: "#/components/schemas/GridPosition"
         gridLength:
           type: integer
           format: int32
@@ -78,8 +70,6 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/TrackBlock"
-        displayValue:
-          type: string
     BusBitDto:
       type: object
       properties:
@@ -100,10 +90,6 @@ components:
         id:
           type: integer
           format: int64
-        internalId:
-          type: integer
-          format: int64
-          deprecated: true
         bus:
           type: integer
           format: int32
@@ -177,10 +163,6 @@ components:
         id:
           type: integer
           format: int64
-        internalId:
-          type: integer
-          format: int64
-          deprecated: true
         name:
           type: string
         inAutomaticMode:
@@ -214,10 +196,6 @@ components:
         id:
           type: integer
           format: int64
-        internalId:
-          type: integer
-          format: int64
-          deprecated: true
         gridPosition:
           $ref: "#/components/schemas/GridPosition"
         trackPartType:
@@ -294,16 +272,10 @@ components:
         id:
           type: integer
           format: int64
-        internalId:
-          type: integer
-          format: int64
-          deprecated: true
         key:
           type: string
         type:
           $ref: "#/components/schemas/DEVICE_TYPE"
-        connected:
-          type: boolean
     DeviceInfoEvent:
       description: bus status update sent via WebSocket
       type: object
@@ -318,10 +290,6 @@ components:
         id:
           type: integer
           format: int64
-        internalId:
-          type: integer
-          format: int64
-          deprecated: true
         stateOnConfig:
           $ref: "#/components/schemas/BusDataConfiguration"
         stateOffConfig:
@@ -347,10 +315,6 @@ components:
         id:
           type: integer
           format: int64
-        internalId:
-          type: integer
-          format: int64
-          deprecated: true
         x:
           type: integer
           format: int32
@@ -447,10 +411,6 @@ components:
         id:
           type: integer
           format: int64
-        internalId:
-          type: integer
-          format: int64
-          deprecated: true
         name:
           type: string
         start:
@@ -470,11 +430,6 @@ components:
           uniqueItems: true
           items:
             $ref: "#/components/schemas/TrackBlock"
-        allTrackBlocks:
-          type: array
-          uniqueItems: true
-          items:
-            $ref: "#/components/schemas/TrackBlock"
     RouteDataChangedEvent:
       description: route update sent via WebSocket
       type: object
@@ -490,10 +445,6 @@ components:
         id:
           type: integer
           format: int64
-        internalId:
-          type: integer
-          format: int64
-          deprecated: true
         position:
           type: integer
           format: int32
@@ -548,10 +499,6 @@ components:
         id:
           type: integer
           format: int64
-        internalId:
-          type: integer
-          format: int64
-          deprecated: true
         name:
           type: string
         cron:
@@ -593,8 +540,8 @@ components:
           type: boolean
         cron:
           type:
-            - string
-            - "null"
+          - string
+          - "null"
     ScenarioStateEvent:
       description: scenario status update sent via WebSocket
       type: object
@@ -674,10 +621,6 @@ components:
         id:
           type: integer
           format: int64
-        internalId:
-          type: integer
-          format: int64
-          deprecated: true
         gridPosition:
           $ref: "#/components/schemas/GridPosition"
         trackPartType:
@@ -725,10 +668,6 @@ components:
         id:
           type: integer
           format: int64
-        internalId:
-          type: integer
-          format: int64
-          deprecated: true
         blockFunction:
           $ref: "#/components/schemas/BusDataConfiguration"
         name:
@@ -776,9 +715,7 @@ components:
         occupied:
           type: boolean
         feedbackData:
-          anyOf:
-            - $ref: "#/components/schemas/FeedbackBlockData"
-            - type: "null"
+          $ref: "#/components/schemas/FeedbackBlockData"
         cacheKey:
           type: string
     TrackPartDataChangedEvent:
@@ -807,10 +744,6 @@ components:
         id:
           type: integer
           format: int64
-        internalId:
-          type: integer
-          format: int64
-          deprecated: true
         address:
           type: integer
           format: int32
@@ -870,10 +803,6 @@ components:
         id:
           type: integer
           format: int64
-        internalId:
-          type: integer
-          format: int64
-          deprecated: true
         alias:
           type: string
         configuration:
@@ -920,10 +849,6 @@ components:
         id:
           type: integer
           format: int64
-        internalId:
-          type: integer
-          format: int64
-          deprecated: true
         gridPosition:
           $ref: "#/components/schemas/GridPosition"
         trackPartType:

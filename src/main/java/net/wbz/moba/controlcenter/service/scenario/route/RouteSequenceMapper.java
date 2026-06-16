@@ -11,7 +11,7 @@ import org.mapstruct.Named;
 /**
  * @author Daniel Tuerk
  */
-@Mapper(componentModel = "cdi")
+@Mapper(componentModel = "jakarta-cdi")
 abstract public class RouteSequenceMapper {
 
     @Inject

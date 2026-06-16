@@ -10,7 +10,7 @@ import org.mapstruct.Mapping;
 /**
  * @author Daniel Tuerk
  */
-@Mapper(componentModel = "cdi", uses = {RouteSequenceMapper.class, TrackPartMapper.class})
+@Mapper(componentModel = "jakarta-cdi", uses = {RouteSequenceMapper.class, TrackPartMapper.class})
 public interface RouteMapper {
 
     @Mapping(target = "track", ignore = true)

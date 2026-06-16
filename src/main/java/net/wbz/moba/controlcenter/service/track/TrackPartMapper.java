@@ -19,7 +19,7 @@ import org.mapstruct.ReportingPolicy;
 /**
  * @author Daniel Tuerk
  */
-@Mapper(componentModel = "cdi", unmappedTargetPolicy = ReportingPolicy.IGNORE)
+@Mapper(componentModel = "jakarta-cdi", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface TrackPartMapper {
 
     @Mapping(target = "lastGridPositions", ignore = true)

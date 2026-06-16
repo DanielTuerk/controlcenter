@@ -7,7 +7,7 @@ import org.mapstruct.Mapper;
 /**
  * @author Daniel Tuerk
  */
-@Mapper(componentModel = "cdi")
+@Mapper(componentModel = "jakarta-cdi")
 public interface DeviceInfoMapper {
 
     DeviceInfo toDto(DeviceInfoEntity entity);

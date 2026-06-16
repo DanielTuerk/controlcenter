@@ -22,7 +22,7 @@ import net.wbz.moba.controlcenter.persist.entity.track.TurnoutEntity;
 import net.wbz.moba.controlcenter.persist.entity.track.UncouplerEntity;
 import net.wbz.moba.controlcenter.persist.repository.track.GridPositionRepository;
 import net.wbz.moba.controlcenter.persist.repository.track.TrackPartRepository;
-import net.wbz.moba.controlcenter.service.track.block.TrackBlockMapper;
+import net.wbz.moba.controlcenter.service.track.block.TrackBlockDataProvider;
 import net.wbz.moba.controlcenter.shared.constrution.CurrentConstructionChangeEvent;
 import net.wbz.moba.controlcenter.shared.track.model.AbstractTrackPart;
 import net.wbz.moba.controlcenter.shared.track.model.BlockStraight;
@@ -47,18 +47,21 @@ public class TrackDataProvider {
     private final TrackPartMapper trackPartMapper;
     private final BusDataConfigMapper busDataConfigMapper;
     private final EntityManager entityManager;
-    private final TrackBlockMapper trackBlockMapper;
     private final GridPositionRepository gridPositionRepository;
+    private final TrackBlockDataProvider trackBlockDataProvider;
 
-    public TrackDataProvider(TrackPartRepository trackPartRepository, TrackPartMapper trackPartMapper,
-                             BusDataConfigMapper busDataConfigMapper, EntityManager entityManager,
-                             TrackBlockMapper trackBlockMapper, GridPositionRepository gridPositionRepository) {
+    public TrackDataProvider(TrackPartRepository trackPartRepository,
+                             TrackPartMapper trackPartMapper,
+                             BusDataConfigMapper busDataConfigMapper,
+                             EntityManager entityManager,
+                             GridPositionRepository gridPositionRepository,
+                             TrackBlockDataProvider trackBlockDataProvider) {
         this.trackPartRepository = trackPartRepository;
         this.trackPartMapper = trackPartMapper;
         this.busDataConfigMapper = busDataConfigMapper;
         this.entityManager = entityManager;
-        this.trackBlockMapper = trackBlockMapper;
         this.gridPositionRepository = gridPositionRepository;
+        this.trackBlockDataProvider = trackBlockDataProvider;
     }
 
     @CacheInvalidateAll(cacheName = CACHE)
@@ -194,7 +197,7 @@ public class TrackDataProvider {
             signalEntity.signalConfigYellow2 = getMergedBusDataConfig(signal.getSignalConfigYellow2());
             signalEntity.signalConfigWhite = getMergedBusDataConfig(signal.getSignalConfigWhite());
 
-            signalEntity.stopBlock = getMergedTrackBlockEntity(signal.getStopBlock());
+            signalEntity.stopBlock = getTrackBlockEntity(signal.getStopBlock());
 
             persistTrackPart(signalEntity);
         } else {
@@ -219,10 +222,10 @@ public class TrackDataProvider {
     private void updateBlockStraight(BlockStraight blockStraight, AbstractTrackPartEntity existing) {
         if (existing instanceof BlockStraightEntity entity) {
             entity.blockLength = blockStraight.getBlockLength();
-            entity.leftTrackBlock = getMergedTrackBlockEntity(blockStraight.getLeftTrackBlock());
-            entity.middleTrackBlock = getMergedTrackBlockEntity(
+            entity.leftTrackBlock = getTrackBlockEntity(blockStraight.getLeftTrackBlock());
+            entity.middleTrackBlock = getTrackBlockEntity(
                 blockStraight.getMiddleTrackBlock());
-            entity.rightTrackBlock = getMergedTrackBlockEntity(blockStraight.getRightTrackBlock());
+            entity.rightTrackBlock = getTrackBlockEntity(blockStraight.getRightTrackBlock());
             persistTrackPart(entity);
         } else {
             throw new IllegalStateException(
@@ -235,8 +238,9 @@ public class TrackDataProvider {
         return entityManager.merge(busDataConfigMapper.toEntity(busDataConfiguration));
     }
 
-    private TrackBlockEntity getMergedTrackBlockEntity(TrackBlock trackBlock) {
-        return trackBlock == null ? null : entityManager.merge(trackBlockMapper.toEntity(trackBlock));
+    private TrackBlockEntity getTrackBlockEntity(TrackBlock trackBlock) {
+        if (trackBlock == null) return null;
+        return trackBlockDataProvider.getById(trackBlock.getId()).orElse(null);
     }
 
     private void persistTrackPart(AbstractTrackPartEntity entity) {

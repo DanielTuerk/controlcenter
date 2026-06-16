@@ -21,11 +21,10 @@ import {ConstructionSubscription} from "../../../shared/websocket/construction.s
 import {ConstructionService} from "../../../shared/construction.service";
 import {ConfirmDialogComponent} from "../../common/confirm-dialog/confirm-dialog.component";
 import {MatChip} from "@angular/material/chips";
-import {MatCheckbox} from "@angular/material/checkbox";
 import {FormsModule} from "@angular/forms";
-import {ConfigService, KEY_CONSTRUCTION_DEFAULT, KEY_CONSTRUCTION_SHOW_WELCOME} from "../../../shared/config.service";
+import {ConfigService, KEY_CONSTRUCTION_DEFAULT} from "../../../shared/config.service";
 import {MatOption, MatSelect} from "@angular/material/select";
-import {NgForOf, NgIf} from "@angular/common";
+import {NgForOf} from "@angular/common";
 import {MatGridList, MatGridTile} from "@angular/material/grid-list";
 
 @Component({
@@ -50,13 +49,11 @@ import {MatGridList, MatGridTile} from "@angular/material/grid-list";
     MatChip,
     MatIconButton,
     MatMiniFabButton,
-    MatCheckbox,
     FormsModule,
     MatSelect,
     MatOption,
     NgForOf,
     MatGridTile,
-    NgIf,
     MatGridList
   ],
   templateUrl: './construction.component.html',
@@ -73,20 +70,11 @@ export class ConstructionComponent implements OnInit {
 
   constructions = signal<Construction[]>([]);
 
-  protected showWelcomePage: boolean = false;
-  protected defaultConstruction: Construction | undefined;
+  protected defaultConstruction: Construction | undefined = undefined;
 
   ngOnInit(): void {
     this.constructionService.fetchConstructions().subscribe(data => {
       this.constructions.set(data);
-
-      this.configService.loadConfigValue(KEY_CONSTRUCTION_SHOW_WELCOME).subscribe(event => {
-        if (event === null) {
-          this.showWelcomePage = true;
-        } else {
-          this.showWelcomePage = Boolean(event);
-        }
-      });
 
       this.configService.loadConfigValue(KEY_CONSTRUCTION_DEFAULT).subscribe(event => {
         if (event === null) {
@@ -102,8 +90,6 @@ export class ConstructionComponent implements OnInit {
         this.constructions.set(data);
       })
     });
-
-
   }
 
   isCurrentConstruction(construction: Construction) {
@@ -130,11 +116,8 @@ export class ConstructionComponent implements OnInit {
 
   protected updateDefaultConstruction() {
     if (this.defaultConstruction) {
-      this.configService.saveConfigValue(KEY_CONSTRUCTION_DEFAULT, String(this.defaultConstruction.id));
+      this.configService.saveConfigValue(KEY_CONSTRUCTION_DEFAULT, String(this.defaultConstruction.id)).subscribe();
     }
   }
 
-  protected updateShowWelcome() {
-    this.configService.saveConfigValue(KEY_CONSTRUCTION_SHOW_WELCOME, String(this.showWelcomePage));
-  }
 }

@@ -5,13 +5,16 @@ import io.quarkus.runtime.Startup;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.context.control.ActivateRequestContext;
 import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
 import net.wbz.moba.controlcenter.api.config.ConfigItem;
 import net.wbz.moba.controlcenter.persist.entity.ConfigValueEntity;
 import net.wbz.moba.controlcenter.persist.repository.ConfigRepository;
 import net.wbz.moba.controlcenter.shared.config.ConfigNotAvailableException;
 import net.wbz.moba.controlcenter.shared.scenario.Route;
 import net.wbz.moba.controlcenter.shared.train.Train;
+import org.mapstruct.ap.internal.util.Strings;
 
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -20,8 +23,10 @@ import java.util.stream.Collectors;
  */
 @ApplicationScoped
 @Startup
+@Slf4j
 public class ConfigService {
 
+    private static final String CONSTRUCTION_DEFAULT = "construction.default";
     private static final String HP_0_AFTER_TRAIN_PASS_DELAY_IN_SECONDS = "HP0_AFTER_TRAIN_PASS_DELAY_IN_SECONDS";
     /**
      * Delay to start the {@link Train} for a started {@link Route}.
@@ -66,6 +71,16 @@ public class ConfigService {
             });
         configValueEntity.value = value;
         configRepository.persist(configValueEntity);
+    }
+
+    public Optional<Long> getDefaultConstructionId() {
+        try {
+            final var s = loadValue(CONSTRUCTION_DEFAULT);
+            return Optional.ofNullable(Strings.isEmpty(s) ? null : Long.parseLong(s));
+        } catch (ConfigNotAvailableException e) {
+            log.debug("Config not available: {}", CONSTRUCTION_DEFAULT);
+            return Optional.empty();
+        }
     }
 
     public long getHp0AfterTrainPassDelayInSeconds() {

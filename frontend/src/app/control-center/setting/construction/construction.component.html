@@ -6,11 +6,6 @@
 
   <mat-grid-list cols="2" rowHeight="50">
     <mat-grid-tile>
-      <mat-checkbox [(ngModel)]="showWelcomePage"
-                    (click)="updateShowWelcome()">show welcome page
-      </mat-checkbox>
-    </mat-grid-tile>
-    <mat-grid-tile *ngIf="!showWelcomePage">
       Default construction:
       <mat-select [(ngModel)]="defaultConstruction"
                   (selectionChange)="updateDefaultConstruction()"
@@ -21,7 +16,6 @@
       </mat-select>
     </mat-grid-tile>
   </mat-grid-list>
-
 
   <hr/>
   <p>

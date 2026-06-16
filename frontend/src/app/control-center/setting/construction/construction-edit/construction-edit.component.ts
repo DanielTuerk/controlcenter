@@ -45,9 +45,11 @@ export class ConstructionEditComponent implements OnInit {
   });
 
   ngOnInit() {
-    this.constructionService.fetchConstruction(this.constructionId()).subscribe(data => {
-      this.setConstruction(data);
-    });
+    if (this.constructionId() && this.constructionId().toString() != "create") {
+      this.constructionService.fetchConstruction(this.constructionId()).subscribe(data => {
+        this.setConstruction(data);
+      });
+    }
   }
 
   onSubmit() {
@@ -60,7 +62,7 @@ export class ConstructionEditComponent implements OnInit {
     } else {
       observable = this.constructionService.saveConstruction(toUpdate);
     }
-    observable.subscribe(data => {
+    observable.subscribe(() => {
       this.snackBar.showSuccess(`construction "${toUpdate.name}" ${toUpdate.id === undefined ? 'created' : 'updated'} successfully.`);
       this.router.navigate(['/cc/settings/construction', {}]);
     })

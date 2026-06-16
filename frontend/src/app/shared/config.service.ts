@@ -4,7 +4,6 @@ import {SnackBar} from '../control-center/common/snack-bar.component';
 import {catchError, tap} from 'rxjs/operators';
 import {EMPTY, Observable, of} from 'rxjs';
 
-export const KEY_CONSTRUCTION_SHOW_WELCOME = 'construction.show-welcome';
 export const KEY_CONSTRUCTION_DEFAULT = 'construction.default';
 
 @Injectable({providedIn: 'root'})

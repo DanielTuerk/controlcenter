@@ -150,23 +150,13 @@ public class TrackDataProvider {
             var gridPosition = new GridPositionEntity();
             gridPosition.x = newGridPosition.getX();
             gridPosition.y = newGridPosition.getY();
+            gridPosition.constructionId = trackPartEntity.constructionId;
             trackPartEntity.gridPosition = gridPosition;
 
             trackPartRepository.persist(trackPartEntity);
         } else {
-            // TODO add warning if grid position is already assigned to another track part
-//            var byGridPositionId = trackPartRepository.findByGridPositionId(
-//                existingGridPosEntity.id);
-//            if (byGridPositionId.isEmpty()) {
             trackPartEntity.gridPosition = existingGridPosEntity;
-
             trackPartRepository.persist(trackPartEntity);
-//            } else {
-//                // ignore non-changed grid pos or throw error if assigned to other existing track part
-//                throw new IllegalStateException(
-//                    "target position (%s) already assigned to track part with id %d".formatted(newGridPosition,
-//                        existingGridPosEntity.id));
-//            }
         }
     }
 

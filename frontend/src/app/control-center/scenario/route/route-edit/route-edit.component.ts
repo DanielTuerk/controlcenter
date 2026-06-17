@@ -111,15 +111,14 @@ export class RouteEditComponent {
   protected onTrackPartClicked(trackEvent: TrackElement<any>) {
     this.removeHighlight(trackEvent);
 
-    // TODO cleanup code and maybe extract
     switch (this.selectType + ':' + trackEvent.trackPart.trackPartType) {
-      case 'start:BlockStraight':
+      case SELECT_TYPE.START + ':BlockStraight':
         this.$route().start = <BlockStraight>trackEvent.trackPart;
         this.lastStart = trackEvent;
 
         this.buildRouteOnTrack(true);
         break;
-      case 'end:BlockStraight':
+      case SELECT_TYPE.END + ':BlockStraight':
         this.selectEndTrackBlock(trackEvent.trackPart as BlockStraight).subscribe(result => {
           if (result) {
             this.$route().end = result;
@@ -129,8 +128,8 @@ export class RouteEditComponent {
           }
         });
         break;
-      case 'waypoint:Straight':
-      case 'waypoint:Curve':
+      case SELECT_TYPE.WAYPOINT + ':Straight':
+      case SELECT_TYPE.WAYPOINT + ':Curve':
         if (this.$route().waypoints &&
           this.$route().waypoints!.find(waypoint =>
             this.equalGridPos(waypoint, trackEvent.trackPart.gridPosition))) {

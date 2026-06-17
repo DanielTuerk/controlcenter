@@ -131,7 +131,6 @@ public class TrackDataProvider {
             case Curve curve -> trackPartMapper.toEntity(curve);
             default -> throw new IllegalStateException("Unexpected track part type: " + action.trackPart());
         };
-        entity.id = null; // TODO ugly: set to null to trigger insert and ignore the negative temp id from UI
         entity.constructionId = constructionId;
         entity.gridPosition.constructionId = constructionId;
         trackPartRepository.persist(entity);

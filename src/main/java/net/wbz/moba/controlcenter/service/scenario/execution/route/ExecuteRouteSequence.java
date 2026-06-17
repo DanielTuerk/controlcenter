@@ -180,7 +180,7 @@ public class ExecuteRouteSequence {
                     if (SelectrixHelper.getFeedbackBlockModule(device, entry)
                         .getLastReceivedBlockState(blockFunction.getBit())) {
                         return Uni.createFrom().failure(new RouteExecutionInterruptException(
-                            String.format("track not free at block: %d (%d) ", entry.getAddress(),
+                            String.format("track not free at block: %d (%d) ", entry.address(),
                                 blockFunction.getBit())));
                     }
                 }

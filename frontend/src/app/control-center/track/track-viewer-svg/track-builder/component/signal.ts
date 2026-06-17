@@ -115,7 +115,6 @@ export class SignalBuilder extends StraightBuilder<Signal> {
         this.green(cx + pixelShift, cy -pixelShift),
       ];
     }
-    // TODO verify
     switch (event?.signalFunction) {
       case FUNCTION.Hp0:
         return [

@@ -276,7 +276,6 @@ public class RouteExecutionObserver {
     }
 
     private Set<TrackBlock> getTrackBlocksForBlockStraightsOfTrackBlock(TrackBlock left) {
-//        return Uni.createFrom().item(() ->
         return trackProvider.getTrack().stream()
             .filter(x -> x instanceof BlockStraight)
             .map(BlockStraight.class::cast)
@@ -284,8 +283,6 @@ public class RouteExecutionObserver {
             .filter(allTrackBlocks -> allTrackBlocks.contains(left))
             .flatMap(Collection::stream)
             .collect(Collectors.toSet());
-        // TODO nicht gut hier
-//            .runSubscriptionOn(Infrastructure.getDefaultWorkerPool());
     }
 
     /**

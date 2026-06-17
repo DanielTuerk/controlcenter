@@ -18,7 +18,7 @@ import static net.wbz.moba.controlcenter.shared.track.model.Signal.LIGHT.*;
 
 /**
  * Register busAddressListeners to update the current signal function by bus data. Each signal function change will
- * throw an new {@link SignalFunctionStateEvent} by the {@link
+ * throw a new {@link SignalFunctionStateEvent} by the {@link
  * EventBroadcaster}.
  *
  * @author Daniel Tuerk
@@ -40,7 +40,6 @@ class SignalFunctionReceiver {
         this.signal = signal;
         this.eventBroadcaster = eventBroadcaster;
 
-        // TODO refactor?
         for (final Map.Entry<LIGHT, BusDataConfiguration> lightConfigs : signal
             .getSignalLightsConfigurations(signal.getType()).entrySet()) {
             // initial state 'off' for each light
@@ -146,7 +145,7 @@ class SignalFunctionReceiver {
     }
 
     /**
-     * Check active state of the given light.
+     * Check the active state of the given light.
      *
      * @param light {@link LIGHT}
      * @return {@code true} if on

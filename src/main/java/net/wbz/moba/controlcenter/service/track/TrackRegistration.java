@@ -101,7 +101,7 @@ public class TrackRegistration {
         try {
             for (Map.Entry<BusAddressIdentifier, List<BusListener>> entry : busAddressListenersOfTheCurrentTrack
                 .entrySet()) {
-                device.getBusAddress(entry.getKey().getBus(), (byte) entry.getKey().getAddress())
+                device.getBusAddress(entry.getKey().bus(), (byte) entry.getKey().address())
                     .addListeners(entry.getValue());
             }
         } catch (DeviceAccessException e) {
@@ -120,7 +120,7 @@ public class TrackRegistration {
         try {
             for (Map.Entry<BusAddressIdentifier, List<BusListener>> entry : busAddressListenersOfTheCurrentTrack
                 .entrySet()) {
-                device.getBusAddress(entry.getKey().getBus(), (byte) entry.getKey().getAddress())
+                device.getBusAddress(entry.getKey().bus(), (byte) entry.getKey().address())
                     .removeListeners(entry.getValue());
             }
         } catch (DeviceAccessException e) {

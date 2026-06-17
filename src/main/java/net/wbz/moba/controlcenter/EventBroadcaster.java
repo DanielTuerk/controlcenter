@@ -49,7 +49,6 @@ public class EventBroadcaster {
                 },
                 failure -> log.error("failed to sent clientId to {}", connection.id(), failure)
             );
-        // TODO after server restart, the client need to be triggered to reload, maybe page refresh because the eventchache is empty and by that the server is restarted
 
         // send all missed messages while not connected
         eventCache.getEvents().forEach(cachedEvent ->

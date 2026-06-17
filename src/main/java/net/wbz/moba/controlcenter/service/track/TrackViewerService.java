@@ -23,7 +23,6 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 /**
- * TODO split class to multiples, e.g. trackpart vs signal or listener registration vs actions
  * @author Daniel Tuerk
  */
 @Slf4j

@@ -46,7 +46,6 @@ public class BusDataConfiguration extends AbstractDto {
 
     @JsonIgnore
     public boolean isValid() {
-        // TODO bitstate missing?
         return (bus != null && address != null && bit != null) && address > 0 && bit > 0 && bus > -1;
     }
 
@@ -75,7 +74,6 @@ public class BusDataConfiguration extends AbstractDto {
 
     @Override
     public int hashCode() {
-        // TODO drop super?
         return java.util.Objects.hash(super.hashCode(), bus, address, bit);
     }
 

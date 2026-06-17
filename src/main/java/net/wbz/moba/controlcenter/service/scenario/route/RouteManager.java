@@ -8,14 +8,11 @@ import net.wbz.moba.controlcenter.EventBroadcaster;
 import net.wbz.moba.controlcenter.shared.AbstractItemEvent;
 import net.wbz.moba.controlcenter.shared.scenario.Route;
 import net.wbz.moba.controlcenter.shared.scenario.RouteDataChangedEvent;
-import net.wbz.moba.controlcenter.shared.scenario.Scenario;
 
 import java.util.List;
 import java.util.Optional;
 
 /**
- * Manager to access the {@link Scenario}s from database. The data is cached. TODO cache Stations
- *
  * @author Daniel Tuerk
  */
 @Slf4j

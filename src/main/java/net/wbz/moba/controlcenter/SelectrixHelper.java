@@ -14,9 +14,9 @@ public class SelectrixHelper {
     public static FeedbackBlockModule getFeedbackBlockModule(Device device,
             BusAddressIdentifier entry) throws DeviceAccessException {
         return device.getFeedbackBlockModule(
-                entry.getAddress(),
-                (entry.getAddress() + 2),
-                (entry.getAddress() + 1));
+            entry.address(),
+            (entry.address() + 2),
+            (entry.address() + 1));
     }
 
     public static BlockModule getBlockModule(Device device, TrackBlock trackBlock) throws DeviceAccessException {
@@ -26,6 +26,6 @@ public class SelectrixHelper {
 
     public static BlockModule getBlockModule(Device device,
         BusAddressIdentifier entry) throws DeviceAccessException {
-        return device.getBlockModule(entry.getAddress());
+        return device.getBlockModule(entry.address());
     }
 }

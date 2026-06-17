@@ -4,6 +4,7 @@ import {HttpClient} from "@angular/common/http";
 import {Scenario} from "../../shared/openapi-gen";
 import {EMPTY, Observable} from "rxjs";
 import {catchError} from "rxjs/operators";
+import {ScenarioData} from "../control-center/viewer/control/scenario/scenario.component";
 
 @Injectable({
   providedIn: 'root',
@@ -42,7 +43,7 @@ export class ScenarioService {
     return this.httpClient.put('/api/scenarios/' + scenario.id, scenario)
     .pipe(
       catchError((err: any) => {
-        this.snackBar.showError(`can't save scenario ${scenario.id}: ${err.message}`);
+        this.snackBar.showError(`can't save scenario ${scenario.name}: ${err.message}`);
         return EMPTY
       })
     )
@@ -60,38 +61,38 @@ export class ScenarioService {
     });
   }
 
-  startScenario(scenarioId: Number) {
-    return this.httpClient.post(`/api/scenarios/${scenarioId}/start`, null)
+  startScenario(scenario: ScenarioData) {
+    return this.httpClient.post(`/api/scenarios/${scenario.scenarioId}/start`, null)
     .subscribe({
       next: () => {
-        this.snackBar.showSuccess(`scenario ${scenarioId} started`);
+        this.snackBar.showSuccess(`scenario ${scenario.name} (${scenario.scenarioId}) started`);
       },
       error: (error) => {
-        this.snackBar.showError(`can't start scenario ${scenarioId}: ${error.message}`);
+        this.snackBar.showError(`can't start scenario ${scenario.name} (${scenario.scenarioId}): ${error.message}`);
       }
     });
   }
 
-  scheduleScenario(scenarioId: Number) {
-    return this.httpClient.post(`/api/scenarios/${scenarioId}/schedule`, null)
+  scheduleScenario(scenario: ScenarioData) {
+    return this.httpClient.post(`/api/scenarios/${scenario.scenarioId}/schedule`, null)
     .subscribe({
       next: () => {
-        this.snackBar.showSuccess(`scenario ${scenarioId} scheduled`);
+        this.snackBar.showSuccess(`scenario ${scenario.name} (${scenario.scenarioId}) scheduled`);
       },
       error: (error) => {
-        this.snackBar.showError(`can't schedule scenario ${scenarioId}: ${error.message}`);
+        this.snackBar.showError(`can't schedule scenario ${scenario.name} (${scenario.scenarioId}): ${error.message}`);
       }
     });
   }
 
-  stopScenario(scenarioId: Number) {
-    return this.httpClient.post(`/api/scenarios/${scenarioId}/stop`, null)
+  stopScenario(scenario: ScenarioData) {
+    return this.httpClient.post(`/api/scenarios/${scenario.scenarioId}/stop`, null)
     .subscribe({
       next: () => {
-        this.snackBar.showSuccess(`scenario ${scenarioId} stopped`);
+        this.snackBar.showSuccess(`scenario ${scenario.name} (${scenario.scenarioId}) stopped`);
       },
       error: (error) => {
-        this.snackBar.showError(`can't stop scenario ${scenarioId}: ${error.message}`);
+        this.snackBar.showError(`can't stop scenario ${scenario.name} (${scenario.scenarioId}): ${error.message}`);
       }
     });
   }

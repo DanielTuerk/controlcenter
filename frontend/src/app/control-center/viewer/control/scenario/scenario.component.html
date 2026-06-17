@@ -27,15 +27,15 @@
     </mat-panel-title>
   </mat-expansion-panel-header>
   <div class="control-group">
-    <button mat-mini-fab (click)="scheduleScenario(scenario.scenarioId)"
+    <button mat-mini-fab (click)="scheduleScenario(scenario)"
             [disabled]="!canBeScheduled(scenario.scenarioId)">
       <mat-icon>schedule_send</mat-icon>
     </button>
-    <button mat-mini-fab (click)="startScenario(scenario.scenarioId)"
+    <button mat-mini-fab (click)="startScenario(scenario)"
             [disabled]="!canBeStarted(scenario.scenarioId)">
       <mat-icon>play_circle</mat-icon>
     </button>
-    <button mat-mini-fab (click)="stopScenario(scenario.scenarioId)"
+    <button mat-mini-fab (click)="stopScenario(scenario)"
             [disabled]="!canBeStopped(scenario.scenarioId)">
       <mat-icon>stop</mat-icon>
     </button>
@@ -45,7 +45,13 @@
     <div *ngFor="let route of scenario.routes"
          style="width: 90%;padding: 2px"
          [ngClass]="'route-state-' + (route.runState ?? '')">
-      {{ route.name }} - {{ route.runState }}
+
+      <div><span>{{ route.name }}</span><span *ngIf="route.runState"> - {{ route.runState }}</span></div>
+
+      <div *ngIf="route.message?.trim()">
+        {{ route.message }}
+      </div>
+
     </div>
   </div>
 </mat-expansion-panel>

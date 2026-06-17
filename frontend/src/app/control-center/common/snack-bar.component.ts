@@ -14,10 +14,10 @@ export class SnackBar {
   }
 
   showMessage(msg: string) {
-    this.open(msg);
+    this.open(msg, 'common');
   }
 
-  private open(msg: string, type:string = '', durationInSeconds: number = 10) {
+  private open(msg: string, type: string | null, durationInSeconds: number = 10) {
     this._snackBar.open(msg, 'Got It!', {
       duration: durationInSeconds * 1000,
       horizontalPosition: 'right',

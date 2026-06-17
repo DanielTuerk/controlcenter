@@ -213,11 +213,8 @@ public class ExecuteRouteSequence {
                     log.error("no train in start block: {}, train: {}", route.getStart(), train);
                     return Uni.createFrom().failure(new NoTrainInStartBlockException(train, route.getStart()));
                 }
-
                 routeStateEventPublisher.fireEvent(executeRouteModel.scenarioId(), executeRouteModel.routeSequence(), Route.ROUTE_RUN_STATE.PREPARED);
-
             return prepareTrainToStart(train, executeRouteModel.scenarioDrivingDirection()).replaceWith(() -> Route.ROUTE_RUN_STATE.PREPARED);
-//            return Uni.createFrom().item(Route.ROUTE_RUN_STATE.PREPARED);
         });
     }
 

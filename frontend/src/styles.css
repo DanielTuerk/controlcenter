@@ -8,6 +8,9 @@ body {
   color: var(--mat-sys-on-surface);
 }
 
+.snackbar-common {
+}
+
 .snackbar-error {
   --mdc-snackbar-container-color: rgba(230, 130, 130);
   --mat-mdc-snack-bar-button-color: white;

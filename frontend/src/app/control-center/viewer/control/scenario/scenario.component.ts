@@ -1,6 +1,6 @@
 import {Component, inject, OnInit, signal} from '@angular/core';
 import {MatExpansionPanel, MatExpansionPanelHeader, MatExpansionPanelTitle} from "@angular/material/expansion";
-import {NgClass, NgForOf} from "@angular/common";
+import {NgClass, NgForOf, NgIf} from "@angular/common";
 import {ScenarioService} from "../../../../shared/scenario.service";
 import {ROUTERUNSTATE, RUNSTATE, Scenario} from "../../../../../shared/openapi-gen";
 import {MatIcon} from "@angular/material/icon";
@@ -8,16 +8,19 @@ import {MatMiniFabButton} from "@angular/material/button";
 import {DeviceService} from "../../../../shared/device.service";
 import {ScenarioSubscription} from "../../../../shared/websocket/scenario.subscription";
 import {CronExpressionParser} from "cron-parser";
+import {SnackBar} from "../../../common/snack-bar.component";
 
 export class RouteData {
   id: number;
   name: string;
   runState: ROUTERUNSTATE | null;
+  message: string | null;
 
-  constructor(id: number, name: string, runState: ROUTERUNSTATE | null) {
+  constructor(id: number, name: string, runState: ROUTERUNSTATE | null, message: string | null) {
     this.id = id;
     this.name = name;
     this.runState = runState;
+    this.message = message;
   }
 }
 
@@ -48,7 +51,8 @@ export class ScenarioData {
     NgForOf,
     MatIcon,
     MatMiniFabButton,
-    NgClass
+    NgClass,
+    NgIf
   ],
   templateUrl: './scenario.component.html',
   styleUrl: './scenario.component.css'
@@ -57,6 +61,7 @@ export class ScenarioComponent implements OnInit {
   private static readonly EMPTY_TIME_TEXT = '--:--';
   private scenarioService = inject(ScenarioService);
   private scenarioSubscription = inject(ScenarioSubscription);
+  private snackBar = inject(SnackBar);
 
   protected scenarios = signal<ScenarioData[]>([]);
 
@@ -89,6 +94,17 @@ export class ScenarioComponent implements OnInit {
         let scenarioById = this.scenarioById(event.itemId!);
         scenarioById!.runState = event.state ?? null;
         scenarioById!.scheduledExecutionTimeAsText = this.timeStringFromCron(scenarioById!.cron);
+
+        let msg = `scenario ${scenarioById!.name} (${scenarioById!.scenarioId})`;
+        switch (event.state) {
+          case RUNSTATE.Failed:
+            this.snackBar.showError(msg + ' failed');
+            break;
+          case RUNSTATE.Stopped:
+            this.snackBar.showMessage(msg + ' stopped');
+            break;
+        }
+
       });
       this.scenarioSubscription.routeStateChanged().subscribe((event) => {
         if (event.state === ROUTERUNSTATE.Failed) {
@@ -98,6 +114,7 @@ export class ScenarioComponent implements OnInit {
         let routeSequences = this.scenarioById(event.scenarioId!)!.routes;
         let find = routeSequences!.find(r => r.id == event.routeSequenceId!);
         find!.runState = event.state ?? null;
+        find!.message = event.message ?? null;
       });
     })
   }
@@ -112,6 +129,7 @@ export class ScenarioComponent implements OnInit {
         return new RouteData(
           routeSequence.id!,
           routeSequence.route?.name!,
+          null,
           null
         );
       });
@@ -134,16 +152,16 @@ export class ScenarioComponent implements OnInit {
     });
   }
 
-  protected scheduleScenario(scenarioId: number) {
-    this.scenarioService.scheduleScenario(scenarioId);
+  protected scheduleScenario(scenario: ScenarioData) {
+    this.scenarioService.scheduleScenario(scenario);
   }
 
-  protected startScenario(scenarioId: number) {
-    this.scenarioService.startScenario(scenarioId);
+  protected startScenario(scenario: ScenarioData) {
+    this.scenarioService.startScenario(scenario);
   }
 
-  protected stopScenario(scenarioId: number) {
-    this.scenarioService.stopScenario(scenarioId);
+  protected stopScenario(scenario: ScenarioData) {
+    this.scenarioService.stopScenario(scenario);
   }
 
   protected scheduleAllScenarios() {

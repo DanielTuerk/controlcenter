@@ -3,7 +3,7 @@ import {HttpClient, HttpErrorResponse} from "@angular/common/http";
 import {SnackBar} from "../control-center/common/snack-bar.component";
 import {EMPTY, Observable, tap} from "rxjs";
 import {catchError} from "rxjs/operators";
-import {DRIVINGDIRECTION, Train} from "../../shared/openapi-gen";
+import {DRIVINGDIRECTION, Train, TrainDto, TrainFunction} from "../../shared/openapi-gen";
 
 @Injectable({
   providedIn: 'root',
@@ -39,7 +39,7 @@ export class TrainService {
     return this.httpClient.get<Train>('/api/trains/' + trainId)
   }
 
-  createTrain(train: Train) {
+  createTrain(train: TrainDto) {
     return this.httpClient.post('/api/trains/', train)
     .pipe(
       catchError((err: HttpErrorResponse) => {
@@ -49,11 +49,11 @@ export class TrainService {
     )
   }
 
-  saveTrain(train: Train) {
-    return this.httpClient.put('/api/trains/' + train.id, train)
+  saveTrain(trainId: number, train: TrainDto) {
+    return this.httpClient.put('/api/trains/' + trainId, train)
     .pipe(
       catchError((err: HttpErrorResponse) => {
-        this.snackBar.showError(`can't save train ${train.id}: ${err.error}`);
+        this.snackBar.showError(`can't save train ${trainId}: ${err.error}`);
         return EMPTY
       })
     )
@@ -109,5 +109,15 @@ export class TrainService {
         return EMPTY
       })
     )
+  }
+
+  toggleFunctionState(train: Train, trainFunction: TrainFunction, state: boolean) {
+    return this.httpClient.post(`/api/trains/${train.id}/functions/${trainFunction.id}`, `${state}`)
+      .pipe(
+        catchError((err: HttpErrorResponse) => {
+          this.snackBar.showError(`can't change function state (${trainFunction.alias}) of train: ${err.error}`);
+          return EMPTY
+        })
+      )
   }
 }

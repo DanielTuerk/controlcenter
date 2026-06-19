@@ -92,7 +92,7 @@ public class TrainResource {
             trainService.toggleDrivingDirection(id, DRIVING_DIRECTION.FORWARD == drivingDirection);
             return Response.ok().build();
         } catch (NotFoundException e) {
-            return Response.status(Response.Status.NOT_FOUND).build();
+            return Response.status(Response.Status.NOT_FOUND.getStatusCode(), e.getMessage()).build();
         }
     }
 
@@ -104,7 +104,7 @@ public class TrainResource {
             trainService.updateDrivingLevel(id, level);
             return Response.ok().build();
         } catch (NotFoundException e) {
-            return Response.status(Response.Status.NOT_FOUND).build();
+            return Response.status(Response.Status.NOT_FOUND.getStatusCode(), e.getMessage()).build();
         }
     }
 
@@ -116,7 +116,7 @@ public class TrainResource {
             trainService.toggleLight(id, state);
             return Response.ok().build();
         } catch (NotFoundException e) {
-            return Response.status(Response.Status.NOT_FOUND).build();
+            return Response.status(Response.Status.NOT_FOUND.getStatusCode(), e.getMessage()).build();
         }
     }
 
@@ -128,7 +128,19 @@ public class TrainResource {
             trainService.toggleHorn(id, state);
             return Response.ok().build();
         } catch (NotFoundException e) {
-            return Response.status(Response.Status.NOT_FOUND).build();
+            return Response.status(Response.Status.NOT_FOUND.getStatusCode(), e.getMessage()).build();
+        }
+    }
+
+    @POST
+    @Path("/{id}/functions/{functionId}")
+    @Consumes(MediaType.TEXT_PLAIN)
+    public Response toggleFunctionState(@PathParam("id") Long trainId, @PathParam("functionId") Long functionId, boolean state) {
+        try {
+            trainService.toggleFunctionState(trainId, functionId, state);
+            return Response.ok().build();
+        } catch (NotFoundException e) {
+            return Response.status(Response.Status.NOT_FOUND.getStatusCode(), e.getMessage()).build();
         }
     }
 

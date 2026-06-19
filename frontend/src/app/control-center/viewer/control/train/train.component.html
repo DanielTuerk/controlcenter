@@ -15,6 +15,12 @@
           <mat-icon *ngIf="trainData.light" class="icon">lightbulb</mat-icon>
           <mat-icon *ngIf="trainData.horn" class="icon">volume_up</mat-icon>
         </span>
+        <span *ngFor="let fn of trainData.train.functions">
+          <span *ngIf="trainData.functionStates.get(fn.id!)"
+                style="font-size: small">
+            {{ fn.alias }}
+          </span>
+        </span>
       </div>
     </mat-panel-title>
   </mat-expansion-panel-header>
@@ -42,19 +48,29 @@
                 [disabled]="!isConnected()">
       <input matSliderThumb (valueChange)="changeDrivingLevel(trainData.train, $event)">
     </mat-slider>
-    <mat-divider></mat-divider>
 
-    <button mat-mini-fab (click)="updateLight(trainData.train)"
-            [disabled]="!isConnected()">
-      <mat-icon [style]="trainData.light ? 'color:white':''">lightbulb</mat-icon>
-    </button>
+    <mat-divider/>
 
-    <button mat-mini-fab (click)="updateHorn(trainData.train)"
-            [disabled]="!isConnected()">
-      <mat-icon [style]="trainData.horn ? 'color:white':''">volume_up</mat-icon>
-    </button>
+    <span>
+      <button mat-mini-fab (click)="updateLight(trainData.train)"
+              [disabled]="!isConnected()">
+        <mat-icon [style]="trainData.light ? 'color:white':''">lightbulb</mat-icon>
+      </button>
 
-    <mat-divider></mat-divider>
+      <button mat-mini-fab (click)="updateHorn(trainData.train)"
+              [disabled]="!isConnected()">
+        <mat-icon [style]="trainData.horn ? 'color:white':''">volume_up</mat-icon>
+      </button>
+    </span>
+
+    <ng-container *ngFor="let fn of trainData.train.functions">
+      <button mat-mini-fab (click)="updateFunctionState(trainData.train, fn, !trainData.functionStates.get(fn.id!))"
+              [disabled]="!isConnected()">
+        <span [style]="trainData.functionStates.get(fn.id!) ? 'color:white':''">{{ fn.alias }}</span>
+      </button>
+    </ng-container>
+
+    <mat-divider/>
     <button mat-mini-fab>
       <mat-icon routerLink="/cc/train/{{trainData.train.id}}">edit</mat-icon>
     </button>

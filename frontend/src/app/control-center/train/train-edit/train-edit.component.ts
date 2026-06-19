@@ -6,8 +6,22 @@ import {FormBuilder, FormControl, FormsModule, ReactiveFormsModule} from "@angul
 import {MatFormField, MatInput} from "@angular/material/input";
 import {FloatLabelType} from "@angular/material/form-field";
 import {MatButton} from "@angular/material/button";
-import {Train} from "../../../../shared/openapi-gen";
+import {Train, TrainDto, TrainFunction} from "../../../../shared/openapi-gen";
 import {SnackBar} from "../../common/snack-bar.component";
+import {
+  MatCell,
+  MatCellDef,
+  MatColumnDef,
+  MatHeaderCell,
+  MatHeaderCellDef,
+  MatHeaderRow,
+  MatHeaderRowDef,
+  MatRow,
+  MatRowDef,
+  MatTable
+} from "@angular/material/table";
+import {MatCheckbox} from "@angular/material/checkbox";
+import {MatIcon} from "@angular/material/icon";
 
 @Component({
   selector: 'app-train-edit',
@@ -22,27 +36,46 @@ import {SnackBar} from "../../common/snack-bar.component";
     MatFormField,
     FormsModule,
     MatCardFooter,
-    MatButton
+    MatButton,
+    MatCell,
+    MatCellDef,
+    MatCheckbox,
+    MatColumnDef,
+    MatHeaderCell,
+    MatHeaderRow,
+    MatHeaderRowDef,
+    MatIcon,
+    MatRow,
+    MatRowDef,
+    MatTable,
+    MatHeaderCellDef
   ],
   templateUrl: './train-edit.component.html',
   styleUrl: './train-edit.component.css'
 })
 export class TrainEditComponent implements OnInit {
   trainId = input.required<Number>();
+
+  train = signal<Train>({});
+  trainFunction = signal<TrainFunction[]>([]);
+
   private trainService = inject(TrainService);
   private snackBar = inject(SnackBar);
   private router = inject(Router);
+  private formBuilder = inject(FormBuilder);
 
-  train = signal<Train>({});
+  displayedColumns: string[] = ['alias', 'address', 'bit', 'state', 'action'];
 
   readonly hideRequiredControl = new FormControl(false);
   readonly floatLabelControl = new FormControl('auto' as FloatLabelType);
-  readonly form = inject(FormBuilder).group({
+  readonly form = this.formBuilder.group({
     hideRequired: this.hideRequiredControl,
     floatLabel: this.floatLabelControl,
     name: '',
     address: -1,
+    trainFunctions: this.formBuilder.array([])
   });
+
 
   ngOnInit() {
     if (this.trainId() && this.trainId().toString() != "create") {
@@ -53,18 +86,20 @@ export class TrainEditComponent implements OnInit {
   }
 
   onSubmit() {
-
-    let trainToUpdate = this.train();
-    trainToUpdate.address = this.form.controls.address.getRawValue()!
-    trainToUpdate.name = this.form.controls.name.getRawValue()!
+    let trainToUpdate: TrainDto = {
+      name: this.form.controls.name.getRawValue()!,
+      address: this.form.controls.address.getRawValue()!,
+      functions: this.trainFunction()
+    };
 
     let observable;
     let operation;
-    if (trainToUpdate.id === undefined) {
+    let trainId = this.train().id;
+    if (trainId === undefined) {
       observable = this.trainService.createTrain(trainToUpdate);
       operation='created'
     } else {
-      observable = this.trainService.saveTrain(trainToUpdate);
+      observable = this.trainService.saveTrain(trainId, trainToUpdate);
       operation='updated'
     }
     observable.subscribe(() => {
@@ -75,7 +110,42 @@ export class TrainEditComponent implements OnInit {
 
   private setTrain(train: Train) {
     this.train.set(train);
-    this.form.controls.address.setValue(train.address!)
-    this.form.controls.name.setValue(train.name!)
+    this.form.controls.address.setValue(train.address!);
+    this.form.controls.name.setValue(train.name!);
+
+    this.trainFunction.set(Array.from(train.functions ?? []));
+  }
+
+  protected deleteTrainFunction(trainFunc: TrainFunction) {
+    this.trainFunction.update(items =>
+      items.filter(x => x !== trainFunc)
+    );
+  }
+
+  protected addTrainFunction() {
+    this.trainFunction.update(items => [
+      ...items,
+      {alias: '', configuration: {}} as TrainFunction
+    ]);
+  }
+
+
+  protected updateAddress(element: TrainFunction, value: string) {
+    this.extracted(element).address = Number(value);
+  }
+
+  protected updateBit(element: TrainFunction, value: string) {
+    this.extracted(element).bit = Number(value);
+  }
+
+  protected updateBitState(element: TrainFunction, value: string) {
+    this.extracted(element).bitState = Boolean(value);
+  }
+
+  private extracted(element: TrainFunction) {
+    if (!element.configuration) {
+      element.configuration = {};
+    }
+    return element.configuration;
   }
 }

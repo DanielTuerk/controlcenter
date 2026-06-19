@@ -8,7 +8,7 @@ import {MatDivider} from "@angular/material/divider";
 import {MatSlider, MatSliderThumb} from "@angular/material/slider";
 import {NgForOf, NgIf} from "@angular/common";
 import {TrainSubscription} from "../../../../shared/websocket/train.subscription";
-import {DRIVINGDIRECTION, Train} from "../../../../../shared/openapi-gen";
+import {DRIVINGDIRECTION, Train, TrainFunction} from "../../../../../shared/openapi-gen";
 import {RouterLink} from "@angular/router";
 import {FormsModule} from "@angular/forms";
 import {DeviceService} from "../../../../shared/device.service";
@@ -20,6 +20,7 @@ export class TrainData {
   light: boolean;
   drivingLevel: number = 0;
   forward: boolean = true;
+  functionStates: Map<number, boolean> = new Map<number, boolean>();
 
   constructor(train: Train, horn: boolean, light: boolean, drivingLevel: number, forward: boolean) {
     this.train = train;
@@ -27,9 +28,9 @@ export class TrainData {
     this.light = light;
     this.drivingLevel = drivingLevel;
     this.forward = forward;
+    this.functionStates = new Map<number, boolean>();
   }
 }
-
 
 @Component({
   selector: 'app-viewer-control-train',
@@ -98,7 +99,9 @@ export class TrainComponent implements OnInit {
       this.trainSubscription.trainHornState().subscribe(data => {
         this.getTrainData(data.itemId).horn = data.state!;
       });
-
+      this.trainSubscription.trainFunctionState().subscribe(data => {
+        this.getTrainData(data.itemId).functionStates.set(data.function!.id!, data.active!);
+      });
     });
   }
 
@@ -126,5 +129,9 @@ export class TrainComponent implements OnInit {
     this.trainService.toggleDirection(trainData.train,
       trainData.forward ? DRIVINGDIRECTION.Forward : DRIVINGDIRECTION.Backward)
     .subscribe();
+  }
+
+  protected updateFunctionState(train: Train, trainFunction: TrainFunction, state: boolean) {
+    this.trainService.toggleFunctionState(train, trainFunction, state).subscribe();
   }
 }

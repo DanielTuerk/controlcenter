@@ -8,7 +8,6 @@ import jakarta.inject.Inject;
 import jakarta.ws.rs.NotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import net.wbz.moba.controlcenter.EventBroadcaster;
-import net.wbz.moba.controlcenter.shared.track.model.BusDataConfiguration;
 import net.wbz.moba.controlcenter.shared.train.Train;
 import net.wbz.moba.controlcenter.shared.train.TrainDataChangedEvent;
 import net.wbz.moba.controlcenter.shared.train.TrainDrivingDirectionEvent;
@@ -131,7 +130,6 @@ public class TrainService {
                             eventBroadcaster
                                 .fireEvent(new TrainFunctionStateEvent(trainInstance.train().getId(),
                                     trainFunction, active));
-                            break;
                         }
                     }
                 }
@@ -195,27 +193,27 @@ public class TrainService {
     }
 
     public void toggleHorn(long id, boolean on) {
-        // TODO refactor to functionState
         getTrainModule(id).setHorn(on);
     }
 
     public void toggleLight(long id, boolean on) {
-        // TODO refactor to functionState
         getTrainModule(id).setLight(on);
     }
 
-    public void toggleFunctionState(long id, TrainFunction function, boolean state) {
+    public void toggleFunctionState(long trainId, long functionId, boolean state) {
+        final var trainFunction = getTrain(trainId).getFunctions().stream()
+            .filter(f -> f.getId().equals(functionId))
+            .findFirst()
+            .orElseThrow(() -> new NotFoundException("function not found"));
         try {
-            TrainModule trainModule = getTrainModule(id);
-            BusDataConfiguration functionConfiguration = function.getConfiguration();
-            // TODO remove bus nr quick fix
-            functionConfiguration.setBus(trainModule.getBus());
+            final var trainModule = getTrainModule(trainId);
+            final var functionConfiguration = trainFunction.getConfiguration();
             trainModule.setFunctionState(
                 deviceManager.getConnectedDevice().orElseThrow(() -> new RuntimeException("no connected device"))
                     .getBusAddress(functionConfiguration.getBus(), functionConfiguration.getAddress()),
                 functionConfiguration.getBit(), state);
         } catch (DeviceAccessException e) {
-            String msg = String.format("can't change state of function %s of train %d", function.getAlias(), id);
+            String msg = String.format("can't change state of function %s of train %d", trainFunction.getAlias(), trainId);
             log.error(msg, e);
             throw new RuntimeException(msg);
         }

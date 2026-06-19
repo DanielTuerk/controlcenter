@@ -797,6 +797,10 @@ components:
         address:
           type: integer
           format: int32
+        functions:
+          type: array
+          items:
+            $ref: "#/components/schemas/TrainFunction"
     TrainFunction:
       type: object
       properties:
@@ -1954,6 +1958,36 @@ paths:
             application/json:
               schema: {}
       summary: Update Driving Direction
+      tags:
+        - Train Resource
+  /api/trains/{id}/functions/{functionId}:
+    post:
+      parameters:
+        - name: functionId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        content:
+          text/plain:
+            schema:
+              type: boolean
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { }
+      summary: Toggle Horn
       tags:
       - Train Resource
   /api/trains/{id}/horn:

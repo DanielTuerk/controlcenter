@@ -8,12 +8,18 @@ import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import net.wbz.moba.controlcenter.api.train.TrainDto;
 import net.wbz.moba.controlcenter.persist.entity.TrainEntity;
+import net.wbz.moba.controlcenter.persist.entity.TrainFunctionEntity;
+import net.wbz.moba.controlcenter.persist.entity.track.BusDataConfigurationEntity;
+import net.wbz.moba.controlcenter.persist.repository.TrainFunctionRepository;
 import net.wbz.moba.controlcenter.persist.repository.TrainRepository;
 import net.wbz.moba.controlcenter.shared.train.Train;
+import net.wbz.moba.controlcenter.shared.train.TrainFunction;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Slf4j
 @ApplicationScoped
@@ -23,14 +29,16 @@ public class TrainDataProvider {
 
     private final TrainRepository trainRepository;
     private final TrainMapper trainMapper;
+    private final TrainFunctionRepository trainFunctionRepository;
 
-    public TrainDataProvider(TrainRepository trainRepository, TrainMapper trainMapper) {
+    public TrainDataProvider(TrainRepository trainRepository, TrainMapper trainMapper, TrainFunctionRepository trainFunctionRepository) {
         this.trainRepository = trainRepository;
         this.trainMapper = trainMapper;
+        this.trainFunctionRepository = trainFunctionRepository;
     }
 
     /**
-     * Load all trains from database and cache the result.
+     * Load all trains from the database and cache the result.
      */
     @CacheResult(cacheName = CACHE)
     public List<Train> getTrains() {
@@ -49,7 +57,9 @@ public class TrainDataProvider {
         TrainEntity entity = new TrainEntity();
         entity.name = dto.name();
         entity.address = dto.address();
-        // TODO train functions
+        entity.functions = Stream.of(dto.functions())
+            .map(function -> createTrainFunction(function, entity))
+            .collect(Collectors.toSet());
         trainRepository.persist(entity);
         return entity.id;
     }
@@ -66,7 +76,39 @@ public class TrainDataProvider {
         }
         existing.name = updated.name();
         existing.address = updated.address();
-        // TODO train functions
+
+        final var updatedExistingIds = Stream.of(updated.functions())
+            .map(TrainFunction::getId)
+            .filter(Objects::nonNull)
+            .collect(Collectors.toSet());
+
+        // remove deleted ones
+        final var toDelete = existing.functions.stream()
+            .filter(function -> !updatedExistingIds.contains(function.id))
+            .collect(Collectors.toSet());
+        existing.functions.removeAll(toDelete);
+        toDelete.forEach(trainFunctionRepository::delete);
+
+        // update exiting
+        existing.functions.forEach(funcToUpdate ->
+            Stream.of(updated.functions())
+                .filter(tf -> tf.getId().equals(funcToUpdate.id))
+                .findFirst()
+                .ifPresent(trainFunction -> {
+                    funcToUpdate.alias = trainFunction.getAlias();
+                    funcToUpdate.configuration.address = trainFunction.getConfiguration().getAddress();
+                    funcToUpdate.configuration.bit = trainFunction.getConfiguration().getBit();
+                    funcToUpdate.configuration.bitState = trainFunction.getConfiguration().getBitState();
+                })
+        );
+
+        // add new ones
+        existing.functions.addAll(Stream.of(updated.functions())
+            .filter(function -> function.getId() == null)
+            .map(function -> createTrainFunction(function, existing))
+            .collect(Collectors.toSet()));
+
+        trainRepository.persist(existing);
     }
 
     /**
@@ -82,5 +124,21 @@ public class TrainDataProvider {
         return getTrains().stream()
             .filter(train -> train.getId().equals(id))
             .findFirst();
+    }
+
+    private TrainFunctionEntity createTrainFunction(TrainFunction function, TrainEntity train) {
+        var busDataConfigEntity = new BusDataConfigurationEntity();
+        busDataConfigEntity.bus = 0;
+        busDataConfigEntity.address = function.getConfiguration().getAddress();
+        busDataConfigEntity.bit = function.getConfiguration().getBit();
+        busDataConfigEntity.bitState = function.getConfiguration().getBitState();
+
+        final var trainFunctionEntity = new TrainFunctionEntity();
+        trainFunctionEntity.alias = function.getAlias();
+        trainFunctionEntity.configuration = busDataConfigEntity;
+        trainFunctionEntity.train = train;
+
+        trainFunctionRepository.persist(trainFunctionEntity);
+        return trainFunctionEntity;
     }
 }

@@ -10,7 +10,7 @@ import net.wbz.moba.controlcenter.persist.entity.track.BusDataConfigurationEntit
 
 /**
  * Function of a {@link TrainEntity}. For each train the functions are created
- * by persist the train. Afterwards the functions could be edit.
+ * by persisting the train. Afterward the functions could be edited.
  *
  * @author Daniel Tuerk
  */

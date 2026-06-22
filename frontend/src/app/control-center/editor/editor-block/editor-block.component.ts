@@ -1,4 +1,4 @@
-import {Component, inject, OnInit, signal} from '@angular/core';
+import {Component, inject, OnInit, signal, ChangeDetectionStrategy} from '@angular/core';
 import {MatButton} from "@angular/material/button";
 import {MatCard, MatCardContent, MatCardHeader} from "@angular/material/card";
 import {
@@ -43,6 +43,7 @@ import {ConstructionSubscription} from "../../../shared/websocket/construction.s
     MatHeaderCellDef
   ],
   templateUrl: './editor-block.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './editor-block.component.css'
 })
 export class EditorBlockComponent implements OnInit {
@@ -55,11 +56,11 @@ export class EditorBlockComponent implements OnInit {
   private constructionSubscription = inject(ConstructionSubscription);
 
   ngOnInit() {
-    this.constructionSubscription.currentConstruction().subscribe(event => {
+    this.constructionSubscription.currentConstruction().subscribe(() => {
       this.loadTrackBlocks();
     })
 
-    this.trackSubscription.trackBlockDataChangedEvent().subscribe(event => {
+    this.trackSubscription.trackBlockDataChangedEvent().subscribe(() => {
       this.loadTrackBlocks();
     });
   }

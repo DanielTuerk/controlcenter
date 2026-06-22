@@ -1,5 +1,5 @@
-import {Component, inject, OnDestroy, OnInit} from '@angular/core';
-import {DecimalPipe, NgForOf, NgIf} from "@angular/common";
+import {Component, inject, OnDestroy, OnInit, ChangeDetectionStrategy} from '@angular/core';
+import { DecimalPipe } from "@angular/common";
 import {DeviceSubscription} from "../../shared/websocket/device.subscription";
 import {BusService} from "../../shared/bus.service";
 import {WebSocketService} from "../../shared/websocket/websocket.service";
@@ -9,11 +9,10 @@ import {DeviceService} from "../../shared/device.service";
 @Component({
   selector: 'app-bus-monitor',
   imports: [
-    NgForOf,
-    DecimalPipe,
-    NgIf
-  ],
+    DecimalPipe
+],
   templateUrl: './bus-monitor.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './bus-monitor.component.css'
 })
 export class BusMonitorComponent implements OnInit, OnDestroy {

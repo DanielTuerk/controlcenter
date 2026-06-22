@@ -1,24 +1,32 @@
-<div *ngIf="!isConnected()">
-  <p>No connection! Please connect device first.</p>
-</div>
+@if (!isConnected()) {
+  <div>
+    <p>No connection! Please connect device first.</p>
+  </div>
+}
 
-<div class="bus-container" *ngIf="isConnected()">
-  <div class="bus" *ngFor="let bus of buses">
-    <h2>Bus {{ bus.number }}</h2>
-    <div class="address-grid">
-      <div *ngFor="let row of bus.rows" class="address-item">
-        <span class="address">{{ row.address | number:'3.0-0' }}</span>
-        <div class="bits">
-          <button
-            *ngFor="let bit of row.bits; let j = index"
-            (click)="toggleBit(bus, row.address, j+1, !row.bits[j])"
-            [class.active]="bit">
-            {{ j + 1 }}
-          </button>
+@if (isConnected()) {
+  <div class="bus-container">
+    @for (bus of buses; track bus) {
+      <div class="bus">
+        <h2>Bus {{ bus.number }}</h2>
+        <div class="address-grid">
+          @for (row of bus.rows; track row) {
+            <div class="address-item">
+              <span class="address">{{ row.address | number:'3.0-0' }}</span>
+              <div class="bits">
+                @for (bit of row.bits; track bit; let j = $index) {
+                  <button
+                    (click)="toggleBit(bus, row.address, j+1, !row.bits[j])"
+                    [class.active]="bit">
+                    {{ j + 1 }}
+                  </button>
+                }
+              </div>
+            </div>
+          }
         </div>
       </div>
-    </div>
+    }
   </div>
-
-</div>
+}
 <br/>

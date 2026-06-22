@@ -1,58 +1,62 @@
 <div class="control-group" style="padding-top: 10px; padding-left: 10px">
   <button mat-mini-fab (click)="scheduleAllScenarios()"
-          [disabled]="!isConnected()">
+    [disabled]="!isConnected()">
     <mat-icon>schedule_send</mat-icon>
   </button>
   <button mat-mini-fab (click)="stopAllScenarios()"
-          [disabled]="!isConnected()">
+    [disabled]="!isConnected()">
     <mat-icon>stop</mat-icon>
   </button>
 </div>
 
-<mat-expansion-panel *ngFor="let scenario of scenarios()" style="padding-top: 10px">
-  <mat-expansion-panel-header>
-    <mat-panel-title class="panel-title">
-      <div class="title-top">
-        <span class="train-name">{{ scenario.name }}</span>
-      </div>
-      <div class="title-bottom">
-        <span>
-          {{ scenario.runState }}
-        </span>
-        <span>
-          <mat-icon style=" display: contents;font-size: medium">departure_board</mat-icon>
-          {{ scenario.scheduledExecutionTimeAsText }}
-        </span>
-      </div>
-    </mat-panel-title>
-  </mat-expansion-panel-header>
-  <div class="control-group">
-    <button mat-mini-fab (click)="scheduleScenario(scenario)"
-            [disabled]="!canBeScheduled(scenario.scenarioId)">
-      <mat-icon>schedule_send</mat-icon>
-    </button>
-    <button mat-mini-fab (click)="startScenario(scenario)"
-            [disabled]="!canBeStarted(scenario.scenarioId)">
-      <mat-icon>play_circle</mat-icon>
-    </button>
-    <button mat-mini-fab (click)="stopScenario(scenario)"
-            [disabled]="!canBeStopped(scenario.scenarioId)">
-      <mat-icon>stop</mat-icon>
-    </button>
-  </div>
-
-  <div style="padding-top: 5px">
-    <div *ngFor="let route of scenario.routes"
-         style="width: 90%;padding: 2px"
-         [ngClass]="'route-state-' + (route.runState ?? '')">
-
-      <div><span>{{ route.name }}</span><span *ngIf="route.runState"> - {{ route.runState }}</span></div>
-
-      <div *ngIf="route.message?.trim()">
-        {{ route.message }}
-      </div>
-
+@for (scenario of scenarios(); track scenario) {
+  <mat-expansion-panel style="padding-top: 10px">
+    <mat-expansion-panel-header>
+      <mat-panel-title class="panel-title">
+        <div class="title-top">
+          <span class="train-name">{{ scenario.name }}</span>
+        </div>
+        <div class="title-bottom">
+          <span>
+            {{ scenario.runState }}
+          </span>
+          <span>
+            <mat-icon style=" display: contents;font-size: medium">departure_board</mat-icon>
+            {{ scenario.scheduledExecutionTimeAsText }}
+          </span>
+        </div>
+      </mat-panel-title>
+    </mat-expansion-panel-header>
+    <div class="control-group">
+      <button mat-mini-fab (click)="scheduleScenario(scenario)"
+        [disabled]="!canBeScheduled(scenario.scenarioId)">
+        <mat-icon>schedule_send</mat-icon>
+      </button>
+      <button mat-mini-fab (click)="startScenario(scenario)"
+        [disabled]="!canBeStarted(scenario.scenarioId)">
+        <mat-icon>play_circle</mat-icon>
+      </button>
+      <button mat-mini-fab (click)="stopScenario(scenario)"
+        [disabled]="!canBeStopped(scenario.scenarioId)">
+        <mat-icon>stop</mat-icon>
+      </button>
     </div>
+    <div style="padding-top: 5px">
+      @for (route of scenario.routes; track route) {
+        <div
+          style="width: 90%;padding: 2px"
+          [ngClass]="'route-state-' + (route.runState ?? '')">
+          <div><span>{{ route.name }}</span>@if (route.runState) {
+          <span> - {{ route.runState }}</span>
+        }</div>
+        @if (route.message?.trim()) {
+          <div>
+            {{ route.message }}
+          </div>
+        }
+      </div>
+    }
   </div>
 </mat-expansion-panel>
+}
 <br/>

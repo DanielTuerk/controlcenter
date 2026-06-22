@@ -1,4 +1,4 @@
-import {Component, Inject, Injector, OnInit, Type, ViewChild, ViewContainerRef} from '@angular/core';
+import {Component, Inject, Injector, OnInit, Type, ViewChild, ViewContainerRef, ChangeDetectionStrategy} from '@angular/core';
 import {
   MAT_DIALOG_DATA,
   MatDialogActions,
@@ -38,6 +38,7 @@ export interface EditComponent<T extends AbstractTrackPart> {
     ReactiveFormsModule
   ],
   templateUrl: './base-edit-track-part.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './base-edit-track-part.component.css'
 })
 export class BaseEditTrackPartComponent<T extends AbstractTrackPart> implements OnInit {

@@ -1,4 +1,4 @@
-import {Component, inject, input, OnInit, signal} from '@angular/core';
+import {Component, inject, input, OnInit, signal, ChangeDetectionStrategy} from '@angular/core';
 import {FormBuilder, FormControl, FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {MatButton} from "@angular/material/button";
 import {MatCard, MatCardContent, MatCardFooter, MatCardHeader, MatCardTitle} from "@angular/material/card";
@@ -25,6 +25,7 @@ import {ConstructionService} from "../../../../shared/construction.service";
     ReactiveFormsModule
   ],
   templateUrl: './construction-edit.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './construction-edit.component.css'
 })
 export class ConstructionEditComponent implements OnInit {

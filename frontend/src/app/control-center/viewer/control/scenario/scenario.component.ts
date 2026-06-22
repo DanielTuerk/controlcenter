@@ -1,6 +1,6 @@
-import {Component, inject, OnInit, signal} from '@angular/core';
+import {Component, inject, OnInit, signal, ChangeDetectionStrategy} from '@angular/core';
 import {MatExpansionPanel, MatExpansionPanelHeader, MatExpansionPanelTitle} from "@angular/material/expansion";
-import {NgClass, NgForOf, NgIf} from "@angular/common";
+import { NgClass } from "@angular/common";
 import {ScenarioService} from "../../../../shared/scenario.service";
 import {ROUTERUNSTATE, RUNSTATE, Scenario} from "../../../../../shared/openapi-gen";
 import {MatIcon} from "@angular/material/icon";
@@ -48,13 +48,12 @@ export class ScenarioData {
     MatExpansionPanel,
     MatExpansionPanelHeader,
     MatExpansionPanelTitle,
-    NgForOf,
     MatIcon,
     MatMiniFabButton,
-    NgClass,
-    NgIf
-  ],
+    NgClass
+],
   templateUrl: './scenario.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './scenario.component.css'
 })
 export class ScenarioComponent implements OnInit {

@@ -1,4 +1,4 @@
-import {Component, inject, OnInit, signal} from '@angular/core';
+import {Component, inject, OnInit, signal, ChangeDetectionStrategy} from '@angular/core';
 import {Signal, SIGNALTYPE, TrackBlock} from "../../../../../../shared/openapi-gen";
 import {EditComponent} from "../base-edit-track-part.component";
 import {MatCard, MatCardContent, MatCardHeader, MatCardTitle} from "@angular/material/card";
@@ -6,7 +6,7 @@ import {TrackService} from "../../../../../shared/track.service";
 import {FormControl, FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {MatButtonToggle, MatButtonToggleGroup} from "@angular/material/button-toggle";
 import {MatFormField, MatInput, MatLabel} from "@angular/material/input";
-import {NgIf, NgSwitch, NgSwitchCase} from "@angular/common";
+
 import {MatCheckbox} from "@angular/material/checkbox";
 import {TrackBlockSelectComponent} from "../../../../common/track-block-select/track-block-select.component";
 
@@ -24,13 +24,11 @@ import {TrackBlockSelectComponent} from "../../../../common/track-block-select/t
     MatInput,
     ReactiveFormsModule,
     MatLabel,
-    NgIf,
     MatCheckbox,
-    NgSwitch,
-    NgSwitchCase,
     TrackBlockSelectComponent
-  ],
+],
   templateUrl: './signal-edit.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './signal-edit.component.css'
 })
 export class SignalEditComponent implements EditComponent<Signal>, OnInit {

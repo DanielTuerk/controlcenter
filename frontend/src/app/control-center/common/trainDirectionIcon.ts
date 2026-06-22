@@ -1,14 +1,17 @@
-import {Component, Input} from '@angular/core';
+import {Component, Input, ChangeDetectionStrategy} from '@angular/core';
 import {MatIconModule} from '@angular/material/icon';
-import {NgIf} from "@angular/common";
+
 
 @Component({
   selector: 'train-direction-icon',
   standalone: true,
-  imports: [MatIconModule, NgIf],
+  imports: [MatIconModule],
+  changeDetection: ChangeDetectionStrategy.Eager,
   template: `
-    <mat-icon class="icon" *ngIf="icon">{{ icon }}</mat-icon>
-  `
+    @if (icon) {
+      <mat-icon class="icon">{{ icon }}</mat-icon>
+    }
+    `
 })
 export class TrainDirectionIcon {
   @Input() forward: boolean | undefined;

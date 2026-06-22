@@ -12,12 +12,12 @@ body {
 }
 
 .snackbar-error {
-  --mdc-snackbar-container-color: rgba(230, 130, 130);
+  --mat-snackbar-container-color: rgba(230, 130, 130);
   --mat-mdc-snack-bar-button-color: white;
 }
 
 .snackbar-success {
-  --mdc-snackbar-container-color: #91c16d;
+  --mat-snackbar-container-color: #91c16d;
   --mat-mdc-snack-bar-button-color: white;
 }
 

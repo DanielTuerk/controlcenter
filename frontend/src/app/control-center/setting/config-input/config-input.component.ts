@@ -1,5 +1,5 @@
-import {Component, DestroyRef, inject, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
-import {CommonModule} from '@angular/common';
+import {Component, DestroyRef, inject, Input, OnChanges, OnInit, SimpleChanges, ChangeDetectionStrategy} from '@angular/core';
+
 import {FormControl, ReactiveFormsModule} from '@angular/forms';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {debounceTime, distinctUntilChanged, switchMap, take} from 'rxjs/operators';
@@ -8,7 +8,8 @@ import {ConfigService} from "../../../shared/config.service";
 @Component({
   selector: 'app-config-input',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [ReactiveFormsModule],
+  changeDetection: ChangeDetectionStrategy.Eager,
   templateUrl: './config-input.component.html'
 })
 export class ConfigInputComponent implements OnInit, OnChanges {

@@ -1,9 +1,9 @@
-import {Component, inject, OnInit, signal} from '@angular/core';
+import {Component, inject, OnInit, signal, ChangeDetectionStrategy} from '@angular/core';
 import {MatSlideToggle} from "@angular/material/slide-toggle";
 import {MatSelect} from "@angular/material/select";
 import {DeviceService} from "../../../shared/device.service";
 import {FormsModule} from "@angular/forms";
-import {NgForOf} from "@angular/common";
+
 import {DeviceInfo} from "../../../../shared/openapi-gen";
 import {DeviceSubscription} from "../../../shared/websocket/device.subscription";
 import {MatIcon} from "@angular/material/icon";
@@ -21,12 +21,12 @@ import {MatOption} from "@angular/material/core";
     MatSelect,
     MatOption,
     FormsModule,
-    NgForOf,
     MatIcon,
     MatFabButton,
     RouterLink
-  ],
+],
   templateUrl: './device.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './device.component.css'
 })
 export class DeviceComponent implements OnInit {

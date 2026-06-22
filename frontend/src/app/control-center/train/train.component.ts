@@ -1,4 +1,4 @@
-import {Component, inject, OnInit, signal} from '@angular/core';
+import {Component, inject, OnInit, signal, ChangeDetectionStrategy} from '@angular/core';
 import {TrainService} from "../../shared/train.service";
 import {RouterLink} from "@angular/router";
 import {MatCard, MatCardContent, MatCardHeader, MatCardTitle} from "@angular/material/card";
@@ -23,6 +23,7 @@ import {TrainSubscription} from "../../shared/websocket/train.subscription";
     MatButton
   ],
   templateUrl: './train.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './train.component.css'
 })
 export class TrainComponent implements OnInit {

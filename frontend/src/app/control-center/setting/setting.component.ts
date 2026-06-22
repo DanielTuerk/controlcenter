@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {Component, ChangeDetectionStrategy} from '@angular/core';
 import {RouterLink, RouterOutlet} from "@angular/router";
 import {MatSidenav, MatSidenavContainer, MatSidenavContent} from "@angular/material/sidenav";
 import {MatListItem, MatNavList} from "@angular/material/list";
@@ -17,6 +17,7 @@ import {MatCard} from "@angular/material/card";
     MatCard
   ],
   templateUrl: './setting.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './setting.component.css'
 })
 export class SettingComponent {

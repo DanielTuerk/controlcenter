@@ -1,4 +1,4 @@
-import {Component, inject, input, OnInit, signal} from '@angular/core';
+import {Component, inject, input, OnInit, signal, ChangeDetectionStrategy} from '@angular/core';
 import {FormBuilder, FormControl, FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {MatButton} from "@angular/material/button";
 import {MatCardContent, MatCardFooter, MatCardHeader, MatCardTitle} from "@angular/material/card";
@@ -10,7 +10,7 @@ import {SnackBar} from "../../common/snack-bar.component";
 import {AvailableDevice, DeviceInfo, DEVICETYPE} from "../../../../shared/openapi-gen";
 import {MatOption} from "@angular/material/core";
 import {MatSelect} from "@angular/material/select";
-import {NgForOf} from "@angular/common";
+
 import {MatIcon} from "@angular/material/icon";
 
 @Component({
@@ -28,10 +28,10 @@ import {MatIcon} from "@angular/material/icon";
     ReactiveFormsModule,
     MatOption,
     MatSelect,
-    NgForOf,
     MatIcon
-  ],
+],
   templateUrl: './device-edit.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './device-edit.component.css'
 })
 export class DeviceEditComponent implements OnInit {

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import {MatCard, MatCardContent, MatCardHeader, MatCardTitle} from "@angular/material/card";
 
 @Component({
@@ -10,6 +10,7 @@ import {MatCard, MatCardContent, MatCardHeader, MatCardTitle} from "@angular/mat
     MatCardTitle
   ],
   templateUrl: './station.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './station.component.css'
 })
 export class StationComponent {

@@ -1,4 +1,4 @@
-import {Component, inject, OnInit} from '@angular/core';
+import {Component, inject, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {Router, RouterOutlet} from "@angular/router";
 import {ConstructionService} from "./shared/construction.service";
 import {WebSocketService} from "./shared/websocket/websocket.service";
@@ -9,6 +9,7 @@ import {DeviceService} from "./shared/device.service";
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [RouterOutlet]
 })
 export class AppComponent implements OnInit {

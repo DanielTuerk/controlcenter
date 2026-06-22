@@ -8,11 +8,13 @@
     <mat-grid-tile>
       Default construction:
       <mat-select [(ngModel)]="defaultConstruction"
-                  (selectionChange)="updateDefaultConstruction()"
-                  name="construction">
-        <mat-option *ngFor="let construction of constructions();"
-                    [value]="construction">{{ construction.name }}
-        </mat-option>
+        (selectionChange)="updateDefaultConstruction()"
+        name="construction">
+        @for (construction of constructions(); track construction) {
+          <mat-option
+            [value]="construction">{{ construction.name }}
+          </mat-option>
+        }
       </mat-select>
     </mat-grid-tile>
   </mat-grid-list>

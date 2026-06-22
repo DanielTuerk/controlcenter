@@ -1,79 +1,80 @@
-<mat-expansion-panel *ngFor="let trainData of trains()" style="padding-top: 10px">
-  <mat-expansion-panel-header>
-    <mat-panel-title class="panel-title">
-      <div class="title-top">
-        <span class="train-name">{{ trainData.train.name }}</span>
-      </div>
-      <div class="title-bottom">
-        <span>
-          <train-direction-icon [forward]="trainData.forward"/>
-        </span>
-        <span>
-          <mat-icon class="icon">speed</mat-icon>
-          {{ trainData.drivingLevel }}</span>
-        <span>
-          <mat-icon *ngIf="trainData.light" class="icon">lightbulb</mat-icon>
-          <mat-icon *ngIf="trainData.horn" class="icon">volume_up</mat-icon>
-        </span>
-        <span *ngFor="let fn of trainData.train.functions">
-          <span *ngIf="trainData.functionStates.get(fn.id!)"
-                style="font-size: small">
-            {{ fn.alias }}
+@for (trainData of trains(); track trainData) {
+  <mat-expansion-panel style="padding-top: 10px">
+    <mat-expansion-panel-header>
+      <mat-panel-title class="panel-title">
+        <div class="title-top">
+          <span class="train-name">{{ trainData.train.name }}</span>
+        </div>
+        <div class="title-bottom">
+          <span>
+            <train-direction-icon [forward]="trainData.forward"/>
           </span>
-        </span>
-      </div>
-    </mat-panel-title>
-  </mat-expansion-panel-header>
-
-  <div>
-    <mat-button-toggle-group [(ngModel)]="trainData.forward"
-                             [disabled]="!isConnected()"
-                             (ngModelChange)="drivingDirectionChanged(trainData)"
-                             name="fontStyle" aria-label="Font Style"
-                             hideSingleSelectionIndicator="true">
-      <mat-button-toggle [value]="false">
-        <mat-icon>arrow_backward</mat-icon>
-      </mat-button-toggle>
-      <mat-button-toggle [value]="true">
-        <mat-icon>arrow_forward</mat-icon>
-      </mat-button-toggle>
-    </mat-button-toggle-group>
-
-    <button mat-mini-fab (click)="stopTrain(trainData.train)"
-            [disabled]="!isConnected()">
-      <mat-icon>stop</mat-icon>
-    </button>
-
-    <mat-slider min="0" max="12" step="1" showTickMarks discrete
-                [disabled]="!isConnected()">
-      <input matSliderThumb (valueChange)="changeDrivingLevel(trainData.train, $event)">
-    </mat-slider>
-
-    <mat-divider/>
-
-    <span>
-      <button mat-mini-fab (click)="updateLight(trainData.train)"
-              [disabled]="!isConnected()">
-        <mat-icon [style]="trainData.light ? 'color:white':''">lightbulb</mat-icon>
+          <span>
+            <mat-icon class="icon">speed</mat-icon>
+          {{ trainData.drivingLevel }}</span>
+          <span>
+            @if (trainData.light) {
+              <mat-icon class="icon">lightbulb</mat-icon>
+            }
+            @if (trainData.horn) {
+              <mat-icon class="icon">volume_up</mat-icon>
+            }
+          </span>
+          @for (fn of trainData.train.functions; track fn) {
+            <span>
+              @if (trainData.functionStates.get(fn.id!)) {
+                <span
+                  style="font-size: small">
+                  {{ fn.alias }}
+                </span>
+              }
+            </span>
+          }
+        </div>
+      </mat-panel-title>
+    </mat-expansion-panel-header>
+    <div>
+      <mat-button-toggle-group [(ngModel)]="trainData.forward"
+        [disabled]="!isConnected()"
+        (ngModelChange)="drivingDirectionChanged(trainData)"
+        name="fontStyle" aria-label="Font Style"
+        hideSingleSelectionIndicator="true">
+        <mat-button-toggle [value]="false">
+          <mat-icon>arrow_backward</mat-icon>
+        </mat-button-toggle>
+        <mat-button-toggle [value]="true">
+          <mat-icon>arrow_forward</mat-icon>
+        </mat-button-toggle>
+      </mat-button-toggle-group>
+      <button mat-mini-fab (click)="stopTrain(trainData.train)"
+        [disabled]="!isConnected()">
+        <mat-icon>stop</mat-icon>
       </button>
-
-      <button mat-mini-fab (click)="updateHorn(trainData.train)"
-              [disabled]="!isConnected()">
-        <mat-icon [style]="trainData.horn ? 'color:white':''">volume_up</mat-icon>
+      <mat-slider min="0" max="12" step="1" showTickMarks discrete
+        [disabled]="!isConnected()">
+        <input matSliderThumb (valueChange)="changeDrivingLevel(trainData.train, $event)">
+      </mat-slider>
+      <mat-divider/>
+      <span>
+        <button mat-mini-fab (click)="updateLight(trainData.train)"
+          [disabled]="!isConnected()">
+          <mat-icon [style]="trainData.light ? 'color:white':''">lightbulb</mat-icon>
+        </button>
+        <button mat-mini-fab (click)="updateHorn(trainData.train)"
+          [disabled]="!isConnected()">
+          <mat-icon [style]="trainData.horn ? 'color:white':''">volume_up</mat-icon>
+        </button>
+      </span>
+      @for (fn of trainData.train.functions; track fn) {
+        <button mat-mini-fab (click)="updateFunctionState(trainData.train, fn, !trainData.functionStates.get(fn.id!))"
+          [disabled]="!isConnected()">
+          <span [style]="trainData.functionStates.get(fn.id!) ? 'color:white':''">{{ fn.alias }}</span>
+        </button>
+      }
+      <mat-divider/>
+      <button mat-mini-fab>
+        <mat-icon routerLink="/cc/train/{{trainData.train.id}}">edit</mat-icon>
       </button>
-    </span>
-
-    <ng-container *ngFor="let fn of trainData.train.functions">
-      <button mat-mini-fab (click)="updateFunctionState(trainData.train, fn, !trainData.functionStates.get(fn.id!))"
-              [disabled]="!isConnected()">
-        <span [style]="trainData.functionStates.get(fn.id!) ? 'color:white':''">{{ fn.alias }}</span>
-      </button>
-    </ng-container>
-
-    <mat-divider/>
-    <button mat-mini-fab>
-      <mat-icon routerLink="/cc/train/{{trainData.train.id}}">edit</mat-icon>
-    </button>
-
-  </div>
-</mat-expansion-panel>
+    </div>
+  </mat-expansion-panel>
+}

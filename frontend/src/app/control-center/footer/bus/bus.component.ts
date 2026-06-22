@@ -1,4 +1,4 @@
-import {Component, inject, OnInit} from '@angular/core';
+import {Component, inject, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {MatSlideToggle} from "@angular/material/slide-toggle";
 import {BusSubscription} from "../../../shared/websocket/bus.subscription";
 import {BusService} from "../../../shared/bus.service";
@@ -20,6 +20,7 @@ import {MatDialog} from "@angular/material/dialog";
     MatIconButton
   ],
   templateUrl: './bus.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './bus.component.css'
 })
 export class BusComponent implements OnInit {

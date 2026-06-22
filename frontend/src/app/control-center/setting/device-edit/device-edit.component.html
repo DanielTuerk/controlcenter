@@ -23,9 +23,11 @@
       available:
       <mat-icon (click)="reloadAvailableDevices()">refresh</mat-icon>
       <ul>
-        <li *ngFor="let device of availableDevices()">
-          {{ device.port }}: {{ device.name }}
-        </li>
+        @for (device of availableDevices(); track device) {
+          <li>
+            {{ device.port }}: {{ device.name }}
+          </li>
+        }
       </ul>
 
     </div>

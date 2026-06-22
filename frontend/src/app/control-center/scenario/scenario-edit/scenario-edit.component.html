@@ -20,7 +20,9 @@
         <label>Train: </label>
         <mat-form-field>
           <mat-select required formControlName="train">
-            <mat-option *ngFor="let opt of trains()" [value]="opt"> {{ opt.name }}</mat-option>
+            @for (opt of trains(); track opt) {
+              <mat-option [value]="opt"> {{ opt.name }}</mat-option>
+            }
           </mat-select>
         </mat-form-field>
       </div>
@@ -28,9 +30,11 @@
         <label>driving direction</label>
         <mat-form-field>
           <mat-select required formControlName="drivingDirection">
-            <mat-option *ngFor="let opt of [DRIVINGDIRECTION1.Forward, DRIVINGDIRECTION1.Backward]"
-                        [value]="opt"> {{ opt }}
-            </mat-option>
+            @for (opt of [DRIVINGDIRECTION1.Forward, DRIVINGDIRECTION1.Backward]; track opt) {
+              <mat-option
+                [value]="opt"> {{ opt }}
+              </mat-option>
+            }
           </mat-select>
         </mat-form-field>
       </div>
@@ -47,7 +51,9 @@
           <mat-form-field>
             <mat-label>select route to add ...</mat-label>
             <mat-select #routeSelect>
-              <mat-option *ngFor="let opt of routes()" [value]="opt"> {{ opt.name }}</mat-option>
+              @for (opt of routes(); track opt) {
+                <mat-option [value]="opt"> {{ opt.name }}</mat-option>
+              }
             </mat-select>
           </mat-form-field>
           <button type="button" mat-mini-fab (click)="addRoute(routeSelect.value)">
@@ -56,11 +62,13 @@
         </div>
 
         <mat-list>
-          <mat-list-item *ngFor="let opt of scenario().routeSequences"> {{ opt.route?.name }}
-            <mat-icon (click)="moveUpRouteSequence(opt)">arrow_drop_up</mat-icon>
-            <mat-icon (click)="moveDownRouteSequence(opt)">arrow_drop_down</mat-icon>
-            <mat-icon (click)="removeRouteSequence(opt)">delete</mat-icon>
-          </mat-list-item>
+          @for (opt of scenario().routeSequences; track opt) {
+            <mat-list-item> {{ opt.route?.name }}
+              <mat-icon (click)="moveUpRouteSequence(opt)">arrow_drop_up</mat-icon>
+              <mat-icon (click)="moveDownRouteSequence(opt)">arrow_drop_down</mat-icon>
+              <mat-icon (click)="removeRouteSequence(opt)">delete</mat-icon>
+            </mat-list-item>
+          }
         </mat-list>
       </div>
     </mat-card-content>

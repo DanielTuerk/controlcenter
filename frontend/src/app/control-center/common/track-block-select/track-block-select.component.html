@@ -1,8 +1,10 @@
 <mat-form-field appearance="fill">
   <mat-select [value]="selected" (selectionChange)="onChange($event.value)">
     <mat-option [value]="null">{{ emptyLabel }}</mat-option>
-    <mat-option *ngFor="let trackBlock of trackBlocks; index as i" [value]="trackBlock">
-      {{ displayFn(trackBlock) }}
-    </mat-option>
+    @for (trackBlock of trackBlocks; track trackBlock; let i = $index) {
+      <mat-option [value]="trackBlock">
+        {{ displayFn(trackBlock) }}
+      </mat-option>
+    }
   </mat-select>
 </mat-form-field>

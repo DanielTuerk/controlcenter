@@ -1,4 +1,4 @@
-import {Component, Inject} from '@angular/core';
+import {Component, Inject, ChangeDetectionStrategy} from '@angular/core';
 import {
   MAT_DIALOG_DATA,
   MatDialogActions,
@@ -25,6 +25,7 @@ import {BusDataDto} from "../../../../../shared/openapi-gen";
     ReactiveFormsModule
   ],
   templateUrl: './bus-send-data-dialog.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './bus-send-data-dialog.component.css'
 })
 export class BusSendDataDialogComponent {

@@ -1,7 +1,9 @@
 <h3>Select construction</h3>
 
-<li *ngFor="let construction of constructions(); index as i;">
-  <button (click)="selectCurrentConstruction(construction)">{{ construction.name }}</button>
-</li>
+@for (construction of constructions(); track construction; let i = $index) {
+  <li>
+    <button (click)="selectCurrentConstruction(construction)">{{ construction.name }}</button>
+  </li>
+}
 
 <app-create-construction/>

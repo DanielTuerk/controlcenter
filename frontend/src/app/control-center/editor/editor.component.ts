@@ -1,4 +1,4 @@
-import {Component, inject, OnInit} from '@angular/core';
+import {Component, inject, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {MatTab, MatTabGroup} from "@angular/material/tabs";
 import {NavigationEnd, Router, RouterOutlet} from "@angular/router";
 import {filter} from "rxjs";
@@ -11,6 +11,7 @@ import {filter} from "rxjs";
     RouterOutlet
   ],
   templateUrl: './editor.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './editor.component.css'
 })
 export class EditorComponent implements OnInit {

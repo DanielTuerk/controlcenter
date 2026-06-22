@@ -1,4 +1,4 @@
-import {Component, inject, OnInit, signal} from '@angular/core';
+import {Component, inject, OnInit, signal, ChangeDetectionStrategy} from '@angular/core';
 import {MatButton} from "@angular/material/button";
 import {MatCard, MatCardContent, MatCardHeader, MatCardTitle} from "@angular/material/card";
 import {MatTableModule} from "@angular/material/table";
@@ -27,6 +27,7 @@ import {ScenarioSubscription} from "../../shared/websocket/scenario.subscription
     TrainDirectionIcon
   ],
   templateUrl: './scenario.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './scenario.component.css'
 })
 export class ScenarioComponent implements OnInit {

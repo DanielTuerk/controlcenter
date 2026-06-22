@@ -1,18 +1,19 @@
-import {Component, EventEmitter, Input, Output} from '@angular/core';
+import {Component, EventEmitter, Input, Output, ChangeDetectionStrategy} from '@angular/core';
 import {MatFormField} from "@angular/material/input";
 import {MatOption, MatSelect} from "@angular/material/select";
-import {NgForOf} from "@angular/common";
+
 import {TrackBlock} from "../../../../shared/openapi-gen";
 
 @Component({
   selector: 'app-track-block-select',
   templateUrl: './track-block-select.component.html',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     MatFormField,
     MatSelect,
-    MatOption,
-    NgForOf]
+    MatOption
+]
 })
 export class TrackBlockSelectComponent {
   @Input() trackBlocks: TrackBlock[] = [];

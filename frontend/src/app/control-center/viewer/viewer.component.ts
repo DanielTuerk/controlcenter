@@ -1,4 +1,4 @@
-import {Component, inject} from '@angular/core';
+import {Component, inject, ChangeDetectionStrategy} from '@angular/core';
 import {TrackViewerSvgComponent} from "../track/track-viewer-svg/track-viewer-svg.component";
 import {ControlComponent} from "./control/control.component";
 import {TrackElement} from "../track/track-viewer-svg/track-element";
@@ -14,6 +14,7 @@ import {SelectSignalFunctionComponent} from "./select-signal-func/select-signal-
     ControlComponent
   ],
   templateUrl: './viewer.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './viewer.component.css'
 })
 export class ViewerComponent {

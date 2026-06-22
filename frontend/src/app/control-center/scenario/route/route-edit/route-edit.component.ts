@@ -1,4 +1,4 @@
-import {Component, inject, input, signal, ViewChild} from '@angular/core';
+import {Component, inject, input, signal, ViewChild, ChangeDetectionStrategy} from '@angular/core';
 import {Router, RouterLink} from "@angular/router";
 import {MatCard, MatCardContent, MatCardFooter, MatCardHeader, MatCardTitle} from "@angular/material/card";
 import {FormBuilder, FormControl, FormsModule, ReactiveFormsModule} from "@angular/forms";
@@ -13,7 +13,7 @@ import {TrackViewerSvgComponent} from "../../../track/track-viewer-svg/track-vie
 import {TrackElement} from "../../../track/track-viewer-svg/track-element";
 import {MatDialog} from "@angular/material/dialog";
 import {SelectTrackBlockComponent} from "./select-track-block/select-track-block.component";
-import {NgIf} from "@angular/common";
+
 import {SuccessIconComponent} from "../../../../shared/component/SuccessIconComponent";
 import {ErrorIconComponent} from "../../../../shared/component/ErrorIconComponent";
 import {finalize} from "rxjs";
@@ -37,14 +37,14 @@ export enum SELECT_TYPE {START = 'start', END = 'end', WAYPOINT = 'waypoint'}
     MatButton,
     MatCheckbox,
     TrackViewerSvgComponent,
-    NgIf,
     SuccessIconComponent,
     ErrorIconComponent,
     MatButtonToggle,
     MatButtonToggleGroup,
     FormsModule
-  ],
+],
   templateUrl: './route-edit.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './route-edit.component.css'
 })
 export class RouteEditComponent {

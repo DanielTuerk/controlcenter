@@ -9,7 +9,7 @@ import {
 } from "@angular/material/dialog";
 import {FormsModule} from "@angular/forms";
 import {FUNCTION} from "../../../../shared/openapi-gen";
-import {NgForOf} from "@angular/common";
+
 
 @Component({
   selector: 'app-select-signal-func',
@@ -19,9 +19,8 @@ import {NgForOf} from "@angular/common";
     MatDialogClose,
     MatDialogContent,
     MatDialogTitle,
-    FormsModule,
-    NgForOf
-  ],
+    FormsModule
+],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './select-signal-func.component.html',
   styleUrl: './select-signal-func.component.css'

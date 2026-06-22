@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {Component, ChangeDetectionStrategy} from '@angular/core';
 import {MatCardContent, MatCardHeader, MatCardTitle} from "@angular/material/card";
 import {ReactiveFormsModule} from "@angular/forms";
 import {ConfigInputComponent} from "../config-input/config-input.component";
@@ -16,6 +16,7 @@ import {MatList, MatListItem} from "@angular/material/list";
     MatList
   ],
   templateUrl: './scenario.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './scenario.component.css'
 })
 export class ScenarioComponent {

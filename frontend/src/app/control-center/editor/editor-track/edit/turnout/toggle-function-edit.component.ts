@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {Component, ChangeDetectionStrategy} from '@angular/core';
 import {FormControl, FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {MatFormField, MatInput} from "@angular/material/input";
 import {EditComponent} from "../base-edit-track-part.component";
@@ -24,6 +24,7 @@ export type HasToggleFunction = AbstractTrackPart & {
     ReactiveFormsModule
   ],
   templateUrl: './toggle-function-edit.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './toggle-function-edit.component.css'
 })
 export class ToggleFunctionEditComponent implements EditComponent<HasToggleFunction> {

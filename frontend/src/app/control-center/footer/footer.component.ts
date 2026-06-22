@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {Component, ChangeDetectionStrategy} from '@angular/core';
 import {DeviceComponent} from "./device/device.component";
 import {BusComponent} from "./bus/bus.component";
 import {PlayerComponent} from "./player/player.component";
@@ -11,6 +11,7 @@ import {PlayerComponent} from "./player/player.component";
     PlayerComponent
   ],
   templateUrl: './footer.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './footer.component.css'
 })
 export class FooterComponent {

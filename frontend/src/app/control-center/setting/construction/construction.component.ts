@@ -1,4 +1,4 @@
-import {Component, inject, OnInit, signal} from '@angular/core';
+import {Component, inject, OnInit, signal, ChangeDetectionStrategy} from '@angular/core';
 import {MatButton, MatIconButton, MatMiniFabButton} from "@angular/material/button";
 import {
   MatCell,
@@ -24,7 +24,7 @@ import {MatChip} from "@angular/material/chips";
 import {FormsModule} from "@angular/forms";
 import {ConfigService, KEY_CONSTRUCTION_DEFAULT} from "../../../shared/config.service";
 import {MatOption, MatSelect} from "@angular/material/select";
-import {NgForOf} from "@angular/common";
+
 import {MatGridList, MatGridTile} from "@angular/material/grid-list";
 
 @Component({
@@ -52,11 +52,11 @@ import {MatGridList, MatGridTile} from "@angular/material/grid-list";
     FormsModule,
     MatSelect,
     MatOption,
-    NgForOf,
     MatGridTile,
     MatGridList
-  ],
+],
   templateUrl: './construction.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './construction.component.css'
 })
 export class ConstructionComponent implements OnInit {

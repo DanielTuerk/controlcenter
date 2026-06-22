@@ -1,4 +1,4 @@
-import {Component, inject, OnInit, signal} from '@angular/core';
+import {Component, inject, OnInit, signal, ChangeDetectionStrategy} from '@angular/core';
 import {DeviceInfo} from "../../../../shared/openapi-gen";
 import {DeviceService} from "../../../shared/device.service";
 import {ConfirmDialogComponent} from "../../common/confirm-dialog/confirm-dialog.component";
@@ -42,6 +42,7 @@ import {DeviceSubscription} from "../../../shared/websocket/device.subscription"
     MatRowDef
   ],
   templateUrl: './device.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './device.component.css'
 })
 export class DeviceComponent implements OnInit {

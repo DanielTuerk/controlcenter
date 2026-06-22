@@ -34,7 +34,9 @@
         <label>Type: </label>
         <mat-form-field>
           <mat-select required formControlName="drivingLevelAdjustType">
-            <mat-option *ngFor="let opt of drivingLevelOptions()" [value]="opt"> {{ opt }}</mat-option>
+            @for (opt of drivingLevelOptions(); track opt) {
+              <mat-option [value]="opt"> {{ opt }}</mat-option>
+            }
           </mat-select>
         </mat-form-field>
       </div>

@@ -1,4 +1,4 @@
-import {Component, inject} from '@angular/core';
+import {Component, inject, ChangeDetectionStrategy} from '@angular/core';
 import {FormControl, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
 import {ConstructionService} from "../../shared/construction.service";
 
@@ -6,6 +6,7 @@ import {ConstructionService} from "../../shared/construction.service";
   selector: 'app-create-construction',
   imports: [ReactiveFormsModule],
   templateUrl: './create-construction.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './create-construction.component.css'
 })
 export class CreateConstructionComponent {

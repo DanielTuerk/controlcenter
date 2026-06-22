@@ -1,4 +1,4 @@
-import {Component, inject, OnInit, signal} from '@angular/core';
+import {Component, inject, OnInit, signal, ChangeDetectionStrategy} from '@angular/core';
 import {MatExpansionPanel, MatExpansionPanelHeader, MatExpansionPanelTitle} from "@angular/material/expansion";
 import {MatButtonToggle, MatButtonToggleGroup} from "@angular/material/button-toggle";
 import {MatMiniFabButton} from "@angular/material/button";
@@ -6,7 +6,7 @@ import {MatIcon} from "@angular/material/icon";
 import {TrainService} from "../../../../shared/train.service";
 import {MatDivider} from "@angular/material/divider";
 import {MatSlider, MatSliderThumb} from "@angular/material/slider";
-import {NgForOf, NgIf} from "@angular/common";
+
 import {TrainSubscription} from "../../../../shared/websocket/train.subscription";
 import {DRIVINGDIRECTION, Train, TrainFunction} from "../../../../../shared/openapi-gen";
 import {RouterLink} from "@angular/router";
@@ -45,13 +45,12 @@ export class TrainData {
     MatDivider,
     MatSlider,
     MatSliderThumb,
-    NgForOf,
     RouterLink,
     FormsModule,
-    NgIf,
     TrainDirectionIcon
-  ],
+],
   templateUrl: './train.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './train.component.css'
 })
 export class TrainComponent implements OnInit {

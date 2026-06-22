@@ -1,4 +1,4 @@
-import {Component, inject, OnInit, signal} from '@angular/core';
+import {Component, inject, OnInit, signal, ChangeDetectionStrategy} from '@angular/core';
 import {EditComponent} from "../base-edit-track-part.component";
 import {BlockStraight, TrackBlock} from "../../../../../../shared/openapi-gen";
 import {MatFormField, MatInput} from "@angular/material/input";
@@ -15,6 +15,7 @@ import {TrackService} from "../../../../../shared/track.service";
     TrackBlockSelectComponent
   ],
   templateUrl: './track-block-edit.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './track-block-edit.component.css'
 })
 export class TrackBlockEditComponent implements EditComponent<BlockStraight>, OnInit {

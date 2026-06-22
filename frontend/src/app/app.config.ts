@@ -1,4 +1,4 @@
-import {HTTP_INTERCEPTORS, provideHttpClient} from "@angular/common/http";
+import {HTTP_INTERCEPTORS, provideHttpClient, withXhr} from "@angular/common/http";
 import {provideRouter, withComponentInputBinding} from "@angular/router";
 import {routes} from "./app.routes";
 import {ApplicationConfig, importProvidersFrom} from "@angular/core";
@@ -30,7 +30,7 @@ export const appConfig: ApplicationConfig = {
     ConfigService,
     SnackBar,
     TrackComponentBuilder,
-    provideHttpClient(),
+    provideHttpClient(withXhr()),
     { provide: HTTP_INTERCEPTORS, useClass: HttpErrorInterceptor, multi: true },
     provideRouter(routes, withComponentInputBinding()), provideAnimationsAsync(), provideAnimationsAsync(),
     importProvidersFrom([ApiModule.forRoot(apiConfigFactory)])

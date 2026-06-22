@@ -1959,22 +1959,22 @@ paths:
               schema: {}
       summary: Update Driving Direction
       tags:
-        - Train Resource
+      - Train Resource
   /api/trains/{id}/functions/{functionId}:
     post:
       parameters:
-        - name: functionId
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
+      - name: functionId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
       requestBody:
         content:
           text/plain:
@@ -1986,8 +1986,8 @@ paths:
           description: OK
           content:
             application/json:
-              schema: { }
-      summary: Toggle Horn
+              schema: {}
+      summary: Toggle Function State
       tags:
       - Train Resource
   /api/trains/{id}/horn:

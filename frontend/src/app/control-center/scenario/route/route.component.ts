@@ -1,4 +1,4 @@
-import {Component, inject, OnInit, signal} from '@angular/core';
+import {Component, inject, OnInit, signal, ChangeDetectionStrategy} from '@angular/core';
 import {MatButton} from "@angular/material/button";
 import {MatCard, MatCardContent, MatCardHeader, MatCardTitle} from "@angular/material/card";
 import {
@@ -49,6 +49,7 @@ import {ScenarioSubscription} from "../../../shared/websocket/scenario.subscript
     SuccessIconComponent
   ],
   templateUrl: './route.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './route.component.css'
 })
 export class RouteComponent implements OnInit {

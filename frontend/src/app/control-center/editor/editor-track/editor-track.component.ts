@@ -1,4 +1,4 @@
-import {Component, ElementRef, inject, OnDestroy, Renderer2, ViewChild} from '@angular/core';
+import {Component, ElementRef, inject, OnDestroy, Renderer2, ViewChild, ChangeDetectionStrategy} from '@angular/core';
 import {TrackViewerSvgComponent} from "../../track/track-viewer-svg/track-viewer-svg.component";
 import {TrackElement} from "../../track/track-viewer-svg/track-element";
 import {MatToolbar} from "@angular/material/toolbar";
@@ -30,6 +30,7 @@ export enum EDIT_TYPE {NONE, ADD, MOVE, ROTATE, DELETE, EDIT}
     MatExpansionPanel
   ],
   templateUrl: './editor-track.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './editor-track.component.css'
 })
 export class EditorTrackComponent implements OnDestroy {

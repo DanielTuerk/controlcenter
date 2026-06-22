@@ -1,4 +1,4 @@
-import {Component, inject, input, OnInit, signal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject, input, OnInit, signal} from '@angular/core';
 import {Router, RouterLink} from "@angular/router";
 import {MatCard, MatCardContent, MatCardFooter, MatCardHeader, MatCardTitle} from "@angular/material/card";
 import {FormBuilder, FormControl, FormsModule, ReactiveFormsModule} from "@angular/forms";
@@ -9,10 +9,9 @@ import {DRIVINGDIRECTION1, Route, RouteSequence, Scenario, Train} from "../../..
 import {SnackBar} from "../../common/snack-bar.component";
 import {ScenarioService} from "../../../shared/scenario.service";
 import {TrainService} from "../../../shared/train.service";
-import {TrainSubscription} from "../../../shared/websocket/train.subscription";
 import {MatOption} from "@angular/material/core";
 import {MatSelect} from "@angular/material/select";
-import {NgForOf} from "@angular/common";
+
 import {MatList, MatListItem} from "@angular/material/list";
 import {MatIcon} from "@angular/material/icon";
 import {RouteService} from "../../../shared/route.service";
@@ -33,14 +32,14 @@ import {RouteService} from "../../../shared/route.service";
     MatButton,
     MatOption,
     MatSelect,
-    NgForOf,
     MatList,
     MatListItem,
     MatIcon,
     MatMiniFabButton,
     MatLabel
-  ],
+],
   templateUrl: './scenario-edit.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './scenario-edit.component.css'
 })
 export class ScenarioEditComponent implements OnInit {
@@ -50,13 +49,10 @@ export class ScenarioEditComponent implements OnInit {
   private routeService = inject(RouteService);
   private snackBar = inject(SnackBar);
   private router = inject(Router);
-  private trainSubscription = inject(TrainSubscription);
 
   scenario = signal<Scenario>({});
   trains = signal<Train[]>([]);
   routes = signal<Route[]>([]);
-
-  private routeSequences: RouteSequence[] = [];
 
   readonly hideRequiredControl = new FormControl(false);
   readonly floatLabelControl = new FormControl('auto' as FloatLabelType);

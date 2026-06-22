@@ -72,7 +72,7 @@
           <th mat-header-cell *matHeaderCellDef> State</th>
           <td mat-cell *matCellDef="let element">
             <mat-checkbox
-              [ngModel]="element.configuration?.bitState"
+              [ngModel]="$safeNavigationMigration(element.configuration?.bitState)"
               (ngModelChange)="updateBitState(element, $event)"
               [ngModelOptions]="{ standalone: true }">
             </mat-checkbox>

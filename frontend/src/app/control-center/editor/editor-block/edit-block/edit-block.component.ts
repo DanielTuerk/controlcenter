@@ -1,4 +1,4 @@
-import {Component, inject, input, OnInit, signal} from '@angular/core';
+import {Component, inject, input, OnInit, signal, ChangeDetectionStrategy} from '@angular/core';
 import {MatButton} from "@angular/material/button";
 import {MatCard, MatCardContent, MatCardFooter, MatCardHeader, MatCardTitle} from "@angular/material/card";
 import {MatFormField, MatInput} from "@angular/material/input";
@@ -10,7 +10,7 @@ import {FloatLabelType} from "@angular/material/form-field";
 import {TrackService} from "../../../../shared/track.service";
 import {MatCheckbox} from "@angular/material/checkbox";
 import {MatOption, MatSelect} from "@angular/material/select";
-import {NgForOf} from "@angular/common";
+
 
 @Component({
   selector: 'app-edit-block',
@@ -27,10 +27,10 @@ import {NgForOf} from "@angular/common";
     RouterLink,
     MatCheckbox,
     MatSelect,
-    MatOption,
-    NgForOf
-  ],
+    MatOption
+],
   templateUrl: './edit-block.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './edit-block.component.css'
 })
 export class EditBlockComponent implements OnInit {
@@ -88,7 +88,7 @@ export class EditBlockComponent implements OnInit {
       observable = this.trackService.saveTrackBlock(toUpdate);
       operation = 'updated'
     }
-    observable.subscribe(data => {
+    observable.subscribe(() => {
       this.snackBar.showSuccess(`track-block "${toUpdate.name}" ${operation} successfully.`);
       this.router.navigate(['/cc/editor/track-block', {}]);
     })

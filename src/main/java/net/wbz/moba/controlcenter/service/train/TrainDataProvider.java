@@ -57,9 +57,11 @@ public class TrainDataProvider {
         TrainEntity entity = new TrainEntity();
         entity.name = dto.name();
         entity.address = dto.address();
-        entity.functions = Stream.of(dto.functions())
-            .map(function -> createTrainFunction(function, entity))
-            .collect(Collectors.toSet());
+        if (dto.functions() != null) {
+            entity.functions = Stream.of(dto.functions())
+                .map(function -> createTrainFunction(function, entity))
+                .collect(Collectors.toSet());
+        }
         trainRepository.persist(entity);
         return entity.id;
     }
@@ -76,6 +78,17 @@ public class TrainDataProvider {
         }
         existing.name = updated.name();
         existing.address = updated.address();
+
+        updateTrainFunctions(updated, existing);
+
+        trainRepository.persist(existing);
+    }
+
+    private void updateTrainFunctions(TrainDto updated, TrainEntity existing) {
+        if (updated.functions() == null) {
+            existing.functions.clear();
+            return;
+        }
 
         final var updatedExistingIds = Stream.of(updated.functions())
             .map(TrainFunction::getId)
@@ -107,8 +120,6 @@ public class TrainDataProvider {
             .filter(function -> function.getId() == null)
             .map(function -> createTrainFunction(function, existing))
             .collect(Collectors.toSet()));
-
-        trainRepository.persist(existing);
     }
 
     /**

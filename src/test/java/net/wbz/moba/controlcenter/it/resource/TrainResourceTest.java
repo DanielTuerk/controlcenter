@@ -90,7 +90,8 @@ class TrainResourceTest extends BaseIt {
             .statusCode(200)
             .body("id", equalTo(trainId.intValue()))
             .body("name", notNullValue())
-            .body("address", notNullValue());
+            .body("address", notNullValue())
+            .body("functions", anyOf(nullValue(), empty()));
     }
 
     @Test
@@ -188,6 +189,170 @@ class TrainResourceTest extends BaseIt {
             .delete("/api/trains/{id}")
             .then()
             .statusCode(404);
+    }
+
+    @Test
+    @Order(9)
+    void testUpdateTrain_SetFunctionsToNull() {
+        // create train with one function
+        Long trainId = given()
+            .contentType(ContentType.JSON)
+            .body("""
+                {
+                    "name":"IT-TRAIN-FUNC-NULL","address":20,
+                    "functions":[{"alias":"F1","configuration":{"bus":0,"address":10,"bit":1,"bitState":true}}]
+                }""")
+            .when()
+            .post("/api/trains")
+            .then()
+            .statusCode(201)
+            .extract()
+            .jsonPath()
+            .getLong("id");
+
+        // verify created with function
+        given()
+            .pathParam("id", trainId)
+            .when().get("/api/trains/{id}")
+            .then()
+            .statusCode(200)
+            .body("functions.size()", equalTo(1));
+
+        // update with functions = null
+        given()
+            .contentType(ContentType.JSON)
+            .body(String.format("{\"id\":%d,\"name\":\"IT-TRAIN-FUNC-NULL-UPDATED\",\"address\":21,\"functions\":null}", trainId))
+            .pathParam("id", trainId)
+            .when()
+            .put("/api/trains/{id}")
+            .then()
+            .statusCode(200)
+            .body("name", equalTo("IT-TRAIN-FUNC-NULL-UPDATED"))
+            .body("functions.size()", equalTo(1));
+
+        // WebSocket/event check
+        EVENT_RECEIVER.verifyReceivedEvent(TrainDataChangedEvent.class, "\"itemId\":" + trainId);
+
+        // finally verify persisted state
+        given()
+            .pathParam("id", trainId)
+            .when().get("/api/trains/{id}")
+            .then()
+            .statusCode(200)
+            .body("functions.size()", equalTo(1));
+    }
+
+    @Test
+    @Order(10)
+    void testUpdateTrain_AddFunctions() {
+        // create train without functions
+        Long trainId = given()
+            .contentType(ContentType.JSON)
+            .body("{\"name\":\"IT-TRAIN-FUNC-CREATE\",\"address\":22}")
+            .when()
+            .post("/api/trains")
+            .then()
+            .statusCode(201)
+            .extract()
+            .jsonPath()
+            .getLong("id");
+
+        // update with two functions
+        String updateBody = String.format("""
+            {
+                "id":%d,"name":"IT-TRAIN-FUNC-UPDATED","address":23,
+                "functions":[
+                    {"alias":"F1","configuration":{"bus":0,"address":11,"bit":2,"bitState":true}},
+                    {"alias":"F2","configuration":{"bus":0,"address":11,"bit":3,"bitState":true}}
+                ]
+            }""", trainId);
+
+        given()
+            .contentType(ContentType.JSON)
+            .body(updateBody)
+            .pathParam("id", trainId)
+            .when()
+            .put("/api/trains/{id}")
+            .then()
+            .statusCode(200)
+            .body("functions.size()", equalTo(2));
+
+        // WebSocket/event check
+        EVENT_RECEIVER.verifyReceivedEvent(TrainDataChangedEvent.class, "\"itemId\":" + trainId);
+
+        // finally verify persisted state
+        given()
+            .pathParam("id", trainId)
+            .when().get("/api/trains/{id}")
+            .then()
+            .statusCode(200)
+            .body("functions.size()", equalTo(2));
+    }
+
+    @Test
+    @Order(11)
+    void testRemoveFunction() {
+        // create train with two functions
+        Long trainId = given()
+            .contentType(ContentType.JSON)
+            .body("""
+                {
+                "name":"IT-TRAIN-REMOVE-FUNC",
+                "address":30,
+                "functions":[
+                            {"alias":"F1","configuration":{"bus":0,"address":31,"bit":1,"bitState":true}},
+                            {"alias":"F2","configuration":{"bus":0,"address":31,"bit":2,"bitState":true}}
+                            ]
+                }""")
+            .when()
+            .post("/api/trains")
+            .then()
+            .statusCode(201)
+            .extract()
+            .jsonPath()
+            .getLong("id");
+
+        // verify created with two functions and extract their ids
+        var functionIds = given()
+            .pathParam("id", trainId)
+            .when().get("/api/trains/{id}")
+            .then()
+            .statusCode(200)
+            .body("functions.size()", equalTo(2))
+            .extract()
+            .jsonPath()
+            .getList("functions.id");
+
+        Integer idToKeep = (Integer) functionIds.getFirst();
+
+        // update train keeping only one function (remove the other)
+        String updateBody = String.format("""
+            {"id":%d,"name":"IT-TRAIN-REMOVE-FUNC-UPDATED","address":31,
+            "functions":[{"id":%d,"alias":"F_KEEP","configuration":{"bus":0,"address":31,"bit":1,"bitState":true}}]
+            }""", trainId, idToKeep);
+
+        given()
+            .contentType(ContentType.JSON)
+            .body(updateBody)
+            .pathParam("id", trainId)
+            .when()
+            .put("/api/trains/{id}")
+            .then()
+            .statusCode(200)
+            .body("functions.size()", equalTo(1))
+            .body("functions[0].id", equalTo(idToKeep));
+
+        // WebSocket/event check
+        EVENT_RECEIVER.verifyReceivedEvent(TrainDataChangedEvent.class, "\"itemId\":" + trainId);
+
+        // finally, verify persisted state
+        given()
+            .pathParam("id", trainId)
+            .when().get("/api/trains/{id}")
+            .then()
+            .statusCode(200)
+            .body("functions.size()", equalTo(1))
+            .body("functions[0].id", equalTo(idToKeep));
     }
 
 }

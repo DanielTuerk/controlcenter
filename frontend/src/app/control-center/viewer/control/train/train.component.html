@@ -11,7 +11,7 @@
           </span>
           <span>
             <mat-icon class="icon">speed</mat-icon>
-          {{ trainData.drivingLevel }}</span>
+            {{ trainData.drivingLevel ?? 0 }}</span>
           <span>
             @if (trainData.light) {
               <mat-icon class="icon">lightbulb</mat-icon>

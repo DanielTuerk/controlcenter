@@ -33,8 +33,8 @@
       <ng-container matColumnDef="action">
         <th mat-header-cell *matHeaderCellDef></th>
         <td mat-cell *matCellDef="let trackBlock">
-          <mat-icon routerLink="{{trackBlock.id}}">edit</mat-icon>
-          <mat-icon (click)="deleteBlock(trackBlock)">delete</mat-icon>
+          <button mat-icon-button [routerLink]="[trackBlock.id]"><mat-icon>edit</mat-icon></button>
+          <button mat-icon-button (click)="deleteBlock(trackBlock)"><mat-icon>delete</mat-icon></button>
         </td>
       </ng-container>
 

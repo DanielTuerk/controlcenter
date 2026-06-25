@@ -75,8 +75,8 @@
       </div>
       <mat-divider/>
       <div class="control-row">
-        <button mat-mini-fab>
-          <mat-icon routerLink="/cc/train/{{trainData.train.id}}">edit</mat-icon>
+        <button mat-mini-fab [routerLink]="['/cc/train', trainData.train.id]">
+          <mat-icon>edit</mat-icon>
         </button>
       </div>
     </div>

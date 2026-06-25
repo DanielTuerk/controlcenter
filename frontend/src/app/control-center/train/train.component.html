@@ -29,8 +29,8 @@
       <ng-container matColumnDef="action">
         <th mat-header-cell *matHeaderCellDef></th>
         <td mat-cell *matCellDef="let train">
-          <mat-icon routerLink="{{train.id}}">edit</mat-icon>
-          <mat-icon (click)="deleteTrain(train)">delete</mat-icon>
+          <button mat-icon-button [routerLink]="[train.id]"><mat-icon>edit</mat-icon></button>
+          <button mat-icon-button (click)="deleteTrain(train)"><mat-icon>delete</mat-icon></button>
         </td>
       </ng-container>
 

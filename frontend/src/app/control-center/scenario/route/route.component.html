@@ -54,8 +54,8 @@
       <ng-container matColumnDef="action">
         <th mat-header-cell *matHeaderCellDef></th>
         <td mat-cell *matCellDef="let route">
-          <mat-icon routerLink="route/{{route.id}}">edit</mat-icon>
-          <mat-icon (click)="deleteRoute(route)">delete</mat-icon>
+          <button mat-icon-button [routerLink]="['route', route.id]"><mat-icon>edit</mat-icon></button>
+          <button mat-icon-button (click)="deleteRoute(route)"><mat-icon>delete</mat-icon></button>
         </td>
       </ng-container>
 

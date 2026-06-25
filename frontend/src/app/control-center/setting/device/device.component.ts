@@ -16,7 +16,7 @@ import {
   MatRowDef,
   MatTable
 } from "@angular/material/table";
-import {MatButton} from "@angular/material/button";
+import {MatButton, MatIconButton} from "@angular/material/button";
 import {RouterLink} from "@angular/router";
 import {MatIcon} from "@angular/material/icon";
 import {DeviceSubscription} from "../../../shared/websocket/device.subscription";
@@ -29,6 +29,7 @@ import {DeviceSubscription} from "../../../shared/websocket/device.subscription"
     MatCardHeader,
     MatTable,
     MatButton,
+    MatIconButton,
     RouterLink,
     MatIcon,
     MatHeaderCellDef,

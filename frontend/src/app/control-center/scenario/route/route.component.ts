@@ -1,5 +1,5 @@
 import {Component, inject, OnInit, signal, ChangeDetectionStrategy} from '@angular/core';
-import {MatButton} from "@angular/material/button";
+import {MatButton, MatIconButton} from "@angular/material/button";
 import {MatCard, MatCardContent, MatCardHeader, MatCardTitle} from "@angular/material/card";
 import {
   MatCell,
@@ -27,6 +27,7 @@ import {ScenarioSubscription} from "../../../shared/websocket/scenario.subscript
   selector: 'app-route',
   imports: [
     MatButton,
+    MatIconButton,
     MatCard,
     MatCardContent,
     MatCardHeader,

@@ -1,5 +1,5 @@
 import {Component, inject, OnInit, signal, ChangeDetectionStrategy} from '@angular/core';
-import {MatButton} from "@angular/material/button";
+import {MatButton, MatIconButton} from "@angular/material/button";
 import {MatCard, MatCardContent, MatCardHeader, MatCardTitle} from "@angular/material/card";
 import {MatTableModule} from "@angular/material/table";
 import {MatIcon} from "@angular/material/icon";
@@ -23,6 +23,7 @@ import {ScenarioSubscription} from "../../shared/websocket/scenario.subscription
     MatTableModule,
     MatIcon,
     MatButton,
+    MatIconButton,
     RouteComponent,
     TrainDirectionIcon
   ],

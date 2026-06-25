@@ -1,12 +1,12 @@
 <div class="config-input">
-  @if (label) {
-    <label>{{ label }}: </label>
+  @if (label()) {
+    <label>{{ label() }}: </label>
   }
 
   <input
-    [type]="type"
+    [type]="type()"
     [formControl]="control"
-    [placeholder]="placeholder"
+    [placeholder]="placeholder()"
   />
 
   @if (loading) {

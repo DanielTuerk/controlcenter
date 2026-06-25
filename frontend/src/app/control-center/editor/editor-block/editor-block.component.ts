@@ -1,5 +1,5 @@
 import {Component, inject, OnInit, signal, ChangeDetectionStrategy} from '@angular/core';
-import {MatButton} from "@angular/material/button";
+import {MatButton, MatIconButton} from "@angular/material/button";
 import {MatCard, MatCardContent, MatCardHeader} from "@angular/material/card";
 import {
   MatCell,
@@ -26,6 +26,7 @@ import {ConstructionSubscription} from "../../../shared/websocket/construction.s
   selector: 'app-editor-block',
   imports: [
     MatButton,
+    MatIconButton,
     MatCard,
     MatCardContent,
     MatCardHeader,

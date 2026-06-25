@@ -46,8 +46,8 @@
     <ng-container matColumnDef="action">
       <th mat-header-cell *matHeaderCellDef></th>
       <td mat-cell *matCellDef="let construction">
-        <button mat-icon-button>
-          <mat-icon routerLink="{{construction.id}}">edit</mat-icon>
+        <button mat-icon-button [routerLink]="[construction.id]">
+          <mat-icon>edit</mat-icon>
         </button>
         @if (!isCurrentConstruction(construction)) {
           <button mat-icon-button>

@@ -33,8 +33,8 @@
       <ng-container matColumnDef="action">
         <th mat-header-cell *matHeaderCellDef></th>
         <td mat-cell *matCellDef="let scenario">
-          <mat-icon routerLink="{{scenario.id}}">edit</mat-icon>
-          <mat-icon (click)="deleteScenario(scenario)">delete</mat-icon>
+          <button mat-icon-button [routerLink]="[scenario.id]"><mat-icon>edit</mat-icon></button>
+          <button mat-icon-button (click)="deleteScenario(scenario)"><mat-icon>delete</mat-icon></button>
         </td>
       </ng-container>
 

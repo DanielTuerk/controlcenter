@@ -6,7 +6,7 @@ import {MatTableModule} from "@angular/material/table";
 import {MatIcon} from "@angular/material/icon";
 import {MatDialog} from "@angular/material/dialog";
 import {ConfirmDialogComponent} from "../common/confirm-dialog/confirm-dialog.component";
-import {MatButton} from "@angular/material/button";
+import {MatButton, MatIconButton} from "@angular/material/button";
 import {Train} from "../../../shared/openapi-gen";
 import {TrainSubscription} from "../../shared/websocket/train.subscription";
 
@@ -20,7 +20,8 @@ import {TrainSubscription} from "../../shared/websocket/train.subscription";
     MatCardContent,
     MatTableModule,
     MatIcon,
-    MatButton
+    MatButton,
+    MatIconButton
   ],
   templateUrl: './train.component.html',
   changeDetection: ChangeDetectionStrategy.Eager,

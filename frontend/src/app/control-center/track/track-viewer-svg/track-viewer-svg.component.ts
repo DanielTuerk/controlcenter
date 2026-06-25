@@ -4,11 +4,10 @@ import {
   Component,
   computed,
   ElementRef,
-  EventEmitter,
   inject,
-  Input,
+  input,
+  output,
   OnInit,
-  Output,
   ViewChild
 } from '@angular/core';
 import {TrackComponentBuilder} from "./track-builder/track-component-builder";
@@ -36,12 +35,9 @@ export class TrackViewerSvgComponent implements OnInit {
     return this._container;
   }
 
-  @Input() overrideIsConnected = false;
-  /**
-   * Output event for a trackpart which was clicked.
-   */
-  @Output() trackPartClicked = new EventEmitter<TrackElement<any>>();
-  @Output() trackPartsReady = new EventEmitter<TrackElement<any>[]>();
+  overrideIsConnected = input(false);
+  trackPartClicked = output<TrackElement<any>>();
+  trackPartsReady = output<TrackElement<any>[]>();
 
   private trackComponentBuilder = inject(TrackComponentBuilder);
   private cdr = inject(ChangeDetectorRef);
@@ -49,14 +45,14 @@ export class TrackViewerSvgComponent implements OnInit {
   private trackSubscription = inject(TrackSubscription);
   private deviceService = inject(DeviceService);
 
-  private loadedTrackParts: TrackElement<TrackPartStateEvent>[] = []
+  private loadedTrackParts: TrackElement<TrackPartStateEvent>[] = [];
 
   svgWidth = 0;
   svgHeight = 0;
   tileSize = AbstractTrackComponentBuilder.TILE;
 
   protected isConnected = computed(() =>
-    this.overrideIsConnected ? true : this.deviceService.isConnected());
+    this.overrideIsConnected() ? true : this.deviceService.isConnected());
 
   ngOnInit() {
     this.trackService.fetchTrackParts().subscribe(elements => {
@@ -71,7 +67,6 @@ export class TrackViewerSvgComponent implements OnInit {
         console.log("trackPartDataChangedEvent");
         this.reloadTrack();
       });
-
     });
   }
 
@@ -91,18 +86,13 @@ export class TrackViewerSvgComponent implements OnInit {
     this.loadedTrackParts = [];
 
     elements
-    .map(trackPart => {
-      return this.buildTrackPartElement(trackPart);
-    })
-    .forEach(e => this.addTrackPart(e));
+      .map(trackPart => this.buildTrackPartElement(trackPart))
+      .forEach(e => this.addTrackPart(e));
 
     this.updateTrackDimension(elements);
-
     this.cdr.markForCheck();
-
     this.trackPartsReady.emit(this.loadedTrackParts);
 
-    // subscribe to state changes for track elements
     this.trackSubscription.trackPartState().subscribe(event => {
       this.consumeTrackEvent('trackPartState', event, event.trackPartId!);
     });
@@ -162,8 +152,7 @@ export class TrackViewerSvgComponent implements OnInit {
   }
 
   private removeTrackPart(trackElement: TrackElement<TrackPartStateEvent>) {
-    // remove old one if already exists
-    this.loadedTrackParts = this.loadedTrackParts.filter(e => e.trackPart.id !== trackElement.trackPart.id)
+    this.loadedTrackParts = this.loadedTrackParts.filter(e => e.trackPart.id !== trackElement.trackPart.id);
     this._svgContentContainer.nativeElement.removeChild(trackElement.svgElement);
   }
 
@@ -182,4 +171,3 @@ export class TrackViewerSvgComponent implements OnInit {
     return element;
   }
 }
-

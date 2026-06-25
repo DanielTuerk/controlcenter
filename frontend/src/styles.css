@@ -46,3 +46,21 @@ mat-card-footer, .mat-card-footer {
   font-size: medium;
   display: contents;
 }
+
+button[mat-icon-button],
+button[mat-mini-fab],
+button[mat-fab],
+button[mat-stroked-button],
+button[mat-flat-button],
+button[mat-raised-button],
+button[mat-button] {
+  vertical-align: middle;
+}
+
+button[mat-icon-button] mat-icon,
+button[mat-mini-fab] mat-icon,
+button[mat-fab] mat-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

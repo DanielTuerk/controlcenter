@@ -91,6 +91,7 @@ export class TrainComponent implements OnInit {
       });
       this.trainSubscription.trainDrivingLevel().subscribe(data => {
         this.getTrainData(data.itemId).drivingLevel = data.speed ?? 0;
+        this.trains.set([...this.trains()]);
       });
       this.trainSubscription.trainLightState().subscribe(data => {
         this.getTrainData(data.itemId).light = data.state!;

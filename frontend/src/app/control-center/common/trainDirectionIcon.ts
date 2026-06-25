@@ -7,6 +7,7 @@ import {MatIconModule} from '@angular/material/icon';
   standalone: true,
   imports: [MatIconModule],
   changeDetection: ChangeDetectionStrategy.Eager,
+  styles: [`:host { display: flex; align-items: center; }`],
   template: `
     @if (icon) {
       <mat-icon class="icon">{{ icon }}</mat-icon>

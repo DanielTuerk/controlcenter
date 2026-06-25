@@ -33,29 +33,31 @@
         </div>
       </mat-panel-title>
     </mat-expansion-panel-header>
-    <div>
-      <mat-button-toggle-group [(ngModel)]="trainData.forward"
-        [disabled]="!isConnected()"
-        (ngModelChange)="drivingDirectionChanged(trainData)"
-        name="fontStyle" aria-label="Font Style"
-        hideSingleSelectionIndicator="true">
-        <mat-button-toggle [value]="false">
-          <mat-icon>arrow_backward</mat-icon>
-        </mat-button-toggle>
-        <mat-button-toggle [value]="true">
-          <mat-icon>arrow_forward</mat-icon>
-        </mat-button-toggle>
-      </mat-button-toggle-group>
-      <button mat-mini-fab (click)="stopTrain(trainData.train)"
-        [disabled]="!isConnected()">
-        <mat-icon>stop</mat-icon>
-      </button>
-      <mat-slider min="0" max="12" step="1" showTickMarks discrete
-        [disabled]="!isConnected()">
-        <input matSliderThumb (valueChange)="changeDrivingLevel(trainData.train, $event)">
-      </mat-slider>
+    <div class="controls">
+      <div class="control-row">
+        <mat-button-toggle-group [(ngModel)]="trainData.forward"
+          [disabled]="!isConnected()"
+          (ngModelChange)="drivingDirectionChanged(trainData)"
+          name="fontStyle" aria-label="Font Style"
+          hideSingleSelectionIndicator="true">
+          <mat-button-toggle [value]="false">
+            <mat-icon>arrow_backward</mat-icon>
+          </mat-button-toggle>
+          <mat-button-toggle [value]="true">
+            <mat-icon>arrow_forward</mat-icon>
+          </mat-button-toggle>
+        </mat-button-toggle-group>
+        <button mat-mini-fab (click)="stopTrain(trainData.train)"
+          [disabled]="!isConnected()">
+          <mat-icon>stop</mat-icon>
+        </button>
+        <mat-slider min="0" max="31" step="1" showTickMarks discrete
+          [disabled]="!isConnected()">
+          <input matSliderThumb [value]="trainData.drivingLevel" (valueChange)="changeDrivingLevel(trainData.train, $event)">
+        </mat-slider>
+      </div>
       <mat-divider/>
-      <span>
+      <div class="control-row">
         <button mat-mini-fab (click)="updateLight(trainData.train)"
           [disabled]="!isConnected()">
           <mat-icon [style]="trainData.light ? 'color:white':''">lightbulb</mat-icon>
@@ -64,17 +66,19 @@
           [disabled]="!isConnected()">
           <mat-icon [style]="trainData.horn ? 'color:white':''">volume_up</mat-icon>
         </button>
-      </span>
-      @for (fn of trainData.train.functions; track fn) {
-        <button mat-mini-fab (click)="updateFunctionState(trainData.train, fn, !trainData.functionStates.get(fn.id!))"
-          [disabled]="!isConnected()">
-          <span [style]="trainData.functionStates.get(fn.id!) ? 'color:white':''">{{ fn.alias }}</span>
-        </button>
-      }
+        @for (fn of trainData.train.functions; track fn) {
+          <button mat-mini-fab (click)="updateFunctionState(trainData.train, fn, !trainData.functionStates.get(fn.id!))"
+            [disabled]="!isConnected()">
+            <span [style]="trainData.functionStates.get(fn.id!) ? 'color:white':''">{{ fn.alias }}</span>
+          </button>
+        }
+      </div>
       <mat-divider/>
-      <button mat-mini-fab>
-        <mat-icon routerLink="/cc/train/{{trainData.train.id}}">edit</mat-icon>
-      </button>
+      <div class="control-row">
+        <button mat-mini-fab>
+          <mat-icon routerLink="/cc/train/{{trainData.train.id}}">edit</mat-icon>
+        </button>
+      </div>
     </div>
   </mat-expansion-panel>
 }

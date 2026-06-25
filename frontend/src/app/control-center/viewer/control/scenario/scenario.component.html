@@ -9,7 +9,7 @@
   </button>
 </div>
 
-@for (scenario of scenarios(); track scenario) {
+@for (scenario of scenarios(); track scenario.scenarioId) {
   <mat-expansion-panel style="padding-top: 10px">
     <mat-expansion-panel-header>
       <mat-panel-title class="panel-title">
@@ -42,7 +42,7 @@
       </button>
     </div>
     <div style="padding-top: 5px">
-      @for (route of scenario.routes; track route) {
+      @for (route of scenario.routes; track route.name) {
         <div
           style="width: 90%;padding: 2px"
           [ngClass]="'route-state-' + (route.runState ?? '')">

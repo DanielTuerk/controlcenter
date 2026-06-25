@@ -1,6 +1,5 @@
-import {Component, Input, ChangeDetectionStrategy} from '@angular/core';
+import {Component, input, computed, ChangeDetectionStrategy} from '@angular/core';
 import {MatIconModule} from '@angular/material/icon';
-
 
 @Component({
   selector: 'train-direction-icon',
@@ -9,15 +8,13 @@ import {MatIconModule} from '@angular/material/icon';
   changeDetection: ChangeDetectionStrategy.Eager,
   styles: [`:host { display: flex; align-items: center; }`],
   template: `
-    @if (icon) {
-      <mat-icon class="icon">{{ icon }}</mat-icon>
+    @if (icon()) {
+      <mat-icon class="icon">{{ icon() }}</mat-icon>
     }
-    `
+  `
 })
 export class TrainDirectionIcon {
-  @Input() forward: boolean | undefined;
+  forward = input<boolean | undefined>();
 
-  get icon() {
-    return this.forward ? 'arrow_forward' : 'arrow_backward';
-  }
+  icon = computed(() => this.forward() ? 'arrow_forward' : 'arrow_backward');
 }

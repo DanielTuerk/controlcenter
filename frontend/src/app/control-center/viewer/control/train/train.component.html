@@ -1,4 +1,4 @@
-@for (trainData of trains(); track trainData) {
+@for (trainData of trains(); track trainData.train.id) {
   <mat-expansion-panel style="padding-top: 10px">
     <mat-expansion-panel-header>
       <mat-panel-title class="panel-title">
@@ -20,7 +20,7 @@
               <mat-icon class="icon">volume_up</mat-icon>
             }
           </span>
-          @for (fn of trainData.train.functions; track fn) {
+          @for (fn of trainData.train.functions; track fn.id) {
             <span>
               @if (trainData.functionStates.get(fn.id!)) {
                 <span
@@ -66,7 +66,7 @@
           [disabled]="!isConnected()">
           <mat-icon [style]="trainData.horn ? 'color:white':''">volume_up</mat-icon>
         </button>
-        @for (fn of trainData.train.functions; track fn) {
+        @for (fn of trainData.train.functions; track fn.id) {
           <button mat-mini-fab (click)="updateFunctionState(trainData.train, fn, !trainData.functionStates.get(fn.id!))"
             [disabled]="!isConnected()">
             <span [style]="trainData.functionStates.get(fn.id!) ? 'color:white':''">{{ fn.alias }}</span>

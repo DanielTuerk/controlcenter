@@ -10,7 +10,7 @@
       <mat-select [(ngModel)]="defaultConstruction"
         (selectionChange)="updateDefaultConstruction()"
         name="construction">
-        @for (construction of constructions(); track construction) {
+        @for (construction of constructions(); track construction.id) {
           <mat-option
             [value]="construction">{{ construction.name }}
           </mat-option>

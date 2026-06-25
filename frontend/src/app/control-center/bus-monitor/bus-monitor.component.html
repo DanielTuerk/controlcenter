@@ -6,11 +6,11 @@
 
 @if (isConnected()) {
   <div class="bus-container">
-    @for (bus of buses; track bus) {
+    @for (bus of buses; track bus.number) {
       <div class="bus">
         <h2>Bus {{ bus.number }}</h2>
         <div class="address-grid">
-          @for (row of bus.rows; track row) {
+          @for (row of bus.rows; track row.address) {
             <div class="address-item">
               <span class="address">{{ row.address | number:'3.0-0' }}</span>
               <div class="bits">

@@ -13,7 +13,7 @@
       <label>Type: </label>
       <mat-form-field>
         <mat-select required [formControl]="form.controls.type">
-          @for (deviceType of DEVICE_TYPES; track deviceType) {
+          @for (deviceType of DEVICE_TYPES; track $index) {
             <mat-option [value]="deviceType">{{deviceType}}</mat-option>
           }
         </mat-select>
@@ -23,7 +23,7 @@
       available:
       <mat-icon (click)="reloadAvailableDevices()">refresh</mat-icon>
       <ul>
-        @for (device of availableDevices(); track device) {
+        @for (device of availableDevices(); track device.port) {
           <li>
             {{ device.port }}: {{ device.name }}
           </li>

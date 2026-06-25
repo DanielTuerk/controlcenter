@@ -34,7 +34,7 @@
         <label>Type: </label>
         <mat-form-field>
           <mat-select required formControlName="drivingLevelAdjustType">
-            @for (opt of drivingLevelOptions(); track opt) {
+            @for (opt of drivingLevelOptions(); track $index) {
               <mat-option [value]="opt"> {{ opt }}</mat-option>
             }
           </mat-select>

@@ -20,7 +20,7 @@
         <label>Train: </label>
         <mat-form-field>
           <mat-select required formControlName="train">
-            @for (opt of trains(); track opt) {
+            @for (opt of trains(); track opt.id) {
               <mat-option [value]="opt"> {{ opt.name }}</mat-option>
             }
           </mat-select>
@@ -30,7 +30,7 @@
         <label>driving direction</label>
         <mat-form-field>
           <mat-select required formControlName="drivingDirection">
-            @for (opt of [DRIVINGDIRECTION1.Forward, DRIVINGDIRECTION1.Backward]; track opt) {
+            @for (opt of [DRIVINGDIRECTION1.Forward, DRIVINGDIRECTION1.Backward]; track $index) {
               <mat-option
                 [value]="opt"> {{ opt }}
               </mat-option>
@@ -51,7 +51,7 @@
           <mat-form-field>
             <mat-label>select route to add ...</mat-label>
             <mat-select #routeSelect>
-              @for (opt of routes(); track opt) {
+              @for (opt of routes(); track opt.id) {
                 <mat-option [value]="opt"> {{ opt.name }}</mat-option>
               }
             </mat-select>
@@ -62,7 +62,7 @@
         </div>
 
         <mat-list>
-          @for (opt of scenario().routeSequences; track opt) {
+          @for (opt of scenario().routeSequences; track opt.id) {
             <mat-list-item> {{ opt.route?.name }}
               <mat-icon (click)="moveUpRouteSequence(opt)">arrow_drop_up</mat-icon>
               <mat-icon (click)="moveDownRouteSequence(opt)">arrow_drop_down</mat-icon>

@@ -1,4 +1,6 @@
-import {Component, inject, OnInit, signal, ChangeDetectionStrategy} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
+import {toSignal} from '@angular/core/rxjs-interop';
+import {map, merge, of, switchMap} from 'rxjs';
 import {DeviceInfo} from "../../../../shared/openapi-gen";
 import {DeviceService} from "../../../shared/device.service";
 import {ConfirmDialogComponent} from "../../common/confirm-dialog/confirm-dialog.component";
@@ -46,43 +48,29 @@ import {DeviceSubscription} from "../../../shared/websocket/device.subscription"
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './device.component.css'
 })
-export class DeviceComponent implements OnInit {
-
+export class DeviceComponent {
   private deviceService = inject(DeviceService);
   private deviceSubscription = inject(DeviceSubscription);
+  private dialog = inject(MatDialog);
 
-  devices = signal<DeviceInfo[]>([]);
-  readonly dialog = inject(MatDialog);
+  devices = toSignal(
+    merge(of(null), this.deviceSubscription.deviceDataChanged()).pipe(
+      switchMap(() => this.deviceService.loadDevices())
+    ),
+    {initialValue: []}
+  );
+
+  isConnected = toSignal(
+    this.deviceSubscription.deviceConnection().pipe(map(d => d.connected ?? false)),
+    {initialValue: false}
+  );
+
   displayedColumns: string[] = ['id', 'key', 'type', 'action'];
-  isConnected: boolean = false;
-
-  ngOnInit() {
-    this.fetchDevices();
-
-    this.deviceSubscription.deviceConnection().subscribe(device => {
-      this.isConnected = device.connected!;
-    });
-
-    this.deviceSubscription.deviceDataChanged().subscribe(() => {
-      this.fetchDevices();
-    });
-  }
-
-  private fetchDevices() {
-    this.deviceService.loadDevices().subscribe(data => {
-      this.devices.set(data);
-    })
-  }
 
   deleteDevice(device: DeviceInfo) {
-    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
-      data: device.key
-    });
-
-    dialogRef.afterClosed().subscribe(result => {
-      if (result === true) {
-        this.deviceService.deleteDevice(device.id!);
-      }
+    this.dialog.open(ConfirmDialogComponent, {data: device.key})
+      .afterClosed().subscribe(result => {
+      if (result === true) this.deviceService.deleteDevice(device.id!);
     });
   }
 }

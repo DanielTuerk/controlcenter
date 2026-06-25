@@ -1,4 +1,6 @@
-import {Component, inject, OnInit, signal, ChangeDetectionStrategy} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
+import {toSignal} from '@angular/core/rxjs-interop';
+import {merge, of, switchMap} from 'rxjs';
 import {TrainService} from "../../shared/train.service";
 import {RouterLink} from "@angular/router";
 import {MatCard, MatCardContent, MatCardHeader, MatCardTitle} from "@angular/material/card";
@@ -27,36 +29,24 @@ import {TrainSubscription} from "../../shared/websocket/train.subscription";
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './train.component.css'
 })
-export class TrainComponent implements OnInit {
+export class TrainComponent {
   private trainService = inject(TrainService);
-  trains = signal<Train[]>([]);
-  displayedColumns: string[] = ['id', 'name', 'address', 'action'];
-  readonly dialog = inject(MatDialog);
   private trainSubscription = inject(TrainSubscription);
+  private dialog = inject(MatDialog);
 
-  ngOnInit() {
-    this.loadTrains();
+  trains = toSignal(
+    merge(of(null), this.trainSubscription.trainDataChanged()).pipe(
+      switchMap(() => this.trainService.loadTrains())
+    ),
+    {initialValue: []}
+  );
 
-    this.trainSubscription.trainDataChanged().subscribe(() => {
-      this.loadTrains();
-    });
-  }
-
-  private loadTrains() {
-    this.trainService.loadTrains().subscribe(data => {
-      this.trains.set(data);
-    })
-  }
+  displayedColumns: string[] = ['id', 'name', 'address', 'action'];
 
   deleteTrain(train: Train) {
-    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
-      data: train.name
-    });
-
-    dialogRef.afterClosed().subscribe(result => {
-      if (result === true) {
-        this.trainService.deleteTrain(train.id!);
-      }
+    this.dialog.open(ConfirmDialogComponent, {data: train.name})
+      .afterClosed().subscribe(result => {
+      if (result === true) this.trainService.deleteTrain(train.id!);
     });
   }
 }

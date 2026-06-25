@@ -1,4 +1,6 @@
-import {Component, inject, OnInit, signal, ChangeDetectionStrategy} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
+import {toSignal} from '@angular/core/rxjs-interop';
+import {merge, switchMap} from 'rxjs';
 import {MatButton, MatIconButton} from "@angular/material/button";
 import {MatCard, MatCardContent, MatCardHeader} from "@angular/material/card";
 import {
@@ -47,41 +49,26 @@ import {ConstructionSubscription} from "../../../shared/websocket/construction.s
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './editor-block.component.css'
 })
-export class EditorBlockComponent implements OnInit {
-
-  trackBlocks = signal<TrackBlock[]>([]);
-  displayedColumns: string[] = ['id', 'name', 'address', 'bit', 'action'];
-  readonly dialog = inject(MatDialog);
+export class EditorBlockComponent {
   private trackService = inject(TrackService);
   private trackSubscription = inject(TrackSubscription);
   private constructionSubscription = inject(ConstructionSubscription);
+  private dialog = inject(MatDialog);
 
-  ngOnInit() {
-    this.constructionSubscription.currentConstruction().subscribe(() => {
-      this.loadTrackBlocks();
-    })
+  trackBlocks = toSignal(
+    merge(
+      this.constructionSubscription.currentConstruction(),
+      this.trackSubscription.trackBlockDataChangedEvent()
+    ).pipe(switchMap(() => this.trackService.loadTrackBlocks())),
+    {initialValue: []}
+  );
 
-    this.trackSubscription.trackBlockDataChangedEvent().subscribe(() => {
-      this.loadTrackBlocks();
-    });
-  }
-
-  private loadTrackBlocks() {
-    this.trackService.loadTrackBlocks().subscribe(data => {
-      this.trackBlocks.set(data);
-    })
-  }
+  displayedColumns: string[] = ['id', 'name', 'address', 'bit', 'action'];
 
   deleteBlock(trackBlock: TrackBlock) {
-    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
-      data: trackBlock.name
-    });
-
-    dialogRef.afterClosed().subscribe(result => {
-      if (result === true) {
-        this.trackService.deleteTrackBlock(trackBlock.id!);
-      }
+    this.dialog.open(ConfirmDialogComponent, {data: trackBlock.name})
+      .afterClosed().subscribe(result => {
+      if (result === true) this.trackService.deleteTrackBlock(trackBlock.id!);
     });
   }
-
 }

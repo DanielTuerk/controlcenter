@@ -1,4 +1,6 @@
-import {Component, inject, OnInit, signal, ChangeDetectionStrategy} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
+import {toSignal} from '@angular/core/rxjs-interop';
+import {merge, of, switchMap} from 'rxjs';
 import {MatButton, MatIconButton} from "@angular/material/button";
 import {MatCard, MatCardContent, MatCardHeader, MatCardTitle} from "@angular/material/card";
 import {MatTableModule} from "@angular/material/table";
@@ -31,39 +33,24 @@ import {ScenarioSubscription} from "../../shared/websocket/scenario.subscription
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './scenario.component.css'
 })
-export class ScenarioComponent implements OnInit {
+export class ScenarioComponent {
   private scenarioService = inject(ScenarioService);
   private scenarioSubscription = inject(ScenarioSubscription);
+  private dialog = inject(MatDialog);
 
-  scenarios = signal<Scenario[]>([]);
+  scenarios = toSignal(
+    merge(of(null), this.scenarioSubscription.scenarioDataChanged(), this.scenarioSubscription.scenariosChanged()).pipe(
+      switchMap(() => this.scenarioService.loadScenarios())
+    ),
+    {initialValue: []}
+  );
+
   displayedColumns: string[] = ['id', 'name', 'train', 'cron', 'action'];
-  readonly dialog = inject(MatDialog);
-
-  ngOnInit() {
-    this.scenarioSubscription.scenarioDataChanged().subscribe(() => {
-      this.loadData();
-    });
-    this.scenarioSubscription.scenariosChanged().subscribe(() => {
-      this.loadData();
-    });
-    this.loadData();
-  }
-
-  private loadData() {
-    this.scenarioService.loadScenarios().subscribe(data => {
-      this.scenarios.set(data);
-    });
-  }
 
   deleteScenario(scenario: Scenario) {
-    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
-      data: scenario.name
-    });
-
-    dialogRef.afterClosed().subscribe(result => {
-      if (result === true) {
-        this.scenarioService.deleteScenario(scenario.id!);
-      }
+    this.dialog.open(ConfirmDialogComponent, {data: scenario.name})
+      .afterClosed().subscribe(result => {
+      if (result === true) this.scenarioService.deleteScenario(scenario.id!);
     });
   }
 

@@ -1,4 +1,6 @@
-import {Component, inject, OnInit, signal, ChangeDetectionStrategy} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
+import {toSignal} from '@angular/core/rxjs-interop';
+import {merge, of, switchMap} from 'rxjs';
 import {MatButton, MatIconButton} from "@angular/material/button";
 import {MatCard, MatCardContent, MatCardHeader, MatCardTitle} from "@angular/material/card";
 import {
@@ -53,41 +55,24 @@ import {ScenarioSubscription} from "../../../shared/websocket/scenario.subscript
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './route.component.css'
 })
-export class RouteComponent implements OnInit {
-
+export class RouteComponent {
   private routeService = inject(RouteService);
   private scenarioSubscription = inject(ScenarioSubscription);
+  private dialog = inject(MatDialog);
 
-  routes = signal<Route[]>([]);
+  routes = toSignal(
+    merge(of(null), this.scenarioSubscription.routeDataChanged(), this.scenarioSubscription.routesChanged()).pipe(
+      switchMap(() => this.routeService.loadRoutes())
+    ),
+    {initialValue: []}
+  );
+
   displayedColumns: string[] = ['id', 'name', 'start', 'end', 'oneway', 'track', 'action'];
-  readonly dialog = inject(MatDialog);
-
-  ngOnInit() {
-    this.scenarioSubscription.routeDataChanged().subscribe(() => {
-      this.loadRoutes();
-    });
-    this.scenarioSubscription.routesChanged().subscribe(() => {
-      this.loadRoutes();
-    });
-    this.loadRoutes();
-  }
-
-  private loadRoutes() {
-    this.routeService.loadRoutes().subscribe(data => {
-      this.routes.set(data);
-    })
-  }
 
   deleteRoute(route: Route) {
-    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
-      data: route.name
-    });
-
-    dialogRef.afterClosed().subscribe(result => {
-      if (result === true) {
-        this.routeService.deleteRoute(route.id!);
-      }
+    this.dialog.open(ConfirmDialogComponent, {data: route.name})
+      .afterClosed().subscribe(result => {
+      if (result === true) this.routeService.deleteRoute(route.id!);
     });
   }
-
 }

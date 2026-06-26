@@ -3,15 +3,22 @@
   <mat-select [(ngModel)]="selectedDevice"
     [disabled]="isConnected()"
     name="device">
-    @for (device of devices(); track device; let i = $index) {
+    @for (device of devices(); track device.id) {
       <mat-option [value]="device">{{ device.key }}</mat-option>
     }
   </mat-select>
 </mat-form-field>
-<button mat-fab routerLink="settings/device" [disabled]="isConnected()">
+<button mat-mini-fab routerLink="settings/device" [disabled]="isConnected()">
   <mat-icon>edit</mat-icon>
 </button>
-<mat-slide-toggle [checked]="isConnected()"
-  [disabled]="!selectedDevice"
-  (change)="onConnectionToggle($event.checked)">Connection
-</mat-slide-toggle>
+<button mat-icon-button
+        [matTooltip]="'toggle connection'"
+        [disabled]="!selectedDevice"
+        (click)="onConnectionToggle()">
+  <mat-icon>@if (isConnected()) {
+    power_off
+  } @else {
+    power
+  }
+  </mat-icon>
+</button>

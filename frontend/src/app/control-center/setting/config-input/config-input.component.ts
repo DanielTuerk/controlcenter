@@ -1,13 +1,14 @@
-import {Component, inject, input, effect, ChangeDetectionStrategy} from '@angular/core';
+import {ChangeDetectionStrategy, Component, effect, inject, input} from '@angular/core';
 import {FormControl, ReactiveFormsModule} from '@angular/forms';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {debounceTime, distinctUntilChanged, switchMap, take} from 'rxjs/operators';
 import {ConfigService} from "../../../shared/config.service";
+import {MatFormField, MatInput} from "@angular/material/input";
 
 @Component({
   selector: 'app-config-input',
   standalone: true,
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, MatInput, MatFormField],
   changeDetection: ChangeDetectionStrategy.Eager,
   templateUrl: './config-input.component.html'
 })

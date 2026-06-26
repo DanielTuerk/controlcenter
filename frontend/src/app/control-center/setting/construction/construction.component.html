@@ -3,10 +3,9 @@
   <mat-card-title>Constructions</mat-card-title>
 </mat-card-header>
 <mat-card-content>
-
-  <mat-grid-list cols="2" rowHeight="50">
-    <mat-grid-tile>
-      Default construction:
+  <br>
+  <mat-form-field>
+    <mat-label>Default construction</mat-label>
       <mat-select [(ngModel)]="defaultConstruction"
         (selectionChange)="updateDefaultConstruction()"
         name="construction">
@@ -16,10 +15,7 @@
           </mat-option>
         }
       </mat-select>
-    </mat-grid-tile>
-  </mat-grid-list>
-
-  <hr/>
+  </mat-form-field>
   <p>
     <button mat-stroked-button routerLink="create">
       <mat-icon>add</mat-icon>

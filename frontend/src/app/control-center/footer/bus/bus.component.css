@@ -1,0 +1,21 @@
+.voltage-off {
+  position: relative;
+  display: inline-block;
+}
+.voltage-on {
+  position: relative;
+  display: inline-block;
+}
+
+.voltage-off::after {
+  content: '';
+  position: absolute;
+  inset: 3px;
+  background: linear-gradient(
+    to bottom left,
+    transparent 44%,
+    currentColor 44%,
+    currentColor 56%,
+    transparent 56%
+  );
+}

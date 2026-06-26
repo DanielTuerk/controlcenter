@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {toSignal} from '@angular/core/rxjs-interop';
-import {map, merge, of, switchMap} from 'rxjs';
+import {merge, of, switchMap} from 'rxjs';
 import {DeviceInfo} from "../../../../shared/openapi-gen";
 import {DeviceService} from "../../../shared/device.service";
 import {ConfirmDialogComponent} from "../../common/confirm-dialog/confirm-dialog.component";
@@ -60,10 +60,7 @@ export class DeviceComponent {
     {initialValue: []}
   );
 
-  isConnected = toSignal(
-    this.deviceSubscription.deviceConnection().pipe(map(d => d.connected ?? false)),
-    {initialValue: false}
-  );
+  readonly isConnected = this.deviceSubscription.isConnected;
 
   displayedColumns: string[] = ['id', 'key', 'type', 'action'];
 

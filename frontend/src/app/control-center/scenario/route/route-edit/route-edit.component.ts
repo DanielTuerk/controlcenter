@@ -18,6 +18,7 @@ import {SuccessIconComponent} from "../../../../shared/component/SuccessIconComp
 import {ErrorIconComponent} from "../../../../shared/component/ErrorIconComponent";
 import {finalize} from "rxjs";
 import {MatButtonToggle, MatButtonToggleChange, MatButtonToggleGroup} from "@angular/material/button-toggle";
+import {MatToolbar} from "@angular/material/toolbar";
 
 export enum SELECT_TYPE {START = 'start', END = 'end', WAYPOINT = 'waypoint'}
 
@@ -41,8 +42,9 @@ export enum SELECT_TYPE {START = 'start', END = 'end', WAYPOINT = 'waypoint'}
     ErrorIconComponent,
     MatButtonToggle,
     MatButtonToggleGroup,
-    FormsModule
-],
+    FormsModule,
+    MatToolbar
+  ],
   templateUrl: './route-edit.component.html',
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './route-edit.component.css'

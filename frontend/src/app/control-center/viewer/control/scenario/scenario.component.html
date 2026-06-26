@@ -1,4 +1,4 @@
-<div class="control-group" style="padding-top: 10px; padding-left: 10px">
+<div class="control-group">
   <button mat-mini-fab (click)="scheduleAllScenarios()"
     [disabled]="!isConnected()">
     <mat-icon>schedule_send</mat-icon>
@@ -10,11 +10,11 @@
 </div>
 
 @for (scenario of scenarios(); track scenario.scenarioId) {
-  <mat-expansion-panel style="padding-top: 10px">
+  <mat-expansion-panel class="viewer-control-pane-item">
     <mat-expansion-panel-header>
       <mat-panel-title class="panel-title">
         <div class="title-top">
-          <span class="train-name">{{ scenario.name }}</span>
+          <span class="scenario-name">{{ scenario.name }}</span>
         </div>
         <div class="title-bottom">
           <span>

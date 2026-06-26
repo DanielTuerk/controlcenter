@@ -125,11 +125,14 @@ public class TrainService {
                 @Override
                 public void functionStateChanged(int functionAddress, int functionBit, boolean active) {
                     for (TrainFunction trainFunction : trainInstance.train().getFunctions()) {
-                        if (trainFunction.getConfiguration().getAddress() == functionAddress
-                            && trainFunction.getConfiguration().getBit() == functionBit) {
-                            eventBroadcaster
-                                .fireEvent(new TrainFunctionStateEvent(trainInstance.train().getId(),
-                                    trainFunction, active));
+                        if (trainFunction.getConfiguration().getAddress() != null
+                            && trainFunction.getConfiguration().getBit() != null) {
+                            if (trainFunction.getConfiguration().getAddress() == functionAddress
+                                && trainFunction.getConfiguration().getBit() == functionBit) {
+                                eventBroadcaster
+                                    .fireEvent(new TrainFunctionStateEvent(trainInstance.train().getId(),
+                                        trainFunction, active));
+                            }
                         }
                     }
                 }

@@ -1,6 +1,5 @@
-import {Component, inject, OnDestroy, OnInit, ChangeDetectionStrategy} from '@angular/core';
-import { DecimalPipe } from "@angular/common";
-import {DeviceSubscription} from "../../shared/websocket/device.subscription";
+import {ChangeDetectionStrategy, Component, effect, inject, OnDestroy, OnInit} from '@angular/core';
+import {DecimalPipe} from "@angular/common";
 import {BusService} from "../../shared/bus.service";
 import {WebSocketService} from "../../shared/websocket/websocket.service";
 import {BusSubscription} from "../../shared/websocket/bus.subscription";
@@ -17,7 +16,6 @@ import {DeviceService} from "../../shared/device.service";
 })
 export class BusMonitorComponent implements OnInit, OnDestroy {
 
-  private deviceSubscription = inject(DeviceSubscription);
   private busSubscription = inject(BusSubscription);
   private webSocketService = inject(WebSocketService);
   private busService = inject(BusService);
@@ -31,16 +29,17 @@ export class BusMonitorComponent implements OnInit, OnDestroy {
       {number: 0, rows: this.createRows()},
       {number: 1, rows: this.createRows()}
     ];
-  }
 
-  ngOnInit() {
-    this.deviceSubscription.deviceConnection().subscribe(device => {
-      if (device.connected) {
+    effect(() => {
+      if (this.isConnected()) {
         this.busService.startTrackingBus(this.webSocketService.getClientId());
       } else {
         this.busService.stopTrackingBus(this.webSocketService.getClientId());
       }
     });
+  }
+
+  ngOnInit() {
     this.busSubscription.busDataEvent().subscribe(busDataEvent => {
       if (busDataEvent.address !== undefined && busDataEvent.data !== undefined) {
         this.buses.filter(bus => bus.number == busDataEvent.bus)
@@ -67,7 +66,7 @@ export class BusMonitorComponent implements OnInit, OnDestroy {
   }
 
   protected toggleBit(bus: Bus, rowIndex: number, bitIndex: number, state: boolean): void {
-    this.busService.busBit({bus: bus.number, address: rowIndex, bit: bitIndex, state: state});
+    this.busService.sendBusBit({bus: bus.number, address: rowIndex, bit: bitIndex, state: state});
   }
 
 }

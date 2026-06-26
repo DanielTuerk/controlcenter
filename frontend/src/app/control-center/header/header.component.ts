@@ -2,8 +2,9 @@ import {Component, ChangeDetectionStrategy} from '@angular/core';
 import {RouterLink} from "@angular/router";
 import {MatToolbar} from "@angular/material/toolbar";
 import {MatIcon} from "@angular/material/icon";
-import {MatButton, MatMiniFabButton} from "@angular/material/button";
+import {MatButton, MatIconButton, MatMiniFabButton} from "@angular/material/button";
 import {MatDivider} from "@angular/material/divider";
+import {MatMenu, MatMenuItem, MatMenuTrigger} from "@angular/material/menu";
 
 @Component({
   selector: 'app-header',
@@ -13,7 +14,11 @@ import {MatDivider} from "@angular/material/divider";
     MatIcon,
     MatDivider,
     MatButton,
-    MatMiniFabButton
+    MatIconButton,
+    MatMiniFabButton,
+    MatMenu,
+    MatMenuItem,
+    MatMenuTrigger,
   ],
   templateUrl: './header.component.html',
   changeDetection: ChangeDetectionStrategy.Eager,

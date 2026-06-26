@@ -1,17 +1,28 @@
   <button mat-stroked-button
-          [textContent]="systemFormat"
-          [disabled]="!isConnected"
+          [matTooltip]="'change system format'"
+          [textContent]="systemFormat()"
+          [disabled]="!isConnected()"
           (click)="onSystemFormat()"></button>
-  <mat-slide-toggle (change)="onRailVoltageToggle()"
-                    [checked]="railVoltageEnabled"
-                    [disabled]="!isConnected">Voltage</mat-slide-toggle>
-  <button mat-icon-button routerLink="bus-monitor" [disabled]="!isConnected">
+
+  <button mat-icon-button
+          [matTooltip]="'toggle rail voltage'"
+          [disabled]="!isConnected()"
+          (click)="onRailVoltageToggle()">
+    @if (railVoltageEnabled()) {
+      <span class="voltage-off"><mat-icon>electric_bolt</mat-icon></span>
+    } @else {
+      <span class="voltage-on"><mat-icon>electric_bolt</mat-icon></span>
+    }
+  </button>
+
+  <button mat-icon-button routerLink="bus-monitor"
+          [matTooltip]="'open bus monitor'"
+          [disabled]="!isConnected()">
     <mat-icon>monitor</mat-icon>
   </button>
-  <button mat-icon-button [disabled]="!isConnected"
+  <button mat-icon-button
+          [matTooltip]="'send bus data'"
+          [disabled]="!isConnected()"
           (click)="sendBusData()">
     <mat-icon>send</mat-icon>
   </button>
-
-  <mat-slide-toggle (change)="onRecordingToggle()"
-                    [disabled]="!isConnected">Recording</mat-slide-toggle>

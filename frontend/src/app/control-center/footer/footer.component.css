@@ -1,3 +1,13 @@
+:host {
+  display: block;
+  background-color: #001d36;
+}
+
+mat-divider {
+  height: -webkit-fill-available;
+  align-self: center;
+}
+
 .copyright {
   text-align: center;
   /*padding: 1rem;*/

@@ -1,1 +1,11 @@
-<span>player works!</span>
+<button mat-icon-button
+        [disabled]="!isConnected()"
+        (click)="onRecordingToggle()"
+        [matTooltip]="'record bus to file'">
+  <mat-icon style="color: rgb(207 102 102 / 0.58)">radio_button_checked</mat-icon>
+</button>
+<button mat-icon-button
+        [disabled]="!isConnected()"
+        [matTooltip]="'play file'">
+  <mat-icon>play_circle</mat-icon>
+</button>

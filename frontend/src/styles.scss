@@ -1,15 +1,49 @@
 @use '@angular/material' as mat;
 
+$_cc-blue-primary: (
+  0: #000000,
+  10: #001d36,
+  20: #003259,
+  25: #003d6b,
+  30: #004980,
+  35: #005494,
+  40: #0060a9,
+  50: #2478c9,
+  60: #4191e4,
+  70: #5cacff,
+  80: #4a9eff,
+  90: #96baea,
+  95: #88b6ed,
+  98: #7fbcff,
+  99: #99c5fa,
+  100: #acd2ff,
+);
+
 html {
   @include mat.theme((
     color: (
-      primary: mat.$cyan-palette,
+      primary: $_cc-blue-primary,
       tertiary: mat.$orange-palette,
       theme-type: dark,
     ),
     typography: Roboto,
     density: 0,
   ));
+
+  --mat-sys-surface: #1e1f22;
+  --mat-sys-surface-dim: #1e1f22;
+  --mat-sys-surface-bright: #3b3d42;
+  --mat-sys-surface-container-lowest: #18191c;
+  --mat-sys-surface-container-low: #24262a;
+  --mat-sys-surface-container: #2b2d30;
+  --mat-sys-surface-container-high: #313438;
+  --mat-sys-surface-container-highest: #383a3f;
+  --mat-sys-on-surface: #dfe1e5;
+  --mat-sys-on-surface-variant: #9da0a5;
+  --mat-sys-outline: #43454a;
+  --mat-sys-outline-variant: #3d3f44;
+  --mat-sys-surface-tint: #1a3558;
+  --mat-card-container-color: var(--mat-sys-surface-container);
 }
 
 body {
@@ -18,21 +52,21 @@ body {
 
   font-family: Roboto, "Helvetica Neue", sans-serif;
 
-  background: var(--mat-sys-surface);
+  background: var(--mat-sys-surface-container-low);
   color: var(--mat-sys-on-surface);
 }
 
 .snackbar-common {
 }
 
-.snackbar-error {
-  --mat-snackbar-container-color: rgba(230, 130, 130);
-  --mat-mdc-snack-bar-button-color: white;
+.mat-mdc-snack-bar-container.snackbar-error {
+  --mat-snack-bar-container-color: #c0392b;
+  --mat-snack-bar-button-color: white;
 }
 
-.snackbar-success {
-  --mat-snackbar-container-color: #91c16d;
-  --mat-mdc-snack-bar-button-color: white;
+.mat-mdc-snack-bar-container.snackbar-success {
+  --mat-snack-bar-container-color: #4a7c3f;
+  --mat-snack-bar-button-color: white;
 }
 
 .container {
@@ -42,11 +76,16 @@ body {
 }
 
 .footer-content {
-  display: flex;      /* or display: grid; */
+  display: flex;
+  align-items: center;
   gap: 10px;
   padding: 0.4em;
 }
 
+mat-expansion-panel.viewer-control-pane-item {
+  margin: 1rem;
+  background-color: var(--mat-sys-surface-container-high)
+}
 
 mat-card-footer, .mat-card-footer {
   display: flex;
@@ -59,6 +98,29 @@ mat-card-footer, .mat-card-footer {
 .icon {
   font-size: medium;
   display: contents;
+}
+
+button[mat-mini-fab] {
+  color: var(--mat-sys-secondary);
+  box-shadow: none;
+
+  /* suppress elevation on all states */
+  --mat-fab-small-container-elevation-shadow: none;
+  --mat-fab-small-focus-container-elevation-shadow: none;
+  --mat-fab-small-hover-container-elevation-shadow: none;
+  --mat-fab-small-pressed-container-elevation-shadow: none;
+
+  /* dampen hover/focus/pressed state-layer overlays */
+  --mat-fab-small-hover-state-layer-opacity: 0.06;
+  --mat-fab-small-focus-state-layer-opacity: 0.08;
+  --mat-fab-small-pressed-state-layer-opacity: 0.10;
+}
+
+/* subtle focus ring instead of the default bright white outline */
+.mat-mdc-mini-fab .mat-focus-indicator::after {
+  border-width: 1px !important;
+  border-color: var(--mat-sys-outline) !important;
+  box-shadow: none !important;
 }
 
 button[mat-icon-button],
@@ -77,4 +139,20 @@ button[mat-fab] mat-icon {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+button[mat-icon-button] mat-icon {
+  color: var(--mat-sys-on-surface);
+}
+
+button[mat-icon-button]:disabled mat-icon {
+  color: var(--mat-sys-on-surface-variant);
+  opacity: 0.4;
+}
+
+:root {
+  @include mat.tooltip-overrides((
+    container-color: var(--mat-sys-surface-container-lowest),
+    supporting-text-color: var(--mat-sys-on-surface),
+  ));
 }

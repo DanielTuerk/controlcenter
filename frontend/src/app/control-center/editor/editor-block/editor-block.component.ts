@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
-import {toSignal} from '@angular/core/rxjs-interop';
+import {toObservable, toSignal} from '@angular/core/rxjs-interop';
 import {merge, switchMap} from 'rxjs';
 import {MatButton, MatIconButton} from "@angular/material/button";
 import {MatCard, MatCardContent, MatCardHeader} from "@angular/material/card";
@@ -57,7 +57,7 @@ export class EditorBlockComponent {
 
   trackBlocks = toSignal(
     merge(
-      this.constructionSubscription.currentConstruction(),
+      toObservable(this.constructionSubscription.currentConstruction),
       this.trackSubscription.trackBlockDataChangedEvent()
     ).pipe(switchMap(() => this.trackService.loadTrackBlocks())),
     {initialValue: []}

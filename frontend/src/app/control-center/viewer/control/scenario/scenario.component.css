@@ -18,9 +18,10 @@
 }
 
 .control-group {
+  margin: 1rem;
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 1rem;
 }
 .route-state-PREPARED { background: #8f8b5a; }
 .route-state-STOPPED { background: #1e3a53; }

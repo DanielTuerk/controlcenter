@@ -14,7 +14,7 @@
             <div class="address-item">
               <span class="address">{{ row.address | number:'3.0-0' }}</span>
               <div class="bits">
-                @for (bit of row.bits; track bit; let j = $index) {
+                @for (bit of row.bits; track j; let j = $index) {
                   <button
                     (click)="toggleBit(bus, row.address, j+1, !row.bits[j])"
                     [class.active]="bit">

@@ -10,7 +10,7 @@ export class BusService {
   private httpClient = inject(HttpClient);
   private snackBar = inject(SnackBar);
 
-  railVoltage() {
+  toggleRailVoltage() {
     return this.callBusAction('railvoltage')
     .pipe(
       catchError((err: any) => {
@@ -20,7 +20,7 @@ export class BusService {
     ).subscribe();
   }
 
-  busFormat() {
+  switchSystemFormat() {
     return this.callBusAction('system-format')
     .pipe(
       catchError((err: any) => {
@@ -30,7 +30,7 @@ export class BusService {
     ).subscribe();
   }
 
-  busBit(busBit:BusBitDto) {
+  sendBusBit(busBit: BusBitDto) {
     return this.callBusAction('bus-bit', busBit)
     .pipe(
       catchError((err: any) => {

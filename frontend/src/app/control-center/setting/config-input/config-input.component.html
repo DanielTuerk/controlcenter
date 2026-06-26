@@ -2,12 +2,12 @@
   @if (label()) {
     <label>{{ label() }}: </label>
   }
-
-  <input
-    [type]="type()"
-    [formControl]="control"
-    [placeholder]="placeholder()"
-  />
+  <mat-form-field>
+    <input matInput
+           [type]="type()"
+           [formControl]="control"
+           [placeholder]="placeholder()"
+    /></mat-form-field>
 
   @if (loading) {
     <small>loading...</small>

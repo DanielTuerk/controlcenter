@@ -1,4 +1,4 @@
-import {Component, inject, OnInit, signal, ChangeDetectionStrategy} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject, OnInit, signal} from '@angular/core';
 import {MatButton, MatIconButton, MatMiniFabButton} from "@angular/material/button";
 import {
   MatCell,
@@ -23,9 +23,7 @@ import {ConfirmDialogComponent} from "../../common/confirm-dialog/confirm-dialog
 import {MatChip} from "@angular/material/chips";
 import {FormsModule} from "@angular/forms";
 import {ConfigService, KEY_CONSTRUCTION_DEFAULT} from "../../../shared/config.service";
-import {MatOption, MatSelect} from "@angular/material/select";
-
-import {MatGridList, MatGridTile} from "@angular/material/grid-list";
+import {MatFormField, MatLabel, MatOption, MatSelect} from "@angular/material/select";
 
 @Component({
   selector: 'app-construction',
@@ -52,9 +50,9 @@ import {MatGridList, MatGridTile} from "@angular/material/grid-list";
     FormsModule,
     MatSelect,
     MatOption,
-    MatGridTile,
-    MatGridList
-],
+    MatLabel,
+    MatFormField
+  ],
   templateUrl: './construction.component.html',
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './construction.component.css'

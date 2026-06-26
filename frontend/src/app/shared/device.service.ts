@@ -1,4 +1,4 @@
-import {inject, Injectable, signal} from "@angular/core";
+import {inject, Injectable, Signal} from "@angular/core";
 import {HttpClient} from "@angular/common/http";
 import {SnackBar} from "../control-center/common/snack-bar.component";
 import {AvailableDevice, DeviceInfo, Scenario} from "../../shared/openapi-gen";
@@ -14,16 +14,7 @@ export class DeviceService {
   private httpClient = inject(HttpClient);
   private snackBar = inject(SnackBar);
 
-  private deviceSubscription = inject(DeviceSubscription);
-  private _isConnected = signal(false);
-  public readonly isConnected = this._isConnected.asReadonly();
-
-  init() {
-    this.deviceSubscription.deviceConnection().subscribe($event => {
-      console.log("device connection changed", {device: $event});
-      this._isConnected.set($event.connected!);
-    });
-  }
+  readonly isConnected: Signal<boolean> = inject(DeviceSubscription).isConnected;
 
   loadDevices() {
     return this.httpClient.get<DeviceInfo[]>('/api/devices')

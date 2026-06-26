@@ -1,63 +1,46 @@
-import {Component, inject, OnInit, ChangeDetectionStrategy} from '@angular/core';
-import {MatSlideToggle} from "@angular/material/slide-toggle";
-import {BusSubscription} from "../../../shared/websocket/bus.subscription";
+import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {BusService} from "../../../shared/bus.service";
 import {DeviceSubscription} from "../../../shared/websocket/device.subscription";
-import {BusDataDto, SYSTEMFORMAT} from "../../../../shared/openapi-gen";
+import {BusDataDto} from "../../../../shared/openapi-gen";
 import {MatButton, MatIconButton} from "@angular/material/button";
 import {MatIcon} from "@angular/material/icon";
 import {RouterLink} from "@angular/router";
 import {BusSendDataDialogComponent} from "./bus-send-data-dialog/bus-send-data-dialog.component";
 import {MatDialog} from "@angular/material/dialog";
+import {MatTooltip} from "@angular/material/tooltip";
+import {BusSubscription} from "../../../shared/websocket/bus.subscription";
 
 @Component({
   selector: 'app-bus',
   imports: [
-    MatSlideToggle,
     MatButton,
     MatIcon,
     RouterLink,
-    MatIconButton
+    MatIconButton,
+    MatTooltip
   ],
   templateUrl: './bus.component.html',
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './bus.component.css'
 })
-export class BusComponent implements OnInit {
+export class BusComponent {
   private busService = inject(BusService);
   private busSubscription = inject(BusSubscription);
   private deviceSubscription = inject(DeviceSubscription);
 
-  isConnected: boolean = false;
-  railVoltageEnabled = false;
-  systemFormat = SYSTEMFORMAT.Unknown;
+  readonly isConnected = this.deviceSubscription.isConnected;
+  readonly railVoltageEnabled = this.busSubscription.railVoltage;
+  readonly systemFormat = this.busSubscription.systemFormat;
 
   constructor(private dialog: MatDialog) {
   }
 
-  ngOnInit() {
-    this.busSubscription.systemFormat().subscribe(event => {
-      this.systemFormat = event.systemFormat ? event.systemFormat : SYSTEMFORMAT.Unknown;
-    });
-    this.busSubscription.railvoltage().subscribe(event => {
-      this.railVoltageEnabled = event.state ? event.state : false;
-    });
-    this.deviceSubscription.deviceConnection().subscribe(device => {
-      this.isConnected = device.connected!;
-    });
-  }
-
   onRailVoltageToggle() {
-    this.busService.railVoltage();
-  }
-
-  onRecordingToggle() {
-    // TODO
-    console.log("TODO: no recording");
+    this.busService.toggleRailVoltage();
   }
 
   onSystemFormat() {
-    this.busService.busFormat();
+    this.busService.switchSystemFormat();
   }
 
   protected sendBusData() {

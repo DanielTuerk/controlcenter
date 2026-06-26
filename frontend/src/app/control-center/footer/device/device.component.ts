@@ -1,5 +1,4 @@
-import {Component, inject, OnInit, signal, ChangeDetectionStrategy} from '@angular/core';
-import {MatSlideToggle} from "@angular/material/slide-toggle";
+import {ChangeDetectionStrategy, Component, inject, OnInit, signal} from '@angular/core';
 import {MatSelect} from "@angular/material/select";
 import {DeviceService} from "../../../shared/device.service";
 import {FormsModule} from "@angular/forms";
@@ -7,24 +6,26 @@ import {FormsModule} from "@angular/forms";
 import {DeviceInfo} from "../../../../shared/openapi-gen";
 import {DeviceSubscription} from "../../../shared/websocket/device.subscription";
 import {MatIcon} from "@angular/material/icon";
-import {MatFabButton} from "@angular/material/button";
+import {MatIconButton, MatMiniFabButton} from "@angular/material/button";
 import {RouterLink} from "@angular/router";
 import {MatFormField, MatLabel} from "@angular/material/input";
 import {MatOption} from "@angular/material/core";
+import {MatTooltip} from "@angular/material/tooltip";
 
 @Component({
   selector: 'app-device',
   imports: [
-    MatSlideToggle,
     MatFormField,
     MatLabel,
     MatSelect,
     MatOption,
     FormsModule,
     MatIcon,
-    MatFabButton,
-    RouterLink
-],
+    RouterLink,
+    MatMiniFabButton,
+    MatIconButton,
+    MatTooltip
+  ],
   templateUrl: './device.component.html',
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './device.component.css'
@@ -46,13 +47,13 @@ export class DeviceComponent implements OnInit {
     });
   }
 
-  onConnectionToggle(checked: boolean) {
+  onConnectionToggle() {
     let device = this.selectedDevice;
     if (!device) return;
-    if (checked) {
-      this.deviceService.connect(device);
-    } else {
+    if (this.isConnected()) {
       this.deviceService.disconnect();
+    } else {
+      this.deviceService.connect(device);
     }
   }
 
@@ -71,4 +72,5 @@ export class DeviceComponent implements OnInit {
       })
     })
   }
+
 }

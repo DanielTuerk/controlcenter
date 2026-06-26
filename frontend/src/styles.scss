@@ -1,0 +1,80 @@
+@use '@angular/material' as mat;
+
+html {
+  @include mat.theme((
+    color: (
+      primary: mat.$cyan-palette,
+      tertiary: mat.$orange-palette,
+      theme-type: dark,
+    ),
+    typography: Roboto,
+    density: 0,
+  ));
+}
+
+body {
+  height: 100vh;
+  margin: 0;
+
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+
+  background: var(--mat-sys-surface);
+  color: var(--mat-sys-on-surface);
+}
+
+.snackbar-common {
+}
+
+.snackbar-error {
+  --mat-snackbar-container-color: rgba(230, 130, 130);
+  --mat-mdc-snack-bar-button-color: white;
+}
+
+.snackbar-success {
+  --mat-snackbar-container-color: #91c16d;
+  --mat-mdc-snack-bar-button-color: white;
+}
+
+.container {
+  justify-content: center;
+  margin-left: 2rem;
+  margin-right: 2rem;
+}
+
+.footer-content {
+  display: flex;      /* or display: grid; */
+  gap: 10px;
+  padding: 0.4em;
+}
+
+
+mat-card-footer, .mat-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px;
+}
+
+.icon {
+  font-size: medium;
+  display: contents;
+}
+
+button[mat-icon-button],
+button[mat-mini-fab],
+button[mat-fab],
+button[mat-stroked-button],
+button[mat-flat-button],
+button[mat-raised-button],
+button[mat-button] {
+  vertical-align: middle;
+}
+
+button[mat-icon-button] mat-icon,
+button[mat-mini-fab] mat-icon,
+button[mat-fab] mat-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

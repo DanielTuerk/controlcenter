@@ -208,6 +208,9 @@ public class TrainService {
             .filter(f -> f.getId().equals(functionId))
             .findFirst()
             .orElseThrow(() -> new NotFoundException("function not found"));
+
+        validateConfiguration(trainFunction);
+
         try {
             final var trainModule = getTrainModule(trainId);
             final var functionConfiguration = trainFunction.getConfiguration();
@@ -219,6 +222,21 @@ public class TrainService {
             String msg = String.format("can't change state of function %s of train %d", trainFunction.getAlias(), trainId);
             log.error(msg, e);
             throw new RuntimeException(msg);
+        }
+    }
+
+    private static void validateConfiguration(TrainFunction trainFunction) {
+        if (trainFunction.getConfiguration() == null) {
+            throw new IllegalArgumentException("configuration not set");
+        }
+        if (trainFunction.getConfiguration().getBus() == null) {
+            throw new IllegalArgumentException("bus not set");
+        }
+        if (trainFunction.getConfiguration().getAddress() == null) {
+            throw new IllegalArgumentException("address not set");
+        }
+        if (trainFunction.getConfiguration().getBit() == null) {
+            throw new IllegalArgumentException("bit not set");
         }
     }
 

@@ -140,7 +140,9 @@ public class TrainResource {
             trainService.toggleFunctionState(trainId, functionId, state);
             return Response.ok().build();
         } catch (NotFoundException e) {
-            return Response.status(Response.Status.NOT_FOUND.getStatusCode(), e.getMessage()).build();
+            return Response.status(Response.Status.NOT_FOUND.getStatusCode()).entity(e.getMessage()).build();
+        } catch (IllegalArgumentException e) {
+            return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).entity(e.getMessage()).build();
         }
     }
 

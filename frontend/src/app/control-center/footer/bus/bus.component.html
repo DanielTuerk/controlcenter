@@ -1,10 +1,10 @@
-  <button mat-stroked-button
+<button matButton="outlined"
           [matTooltip]="'change system format'"
           [textContent]="systemFormat()"
           [disabled]="!isConnected()"
           (click)="onSystemFormat()"></button>
 
-  <button mat-icon-button
+<button matIconButton
           [matTooltip]="'toggle rail voltage'"
           [disabled]="!isConnected()"
           (click)="onRailVoltageToggle()">
@@ -15,12 +15,12 @@
     }
   </button>
 
-  <button mat-icon-button routerLink="bus-monitor"
+<button matIconButton routerLink="bus-monitor"
           [matTooltip]="'open bus monitor'"
           [disabled]="!isConnected()">
     <mat-icon>monitor</mat-icon>
   </button>
-  <button mat-icon-button
+<button matIconButton
           [matTooltip]="'send bus data'"
           [disabled]="!isConnected()"
           (click)="sendBusData()">

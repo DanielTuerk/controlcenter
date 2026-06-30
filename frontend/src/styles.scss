@@ -100,7 +100,7 @@ mat-card-footer, .mat-card-footer {
   display: contents;
 }
 
-button[mat-mini-fab] {
+button[matMiniFab] {
   color: var(--mat-sys-secondary);
   box-shadow: none;
 
@@ -123,29 +123,26 @@ button[mat-mini-fab] {
   box-shadow: none !important;
 }
 
-button[mat-icon-button],
-button[mat-mini-fab],
-button[mat-fab],
-button[mat-stroked-button],
-button[mat-flat-button],
-button[mat-raised-button],
-button[mat-button] {
+button[matIconButton],
+button[matMiniFab],
+button[matFab],
+button[matButton] {
   vertical-align: middle;
 }
 
-button[mat-icon-button] mat-icon,
-button[mat-mini-fab] mat-icon,
-button[mat-fab] mat-icon {
+button[matIconButton] mat-icon,
+button[matMiniFab] mat-icon,
+button[matFab] mat-icon {
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-button[mat-icon-button] mat-icon {
+button[matIconButton] mat-icon {
   color: var(--mat-sys-on-surface);
 }
 
-button[mat-icon-button]:disabled mat-icon {
+button[matIconButton]:disabled mat-icon {
   color: var(--mat-sys-on-surface-variant);
   opacity: 0.4;
 }

@@ -1,9 +1,9 @@
 <div class="control-group">
-  <button mat-mini-fab (click)="scheduleAllScenarios()"
+  <button matMiniFab (click)="scheduleAllScenarios()"
     [disabled]="!isConnected()">
     <mat-icon>schedule_send</mat-icon>
   </button>
-  <button mat-mini-fab (click)="stopAllScenarios()"
+  <button matMiniFab (click)="stopAllScenarios()"
     [disabled]="!isConnected()">
     <mat-icon>stop</mat-icon>
   </button>
@@ -28,15 +28,15 @@
       </mat-panel-title>
     </mat-expansion-panel-header>
     <div class="control-group">
-      <button mat-mini-fab (click)="scheduleScenario(scenario)"
+      <button matMiniFab (click)="scheduleScenario(scenario)"
         [disabled]="!canBeScheduled(scenario.scenarioId)">
         <mat-icon>schedule_send</mat-icon>
       </button>
-      <button mat-mini-fab (click)="startScenario(scenario)"
+      <button matMiniFab (click)="startScenario(scenario)"
         [disabled]="!canBeStarted(scenario.scenarioId)">
         <mat-icon>play_circle</mat-icon>
       </button>
-      <button mat-mini-fab (click)="stopScenario(scenario)"
+      <button matMiniFab (click)="stopScenario(scenario)"
         [disabled]="!canBeStopped(scenario.scenarioId)">
         <mat-icon>stop</mat-icon>
       </button>

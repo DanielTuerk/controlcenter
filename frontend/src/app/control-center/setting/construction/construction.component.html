@@ -17,7 +17,7 @@
       </mat-select>
   </mat-form-field>
   <p>
-    <button mat-stroked-button routerLink="create">
+    <button matButton="outlined" routerLink="create">
       <mat-icon>add</mat-icon>
       Create
     </button>
@@ -42,15 +42,15 @@
     <ng-container matColumnDef="action">
       <th mat-header-cell *matHeaderCellDef></th>
       <td mat-cell *matCellDef="let construction">
-        <button mat-icon-button [routerLink]="[construction.id]">
+        <button matIconButton [routerLink]="[construction.id]">
           <mat-icon>edit</mat-icon>
         </button>
         @if (!isCurrentConstruction(construction)) {
-          <button mat-icon-button>
+          <button matIconButton>
             <mat-icon (click)="deleteConstruction(construction)">delete</mat-icon>
           </button>
           &nbsp;
-          <button mat-mini-fab>
+          <button matMiniFab>
             <mat-icon (click)="selectCurrentConstruction(construction)">logout</mat-icon>
           </button>
         }

@@ -4,7 +4,7 @@
   </mat-card-header>
   <mat-card-content>
     <p>
-      <button mat-stroked-button routerLink="route/create">
+      <button matButton="outlined" routerLink="route/create">
         <mat-icon>add</mat-icon>
         Create
       </button>
@@ -54,8 +54,12 @@
       <ng-container matColumnDef="action">
         <th mat-header-cell *matHeaderCellDef></th>
         <td mat-cell *matCellDef="let route">
-          <button mat-icon-button [routerLink]="['route', route.id]"><mat-icon>edit</mat-icon></button>
-          <button mat-icon-button (click)="deleteRoute(route)"><mat-icon>delete</mat-icon></button>
+          <button matIconButton [routerLink]="['route', route.id]">
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button matIconButton (click)="deleteRoute(route)">
+            <mat-icon>delete</mat-icon>
+          </button>
         </td>
       </ng-container>
 

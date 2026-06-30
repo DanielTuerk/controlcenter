@@ -2,7 +2,7 @@
 <mat-dialog-content>
 
   @for (func of functions(); track func; let i = $index) {
-    <button mat-button mat-dialog-close [mat-dialog-close]="func"
+    <button matButton mat-dialog-close [mat-dialog-close]="func"
             [value]="func"
     >{{ func }}
     </button>
@@ -12,5 +12,5 @@
   <br>
 </mat-dialog-content>
 <mat-dialog-actions>
-  <button mat-button mat-dialog-close>Cancel</button>
+  <button matButton mat-dialog-close>Cancel</button>
 </mat-dialog-actions>

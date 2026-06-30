@@ -4,7 +4,10 @@
   </mat-card-header>
   <mat-card-content>
     <p>
-      <button mat-stroked-button routerLink="create"><mat-icon >add</mat-icon> Create</button>
+      <button matButton="outlined" routerLink="create">
+        <mat-icon>add</mat-icon>
+        Create
+      </button>
     </p>
     <table mat-table [dataSource]="scenarios()" class="mat-elevation-z8">
 
@@ -33,8 +36,12 @@
       <ng-container matColumnDef="action">
         <th mat-header-cell *matHeaderCellDef></th>
         <td mat-cell *matCellDef="let scenario">
-          <button mat-icon-button [routerLink]="[scenario.id]"><mat-icon>edit</mat-icon></button>
-          <button mat-icon-button (click)="deleteScenario(scenario)"><mat-icon>delete</mat-icon></button>
+          <button matIconButton [routerLink]="[scenario.id]">
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button matIconButton (click)="deleteScenario(scenario)">
+            <mat-icon>delete</mat-icon>
+          </button>
         </td>
       </ng-container>
 

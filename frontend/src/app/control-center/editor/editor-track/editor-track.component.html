@@ -20,12 +20,12 @@
 
     </mat-button-toggle-group>
 
-    <button mat-mini-fab style="margin-left: 10px"
+    <button matMiniFab style="margin-left: 10px"
             [disabled]="!pendingChanges()"
             (click)="save()">
       <mat-icon>save</mat-icon>
     </button>
-    <button mat-mini-fab style="margin-left: 10px"
+    <button matMiniFab style="margin-left: 10px"
             [disabled]="!pendingChanges()"
             (click)="revert()">
       <mat-icon>undo</mat-icon>

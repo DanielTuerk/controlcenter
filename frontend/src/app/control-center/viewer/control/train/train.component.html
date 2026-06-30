@@ -41,7 +41,7 @@
             <mat-icon>arrow_forward</mat-icon>
           </mat-button-toggle>
         </mat-button-toggle-group>
-        <button mat-mini-fab (click)="stopTrain(trainData.train)"
+        <button matMiniFab (click)="stopTrain(trainData.train)"
           [disabled]="!isConnected()">
           <mat-icon>stop</mat-icon>
         </button>
@@ -52,16 +52,16 @@
       </div>
       <mat-divider/>
       <div class="control-row">
-        <button mat-mini-fab (click)="updateLight(trainData.train)"
+        <button matMiniFab (click)="updateLight(trainData.train)"
           [disabled]="!isConnected()">
           <mat-icon [style]="trainData.light ? 'color:white':''">lightbulb</mat-icon>
         </button>
-        <button mat-mini-fab (click)="updateHorn(trainData.train)"
+        <button matMiniFab (click)="updateHorn(trainData.train)"
           [disabled]="!isConnected()">
           <mat-icon [style]="trainData.horn ? 'color:white':''">volume_up</mat-icon>
         </button>
         @for (fn of trainData.train.functions; track fn.id) {
-          <button mat-mini-fab (click)="updateFunctionState(trainData.train, fn, !trainData.functionStates.get(fn.id!))"
+          <button matMiniFab (click)="updateFunctionState(trainData.train, fn, !trainData.functionStates.get(fn.id!))"
             [disabled]="!isConnected()">
             <span [style]="trainData.functionStates.get(fn.id!) ? 'color:white':''">{{ fn.alias }}</span>
           </button>
@@ -69,7 +69,7 @@
       </div>
       <mat-divider/>
       <div class="control-row">
-        <button mat-mini-fab [routerLink]="['/cc/train', trainData.train.id]">
+        <button matMiniFab [routerLink]="['/cc/train', trainData.train.id]">
           <mat-icon>edit</mat-icon>
         </button>
       </div>

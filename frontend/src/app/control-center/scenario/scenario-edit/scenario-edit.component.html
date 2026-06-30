@@ -56,7 +56,7 @@
               }
             </mat-select>
           </mat-form-field>
-          <button type="button" mat-mini-fab (click)="addRoute(routeSelect.value)">
+          <button type="button" matMiniFab (click)="addRoute(routeSelect.value)">
             <mat-icon>add</mat-icon>
           </button>
         </div>
@@ -73,8 +73,8 @@
       </div>
     </mat-card-content>
     <mat-card-footer>
-      <button mat-stroked-button type="button" routerLink="../">Back</button>
-      <button mat-stroked-button>Apply</button>
+      <button matButton="outlined" type="button" routerLink="../">Back</button>
+      <button matButton="outlined">Apply</button>
     </mat-card-footer>
   </form>
 </mat-card>

@@ -9,7 +9,7 @@
 
 .nav-full {
   display: flex;
-  gap: 3px;
+  gap: 5px;
 }
 
 .nav-collapsed {

@@ -1,4 +1,4 @@
-import {Component, ChangeDetectionStrategy} from '@angular/core';
+import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {RouterLink} from "@angular/router";
 import {MatToolbar} from "@angular/material/toolbar";
 import {MatIcon} from "@angular/material/icon";
@@ -18,7 +18,7 @@ import {MatMenu, MatMenuItem, MatMenuTrigger} from "@angular/material/menu";
     MatMiniFabButton,
     MatMenu,
     MatMenuItem,
-    MatMenuTrigger,
+    MatMenuTrigger
   ],
   templateUrl: './header.component.html',
   changeDetection: ChangeDetectionStrategy.Eager,

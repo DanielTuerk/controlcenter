@@ -44,10 +44,10 @@ export class ConstructionService {
   }
 
   selectCurrentConstruction(construction: Construction) {
-   return  this.httpClient.post<String>('/api/current-construction', '' + construction.id)
+    return this.httpClient.post<String>('/api/current-construction', '' + construction.id)
     .pipe(
       catchError((error: any) => {
-          this.snackBar.showError(`can't set current constructions: ${error.message}`);
+        this.snackBar.showError(`can't set current constructions: ${error.message}`);
         return EMPTY;
       })
     );

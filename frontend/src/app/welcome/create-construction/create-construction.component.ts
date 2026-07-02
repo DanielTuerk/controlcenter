@@ -1,6 +1,8 @@
-import {Component, inject, ChangeDetectionStrategy} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {FormControl, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
 import {ConstructionService} from "../../shared/construction.service";
+import {SnackBar} from "../../control-center/common/snack-bar.component";
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-create-construction',
@@ -11,6 +13,8 @@ import {ConstructionService} from "../../shared/construction.service";
 })
 export class CreateConstructionComponent {
   private constructionService = inject(ConstructionService);
+  private snackBar = inject(SnackBar);
+  private router = inject(Router);
 
   form = new FormGroup({
     name: new FormControl('', Validators.required)
@@ -22,11 +26,19 @@ export class CreateConstructionComponent {
 
   onSubmit() {
     if(this.form.valid) {
-      this.constructionService.createConstruction({name: this.form.controls.name.value!})
+      let name = this.form.controls.name.value!;
+      this.constructionService.createConstruction({name: name})
         .subscribe(data => {
           console.log(data);
           this.constructionService.selectCurrentConstruction(data)
-            .subscribe();
+            .subscribe({
+              next: () => {
+                this.router.navigate(['/cc']);
+              },
+              error: (error) => {
+                this.snackBar.showError(`can't select construction ${name}: ${error.message}`);
+              }
+            });
         })
     }
   }

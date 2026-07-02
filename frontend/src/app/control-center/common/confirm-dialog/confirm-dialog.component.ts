@@ -16,5 +16,5 @@ import {
   styleUrl: './confirm-dialog.component.css'
 })
 export class ConfirmDialogComponent {
-  readonly text= inject<String>(MAT_DIALOG_DATA);
+  readonly text = inject<String>(MAT_DIALOG_DATA);
 }

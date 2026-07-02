@@ -3,7 +3,7 @@ package net.wbz.moba.controlcenter.it.resource;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.containsString;
 
-import io.quarkus.test.junit.QuarkusTest;
+import io.quarkus.test.junit.QuarkusIntegrationTest;
 import io.restassured.RestAssured;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -13,8 +13,8 @@ import org.junit.jupiter.api.Test;
  * {@code index.html} for the single-page-application routes ({@code /cc} and {@code /welcome})
  * and their sub-paths, so that deep links are handled by the frontend router.
  */
-@QuarkusTest
-class FrontendResourceTest {
+@QuarkusIntegrationTest
+class FrontendResourceTestIT {
 
     @BeforeAll
     public static void beforeAll() {

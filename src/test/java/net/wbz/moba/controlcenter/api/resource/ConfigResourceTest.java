@@ -1,4 +1,4 @@
-package net.wbz.moba.controlcenter.it.resource;
+package net.wbz.moba.controlcenter.api.resource;
 
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;

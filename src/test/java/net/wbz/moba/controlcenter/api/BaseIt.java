@@ -1,4 +1,4 @@
-package net.wbz.moba.controlcenter.it;
+package net.wbz.moba.controlcenter.api;
 
 import org.junit.jupiter.api.BeforeEach;
 

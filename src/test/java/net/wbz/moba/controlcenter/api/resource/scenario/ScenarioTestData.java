@@ -1,12 +1,12 @@
-package net.wbz.moba.controlcenter.it.scenario;
+package net.wbz.moba.controlcenter.api.resource.scenario;
 
-import net.wbz.moba.controlcenter.it.BaseTestData;
+import net.wbz.moba.controlcenter.api.BaseTestData;
 import net.wbz.moba.controlcenter.shared.train.TrainDrivingDirectionEvent;
 
 import java.util.List;
 
-import static net.wbz.moba.controlcenter.it.BaseTestData.TRAIN1;
-import static net.wbz.moba.controlcenter.it.BaseTestData.TRAIN2;
+import static net.wbz.moba.controlcenter.api.BaseTestData.TRAIN1;
+import static net.wbz.moba.controlcenter.api.BaseTestData.TRAIN2;
 
 public class ScenarioTestData {
 

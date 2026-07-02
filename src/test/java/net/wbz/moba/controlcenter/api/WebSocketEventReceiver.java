@@ -1,4 +1,4 @@
-package net.wbz.moba.controlcenter.it;
+package net.wbz.moba.controlcenter.api;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;

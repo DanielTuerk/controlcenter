@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
 
@@ -20,8 +21,10 @@
         <maven.compiler.release>21</maven.compiler.release>
 
         <!-- Native Image -->
-        <quarkus.native.builder-image>quay.io/quarkus/ubi9-quarkus-mandrel-builder-image:jdk-21</quarkus.native.builder-image>
-        <quarkus.native.additional-build-args>--initialize-at-run-time=com.fazecast.jSerialComm.SerialPort</quarkus.native.additional-build-args>
+        <quarkus.native.builder-image>quay.io/quarkus/ubi9-quarkus-mandrel-builder-image:jdk-21
+        </quarkus.native.builder-image>
+        <quarkus.native.additional-build-args>--initialize-at-run-time=com.fazecast.jSerialComm.SerialPort
+        </quarkus.native.additional-build-args>
         <quarkus.native.container-build>true</quarkus.native.container-build>
 
         <compiler-plugin.version>3.14.0</compiler-plugin.version>
@@ -30,7 +33,6 @@
         <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
         <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
         <quarkus.platform.version>3.36.2</quarkus.platform.version>
-        <skipITs>true</skipITs>
         <surefire-plugin.version>3.5.4</surefire-plugin.version>
         <mapstruct.version>1.6.3</mapstruct.version>
         <lombok.version>1.18.46</lombok.version>
@@ -292,9 +294,9 @@
     <profiles>
         <profile>
             <id>with-frontend</id>
-            <!--    <activation>-->
-            <!--      <activeByDefault>true</activeByDefault>-->
-            <!--    </activation>-->
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
             <build>
                 <plugins>
                     <plugin>
@@ -314,6 +316,21 @@
 
                     <!-- Frontend -->
                     <plugin>
+                        <groupId>com.github.eirslett</groupId>
+                        <artifactId>frontend-maven-plugin</artifactId>
+                        <version>1.15.0</version>
+
+                        <configuration>
+                            <workingDirectory>frontend</workingDirectory>
+                            <nodeVersion>v24.15.0</nodeVersion>
+                            <environmentVariables>
+                                <JAVA_HOME>${java.home}</JAVA_HOME>
+                                <!--suppress UnresolvedMavenProperty -->
+                                <Path>${java.home}\bin;${env.Path}</Path>
+                                <PATH>${java.home}\bin;${env.PATH}</PATH>
+                            </environmentVariables>
+                        </configuration>
+
                         <executions>
                             <execution>
                                 <id>install node and npm</id>
@@ -321,8 +338,26 @@
                                     <goal>install-node-and-npm</goal>
                                 </goals>
                                 <phase>generate-resources</phase>
+                            </execution>
+
+                            <execution>
+                                <id>npm install</id>
+                                <goals>
+                                    <goal>npm</goal>
+                                </goals>
                                 <configuration>
-                                    <nodeVersion>v20.0.0</nodeVersion>
+                                    <arguments>ci</arguments>
+                                </configuration>
+                            </execution>
+
+                            <execution>
+                                <id>npm openapi:generate</id>
+                                <goals>
+                                    <goal>npm</goal>
+                                </goals>
+                                <phase>generate-resources</phase>
+                                <configuration>
+                                    <arguments>run openapi:generate</arguments>
                                 </configuration>
                             </execution>
 
@@ -336,16 +371,7 @@
                                     <arguments>run build</arguments>
                                 </configuration>
                             </execution>
-
                         </executions>
-                        <groupId>com.github.eirslett</groupId>
-                        <artifactId>frontend-maven-plugin</artifactId>
-
-                        <version>1.15.0</version>
-
-                        <configuration>
-                            <workingDirectory>frontend</workingDirectory>
-                        </configuration>
                     </plugin>
                 </plugins>
             </build>

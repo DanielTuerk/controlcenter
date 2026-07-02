@@ -1,11 +1,11 @@
-package net.wbz.moba.controlcenter.it.scenario;
+package net.wbz.moba.controlcenter.api.resource.scenario;
 
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
 import io.smallrye.mutiny.tuples.Tuple2;
 import lombok.extern.slf4j.Slf4j;
-import net.wbz.moba.controlcenter.it.BaseIt;
-import net.wbz.moba.controlcenter.it.ItUtil;
+import net.wbz.moba.controlcenter.api.BaseIt;
+import net.wbz.moba.controlcenter.api.ItUtil;
 import net.wbz.moba.controlcenter.shared.scenario.Route;
 import net.wbz.moba.controlcenter.shared.scenario.RouteStateEvent;
 import net.wbz.moba.controlcenter.shared.scenario.Scenario;

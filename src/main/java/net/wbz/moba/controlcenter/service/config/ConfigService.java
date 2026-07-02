@@ -12,7 +12,7 @@ import net.wbz.moba.controlcenter.persist.repository.ConfigRepository;
 import net.wbz.moba.controlcenter.shared.config.ConfigNotAvailableException;
 import net.wbz.moba.controlcenter.shared.scenario.Route;
 import net.wbz.moba.controlcenter.shared.train.Train;
-import org.mapstruct.ap.internal.util.Strings;
+import org.apache.logging.log4j.util.Strings;
 
 import java.util.Optional;
 import java.util.Set;

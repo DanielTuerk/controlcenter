@@ -1,9 +1,9 @@
-package net.wbz.moba.controlcenter.it.resource;
+package net.wbz.moba.controlcenter.api.resource;
 
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
-import net.wbz.moba.controlcenter.it.BaseIt;
-import net.wbz.moba.controlcenter.it.ItUtil;
+import net.wbz.moba.controlcenter.api.BaseIt;
+import net.wbz.moba.controlcenter.api.ItUtil;
 import net.wbz.moba.controlcenter.shared.viewer.TrackPartStateEvent;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;

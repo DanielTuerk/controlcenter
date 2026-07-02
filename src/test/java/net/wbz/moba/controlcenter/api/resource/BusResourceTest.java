@@ -1,10 +1,10 @@
-package net.wbz.moba.controlcenter.it.resource;
+package net.wbz.moba.controlcenter.api.resource;
 
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import net.wbz.moba.controlcenter.it.BaseIt;
-import net.wbz.moba.controlcenter.it.ItUtil;
+import net.wbz.moba.controlcenter.api.BaseIt;
+import net.wbz.moba.controlcenter.api.ItUtil;
 import net.wbz.moba.controlcenter.shared.bus.BusDataEvent;
 import net.wbz.moba.controlcenter.shared.bus.RailVoltageEvent;
 import net.wbz.moba.controlcenter.shared.bus.SystemFormatEvent;

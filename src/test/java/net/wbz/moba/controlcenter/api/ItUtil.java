@@ -1,4 +1,4 @@
-package net.wbz.moba.controlcenter.it;
+package net.wbz.moba.controlcenter.api;
 
 import io.restassured.http.ContentType;
 import net.wbz.moba.controlcenter.shared.bus.RailVoltageEvent;

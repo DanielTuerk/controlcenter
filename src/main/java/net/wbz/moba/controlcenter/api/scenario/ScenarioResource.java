@@ -12,10 +12,12 @@ import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import org.eclipse.microprofile.openapi.annotations.responses.APIResponseSchema;
 import net.wbz.moba.controlcenter.service.scenario.ScenarioManager;
 import net.wbz.moba.controlcenter.service.scenario.ScenarioService;
 import net.wbz.moba.controlcenter.service.scenario.ScenarioStatisticManager;
 import net.wbz.moba.controlcenter.shared.scenario.Scenario;
+import net.wbz.moba.controlcenter.shared.scenario.ScenarioStatistic;
 
 import java.util.List;
 
@@ -46,6 +48,7 @@ public class ScenarioResource {
 
     @GET
     @Path("/{id}")
+    @APIResponseSchema(Scenario.class)
     public Response getById(@PathParam("id") Long id) {
         final var scenario$ = scenarioManager.getScenarioById(id);
         if (scenario$.isEmpty()) {
@@ -56,6 +59,7 @@ public class ScenarioResource {
 
     @GET
     @Path("/{id}/statistic")
+    @APIResponseSchema(ScenarioStatistic.class)
     public Response scenarioStatistic(@PathParam("id") Long id) {
         final var statistic$ = scenarioStatisticManager.load(id);
         if (statistic$.isEmpty()) {
@@ -65,6 +69,7 @@ public class ScenarioResource {
     }
 
     @POST
+    @APIResponseSchema(value = Scenario.class, responseCode = "201")
     public Response create(Scenario scenario) {
         return Response.status(Response.Status.CREATED)
             .entity(scenarioManager.createScenario(scenario))
@@ -73,6 +78,7 @@ public class ScenarioResource {
 
     @PUT
     @Path("/{id}")
+    @APIResponseSchema(Scenario.class)
     public Response update(@PathParam("id") Long id, Scenario updated) {
         if (scenarioManager.notExistsById(id)) {
             return Response.status(Response.Status.NOT_FOUND).build();

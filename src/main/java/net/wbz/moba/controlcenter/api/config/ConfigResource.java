@@ -12,6 +12,7 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
 import java.util.Set;
+import org.eclipse.microprofile.openapi.annotations.responses.APIResponseSchema;
 import net.wbz.moba.controlcenter.service.config.ConfigService;
 import net.wbz.moba.controlcenter.shared.config.ConfigNotAvailableException;
 
@@ -35,6 +36,7 @@ public class ConfigResource {
     @GET
     @Path("/{key}")
     @Produces(MediaType.TEXT_PLAIN)
+    @APIResponseSchema(String.class)
     public Response loadValue(@PathParam("key") String key) {
         try {
             return Response.ok(configService.loadValue(key)).build();

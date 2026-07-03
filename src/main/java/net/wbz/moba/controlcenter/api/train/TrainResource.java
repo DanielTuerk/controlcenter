@@ -13,6 +13,7 @@ import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import org.eclipse.microprofile.openapi.annotations.responses.APIResponseSchema;
 import net.wbz.moba.controlcenter.service.train.TrainManager;
 import net.wbz.moba.controlcenter.service.train.TrainService;
 import net.wbz.moba.controlcenter.shared.train.Train;
@@ -38,6 +39,7 @@ public class TrainResource {
 
     @GET
     @Path("/{id}")
+    @APIResponseSchema(Train.class)
     public Response getById(@PathParam("id") Long id) {
         var byId = trainManager.getById(id);
         if (byId.isEmpty()) {
@@ -47,6 +49,7 @@ public class TrainResource {
     }
 
     @POST
+    @APIResponseSchema(value = Train.class, responseCode = "201")
     public Response create(TrainDto dto) {
         if (trainManager.getByAddress(dto.address()).isPresent()) {
             return Response.status(Response.Status.CONFLICT)
@@ -60,6 +63,7 @@ public class TrainResource {
 
     @PUT
     @Path("/{id}")
+    @APIResponseSchema(Train.class)
     public Response update(@PathParam("id") Long id, TrainDto dto) {
         if (!trainManager.existsById(id)) {
             return Response.status(Response.Status.NOT_FOUND).build();

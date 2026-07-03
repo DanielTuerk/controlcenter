@@ -17,6 +17,7 @@ import net.wbz.moba.controlcenter.service.constrution.ConstructionService;
 import net.wbz.moba.controlcenter.service.track.block.TrackBlockManager;
 import net.wbz.moba.controlcenter.shared.constrution.Construction;
 import net.wbz.moba.controlcenter.shared.track.model.TrackBlock;
+import org.eclipse.microprofile.openapi.annotations.responses.APIResponseSchema;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 import java.util.Collection;
@@ -40,6 +41,7 @@ public class TrackBlockResource {
 
     @GET
     @Path("/{id}")
+    @APIResponseSchema(TrackBlock.class)
     public Response getById(@PathParam("id") Long id) {
         var byId = trackBlockManager.getById(id);
         if (byId.isEmpty()) {
@@ -49,6 +51,7 @@ public class TrackBlockResource {
     }
 
     @POST
+    @APIResponseSchema(value = TrackBlock.class, responseCode = "201")
     public Response create(TrackBlock dto) {
         return Response.status(Response.Status.CREATED)
             .entity(trackBlockManager.create(currentConstruction().getId(), dto))

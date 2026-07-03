@@ -13,6 +13,7 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
 import lombok.extern.slf4j.Slf4j;
+import org.eclipse.microprofile.openapi.annotations.responses.APIResponseSchema;
 import net.wbz.moba.controlcenter.service.bus.BusService;
 import net.wbz.selectrix4java.device.Device.SYSTEM_FORMAT;
 import net.wbz.selectrix4java.device.DeviceAccessException;
@@ -69,6 +70,7 @@ public class BusResource {
 
     @GET
     @Path("/bus-address-data")
+    @APIResponseSchema(Integer.class)
     public Response busData(@QueryParam("bus") int bus, @QueryParam("address") int address) {
         try {
             return Response.ok(busService.fetchBusData(bus, address)).build();

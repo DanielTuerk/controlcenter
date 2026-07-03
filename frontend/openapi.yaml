@@ -321,6 +321,11 @@ components:
         "y":
           type: integer
           format: int32
+    LocalDateTime:
+      type: string
+      format: date-time
+      examples:
+      - 2022-03-10T12:15:50
     Move:
       type: object
       required:
@@ -482,6 +487,11 @@ components:
       - ENTER
       - EXIT
       - BEFORE
+    STATE:
+      type: string
+      enum:
+      - SUCCESS
+      - FAILED
     SYSTEM_FORMAT:
       type: string
       enum:
@@ -555,6 +565,42 @@ components:
           $ref: "#/components/schemas/RUN_STATE"
         nextScheduleTimeText:
           type: string
+    ScenarioStatistic:
+      type: object
+      properties:
+        scenarioId:
+          type: integer
+          format: int64
+        lastRun:
+          $ref: "#/components/schemas/LocalDateTime"
+        total:
+          type: integer
+          format: int32
+        failed:
+          type: integer
+          format: int32
+        successful:
+          type: integer
+          format: int32
+        averageRunTimeInMillis:
+          type: number
+          format: double
+        runs:
+          type: array
+          items:
+            $ref: "#/components/schemas/ScenarioStatisticRun"
+    ScenarioStatisticRun:
+      type: object
+      properties:
+        start:
+          $ref: "#/components/schemas/LocalDateTime"
+        end:
+          $ref: "#/components/schemas/LocalDateTime"
+        averageRunTimeInMillis:
+          type: number
+          format: double
+        state:
+          $ref: "#/components/schemas/STATE"
     ScenariosChangedEvent:
       description: scenarios changed update sent via WebSocket
       type: object
@@ -907,7 +953,9 @@ paths:
           description: OK
           content:
             application/json:
-              schema: {}
+              schema:
+                type: integer
+                format: int32
       summary: Bus Data
       tags:
       - Bus Resource
@@ -1080,7 +1128,9 @@ paths:
         "200":
           description: OK
           content:
-            text/plain: {}
+            text/plain:
+              schema:
+                type: string
       summary: Load Value
       tags:
       - Config Resource
@@ -1106,11 +1156,12 @@ paths:
               $ref: "#/components/schemas/ConstructionDto"
         required: true
       responses:
-        "200":
-          description: OK
+        "201":
           content:
             application/json:
-              schema: {}
+              schema:
+                $ref: "#/components/schemas/Construction"
+          description: Created
         "400":
           description: Bad Request
       summary: Create
@@ -1136,7 +1187,8 @@ paths:
           description: OK
           content:
             application/json:
-              schema: {}
+              schema:
+                $ref: "#/components/schemas/Construction"
         "400":
           description: Bad Request
       summary: Update
@@ -1155,7 +1207,8 @@ paths:
           description: OK
           content:
             application/json:
-              schema: {}
+              schema:
+                $ref: "#/components/schemas/Construction"
       summary: Get By Id
       tags:
       - Construction Resource
@@ -1190,7 +1243,8 @@ paths:
           description: OK
           content:
             application/json:
-              schema: {}
+              schema:
+                $ref: "#/components/schemas/Construction"
       summary: Set Current
       tags:
       - Current Construction Resource
@@ -1200,7 +1254,8 @@ paths:
           description: OK
           content:
             application/json:
-              schema: {}
+              schema:
+                $ref: "#/components/schemas/Construction"
       summary: Get Current
       tags:
       - Current Construction Resource
@@ -1226,11 +1281,12 @@ paths:
               $ref: "#/components/schemas/DeviceInfo"
         required: true
       responses:
-        "200":
-          description: OK
+        "201":
           content:
             application/json:
-              schema: {}
+              schema:
+                $ref: "#/components/schemas/DeviceInfo"
+          description: Created
         "400":
           description: Bad Request
       summary: Create
@@ -1281,7 +1337,8 @@ paths:
           description: OK
           content:
             application/json:
-              schema: {}
+              schema:
+                $ref: "#/components/schemas/DeviceInfo"
         "400":
           description: Bad Request
       summary: Update
@@ -1300,7 +1357,8 @@ paths:
           description: OK
           content:
             application/json:
-              schema: {}
+              schema:
+                $ref: "#/components/schemas/DeviceInfo"
       summary: Get By Id
       tags:
       - Device Resource
@@ -1361,11 +1419,12 @@ paths:
               $ref: "#/components/schemas/Route"
         required: true
       responses:
-        "200":
-          description: OK
+        "201":
           content:
             application/json:
-              schema: {}
+              schema:
+                $ref: "#/components/schemas/Route"
+          description: Created
         "400":
           description: Bad Request
       summary: Create
@@ -1384,7 +1443,8 @@ paths:
           description: OK
           content:
             application/json:
-              schema: {}
+              schema:
+                $ref: "#/components/schemas/Track"
         "400":
           description: Bad Request
       summary: Build Track
@@ -1410,7 +1470,8 @@ paths:
           description: OK
           content:
             application/json:
-              schema: {}
+              schema:
+                $ref: "#/components/schemas/Route"
         "400":
           description: Bad Request
       summary: Update
@@ -1429,7 +1490,8 @@ paths:
           description: OK
           content:
             application/json:
-              schema: {}
+              schema:
+                $ref: "#/components/schemas/Route"
       summary: Get By Id
       tags:
       - Route Resource
@@ -1472,11 +1534,12 @@ paths:
               $ref: "#/components/schemas/Scenario"
         required: true
       responses:
-        "200":
-          description: OK
+        "201":
           content:
             application/json:
-              schema: {}
+              schema:
+                $ref: "#/components/schemas/Scenario"
+          description: Created
         "400":
           description: Bad Request
       summary: Create
@@ -1524,7 +1587,8 @@ paths:
           description: OK
           content:
             application/json:
-              schema: {}
+              schema:
+                $ref: "#/components/schemas/Scenario"
         "400":
           description: Bad Request
       summary: Update
@@ -1543,7 +1607,8 @@ paths:
           description: OK
           content:
             application/json:
-              schema: {}
+              schema:
+                $ref: "#/components/schemas/Scenario"
       summary: Get By Id
       tags:
       - Scenario Resource
@@ -1598,6 +1663,25 @@ paths:
             application/json:
               schema: {}
       summary: Start
+      tags:
+      - Scenario Resource
+  /api/scenarios/{id}/statistic:
+    get:
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ScenarioStatistic"
+      summary: Scenario Statistic
       tags:
       - Scenario Resource
   /api/scenarios/{id}/stop:
@@ -1674,11 +1758,12 @@ paths:
               $ref: "#/components/schemas/TrackBlock"
         required: true
       responses:
-        "200":
-          description: OK
+        "201":
           content:
             application/json:
-              schema: {}
+              schema:
+                $ref: "#/components/schemas/TrackBlock"
+          description: Created
         "400":
           description: Bad Request
       summary: Create
@@ -1723,7 +1808,8 @@ paths:
           description: OK
           content:
             application/json:
-              schema: {}
+              schema:
+                $ref: "#/components/schemas/TrackBlock"
       summary: Get By Id
     delete:
       tags:
@@ -1783,7 +1869,8 @@ paths:
           description: OK
           content:
             application/json:
-              schema: {}
+              schema:
+                $ref: "#/components/schemas/AbstractTrackPart"
       summary: Load Track Part
     delete:
       tags:
@@ -1866,11 +1953,12 @@ paths:
               $ref: "#/components/schemas/TrainDto"
         required: true
       responses:
-        "200":
-          description: OK
+        "201":
           content:
             application/json:
-              schema: {}
+              schema:
+                $ref: "#/components/schemas/Train"
+          description: Created
         "400":
           description: Bad Request
       summary: Create
@@ -1896,7 +1984,8 @@ paths:
           description: OK
           content:
             application/json:
-              schema: {}
+              schema:
+                $ref: "#/components/schemas/Train"
         "400":
           description: Bad Request
       summary: Update
@@ -1915,7 +2004,8 @@ paths:
           description: OK
           content:
             application/json:
-              schema: {}
+              schema:
+                $ref: "#/components/schemas/Train"
       summary: Get By Id
       tags:
       - Train Resource

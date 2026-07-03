@@ -11,8 +11,10 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
+import org.eclipse.microprofile.openapi.annotations.responses.APIResponseSchema;
 import net.wbz.moba.controlcenter.service.constrution.ConstructionManager;
 import net.wbz.moba.controlcenter.service.constrution.ConstructionService;
+import net.wbz.moba.controlcenter.shared.constrution.Construction;
 
 @Path("/api/current-construction")
 @Produces(MediaType.APPLICATION_JSON)
@@ -26,6 +28,7 @@ public class CurrentConstructionResource {
     ConstructionService constructionService;
 
     @POST
+    @APIResponseSchema(Construction.class)
     public Response setCurrent(Long id) {
         var byId = constructionManager.getById(id);
         if (byId.isEmpty()) {
@@ -36,6 +39,7 @@ public class CurrentConstructionResource {
     }
 
     @GET
+    @APIResponseSchema(Construction.class)
     public Response getCurrent() {
         var currentConstruction = constructionService.getCurrentConstruction();
         if (currentConstruction.isEmpty()) {

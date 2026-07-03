@@ -13,6 +13,7 @@ import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import org.eclipse.microprofile.openapi.annotations.responses.APIResponseSchema;
 import net.wbz.moba.controlcenter.service.constrution.ConstructionManager;
 import net.wbz.moba.controlcenter.service.constrution.ConstructionService;
 import net.wbz.moba.controlcenter.shared.constrution.Construction;
@@ -38,6 +39,7 @@ public class ConstructionResource {
 
     @GET
     @Path("/{id}")
+    @APIResponseSchema(Construction.class)
     public Response getById(@PathParam("id") Long id) {
         var byId = constructionManager.getById(id);
         if(byId.isEmpty()) {
@@ -47,6 +49,7 @@ public class ConstructionResource {
     }
 
     @POST
+    @APIResponseSchema(value = Construction.class, responseCode = "201")
     public Response create(ConstructionDto created) {
         var construction = constructionManager.create(created);
         return Response.status(Response.Status.CREATED)
@@ -56,6 +59,7 @@ public class ConstructionResource {
 
     @PUT
     @Path("/{id}")
+    @APIResponseSchema(Construction.class)
     public Response update(@PathParam("id") Long id, ConstructionDto updated) {
         if (!constructionManager.existsById(id)) {
             return Response.status(Response.Status.NOT_FOUND).build();

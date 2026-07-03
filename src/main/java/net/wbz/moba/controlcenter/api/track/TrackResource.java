@@ -22,6 +22,7 @@ import net.wbz.moba.controlcenter.shared.track.model.AbstractTrackPart;
 import net.wbz.moba.controlcenter.shared.track.model.Signal;
 import net.wbz.moba.controlcenter.shared.track.model.Signal.FUNCTION;
 import net.wbz.selectrix4java.device.DeviceAccessException;
+import org.eclipse.microprofile.openapi.annotations.responses.APIResponseSchema;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 import java.util.Collection;
@@ -49,6 +50,7 @@ public class TrackResource {
 
     @GET
     @Path("/{id}")
+    @APIResponseSchema(AbstractTrackPart.class)
     public Response loadTrackPart(@PathParam("id") Long trackPartId) {
         var $trackPart = trackProvider.getTrackPart(trackPartId);
         if ($trackPart.isEmpty()) {

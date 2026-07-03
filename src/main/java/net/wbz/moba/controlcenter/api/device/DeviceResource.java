@@ -14,6 +14,7 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import lombok.extern.slf4j.Slf4j;
+import org.eclipse.microprofile.openapi.annotations.responses.APIResponseSchema;
 import net.wbz.moba.controlcenter.service.bus.DeviceManager;
 import net.wbz.moba.controlcenter.service.bus.DeviceService;
 import net.wbz.moba.controlcenter.shared.device.AvailableDevice;
@@ -48,6 +49,7 @@ public class DeviceResource {
 
     @GET
     @Path("/{id}")
+    @APIResponseSchema(DeviceInfo.class)
     public Response getById(@PathParam("id") Long id) {
         var byId = deviceManager.getById(id);
         if (byId.isEmpty()) {
@@ -57,6 +59,7 @@ public class DeviceResource {
     }
 
     @POST
+    @APIResponseSchema(value = DeviceInfo.class, responseCode = "201")
     public Response create(DeviceInfo created) {
         var deviceInfo = deviceManager.create(created);
         return Response.status(Response.Status.CREATED)
@@ -66,6 +69,7 @@ public class DeviceResource {
 
     @PUT
     @Path("/{id}")
+    @APIResponseSchema(DeviceInfo.class)
     public Response update(@PathParam("id") Long id, DeviceInfo updated) {
         if (!deviceManager.existsById(id)) {
             return Response.status(Response.Status.NOT_FOUND).build();

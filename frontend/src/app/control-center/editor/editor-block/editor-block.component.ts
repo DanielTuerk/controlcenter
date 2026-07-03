@@ -2,7 +2,7 @@ import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {toObservable, toSignal} from '@angular/core/rxjs-interop';
 import {merge, switchMap} from 'rxjs';
 import {MatButton, MatIconButton} from "@angular/material/button";
-import {MatCard, MatCardContent, MatCardHeader} from "@angular/material/card";
+import {MatCard, MatCardContent} from "@angular/material/card";
 import {
   MatCell,
   MatCellDef,
@@ -31,7 +31,6 @@ import {ConstructionSubscription} from "../../../shared/websocket/construction.s
     MatIconButton,
     MatCard,
     MatCardContent,
-    MatCardHeader,
     MatCell,
     MatCellDef,
     MatColumnDef,

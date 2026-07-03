@@ -14,6 +14,7 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import net.wbz.moba.controlcenter.service.scenario.ScenarioManager;
 import net.wbz.moba.controlcenter.service.scenario.ScenarioService;
+import net.wbz.moba.controlcenter.service.scenario.ScenarioStatisticManager;
 import net.wbz.moba.controlcenter.shared.scenario.Scenario;
 
 import java.util.List;
@@ -27,10 +28,16 @@ import java.util.List;
 @Blocking
 public class ScenarioResource {
 
+    private final ScenarioManager scenarioManager;
+    private final ScenarioStatisticManager scenarioStatisticManager;
+    private final ScenarioService scenarioService;
+
     @Inject
-    ScenarioManager scenarioManager;
-    @Inject
-    ScenarioService scenarioService;
+    public ScenarioResource(ScenarioManager scenarioManager, ScenarioStatisticManager scenarioStatisticManager, ScenarioService scenarioService) {
+        this.scenarioManager = scenarioManager;
+        this.scenarioStatisticManager = scenarioStatisticManager;
+        this.scenarioService = scenarioService;
+    }
 
     @GET
     public List<Scenario> listAll() {
@@ -45,6 +52,16 @@ public class ScenarioResource {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
         return Response.ok(scenario$.get()).build();
+    }
+
+    @GET
+    @Path("/{id}/statistic")
+    public Response scenarioStatistic(@PathParam("id") Long id) {
+        final var statistic$ = scenarioStatisticManager.load(id);
+        if (statistic$.isEmpty()) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+        return Response.ok(statistic$.get()).build();
     }
 
     @POST

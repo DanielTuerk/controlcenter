@@ -42,6 +42,9 @@
           <button matIconButton (click)="deleteScenario(scenario)">
             <mat-icon>delete</mat-icon>
           </button>
+          <button matIconButton [routerLink]="[scenario.id, 'statistic']">
+            <mat-icon>bar_chart</mat-icon>
+          </button>
         </td>
       </ng-container>
 

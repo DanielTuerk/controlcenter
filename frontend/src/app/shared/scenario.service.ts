@@ -1,7 +1,7 @@
 import {inject, Injectable} from "@angular/core";
 import {SnackBar} from "../control-center/common/snack-bar.component";
 import {HttpClient} from "@angular/common/http";
-import {Scenario} from "../../shared/openapi-gen";
+import {Scenario, ScenarioStatistic} from "../../shared/openapi-gen";
 import {EMPTY, Observable} from "rxjs";
 import {catchError} from "rxjs/operators";
 import {ScenarioData} from "../control-center/viewer/control/scenario/scenario.component";
@@ -26,7 +26,11 @@ export class ScenarioService {
   }
 
   loadScenario(scenarioId: Number) {
-    return this.httpClient.get<Scenario>('/api/scenarios/' + scenarioId)
+    return this.httpClient.get<Scenario>(`/api/scenarios/${scenarioId}`)
+  }
+
+  loadScenarioStatistic(scenarioId: Number) {
+    return this.httpClient.get<ScenarioStatistic>(`/api/scenarios/${scenarioId}/statistics`)
   }
 
   createScenario(scenario: Scenario) {
@@ -40,7 +44,7 @@ export class ScenarioService {
   }
 
   saveScenario(scenario: Scenario) {
-    return this.httpClient.put('/api/scenarios/' + scenario.id, scenario)
+    return this.httpClient.put(`/api/scenarios/${scenario.id}`, scenario)
     .pipe(
       catchError((err: any) => {
         this.snackBar.showError(`can't save scenario ${scenario.name}: ${err.message}`);

@@ -3,14 +3,14 @@ package net.wbz.moba.controlcenter.api.resource;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import jakarta.inject.Inject;
 import net.wbz.moba.controlcenter.api.BaseIt;
 import net.wbz.moba.controlcenter.api.ItUtil;
+import net.wbz.moba.controlcenter.service.scenario.ScenarioStatisticManager;
+import net.wbz.moba.controlcenter.shared.scenario.Scenario;
 import net.wbz.moba.controlcenter.shared.scenario.ScenarioDataChangedEvent;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.MethodOrderer;
-import org.junit.jupiter.api.Order;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
+import net.wbz.moba.controlcenter.shared.scenario.ScenarioStateEvent;
+import org.junit.jupiter.api.*;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.*;
@@ -18,6 +18,9 @@ import static org.hamcrest.Matchers.*;
 @QuarkusTest
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class ScenarioResourceTest extends BaseIt {
+
+    @Inject
+    ScenarioStatisticManager scenarioStatisticManager;
 
     @BeforeAll
     public static void beforeAll() {
@@ -194,6 +197,71 @@ class ScenarioResourceTest extends BaseIt {
             .delete("/api/scenarios/{id}")
             .then()
             .statusCode(404);
+    }
+
+    @Test
+    @Order(9)
+    void testScenarioStatistic_NotFound() {
+        given()
+                .pathParam("id", 999L)
+                .when().get("/api/scenarios/{id}/statistic")
+                .then()
+                .statusCode(404);
+    }
+
+    @Test
+    @Order(10)
+    void testScenarioStatistic_NotFound_NoRuns() {
+        Long scenarioId = given()
+                .contentType(ContentType.JSON)
+                .body("{\"name\":\"IT-SCENARIO-STATISTIC-NO-RUNS\",\"routeSequences\":[]}")
+                .when()
+                .post("/api/scenarios")
+                .then()
+                .statusCode(201)
+                .extract()
+                .jsonPath()
+                .getLong("id");
+
+        given()
+                .pathParam("id", scenarioId)
+                .when().get("/api/scenarios/{id}/statistic")
+                .then()
+                .statusCode(404);
+    }
+
+    @Test
+    @Order(11)
+    void testScenarioStatistic_Found() {
+        final var scenarioId = given()
+                .contentType(ContentType.JSON)
+                .body("{\"name\":\"IT-SCENARIO-STATISTIC\",\"routeSequences\":[]}")
+                .when()
+                .post("/api/scenarios")
+                .then()
+                .statusCode(201)
+                .extract()
+                .jsonPath()
+                .getLong("id");
+
+        // drive the statistic aggregation the same way a real scenario run does,
+        // without having to simulate the full hardware/route execution flow
+        scenarioStatisticManager.onScenarioStateEvent(
+                new ScenarioStateEvent(scenarioId, Scenario.RUN_STATE.RUNNING, null));
+        scenarioStatisticManager.onScenarioStateEvent(
+                new ScenarioStateEvent(scenarioId, Scenario.RUN_STATE.SUCCESS, null));
+
+        given()
+                .pathParam("id", scenarioId)
+                .when().get("/api/scenarios/{id}/statistic")
+                .then()
+                .statusCode(200)
+                .body("scenarioId", equalTo((int) scenarioId))
+                .body("total", equalTo(1))
+                .body("successful", equalTo(1))
+                .body("failed", equalTo(0))
+                .body("runs", hasSize(1))
+                .body("runs[0].state", equalTo("SUCCESS"));
     }
 
 }

@@ -23,8 +23,45 @@
   align-items: center;
   gap: 1rem;
 }
-.route-state-PREPARED { background: #8f8b5a; }
-.route-state-STOPPED { background: #1e3a53; }
-.route-state-RUNNING { background: #748595; }
-.route-state-FINISHED { background: #1e7724; }
-.route-state-FAILED { background: #6e3333; }
+
+.route-container {
+  padding-top: 5px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.run-state-SCHEDULED {
+  background: #8f8b5a;
+}
+
+.run-state-PREPARED {
+  background: #8f8b5a;
+}
+
+.run-state-STOPPED {
+}
+
+.run-state-RUNNING {
+  background: #748595;
+}
+
+.run-state-SKIPPED {
+  background: #555e5d;
+}
+
+.run-state-PAUSED {
+  background: #225685;
+}
+
+.run-state-FINISHED {
+  background: #1e7724;
+}
+
+.run-state-SUCESS {
+  background: #1e7724;
+}
+
+.run-state-FAILED {
+  background: #6e3333;
+}

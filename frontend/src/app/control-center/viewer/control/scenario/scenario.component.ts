@@ -196,4 +196,16 @@ export class ScenarioComponent implements OnInit {
 
     return `${hours}:${minutes}`;
   }
+
+  protected getBgColor(scenario:ScenarioData) {
+    if(!scenario.runState) return '';
+    switch (scenario.runState) {
+      case RUNSTATE.Scheduled: return 'background-color: #1e3a53';
+      case RUNSTATE.Running: return 'background-color: blue';
+      case RUNSTATE.Success: return 'background-color: #1e7724';
+      case RUNSTATE.Paused: return 'background-color: yellow';
+      case RUNSTATE.Failed: return 'background-color: #6e3333';
+      default: return '';
+    }
+  }
 }

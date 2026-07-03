@@ -11,7 +11,7 @@
 
 @for (scenario of scenarios(); track scenario.scenarioId) {
   <mat-expansion-panel class="viewer-control-pane-item">
-    <mat-expansion-panel-header>
+    <mat-expansion-panel-header  [ngClass]="'run-state-' + (scenario.runState ?? '')">
       <mat-panel-title class="panel-title">
         <div class="title-top">
           <span class="scenario-name">{{ scenario.name }}</span>
@@ -21,7 +21,7 @@
             {{ scenario.runState }}
           </span>
           <span>
-            <mat-icon style=" display: contents;font-size: medium">departure_board</mat-icon>
+            <mat-icon style="display: contents;font-size: medium">departure_board</mat-icon>
             {{ scenario.scheduledExecutionTimeAsText }}
           </span>
         </div>
@@ -41,11 +41,11 @@
         <mat-icon>stop</mat-icon>
       </button>
     </div>
-    <div style="padding-top: 5px">
+    <div class="route-container">
       @for (route of scenario.routes; track route.name) {
         <div
           style="width: 90%;padding: 2px"
-          [ngClass]="'route-state-' + (route.runState ?? '')">
+          [ngClass]="'run-state-' + (route.runState ?? '')">
           <div><span>{{ route.name }}</span>@if (route.runState) {
           <span> - {{ route.runState }}</span>
         }</div>

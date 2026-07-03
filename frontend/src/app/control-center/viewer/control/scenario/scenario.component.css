@@ -65,3 +65,29 @@
 .run-state-FAILED {
   background: #6e3333;
 }
+
+mat-expansion-panel-header.run-state-SCHEDULED,
+mat-expansion-panel-header.run-state-PREPARED {
+  --header-bg: #7a7607;
+}
+
+mat-expansion-panel-header.run-state-RUNNING {
+  --header-bg: #748595;
+}
+
+mat-expansion-panel-header.run-state-SKIPPED {
+  --header-bg: #555e5d;
+}
+
+mat-expansion-panel-header.run-state-PAUSED {
+  --header-bg: #225685;
+}
+
+mat-expansion-panel-header.run-state-FINISHED,
+mat-expansion-panel-header.run-state-SUCESS {
+  --header-bg: #1e7724;
+}
+
+mat-expansion-panel-header.run-state-FAILED {
+  --header-bg: #6e3333;
+}

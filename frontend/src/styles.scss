@@ -87,6 +87,20 @@ mat-expansion-panel.viewer-control-pane-item {
   background-color: var(--mat-sys-surface-container-high)
 }
 
+mat-expansion-panel-header {
+  background: var(--header-bg, var(--mat-expansion-container-background-color, var(--mat-sys-surface)));
+  transition: filter 150ms ease;
+}
+
+/* Material's own :hover rule outranks any component-level background override
+   (e.g. .run-state-*), so it wipes it back to a plain state-layer background
+   on hover. Force the header to keep its actual background and only brighten
+   it instead. Components can set --header-bg to color the header. */
+mat-expansion-panel-header:not([aria-disabled=true]):hover {
+  background: var(--header-bg, var(--mat-expansion-container-background-color, var(--mat-sys-surface))) !important;
+  filter: brightness(1.2);
+}
+
 mat-card-footer, .mat-card-footer {
   display: flex;
   align-items: center;

@@ -82,6 +82,13 @@ body {
   padding: 0.4em;
 }
 
+mat-expansion-panel {
+  border-style: solid;
+  border-width: 1px;
+  border-color: var(--mat-sys-on-surface-variant);
+  --mat-expansion-container-shape: 6px;
+}
+
 mat-expansion-panel.viewer-control-pane-item {
   margin: 1rem;
   background-color: var(--mat-sys-surface-container-high)
@@ -101,12 +108,23 @@ mat-expansion-panel-header:not([aria-disabled=true]):hover {
   filter: brightness(1.2);
 }
 
+mat-card-header, .mat-card-header {
+  background-color:  var(--mat-sys-surface-container-lowest);
+  border-radius: var(--mat-card-elevated-container-shape, var(--mat-sys-corner-medium)) var(--mat-card-elevated-container-shape, var(--mat-sys-corner-medium)) 0 0;
+}
+
+mat-card-header.mat-mdc-card-header {
+  padding-bottom: 10px;
+}
+
 mat-card-footer, .mat-card-footer {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 16px;
   padding: 16px;
+  background-color:  var(--mat-sys-surface-container-lowest);
+  border-radius: 0 0 var(--mat-card-elevated-container-shape, var(--mat-sys-corner-medium)) var(--mat-card-elevated-container-shape, var(--mat-sys-corner-medium));
 }
 
 .icon {
@@ -142,6 +160,13 @@ button[matMiniFab],
 button[matFab],
 button[matButton] {
   vertical-align: middle;
+}
+
+button[matButton="filled"] {
+  --mat-button-filled-container-color: var(--mat-sys-surface-tint);
+  --mat-button-filled-label-text-color: white;
+  --mat-button-filled-state-layer-color: white;
+  color: white;
 }
 
 button[matIconButton] mat-icon,

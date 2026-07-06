@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, inject, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {Router, RouterOutlet} from "@angular/router";
 import {ConstructionService} from "./shared/construction.service";
 import {WebSocketService} from "./shared/websocket/websocket.service";
@@ -10,13 +10,13 @@ import {tap} from "rxjs";
   changeDetection: ChangeDetectionStrategy.Eager,
   imports: [RouterOutlet]
 })
-export class AppComponent implements OnInit {
+export class AppComponent {
 
   private constructionService = inject(ConstructionService);
   private wsService = inject(WebSocketService);
   private router = inject(Router)
 
-  ngOnInit() {
+  constructor() {
     this.wsService.connect();
 
     // fetch current construction from server side

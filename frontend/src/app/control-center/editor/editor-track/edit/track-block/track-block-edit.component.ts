@@ -1,4 +1,4 @@
-import {Component, inject, OnInit, signal, ChangeDetectionStrategy} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject, signal} from '@angular/core';
 import {EditComponent} from "../base-edit-track-part.component";
 import {BlockStraight, TrackBlock} from "../../../../../../shared/openapi-gen";
 import {MatFormField, MatInput} from "@angular/material/input";
@@ -18,7 +18,7 @@ import {TrackService} from "../../../../../shared/track.service";
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './track-block-edit.component.css'
 })
-export class TrackBlockEditComponent implements EditComponent<BlockStraight>, OnInit {
+export class TrackBlockEditComponent implements EditComponent<BlockStraight> {
   protected blockLengthFormField: FormControl<number | null> = new FormControl(null);
   protected selectedLeftBlock: TrackBlock | null = null;
   protected selectedMiddleBlock: TrackBlock | null = null;
@@ -27,7 +27,7 @@ export class TrackBlockEditComponent implements EditComponent<BlockStraight>, On
   protected trackBlocks = signal<TrackBlock[]>([]);
   private trackPart: BlockStraight | null = null;
 
-  ngOnInit(): void {
+  constructor() {
     this.trackService.loadTrackBlocks().subscribe(data => {
       this.trackBlocks.set(data);
       this.updateSelectedTrackBlocks()

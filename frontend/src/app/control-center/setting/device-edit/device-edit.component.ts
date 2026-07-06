@@ -1,4 +1,4 @@
-import {Component, inject, input, OnInit, signal, ChangeDetectionStrategy} from '@angular/core';
+import {ChangeDetectionStrategy, Component, effect, inject, input, signal} from '@angular/core';
 import {FormBuilder, FormControl, FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {MatButton} from "@angular/material/button";
 import {MatCardContent, MatCardFooter, MatCardHeader, MatCardTitle} from "@angular/material/card";
@@ -34,7 +34,7 @@ import {MatIcon} from "@angular/material/icon";
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './device-edit.component.css'
 })
-export class DeviceEditComponent implements OnInit {
+export class DeviceEditComponent {
 
   protected readonly DEVICE_TYPES = [DEVICETYPE.Serial, DEVICETYPE.Test];
 
@@ -55,9 +55,11 @@ export class DeviceEditComponent implements OnInit {
     type: '',
   });
 
-  ngOnInit() {
-    this.deviceService.loadDevice(this.deviceId()).subscribe(data => {
-      this.setDevice(data);
+  constructor() {
+    effect(() => {
+      this.deviceService.loadDevice(this.deviceId()).subscribe(data => {
+        this.setDevice(data);
+      });
     });
     this.reloadAvailableDevices();
   }

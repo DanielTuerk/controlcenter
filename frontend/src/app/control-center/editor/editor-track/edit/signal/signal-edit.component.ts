@@ -1,4 +1,4 @@
-import {Component, inject, OnInit, signal, ChangeDetectionStrategy} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject, signal} from '@angular/core';
 import {Signal, SIGNALTYPE, TrackBlock} from "../../../../../../shared/openapi-gen";
 import {EditComponent} from "../base-edit-track-part.component";
 import {MatCard, MatCardContent, MatCardHeader, MatCardTitle} from "@angular/material/card";
@@ -31,7 +31,7 @@ import {TrackBlockSelectComponent} from "../../../../common/track-block-select/t
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './signal-edit.component.css'
 })
-export class SignalEditComponent implements EditComponent<Signal>, OnInit {
+export class SignalEditComponent implements EditComponent<Signal> {
 
   protected red1AddressFormField: FormControl<number | null> = new FormControl(null);
   protected red1BitFormField: FormControl<number | null> = new FormControl(null);
@@ -68,7 +68,7 @@ export class SignalEditComponent implements EditComponent<Signal>, OnInit {
   private signal: Signal | null = null;
   protected selectedSignalType: SIGNALTYPE = SIGNALTYPE.Block;
 
-  ngOnInit(): void {
+  constructor() {
     this.trackService.loadTrackBlocks().subscribe(data => {
       this.trackBlocks.set(data);
       this.updateSelectedTrackBlocks()

@@ -1,4 +1,4 @@
-import {Component, inject, input, OnInit, signal, ChangeDetectionStrategy} from '@angular/core';
+import {ChangeDetectionStrategy, Component, effect, inject, input, signal} from '@angular/core';
 import {TrainService} from "../../../shared/train.service";
 import {Router, RouterLink} from "@angular/router";
 import {MatCard, MatCardContent, MatCardFooter, MatCardHeader, MatCardTitle} from "@angular/material/card";
@@ -54,7 +54,7 @@ import {MatIcon} from "@angular/material/icon";
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './train-edit.component.css'
 })
-export class TrainEditComponent implements OnInit {
+export class TrainEditComponent {
   trainId = input.required<Number>();
 
   train = signal<Train>({});
@@ -78,12 +78,15 @@ export class TrainEditComponent implements OnInit {
   });
 
 
-  ngOnInit() {
-    if (this.trainId() && this.trainId().toString() != "create") {
-      this.trainService.loadTrain(this.trainId()).subscribe(data => {
-        this.setTrain(data);
-      });
-    }
+  constructor() {
+    effect(() => {
+      const trainId = this.trainId();
+      if (trainId && trainId.toString() != "create") {
+        this.trainService.loadTrain(trainId).subscribe(data => {
+          this.setTrain(data);
+        });
+      }
+    });
   }
 
   onSubmit() {

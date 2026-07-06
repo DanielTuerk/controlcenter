@@ -7,7 +7,6 @@ import {
   inject,
   input,
   output,
-  OnInit,
   ViewChild
 } from '@angular/core';
 import {TrackComponentBuilder} from "./track-builder/track-component-builder";
@@ -26,7 +25,7 @@ import {DeviceService} from "../../../shared/device.service";
   imports: [],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class TrackViewerSvgComponent implements OnInit {
+export class TrackViewerSvgComponent {
 
   @ViewChild('container', {static: true}) private _container!: ElementRef<HTMLDivElement>;
   @ViewChild('svgContentContainer', {static: true}) private _svgContentContainer!: ElementRef<SVGElement>;
@@ -54,7 +53,7 @@ export class TrackViewerSvgComponent implements OnInit {
   protected isConnected = computed(() =>
     this.overrideIsConnected() ? true : this.deviceService.isConnected());
 
-  ngOnInit() {
+  constructor() {
     this.trackService.fetchTrackParts().subscribe(elements => {
       this.loadTrack(elements);
 

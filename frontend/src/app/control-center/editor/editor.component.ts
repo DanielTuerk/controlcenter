@@ -1,4 +1,4 @@
-import {Component, inject, OnInit, ChangeDetectionStrategy} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {MatTab, MatTabGroup} from "@angular/material/tabs";
 import {NavigationEnd, Router, RouterOutlet} from "@angular/router";
 import {filter} from "rxjs";
@@ -14,12 +14,12 @@ import {filter} from "rxjs";
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './editor.component.css'
 })
-export class EditorComponent implements OnInit {
+export class EditorComponent {
 
   private router = inject(Router);
   selectedIndex = 0;
 
-  ngOnInit() {
+  constructor() {
     this.selectedIndex = this.indexFromUrl(this.router.url);
     this.router.events.pipe(filter(e => e instanceof NavigationEnd))
     .subscribe((e: NavigationEnd) => {

@@ -1,4 +1,4 @@
-import {Component, inject, OnInit, signal, ChangeDetectionStrategy} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject, signal} from '@angular/core';
 import {MatExpansionPanel, MatExpansionPanelHeader, MatExpansionPanelTitle} from "@angular/material/expansion";
 import {MatButtonToggle, MatButtonToggleGroup} from "@angular/material/button-toggle";
 import {MatMiniFabButton} from "@angular/material/button";
@@ -53,13 +53,13 @@ export class TrainData {
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './train.component.css'
 })
-export class TrainComponent implements OnInit {
+export class TrainComponent {
   private trainService = inject(TrainService);
   private trainSubscription = inject(TrainSubscription);
   trains = signal<TrainData[]>([]);
   protected isConnected = inject(DeviceService).isConnected;
 
-  ngOnInit() {
+  constructor() {
     this.trainService.loadTrains().subscribe(data => {
       this.trains.set(data.map(train => {
         return new TrainData(train, false, false, 0, true);

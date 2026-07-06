@@ -1,4 +1,4 @@
-import {Component, inject, input, OnInit, signal, ChangeDetectionStrategy} from '@angular/core';
+import {ChangeDetectionStrategy, Component, effect, inject, input, signal} from '@angular/core';
 import {MatButton} from "@angular/material/button";
 import {MatCard, MatCardContent, MatCardFooter, MatCardHeader, MatCardTitle} from "@angular/material/card";
 import {MatFormField, MatInput} from "@angular/material/input";
@@ -33,7 +33,7 @@ import {MatOption, MatSelect} from "@angular/material/select";
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './edit-block.component.css'
 })
-export class EditBlockComponent implements OnInit {
+export class EditBlockComponent {
 
   trackBlockId = input.required<Number>();
   private trackService = inject(TrackService);
@@ -60,12 +60,15 @@ export class EditBlockComponent implements OnInit {
     return [DRIVINGLEVELADJUSTTYPE.None, DRIVINGLEVELADJUSTTYPE.Enter, DRIVINGLEVELADJUSTTYPE.Exit];
   }
 
-  ngOnInit() {
-    if (Number(this.trackBlockId())) {
-      this.trackService.loadTrackBlock(this.trackBlockId()).subscribe(data => {
-        this.setTrackBlock(data);
-      });
-    }
+  constructor() {
+    effect(() => {
+      const trackBlockId = this.trackBlockId();
+      if (Number(trackBlockId)) {
+        this.trackService.loadTrackBlock(trackBlockId).subscribe(data => {
+          this.setTrackBlock(data);
+        });
+      }
+    });
   }
 
   onSubmit() {

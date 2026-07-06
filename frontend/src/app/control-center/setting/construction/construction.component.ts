@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, inject, OnInit, signal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject, signal} from '@angular/core';
 import {MatButton, MatIconButton, MatMiniFabButton} from "@angular/material/button";
 import {
   MatCell,
@@ -57,7 +57,7 @@ import {MatFormField, MatLabel, MatOption, MatSelect} from "@angular/material/se
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './construction.component.css'
 })
-export class ConstructionComponent implements OnInit {
+export class ConstructionComponent {
 
   private configService = inject(ConfigService);
   private constructionService = inject(ConstructionService);
@@ -70,7 +70,7 @@ export class ConstructionComponent implements OnInit {
 
   protected defaultConstruction: Construction | undefined = undefined;
 
-  ngOnInit(): void {
+  constructor() {
     this.constructionService.fetchConstructions().subscribe(data => {
       this.constructions.set(data);
 

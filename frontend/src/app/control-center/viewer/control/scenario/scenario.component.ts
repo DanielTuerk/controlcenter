@@ -1,6 +1,6 @@
-import {Component, inject, OnInit, signal, ChangeDetectionStrategy} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject, signal} from '@angular/core';
 import {MatExpansionPanel, MatExpansionPanelHeader, MatExpansionPanelTitle} from "@angular/material/expansion";
-import { NgClass } from "@angular/common";
+import {NgClass} from "@angular/common";
 import {ScenarioService} from "../../../../shared/scenario.service";
 import {ROUTERUNSTATE, RUNSTATE, Scenario} from "../../../../../shared/openapi-gen";
 import {MatIcon} from "@angular/material/icon";
@@ -56,7 +56,7 @@ export class ScenarioData {
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './scenario.component.css'
 })
-export class ScenarioComponent implements OnInit {
+export class ScenarioComponent {
   private static readonly EMPTY_TIME_TEXT = '--:--';
   private scenarioService = inject(ScenarioService);
   private scenarioSubscription = inject(ScenarioSubscription);
@@ -66,7 +66,7 @@ export class ScenarioComponent implements OnInit {
 
   protected isConnected = inject(DeviceService).isConnected;
 
-  ngOnInit() {
+  constructor() {
     this.scenarioService.loadScenarios().subscribe(data => {
       this.mapData(data);
 

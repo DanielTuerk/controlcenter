@@ -1,4 +1,4 @@
-import {Component, inject, input, OnInit, signal, ChangeDetectionStrategy} from '@angular/core';
+import {ChangeDetectionStrategy, Component, effect, inject, input, signal} from '@angular/core';
 import {FormBuilder, FormControl, FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {MatButton} from "@angular/material/button";
 import {MatCard, MatCardContent, MatCardFooter, MatCardHeader, MatCardTitle} from "@angular/material/card";
@@ -28,7 +28,7 @@ import {ConstructionService} from "../../../../shared/construction.service";
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './construction-edit.component.css'
 })
-export class ConstructionEditComponent implements OnInit {
+export class ConstructionEditComponent {
 
   private constructionService = inject(ConstructionService);
   private snackBar = inject(SnackBar);
@@ -45,12 +45,15 @@ export class ConstructionEditComponent implements OnInit {
     name: '',
   });
 
-  ngOnInit() {
-    if (this.constructionId() && this.constructionId().toString() != "create") {
-      this.constructionService.fetchConstruction(this.constructionId()).subscribe(data => {
-        this.setConstruction(data);
-      });
-    }
+  constructor() {
+    effect(() => {
+      const constructionId = this.constructionId();
+      if (constructionId && constructionId.toString() != "create") {
+        this.constructionService.fetchConstruction(constructionId).subscribe(data => {
+          this.setConstruction(data);
+        });
+      }
+    });
   }
 
   onSubmit() {

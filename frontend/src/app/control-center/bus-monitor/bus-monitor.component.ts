@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, effect, inject, OnDestroy, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, effect, inject, OnDestroy} from '@angular/core';
 import {DecimalPipe} from "@angular/common";
 import {BusService} from "../../shared/bus.service";
 import {WebSocketService} from "../../shared/websocket/websocket.service";
@@ -14,7 +14,7 @@ import {DeviceService} from "../../shared/device.service";
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './bus-monitor.component.css'
 })
-export class BusMonitorComponent implements OnInit, OnDestroy {
+export class BusMonitorComponent implements OnDestroy {
 
   private busSubscription = inject(BusSubscription);
   private webSocketService = inject(WebSocketService);
@@ -37,9 +37,7 @@ export class BusMonitorComponent implements OnInit, OnDestroy {
         this.busService.stopTrackingBus(this.webSocketService.getClientId());
       }
     });
-  }
 
-  ngOnInit() {
     this.busSubscription.busDataEvent().subscribe(busDataEvent => {
       if (busDataEvent.address !== undefined && busDataEvent.data !== undefined) {
         this.buses.filter(bus => bus.number == busDataEvent.bus)

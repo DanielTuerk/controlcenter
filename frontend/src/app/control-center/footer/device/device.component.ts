@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, inject, OnInit, signal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject, signal} from '@angular/core';
 import {MatSelect} from "@angular/material/select";
 import {DeviceService} from "../../../shared/device.service";
 import {FormsModule} from "@angular/forms";
@@ -30,7 +30,7 @@ import {MatTooltip} from "@angular/material/tooltip";
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './device.component.css'
 })
-export class DeviceComponent implements OnInit {
+export class DeviceComponent {
 
   private deviceService = inject(DeviceService);
   private deviceSubscription = inject(DeviceSubscription);
@@ -39,7 +39,7 @@ export class DeviceComponent implements OnInit {
   isConnected = this.deviceService.isConnected;
   selectedDevice: DeviceInfo | null = null;
 
-  ngOnInit() {
+  constructor() {
     this.fetchDevices();
 
     this.deviceSubscription.deviceDataChanged().subscribe(() => {

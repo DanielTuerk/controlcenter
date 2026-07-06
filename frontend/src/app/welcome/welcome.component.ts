@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, inject, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {ConstructionService} from "../shared/construction.service";
 
 import {CreateConstructionComponent} from "./create-construction/create-construction.component";
@@ -15,7 +15,7 @@ import {Router} from "@angular/router";
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './welcome.component.css'
 })
-export class WelcomeComponent implements OnInit {
+export class WelcomeComponent {
 
   private constructionService = inject(ConstructionService);
   private snackBar = inject(SnackBar);
@@ -23,7 +23,7 @@ export class WelcomeComponent implements OnInit {
 
   constructions = this.constructionService.loadedConstructions;
 
-  ngOnInit() {
+  constructor() {
     this.constructionService.loadConstructions()
   }
 

@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, inject, input, OnInit, signal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, effect, inject, input, signal} from '@angular/core';
 import {Router, RouterLink} from "@angular/router";
 import {MatCard, MatCardContent, MatCardFooter, MatCardHeader, MatCardTitle} from "@angular/material/card";
 import {FormBuilder, FormControl, FormsModule, ReactiveFormsModule} from "@angular/forms";
@@ -42,7 +42,7 @@ import {RouteService} from "../../../shared/route.service";
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './scenario-edit.component.css'
 })
-export class ScenarioEditComponent implements OnInit {
+export class ScenarioEditComponent {
   scenarioId = input.required<Number>();
   private scenarioService = inject(ScenarioService);
   private trainService = inject(TrainService);
@@ -67,12 +67,15 @@ export class ScenarioEditComponent implements OnInit {
     routeSequences: new FormControl<RouteSequence[]>([])
   });
 
-  ngOnInit() {
-    if (this.scenarioId() && this.scenarioId().toString() != "create") {
-      this.scenarioService.loadScenario(this.scenarioId()).subscribe(data => {
-        this.setScenario(data);
-      });
-    }
+  constructor() {
+    effect(() => {
+      const scenarioId = this.scenarioId();
+      if (scenarioId && scenarioId.toString() != "create") {
+        this.scenarioService.loadScenario(scenarioId).subscribe(data => {
+          this.setScenario(data);
+        });
+      }
+    });
     this.loadRoutes();
     this.loadTrains();
   }

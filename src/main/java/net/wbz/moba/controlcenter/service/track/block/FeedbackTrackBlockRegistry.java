@@ -24,11 +24,7 @@ import net.wbz.selectrix4java.block.FeedbackBlockModule;
 import net.wbz.selectrix4java.device.Device;
 import net.wbz.selectrix4java.device.DeviceAccessException;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -64,7 +60,7 @@ public class FeedbackTrackBlockRegistry {
         initBlocks(trackBlockManager.fetch(event.construction().getId()));
     }
 
-    private void initBlocks(Collection<TrackBlock> trackBlocks) {
+    private synchronized void initBlocks(Collection<TrackBlock> trackBlocks) {
         log.debug("init track blocks");
         feedbackBlockListeners.clear();
         for (final TrackBlock trackBlock : trackBlocks) {

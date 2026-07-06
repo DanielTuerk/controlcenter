@@ -20,7 +20,10 @@ export class BlockStraightBuilder extends AbstractTrackComponentBuilder<BlockStr
     const group = this.createElement('g');
 
     let trainDisplayValue = '';
-    if (event && event.feedbackData && event.feedbackData.trainAddress) {
+    if (event
+      && event.occupied
+      && event.feedbackData
+      && event.feedbackData.trainAddress) {
       let train = this.trainService.cachedTrainByAddress(event.feedbackData.trainAddress);
       trainDisplayValue = train ? train.name ?? `(${train.address})` : 'n.A.';
     }
@@ -49,8 +52,6 @@ export class BlockStraightBuilder extends AbstractTrackComponentBuilder<BlockStr
     textElement: SVGTextElement,
     maxWidthPx: number
   ): void {
-
-    // passt schon komplett
     if (textElement.getComputedTextLength() <= maxWidthPx) {
       return;
     }

@@ -1,6 +1,9 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {provideHttpClientTesting} from '@angular/common/http/testing';
+import {NEVER} from 'rxjs';
 
-import { BusMonitorComponent } from './bus-monitor.component';
+import {BusMonitorComponent} from './bus-monitor.component';
+import {WebSocketService} from '../../shared/websocket/websocket.service';
 
 describe('BusMonitorComponent', () => {
   let component: BusMonitorComponent;
@@ -8,7 +11,14 @@ describe('BusMonitorComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [BusMonitorComponent]
+      imports: [BusMonitorComponent],
+      providers: [
+        provideHttpClientTesting(),
+        {
+          provide: WebSocketService,
+          useValue: {getClientId: () => 'test-client-id', registerEventAndConsume: () => NEVER}
+        }
+      ]
     })
     .compileComponents();
 

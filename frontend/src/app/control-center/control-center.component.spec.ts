@@ -1,6 +1,8 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {provideRouter} from '@angular/router';
+import {provideHttpClientTesting} from '@angular/common/http/testing';
 
-import { ControlCenterComponent } from './control-center.component';
+import {ControlCenterComponent} from './control-center.component';
 
 describe('ControlCenterComponent', () => {
   let component: ControlCenterComponent;
@@ -8,7 +10,8 @@ describe('ControlCenterComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ControlCenterComponent]
+      imports: [ControlCenterComponent],
+      providers: [provideRouter([]), provideHttpClientTesting()]
     })
     .compileComponents();
 

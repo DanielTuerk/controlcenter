@@ -1,6 +1,8 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {provideRouter} from '@angular/router';
+import {provideHttpClientTesting} from '@angular/common/http/testing';
 
-import { ScenarioEditComponent } from './scenario-edit.component';
+import {ScenarioEditComponent} from './scenario-edit.component';
 
 describe('ScenarioEditComponent', () => {
   let component: ScenarioEditComponent;
@@ -8,12 +10,14 @@ describe('ScenarioEditComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ScenarioEditComponent]
+      imports: [ScenarioEditComponent],
+      providers: [provideRouter([]), provideHttpClientTesting()]
     })
     .compileComponents();
 
     fixture = TestBed.createComponent(ScenarioEditComponent);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput('scenarioId', 'create');
     fixture.detectChanges();
   });
 

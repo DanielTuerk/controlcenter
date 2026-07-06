@@ -1,4 +1,5 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {provideHttpClientTesting} from '@angular/common/http/testing';
 
 import {ConfigInputComponent} from './config-input.component';
 
@@ -8,12 +9,14 @@ describe('ConfigInputComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ConfigInputComponent]
+      imports: [ConfigInputComponent],
+      providers: [provideHttpClientTesting()]
     })
       .compileComponents();
 
     fixture = TestBed.createComponent(ConfigInputComponent);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput('configKey', '');
     fixture.detectChanges();
   });
 

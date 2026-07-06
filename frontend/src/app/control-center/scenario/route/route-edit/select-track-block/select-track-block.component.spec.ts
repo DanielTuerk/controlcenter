@@ -1,4 +1,5 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {MAT_DIALOG_DATA} from '@angular/material/dialog';
 
 import {SelectTrackBlockComponent} from './select-track-block.component';
 
@@ -8,7 +9,8 @@ describe('SelectTrackBlockComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [SelectTrackBlockComponent]
+      imports: [SelectTrackBlockComponent],
+      providers: [{provide: MAT_DIALOG_DATA, useValue: []}]
     })
     .compileComponents();
 

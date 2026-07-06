@@ -1,6 +1,8 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {provideRouter} from '@angular/router';
+import {provideHttpClientTesting} from '@angular/common/http/testing';
 
-import { DeviceComponent } from './device.component';
+import {DeviceComponent} from './device.component';
 
 describe('DeviceComponent', () => {
   let component: DeviceComponent;
@@ -8,7 +10,8 @@ describe('DeviceComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [DeviceComponent]
+      imports: [DeviceComponent],
+      providers: [provideRouter([]), provideHttpClientTesting()]
     })
     .compileComponents();
 

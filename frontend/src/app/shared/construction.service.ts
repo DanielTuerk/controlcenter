@@ -1,4 +1,4 @@
-import {inject, signal} from "@angular/core";
+import {inject, Injectable, signal} from "@angular/core";
 import {HttpClient} from "@angular/common/http";
 import {Router} from "@angular/router";
 import {SnackBar} from "../control-center/common/snack-bar.component";
@@ -6,6 +6,7 @@ import {Construction, ConstructionDto, Scenario} from "../../shared/openapi-gen"
 import {catchError} from "rxjs/operators";
 import {EMPTY} from "rxjs";
 
+@Injectable({providedIn: 'root'})
 export class ConstructionService {
 
   private httpClient = inject(HttpClient);

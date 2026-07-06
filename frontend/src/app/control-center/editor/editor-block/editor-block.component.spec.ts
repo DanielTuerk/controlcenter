@@ -1,4 +1,6 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {provideRouter} from '@angular/router';
+import {provideHttpClientTesting} from '@angular/common/http/testing';
 
 import {EditorBlockComponent} from './editor-block.component';
 
@@ -8,7 +10,8 @@ describe('EditorBlockComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [EditorBlockComponent]
+      imports: [EditorBlockComponent],
+      providers: [provideRouter([]), provideHttpClientTesting()]
     })
     .compileComponents();
 

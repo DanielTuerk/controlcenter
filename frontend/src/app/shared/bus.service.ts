@@ -1,10 +1,11 @@
-import {inject} from "@angular/core";
+import {inject, Injectable} from "@angular/core";
 import {HttpClient} from "@angular/common/http";
 import {SnackBar} from "../control-center/common/snack-bar.component";
 import {catchError} from "rxjs/operators";
 import {EMPTY} from "rxjs";
 import {BusBitDto, BusDataDto} from "../../shared/openapi-gen";
 
+@Injectable({providedIn: 'root'})
 export class BusService {
 
   private httpClient = inject(HttpClient);

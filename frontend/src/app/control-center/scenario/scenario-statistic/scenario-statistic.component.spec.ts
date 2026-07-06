@@ -1,4 +1,5 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {provideHttpClientTesting} from '@angular/common/http/testing';
 
 import {ScenarioStatisticComponent} from './scenario-statistic.component';
 
@@ -8,12 +9,14 @@ describe('ScenarioStatisticComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ScenarioStatisticComponent]
+      imports: [ScenarioStatisticComponent],
+      providers: [provideHttpClientTesting()]
     })
       .compileComponents();
 
     fixture = TestBed.createComponent(ScenarioStatisticComponent);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput('scenarioId', 1);
     fixture.detectChanges();
   });
 

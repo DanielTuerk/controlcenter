@@ -1,6 +1,8 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {provideRouter} from '@angular/router';
+import {provideHttpClientTesting} from '@angular/common/http/testing';
 
-import { DeviceEditComponent } from './device-edit.component';
+import {DeviceEditComponent} from './device-edit.component';
 
 describe('DeviceEditComponent', () => {
   let component: DeviceEditComponent;
@@ -8,12 +10,14 @@ describe('DeviceEditComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [DeviceEditComponent]
+      imports: [DeviceEditComponent],
+      providers: [provideRouter([]), provideHttpClientTesting()]
     })
     .compileComponents();
 
     fixture = TestBed.createComponent(DeviceEditComponent);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput('deviceId', 'create');
     fixture.detectChanges();
   });
 

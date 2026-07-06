@@ -26,11 +26,7 @@ import net.wbz.selectrix4java.device.DeviceAccessException;
 import net.wbz.selectrix4java.device.DeviceManager;
 
 import java.time.Duration;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Stream;
 
 @Slf4j
@@ -151,16 +147,17 @@ public class ExecuteRouteSequence {
         return Uni.createFrom()
             .item(() -> {
                 trainService.updateDrivingLevel(train.getId(), 0);
-                return (Void) null;
+                return configService.getFinishRouteDelaySeconds();
             })
             .runSubscriptionOn(Infrastructure.getDefaultWorkerPool())
-            .onItem()
-            .delayIt().by(Duration.ofSeconds(configService.getFinishRouteDelaySeconds()))
-            // wait a bit before end the action to be sure that the train is physically stopped
-            .call(() -> {
-                log.info("train stop called: {}", train.getName());
-                return Uni.createFrom().voidItem();
-            });
+                .chain(delaySeconds -> Uni.createFrom().voidItem()
+                        .onItem()
+                        .delayIt().by(Duration.ofSeconds(delaySeconds))
+                        // wait a bit before end the action to be sure that the train is physically stopped
+                        .call(() -> {
+                            log.info("train stop called: {}", train.getName());
+                            return Uni.createFrom().voidItem();
+                        }));
     }
 
     /**
@@ -256,9 +253,10 @@ public class ExecuteRouteSequence {
 
                 final Route route = routeSequence.getRoute();
                 log.info("train request free track to start: {} ({})", route.getName(), route.getId());
-                return (Void) null;
+                    return configService.getWaitForFreeTackTimeoutInMinutes();
             })
-            .chain(() -> Multi.createFrom().ticks().every(Duration.ofMillis(500))
+                .runSubscriptionOn(Infrastructure.getDefaultWorkerPool())
+                .chain(timeoutInMinutes -> Multi.createFrom().ticks().every(Duration.ofMillis(500))
                 // observer calls for each item are blocking
                 .emitOn(Infrastructure.getDefaultWorkerPool())
                 .onItem().transform(tick ->
@@ -272,7 +270,7 @@ public class ExecuteRouteSequence {
                 .toUni()
                 .replaceWithVoid()
                 .ifNoItem()
-                .after(Duration.ofMinutes(configService.getWaitForFreeTackTimeoutInMinutes()))
+                        .after(Duration.ofMinutes(timeoutInMinutes))
                 .fail()
             )
 
@@ -395,16 +393,18 @@ public class ExecuteRouteSequence {
     }
 
     private Uni<Void> startTrain(Train train, Integer startDrivingLevel) {
-        return Uni.createFrom().voidItem().onItem()
-            // delay the start of the train
-            .delayIt().by(Duration.ofSeconds(configService.getStartTrainDelaySeconds()))
-            .emitOn(Infrastructure.getDefaultWorkerPool())
-            .chain(() -> Uni.createFrom().item(() -> {
-                log.info("start train to drive {}", train);
-                trainService.updateDrivingLevel(train.getId(),
-                    startDrivingLevel != null ? startDrivingLevel : configService.getDefaultStartDrivingLevel());
-                return null;
-            }));
+        return Uni.createFrom().item(configService::getStartTrainDelaySeconds)
+                .runSubscriptionOn(Infrastructure.getDefaultWorkerPool())
+                .chain(delaySeconds -> Uni.createFrom().voidItem().onItem()
+                        // delay the start of the train
+                        .delayIt().by(Duration.ofSeconds(delaySeconds))
+                        .emitOn(Infrastructure.getDefaultWorkerPool())
+                        .chain(() -> Uni.createFrom().item(() -> {
+                            log.info("start train to drive {}", train);
+                            trainService.updateDrivingLevel(train.getId(),
+                                    startDrivingLevel != null ? startDrivingLevel : configService.getDefaultStartDrivingLevel());
+                            return null;
+                        })));
     }
 
 }

@@ -3,9 +3,14 @@ package net.wbz.moba.controlcenter.api.resource.scenario;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
 import io.smallrye.mutiny.tuples.Tuple2;
+import io.vertx.core.Vertx;
+import jakarta.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import net.wbz.moba.controlcenter.api.BaseIt;
 import net.wbz.moba.controlcenter.api.ItUtil;
+import net.wbz.moba.controlcenter.service.bus.BusService;
+import net.wbz.moba.controlcenter.service.scenario.ScenarioManager;
+import net.wbz.moba.controlcenter.service.scenario.ScenarioService;
 import net.wbz.moba.controlcenter.shared.scenario.Route;
 import net.wbz.moba.controlcenter.shared.scenario.RouteStateEvent;
 import net.wbz.moba.controlcenter.shared.scenario.Scenario;
@@ -19,12 +24,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import static io.restassured.RestAssured.given;
 import static org.junit.jupiter.api.Assertions.*;
@@ -33,6 +37,18 @@ import static org.junit.jupiter.api.Assertions.*;
 @QuarkusTest
 public class ScenarioExecutionTest extends BaseIt {
     private static final Map<Integer, Set<Tuple2<Integer, Integer>>> TRAIN_BLOCKS = new HashMap<>();
+
+    @Inject
+    Vertx vertx;
+
+    @Inject
+    BusService busService;
+
+    @Inject
+    ScenarioManager scenarioManager;
+
+    @Inject
+    ScenarioService scenarioService;
 
     @BeforeEach
     public void beforeEach() throws InterruptedException {
@@ -340,8 +356,12 @@ public class ScenarioExecutionTest extends BaseIt {
         final var bigInteger = BigInteger.valueOf(blockNumber - 1)
             // driving direction
             .setBit(4);
-        ItUtil.sendBusData(1, blockAddress + 1, occupied ? bigInteger.setBit(3).intValue() : bigInteger.intValue());
-        ItUtil.sendBusData(1, blockAddress + 2, trainAddress);
+        final var directionValue = occupied ? bigInteger.setBit(3).intValue() : bigInteger.intValue();
+        // send on the Vert.x event-loop thread: the real Selectrix device delivers bus feedback there too,
+        // and only there (not on a @Blocking worker thread) does a blocking call further down the reactive
+        // route-execution chain trip Quarkus' BlockingOperationNotAllowedException
+        runOnEventLoop(() -> busService.sendBusData(1, blockAddress + 1, directionValue));
+        runOnEventLoop(() -> busService.sendBusData(1, blockAddress + 2, trainAddress));
 
         final var feedbackBlockEvent = getFeedbackBlockEvent();
         assertNotNull(feedbackBlockEvent.feedbackData(), "no feedback data for block: %s".formatted(blockAddress));
@@ -357,9 +377,37 @@ public class ScenarioExecutionTest extends BaseIt {
 
     private void updateBlockState(int blockAddress, int blockNumber, boolean occupied) {
         final var currentBlockValue = BigInteger.valueOf(ItUtil.fetchBusData(1, blockAddress));
-        ItUtil.sendBusData(1, blockAddress, occupied ? currentBlockValue.setBit(blockNumber - 1).intValue() :
-            currentBlockValue.clearBit(blockNumber - 1).intValue()
-        );
+        final var newBlockValue = occupied ? currentBlockValue.setBit(blockNumber - 1).intValue() :
+                currentBlockValue.clearBit(blockNumber - 1).intValue();
+        // see comment in placeTrainInBlock: must run on the event-loop thread to match production threading
+        runOnEventLoop(() -> busService.sendBusData(1, blockAddress, newBlockValue));
+    }
+
+    /**
+     * Runs the given action on the Vert.x event-loop thread and blocks until it completes, propagating any
+     * exception (e.g. {@code BlockingOperationNotAllowedException} from a reactive chain triggered synchronously
+     * by the action) back to the calling test thread.
+     */
+    private void runOnEventLoop(Runnable action) {
+        final var result = new CompletableFuture<Void>();
+        vertx.runOnContext(v -> {
+            try {
+                action.run();
+                result.complete(null);
+            } catch (Throwable t) {
+                result.completeExceptionally(t);
+            }
+        });
+        try {
+            result.get(10, TimeUnit.SECONDS);
+        } catch (ExecutionException e) {
+            if (e.getCause() instanceof RuntimeException runtimeException) {
+                throw runtimeException;
+            }
+            throw new RuntimeException(e.getCause());
+        } catch (InterruptedException | TimeoutException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private void verifyTrainSpeed(int trainId, int expected) {
@@ -389,13 +437,15 @@ public class ScenarioExecutionTest extends BaseIt {
             .statusCode(200);
     }
 
-    private static void stopScenario(long scenarioId) {
-        given()
-            .contentType(ContentType.JSON)
-            .when()
-            .post("/api/scenarios/%d/stop".formatted(scenarioId))
-            .then()
-            .statusCode(200);
+    private void stopScenario(long scenarioId) {
+        // Stopping cancels the running route execution Uni, whose .onCancellation() handler calls
+        // stopTrain(...) synchronously on whatever thread calls cancel(). Going through the @Blocking
+        // REST endpoint (as ItUtil would) forces that onto a worker thread and hides the bug where
+        // production cancels from the real (Vert.x event-loop) device-feedback thread instead - so we
+        // trigger the cancellation directly on the event loop here.
+        // (fetching the scenario itself is a blocking cached DB lookup, so that stays on this thread)
+        scenarioManager.getScenarioById(scenarioId)
+                .ifPresent(scenario -> runOnEventLoop(() -> scenarioService.stop(scenario)));
     }
 
     private void verifyScenarioStateEvent(long scenarioId, Scenario.RUN_STATE runState) {

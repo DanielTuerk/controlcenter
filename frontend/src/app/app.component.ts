@@ -28,7 +28,12 @@ export class AppComponent {
   }
 
   private redirectToWelcomePage() {
-    console.log("no current construction found, navigate to welcome page")
-    if (!this.router.navigate(['/welcome', {}])) console.error("can't forward to welcome page");
+    console.log("no current construction found, navigate to welcome page");
+
+    this.router.navigateByUrl('/welcome').then(success => {
+      if (!success) {
+        console.error("can't forward to welcome page");
+      }
+    });
   }
 }

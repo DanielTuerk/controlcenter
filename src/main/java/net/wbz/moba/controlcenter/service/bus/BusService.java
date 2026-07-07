@@ -4,6 +4,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import net.wbz.moba.controlcenter.EventBroadcaster;
+import net.wbz.moba.controlcenter.Workspace;
 import net.wbz.moba.controlcenter.shared.bus.BusDataEvent;
 import net.wbz.moba.controlcenter.shared.bus.PlayerEvent;
 import net.wbz.selectrix4java.bus.consumption.AllBusDataConsumer;
@@ -35,16 +36,19 @@ public class BusService {
     private final DeviceRecorder deviceRecorder;
     private BusDataPlayer busDataPlayer;
     private final DeviceService deviceService;
+    private final Workspace workspace;
 
     private final Map<String, AllBusDataConsumer> connectionIdsOfBusTracking = new HashMap<>();
 
     @Inject
     public BusService(EventBroadcaster eventBroadcaster,
-        DeviceRecorder deviceRecorder,
-        DeviceService deviceService) {
+                      DeviceRecorder deviceRecorder,
+                      DeviceService deviceService,
+                      Workspace workspace) {
         this.eventBroadcaster = eventBroadcaster;
         this.deviceRecorder = deviceRecorder;
         this.deviceService = deviceService;
+        this.workspace = workspace;
     }
 
     public boolean getRailVoltage() {
@@ -145,8 +149,18 @@ public class BusService {
     }
 
     public int fetchBusData(int busNr, int address) throws DeviceAccessException {
-        final var notConnected = deviceService.getConnectedDevice().orElseThrow(() -> new DeviceAccessException("not connected"));
-        return Byte.valueOf(notConnected.getBusAddress(busNr, (byte) address).getData()).intValue();
+        final var device = deviceService.getConnectedDevice()
+                .orElseThrow(() -> new DeviceAccessException("not connected"));
+        return Byte.valueOf(device.getBusAddress(busNr, (byte) address).getData()).intValue();
+    }
+
+    public String dumpBusData() throws DeviceAccessException {
+        final var device = deviceService.getConnectedDevice()
+                .orElseThrow(() -> new DeviceAccessException("not connected"));
+        return workspace.createBusDump(new Workspace.BusDump(
+                device.getBusDataDispatcher().getData(0),
+                device.getBusDataDispatcher().getData(1)
+        ));
     }
 
     public void startRecording(String fileName) {

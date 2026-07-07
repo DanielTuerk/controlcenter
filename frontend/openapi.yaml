@@ -1397,6 +1397,18 @@ paths:
       summary: Connect
       tags:
       - Device Resource
+  /api/devtool/bus-dump:
+    post:
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: string
+      summary: Create Bus Dump
+      tags:
+      - Dev Tool Resource
   /api/routes:
     get:
       responses:

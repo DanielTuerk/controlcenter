@@ -13,6 +13,7 @@ import net.wbz.selectrix4java.data.recording.BusDataPlayerListener;
 import net.wbz.selectrix4java.device.Device;
 import net.wbz.selectrix4java.device.Device.SYSTEM_FORMAT;
 import net.wbz.selectrix4java.device.DeviceAccessException;
+import net.wbz.selectrix4java.device.test.TestDevice;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -94,8 +95,7 @@ public class BusService {
     }
 
     public void startTrackingBus(String connectionId) throws DeviceAccessException {
-        final var device = deviceService.getConnectedDevice()
-            .orElseThrow(() -> new DeviceAccessException("not connected"));
+        final var device = fetchDevice();
         if (!connectionIdsOfBusTracking.containsKey(connectionId)) {
 
             var value = new AllBusDataConsumer() {
@@ -112,8 +112,7 @@ public class BusService {
     }
 
     public void stopTrackingBus(String connectionId) throws DeviceAccessException {
-        final var device = deviceService.getConnectedDevice()
-            .orElseThrow(() -> new DeviceAccessException("not connected"));
+        final var device = fetchDevice();
 
         if (connectionIdsOfBusTracking.containsKey(connectionId)) {
             // TODO missing connection loss for the connectionIdsOfBusTracking
@@ -149,18 +148,30 @@ public class BusService {
     }
 
     public int fetchBusData(int busNr, int address) throws DeviceAccessException {
-        final var device = deviceService.getConnectedDevice()
-                .orElseThrow(() -> new DeviceAccessException("not connected"));
+        final var device = fetchDevice();
         return Byte.valueOf(device.getBusAddress(busNr, (byte) address).getData()).intValue();
     }
 
     public String dumpBusData() throws DeviceAccessException {
-        final var device = deviceService.getConnectedDevice()
-                .orElseThrow(() -> new DeviceAccessException("not connected"));
+        final var device = fetchDevice();
         return workspace.createBusDump(new Workspace.BusDump(
                 device.getBusDataDispatcher().getData(0),
                 device.getBusDataDispatcher().getData(1)
         ));
+    }
+
+    public void importBusDump(Workspace.BusDump busDump) throws DeviceAccessException {
+        final var device = fetchDevice();
+        if (!(device instanceof TestDevice)) {
+            throw new DeviceAccessException("device is not a TestDevice");
+        }
+        sendDataFromDump(device, 0, busDump.bus0Data());
+        sendDataFromDump(device, 1, busDump.bus1Data());
+    }
+
+    private Device fetchDevice() throws DeviceAccessException {
+        return deviceService.getConnectedDevice()
+                .orElseThrow(() -> new DeviceAccessException("not connected"));
     }
 
     public void startRecording(String fileName) {
@@ -212,6 +223,13 @@ public class BusService {
             log.error("check files of records", e);
         }
         return List.of();
+    }
+
+    private static void sendDataFromDump(Device device, int bus, byte[] busDump) throws DeviceAccessException {
+        for (int i = 0; i < busDump.length; i++) {
+            final byte b = busDump[i];
+            device.getBusAddress(bus, i).sendData(b);
+        }
     }
 
 }

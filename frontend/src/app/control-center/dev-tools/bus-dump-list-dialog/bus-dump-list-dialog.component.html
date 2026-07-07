@@ -1,0 +1,11 @@
+<h2 mat-dialog-title>Bus data dumps</h2>
+
+<mat-dialog-content>
+  @if (fileNames.length === 0) {
+    <p>No bus data dumps found.</p>
+  } @else {
+    @for (fileName of fileNames; track fileName) {
+      <button matButton class="dump-entry" (click)="select(fileName)">{{ fileName }}</button>
+    }
+  }
+</mat-dialog-content>

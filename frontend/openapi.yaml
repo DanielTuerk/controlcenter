@@ -1398,7 +1398,7 @@ paths:
       tags:
       - Device Resource
   /api/devtool/bus-dump:
-    post:
+    get:
       responses:
         "200":
           description: OK
@@ -1407,6 +1407,33 @@ paths:
               schema:
                 type: string
       summary: Create Bus Dump
+      tags:
+        - Dev Tool Resource
+  /api/devtool/bus-dump/list:
+    get:
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { }
+      summary: List Bus Dumps
+      tags:
+        - Dev Tool Resource
+  /api/devtool/bus-dump/load/{fileName}:
+    post:
+      parameters:
+        - name: fileName
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "201":
+          description: Created
+      summary: Load Bus Data Dump
       tags:
       - Dev Tool Resource
   /api/routes:

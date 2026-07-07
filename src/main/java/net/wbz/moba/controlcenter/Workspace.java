@@ -12,6 +12,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Stream;
 
 @Slf4j
 @ApplicationScoped
@@ -49,6 +52,29 @@ public class Workspace {
             return jsonFile.getFileName().toString();
         } catch (IOException e) {
             log.error("Could not write bus dump file: {}", jsonFile, e);
+            throw new RuntimeException(e);
+        }
+    }
+
+    public List<String> listBusDumps() {
+        try (Stream<Path> paths = Files.list(dumpFolder)) {
+            return paths
+                    .map(path -> path.getFileName().toString())
+                    .filter(name -> name.startsWith(BUS_DUMP_PREFIX) && name.endsWith(".json"))
+                    .sorted(Comparator.reverseOrder())
+                    .toList();
+        } catch (IOException e) {
+            log.error("Could not list bus dump files in: {}", dumpFolder, e);
+            throw new RuntimeException(e);
+        }
+    }
+
+    public BusDump loadBusDump(String busDumpFile) {
+        Path jsonFile = dumpFolder.resolve(busDumpFile);
+        try {
+            return objectMapper.readValue(jsonFile.toFile(), BusDump.class);
+        } catch (IOException e) {
+            log.error("Could not read bus dump file: {}", jsonFile, e);
             throw new RuntimeException(e);
         }
     }

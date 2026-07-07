@@ -12,7 +12,7 @@ import {routes as editorRoutes} from "./editor/editor.routes";
 import {StationComponent} from "./station/station.component";
 import {RouteEditComponent} from "./scenario/route/route-edit/route-edit.component";
 import {BusMonitorComponent} from "./bus-monitor/bus-monitor.component";
-import {DevToolsComponent} from "../dev/dev-tools/dev-tools.component";
+import {DevToolsComponent} from "./dev-tools/dev-tools.component";
 
 export const routes: Routes = [
   {

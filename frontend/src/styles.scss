@@ -56,7 +56,9 @@ body {
   color: var(--mat-sys-on-surface);
 }
 
-.snackbar-common {
+.mat-mdc-snack-bar-container.snackbar-common {
+  --mat-snack-bar-container-color: var(--mat-sys-surface-container-high);
+  --mat-snack-bar-button-color: while;
 }
 
 .mat-mdc-snack-bar-container.snackbar-error {

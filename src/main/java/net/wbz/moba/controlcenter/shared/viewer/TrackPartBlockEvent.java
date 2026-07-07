@@ -19,8 +19,9 @@ public record TrackPartBlockEvent(long trackPartId,
 
     @Override
     public String getCacheKey() {
-        return getClass().getName() + ":" + blockAddress + ":" + blockNumber + ":"
-            + (feedbackData != null ? feedbackData.trainAddress + "-" + feedbackData.trainDirection.name() : "none");
+        return "%s:%d:%d:%b:%s".formatted(getClass().getName(), blockAddress, blockNumber, occupied,
+                feedbackData == null ? "none" :
+                        "%d-%s".formatted(feedbackData.trainAddress, feedbackData.trainDirection.name()));
     }
 
 }

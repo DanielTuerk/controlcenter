@@ -3,8 +3,8 @@ package net.wbz.moba.controlcenter.shared;
 import jakarta.enterprise.context.ApplicationScoped;
 import net.wbz.moba.controlcenter.shared.device.DeviceConnectionEvent;
 
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -24,29 +24,18 @@ public class EventCache {
     /**
      * Add the given event to the cache. Already existing event will be overridden.
      *
+     * @apiNote synchronized to guarantee the insert order for later playback
      * @param event {@link E} to cache
      * @param <E> {@link Event} which also implements {@link StateEvent}
      */
-    public <E extends StateEvent> void addEvent(final E event) {
+    public synchronized <E extends StateEvent> void addEvent(final E event) {
         String key = event.getClass().getName();
         if (!cachedEvents.containsKey(key)) {
-            cachedEvents.put(key, new ConcurrentHashMap<>());
+            // guarantee the insert order
+            cachedEvents.put(key, new LinkedHashMap<>());
         }
         String cacheKey = event.getCacheKey();
         cachedEvents.get(key).put(cacheKey, event);
-    }
-
-    /**
-     * Receive all events from cache for the given event class name.
-     *
-     * @param eventClazzName name of {@link Event} class
-     * @return cached {@link Event}s
-     */
-    public Collection<StateEvent> getEvents(final String eventClazzName) {
-        if (cachedEvents.containsKey(eventClazzName)) {
-            return cachedEvents.get(eventClazzName).values();
-        }
-        return new ArrayList<>();
     }
 
     public Collection<Map<String, StateEvent>> getEvents() {

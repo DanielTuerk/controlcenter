@@ -18,6 +18,7 @@ import net.wbz.moba.controlcenter.service.track.TrackViewerService;
 import net.wbz.moba.controlcenter.service.track.block.FeedbackTrackBlockRegistry;
 import net.wbz.moba.controlcenter.service.train.TrainService;
 import net.wbz.moba.controlcenter.shared.scenario.Route;
+import net.wbz.moba.controlcenter.shared.scenario.RouteSequence;
 import net.wbz.moba.controlcenter.shared.track.model.BusDataConfiguration;
 import net.wbz.moba.controlcenter.shared.track.model.TrackBlock;
 import net.wbz.moba.controlcenter.shared.train.Train;
@@ -116,6 +117,13 @@ public class ExecuteRouteSequence {
                 return Result.of(Route.ROUTE_RUN_STATE.FAILED, "route failed");
             })
 
+            /*
+             Cleanup must happen before the state event is published, otherwise listeners registered for this
+             route sequence could still be triggered (e.g. by a track block change) and reserve the route again,
+             although it's already finished.
+             */
+            .onItem().call(result -> cleanupRouteSequence(executeRouteModel.routeSequence()))
+
             .onItem().invoke(result -> {
                 log.info("route finished with state: {}", result);
                 routeStateEventPublisher.fireEvent(executeRouteModel.scenarioId(), executeRouteModel.routeSequence(), result.state(), result.message().orElse(null));
@@ -124,22 +132,25 @@ public class ExecuteRouteSequence {
             .onCancellation().call(() -> {
                 log.info("route execution cancelled for route: {} ({})", executeRouteModel.routeSequence().getRoute().getName(),
                     executeRouteModel.routeSequence().getRoute().getId());
-                routeStateEventPublisher.fireEvent(executeRouteModel.scenarioId(), executeRouteModel.routeSequence(), Route.ROUTE_RUN_STATE.CANCELED);
 
-                var train = executeRouteModel.train();
-                return stopTrain(train);
-            })
-            .eventually(() -> {
-                final var routeSequence = executeRouteModel.routeSequence();
-                try {
-                    routeExecutionObserver.cleanup(routeSequence);
-                } catch (DeviceAccessException e) {
-                    log.error("device access failed to cleanup block listeners for route sequence: {} (route: {})",
-                        routeSequence.getId(), routeSequence.getRoute().getName(), e);
-                }
-                return Uni.createFrom().voidItem();
+                return cleanupRouteSequence(executeRouteModel.routeSequence())
+                    .chain(() -> {
+                        routeStateEventPublisher.fireEvent(executeRouteModel.scenarioId(), executeRouteModel.routeSequence(), Route.ROUTE_RUN_STATE.CANCELED);
+                        return stopTrain(executeRouteModel.train());
+                    });
             });
+    }
 
+    private Uni<Void> cleanupRouteSequence(RouteSequence routeSequence) {
+        return Uni.createFrom().item(() -> {
+            try {
+                routeExecutionObserver.cleanup(routeSequence);
+            } catch (DeviceAccessException e) {
+                log.error("device access failed to cleanup block listeners for route sequence: {} (route: {})",
+                    routeSequence.getId(), routeSequence.getRoute().getName(), e);
+            }
+            return null;
+        });
     }
 
     private Uni<Void> stopTrain(Train train) {

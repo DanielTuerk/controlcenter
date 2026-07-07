@@ -1,6 +1,7 @@
 package net.wbz.moba.controlcenter.service.scenario.statistic;
 
 import io.quarkus.cache.CacheInvalidate;
+import io.quarkus.cache.CacheKey;
 import io.quarkus.cache.CacheResult;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
@@ -32,7 +33,7 @@ public class ScenarioStatisticDataProvider {
     }
 
     @CacheResult(cacheName = CACHE)
-    public Optional<ScenarioStatistic> fetch(long scenarioId) {
+    public Optional<ScenarioStatistic> fetch(@CacheKey long scenarioId) {
         log.debug("load scenario statistics for scenario: {}", scenarioId);
         final var runs = repository.listByScenario(scenarioId).stream()
                 .map(mapper::toDto)
@@ -69,7 +70,7 @@ public class ScenarioStatisticDataProvider {
 
     @CacheInvalidate(cacheName = CACHE)
     @Transactional
-    public void addRun(long scenarioId, LocalDateTime startDateTime, LocalDateTime endDateTime,
+    public void addRun(@CacheKey long scenarioId, LocalDateTime startDateTime, LocalDateTime endDateTime,
                        ScenarioStatisticRun.STATE state) {
         final var entity = new ScenarioHistoryEntity();
         entity.scenarioId = scenarioId;
@@ -85,7 +86,7 @@ public class ScenarioStatisticDataProvider {
 
     @CacheInvalidate(cacheName = CACHE)
     @Transactional
-    public void deleteByScenario(long scenarioId) {
+    public void deleteByScenario(@CacheKey long scenarioId) {
         log.info("history ({} items) for scenario {} cleared", scenarioId,
                 repository.deleteByScenario(scenarioId));
     }

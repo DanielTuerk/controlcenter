@@ -30,7 +30,7 @@ export class ScenarioService {
   }
 
   loadScenarioStatistic(scenarioId: Number) {
-    return this.httpClient.get<ScenarioStatistic>(`/api/scenarios/${scenarioId}/statistics`)
+    return this.httpClient.get<ScenarioStatistic>(`/api/scenarios/${scenarioId}/statistic`)
   }
 
   createScenario(scenario: Scenario) {

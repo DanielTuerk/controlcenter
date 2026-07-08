@@ -32,7 +32,7 @@ import java.util.stream.Stream;
 
 @Slf4j
 @ApplicationScoped
-public class ExecuteRouteSequence {
+public class RouteSequenceExecution {
 
     private final TrainService trainService;
     private final RouteExecutionObserver routeExecutionObserver;
@@ -45,14 +45,14 @@ public class ExecuteRouteSequence {
     private final ConfigService configService;
 
     @Inject
-    public ExecuteRouteSequence(TrainService trainService,
-                                RouteExecutionObserver routeExecutionObserver,
-                                TrackViewerService trackViewerService,
-                                DeviceManager deviceManager,
-                                FeedbackTrackBlockRegistry feedbackTrackBlockRegistry,
-                                SwitchStartSignalOfRouteToDrive switchStartSignalOfRouteToDrive,
-                                RouteReservationCoordinator routeReservationCoordinator,
-                                RouteStateEventPublisher routeStateEventPublisher, ConfigService configService) {
+    public RouteSequenceExecution(TrainService trainService,
+                                  RouteExecutionObserver routeExecutionObserver,
+                                  TrackViewerService trackViewerService,
+                                  DeviceManager deviceManager,
+                                  FeedbackTrackBlockRegistry feedbackTrackBlockRegistry,
+                                  SwitchStartSignalOfRouteToDrive switchStartSignalOfRouteToDrive,
+                                  RouteReservationCoordinator routeReservationCoordinator,
+                                  RouteStateEventPublisher routeStateEventPublisher, ConfigService configService) {
         this.trainService = trainService;
         this.routeExecutionObserver = routeExecutionObserver;
         this.trackViewerService = trackViewerService;
@@ -74,7 +74,7 @@ public class ExecuteRouteSequence {
         }
     }
 
-    public Uni<Route.ROUTE_RUN_STATE> executeRouteSequence(ExecuteRouteModel executeRouteModel) {
+    public Uni<Route.ROUTE_RUN_STATE> start(ExecuteRouteModel executeRouteModel) {
         return Uni.createFrom().item(executeRouteModel)
             .onItem().call(this::prepare)
 

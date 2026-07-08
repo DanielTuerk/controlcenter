@@ -3,7 +3,7 @@ package net.wbz.moba.controlcenter.service.scenario.execution;
 import io.smallrye.mutiny.Multi;
 import io.smallrye.mutiny.Uni;
 import lombok.extern.slf4j.Slf4j;
-import net.wbz.moba.controlcenter.service.scenario.execution.route.ExecuteRouteSequence;
+import net.wbz.moba.controlcenter.service.scenario.execution.route.RouteSequenceExecution;
 import net.wbz.moba.controlcenter.shared.scenario.Route;
 import net.wbz.moba.controlcenter.shared.scenario.Route.ROUTE_RUN_STATE;
 import net.wbz.moba.controlcenter.shared.scenario.RouteSequence;
@@ -23,10 +23,10 @@ import java.util.concurrent.atomic.AtomicReference;
 @Slf4j
 class ScenarioExecution {
 
-    private final ExecuteRouteSequence executeRouteSequence;
+    private final RouteSequenceExecution routeSequenceExecution;
 
-    ScenarioExecution(ExecuteRouteSequence executeRouteSequence) {
-        this.executeRouteSequence = executeRouteSequence;
+    ScenarioExecution(RouteSequenceExecution routeSequenceExecution) {
+        this.routeSequenceExecution = routeSequenceExecution;
     }
 
     Uni<RUN_STATE> start(Scenario scenario) {
@@ -45,7 +45,7 @@ class ScenarioExecution {
                         final var index = routeSequences.indexOf(routeSequence);
                         final var previousRouteSequence = Optional.ofNullable((index > 0) ? routeSequences.get(index - 1) : null);
                         final var nextRouteSequence = Optional.ofNullable((index + 1 < routeSequences.size()) ? routeSequences.get(index + 1) : null);
-                        return executeRouteSequence.executeRouteSequence(new ExecuteRouteModel(
+                            return routeSequenceExecution.start(new ExecuteRouteModel(
                                 scenarioToStart.getId(),
                                 routeSequence,
                                 previousRouteSequence,
@@ -63,8 +63,9 @@ class ScenarioExecution {
                     // collect all route results
                     .collect().asList()
                     .onItem().transform(results -> {
-                        boolean allRoutesSuccess = results.stream().allMatch(r -> r == ROUTE_RUN_STATE.FINISHED);
-                        return allRoutesSuccess ? RUN_STATE.SUCCESS : RUN_STATE.FAILED;
+                            boolean allRoutesSkipped = results.stream().allMatch(r -> r == ROUTE_RUN_STATE.SKIPPED);
+                            boolean anyRouteFailed = results.stream().anyMatch(r -> r == ROUTE_RUN_STATE.FAILED);
+                            return (allRoutesSkipped || anyRouteFailed) ? RUN_STATE.FAILED : RUN_STATE.SUCCESS;
                     });
             })
 

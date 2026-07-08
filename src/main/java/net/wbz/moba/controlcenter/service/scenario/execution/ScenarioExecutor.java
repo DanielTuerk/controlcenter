@@ -5,7 +5,7 @@ import io.smallrye.mutiny.subscription.Cancellable;
 import jakarta.enterprise.context.ApplicationScoped;
 import lombok.extern.slf4j.Slf4j;
 import net.wbz.moba.controlcenter.service.scenario.ScenarioStateEventPublisher;
-import net.wbz.moba.controlcenter.service.scenario.execution.route.ExecuteRouteSequence;
+import net.wbz.moba.controlcenter.service.scenario.execution.route.RouteSequenceExecution;
 import net.wbz.moba.controlcenter.shared.scenario.Scenario;
 import net.wbz.moba.controlcenter.shared.scenario.Scenario.RUN_STATE;
 
@@ -23,7 +23,7 @@ import java.util.concurrent.ExecutorService;
 public class ScenarioExecutor {
 
     private final ExecutorService executorService;
-    private final ExecuteRouteSequence executeRouteSequence;
+    private final RouteSequenceExecution routeSequenceExecution;
     private final ScenarioStateEventPublisher eventPublisher;
 
     /**
@@ -32,11 +32,11 @@ public class ScenarioExecutor {
     private final Map<Long, Cancellable> executionsByScenarioId = new ConcurrentHashMap<>();
 
     ScenarioExecutor(@VirtualThreads ExecutorService executorService,
-                     ExecuteRouteSequence executeRouteSequence,
+                     RouteSequenceExecution routeSequenceExecution,
                      ScenarioStateEventPublisher eventPublisher) {
         this.eventPublisher = eventPublisher;
         this.executorService = executorService;
-        this.executeRouteSequence = executeRouteSequence;
+        this.routeSequenceExecution = routeSequenceExecution;
     }
 
     /**
@@ -46,7 +46,7 @@ public class ScenarioExecutor {
      */
     public synchronized void startScenario(Scenario scenario) {
         if (!executionsByScenarioId.containsKey(scenario.getId())) {
-            final var scenarioExecution = new ScenarioExecution(executeRouteSequence);
+            final var scenarioExecution = new ScenarioExecution(routeSequenceExecution);
 
             eventPublisher.fireEvent(scenario.getId(), RUN_STATE.RUNNING);
             executionsByScenarioId.put(scenario.getId(), scenarioExecution.start(scenario)

@@ -76,7 +76,7 @@ export class RouteEditComponent {
 
   private lastStart: TrackElement<any> | undefined;
   private lastEnd: TrackElement<any> | undefined;
-  private trackElements: TrackElement<any>[] = [];
+  private trackElements = signal<TrackElement<any>[]>([]);
   protected trackStatus: boolean | undefined = undefined;
   protected showViewer = true;
 
@@ -172,12 +172,14 @@ export class RouteEditComponent {
   }
 
   private repaintTrackViewer() {
-    this.paintRoute(this.trackElements);
+    this.paintRoute(this.trackElements());
   }
 
   protected onTrackReady($event: TrackElement<any>[]) {
+    this.trackElements.set($event);
+
     this.routeService.loadRoute(this.routeId()).subscribe(data => {
-      this.trackElements = $event;
+
       this.setRoute(data);
       this.paintRoute($event);
     });

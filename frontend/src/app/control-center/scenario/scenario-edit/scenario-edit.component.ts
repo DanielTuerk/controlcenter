@@ -106,8 +106,18 @@ export class ScenarioEditComponent {
 
   protected addRoute(selectedRoute: Route | undefined) {
     if (selectedRoute) {
-      let routeSequences = this.scenario().routeSequences ?? [];
-      routeSequences.push({id: undefined, route: selectedRoute, position: routeSequences.length, endDelayInSeconds: 0});
+      this.scenario.update(scenario => {
+        const routeSequences = scenario.routeSequences ?? [];
+        return {
+          ...scenario,
+          routeSequences: [...routeSequences, {
+            id: undefined,
+            route: selectedRoute,
+            position: routeSequences.length,
+            endDelayInSeconds: 0
+          }]
+        };
+      });
     }
   }
 
@@ -141,13 +151,19 @@ export class ScenarioEditComponent {
   }
 
   protected removeRouteSequence(opt: RouteSequence) {
-    let scenario1 = this.scenario();
-    if (scenario1.routeSequences) {
-      const index = scenario1.routeSequences.indexOf(opt);
-      if (index >= 0) {
-        scenario1.routeSequences.splice(index, 1);
+    this.scenario.update(scenario => {
+      const routeSequences = scenario.routeSequences;
+      if (!routeSequences) {
+        return scenario;
       }
-    }
+      const index = routeSequences.indexOf(opt);
+      if (index < 0) {
+        return scenario;
+      }
+      const updated = [...routeSequences];
+      updated.splice(index, 1);
+      return {...scenario, routeSequences: updated};
+    });
   }
 
   protected moveUpRouteSequence(opt: RouteSequence): void {
@@ -159,24 +175,25 @@ export class ScenarioEditComponent {
   }
 
   protected moveRouteSequence(opt: RouteSequence, direction: -1 | 1): void {
-    const scenario = this.scenario();
-    const routeSequences = scenario.routeSequences;
+    this.scenario.update(scenario => {
+      const routeSequences = scenario.routeSequences;
+      if (!routeSequences?.length) {
+        return scenario;
+      }
 
-    if (!routeSequences?.length) {
-      return;
-    }
+      const index = routeSequences.indexOf(opt);
+      if (index < 0) {
+        return scenario;
+      }
 
-    const index = routeSequences.indexOf(opt);
-    if (index < 0) {
-      return;
-    }
+      const targetIndex = index + direction;
+      if (targetIndex < 0 || targetIndex >= routeSequences.length) {
+        return scenario;
+      }
 
-    const targetIndex = index + direction;
-    if (targetIndex < 0 || targetIndex >= routeSequences.length) {
-      return;
-    }
-
-    [routeSequences[index], routeSequences[targetIndex]] =
-      [routeSequences[targetIndex], routeSequences[index]];
+      const updated = [...routeSequences];
+      [updated[index], updated[targetIndex]] = [updated[targetIndex], updated[index]];
+      return {...scenario, routeSequences: updated};
+    });
   }
 }

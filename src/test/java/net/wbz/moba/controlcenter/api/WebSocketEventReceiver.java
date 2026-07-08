@@ -92,7 +92,14 @@ public class WebSocketEventReceiver {
             .pollInterval(50, TimeUnit.MILLISECONDS)
             .until(booleanCallable);
         } catch (ConditionTimeoutException e) {
-            log.error("============ timeout: test ends here ============");
+            log.error("""
+                    
+                    =================================================
+                    ============                         ============
+                    ============ timeout: test ends here ============
+                    ============                         ============
+                    =================================================
+                    """);
             throw e;
         }
     }

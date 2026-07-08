@@ -83,18 +83,7 @@ public class RouteSequenceExecution {
             // check all track blocks are free for the route, also by manual drive or lost wagons
             .onItem().call(model -> checkForFreeBlocksOnRoute(model.routeSequence().getRoute()))
 
-            .onItem().call(model -> {
-                routeReservationCoordinator.reserve(model.scenarioId(), model.routeSequence());
-                return Uni.createFrom().item(model);
-            })
-
             .onItem().call(model -> startRoute(model, routeReservationCoordinator))
-
-            .onItem().call(routeExecution -> {
-                routeExecution.nextRouteSequence().ifPresent(next ->
-                    routeExecutionObserver.registerBlocksToReserveNextRoute(routeExecution.scenarioId(), routeExecution.routeSequence(), next));
-                return Uni.createFrom().item(routeExecution);
-            })
 
             .replaceWith(Result::of)
 
@@ -125,20 +114,43 @@ public class RouteSequenceExecution {
             .onItem().call(result -> cleanupRouteSequence(executeRouteModel.routeSequence()))
 
             .onItem().invoke(result -> {
-                log.info("route finished with state: {}", result);
-                routeStateEventPublisher.fireEvent(executeRouteModel.scenarioId(), executeRouteModel.routeSequence(), result.state(), result.message().orElse(null));
+                    final var routeSequence = executeRouteModel.routeSequence();
+                    final var route = routeSequence.getRoute();
+                    log.info("route {} ({}) [seqId: {}] finished with state: {}",
+                            route.getName(), route.getId(), routeSequence.getId(), result);
+                    routeStateEventPublisher.fireEvent(executeRouteModel.scenarioId(), routeSequence, result.state(),
+                            result.message().orElse(null));
             })
             .map(Result::state)
             .onCancellation().call(() -> {
-                log.info("route execution cancelled for route: {} ({})", executeRouteModel.routeSequence().getRoute().getName(),
-                    executeRouteModel.routeSequence().getRoute().getId());
+                    log.info("route execution cancelled for route: {} ({}) [seqId: {}]",
+                            executeRouteModel.routeSequence().getRoute().getName(),
+                            executeRouteModel.routeSequence().getRoute().getId(),
+                            executeRouteModel.routeSequence().getId());
 
-                return cleanupRouteSequence(executeRouteModel.routeSequence())
-                    .chain(() -> {
-                        routeStateEventPublisher.fireEvent(executeRouteModel.scenarioId(), executeRouteModel.routeSequence(), Route.ROUTE_RUN_STATE.CANCELED);
-                        return stopTrain(executeRouteModel.train());
-                    });
-            });
+                    return cancelReservedAndRunningRoute(executeRouteModel);
+                });
+    }
+
+    private Uni<Void> cancelReservedAndRunningRoute(ExecuteRouteModel executeRouteModel) {
+        // cancel next reserved route sequence
+        executeRouteModel.nextRouteSequence().ifPresent(nextRouteSequence -> {
+            try {
+                routeExecutionObserver.cleanup(nextRouteSequence);
+                routeStateEventPublisher.fireEvent(executeRouteModel.scenarioId(), nextRouteSequence,
+                        Route.ROUTE_RUN_STATE.CANCELED);
+            } catch (DeviceAccessException e) {
+                throw new RuntimeException(e);
+            }
+        });
+
+        // cancel current route sequence
+        return cleanupRouteSequence(executeRouteModel.routeSequence())
+                .chain(() -> {
+                    routeStateEventPublisher.fireEvent(executeRouteModel.scenarioId(),
+                            executeRouteModel.routeSequence(), Route.ROUTE_RUN_STATE.CANCELED);
+                    return stopTrain(executeRouteModel.train());
+                });
     }
 
     private Uni<Void> cleanupRouteSequence(RouteSequence routeSequence) {
@@ -263,18 +275,18 @@ public class RouteSequenceExecution {
                 routeExecutionObserver.addRunningRouteSequence(routeSequence);
 
                 final Route route = routeSequence.getRoute();
-                log.info("train request free track to start: {} ({})", route.getName(), route.getId());
+                    log.info("train request free track to start: {} ({}) [seqId: {}]",
+                            route.getName(), route.getId(), routeSequence.getId());
                     return configService.getWaitForFreeTackTimeoutInMinutes();
             })
                 .runSubscriptionOn(Infrastructure.getDefaultWorkerPool())
                 .chain(timeoutInMinutes -> Multi.createFrom().ticks().every(Duration.ofMillis(500))
                 // observer calls for each item are blocking
                 .emitOn(Infrastructure.getDefaultWorkerPool())
-                .onItem().transform(tick ->
-                    routeExecutionObserver.checkAndReserveNextRunningRoute(executeRouteModel.scenarioId(),
-                        executeRouteModel.routeSequence(),
-                        executeRouteModel.previousRouteSequence()
-                    )
+                        .onItem().transform(tick ->
+                                routeExecutionObserver.checkForNextRouteToRun(
+                                        executeRouteModel.routeSequence()
+                                )
                 )
                 .select().where(Boolean.TRUE::equals)
                 .select().first()
@@ -293,76 +305,90 @@ public class RouteSequenceExecution {
             .transform(e -> new ScenarioExecutionInterruptException("failed", e));
     }
 
-    private Uni<ExecuteRouteModel> startRoute(final ExecuteRouteModel routeExecution, RouteReservationCoordinator routeReservationCoordinator) {
-        log.info("start route: {} ({})", routeExecution.routeSequence().getRoute().getName(),
-            routeExecution.routeSequence().getRoute().getId());
+    private Uni<ExecuteRouteModel> startRoute(final ExecuteRouteModel routeExecution,
+                                              RouteReservationCoordinator routeReservationCoordinator) {
+        log.info("start route: {} ({}, routeSequenceId: {})", routeExecution.routeSequence().getRoute().getName(),
+                routeExecution.routeSequence().getRoute().getId(), routeExecution.routeSequence().getId());
 
         return Uni.createFrom().item(routeExecution)
-            .onItem().invoke((executeRouteModel) ->
-                routeStateEventPublisher.fireEvent(routeExecution.scenarioId(), executeRouteModel.routeSequence(), Route.ROUTE_RUN_STATE.RUNNING))
-            .onItem().call(this::updateTrack)
-            .onItem().call(model -> {
-                model.nextRouteSequence().ifPresent(next ->
-                    routeExecutionObserver.registerBlocksToReserveNextRoute(model.scenarioId(), model.routeSequence(), next));
-                return Uni.createFrom().item(model);
-            })
-            .onItem().call(x -> {
-                final var route = routeExecution.routeSequence().getRoute();
-                final var endBlock = route.getEnd();
+                .onItem().invoke((executeRouteModel) ->
+                        routeStateEventPublisher.fireEvent(routeExecution.scenarioId(),
+                                executeRouteModel.routeSequence(), Route.ROUTE_RUN_STATE.RUNNING))
 
-                log.info("wait for end of route '{}' ({}) by end block: {} ({})",
-                    route.getName(), route.getId(), endBlock.getName(), endBlock.getBlockFunction());
+                .onItem().call(this::updateTrack)
 
-                return Uni.createFrom().emitter(emitter -> {
-                    try {
-                        final var blockModule = SelectrixHelper.getBlockModule(connectedDevice(),
-                            new BusAddressIdentifier(endBlock.getBlockFunction())
-                        );
+                .onItem().call(model -> {
+                    model.nextRouteSequence().ifPresent(next ->
+                            routeExecutionObserver.registerBlocksToReserveNextRoute(
+                                    model.scenarioId(), model.routeSequence(), next));
+                    return Uni.createFrom().item(model);
+                })
 
-                        final RouteEndBlockListener listener = new RouteEndBlockListener(route) {
-                            @Override
-                            protected void trainEnterRouteEnd() {
-                                log.debug("train entered route end ({}): {}", endBlock.getBlockFunction(), routeExecution.train());
+                .onItem().call(model -> {
+                    model.nextRouteSequence().ifPresent(next ->
+                            routeExecutionObserver.reserveNextRouteForCurrentRoute(
+                                    model.scenarioId(), next));
+                    return Uni.createFrom().item(model);
+                })
 
-                                var shouldStopTrain = routeExecution.nextRouteSequence()
-                                    .map(next -> !routeReservationCoordinator.isAlreadyReserved(next))
-                                    .orElse(true);
+                .onItem().call(this::startTrainForModel)
 
-                                if (shouldStopTrain) {
-                                    stopTrain(routeExecution.train())
-                                        .subscribe().with(
-                                            unused -> {
-                                                emitter.complete(null);
-                                                log.debug("train stopped after route end: {}", routeExecution.train());
-                                            },
-                                            failure -> {
-                                                log.error("failed to stop train after route end: {}", routeExecution.train(), failure);
-                                                emitter.fail(failure); // falls sinnvoll in deinem Kontext
-                                            }
-                                        );
-                                } else {
-                                    emitter.complete(null);
+                .onItem().call(x -> {
+                    final var route = routeExecution.routeSequence().getRoute();
+                    final var endBlock = route.getEnd();
+
+                    log.info("wait for end of route '{}' ({}) by end block: {} ({})",
+                            route.getName(), route.getId(), endBlock.getName(), endBlock.getBlockFunction());
+
+                    return Uni.createFrom().emitter(emitter -> {
+                        try {
+                            final var blockModule = SelectrixHelper.getBlockModule(connectedDevice(),
+                                    new BusAddressIdentifier(endBlock.getBlockFunction())
+                            );
+
+                            final RouteEndBlockListener listener = new RouteEndBlockListener(route) {
+                                @Override
+                                protected void trainEnterRouteEnd() {
+                                    log.debug("train entered route end ({}): {}", endBlock.getBlockFunction(), routeExecution.train());
+
+                                    var shouldStopTrain = routeExecution.nextRouteSequence()
+                                            .map(next -> !routeReservationCoordinator.isAlreadyReserved(next))
+                                            .orElse(true);
+                                    if (shouldStopTrain) {
+                                        stopTrain(routeExecution.train())
+                                                .subscribe().with(
+                                                        unused -> {
+                                                            emitter.complete(null);
+                                                            log.debug("train stopped after route end: {}", routeExecution.train());
+                                                        },
+                                                        failure -> {
+                                                            log.error("failed to stop train after route end: {}", routeExecution.train(), failure);
+                                                            emitter.fail(failure);
+                                                        }
+                                                );
+                                    } else {
+                                        emitter.complete(null);
+                                    }
                                 }
-                            }
-                        };
+                            };
 
-                        blockModule.addBlockListener(listener);
+                            blockModule.addBlockListener(listener);
 
-                        startTrain(x).subscribe().with(unused -> {
-                        }, emitter::fail);
+                            emitter.onTermination(() -> {
+                                log.debug("on termination start cleanup for route: {} ({}, routeSequenceId: {})",
+                                        routeExecution.routeSequence().getRoute().getName(),
+                                        routeExecution.routeSequence().getRoute().getId(),
+                                        routeExecution.routeSequence().getId());
+                                blockModule.removeBlockListener(listener);
+                            });
 
-                        emitter.onTermination(() -> {
-                            log.debug("route end block listener removed for route: {} ({})", route.getName(), route.getId());
-                            blockModule.removeBlockListener(listener);
-                        });
+                        } catch (DeviceAccessException e) {
+                            log.error("device access failed", e);
+                            emitter.fail(e);
+                        }
+                    });
 
-                    } catch (DeviceAccessException e) {
-                        log.error("device access failed", e);
-                        emitter.fail(e);
-                    }
                 });
-
-            });
     }
 
     private Uni<Void> updateTrack(ExecuteRouteModel model) {
@@ -383,24 +409,19 @@ public class RouteSequenceExecution {
             }).onItem().call(() -> switchStartSignalOfRouteToDrive.call(model.routeSequence().getRoute()));
     }
 
-    private Uni<Void> startTrain(ExecuteRouteModel routeExecution) {
-        return Uni.createFrom().item(routeExecution.train())
+    private Uni<Void> startTrainForModel(ExecuteRouteModel model) {
+        return Uni.createFrom().item(model.train())
             .onItem().transform(trainService::trainInstanceByTrain)
             .onItem().call(trainInstance -> {
                 if (trainInstance.trainStatus().getDrivingLevel() <= 0) {
-                    return startTrain(trainInstance.train(), routeExecution.trainStartDrivingLevel())
-                        .invoke(() -> log.debug("train ({}) start scheduled", routeExecution.train().getName()))
+                    return startTrain(trainInstance.train(), model.trainStartDrivingLevel())
+                            .invoke(() -> log.debug("train ({}) start scheduled", model.train().getName()))
                         .onFailure().invoke(f -> log.error("failed to start train with delay", f));
                 } else {
                     return Uni.createFrom().voidItem();
                 }
             })
             .replaceWithVoid();
-    }
-
-    private Device connectedDevice() throws DeviceAccessException {
-        return deviceManager.getConnectedDevice()
-            .orElseThrow(() -> new DeviceAccessException("no connected device"));
     }
 
     private Uni<Void> startTrain(Train train, Integer startDrivingLevel) {
@@ -416,6 +437,11 @@ public class RouteSequenceExecution {
                                     startDrivingLevel != null ? startDrivingLevel : configService.getDefaultStartDrivingLevel());
                             return null;
                         })));
+    }
+
+    private Device connectedDevice() throws DeviceAccessException {
+        return deviceManager.getConnectedDevice()
+                .orElseThrow(() -> new DeviceAccessException("no connected device"));
     }
 
 }

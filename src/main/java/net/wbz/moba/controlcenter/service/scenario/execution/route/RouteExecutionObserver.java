@@ -19,14 +19,7 @@ import net.wbz.selectrix4java.device.Device;
 import net.wbz.selectrix4java.device.DeviceAccessException;
 import net.wbz.selectrix4java.device.DeviceManager;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
@@ -71,87 +64,62 @@ public class RouteExecutionObserver {
     /**
      * Synchronized to guarantee a single reserve for a route execution.
      *
-     * @param routeSequence {@link RouteSequence} to check and to reserve run
-     * @param previousRouteSequence the previous executed {@link RouteSequence}
-     * @return {@code true} if the track was free and the given route is reserved.
+     * @param routeSequence {@link RouteSequence} to check
+     * @return {@code true} if the track was free, also without dependent route
+     *         {@code false} if still blocks occupied to drive without a route depending on.
+     *          (From manual drive or not started route)
      */
-    synchronized boolean checkAndReserveNextRunningRoute(long scenarioId, RouteSequence routeSequence,
-                                                         Optional<RouteSequence> previousRouteSequence) {
+    synchronized boolean checkForNextRouteToRun(RouteSequence routeSequence) {
+        log.debug("check for next route to run: {} ({}) [seqId: {}]", routeSequence.getRoute().getName(), routeSequence.getRoute().getId(), routeSequence.getId());
         final var route = routeSequence.getRoute();
         final var dependingRunningRoutes = getDependingRunningRoutes(route);
 
-        // previous given one is running, which will be now removed to start next route in the sequence
-        previousRouteSequence.ifPresent(dependingRunningRoutes::remove);
         // all are prepared, then start with one by setting state RESERVED to avoid deadlock of routes
         boolean allDependingRoutesHaveStatePrepared = dependingRunningRoutes.stream()
             .allMatch(x -> routeStateChangedObserver.getRouteState(x.getId()) == ROUTE_RUN_STATE.PREPARED);
 
         // Check that no depending on route is running
         if (dependingRunningRoutes.isEmpty() || allDependingRoutesHaveStatePrepared) {
-
             // only set to reserve if the next route blocks are free, also without dependent route
-            if (allBlocksAreFree(route.getAllTrackBlocksToDrive())) {
-                if (routeReservationCoordinator.reserve(scenarioId, routeSequence)) {
-                    switchStartSignalOfRouteToDrive.call(route).subscribe().with(
-                        unused -> log.debug("reserved next route: {} ({})", route.getName(), route.getId()),
-                        failure -> log.error("failed to reserve next route: {} ({})", route.getName(), route.getId()));
-                }
-                return true;
-            } else {
-                /*
-                 * Still blocks occupied to drive without a route depending on.
-                 * From manual drive or not started route.
-                 */
-                return false;
-            }
+            return allBlocksAreFree(route.getAllTrackBlocksToDrive());
         }
         return false;
     }
 
+    /**
+     * Register {@link BlockListener} for each block running through on the track to try to reserve the next route
+     * immediately.
+     *
+     * @param scenarioId {@link Long} id of scneario
+     * @param current    the current {@link RouteSequence}
+     * @param next       the next {@link RouteSequence}
+     */
     void registerBlocksToReserveNextRoute(long scenarioId, RouteSequence current, RouteSequence next) {
-        // register block listener for each block on the track to try to reserve the next route immediately
-        log.debug("register block listeners for route: {} ({})", current.getRoute().getName(),
-            current.getRoute().getId());
+        log.debug("register block listeners to running through for route: {} ({})",
+                current.getRoute().getName(), current.getRoute().getId());
 
-        // try to reserve next route from start block
-        for (TrackBlock trackBlock : current.getRoute().getStart().getAllTrackBlocks()) {
-            try {
-                addBlockListener(new BlockListener() {
-                    @Override
-                    public void blockOccupied(int blockNr) {
-                        //ignore, that's the start of the route
-                    }
-
-                    @Override
-                    public void blockFreed(int blockNr) {
-                        reserveNextRouteForCurrentRoute(scenarioId, current, next);
-                    }
-                }, trackBlock.getBlockFunction(), connectedDevice());
-            } catch (DeviceAccessException e) {
-                final var msg = "device error during reserve next route from start block: " + current.getRoute().getName();
-                log.error(msg, e);
-                throw new ScenarioExecutionInterruptException(msg, e);
-            }
-        }
-
-        // try to reserve next route from each block running through
         for (TrackBlock trackBlock : current.getRoute().getTrack().trackBlocks()) {
             try {
-                addBlockListener(new BlockListener() {
-                    @Override
-                    public void blockOccupied(int blockNr) {
-                        extracted(blockNr);
-                    }
+                addBlockListener(current, connectedDevice(), trackBlock.getBlockFunction(),
+                        new BlockListener() {
+                            @Override
+                            public void blockOccupied(int blockNr) {
+                                extracted(blockNr);
+                            }
 
-                    @Override
-                    public void blockFreed(int blockNr) {
-                        extracted(blockNr);
-                    }
+                            @Override
+                            public void blockFreed(int blockNr) {
+                                extracted(blockNr);
+                            }
 
-                    private void extracted(int ignored) {
-                        reserveNextRouteForCurrentRoute(scenarioId, current, next);
-                    }
-                }, trackBlock.getBlockFunction(), connectedDevice());
+                            private void extracted(int ignored) {
+                                log.debug("block state changed for route: {} ({}; routeSequenceId: {}; block: {} ({}))",
+                                        current.getRoute().getName(), current.getRoute().getId(), current.getId(),
+                                        trackBlock.getName(), trackBlock.getId());
+                                reserveNextRouteForCurrentRoute(scenarioId, next);
+                            }
+                        }
+                );
             } catch (DeviceAccessException e) {
                 final var msg = "device error during reserve next route: " + current.getRoute().getName();
                 log.error(msg, e);
@@ -160,46 +128,62 @@ public class RouteExecutionObserver {
         }
     }
 
-    public synchronized void reserveNextRouteForCurrentRoute(long scenarioId, RouteSequence current, RouteSequence next) {
+    public synchronized void reserveNextRouteForCurrentRoute(long scenarioId,
+                                                             RouteSequence next) {
         if (routeReservationCoordinator.isAlreadyReserved(next)) {
             log.debug("route sequence {} already reserved", next.getId());
             return;
         }
-        checkAndReserveNextRunningRoute(scenarioId, next, Optional.of(current));
+        if (checkForNextRouteToRun(next)) {
+            if (routeReservationCoordinator.reserve(scenarioId, next)) {
+                final var route = next.getRoute();
+                switchStartSignalOfRouteToDrive.call(route).subscribe().with(
+                        unused -> log.debug("switched start signal to drive for next route: {} ({})",
+                                route.getName(), route.getId()),
+                        failure -> log.error("failed to switch start signal to drive next route: {} ({})",
+                                route.getName(), route.getId()));
+            }
+        }
+    }
+
+    private synchronized void addBlockListener(RouteSequence routeSequence, Device device,
+                                               BusDataConfiguration busDataConfiguration, BlockListener listener)
+            throws DeviceAccessException {
+        log.debug("add block listener for routeSeqId {}: {}", routeSequence.getId(), busDataConfiguration);
+        final var busAddressIdentifier = new BusAddressIdentifier(busDataConfiguration);
+        SelectrixHelper.getBlockModule(device, busAddressIdentifier).addBlockListener(listener);
+        final var key = routeSequence.getId();
+        if (!blockListenersOfRouteSequence.containsKey(key)) {
+            blockListenersOfRouteSequence.put(key, new CopyOnWriteArrayList<>());
+        }
+        blockListenersOfRouteSequence.get(key).add(Tuple2.of(busAddressIdentifier, listener));
+    }
+
+    void addRunningRouteSequence(RouteSequence routeSequence) {
+        log.debug("addRunningRouteSequence: {} ({}) [seqId: {}]", routeSequence.getRoute().getName(),
+                routeSequence.getRoute().getId(), routeSequence.getId());
+        runningRouteSequences.add(routeSequence);
     }
 
     public void cleanup(RouteSequence routeSequence) throws DeviceAccessException {
-        log.debug("removeRunningRouteSequence: {}", routeSequence);
-        synchronized (runningRouteSequences) {
-            runningRouteSequences.remove(routeSequence);
-        }
+        log.debug("cleanup for: {} ({}) [seqId: {}]", routeSequence.getRoute().getName(),
+                routeSequence.getRoute().getId(), routeSequence.getId());
 
-        if (blockListenersOfRouteSequence.containsKey(routeSequence.getId())) {
-            for (Tuple2<BusAddressIdentifier, BlockListener> entry : blockListenersOfRouteSequence.get(routeSequence.getId())) {
+        runningRouteSequences.remove(routeSequence);
+
+        final var key = routeSequence.getId();
+        if (blockListenersOfRouteSequence.containsKey(key)) {
+            for (Tuple2<BusAddressIdentifier, BlockListener> entry : blockListenersOfRouteSequence.get(key)) {
                 SelectrixHelper.getBlockModule(connectedDevice(), entry.getItem1())
-                    .removeBlockListener(entry.getItem2());
+                        .removeBlockListener(entry.getItem2());
             }
+            blockListenersOfRouteSequence.remove(key);
         }
     }
 
     private Device connectedDevice() throws DeviceAccessException {
         return deviceManager.getConnectedDevice()
-            .orElseThrow(() -> new DeviceAccessException("no connected device"));
-    }
-
-    private void addBlockListener(BlockListener listener, BusDataConfiguration busDataConfiguration, Device device) throws
-        DeviceAccessException {
-        final var busAddressIdentifier = new BusAddressIdentifier(busDataConfiguration);
-        SelectrixHelper.getBlockModule(device, busAddressIdentifier).addBlockListener(listener);
-        if (!blockListenersOfRouteSequence.containsKey(busDataConfiguration.getId())) {
-            blockListenersOfRouteSequence.put(busDataConfiguration.getId(), new CopyOnWriteArrayList<>());
-        }
-        blockListenersOfRouteSequence.get(busDataConfiguration.getId()).add(Tuple2.of(busAddressIdentifier, listener));
-    }
-
-    synchronized void addRunningRouteSequence(RouteSequence routeSequence) {
-        log.debug("addRunningRouteSequence: {}", routeSequence);
-        runningRouteSequences.add(routeSequence);
+                .orElseThrow(() -> new DeviceAccessException("no connected device"));
     }
 
     /**

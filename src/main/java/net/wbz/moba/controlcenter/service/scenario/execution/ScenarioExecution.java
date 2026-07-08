@@ -41,7 +41,7 @@ class ScenarioExecution {
                 return Multi.createFrom().iterable(routeSequences)
                     .onItem().transformToUniAndConcatenate(routeSequence -> {
                         final var route = routeSequence.getRoute();
-                        log.info("start to execute route: {} ({})", route.getName(), route.getId());
+                            log.info("start to execute route: {} ({}) [seqId: {}]", route.getName(), route.getId(), routeSequence.getId());
                         final var index = routeSequences.indexOf(routeSequence);
                         final var previousRouteSequence = Optional.ofNullable((index > 0) ? routeSequences.get(index - 1) : null);
                         final var nextRouteSequence = Optional.ofNullable((index + 1 < routeSequences.size()) ? routeSequences.get(index + 1) : null);

@@ -31,7 +31,7 @@ public class ScenarioStatisticManager {
     }
 
     public void onScenarioStateEvent(@Observes ScenarioStateEvent event) {
-        log.info("scenario state changed for ID: {}", event.getItemId());
+        log.info("scenario state changed for ID: {} to {}", event.getItemId(), event.getState());
 
         switch (event.getState()) {
             case RUNNING:

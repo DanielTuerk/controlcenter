@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.wbz.moba.controlcenter.shared.scenario.Route;
 import net.wbz.moba.controlcenter.shared.scenario.RouteSequence;
 import net.wbz.moba.controlcenter.shared.scenario.RouteStateEvent;
+import net.wbz.moba.controlcenter.shared.track.model.AbstractDto;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -25,35 +26,46 @@ public class RouteReservationCoordinator {
     }
 
     void cleanupOnRouteStateChanged(@Observes RouteStateEvent evt) {
-        reservedRouteSequences.removeAll(reservedRouteSequences.stream()
-            .filter(routeSequence -> routeSequence.getId().equals(evt.getRouteSequenceId()))
-            .filter(routeSequence -> switch (evt.getState()) {
-                case PREPARED, RESERVED -> false;
-                default -> true;
-            }).collect(Collectors.toSet()));
+        final var toRemove = reservedRouteSequences.stream()
+                .filter(routeSequence -> routeSequence.getId().equals(evt.getRouteSequenceId()))
+                .filter(routeSequence -> switch (evt.getState()) {
+                    case PREPARED, RESERVED -> false;
+                    default -> true;
+                }).collect(Collectors.toSet());
+        if (!toRemove.isEmpty()) {
+            log.debug("cleanup route sequences ({}) after event: {}", toRemove.stream()
+                            .map(AbstractDto::getId)
+                            .toList(),
+                    evt);
+            reservedRouteSequences.removeAll(toRemove);
+        }
     }
 
     boolean isAlreadyReserved(RouteSequence routeSequence) {
-        log.debug("check for already reserved: {}; reserved route sequences: {}", routeSequence.getId(),
-            reservedRouteSequences.stream().map(RouteSequence::getId).collect(Collectors.toSet()));
+        log.debug("check for already reserved: {} ({}, routeSequenceId: {}); reserved route sequences: {}",
+                routeSequence.getRoute().getName(), routeSequence.getRoute().getId(), routeSequence.getId(),
+                reservedRouteSequences.stream().map(RouteSequence::getId).collect(Collectors.toSet()));
         return reservedRouteSequences.contains(routeSequence)
-            || checkIfRouteIsAlreadyReserved(routeSequence.getRoute());
+                || checkIfRouteIsAlreadyReserved(routeSequence.getRoute());
     }
 
     synchronized boolean reserve(Long scenarioId, RouteSequence routeSequence) {
-        if (!reservedRouteSequences.contains(routeSequence)) {
+        if (reservedRouteSequences.contains(routeSequence)) {
+            log.warn("route sequence {} ({}, routeSequenceId: {}) already reserved",
+                    routeSequence.getRoute().getName(), routeSequence.getRoute().getId(), routeSequence.getId());
+            return false;
+        } else {
+            log.debug("reserve route: {} ({}, routeSequenceId: {})",
+                    routeSequence.getRoute().getName(), routeSequence.getRoute().getId(), routeSequence.getId());
             reservedRouteSequences.add(routeSequence);
             routeStateEventPublisher.fireEvent(scenarioId, routeSequence, Route.ROUTE_RUN_STATE.RESERVED);
             return true;
-        } else {
-            log.warn("route sequence {} ({}) already reserved", routeSequence.getId(), routeSequence.getRoute().getName());
-            return false;
         }
     }
 
     private boolean checkIfRouteIsAlreadyReserved(Route route) {
         return reservedRouteSequences.stream().map(RouteSequence::getRoute)
-            .anyMatch(r -> r.getId().equals(route.getId()));
+                .anyMatch(r -> r.getId().equals(route.getId()));
     }
 
 }

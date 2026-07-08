@@ -78,6 +78,9 @@ public class ScenarioExecutionTest extends BaseIt {
 
         stopScenario(ScenarioTestData.LEFT_TO_RIGHT.id());
         stopScenario(ScenarioTestData.RIGHT_TO_LEFT.id());
+        stopScenario(ScenarioTestData.ONE_TO_ONE.id());
+        stopScenario(ScenarioTestData.ONE_TO_FOUR.id());
+        stopScenario(ScenarioTestData.ONE_TO_TWO_ROUNDTRIP.id());
     }
 
     @Test
@@ -112,26 +115,29 @@ public class ScenarioExecutionTest extends BaseIt {
             Route.ROUTE_RUN_STATE.PREPARED);
 
         verifyRouteStateEvent(scenario.id(), firstRoute.routeSequenceId(),
-            Route.ROUTE_RUN_STATE.RESERVED);
-
-        verifyRouteStateEvent(scenario.id(), firstRoute.routeSequenceId(),
             Route.ROUTE_RUN_STATE.RUNNING);
+
+        verifyRouteStateEvent(scenario.id(), scenario.routes().get(1).routeSequenceId(),
+                Route.ROUTE_RUN_STATE.RESERVED);
 
         verifyTrainSpeed(scenario.train().id(), scenario.drivingLevel());
 
         // train on its way to the next block
         trainLeaveBlock(scenario.train().address(), firstBlock.address(), firstBlock.number());
 
-        // reserve next route for free track after exiting the start block
-        verifyRouteStateEvent(scenario.id(), scenario.routes().get(1).routeSequenceId(),
-            Route.ROUTE_RUN_STATE.RESERVED);
-
         // stop
         stopScenario(scenario.id());
 
         verifyTrainSpeed(scenario.train().id(), 0);
+
+        // reserved route canceled
+        verifyRouteStateEvent(scenario.id(), scenario.routes().get(1).routeSequenceId(),
+                Route.ROUTE_RUN_STATE.CANCELED);
+
+        // current route canceled
         verifyRouteStateEvent(scenario.id(), firstRoute.routeSequenceId(),
-            Route.ROUTE_RUN_STATE.CANCELED);
+                Route.ROUTE_RUN_STATE.CANCELED);
+
         verifyScenarioStateEvent(scenario.id(), Scenario.RUN_STATE.STOPPED);
     }
 
@@ -153,7 +159,6 @@ public class ScenarioExecutionTest extends BaseIt {
         // free the next block
         updateBlockState(60, 1, false);
 
-        verifyRouteStateEvent(scenario.id(), 6401L, Route.ROUTE_RUN_STATE.RESERVED);
         verifyRouteStateEvent(scenario.id(), 6401L, Route.ROUTE_RUN_STATE.RUNNING);
 
         // train on its way to the next block
@@ -171,7 +176,6 @@ public class ScenarioExecutionTest extends BaseIt {
 
         updateBlockState(70, 2, false);
 
-        verifyRouteStateEvent(scenario.id(), 6402L, Route.ROUTE_RUN_STATE.RESERVED);
         verifyRouteStateEvent(scenario.id(), 6402L, Route.ROUTE_RUN_STATE.RUNNING);
 
         // train on its way to the next block
@@ -205,7 +209,6 @@ public class ScenarioExecutionTest extends BaseIt {
         startScenario(firstScenario.id());
         verifyScenarioStateEvent(firstScenario.id(), Scenario.RUN_STATE.RUNNING);
         verifyRouteStateEvent(firstScenario.id(), 6401L, Route.ROUTE_RUN_STATE.PREPARED);
-        verifyRouteStateEvent(firstScenario.id(), 6401L, Route.ROUTE_RUN_STATE.RESERVED);
         verifyRouteStateEvent(firstScenario.id(), 6401L, Route.ROUTE_RUN_STATE.RUNNING);
         verifyTrainSpeed(firstScenario.train().id(), firstScenario.drivingLevel());
 
@@ -213,7 +216,6 @@ public class ScenarioExecutionTest extends BaseIt {
         startScenario(secondScenario.id());
         verifyScenarioStateEvent(secondScenario.id(), Scenario.RUN_STATE.RUNNING);
         verifyRouteStateEvent(secondScenario.id(), 3201L, Route.ROUTE_RUN_STATE.PREPARED);
-        verifyRouteStateEvent(secondScenario.id(), 3201L, Route.ROUTE_RUN_STATE.RESERVED);
         verifyRouteStateEvent(secondScenario.id(), 3201L, Route.ROUTE_RUN_STATE.RUNNING);
         verifyTrainSpeed(secondScenario.train().id(), secondScenario.drivingLevel());
 
@@ -235,12 +237,10 @@ public class ScenarioExecutionTest extends BaseIt {
         verifyTrainSpeed(secondScenario.train().id(), 0);
 
         verifyRouteStateEvent(secondScenario.id(), 4801L, Route.ROUTE_RUN_STATE.PREPARED);
-        verifyRouteStateEvent(secondScenario.id(), 4801L, Route.ROUTE_RUN_STATE.RESERVED);
         verifyRouteStateEvent(secondScenario.id(), 4801L, Route.ROUTE_RUN_STATE.RUNNING);
         // train 2 continue
         verifyTrainSpeed(secondScenario.train().id(), secondScenario.drivingLevel());
 
-        verifyRouteStateEvent(firstScenario.id(), 6402L, Route.ROUTE_RUN_STATE.RESERVED);
         verifyRouteStateEvent(firstScenario.id(), 6402L, Route.ROUTE_RUN_STATE.RUNNING);
         verifyTrainSpeed(firstScenario.train().id(), firstScenario.drivingLevel());
 
@@ -260,6 +260,21 @@ public class ScenarioExecutionTest extends BaseIt {
         verifyTrainSpeed(secondScenario.train().id(), 0);
 
         verifyScenarioStateEvent(secondScenario.id(), Scenario.RUN_STATE.SUCCESS);
+    }
+
+    @Test
+    void testRunScenario_OneToFour() {
+        runScenario(ScenarioTestData.ONE_TO_FOUR);
+    }
+
+    @Test
+    void testRunScenario_OneToOne() {
+        runScenario(ScenarioTestData.ONE_TO_ONE);
+    }
+
+    @Test
+    void testRunScenario_OneToTwoRoundtrip() {
+        runScenario(ScenarioTestData.ONE_TO_TWO_ROUNDTRIP);
     }
 
     @Test
@@ -293,15 +308,10 @@ public class ScenarioExecutionTest extends BaseIt {
             verifyRouteStateEvent(scenario.id(), route.routeSequenceId(),
                 Route.ROUTE_RUN_STATE.PREPARED);
 
-            final var isFirst = i == 0;
-            if (isFirst) {
-                verifyRouteStateEvent(scenario.id(), route.routeSequenceId(),
-                    Route.ROUTE_RUN_STATE.RESERVED);
-            }
-
             verifyRouteStateEvent(scenario.id(), route.routeSequenceId(),
                 Route.ROUTE_RUN_STATE.RUNNING);
 
+            final var isFirst = i == 0;
             if (isFirst) {
                 verifyTrainSpeed(scenario.train().id(), scenario.drivingLevel());
             }
@@ -460,11 +470,15 @@ public class ScenarioExecutionTest extends BaseIt {
 
     private void verifyRouteStateEvent(long scenarioId, long routeSequenceId, Route.ROUTE_RUN_STATE runState, String message) {
         final var scenarioStateEvent = EVENT_RECEIVER.catchEvent(RouteStateEvent.class, s -> s.contains("\"scenarioId\":%d".formatted(scenarioId)));
-        assertEquals(scenarioId, scenarioStateEvent.getScenarioId());
-        assertEquals(routeSequenceId, scenarioStateEvent.getRouteSequenceId());
-        assertEquals(runState, scenarioStateEvent.getState());
+        assertEquals(scenarioId, scenarioStateEvent.getScenarioId(),
+                "scenario not equal for route state event with state: %s".formatted(runState));
+        assertEquals(routeSequenceId, scenarioStateEvent.getRouteSequenceId(),
+                "route sequence id not equal for route state event with state: %s".formatted(runState));
+        assertEquals(runState, scenarioStateEvent.getState(),
+                "run state not equal for route state event");
         if (message != null) {
-            assertEquals(message, scenarioStateEvent.getMessage());
+            assertEquals(message, scenarioStateEvent.getMessage(),
+                    "message not equal for route state event with state: %s".formatted(runState));
         }
     }
 }

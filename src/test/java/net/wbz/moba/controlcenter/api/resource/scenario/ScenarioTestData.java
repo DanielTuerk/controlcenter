@@ -46,6 +46,97 @@ public class ScenarioTestData {
         )
     );
 
+
+    public static Scenario ONE_TO_FOUR = new Scenario(77001L,
+            TRAIN1, 5, TrainDrivingDirectionEvent.DRIVING_DIRECTION.FORWARD,
+            List.of(
+                    new Scenario.Route(7001L,
+                            List.of(
+                                    new Scenario.Route.Block(80, 1),
+                                    new Scenario.Route.Block(80, 2)
+                            )
+                    ),
+                    new Scenario.Route(7002L,
+                            List.of(
+                                    new Scenario.Route.Block(80, 2),
+                                    new Scenario.Route.Block(90, 2)
+                            )
+                    ),
+                    new Scenario.Route(7003L,
+                            List.of(
+                                    new Scenario.Route.Block(90, 2),
+                                    new Scenario.Route.Block(90, 1)
+                            )
+                    )
+            )
+    );
+
+    public static Scenario ONE_TO_ONE = new Scenario(77002,
+            TRAIN1, 6, TrainDrivingDirectionEvent.DRIVING_DIRECTION.FORWARD,
+            List.of(
+                    new Scenario.Route(7201L,
+                            List.of(
+                                    new Scenario.Route.Block(80, 1),
+                                    new Scenario.Route.Block(80, 2)
+                            )
+                    ),
+                    new Scenario.Route(7202L,
+                            List.of(
+                                    new Scenario.Route.Block(80, 2),
+                                    new Scenario.Route.Block(90, 2)
+                            )
+                    ),
+                    new Scenario.Route(7203L,
+                            List.of(
+                                    new Scenario.Route.Block(90, 2),
+                                    new Scenario.Route.Block(90, 1)
+                            )
+                    ),
+                    new Scenario.Route(7204L,
+                            List.of(
+                                    new Scenario.Route.Block(90, 1),
+                                    new Scenario.Route.Block(80, 1)
+                            )
+                    )
+            )
+    );
+
+    public static Scenario ONE_TO_TWO_ROUNDTRIP = new Scenario(77003L,
+            TRAIN1, 7, TrainDrivingDirectionEvent.DRIVING_DIRECTION.FORWARD,
+            List.of(
+                    new Scenario.Route(7301L,
+                            List.of(
+                                    new Scenario.Route.Block(80, 1),
+                                    new Scenario.Route.Block(80, 2)
+                            )
+                    ),
+                    new Scenario.Route(7302L,
+                            List.of(
+                                    new Scenario.Route.Block(80, 2),
+                                    new Scenario.Route.Block(90, 2)
+                            )
+                    ),
+                    new Scenario.Route(7303L,
+                            List.of(
+                                    new Scenario.Route.Block(90, 2),
+                                    new Scenario.Route.Block(90, 1)
+                            )
+                    ),
+                    new Scenario.Route(7304L,
+                            List.of(
+                                    new Scenario.Route.Block(90, 1),
+                                    new Scenario.Route.Block(80, 1)
+                            )
+                    ),
+                    new Scenario.Route(7305L,
+                            List.of(
+                                    new Scenario.Route.Block(80, 1),
+                                    new Scenario.Route.Block(80, 2)
+                            )
+                    )
+            )
+    );
+
     public record Scenario(long id,
                            BaseTestData.Train train,
                            int drivingLevel,

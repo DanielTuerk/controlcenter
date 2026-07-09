@@ -24,7 +24,7 @@
       <ng-container matColumnDef="train">
         <th mat-header-cell *matHeaderCellDef> Train</th>
         <td mat-cell *matCellDef="let element"> {{ element.train?.name }}
-          <train-direction-icon [forward]="element.trainDrivingDirection === DRIVINGDIRECTION1.Forward"/>
+          <train-direction-icon [forward]="element.trainDrivingDirection === DRIVINGDIRECTION1.Forward"/> {{ element.startDrivingLevel }}
         </td>
       </ng-container>
 

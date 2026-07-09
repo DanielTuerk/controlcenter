@@ -4,7 +4,9 @@ import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.containsString;
 
 import io.quarkus.test.junit.QuarkusIntegrationTest;
+import io.quarkus.test.junit.TestProfile;
 import io.restassured.RestAssured;
+import net.wbz.moba.controlcenter.it.ITDatabaseTestProfile;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -14,6 +16,7 @@ import org.junit.jupiter.api.Test;
  * and their sub-paths, so that deep links are handled by the frontend router.
  */
 @QuarkusIntegrationTest
+@TestProfile(ITDatabaseTestProfile.class)
 class FrontendResourceTestIT {
 
     @BeforeAll

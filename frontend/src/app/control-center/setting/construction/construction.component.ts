@@ -62,6 +62,7 @@ export class ConstructionComponent {
   private configService = inject(ConfigService);
   private constructionService = inject(ConstructionService);
   private constructionSubscription = inject(ConstructionSubscription);
+  private currentConstruction = this.constructionSubscription.currentConstruction;
 
   readonly dialog = inject(MatDialog);
   displayedColumns: string[] = ['id', 'name', 'action'];
@@ -91,8 +92,8 @@ export class ConstructionComponent {
   }
 
   isCurrentConstruction(construction: Construction) {
-    return this.constructionService.currentConstruction() !== null
-      && this.constructionService.currentConstruction()?.id === construction.id;
+    return this.currentConstruction() !== null
+      && this.currentConstruction()?.id === construction.id;
   }
 
   deleteConstruction(construction: Construction) {

@@ -39,9 +39,12 @@ export class ScenarioComponent {
   private dialog = inject(MatDialog);
 
   scenarios = toSignal(
-    merge(of(null), this.scenarioSubscription.scenarioDataChanged(), this.scenarioSubscription.scenariosChanged()).pipe(
-      switchMap(() => this.scenarioService.loadScenarios())
-    ),
+    merge(of(null),
+      this.scenarioSubscription.scenarioDataChanged(),
+      this.scenarioSubscription.scenariosChanged())
+      .pipe(
+        switchMap(() => this.scenarioService.loadScenarios())
+      ),
     {initialValue: []}
   );
 

@@ -20,9 +20,11 @@ public class RouteReservationCoordinator {
     private final Set<RouteSequence> reservedRouteSequences = new HashSet<>();
 
     private final RouteStateEventPublisher routeStateEventPublisher;
+    private final SwitchStartSignalOfRouteToDrive switchStartSignalOfRouteToDrive;
 
-    RouteReservationCoordinator(RouteStateEventPublisher routeStateEventPublisher) {
+    RouteReservationCoordinator(RouteStateEventPublisher routeStateEventPublisher, SwitchStartSignalOfRouteToDrive switchStartSignalOfRouteToDrive) {
         this.routeStateEventPublisher = routeStateEventPublisher;
+        this.switchStartSignalOfRouteToDrive = switchStartSignalOfRouteToDrive;
     }
 
     void cleanupOnRouteStateChanged(@Observes RouteStateEvent evt) {
@@ -55,10 +57,17 @@ public class RouteReservationCoordinator {
                     routeSequence.getRoute().getName(), routeSequence.getRoute().getId(), routeSequence.getId());
             return false;
         } else {
+            final var route = routeSequence.getRoute();
             log.debug("reserve route: {} ({}, routeSequenceId: {})",
-                    routeSequence.getRoute().getName(), routeSequence.getRoute().getId(), routeSequence.getId());
+                    route.getName(), route.getId(), routeSequence.getId());
             reservedRouteSequences.add(routeSequence);
             routeStateEventPublisher.fireEvent(scenarioId, routeSequence, Route.ROUTE_RUN_STATE.RESERVED);
+
+            switchStartSignalOfRouteToDrive.call(route).subscribe().with(
+                    unused -> log.debug("switched start signal to drive for reserved route: {} ({})",
+                            route.getName(), route.getId()),
+                    failure -> log.error("failed to switch start signal to drive reserved route: {} ({})",
+                            route.getName(), route.getId()));
             return true;
         }
     }

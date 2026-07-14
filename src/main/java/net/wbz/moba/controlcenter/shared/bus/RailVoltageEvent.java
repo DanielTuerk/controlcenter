@@ -11,31 +11,6 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
  */
 @Schema(description = "railvoltage status update sent via WebSocket")
 @Tag(ref = "websocket")
-public class RailVoltageEvent implements StateEvent {
-
-    private boolean state;
-
-    public RailVoltageEvent() {
-    }
-
-    public RailVoltageEvent(boolean state) {
-        this.state = state;
-    }
-
-    public boolean isState() {
-        return state;
-    }
-
-    public void setState(boolean state) {
-        this.state = state;
-    }
-
-    @Override
-    public String toString() {
-        final StringBuffer sb = new StringBuffer("RailVoltageEvent{");
-        sb.append("state=").append(state);
-        sb.append('}');
-        return sb.toString();
-    }
+public record RailVoltageEvent(boolean state) implements StateEvent {
 
 }

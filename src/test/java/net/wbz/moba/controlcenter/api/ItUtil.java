@@ -88,7 +88,7 @@ public class ItUtil {
             // the initial one
             eventReceiver.verifyReceivedEvent(RailVoltageEvent.class, "state");
             final var railVoltageEvent = eventReceiver.catchEvent(RailVoltageEvent.class);
-            if (!railVoltageEvent.isState()) {
+            if (!railVoltageEvent.state()) {
                 throw new RuntimeException("Rail voltage not enabled after toggle");
             }
             eventReceiver.reset();

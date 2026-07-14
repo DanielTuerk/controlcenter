@@ -26,6 +26,29 @@ export class TrackComponentBuilder {
   curveBuilder = new CurveBuilder();
   uncouplerBuilder = new UncouplerBuilder();
 
+  update(trackPart: AbstractTrackPart, event: TrackPartStateEvent) {
+    if ("trackPartType" in trackPart) {
+      switch (trackPart.trackPartType) {
+        case 'Turnout':
+          return this.turnoutBuilder.update(trackPart as Turnout, event);
+        case 'Signal':
+          return this.signalBuilder.update(trackPart as Signal, event);
+        case 'Straight':
+          return this.straightBuilder.update(trackPart as Straight, event);
+        case 'BlockStraight':
+          return this.blockStraightBuilder.update(trackPart as BlockStraight, event);
+        case 'Curve':
+          return this.curveBuilder.update(trackPart as Curve, event);
+        case 'Uncoupler':
+          return this.uncouplerBuilder.update(trackPart as Uncoupler, event);
+        default:
+          console.error("undefined trackPartType", trackPart);
+          throw new Error("unknown trackPartType: " + trackPart.trackPartType);
+      }
+    }
+    throw new Error("no trackPartType:" + trackPart);
+  }
+
   build(trackPart: AbstractTrackPart, event: TrackPartStateEvent | null = null) {
     if ("trackPartType" in trackPart) {
       switch (trackPart.trackPartType) {

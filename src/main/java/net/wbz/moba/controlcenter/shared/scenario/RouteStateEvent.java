@@ -7,62 +7,20 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 /**
  * Event for the execution state of a {@link RouteSequence} in the {@link Scenario} execution.
- * 
+ *
+ * @param scenarioId      ID of the {@link Scenario}.
+ * @param routeSequenceId ID of the {@link RouteSequence}.
+ * @param state           Actual state.
+ * @param message         Optional message.
  * @author Daniel Tuerk
  */
 @Schema(description = "scenario status update sent via WebSocket")
 @Tag(ref = "websocket")
-public class RouteStateEvent implements StateEvent {
-
-    /**
-     * Id of the {@link Scenario}.
-     */
-    private Long scenarioId;
-    /**
-     * Id of the {@link RouteSequence}.
-     */
-    private Long routeSequenceId;
-    /**
-     * Actual state.
-     */
-    private ROUTE_RUN_STATE state;
-    /**
-     * Optional message.
-     */
-    private String message;
-
-    public RouteStateEvent() {
-    }
+public record RouteStateEvent(Long scenarioId, Long routeSequenceId, ROUTE_RUN_STATE state,
+                              String message) implements StateEvent {
 
     public RouteStateEvent(Long scenarioId, Long routeSequenceId, ROUTE_RUN_STATE state) {
         this(scenarioId, routeSequenceId, state, null);
-    }
-
-    public RouteStateEvent(Long scenarioId, Long routeSequenceId, ROUTE_RUN_STATE state, String msg) {
-        this.scenarioId = scenarioId;
-        this.routeSequenceId = routeSequenceId;
-        this.state = state;
-        this.message = msg;
-    }
-
-    public Long getScenarioId() {
-        return scenarioId;
-    }
-
-    public Long getRouteSequenceId() {
-        return routeSequenceId;
-    }
-
-    public ROUTE_RUN_STATE getState() {
-        return state;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
     }
 
     @Override
@@ -70,16 +28,4 @@ public class RouteStateEvent implements StateEvent {
         return getClass().getName() + ":" + scenarioId + "-" + routeSequenceId;
     }
 
-    @Override
-    public String toString() {
-        return "RouteStateEvent{" +
-                "scenarioId=" + scenarioId +
-                ", routeSequenceId=" + routeSequenceId +
-                ", state=" + state +
-                '}';
-    }
-
-    public enum STATE {
-        WAITING, RUNNING, FINISHED, FAILED
-    }
 }

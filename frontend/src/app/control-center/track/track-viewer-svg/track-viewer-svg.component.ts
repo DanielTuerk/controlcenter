@@ -93,13 +93,20 @@ export class TrackViewerSvgComponent {
     this.trackPartsReady.emit(this.loadedTrackParts);
 
     this.trackSubscription.trackPartState().subscribe(event => {
-      this.consumeTrackEvent('trackPartState', event, event.trackPartId!);
+      this.consumeTrackEvent(event, event.trackPartId!);
     });
     this.trackSubscription.signalFunctionState().subscribe(event => {
-      this.consumeTrackEvent('signalFunctionState', event, event.signalId!);
+      this.consumeTrackEvent(event, event.signalId!);
     });
     this.trackSubscription.trackPartBlock().subscribe(event => {
-      this.consumeTrackEvent('trackPartBlock', event, event.trackPartId!);
+      this.consumeTrackEvent(event, event.trackPartId!);
+    });
+    this.trackSubscription.trainInBlockEvent().subscribe(event => {
+      let trackElement = this.loadedTrackParts.find(
+        trackElement => trackElement.trackPart.id === event.trackPartId);
+      if (!trackElement) return;
+
+      this.trackComponentBuilder.update(trackElement.trackPart, event);
     });
 
     console.log("load finished");
@@ -118,12 +125,11 @@ export class TrackViewerSvgComponent {
     return element;
   }
 
-  private consumeTrackEvent(name: string, event: any, trackPartId: number) {
+  private consumeTrackEvent(event: any, trackPartId: number) {
     let trackElement = this.loadedTrackParts.find(
       trackElement => trackElement.trackPart.id === trackPartId);
     if (!trackElement) return;
 
-    console.log(`received ${name}: `, trackElement);
     this.removeTrackPart(trackElement);
     let element = this.buildTrackPartElement(trackElement?.trackPart!, event);
     this.addTrackPart(element);

@@ -27,8 +27,8 @@ public class RouteReservationCoordinator {
 
     void cleanupOnRouteStateChanged(@Observes RouteStateEvent evt) {
         final var toRemove = reservedRouteSequences.stream()
-                .filter(routeSequence -> routeSequence.getId().equals(evt.getRouteSequenceId()))
-                .filter(routeSequence -> switch (evt.getState()) {
+                .filter(routeSequence -> routeSequence.getId().equals(evt.routeSequenceId()))
+                .filter(routeSequence -> switch (evt.state()) {
                     case PREPARED, RESERVED -> false;
                     default -> true;
                 }).collect(Collectors.toSet());

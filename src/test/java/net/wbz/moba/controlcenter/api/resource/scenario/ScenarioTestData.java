@@ -15,14 +15,14 @@ public class ScenarioTestData {
         List.of(
             new Scenario.Route(6401L,
                 List.of(
-                    new Scenario.Route.Block(50, 1),
-                    new Scenario.Route.Block(60, 1)
+                    new Scenario.Route.Block(20801,50, 1),
+                    new Scenario.Route.Block(20806,60, 1)
                 )
             ),
             new Scenario.Route(6402L,
                 List.of(
-                    new Scenario.Route.Block(60, 1),
-                    new Scenario.Route.Block(70, 2)
+                    new Scenario.Route.Block(20806,60, 1),
+                    new Scenario.Route.Block(20816,70, 2)
                 )
             )
         )
@@ -33,14 +33,14 @@ public class ScenarioTestData {
         List.of(
             new Scenario.Route(3201L,
                 List.of(
-                    new Scenario.Route.Block(70, 2),
-                    new Scenario.Route.Block(60, 2)
+                    new Scenario.Route.Block(20816,70, 2),
+                    new Scenario.Route.Block(20805,60, 2)
                 )
             ),
             new Scenario.Route(4801L,
                 List.of(
-                    new Scenario.Route.Block(60, 2),
-                    new Scenario.Route.Block(50, 1)
+                    new Scenario.Route.Block(20805,60, 2),
+                    new Scenario.Route.Block(20801,50, 1)
                 )
             )
         )
@@ -52,20 +52,20 @@ public class ScenarioTestData {
             List.of(
                     new Scenario.Route(7001L,
                             List.of(
-                                    new Scenario.Route.Block(80, 1),
-                                    new Scenario.Route.Block(80, 2)
+                                    new Scenario.Route.Block(4801L,80, 1),
+                                    new Scenario.Route.Block(4802L,80, 2)
                             )
                     ),
                     new Scenario.Route(7002L,
                             List.of(
-                                    new Scenario.Route.Block(80, 2),
-                                    new Scenario.Route.Block(90, 2)
+                                    new Scenario.Route.Block(4802L,80, 2),
+                                    new Scenario.Route.Block(4804L,90, 2)
                             )
                     ),
                     new Scenario.Route(7003L,
                             List.of(
-                                    new Scenario.Route.Block(90, 2),
-                                    new Scenario.Route.Block(90, 1)
+                                    new Scenario.Route.Block(4804L,90, 2),
+                                    new Scenario.Route.Block(4803L,90, 1)
                             )
                     )
             )
@@ -76,26 +76,26 @@ public class ScenarioTestData {
             List.of(
                     new Scenario.Route(7201L,
                             List.of(
-                                    new Scenario.Route.Block(80, 1),
-                                    new Scenario.Route.Block(80, 2)
+                                    new Scenario.Route.Block(4801L,80, 1),
+                                    new Scenario.Route.Block(4802L,80, 2)
                             )
                     ),
                     new Scenario.Route(7202L,
                             List.of(
-                                    new Scenario.Route.Block(80, 2),
-                                    new Scenario.Route.Block(90, 2)
+                                    new Scenario.Route.Block(4802L,80, 2),
+                                    new Scenario.Route.Block(4804L,90, 2)
                             )
                     ),
                     new Scenario.Route(7203L,
                             List.of(
-                                    new Scenario.Route.Block(90, 2),
-                                    new Scenario.Route.Block(90, 1)
+                                    new Scenario.Route.Block(4804L,90, 2),
+                                    new Scenario.Route.Block(4803L,90, 1)
                             )
                     ),
                     new Scenario.Route(7204L,
                             List.of(
-                                    new Scenario.Route.Block(90, 1),
-                                    new Scenario.Route.Block(80, 1)
+                                    new Scenario.Route.Block(4803L,90, 1),
+                                    new Scenario.Route.Block(4801L,80, 1)
                             )
                     )
             )
@@ -106,32 +106,32 @@ public class ScenarioTestData {
             List.of(
                     new Scenario.Route(7301L,
                             List.of(
-                                    new Scenario.Route.Block(80, 1),
-                                    new Scenario.Route.Block(80, 2)
+                                    new Scenario.Route.Block(4801L,80, 1),
+                                    new Scenario.Route.Block(4802L,80, 2)
                             )
                     ),
                     new Scenario.Route(7302L,
                             List.of(
-                                    new Scenario.Route.Block(80, 2),
-                                    new Scenario.Route.Block(90, 2)
+                                    new Scenario.Route.Block(4802L,80, 2),
+                                    new Scenario.Route.Block(4804L,90, 2)
                             )
                     ),
                     new Scenario.Route(7303L,
                             List.of(
-                                    new Scenario.Route.Block(90, 2),
-                                    new Scenario.Route.Block(90, 1)
+                                    new Scenario.Route.Block(4804L,90, 2),
+                                    new Scenario.Route.Block(4803L,90, 1)
                             )
                     ),
                     new Scenario.Route(7304L,
                             List.of(
-                                    new Scenario.Route.Block(90, 1),
-                                    new Scenario.Route.Block(80, 1)
+                                    new Scenario.Route.Block(4803L,90, 1),
+                                    new Scenario.Route.Block(4801L,80, 1)
                             )
                     ),
                     new Scenario.Route(7305L,
                             List.of(
-                                    new Scenario.Route.Block(80, 1),
-                                    new Scenario.Route.Block(80, 2)
+                                    new Scenario.Route.Block(4801L, 80, 1),
+                                    new Scenario.Route.Block(4802L, 80, 2)
                             )
                     )
             )
@@ -146,7 +146,7 @@ public class ScenarioTestData {
 
         public record Route(long routeSequenceId, List<Block> blocks
         ) {
-            public record Block(int address, int number) {
+            public record Block(long trackPartId, int address, int number) {
             }
         }
     }

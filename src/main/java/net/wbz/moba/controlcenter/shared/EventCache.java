@@ -1,6 +1,8 @@
 package net.wbz.moba.controlcenter.shared;
 
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.event.Observes;
+import lombok.extern.slf4j.Slf4j;
 import net.wbz.moba.controlcenter.shared.device.DeviceConnectionEvent;
 
 import java.util.Collection;
@@ -13,6 +15,7 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  * @author Daniel Tuerk
  */
+@Slf4j
 @ApplicationScoped
 public class EventCache {
 
@@ -20,6 +23,14 @@ public class EventCache {
      * Cached events by event class name. Entries contains the events by the cache key.
      */
     private final Map<String, Map<String, StateEvent>> cachedEvents = new ConcurrentHashMap<>();
+
+    public void onDeviceConnectionEvent(@Observes DeviceConnectionEvent event) {
+        log.info("device connection changed for device ID: {}", event.deviceInfo().getId());
+        if (!event.connected()) {
+            log.info("clear event cache for disconnected device (ID: {})", event.deviceInfo().getId());
+            cachedEvents.clear();
+        }
+    }
 
     /**
      * Add the given event to the cache. Already existing event will be overridden.

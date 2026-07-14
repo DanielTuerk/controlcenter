@@ -14,7 +14,7 @@ public class RouteStateChangedObserver {
     private final Map<Long, Route.ROUTE_RUN_STATE> currentRouteSequenceState = new ConcurrentHashMap<>();
 
     public void onRouteStateChanged(@Observes RouteStateEvent evt) {
-        currentRouteSequenceState.put(evt.getRouteSequenceId(), evt.getState());
+        currentRouteSequenceState.put(evt.routeSequenceId(), evt.state());
     }
 
     Route.ROUTE_RUN_STATE getRouteState(long routeSequenceId) {

@@ -1,7 +1,10 @@
 import {Curve, TrackPartStateEvent} from "../../../../../../shared/openapi-gen";
 import {AbstractTrackComponentBuilder} from "../abstract-track-component-builder";
 
-export class CurveBuilder extends AbstractTrackComponentBuilder<Curve, TrackPartStateEvent> {
+export class CurveBuilder extends AbstractTrackComponentBuilder<Curve, TrackPartStateEvent, TrackPartStateEvent> {
+  override update(trackPart: Curve, event: TrackPartStateEvent): void {
+    throw new Error("Method not implemented.");
+  }
 
   doBuild(trackPart: Curve, baseX: number, baseY: number, event: TrackPartStateEvent | null = null): Element {
     const cx = baseX + AbstractTrackComponentBuilder.TILE / 2;

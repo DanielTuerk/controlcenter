@@ -1,32 +1,52 @@
-import {BlockStraight, DIRECTION, TrackPartBlockEvent, TrackPartStateEvent} from "../../../../../../shared/openapi-gen";
+import {
+  BlockStraight,
+  DIRECTION,
+  DRIVINGDIRECTION1,
+  TrackPartBlockEvent,
+  TrackPartStateEvent,
+  TrainInBlockEvent
+} from "../../../../../../shared/openapi-gen";
 import {AbstractTrackComponentBuilder} from "../abstract-track-component-builder";
 import {TrainService} from "../../../../../shared/train.service";
 
-export class BlockStraightBuilder extends AbstractTrackComponentBuilder<BlockStraight, TrackPartStateEvent> {
+export class BlockStraightBuilder extends AbstractTrackComponentBuilder<BlockStraight, TrackPartStateEvent, TrainInBlockEvent> {
   private trainService: TrainService;
+
+  private trainOnBlocks: string[] = [];
 
   constructor(trainService: TrainService) {
     super();
     this.trainService = trainService;
   }
 
+  update(trackPart: BlockStraight, event: TrainInBlockEvent) {
+    let train = this.trainService.cachedTrainByAddress(event.trainAddress!);
+    let text = document.getElementById(`track-part-${trackPart.id}-feedback-text`) as SVGTextElement | null;
+    if (text) {
+      let direction = event.trainDirection === DRIVINGDIRECTION1.Backward ? '<- ' : '-> ';
+      let content = `${direction} ` + (train ? train.name ?? `(${train.address})` : 'n.A.');
+      text.textContent = content;
+      requestAnimationFrame(() => {
+        // do it after rendering to receive the calculated text length
+        this.truncateSvgText(text as SVGTextElement, this.calcBlockSize(trackPart));
+      });
+
+      this.trainOnBlocks[trackPart!.id!] = content;
+    }
+  }
 
   doBuild(trackPart: BlockStraight, baseX: number, baseY: number, event: TrackPartBlockEvent | null = null): Element {
-    let blockSize = trackPart.blockLength !== undefined
-      ? AbstractTrackComponentBuilder.TILE * trackPart.blockLength
-      : AbstractTrackComponentBuilder.TILE;
+    let blockSize = this.calcBlockSize(trackPart);
     let blockThickness = AbstractTrackComponentBuilder.TILE - 4;
 
     const group = this.createElement('g');
 
-    let trainDisplayValue = '';
-    if (event
-      && event.occupied
-      && event.feedbackData
-      && event.feedbackData.trainAddress) {
-      let train = this.trainService.cachedTrainByAddress(event.feedbackData.trainAddress);
-      trainDisplayValue = train ? train.name ?? `(${train.address})` : 'n.A.';
+    if (!event || !event.occupied) {
+      this.trainOnBlocks[trackPart!.id!] = '';
     }
+
+    let trainDisplayValue = this.trainOnBlocks[trackPart!.id!];
+
     let blockColor = event && event.occupied ? BLOCK_COLOR_OCCUPIED : BLOCK_COLOR_FREE;
     let rect, text;
     if (trackPart.direction === DIRECTION.Vertical) {
@@ -37,6 +57,7 @@ export class BlockStraightBuilder extends AbstractTrackComponentBuilder<BlockStr
       rect = this.baseRect(baseX, baseY - 7.5, blockSize, blockThickness, blockColor, null);
       text = this.text(trainDisplayValue, baseX - 8, baseY - 12, null);
     }
+    text.id = `track-part-${trackPart.id}-feedback-text`;
     group.appendChild(rect);
     group.appendChild(text);
 
@@ -46,6 +67,12 @@ export class BlockStraightBuilder extends AbstractTrackComponentBuilder<BlockStr
     });
 
     return group;
+  }
+
+  private calcBlockSize(trackPart: BlockStraight) {
+    return trackPart.blockLength !== undefined
+      ? AbstractTrackComponentBuilder.TILE * trackPart.blockLength
+      : AbstractTrackComponentBuilder.TILE;
   }
 
   private truncateSvgText(

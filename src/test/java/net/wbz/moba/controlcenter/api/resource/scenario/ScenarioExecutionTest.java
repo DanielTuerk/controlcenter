@@ -2,7 +2,6 @@ package net.wbz.moba.controlcenter.api.resource.scenario;
 
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
-import io.smallrye.mutiny.tuples.Tuple2;
 import io.vertx.core.Vertx;
 import jakarta.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
@@ -18,7 +17,7 @@ import net.wbz.moba.controlcenter.shared.scenario.ScenarioStateEvent;
 import net.wbz.moba.controlcenter.shared.train.TrainDrivingDirectionEvent;
 import net.wbz.moba.controlcenter.shared.train.TrainDrivingLevelEvent;
 import net.wbz.moba.controlcenter.shared.train.TrainLightStateEvent;
-import net.wbz.moba.controlcenter.shared.viewer.TrackPartBlockEvent;
+import net.wbz.moba.controlcenter.shared.viewer.TrainInBlockEvent;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -31,12 +30,13 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import static io.restassured.RestAssured.given;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
 @QuarkusTest
 public class ScenarioExecutionTest extends BaseIt {
-    private static final Map<Integer, Set<Tuple2<Integer, Integer>>> TRAIN_BLOCKS = new HashMap<>();
+    private static final Map<Integer, Set<ScenarioTestData.Scenario.Route.Block>> TRAIN_BLOCKS = new HashMap<>();
 
     @Inject
     Vertx vertx;
@@ -65,15 +65,15 @@ public class ScenarioExecutionTest extends BaseIt {
     @AfterEach
     public void afterEach() {
         // remove the train from the block to ensure a clean state for the next test
-        new HashMap<>(TRAIN_BLOCKS).forEach((trainAddress, addressTuple) ->
-            new ArrayList<>(addressTuple).forEach(tuple -> {
-                try {
-                    trainLeaveBlock(trainAddress, tuple.getItem1(), tuple.getItem2());
-                } catch (Exception e) {
-                    log.error("Error during cleanup", e);
-                }
-            })
-        );
+        new HashMap<>(TRAIN_BLOCKS).forEach((trainAddress, blocks) ->
+                new HashSet<>(blocks).forEach(block -> {
+                    try {
+                        trainLeaveBlock(trainAddress, block.address(), block.number(), block.trackPartId());
+                    } catch (Exception e) {
+                        log.error("Error during cleanup", e);
+                    }
+                }));
+
         TRAIN_BLOCKS.clear();
 
         stopScenario(ScenarioTestData.LEFT_TO_RIGHT.id());
@@ -105,7 +105,7 @@ public class ScenarioExecutionTest extends BaseIt {
         var scenario = ScenarioTestData.LEFT_TO_RIGHT;
         final var firstRoute = scenario.routes().getFirst();
         final var firstBlock = firstRoute.blocks().getFirst();
-        trainEnterBlock(scenario.train().address(), firstBlock.address(), firstBlock.number());
+        trainEnterBlock(scenario.train().address(), firstBlock.address(), firstBlock.number(), firstBlock.trackPartId());
 
         // start
         startScenario(scenario.id());
@@ -123,7 +123,7 @@ public class ScenarioExecutionTest extends BaseIt {
         verifyTrainSpeed(scenario.train().id(), scenario.drivingLevel());
 
         // train on its way to the next block
-        trainLeaveBlock(scenario.train().address(), firstBlock.address(), firstBlock.number());
+        trainLeaveBlock(scenario.train().address(), firstBlock.address(), firstBlock.number(), firstBlock.trackPartId());
 
         // stop
         stopScenario(scenario.id());
@@ -149,7 +149,7 @@ public class ScenarioExecutionTest extends BaseIt {
         updateBlockState(70, 2, true);
 
         // place train in start block
-        trainEnterBlock(scenario.train().address(), 50, 1);
+        trainEnterBlock(scenario.train().address(), 50, 1, 20801);
 
         startScenario(scenario.id());
 
@@ -163,8 +163,8 @@ public class ScenarioExecutionTest extends BaseIt {
 
         // train on its way to the next block
         verifyTrainSpeed(scenario.train().id(), scenario.drivingLevel());
-        trainLeaveBlock(scenario.train().address(), 50, 1);
-        trainEnterBlock(scenario.train().address(), 60, 1);
+        trainLeaveBlock(scenario.train().address(), 50, 1, 20801);
+        trainEnterBlock(scenario.train().address(), 60, 1, 20806);
 
         verifyRouteStateEvent(scenario.id(), 6401L, Route.ROUTE_RUN_STATE.FINISHED);
 
@@ -180,8 +180,8 @@ public class ScenarioExecutionTest extends BaseIt {
 
         // train on its way to the next block
         verifyTrainSpeed(scenario.train().id(), scenario.drivingLevel());
-        trainLeaveBlock(scenario.train().address(), 60, 1);
-        trainEnterBlock(scenario.train().address(), 70, 2);
+        trainLeaveBlock(scenario.train().address(), 60, 1, 20806);
+        trainEnterBlock(scenario.train().address(), 70, 2, 20816);
 
         verifyRouteStateEvent(scenario.id(), 6402L, Route.ROUTE_RUN_STATE.FINISHED);
 
@@ -202,8 +202,8 @@ public class ScenarioExecutionTest extends BaseIt {
         final var secondScenario = ScenarioTestData.RIGHT_TO_LEFT;
 
         // place trains in start blocks (A and C)
-        trainEnterBlock(firstScenario.train().address(), 50, 1);
-        trainEnterBlock(secondScenario.train().address(), 70, 2);
+        trainEnterBlock(firstScenario.train().address(), 50, 1, 20801);
+        trainEnterBlock(secondScenario.train().address(), 70, 2, 20816);
 
         // start from A
         startScenario(firstScenario.id());
@@ -219,19 +219,19 @@ public class ScenarioExecutionTest extends BaseIt {
         verifyRouteStateEvent(secondScenario.id(), 3201L, Route.ROUTE_RUN_STATE.RUNNING);
         verifyTrainSpeed(secondScenario.train().id(), secondScenario.drivingLevel());
 
-        trainLeaveBlock(secondScenario.train().address(), 70, 2);
+        trainLeaveBlock(secondScenario.train().address(), 70, 2, 20816);
 
         // train on its way to B
-        trainLeaveBlock(firstScenario.train().address(), 50, 1);
+        trainLeaveBlock(firstScenario.train().address(), 50, 1, 20801);
         // train on B
-        trainEnterBlock(firstScenario.train().address(), 60, 1);
+        trainEnterBlock(firstScenario.train().address(), 60, 1, 20806);
         verifyRouteStateEvent(firstScenario.id(), 6401L, Route.ROUTE_RUN_STATE.FINISHED);
         verifyTrainSpeed(firstScenario.train().id(), 0);
         // waiting for blocked route
         verifyRouteStateEvent(firstScenario.id(), 6402L, Route.ROUTE_RUN_STATE.PREPARED);
 
         // train from C arrives at D
-        trainEnterBlock(secondScenario.train().address(), 60, 2);
+        trainEnterBlock(secondScenario.train().address(), 60, 2, 20805);
         verifyRouteStateEvent(secondScenario.id(), 3201L, Route.ROUTE_RUN_STATE.FINISHED);
         // train 2 stops, track is clear, but was no block before the end block to reserve the next route
         verifyTrainSpeed(secondScenario.train().id(), 0);
@@ -245,15 +245,15 @@ public class ScenarioExecutionTest extends BaseIt {
         verifyTrainSpeed(firstScenario.train().id(), firstScenario.drivingLevel());
 
         // train1 in end block
-        trainEnterBlock(firstScenario.train().address(), 70, 2);
+        trainEnterBlock(firstScenario.train().address(), 70, 2, 20816);
 
         verifyRouteStateEvent(firstScenario.id(), 6402L, Route.ROUTE_RUN_STATE.FINISHED);
         verifyScenarioStateEvent(firstScenario.id(), Scenario.RUN_STATE.SUCCESS);
         verifyTrainSpeed(firstScenario.train().id(), 0);
 
         // train on its way to A
-        trainLeaveBlock(secondScenario.train().address(), 60, 2);
-        trainEnterBlock(secondScenario.train().address(), 50, 1);
+        trainLeaveBlock(secondScenario.train().address(), 60, 2, 20805);
+        trainEnterBlock(secondScenario.train().address(), 50, 1, 20801);
 
         // train arrived in A
         verifyRouteStateEvent(secondScenario.id(), 4801L, Route.ROUTE_RUN_STATE.FINISHED);
@@ -290,7 +290,7 @@ public class ScenarioExecutionTest extends BaseIt {
     private void runScenario(ScenarioTestData.Scenario scenario) {
         // place train in start block
         final var firstBlock = scenario.routes().getFirst().blocks().getFirst();
-        trainEnterBlock(scenario.train().address(), firstBlock.address(), firstBlock.number());
+        trainEnterBlock(scenario.train().address(), firstBlock.address(), firstBlock.number(), firstBlock.trackPartId());
 
         startScenario(scenario.id());
 
@@ -321,7 +321,7 @@ public class ScenarioExecutionTest extends BaseIt {
                 var block = blocks.get(j);
 
                 // train on its way to the next block
-                trainLeaveBlock(scenario.train().address(), block.address(), block.number());
+                trainLeaveBlock(scenario.train().address(), block.address(), block.number(), block.trackPartId());
 
                 if (i + 1 < routes.size() && j == 0) {
                     // check that next route is reserved
@@ -332,7 +332,7 @@ public class ScenarioExecutionTest extends BaseIt {
                 if (j + 1 < blocks.size()) {
                     // train arrived in next block
                     var nextBlock = blocks.get(j + 1);
-                    trainEnterBlock(scenario.train().address(), nextBlock.address(), nextBlock.number());
+                    trainEnterBlock(scenario.train().address(), nextBlock.address(), nextBlock.number(), nextBlock.trackPartId());
                 }
             }
 
@@ -346,43 +346,40 @@ public class ScenarioExecutionTest extends BaseIt {
         verifyScenarioStateEvent(scenario.id(), Scenario.RUN_STATE.SUCCESS);
     }
 
-    private void trainEnterBlock(int trainAddress, int blockAddress, int blockNumber) {
+    private void trainEnterBlock(int trainAddress, int blockAddress, int blockNumber, long trackPartId) {
         if (!TRAIN_BLOCKS.containsKey(trainAddress)) {
             TRAIN_BLOCKS.put(trainAddress, new HashSet<>());
         }
-        TRAIN_BLOCKS.get(trainAddress).add(Tuple2.of(blockAddress, blockNumber));
-        placeTrainInBlock(trainAddress, blockAddress, blockNumber, true);
+        TRAIN_BLOCKS.get(trainAddress).add(new ScenarioTestData.Scenario.Route.Block(trackPartId, blockAddress, blockNumber));
+        placeTrainInBlock(trainAddress, blockAddress, blockNumber, true, trackPartId);
     }
 
-    private void trainLeaveBlock(int trainAddress, int blockAddress, int blockNumber) {
-        TRAIN_BLOCKS.get(trainAddress).remove(Tuple2.of(blockAddress, blockNumber));
-        placeTrainInBlock(trainAddress, blockAddress, blockNumber, false);
+    private void trainLeaveBlock(int trainAddress, int blockAddress, int blockNumber, long trackPartId) {
+        TRAIN_BLOCKS.get(trainAddress).removeIf(x -> x.trackPartId() == trackPartId && x.address() == blockAddress && x.number() == blockNumber);
+        placeTrainInBlock(trainAddress, blockAddress, blockNumber, false, trackPartId);
     }
 
-    private void placeTrainInBlock(int trainAddress, int blockAddress, int blockNumber, boolean occupied) {
-        updateBlockState(blockAddress, blockNumber, occupied);
+    private void placeTrainInBlock(int trainAddress, int blockAddress, int blockNumber, boolean enter, long trackPartId) {
+
+        updateBlockState(blockAddress, blockNumber, enter);
 
         // block number
         final var bigInteger = BigInteger.valueOf(blockNumber - 1)
             // driving direction
             .setBit(4);
-        final var directionValue = occupied ? bigInteger.setBit(3).intValue() : bigInteger.intValue();
+        final var directionValue = enter ? bigInteger.setBit(3).intValue() : bigInteger.intValue();
         // send on the Vert.x event-loop thread: the real Selectrix device delivers bus feedback there too,
         // and only there (not on a @Blocking worker thread) does a blocking call further down the reactive
         // route-execution chain trip Quarkus' BlockingOperationNotAllowedException
         runOnEventLoop(() -> busService.sendBusData(1, blockAddress + 1, directionValue));
         runOnEventLoop(() -> busService.sendBusData(1, blockAddress + 2, trainAddress));
 
-        final var feedbackBlockEvent = getFeedbackBlockEvent();
-        assertNotNull(feedbackBlockEvent.feedbackData(), "no feedback data for block: %s".formatted(blockAddress));
-        assertEquals(trainAddress, feedbackBlockEvent.feedbackData().trainAddress());
-        assertEquals(occupied, feedbackBlockEvent.occupied());
-        assertEquals(blockAddress, feedbackBlockEvent.blockAddress());
-        assertEquals(blockNumber, feedbackBlockEvent.blockNumber());
-    }
 
-    private static TrackPartBlockEvent getFeedbackBlockEvent() {
-        return EVENT_RECEIVER.catchEvent(TrackPartBlockEvent.class, s -> !s.contains("\"feedbackData\":null"));
+
+        final var trainInBlockEvent = EVENT_RECEIVER.catchEvent(TrainInBlockEvent.class);
+        assertEquals(trackPartId, trainInBlockEvent.trackPartId());
+        assertEquals(trainAddress, trainInBlockEvent.trainAddress());
+        assertEquals(enter, trainInBlockEvent.enter());
     }
 
     private void updateBlockState(int blockAddress, int blockNumber, boolean occupied) {
@@ -470,14 +467,14 @@ public class ScenarioExecutionTest extends BaseIt {
 
     private void verifyRouteStateEvent(long scenarioId, long routeSequenceId, Route.ROUTE_RUN_STATE runState, String message) {
         final var scenarioStateEvent = EVENT_RECEIVER.catchEvent(RouteStateEvent.class, s -> s.contains("\"scenarioId\":%d".formatted(scenarioId)));
-        assertEquals(scenarioId, scenarioStateEvent.getScenarioId(),
+        assertEquals(scenarioId, scenarioStateEvent.scenarioId(),
                 "scenario not equal for route state event with state: %s".formatted(runState));
-        assertEquals(routeSequenceId, scenarioStateEvent.getRouteSequenceId(),
+        assertEquals(routeSequenceId, scenarioStateEvent.routeSequenceId(),
                 "route sequence id not equal for route state event with state: %s".formatted(runState));
-        assertEquals(runState, scenarioStateEvent.getState(),
+        assertEquals(runState, scenarioStateEvent.state(),
                 "run state not equal for route state event");
         if (message != null) {
-            assertEquals(message, scenarioStateEvent.getMessage(),
+            assertEquals(message, scenarioStateEvent.message(),
                     "message not equal for route state event with state: %s".formatted(runState));
         }
     }

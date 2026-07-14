@@ -9,4 +9,5 @@ public interface StateEvent extends Event {
     default String getCacheKey(){
         return getClass().getName();
     }
+
 }

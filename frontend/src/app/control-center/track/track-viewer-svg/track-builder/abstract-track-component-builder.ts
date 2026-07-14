@@ -2,13 +2,16 @@ import {AbstractTrackPart, TrackPartStateEvent} from "../../../../../shared/open
 
 export abstract class AbstractTrackComponentBuilder<
   T extends AbstractTrackPart,
-  E extends TrackPartStateEvent
+  E extends TrackPartStateEvent,
+  U extends TrackPartStateEvent
 > {
   private static SVG_NS = 'http://www.w3.org/2000/svg';
 
   public static TILE = 26;
   protected static BASE_HEIGHT = 8;
   protected static BASE_COLOR = 'white';
+
+  abstract update(trackPart: T, updateEvent: U): void;
 
   abstract doBuild(trackPart: T, baseX: number, baseY: number, event: E | null): Element;
 

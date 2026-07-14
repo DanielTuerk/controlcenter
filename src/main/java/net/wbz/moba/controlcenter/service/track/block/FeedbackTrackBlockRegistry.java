@@ -11,12 +11,14 @@ import net.wbz.moba.controlcenter.service.track.TrackProvider;
 import net.wbz.moba.controlcenter.service.train.TrainManager;
 import net.wbz.moba.controlcenter.service.train.TrainService;
 import net.wbz.moba.controlcenter.shared.constrution.CurrentConstructionChangeEvent;
+import net.wbz.moba.controlcenter.shared.device.DeviceConnectionEvent;
 import net.wbz.moba.controlcenter.shared.track.model.BlockStraight;
 import net.wbz.moba.controlcenter.shared.track.model.BusDataConfiguration;
 import net.wbz.moba.controlcenter.shared.track.model.TrackBlock;
 import net.wbz.moba.controlcenter.shared.track.model.TrackBlock.DRIVING_LEVEL_ADJUST_TYPE;
 import net.wbz.moba.controlcenter.shared.train.Train;
 import net.wbz.moba.controlcenter.shared.viewer.TrackPartBlockEvent;
+import net.wbz.moba.controlcenter.shared.viewer.TrainInBlockEvent;
 import net.wbz.selectrix4java.block.BlockListener;
 import net.wbz.selectrix4java.block.BlockModule;
 import net.wbz.selectrix4java.block.FeedbackBlockListener;
@@ -26,6 +28,7 @@ import net.wbz.selectrix4java.device.DeviceAccessException;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 /**
  * Registry for available {@link TrackBlock}s to add the {@link FeedbackBlockListener}s for receiving the block states
@@ -43,8 +46,9 @@ public class FeedbackTrackBlockRegistry {
     private final TrackBlockManager trackBlockManager;
     private final TrackProvider trackProvider;
 
-    private final Map<TrackBlock, BlockListener> feedbackBlockListeners = new ConcurrentHashMap<>();
+    private final Map<TrackBlock, List<BlockListener>> feedbackBlockListeners = new ConcurrentHashMap<>();
     private final Map<TrackBlock, Set<Long>> trainsOnBlocks = new ConcurrentHashMap<>();
+    private final Map<Long, Set<BusDataConfiguration>> blockStraightOccupations = new ConcurrentHashMap<>();
 
     public FeedbackTrackBlockRegistry(EventBroadcaster eventBroadcaster, TrainService trainService,
                                       TrainManager trainManager, TrackBlockManager trackBlockManager, TrackProvider trackProvider) {
@@ -58,6 +62,73 @@ public class FeedbackTrackBlockRegistry {
     public void onCurrentConstructionChanged(@Observes CurrentConstructionChangeEvent event) {
         log.info("current construction changed for ID: {}, refreshing track blocks...", event.construction().getId());
         initBlocks(trackBlockManager.fetch(event.construction().getId()));
+        initBlockStraights(trackProvider.getTrack().stream()
+                .filter(x -> x instanceof BlockStraight)
+                .map(x -> (BlockStraight) x)
+                .collect(Collectors.toSet()));
+    }
+
+    public void onDeviceConnectionEvent(@Observes DeviceConnectionEvent event) {
+        log.info("device connection changed for device ID: {}", event.deviceInfo().getId());
+        trainsOnBlocks.clear();
+        blockStraightOccupations.clear();
+    }
+
+    private synchronized void initBlockStraights(Collection<BlockStraight> blockStraights) {
+        log.debug("init blocks of block straights");
+        blockStraights.forEach(blockStraight -> {
+            blockStraightOccupations.put(blockStraight.getId(), ConcurrentHashMap.newKeySet());
+
+            blockStraight.getAllTrackBlocks().forEach(trackBlock -> {
+
+                if (checkBlockFunction(trackBlock)) {
+
+                    final var blockFunction = trackBlock.getBlockFunction();
+                    addBlockListener(trackBlock, new FeedbackBlockListener() {
+                        @Override
+                        public void trainEnterBlock(int blockNumber, int trainAddress, boolean forward) {
+                            if (blockNumber == blockFunction.getBit()) {
+                                sendTrainOnBlockEvent(true, trainAddress, forward, blockStraight);
+                            }
+                        }
+
+                        @Override
+                        public void trainLeaveBlock(int blockNumber, int trainAddress, boolean forward) {
+                            if (blockNumber == blockFunction.getBit()) {
+                                sendTrainOnBlockEvent(false, trainAddress, forward, blockStraight);
+                            }
+                        }
+
+                        @Override
+                        public void blockOccupied(int blockNr) {
+                            if (blockNr == blockFunction.getBit()) {
+                                final var entries = blockStraightOccupations.get(blockStraight.getId());
+                                if (entries.isEmpty()) {
+                                    fireBlockEvent(blockStraight.getId(), true);
+                                }
+                                entries.add(trackBlock.getBlockFunction());
+                            }
+                        }
+
+                        @Override
+                        public void blockFreed(int blockNr) {
+                            if (blockNr == blockFunction.getBit()) {
+                                final var entries = blockStraightOccupations.get(blockStraight.getId());
+                                entries.remove(trackBlock.getBlockFunction());
+                                if (entries.isEmpty()) {
+                                    fireBlockEvent(blockStraight.getId(), false);
+                                }
+                            }
+                        }
+                    });
+                }
+            });
+        });
+    }
+
+    private void sendTrainOnBlockEvent(boolean enter, int trainAddress, boolean forward, BlockStraight blockStraight) {
+        eventBroadcaster.fireEvent(new TrainInBlockEvent(blockStraight.getId(), enter, trainAddress,
+                forward ? Train.DRIVING_DIRECTION.FORWARD : Train.DRIVING_DIRECTION.BACKWARD));
     }
 
     private synchronized void initBlocks(Collection<TrackBlock> trackBlocks) {
@@ -86,33 +157,10 @@ public class FeedbackTrackBlockRegistry {
 
                         @Override
                         public void blockOccupied(int blockNr) {
-                            if (blockNr == blockFunction.getBit()) {
-                                fireBlockEvent(trackBlock, true);
-                            }
                         }
 
                         @Override
                         public void blockFreed(int blockNr) {
-                            if (blockNr == blockFunction.getBit()) {
-                                fireBlockEvent(trackBlock, false);
-                            }
-                        }
-                    });
-                } else {
-                    addBlockListener(trackBlock, new BlockListener() {
-
-                        @Override
-                        public void blockOccupied(int blockNr) {
-                            if (blockNr == blockFunction.getBit()) {
-                                fireBlockEvent(trackBlock, true);
-                            }
-                        }
-
-                        @Override
-                        public void blockFreed(int blockNr) {
-                            if (blockNr == blockFunction.getBit()) {
-                                fireBlockEvent(trackBlock, false);
-                            }
                         }
                     });
                 }
@@ -120,53 +168,43 @@ public class FeedbackTrackBlockRegistry {
         }
     }
 
-    private void fireBlockEvent(TrackBlock trackBlock, boolean bitState) {
-        fireBlockEvent(trackBlock, bitState, null);
-    }
-
-    private void fireBlockEvent(TrackBlock trackBlock, boolean bitState,
-                                TrackPartBlockEvent.FeedbackBlockData feedbackBlockData) {
-        final var trackPartId = trackProvider.getTrack().stream().filter(trackPart -> {
-                if (trackPart instanceof BlockStraight) {
-                    return ((BlockStraight) trackPart).getAllTrackBlocks().contains(trackBlock);
-                }
-                return false;
-            }).findFirst()
-            .orElseThrow(() -> new IllegalArgumentException("TrackPart not found for TrackBlock([%d])"
-                .formatted(trackBlock.getId())))
-            .getId();
-        eventBroadcaster.fireEvent(new TrackPartBlockEvent(trackPartId, trackBlock.getBlockFunction().getAddress(),
-            trackBlock.getBlockFunction().getBit(), bitState, feedbackBlockData));
+    private void fireBlockEvent(long trackPartId, boolean occupied) {
+        eventBroadcaster.fireEvent(new TrackPartBlockEvent(trackPartId, occupied));
     }
 
     private void addBlockListener(TrackBlock trackBlock, BlockListener blockListener) {
         if (!feedbackBlockListeners.containsKey(trackBlock)) {
-            feedbackBlockListeners.put(trackBlock, blockListener);
+            feedbackBlockListeners.put(trackBlock, new ArrayList<>());
         }
+        feedbackBlockListeners.get(trackBlock).add(blockListener);
     }
 
     public void registerListeners(Device device) throws DeviceAccessException {
-        for (Map.Entry<TrackBlock, BlockListener> entry : feedbackBlockListeners.entrySet()) {
-            if (entry.getValue() instanceof FeedbackBlockListener) {
-                getFeedbackBlockModule(device, getBusAddressIdentifier(entry.getKey().getBlockFunction()))
-                    .ifPresent(feedbackBlockModule ->
-                        feedbackBlockModule.addFeedbackBlockListener((FeedbackBlockListener) entry.getValue()));
-            } else {
-                getBlockModule(device, getBusAddressIdentifier(entry.getKey().getBlockFunction()))
-                    .ifPresent(blockModule -> blockModule.addBlockListener(entry.getValue()));
+        for (Map.Entry<TrackBlock, List<BlockListener>> entry : feedbackBlockListeners.entrySet()) {
+            for (BlockListener blockListener : entry.getValue()) {
+                if (blockListener instanceof FeedbackBlockListener) {
+                    getFeedbackBlockModule(device, getBusAddressIdentifier(entry.getKey().getBlockFunction()))
+                            .ifPresent(feedbackBlockModule ->
+                                    feedbackBlockModule.addFeedbackBlockListener((FeedbackBlockListener) blockListener));
+                } else {
+                    getBlockModule(device, getBusAddressIdentifier(entry.getKey().getBlockFunction()))
+                            .ifPresent(blockModule -> blockModule.addBlockListener(blockListener));
+                }
             }
         }
     }
 
     public void removeListeners(Device device) throws DeviceAccessException {
-        for (Map.Entry<TrackBlock, BlockListener> entry : feedbackBlockListeners.entrySet()) {
-            if (entry.getValue() instanceof FeedbackBlockListener) {
-                getFeedbackBlockModule(device, getBusAddressIdentifier(entry.getKey().getBlockFunction()))
-                    .ifPresent(feedbackBlockModule ->
-                        feedbackBlockModule.removeFeedbackBlockListener((FeedbackBlockListener) entry.getValue()));
-            } else {
-                getBlockModule(device, getBusAddressIdentifier(entry.getKey().getBlockFunction()))
-                    .ifPresent(blockModule -> blockModule.removeBlockListener(entry.getValue()));
+        for (Map.Entry<TrackBlock, List<BlockListener>> entry : feedbackBlockListeners.entrySet()) {
+            for (BlockListener blockListener : entry.getValue()) {
+                if (blockListener instanceof FeedbackBlockListener) {
+                    getFeedbackBlockModule(device, getBusAddressIdentifier(entry.getKey().getBlockFunction()))
+                            .ifPresent(feedbackBlockModule ->
+                                    feedbackBlockModule.removeFeedbackBlockListener((FeedbackBlockListener) blockListener));
+                } else {
+                    getBlockModule(device, getBusAddressIdentifier(entry.getKey().getBlockFunction()))
+                            .ifPresent(blockModule -> blockModule.removeBlockListener(blockListener));
+                }
             }
         }
     }
@@ -226,11 +264,6 @@ public class FeedbackTrackBlockRegistry {
                     }
                 }
             }
-            // fire position event of train to clients
-            fireBlockEvent(trackBlock,
-                enterBlock,
-                new TrackPartBlockEvent.FeedbackBlockData(trainAddress,
-                    forward ? Train.DRIVING_DIRECTION.FORWARD : Train.DRIVING_DIRECTION.BACKWARD));
         }
     }
 

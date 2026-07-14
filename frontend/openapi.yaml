@@ -301,14 +301,6 @@ components:
       - HP1
       - HP2
       - HP0_SH1
-    FeedbackBlockData:
-      type: object
-      properties:
-        trainAddress:
-          type: integer
-          format: int32
-        trainDirection:
-          $ref: "#/components/schemas/DRIVING_DIRECTION1"
     GridPosition:
       type: object
       properties:
@@ -760,8 +752,6 @@ components:
           format: int32
         occupied:
           type: boolean
-        feedbackData:
-          $ref: "#/components/schemas/FeedbackBlockData"
         cacheKey:
           type: string
     TrackPartDataChangedEvent:
@@ -881,6 +871,22 @@ components:
           type: string
         state:
           type: boolean
+    TrainInBlockEvent:
+      description: train enter or exit block straight event sent via WebSocket
+      type: object
+      properties:
+        trackPartId:
+          type: integer
+          format: int64
+        enter:
+          type: boolean
+        trainAddress:
+          type: integer
+          format: int32
+        trainDirection:
+          $ref: "#/components/schemas/DRIVING_DIRECTION1"
+        cacheKey:
+          type: string
     TrainLightStateEvent:
       description: Train status update sent via WebSocket
       type: object
@@ -1403,7 +1409,7 @@ paths:
         "200":
           description: OK
           content:
-            application/json:
+            text/plain:
               schema:
                 type: string
       summary: Create Bus Dump
@@ -1431,8 +1437,11 @@ paths:
           schema:
             type: string
       responses:
-        "201":
-          description: Created
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { }
       summary: Load Bus Data Dump
       tags:
       - Dev Tool Resource

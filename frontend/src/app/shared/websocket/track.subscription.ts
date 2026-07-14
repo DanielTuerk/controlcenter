@@ -5,7 +5,8 @@ import {
   TrackChangedEvent,
   TrackPartBlockEvent,
   TrackPartDataChangedEvent,
-  TrackPartStateEvent
+  TrackPartStateEvent,
+  TrainInBlockEvent
 } from "../../../shared/openapi-gen";
 import {Subscription} from "./subscription";
 
@@ -22,5 +23,6 @@ export class TrackSubscription extends Subscription {
   readonly trackPartState = this.createEventAccessor<TrackPartStateEvent>('TrackPartStateEvent');
 
   readonly trackPartBlock = this.createEventAccessor<TrackPartBlockEvent>('TrackPartBlockEvent');
+  readonly trainInBlockEvent = this.createEventAccessor<TrainInBlockEvent>('TrainInBlockEvent');
 
 }

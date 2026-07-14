@@ -744,12 +744,6 @@ components:
         trackPartId:
           type: integer
           format: int64
-        blockAddress:
-          type: integer
-          format: int64
-        blockNumber:
-          type: integer
-          format: int32
         occupied:
           type: boolean
         cacheKey:
@@ -1443,6 +1437,48 @@ paths:
             application/json:
               schema: { }
       summary: Load Bus Data Dump
+      tags:
+        - Dev Tool Resource
+  /api/devtool/event-dump:
+    get:
+      responses:
+        "200":
+          description: OK
+          content:
+            text/plain:
+              schema:
+                type: string
+      summary: Create Event Dump
+      tags:
+        - Dev Tool Resource
+  /api/devtool/event-dump/list:
+    get:
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { }
+      summary: List Event Dumps
+      tags:
+        - Dev Tool Resource
+  /api/devtool/event-dump/load/{fileName}:
+    post:
+      parameters:
+        - name: fileName
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { }
+      summary: Load Event Dump
       tags:
       - Dev Tool Resource
   /api/routes:

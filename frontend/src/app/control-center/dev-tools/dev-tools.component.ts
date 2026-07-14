@@ -4,6 +4,7 @@ import {HttpClient} from "@angular/common/http";
 import {MatDialog} from "@angular/material/dialog";
 import {SnackBar} from "../common/snack-bar.component";
 import {BusDumpListDialogComponent} from "./bus-dump-list-dialog/bus-dump-list-dialog.component";
+import {EventDumpListDialogComponent} from "./event-dump-list-dialog/event-dump-list-dialog.component";
 
 @Component({
   selector: 'app-dev-tools',
@@ -51,6 +52,42 @@ export class DevToolsComponent {
       error: err => {
         console.error('Could not list bus data dumps', err);
         this.snackBar.showError('could not list bus data dumps');
+      }
+    });
+  }
+
+  protected createEventDump() {
+    this.httpClient.get('/api/devtool/event-dump', {responseType: 'text'}).subscribe({
+      next: data => {
+        this.snackBar.showMessage('event dump created: ' + data);
+      },
+      error: err => {
+        console.error('Could not create event dump', err);
+        this.snackBar.showError('event dump failed');
+      }
+    });
+  }
+
+  protected openEventDumpListDialog() {
+    this.httpClient.get<string[]>('/api/devtool/event-dump/list').subscribe({
+      next: fileNames => {
+        const dialogRef = this.dialog.open(EventDumpListDialogComponent, {
+          data: fileNames
+        });
+        dialogRef.afterClosed().subscribe(fileName => {
+          if (fileName) {
+            this.httpClient.post(`/api/devtool/event-dump/load/${encodeURIComponent(fileName)}`, null).subscribe({
+              error: err => {
+                console.error('Could not load event dump', err);
+                this.snackBar.showError('load event dump failed');
+              }
+            });
+          }
+        });
+      },
+      error: err => {
+        console.error('Could not list event dumps', err);
+        this.snackBar.showError('could not list event dumps');
       }
     });
   }

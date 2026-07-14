@@ -6,8 +6,10 @@ import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import lombok.extern.slf4j.Slf4j;
+import net.wbz.moba.controlcenter.EventBroadcaster;
 import net.wbz.moba.controlcenter.Workspace;
 import net.wbz.moba.controlcenter.service.bus.BusService;
+import net.wbz.moba.controlcenter.shared.EventCache;
 import net.wbz.selectrix4java.device.DeviceAccessException;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponseSchema;
 
@@ -22,10 +24,15 @@ public class DevToolResource {
 
     private final BusService busService;
     private final Workspace workspace;
+    private final EventCache eventCache;
+    private final EventBroadcaster eventBroadcaster;
 
-    public DevToolResource(BusService busService, Workspace workspace) {
+    public DevToolResource(BusService busService, Workspace workspace, EventCache eventCache,
+                           EventBroadcaster eventBroadcaster) {
         this.busService = busService;
         this.workspace = workspace;
+        this.eventCache = eventCache;
+        this.eventBroadcaster = eventBroadcaster;
     }
 
     @APIResponseSchema(String.class)
@@ -58,6 +65,30 @@ public class DevToolResource {
             log.error("can't load bus dump: {}", fileName, e);
             return Response.serverError().build();
         }
+    }
+
+    @APIResponseSchema(String.class)
+    @GET
+    @Produces(MediaType.TEXT_PLAIN)
+    @Path("/event-dump")
+    public Response createEventDump() {
+        return Response.ok(workspace.createEventDump(eventCache.getCachedEvents())).build();
+    }
+
+    @APIResponseSchema(List.class)
+    @GET
+    @Path("/event-dump/list")
+    public Response listEventDumps() {
+        return Response.ok(workspace.listEventDumps()).build();
+    }
+
+    @POST
+    @Path("/event-dump/load/{fileName}")
+    public Response loadEventDump(@PathParam("fileName") String fileName) {
+        workspace.loadEventDump(fileName).entries()
+                .forEach(entry ->
+                        entry.events().values().forEach(eventBroadcaster::fireEvent));
+        return Response.ok().build();
     }
 
 }

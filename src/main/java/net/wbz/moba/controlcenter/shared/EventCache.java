@@ -54,6 +54,13 @@ public class EventCache {
     }
 
     /**
+     * @return cached events keyed by event class name
+     */
+    public Map<String, Map<String, StateEvent>> getCachedEvents() {
+        return cachedEvents;
+    }
+
+    /**
      * Clear the cached events.
      */
     public void clear() {

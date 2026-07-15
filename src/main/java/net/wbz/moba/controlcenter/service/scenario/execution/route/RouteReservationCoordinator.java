@@ -51,11 +51,10 @@ public class RouteReservationCoordinator {
                 || checkIfRouteIsAlreadyReserved(routeSequence.getRoute());
     }
 
-    synchronized boolean reserve(Long scenarioId, RouteSequence routeSequence) {
+    synchronized void reserve(Long scenarioId, RouteSequence routeSequence) {
         if (reservedRouteSequences.contains(routeSequence)) {
             log.warn("route sequence {} ({}, routeSequenceId: {}) already reserved",
                     routeSequence.getRoute().getName(), routeSequence.getRoute().getId(), routeSequence.getId());
-            return false;
         } else {
             final var route = routeSequence.getRoute();
             log.debug("reserve route: {} ({}, routeSequenceId: {})",
@@ -63,12 +62,7 @@ public class RouteReservationCoordinator {
             reservedRouteSequences.add(routeSequence);
             routeStateEventPublisher.fireEvent(scenarioId, routeSequence, Route.ROUTE_RUN_STATE.RESERVED);
 
-            switchStartSignalOfRouteToDrive.call(route).subscribe().with(
-                    unused -> log.debug("switched start signal to drive for reserved route: {} ({})",
-                            route.getName(), route.getId()),
-                    failure -> log.error("failed to switch start signal to drive reserved route: {} ({})",
-                            route.getName(), route.getId()));
-            return true;
+            switchStartSignalOfRouteToDrive.call(route);
         }
     }
 

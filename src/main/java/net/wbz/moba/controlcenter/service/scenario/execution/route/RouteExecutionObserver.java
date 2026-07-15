@@ -1,5 +1,6 @@
 package net.wbz.moba.controlcenter.service.scenario.execution.route;
 
+import io.smallrye.mutiny.Uni;
 import io.smallrye.mutiny.tuples.Tuple2;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -100,26 +101,25 @@ public class RouteExecutionObserver {
 
         for (TrackBlock trackBlock : current.getRoute().getTrack().trackBlocks()) {
             try {
-                addBlockListener(current, connectedDevice(), trackBlock.getBlockFunction(),
-                        new BlockListener() {
-                            @Override
-                            public void blockOccupied(int blockNr) {
-                                extracted(blockNr);
-                            }
+                addBlockListener(current, connectedDevice(), trackBlock.getBlockFunction(), new BlockListener() {
+                    @Override
+                    public void blockOccupied(int blockNr) {
+                        extracted(blockNr);
+                    }
 
-                            @Override
-                            public void blockFreed(int blockNr) {
-                                extracted(blockNr);
-                            }
+                    @Override
+                    public void blockFreed(int blockNr) {
+                        extracted(blockNr);
+                    }
 
-                            private void extracted(int ignored) {
-                                log.debug("block state changed for route: {} ({}; routeSequenceId: {}; block: {} ({}))",
-                                        current.getRoute().getName(), current.getRoute().getId(), current.getId(),
-                                        trackBlock.getName(), trackBlock.getId());
-                                reserveNextRouteForCurrentRoute(scenarioId, next);
-                            }
-                        }
-                );
+                    private void extracted(int ignored) {
+                        log.debug("block state changed reservation: {} ({}; routeSequenceId: {}; block: {} ({}))",
+                                current.getRoute().getName(), current.getRoute().getId(), current.getId(), trackBlock.getName(), trackBlock.getId());
+                        reserveNextRouteForCurrentRoute(scenarioId, next).subscribe()
+                                .with(unused -> log.debug("next routeSequenceId {} reserved from routeSequenceId {}", current.getId(), next.getId()),
+                                        failure -> log.error("failed to reserve routeSequenceId {} from routeSequenceId {}", current.getId(), next.getId()));
+                    }
+                });
             } catch (DeviceAccessException e) {
                 final var msg = "device error during reserve next route: " + current.getRoute().getName();
                 log.error(msg, e);
@@ -128,22 +128,16 @@ public class RouteExecutionObserver {
         }
     }
 
-    public synchronized void reserveNextRouteForCurrentRoute(long scenarioId,
-                                                             RouteSequence next) {
+    public synchronized Uni<Void> reserveNextRouteForCurrentRoute(long scenarioId,
+                                                                  RouteSequence next) {
         if (routeReservationCoordinator.isAlreadyReserved(next)) {
             log.debug("route sequence {} already reserved", next.getId());
-            return;
+            return Uni.createFrom().voidItem();
         }
         if (checkForNextRouteToRun(next)) {
-            if (routeReservationCoordinator.reserve(scenarioId, next)) {
-                final var route = next.getRoute();
-                switchStartSignalOfRouteToDrive.call(route).subscribe().with(
-                        unused -> log.debug("switched start signal to drive for next route: {} ({})",
-                                route.getName(), route.getId()),
-                        failure -> log.error("failed to switch start signal to drive next route: {} ({})",
-                                route.getName(), route.getId()));
-            }
+            routeReservationCoordinator.reserve(scenarioId, next);
         }
+        return Uni.createFrom().voidItem();
     }
 
     private synchronized void addBlockListener(RouteSequence routeSequence, Device device,

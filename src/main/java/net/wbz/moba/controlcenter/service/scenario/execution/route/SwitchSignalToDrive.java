@@ -1,6 +1,7 @@
 package net.wbz.moba.controlcenter.service.scenario.execution.route;
 
 import io.smallrye.mutiny.Uni;
+import io.smallrye.mutiny.infrastructure.Infrastructure;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
@@ -28,15 +29,20 @@ class SwitchSignalToDrive {
         this.configService = configService;
     }
 
-    Uni<Void> call(final Signal signal, BlockStraight startOfNextRoute) {
+    void call(final Signal signal, BlockStraight startOfNextRoute) {
         var signalFunction = nextSignalFunction(startOfNextRoute);
         log.info("switch signal to {} {}", signalFunction, signal);
         trackViewerService.switchSignal(signal, signalFunction);
 
-        // switch back to HP0 after delay
-        return Uni.createFrom().voidItem().onItem()
+        // switch back to HP0 after a delay, without blocking the caller
+        Uni.createFrom().voidItem().onItem()
             .delayIt().by(Duration.ofSeconds(configService.getHp0AfterTrainPassDelayInSeconds()))
-            .invoke(() -> trackViewerService.switchSignal(signal, Signal.FUNCTION.HP0));
+            .emitOn(Infrastructure.getDefaultWorkerPool())
+                .invoke(() -> trackViewerService.switchSignal(signal, Signal.FUNCTION.HP0))
+                .subscribe().with(
+                        unused -> log.debug("signal {} switched back to HP0", signal),
+                        failure -> log.error("failed to switch signal {} back to HP0", signal, failure)
+                );
     }
 
     private Signal.FUNCTION nextSignalFunction(BlockStraight startOfNextRoute) {

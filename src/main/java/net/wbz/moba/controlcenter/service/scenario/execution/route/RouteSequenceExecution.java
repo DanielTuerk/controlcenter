@@ -172,7 +172,7 @@ public class RouteSequenceExecution {
                 trainService.updateDrivingLevel(train.getId(), 0);
                 return configService.getFinishRouteDelaySeconds();
             })
-            .runSubscriptionOn(Infrastructure.getDefaultWorkerPool())
+             .runSubscriptionOn(Infrastructure.getDefaultWorkerPool())
                 .chain(delaySeconds -> Uni.createFrom().voidItem()
                         .onItem()
                         .delayIt().by(Duration.ofSeconds(delaySeconds))
@@ -311,6 +311,7 @@ public class RouteSequenceExecution {
                 routeExecution.routeSequence().getRoute().getId(), routeExecution.routeSequence().getId());
 
         return Uni.createFrom().item(routeExecution)
+                .runSubscriptionOn(Infrastructure.getDefaultWorkerPool())
                 .onItem().invoke((executeRouteModel) ->
                         routeStateEventPublisher.fireEvent(routeExecution.scenarioId(),
                                 executeRouteModel.routeSequence(), Route.ROUTE_RUN_STATE.RUNNING))
@@ -318,6 +319,7 @@ public class RouteSequenceExecution {
                 .onItem().call(this::updateTrack)
 
                 .onItem().call(model -> {
+                    log.debug("before registerBlocksToReserveNextRoute");
                     model.nextRouteSequence().ifPresent(next ->
                             routeExecutionObserver.registerBlocksToReserveNextRoute(
                                     model.scenarioId(), model.routeSequence(), next));
@@ -325,9 +327,10 @@ public class RouteSequenceExecution {
                 })
 
                 .onItem().call(model -> {
-                    model.nextRouteSequence().ifPresent(next ->
-                            routeExecutionObserver.reserveNextRouteForCurrentRoute(
-                                    model.scenarioId(), next));
+                    if (model.nextRouteSequence().isPresent()) {
+                        return routeExecutionObserver.reserveNextRouteForCurrentRoute(
+                                model.scenarioId(), model.nextRouteSequence().get());
+                    }
                     return Uni.createFrom().item(model);
                 })
 
@@ -406,7 +409,8 @@ public class RouteSequenceExecution {
                 }
                 trackViewerService.toggleTrackParts(trackPartStates);
                 return (Void) null;
-            }).onItem().call(() -> switchStartSignalOfRouteToDrive.call(model.routeSequence().getRoute()));
+            })
+                .onItem().invoke(() -> switchStartSignalOfRouteToDrive.call(model.routeSequence().getRoute()));
     }
 
     private Uni<Void> startTrainForModel(ExecuteRouteModel model) {

@@ -1,6 +1,5 @@
 package net.wbz.moba.controlcenter.service.scenario.execution.route;
 
-import io.smallrye.mutiny.Uni;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import net.wbz.moba.controlcenter.service.track.TrackProvider;
@@ -18,9 +17,8 @@ public class SwitchStartSignalOfRouteToDrive {
         this.switchSignalToDrive = switchSignalToDrive;
     }
 
-    Uni<Void> call(Route route) {
-        return trackProvider.findStartSignal(route)
-            .map(signal -> switchSignalToDrive.call(signal, route.getStart()))
-            .orElse(Uni.createFrom().voidItem());
+    void call(Route route) {
+        trackProvider.findStartSignal(route)
+                .ifPresent(signal -> switchSignalToDrive.call(signal, route.getStart()));
     }
 }

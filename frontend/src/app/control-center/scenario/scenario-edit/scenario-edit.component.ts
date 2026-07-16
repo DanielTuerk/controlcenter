@@ -129,11 +129,14 @@ export class ScenarioEditComponent {
     scenarioToUpdate.trainDrivingDirection = this.form.controls.drivingDirection.getRawValue()!
     scenarioToUpdate.startDrivingLevel = this.form.controls.drivingLevel.getRawValue()!
 
-    let routeSequences = this.scenario().routeSequences!;
+    let existingRouteSequences = this.scenario().routeSequences;
+    if (existingRouteSequences) {
+      let routeSequences = existingRouteSequences!;
     scenarioToUpdate.routeSequences = routeSequences.map(rs => {
       rs.position = routeSequences.indexOf(rs);
       return rs;
     });
+    }
 
     let observable;
     let operation;

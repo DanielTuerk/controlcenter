@@ -17,9 +17,6 @@ public class ConstructionDataChangedEvent extends AbstractItemEvent {
         super(constructionId);
     }
 
-    public ConstructionDataChangedEvent() {
-    }
-
     @Override
     public String toString() {
         return "ConstructionDataChangedEvent{} " + super.toString();

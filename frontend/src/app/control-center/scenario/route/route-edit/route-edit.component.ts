@@ -1,4 +1,4 @@
-import {Component, inject, input, signal, ViewChild, ChangeDetectionStrategy} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject, input, signal, ViewChild} from '@angular/core';
 import {Router, RouterLink} from "@angular/router";
 import {MatCard, MatCardContent, MatCardFooter, MatCardHeader, MatCardTitle} from "@angular/material/card";
 import {FormBuilder, FormControl, FormsModule, ReactiveFormsModule} from "@angular/forms";
@@ -178,11 +178,12 @@ export class RouteEditComponent {
   protected onTrackReady($event: TrackElement<any>[]) {
     this.trackElements.set($event);
 
-    this.routeService.loadRoute(this.routeId()).subscribe(data => {
-
-      this.setRoute(data);
-      this.paintRoute($event);
-    });
+    if (this.routeId() && this.routeId().toString() != "create") {
+      this.routeService.loadRoute(this.routeId()).subscribe(data => {
+        this.setRoute(data);
+        this.paintRoute($event);
+      });
+    }
   }
 
   private paintRoute($event: TrackElement<any>[]) {

@@ -9,6 +9,10 @@ import lombok.extern.slf4j.Slf4j;
 import net.wbz.moba.controlcenter.api.construction.ConstructionDto;
 import net.wbz.moba.controlcenter.persist.entity.ConstructionEntity;
 import net.wbz.moba.controlcenter.persist.repository.ConstructionRepository;
+import net.wbz.moba.controlcenter.persist.repository.RouteRepository;
+import net.wbz.moba.controlcenter.persist.repository.ScenarioRepository;
+import net.wbz.moba.controlcenter.service.track.TrackDataProvider;
+import net.wbz.moba.controlcenter.service.track.block.TrackBlockDataProvider;
 import net.wbz.moba.controlcenter.shared.constrution.Construction;
 
 import java.util.List;
@@ -23,10 +27,21 @@ public class ConstructionDataProvider {
 
     private final ConstructionRepository constructionRepository;
     private final ConstructionMapper constructionMapper;
+    private final TrackDataProvider trackDataProvider;
+    private final TrackBlockDataProvider trackBlockDataProvider;
+    private final RouteRepository routeRepository;
+    private final ScenarioRepository scenarioRepository;
 
-    public ConstructionDataProvider(ConstructionRepository constructionRepository, ConstructionMapper constructionMapper) {
+    public ConstructionDataProvider(ConstructionRepository constructionRepository,
+                                    ConstructionMapper constructionMapper, TrackDataProvider trackDataProvider,
+                                    TrackBlockDataProvider trackBlockDataProvider, RouteRepository routeRepository,
+                                    ScenarioRepository scenarioRepository) {
         this.constructionRepository = constructionRepository;
         this.constructionMapper = constructionMapper;
+        this.trackDataProvider = trackDataProvider;
+        this.trackBlockDataProvider = trackBlockDataProvider;
+        this.routeRepository = routeRepository;
+        this.scenarioRepository = scenarioRepository;
     }
 
     /**
@@ -72,6 +87,22 @@ public class ConstructionDataProvider {
     @CacheInvalidateAll(cacheName = CACHE)
     @Transactional
     public boolean deleteConstruction(Long id) {
+        routeRepository.listAll(id).stream()
+                .map(x -> x.id)
+                .forEach(routeRepository::deleteById);
+
+        scenarioRepository.listAll(id).stream()
+                .map(x -> x.id)
+                .forEach(scenarioRepository::deleteById);
+
+        trackBlockDataProvider.load(id)
+                .stream().map(x -> x.id)
+                .forEach(trackBlockDataProvider::deleteById);
+
+        trackBlockDataProvider.load(id).stream()
+                .map(x -> x.id)
+                .forEach(trackDataProvider::deleteById);
+
         return constructionRepository.deleteById(id);
     }
 

@@ -23,8 +23,7 @@ export class BlockStraightBuilder extends AbstractTrackComponentBuilder<BlockStr
     let train = this.trainService.cachedTrainByAddress(event.trainAddress!);
     let text = document.getElementById(`track-part-${trackPart.id}-feedback-text`) as SVGTextElement | null;
     if (text) {
-      let direction = event.trainDirection === DRIVINGDIRECTION1.Backward ? '<- ' : '-> ';
-      let content = `${direction} ` + (train ? train.name ?? `(${train.address})` : 'n.A.');
+      let content = event.enter ? `${event.trainDirection === DRIVINGDIRECTION1.Backward ? '<- ' : '-> '} ` + (train ? train.name ?? `(${train.address})` : 'n.A.') : '';
       text.textContent = content;
       requestAnimationFrame(() => {
         // do it after rendering to receive the calculated text length

@@ -84,51 +84,10 @@ public class FeedbackTrackBlockRegistry {
                 if (checkBlockFunction(trackBlock)) {
 
                     final var blockFunction = trackBlock.getBlockFunction();
-                    addBlockListener(trackBlock, new FeedbackBlockListener() {
-                        @Override
-                        public void trainEnterBlock(int blockNumber, int trainAddress, boolean forward) {
-                            if (blockNumber == blockFunction.getBit()) {
-                                sendTrainOnBlockEvent(true, trainAddress, forward, blockStraight);
-                            }
-                        }
-
-                        @Override
-                        public void trainLeaveBlock(int blockNumber, int trainAddress, boolean forward) {
-                            if (blockNumber == blockFunction.getBit()) {
-                                sendTrainOnBlockEvent(false, trainAddress, forward, blockStraight);
-                            }
-                        }
-
-                        @Override
-                        public void blockOccupied(int blockNr) {
-                            if (blockNr == blockFunction.getBit()) {
-                                final var entries = blockStraightOccupations.get(blockStraight.getId());
-                                if (entries.isEmpty()) {
-                                    fireBlockEvent(blockStraight.getId(), true);
-                                }
-                                entries.add(trackBlock.getBlockFunction());
-                            }
-                        }
-
-                        @Override
-                        public void blockFreed(int blockNr) {
-                            if (blockNr == blockFunction.getBit()) {
-                                final var entries = blockStraightOccupations.get(blockStraight.getId());
-                                entries.remove(trackBlock.getBlockFunction());
-                                if (entries.isEmpty()) {
-                                    fireBlockEvent(blockStraight.getId(), false);
-                                }
-                            }
-                        }
-                    });
+                    addBlockListener(trackBlock, createFeedbackBlockListener(blockStraight, trackBlock, blockFunction));
                 }
             });
         });
-    }
-
-    private void sendTrainOnBlockEvent(boolean enter, int trainAddress, boolean forward, BlockStraight blockStraight) {
-        eventBroadcaster.fireEvent(new TrainInBlockEvent(blockStraight.getId(), enter, trainAddress,
-                forward ? Train.DRIVING_DIRECTION.FORWARD : Train.DRIVING_DIRECTION.BACKWARD));
     }
 
     private synchronized void initBlocks(Collection<TrackBlock> trackBlocks) {
@@ -166,6 +125,62 @@ public class FeedbackTrackBlockRegistry {
                 }
             }
         }
+    }
+
+    private FeedbackBlockListener createFeedbackBlockListener(BlockStraight blockStraight, TrackBlock trackBlock,
+                                                              BusDataConfiguration blockFunction) {
+        final var blockStraightId = blockStraight.getId();
+        return new FeedbackBlockListener() {
+
+            @Override
+            public void trainEnterBlock(int blockNumber, int trainAddress, boolean forward) {
+                if (blockNumber == blockFunction.getBit()) {
+                    sendTrainOnBlockEvent(true, trainAddress, forward, blockStraightId);
+                }
+            }
+
+            @Override
+            public void trainLeaveBlock(int blockNumber, int trainAddress, boolean forward) {
+                if (blockNumber == blockFunction.getBit()) {
+                    sendTrainOnBlockEvent(false, trainAddress, forward, blockStraightId);
+                }
+            }
+
+            @Override
+            public void blockOccupied(int blockNr) {
+                if (blockNr == blockFunction.getBit()) {
+                    addForBlockStraight(blockStraightId, trackBlock.getBlockFunction());
+                }
+            }
+
+            @Override
+            public void blockFreed(int blockNr) {
+                if (blockNr == blockFunction.getBit()) {
+                    removeForBlockStraight(blockStraightId, trackBlock);
+                }
+            }
+        };
+    }
+
+    private void removeForBlockStraight(Long blockStraightId, TrackBlock trackBlock) {
+        final var entries = blockStraightOccupations.get(blockStraightId);
+        entries.remove(trackBlock.getBlockFunction());
+        if (entries.isEmpty()) {
+            fireBlockEvent(blockStraightId, false);
+        }
+    }
+
+    private synchronized void addForBlockStraight(long blockStraightId, BusDataConfiguration blockFunction) {
+        final var entries = blockStraightOccupations.get(blockStraightId);
+        if (entries.isEmpty()) {
+            fireBlockEvent(blockStraightId, true);
+        }
+        entries.add(blockFunction);
+    }
+
+    private void sendTrainOnBlockEvent(boolean enter, int trainAddress, boolean forward, long blockStraightId) {
+        eventBroadcaster.fireEvent(new TrainInBlockEvent(blockStraightId, enter, trainAddress,
+                forward ? Train.DRIVING_DIRECTION.FORWARD : Train.DRIVING_DIRECTION.BACKWARD));
     }
 
     private void fireBlockEvent(long trackPartId, boolean occupied) {
@@ -222,13 +237,11 @@ public class FeedbackTrackBlockRegistry {
             : Optional.empty();
     }
 
-
     private Optional<BlockModule> getBlockModule(Device device, BusAddressIdentifier entry) throws
         DeviceAccessException {
         return device.isConnected() ? Optional.of(SelectrixHelper.getBlockModule(device, entry))
             : Optional.empty();
     }
-
 
     private boolean checkBlockFunction(TrackBlock trackBlock) {
         return trackBlock != null && trackBlock.getBlockFunction() != null && trackBlock.getBlockFunction().isValid();
@@ -253,11 +266,11 @@ public class FeedbackTrackBlockRegistry {
                 trainsOnThisBlock.remove(train$.get().getId());
             }
             // update automatic driving level
-            DRIVING_LEVEL_ADJUST_TYPE adjustType = trackBlock.getDrivingLevelAdjustType();
+            var adjustType = trackBlock.getDrivingLevelAdjustType();
             if (adjustType != DRIVING_LEVEL_ADJUST_TYPE.NONE) {
                 if ((enterBlock && adjustType == DRIVING_LEVEL_ADJUST_TYPE.ENTER)
                         || (!enterBlock && adjustType == DRIVING_LEVEL_ADJUST_TYPE.EXIT)) {
-                    Integer drivingLevelForTrain = forward ? trackBlock.getForwardTargetDrivingLevel()
+                    var drivingLevelForTrain = forward ? trackBlock.getForwardTargetDrivingLevel()
                             : trackBlock.getBackwardTargetDrivingLevel();
                     if (drivingLevelForTrain != null) {
                         trainService.updateAutomaticDrivingLevel(train$.get(), drivingLevelForTrain);

@@ -3,7 +3,7 @@ import {HttpClient} from "@angular/common/http";
 import {SnackBar} from "../control-center/common/snack-bar.component";
 import {catchError} from "rxjs/operators";
 import {EMPTY} from "rxjs";
-import {BusBitDto, BusDataDto} from "../../shared/openapi-gen";
+import {BusBitDto, BusDataDto, SYSTEMFORMAT} from "../../shared/openapi-gen";
 
 @Injectable({providedIn: 'root'})
 export class BusService {
@@ -29,6 +29,16 @@ export class BusService {
         return EMPTY
       })
     ).subscribe();
+  }
+
+  currentSystemFormat() {
+    return this.httpClient.get<SYSTEMFORMAT>('/api/bus/system-format')
+      .pipe(
+        catchError((err: any) => {
+          this.snackBar.showError(`can't fetch system format: ${err.message}`);
+          return EMPTY
+        })
+      );
   }
 
   sendBusBit(busBit: BusBitDto) {

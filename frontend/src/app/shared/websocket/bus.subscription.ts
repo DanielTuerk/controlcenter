@@ -1,6 +1,6 @@
-import {Injectable, Signal} from '@angular/core';
+import {inject, Injectable, Signal} from '@angular/core';
 import {toSignal} from '@angular/core/rxjs-interop';
-import {map} from 'rxjs';
+import {concat, map} from 'rxjs';
 import {
   BusDataEvent,
   PlayerEvent,
@@ -10,11 +10,13 @@ import {
   SystemFormatEvent
 } from "../../../shared/openapi-gen";
 import {Subscription} from "./subscription";
+import {BusService} from "../bus.service";
 
 @Injectable({
   providedIn: 'root'
 })
 export class BusSubscription extends Subscription {
+  private busService = inject(BusService);
 
   private readonly _railvoltage = this.createEventAccessor<RailVoltageEvent>('RailVoltageEvent');
   readonly railVoltage: Signal<boolean> = toSignal(
@@ -25,11 +27,16 @@ export class BusSubscription extends Subscription {
   );
 
   private readonly _systemFormat = this.createEventAccessor<SystemFormatEvent>('SystemFormatEvent');
-  readonly systemFormat: Signal<SYSTEMFORMAT> = toSignal(
-    this._systemFormat().pipe(
-      map(event => event.systemFormat ? event.systemFormat : SYSTEMFORMAT.Unknown)
+  readonly systemFormat = toSignal(
+    concat(
+      this.busService.currentSystemFormat(),
+      this._systemFormat().pipe(
+        map(event => event.systemFormat ?? SYSTEMFORMAT.Unknown)
+      )
     ),
-    {initialValue: SYSTEMFORMAT.Unknown}
+    {
+      initialValue: SYSTEMFORMAT.Unknown
+    }
   );
 
   private readonly _player = this.createEventAccessor<PlayerEvent>('PlayerEvent');

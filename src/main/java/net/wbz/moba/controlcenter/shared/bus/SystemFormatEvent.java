@@ -12,30 +12,6 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
  */
 @Schema(description = "system format update sent via WebSocket")
 @Tag(ref = "websocket")
-public class SystemFormatEvent implements StateEvent {
-
-    private SYSTEM_FORMAT systemFormat;
-
-    public SystemFormatEvent() {
-    }
-
-    public SystemFormatEvent(SYSTEM_FORMAT systemFormat) {
-        this.systemFormat = systemFormat;
-    }
-
-    public SYSTEM_FORMAT getSystemFormat() {
-        return systemFormat;
-    }
-
-    public void setSystemFormat(SYSTEM_FORMAT systemFormat) {
-        this.systemFormat = systemFormat;
-    }
-
-    @Override
-    public String toString() {
-        String sb = "SystemFormatEvent{" + "systemFormat=" + systemFormat
-            + '}';
-        return sb;
-    }
+public record SystemFormatEvent(SYSTEM_FORMAT systemFormat) implements StateEvent {
 
 }

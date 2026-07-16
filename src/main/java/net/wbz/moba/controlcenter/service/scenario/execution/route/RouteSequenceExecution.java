@@ -410,7 +410,8 @@ public class RouteSequenceExecution {
                 trackViewerService.toggleTrackParts(trackPartStates);
                 return (Void) null;
             })
-                .onItem().invoke(() -> switchStartSignalOfRouteToDrive.call(model.routeSequence().getRoute()));
+                .onItem().invoke(() ->
+                        switchStartSignalOfRouteToDrive.call(model.routeSequence().getRoute(), true));
     }
 
     private Uni<Void> startTrainForModel(ExecuteRouteModel model) {

@@ -62,7 +62,7 @@ public class RouteReservationCoordinator {
             reservedRouteSequences.add(routeSequence);
             routeStateEventPublisher.fireEvent(scenarioId, routeSequence, Route.ROUTE_RUN_STATE.RESERVED);
 
-            switchStartSignalOfRouteToDrive.call(route);
+            switchStartSignalOfRouteToDrive.call(route, false);
         }
     }
 

@@ -17,8 +17,9 @@ public class SwitchStartSignalOfRouteToDrive {
         this.switchSignalToDrive = switchSignalToDrive;
     }
 
-    void call(Route route) {
+    void call(Route route, boolean switchBackToHp0) {
         trackProvider.findStartSignal(route)
-                .ifPresent(signal -> switchSignalToDrive.call(signal, route.getStart()));
+                .ifPresent(signal ->
+                        switchSignalToDrive.call(signal, route.getStart(), switchBackToHp0));
     }
 }

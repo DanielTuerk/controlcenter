@@ -11,13 +11,9 @@ import net.wbz.moba.controlcenter.shared.bus.SystemFormatEvent;
 import net.wbz.moba.controlcenter.shared.device.DeviceConnectionEvent;
 import net.wbz.moba.controlcenter.shared.device.DeviceDataChangedEvent;
 import net.wbz.moba.controlcenter.shared.device.DeviceInfo;
-import net.wbz.selectrix4java.device.Device;
-import net.wbz.selectrix4java.device.DeviceAccessException;
-import net.wbz.selectrix4java.device.DeviceConnectionListener;
+import net.wbz.selectrix4java.device.*;
 import net.wbz.selectrix4java.device.DeviceManager;
 import net.wbz.selectrix4java.device.DeviceManager.DEVICE_TYPE;
-import net.wbz.selectrix4java.device.RailVoltageListener;
-import net.wbz.selectrix4java.device.SystemFormatListener;
 import net.wbz.selectrix4java.device.serial.SerialDevice;
 
 import java.util.Optional;
@@ -35,16 +31,18 @@ public class DeviceService {
     private final EventBroadcaster eventBroadcaster;
     private final RailVoltageListener railVoltageListener;
     private final SystemFormatListener systemFormatListener;
+    private final BusService busService;
     private Device activeDevice;
     private DeviceInfo activeDeviceInfo;
 
     @Inject
     public DeviceService(DeviceManager selectrixDeviceManager,
-        final EventBroadcaster eventBroadcaster,
-        net.wbz.moba.controlcenter.service.bus.DeviceManager deviceManager) {
+                         final EventBroadcaster eventBroadcaster,
+                         net.wbz.moba.controlcenter.service.bus.DeviceManager deviceManager, BusService busService) {
         this.deviceManager = deviceManager;
         this.selectrixDeviceManager = selectrixDeviceManager;
         this.eventBroadcaster = eventBroadcaster;
+        this.busService = busService;
 
         initConnectionListener();
 
@@ -98,6 +96,8 @@ public class DeviceService {
                     // add listener to receive state change
                     device.addRailVoltageListener(railVoltageListener);
                     device.addSystemFormatListener(systemFormatListener);
+                    // throw initial value, because it could be zero
+                    eventBroadcaster.fireEvent(new SystemFormatEvent(busService.getSystemFormat()));
                 }
             }
 

@@ -42,6 +42,10 @@
 .run-state-STOPPED {
 }
 
+.run-state-RESERVED {
+  background: rgb(113 137 145);
+}
+
 .run-state-RUNNING {
   background: #748595;
 }

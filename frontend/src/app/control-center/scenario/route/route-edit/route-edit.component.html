@@ -39,6 +39,7 @@
         @if (showViewer) {
           <app-track-viewer-svg
             [overrideIsConnected]="true"
+            [overrideUseEvents]="false"
             (trackPartClicked)="onTrackPartClicked($event)"
             (trackPartsReady)="onTrackReady($event)"> style="overflow: auto">
           </app-track-viewer-svg>

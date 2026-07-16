@@ -35,6 +35,7 @@ export class TrackViewerSvgComponent {
   }
 
   overrideIsConnected = input(false);
+  overrideUseEvents = input(true);
   trackPartClicked = output<TrackElement<any>>();
   trackPartsReady = output<TrackElement<any>[]>();
 
@@ -92,23 +93,24 @@ export class TrackViewerSvgComponent {
     this.cdr.markForCheck();
     this.trackPartsReady.emit(this.loadedTrackParts);
 
-    this.trackSubscription.trackPartState().subscribe(event => {
-      this.consumeTrackEvent(event, event.trackPartId!);
-    });
-    this.trackSubscription.signalFunctionState().subscribe(event => {
-      this.consumeTrackEvent(event, event.signalId!);
-    });
-    this.trackSubscription.trackPartBlock().subscribe(event => {
-      this.consumeTrackEvent(event, event.trackPartId!);
-    });
-    this.trackSubscription.trainInBlockEvent().subscribe(event => {
-      let trackElement = this.loadedTrackParts.find(
-        trackElement => trackElement.trackPart.id === event.trackPartId);
-      if (!trackElement) return;
+    if(this.overrideUseEvents()) {
+      this.trackSubscription.trackPartState().subscribe(event => {
+        this.consumeTrackEvent(event, event.trackPartId!);
+      });
+      this.trackSubscription.signalFunctionState().subscribe(event => {
+        this.consumeTrackEvent(event, event.signalId!);
+      });
+      this.trackSubscription.trackPartBlock().subscribe(event => {
+        this.consumeTrackEvent(event, event.trackPartId!);
+      });
+      this.trackSubscription.trainInBlockEvent().subscribe(event => {
+        let trackElement = this.loadedTrackParts.find(
+          trackElement => trackElement.trackPart.id === event.trackPartId);
+        if (!trackElement) return;
 
-      this.trackComponentBuilder.update(trackElement.trackPart, event);
-    });
-
+        this.trackComponentBuilder.update(trackElement.trackPart, event);
+      });
+    }
     console.log("load finished");
   }
 

@@ -41,6 +41,7 @@
   <app-track-viewer-svg #trackViewer
                         style="overflow: auto"
                         [overrideIsConnected]="true"
+                        [overrideUseEvents]="false"
                         (trackPartClicked)="onTrackPartClicked($event)"
                         (mousemove)="mouseOverTrackViewer($event)"
                         (click)="onTrackViewerClicked()">

@@ -9,6 +9,8 @@ import {DeviceService} from "../../../../shared/device.service";
 import {ScenarioSubscription} from "../../../../shared/websocket/scenario.subscription";
 import {CronExpressionParser} from "cron-parser";
 import {SnackBar} from "../../../common/snack-bar.component";
+import {RouteRunStateIconComponent} from "../../../common/route-run-state-icon";
+import {ScenarioRunStateIconComponent} from "../../../common/scenario-run-state-icon";
 
 export class RouteData {
   id: number;
@@ -50,8 +52,10 @@ export class ScenarioData {
     MatExpansionPanelTitle,
     MatIcon,
     MatMiniFabButton,
-    NgClass
-],
+    NgClass,
+    RouteRunStateIconComponent,
+    ScenarioRunStateIconComponent
+  ],
   templateUrl: './scenario.component.html',
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './scenario.component.css'

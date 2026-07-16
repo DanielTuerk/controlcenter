@@ -17,9 +17,7 @@
           <span class="scenario-name">{{ scenario.name }}</span>
         </div>
         <div class="title-bottom">
-          <span>
-            {{ scenario.runState }}
-          </span>
+          <app-scenario-run-state-icon [runState]="scenario.runState"/>
           <span>
             <mat-icon style="display: contents;font-size: medium">departure_board</mat-icon>
             {{ scenario.scheduledExecutionTimeAsText }}
@@ -46,9 +44,10 @@
         <div
           style="width: 90%;padding: 2px"
           [ngClass]="'run-state-' + (route.runState ?? '')">
-          <div><span>{{ route.name }}</span>@if (route.runState) {
-          <span> - {{ route.runState }}</span>
-        }</div>
+          <div>
+            <app-route-run-state-icon [runState]="route.runState"/>
+            <span>{{ route.name }}</span>
+          </div>
         @if (route.message?.trim()) {
           <div>
             {{ route.message }}

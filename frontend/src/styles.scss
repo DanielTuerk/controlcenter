@@ -77,6 +77,26 @@ body {
   margin-right: 2rem;
 }
 
+/* Uniform layout for simple "label + control" rows in mat-card edit forms:
+   labels stack in a fixed-width left column so the controls that follow
+   line up in a single vertical column across all rows. */
+.form-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 4px;
+}
+
+.form-row > label {
+  flex: 0 0 200px;
+  text-align: right;
+}
+
+.form-row mat-form-field {
+  max-width: 70%;
+  min-width: 60%;
+}
+
 .footer-content {
   display: flex;
   align-items: center;

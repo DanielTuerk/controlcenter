@@ -4,7 +4,7 @@
   </mat-card-header>
   <form [formGroup]="form" (ngSubmit)="onSubmit()">
     <mat-card-content>
-      <div>
+      <div class="form-row">
         <label>Name: </label>
         <mat-form-field>
           <input matInput required [formControl]="form.controls.name"/>

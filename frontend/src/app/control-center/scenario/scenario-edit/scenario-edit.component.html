@@ -4,19 +4,19 @@
   </mat-card-header>
   <form [formGroup]="form" (ngSubmit)="onSubmit()">
     <mat-card-content>
-      <div>
+      <div class="form-row">
         <label>Name: </label>
         <mat-form-field>
           <input matInput required [formControl]="form.controls.name"/>
         </mat-form-field>
       </div>
-      <div>
+      <div class="form-row">
         <label>Cron: </label>
         <mat-form-field>
           <input matInput required [formControl]="form.controls.cron"/>
         </mat-form-field>
       </div>
-      <div>
+      <div class="form-row">
         <label>Train: </label>
         <mat-form-field>
           <mat-select required formControlName="train">
@@ -26,7 +26,7 @@
           </mat-select>
         </mat-form-field>
       </div>
-      <div>
+      <div class="form-row">
         <label>driving direction</label>
         <mat-form-field>
           <mat-select required formControlName="drivingDirection">
@@ -38,7 +38,7 @@
           </mat-select>
         </mat-form-field>
       </div>
-      <div>
+      <div class="form-row">
         <label>driving level: </label>
         <mat-form-field>
           <input matInput required [formControl]="form.controls.drivingLevel"/>
@@ -46,30 +46,33 @@
       </div>
 
       <div>
-        <label>Routes: </label>
-        <div>
-          <mat-form-field>
-            <mat-label>select route to add ...</mat-label>
-            <mat-select #routeSelect>
-              @for (opt of routes(); track opt.id) {
-                <mat-option [value]="opt"> {{ opt.name }}</mat-option>
+        <div class="form-row">
+          <label>Routes: </label>
+          <div style="width: 100%">
+            <mat-form-field>
+              <mat-label>select route to add ...</mat-label>
+              <mat-select #routeSelect>
+                @for (opt of routes(); track opt.id) {
+                  <mat-option [value]="opt"> {{ opt.name }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+            <button type="button" matMiniFab (click)="addRoute(routeSelect.value)">
+              <mat-icon>add</mat-icon>
+            </button>
+
+            <mat-list>
+              @for (opt of scenario().routeSequences; track opt.id) {
+                <mat-list-item> {{ opt.route?.name }}
+                  <mat-icon (click)="moveUpRouteSequence(opt)">arrow_drop_up</mat-icon>
+                  <mat-icon (click)="moveDownRouteSequence(opt)">arrow_drop_down</mat-icon>
+                  <mat-icon (click)="removeRouteSequence(opt)">delete</mat-icon>
+                </mat-list-item>
               }
-            </mat-select>
-          </mat-form-field>
-          <button type="button" matMiniFab (click)="addRoute(routeSelect.value)">
-            <mat-icon>add</mat-icon>
-          </button>
+            </mat-list>
+          </div>
         </div>
 
-        <mat-list>
-          @for (opt of scenario().routeSequences; track opt.id) {
-            <mat-list-item> {{ opt.route?.name }}
-              <mat-icon (click)="moveUpRouteSequence(opt)">arrow_drop_up</mat-icon>
-              <mat-icon (click)="moveDownRouteSequence(opt)">arrow_drop_down</mat-icon>
-              <mat-icon (click)="removeRouteSequence(opt)">delete</mat-icon>
-            </mat-list-item>
-          }
-        </mat-list>
       </div>
     </mat-card-content>
     <mat-card-footer>

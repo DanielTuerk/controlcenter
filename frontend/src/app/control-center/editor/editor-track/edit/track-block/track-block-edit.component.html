@@ -1,4 +1,4 @@
-<div>
+<div class="form-row">
   <label>Length: </label>
   <mat-form-field>
     <input matInput required type="number" [formControl]="blockLengthFormField"/>
@@ -6,15 +6,15 @@
 </div>
 <hr/>
 <br/>
-<div>
+<div class="form-row">
   <label>Left Block: </label>
   <app-track-block-select [trackBlocks]="trackBlocks()" [(selected)]="selectedLeftBlock"></app-track-block-select>
 </div>
-<div>
+<div class="form-row">
   <label>Middle Block: </label>
   <app-track-block-select [trackBlocks]="trackBlocks()" [(selected)]="selectedMiddleBlock"></app-track-block-select>
 </div>
-<div>
+<div class="form-row">
   <label>Right Block: </label>
   <app-track-block-select [trackBlocks]="trackBlocks()" [(selected)]="selectedRightBlock"></app-track-block-select>
 </div>

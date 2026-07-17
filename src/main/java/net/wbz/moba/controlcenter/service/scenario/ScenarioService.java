@@ -14,6 +14,7 @@ import org.quartz.CronExpression;
 import org.quartz.TriggerKey;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 
 /**
@@ -88,15 +89,27 @@ public class ScenarioService {
         scenarioManager.getScenarios().forEach(this::schedule);
     }
 
-    public void stop(Scenario scenario) {
+    public void cancelAll() {
+        scenarioManager.getScenarios().forEach(this::cancel);
+    }
+
+    public void cancel(Scenario scenario) {
         var scenarioId = scenario.getId();
         log.debug("stop scenario: {}", scenarioId);
-        unscheduleScenario(scenarioId);
+        unschedule(scenarioId);
         scenarioExecutor.stopScenario(scenario);
     }
 
-    public void stopAll() {
-        scenarioManager.getScenarios().forEach(this::stop);
+    public void unscheduleAll() {
+        new HashSet<>(scenarioTriggerKeys.keySet()).forEach(this::unschedule);
+    }
+
+    public synchronized void unschedule(long scenarioId) {
+        if (scenarioTriggerKeys.containsKey(scenarioId)) {
+            scheduler.unscheduleJob(jobIdentity(scenarioId));
+            scenarioTriggerKeys.remove(scenarioId);
+            eventBroadcaster.fireEvent(ScenarioScheduleEvent.unscheduled(scenarioId));
+        }
     }
 
     private static String jobIdentity(Long scenarioId) {
@@ -108,15 +121,6 @@ public class ScenarioService {
             scenarioExecutor.startScenario(scenario);
         } else {
             log.error("can't start scenario - no device connected");
-        }
-    }
-
-    private synchronized void unscheduleScenario(long scenarioId) {
-        if (scenarioTriggerKeys.containsKey(scenarioId)) {
-            scheduler.unscheduleJob(jobIdentity(scenarioId));
-            scenarioTriggerKeys.remove(scenarioId);
-            eventBroadcaster.fireEvent(ScenarioScheduleEvent.unscheduled(scenarioId));
-            eventPublisher.fireEvent(scenarioId, Scenario.RUN_STATE.STOPPED);
         }
     }
 

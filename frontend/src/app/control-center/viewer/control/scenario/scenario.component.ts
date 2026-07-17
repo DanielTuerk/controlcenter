@@ -89,6 +89,7 @@ export class ScenarioComponent {
           scenarioById!.cron = event.cron!;
         } else {
           scenarioById!.cron = null;
+          scenarioById!.runState = null;
         }
         scenarioById!.scheduledExecutionTimeAsText = this.timeStringFromCron(scenarioById!.cron);
       });
@@ -175,6 +176,14 @@ export class ScenarioComponent {
     this.scenarioService.stopAll();
   }
 
+  protected unscheduleScenario(scenario: ScenarioData) {
+    this.scenarioService.unscheduleScenario(scenario);
+  }
+
+  protected unscheduleAllScenarios() {
+    this.scenarioService.unscheduleAll();
+  }
+
   protected canBeStarted(scenarioId: number) {
     return this.isConnected() &&
       (this.scenarioById(scenarioId)?.runState !== RUNSTATE.Running
@@ -191,6 +200,11 @@ export class ScenarioComponent {
         || this.scenarioById(scenarioId)?.runState === RUNSTATE.Scheduled);
   }
 
+  protected canBeUnscheduled(scenarioId: number) {
+    return this.isConnected() &&
+      (this.scenarioById(scenarioId)?.runState === RUNSTATE.Scheduled);
+  }
+
   private cronToFixedTime(cron: string): string {
     const interval = CronExpressionParser.parse(cron);
     const nextDate = interval.next().toDate();
@@ -201,15 +215,4 @@ export class ScenarioComponent {
     return `${hours}:${minutes}`;
   }
 
-  protected getBgColor(scenario:ScenarioData) {
-    if(!scenario.runState) return '';
-    switch (scenario.runState) {
-      case RUNSTATE.Scheduled: return 'background-color: #1e3a53';
-      case RUNSTATE.Running: return 'background-color: blue';
-      case RUNSTATE.Success: return 'background-color: #1e7724';
-      case RUNSTATE.Paused: return 'background-color: yellow';
-      case RUNSTATE.Failed: return 'background-color: #6e3333';
-      default: return '';
-    }
-  }
 }

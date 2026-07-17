@@ -90,7 +90,7 @@ export class ScenarioService {
   }
 
   stopScenario(scenario: ScenarioData) {
-    return this.httpClient.post(`/api/scenarios/${scenario.scenarioId}/stop`, null)
+    return this.httpClient.post(`/api/scenarios/${scenario.scenarioId}/cancel`, null)
     .subscribe({
       next: () => {
         this.snackBar.showSuccess(`scenario ${scenario.name} (${scenario.scenarioId}) stopped`);
@@ -114,7 +114,7 @@ export class ScenarioService {
   }
 
   stopAll() {
-    return this.httpClient.post(`/api/scenarios/stop-all`, null)
+    return this.httpClient.post(`/api/scenarios/cancel-all`, null)
     .subscribe({
       next: () => {
         this.snackBar.showSuccess(`all scenarios stopped`);
@@ -124,4 +124,29 @@ export class ScenarioService {
       }
     });
   }
+
+  unscheduleScenario(scenario: ScenarioData) {
+    return this.httpClient.post(`/api/scenarios/${scenario.scenarioId}/unschedule`, null)
+      .subscribe({
+        next: () => {
+          this.snackBar.showSuccess(`scenario ${scenario.name} (${scenario.scenarioId}) unscheduled`);
+        },
+        error: (error) => {
+          this.snackBar.showError(`can't unschedule scenario ${scenario.name} (${scenario.scenarioId}): ${error.message}`);
+        }
+      });
+  }
+
+  unscheduleAll() {
+    return this.httpClient.post(`/api/scenarios/unschedule-all`, null)
+      .subscribe({
+        next: () => {
+          this.snackBar.showSuccess(`all scenarios unscheduled`);
+        },
+        error: (error) => {
+          this.snackBar.showError(`can't unschedule all scenarios: ${error.message}`);
+        }
+      });
+  }
+
 }

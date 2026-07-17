@@ -2,22 +2,15 @@ package net.wbz.moba.controlcenter.api.scenario;
 
 import io.smallrye.common.annotation.Blocking;
 import jakarta.inject.Inject;
-import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.DELETE;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.PUT;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.PathParam;
-import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-import org.eclipse.microprofile.openapi.annotations.responses.APIResponseSchema;
 import net.wbz.moba.controlcenter.service.scenario.ScenarioManager;
 import net.wbz.moba.controlcenter.service.scenario.ScenarioService;
 import net.wbz.moba.controlcenter.service.scenario.ScenarioStatisticManager;
 import net.wbz.moba.controlcenter.shared.scenario.Scenario;
 import net.wbz.moba.controlcenter.shared.scenario.ScenarioStatistic;
+import org.eclipse.microprofile.openapi.annotations.responses.APIResponseSchema;
 
 import java.util.List;
 
@@ -108,20 +101,38 @@ public class ScenarioResource {
     }
 
     @POST
-    @Path("/{id}/stop")
-    public Response stop(@PathParam("id") Long id) {
+    @Path("/{id}/cancel")
+    public Response cancel(@PathParam("id") Long id) {
         final var scenario$ = scenarioManager.getScenarioById(id);
         if (scenario$.isEmpty()) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
-        scenarioService.stop(scenario$.get());
+        scenarioService.cancel(scenario$.get());
         return Response.ok().build();
     }
 
     @POST
-    @Path("/stop-all")
-    public Response stopAll() {
-        scenarioService.stopAll();
+    @Path("/cancel-all")
+    public Response cancelAll() {
+        scenarioService.cancelAll();
+        return Response.ok().build();
+    }
+
+    @POST
+    @Path("/{id}/unschedule")
+    public Response unschedule(@PathParam("id") Long id) {
+        final var scenario$ = scenarioManager.getScenarioById(id);
+        if (scenario$.isEmpty()) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+        scenarioService.unschedule(scenario$.get().getId());
+        return Response.ok().build();
+    }
+
+    @POST
+    @Path("/unschedule-all")
+    public Response unscheduleAll() {
+        scenarioService.unscheduleAll();
         return Response.ok().build();
     }
 

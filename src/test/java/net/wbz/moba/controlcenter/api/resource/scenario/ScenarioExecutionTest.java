@@ -452,7 +452,7 @@ public class ScenarioExecutionTest extends BaseIt {
         // trigger the cancellation directly on the event loop here.
         // (fetching the scenario itself is a blocking cached DB lookup, so that stays on this thread)
         scenarioManager.getScenarioById(scenarioId)
-                .ifPresent(scenario -> runOnEventLoop(() -> scenarioService.stop(scenario)));
+                .ifPresent(scenario -> runOnEventLoop(() -> scenarioService.cancel(scenario)));
     }
 
     private void verifyScenarioStateEvent(long scenarioId, Scenario.RUN_STATE runState) {

@@ -7,8 +7,6 @@ For more information feel free to contact me, the current state is NOT ready to 
 
 ###Supported Format: SX1
 
-**The library (https://github.com/DanielTuerk/selectrix4java) is required in your local maven repository!**
-
 Build native executable of control-center:
 
 ```

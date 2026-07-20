@@ -1,6 +1,7 @@
 package io.github.danieltuerk.controlcenter.shared.scenario;
 
 import io.github.danieltuerk.controlcenter.shared.AbstractItemEvent;
+import lombok.Getter;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
@@ -9,6 +10,7 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
  *
  * @author Daniel Tuerk
  */
+@Getter
 @Schema(description = "scenario status update sent via WebSocket")
 @Tag(ref = "websocket")
 public class ScenarioDataChangedEvent extends AbstractItemEvent {
@@ -18,10 +20,6 @@ public class ScenarioDataChangedEvent extends AbstractItemEvent {
     public ScenarioDataChangedEvent(long scenarioId, ACTION_TYPE type) {
         super(scenarioId);
         this.type = type;
-    }
-
-    public ACTION_TYPE getType() {
-        return type;
     }
 
     @Override

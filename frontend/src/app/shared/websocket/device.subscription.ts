@@ -1,5 +1,5 @@
 import {Injectable, Signal} from '@angular/core';
-import {DeviceConnectionEvent, DeviceDataChangedEvent, DeviceInfoEvent} from "../../../shared/openapi-gen";
+import {DeviceConnectionEvent, DeviceDataChangedEvent} from "../../../shared/openapi-gen";
 import {Subscription} from "./subscription";
 import {toSignal} from "@angular/core/rxjs-interop";
 import {map} from "rxjs";
@@ -17,7 +17,6 @@ export class DeviceSubscription extends Subscription {
     {initialValue: false}
   );
 
-  readonly deviceInfo = this.createEventAccessor<DeviceInfoEvent>('DeviceInfoEvent');
   readonly deviceDataChanged = this.createEventAccessor<DeviceDataChangedEvent>('DeviceDataChangedEvent', true);
 
 }

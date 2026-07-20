@@ -77,16 +77,16 @@ public class TrackViewerService {
             List<BusAddress> busAddressesToUpdateData = new ArrayList<>();
             for (BusAddressBit config : busAddressBits) {
                 if (config != null) {
-                    BusAddress busAddress = connectedDevice.getBusAddress(config.getBus(), (byte) config.getAddress());
+                    BusAddress busAddress = connectedDevice.getBusAddress(config.bus(), (byte) config.address());
 
                     if (!busAddressesToUpdateData.contains(busAddress)) {
                         busAddressesToUpdateData.add(busAddress);
                     }
 
-                    if (config.isBitState()) {
-                        busAddress.setBit(config.getBit());
+                    if (config.bitState()) {
+                        busAddress.setBit(config.bit());
                     } else {
-                        busAddress.clearBit(config.getBit());
+                        busAddress.clearBit(config.bit());
                     }
                 }
             }

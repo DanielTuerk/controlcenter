@@ -1,5 +1,6 @@
 package io.github.danieltuerk.controlcenter.shared.train;
 
+import lombok.Getter;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
@@ -8,28 +9,18 @@ import java.util.Objects;
 /**
  * @author Daniel Tuerk
  */
+@Getter
 @Schema(description = "Train status update sent via WebSocket")
 @Tag(ref = "websocket")
 public class TrainFunctionStateEvent extends TrainStateEvent {
 
-    private TrainFunction function;
-    private boolean active;
+    private final TrainFunction function;
+    private final boolean active;
 
     public TrainFunctionStateEvent(long itemId, TrainFunction function, boolean active) {
         super(itemId);
         this.function = function;
         this.active = active;
-    }
-
-    public TrainFunctionStateEvent() {
-    }
-
-    public TrainFunction getFunction() {
-        return function;
-    }
-
-    public boolean isActive() {
-        return active;
     }
 
     @Override

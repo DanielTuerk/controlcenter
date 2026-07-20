@@ -364,7 +364,7 @@ public class TrackBuilderTurnoutTest extends AbstractTrackBuilderTest {
      * Turnout to right, no drive from bottom.
      */
     @Test
-    public void testTurnout_LeftToRight_Exception() throws TrackNotFoundException {
+    public void testTurnout_LeftToRight_Exception() {
         BlockStraight startBlockStraight = createVerticalBlockStraight(1, 4, startBlock);
 
         mockTrack(List.of(

@@ -4,6 +4,8 @@ package io.github.danieltuerk.controlcenter.shared.track.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import lombok.Getter;
+import lombok.Setter;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
 import java.util.Collection;
@@ -11,6 +13,8 @@ import java.util.Collection;
 /**
  * @author Daniel Tuerk
  */
+@Setter
+@Getter
 @Schema(
     discriminatorProperty = "trackPartType",
     oneOf = {
@@ -43,14 +47,6 @@ public abstract class AbstractTrackPart extends AbstractDto {
     }
 
     private GridPosition gridPosition;
-
-    public GridPosition getGridPosition() {
-        return gridPosition;
-    }
-
-    public void setGridPosition(GridPosition gridPosition) {
-        this.gridPosition = gridPosition;
-    }
 
     /**
      * Get the next {@link GridPosition} which is connected to this track part.

@@ -2,12 +2,14 @@ package io.github.danieltuerk.controlcenter.shared.scenario;
 
 import io.github.danieltuerk.controlcenter.shared.AbstractItemStateEvent;
 import io.github.danieltuerk.controlcenter.shared.scenario.Scenario.RUN_STATE;
+import lombok.Getter;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 /**
  * @author Daniel Tuerk
  */
+@Getter
 @Schema(description = "scenario status update sent via WebSocket")
 @Tag(ref = "websocket")
 public class ScenarioStateEvent extends AbstractItemStateEvent {
@@ -24,21 +26,11 @@ public class ScenarioStateEvent extends AbstractItemStateEvent {
         this.nextScheduleTimeText = nextScheduleTimeText;
     }
 
-    public String getNextScheduleTimeText() {
-        return nextScheduleTimeText;
-    }
-
-    public RUN_STATE getState() {
-        return state;
-    }
-
     @Override
     public String toString() {
-        final StringBuffer sb = new StringBuffer("ScenarioStateEvent{");
-        sb.append("state=").append(state);
-        sb.append(", itemId=").append(itemId);
-        sb.append(", nextScheduleTimeText=").append(nextScheduleTimeText);
-        sb.append('}');
-        return sb.toString();
+        return "ScenarioStateEvent{" + "state=" + state +
+                ", itemId=" + itemId +
+                ", nextScheduleTimeText=" + nextScheduleTimeText +
+                '}';
     }
 }

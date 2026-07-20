@@ -3,6 +3,7 @@ package io.github.danieltuerk.controlcenter.shared;
 import io.github.danieltuerk.controlcenter.shared.device.DeviceConnectionEvent;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Observes;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Collection;
@@ -15,6 +16,7 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  * @author Daniel Tuerk
  */
+@Getter
 @Slf4j
 @ApplicationScoped
 public class EventCache {
@@ -51,13 +53,6 @@ public class EventCache {
 
     public Collection<Map<String, StateEvent>> getEvents() {
         return cachedEvents.values();
-    }
-
-    /**
-     * @return cached events keyed by event class name
-     */
-    public Map<String, Map<String, StateEvent>> getCachedEvents() {
-        return cachedEvents;
     }
 
     /**

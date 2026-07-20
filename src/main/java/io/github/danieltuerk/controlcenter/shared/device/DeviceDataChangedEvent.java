@@ -17,9 +17,6 @@ public class DeviceDataChangedEvent extends AbstractItemEvent {
         super(deviceId);
     }
 
-    public DeviceDataChangedEvent() {
-    }
-
     @Override
     public String toString() {
         return "DeviceDataChangedEvent{} " + super.toString();

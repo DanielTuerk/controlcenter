@@ -1,12 +1,14 @@
 package io.github.danieltuerk.controlcenter.shared.bus;
 
 import io.github.danieltuerk.controlcenter.shared.StateEvent;
+import lombok.Getter;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 /**
  * @author Daniel Tuerk
  */
+@Getter
 @Schema(description = "bus status update sent via WebSocket")
 @Tag(ref = "websocket")
 public class RecordingEvent implements StateEvent {
@@ -21,14 +23,6 @@ public class RecordingEvent implements StateEvent {
     public RecordingEvent(RECORDING_STATE state, String filePath) {
         this.state = state;
         this.filePath = filePath;
-    }
-
-    public RECORDING_STATE getState() {
-        return state;
-    }
-
-    public String getFilePath() {
-        return filePath;
     }
 
     @Override

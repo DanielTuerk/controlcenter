@@ -1,10 +1,13 @@
 package io.github.danieltuerk.controlcenter.shared;
 
+import lombok.Getter;
+
 /**
  * Abstract {@link Event} for a item identified by the ID of the item.
  *
  * @author Daniel Tuerk
  */
+@Getter
 public class AbstractItemEvent implements Event {
     public enum ACTION_TYPE {CREATE, UPDATE, DELETE}
 
@@ -15,10 +18,6 @@ public class AbstractItemEvent implements Event {
 
     public AbstractItemEvent(long itemId) {
         this.itemId = itemId;
-    }
-
-    public long getItemId() {
-        return itemId;
     }
 
     @Override

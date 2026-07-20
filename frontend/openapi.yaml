@@ -276,14 +276,6 @@ components:
           type: string
         type:
           $ref: "#/components/schemas/DEVICE_TYPE"
-    DeviceInfoEvent:
-      description: bus status update sent via WebSocket
-      type: object
-      properties:
-        deviceInfo:
-          $ref: "#/components/schemas/DeviceInfo"
-        eventType:
-          $ref: "#/components/schemas/TYPE"
     EventConfiguration:
       type: object
       properties:
@@ -675,12 +667,6 @@ components:
           type: string
         systemFormat:
           $ref: "#/components/schemas/SYSTEM_FORMAT"
-    TYPE:
-      type: string
-      enum:
-      - CREATE
-      - REMOVE
-      - MODIFY
     Track:
       type: object
       properties:

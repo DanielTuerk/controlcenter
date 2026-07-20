@@ -48,18 +48,15 @@ public class RouteExecutionObserver {
     private final DeviceManager deviceManager;
     private final RouteStateChangedObserver routeStateChangedObserver;
     private final RouteReservationCoordinator routeReservationCoordinator;
-    private final SwitchStartSignalOfRouteToDrive switchStartSignalOfRouteToDrive;
 
     @Inject
     public RouteExecutionObserver(TrackProvider trackProvider, DeviceManager deviceManager,
                                   RouteStateChangedObserver routeStateChangedObserver,
-                                  RouteReservationCoordinator routeReservationCoordinator,
-                                  SwitchStartSignalOfRouteToDrive switchStartSignalOfRouteToDrive) {
+                                  RouteReservationCoordinator routeReservationCoordinator) {
         this.trackProvider = trackProvider;
         this.deviceManager = deviceManager;
         this.routeStateChangedObserver = routeStateChangedObserver;
         this.routeReservationCoordinator = routeReservationCoordinator;
-        this.switchStartSignalOfRouteToDrive = switchStartSignalOfRouteToDrive;
     }
 
     /**

@@ -3,8 +3,8 @@ package io.github.danieltuerk.controlcenter.shared.scenario;
 import java.io.Serializable;
 
 /**
- * Exception if there is no {@link net.wbz.moba.controlcenter.web.shared.scenario.Track} for a
- * {@link net.wbz.moba.controlcenter.web.shared.scenario.Route}.
+ * Exception if there is no {@link Track} for a
+ * {@link Route}.
  *
  * @author Daniel Tuerk
  */

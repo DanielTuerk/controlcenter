@@ -1,26 +1,21 @@
 package io.github.danieltuerk.controlcenter.shared.train;
 
+import lombok.Getter;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 /**
  * @author Daniel Tuerk
  */
+@Getter
 @Schema(description = "Train status update sent via WebSocket")
 @Tag(ref = "websocket")
 public class TrainDrivingLevelEvent extends TrainStateEvent {
-    private int speed;
+    private final int speed;
 
     public TrainDrivingLevelEvent(long itemId, int speed) {
         super(itemId);
         this.speed = speed;
-    }
-
-    public TrainDrivingLevelEvent() {
-    }
-
-    public int getSpeed() {
-        return speed;
     }
 
     @Override

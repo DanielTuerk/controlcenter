@@ -418,7 +418,7 @@ public class RouteSequenceExecution {
         return Uni.createFrom().item(model.train())
             .onItem().transform(trainService::trainInstanceByTrain)
             .onItem().call(trainInstance -> {
-                if (trainInstance.trainStatus().getDrivingLevel() <= 0) {
+                    if (trainInstance.trainStatus().getDrivingLevel() <= 0) {
                     return startTrain(trainInstance.train(), model.trainStartDrivingLevel())
                             .invoke(() -> log.debug("train ({}) start scheduled", model.train().getName()))
                         .onFailure().invoke(f -> log.error("failed to start train with delay", f));

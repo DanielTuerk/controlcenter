@@ -1,0 +1,24 @@
+package io.github.danieltuerk.controlcenter.shared.constrution;
+
+import io.github.danieltuerk.controlcenter.shared.AbstractItemEvent;
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
+import org.eclipse.microprofile.openapi.annotations.tags.Tag;
+
+/**
+ * Event for modified data of {@link Construction} or created/deleted entity.
+ *
+ * @author Daniel Tuerk
+ */
+@Schema(description = "Construction update sent via WebSocket")
+@Tag(ref = "websocket")
+public class ConstructionDataChangedEvent extends AbstractItemEvent {
+
+    public ConstructionDataChangedEvent(long constructionId) {
+        super(constructionId);
+    }
+
+    @Override
+    public String toString() {
+        return "ConstructionDataChangedEvent{} " + super.toString();
+    }
+}

@@ -6,35 +6,49 @@
     <mat-list-item>
       <app-config-input
         [configKey]="HP_0_AFTER_TRAIN_PASS_DELAY_IN_SECONDS"
-        label="Delay in seconds to switch back the signal to HP0 after the train passed">
+        label="Delay in seconds to switch back the signal to HP0 after the train passed"
+        type="number">
       </app-config-input>
     </mat-list-item>
 
     <mat-list-item>
       <app-config-input
         [configKey]="START_TRAIN_DELAY_SECONDS"
-        label="Delay in seconds to start the train for a started route">
+        label="Delay in seconds to start the train for a started route"
+        type="number">
       </app-config-input>
     </mat-list-item>
 
     <mat-list-item>
       <app-config-input
         [configKey]="FINISH_ROUTE_DELAY_SECONDS"
-        label="Delay in seconds to finish the route after train stop was called">
+        label="Delay in seconds to finish the route after train stop was called"
+        type="number">
       </app-config-input>
     </mat-list-item>
 
     <mat-list-item>
       <app-config-input
         [configKey]="DEFAULT_START_DRIVING_LEVEL"
-        label="Default driving level of train by starting a route">
+        label="Default driving level of train by starting a route"
+        type="number">
       </app-config-input>
     </mat-list-item>
 
     <mat-list-item>
       <app-config-input
         [configKey]="WAIT_FOR_FREE_TACK_TIMEOUT_IN_MINUTES"
-        label="Minutes to wait for a free track">
+        label="Minutes to wait for a free track"
+        type="number">
+      </app-config-input>
+    </mat-list-item>
+
+    <mat-list-item>
+      <app-config-input
+        [configKey]="SCENARIO_STATISTIC_MAX_ENTRIES_PER_SCENARIO"
+        label="Maximum number of history entries kept per scenario"
+        hint="This only takes effect on the next cleanup run (on startup or nightly), not immediately."
+        type="number">
       </app-config-input>
     </mat-list-item>
 

@@ -4,19 +4,24 @@ import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {debounceTime, distinctUntilChanged, switchMap, take} from 'rxjs/operators';
 import {ConfigService} from "../../../shared/config.service";
 import {MatFormField, MatInput} from "@angular/material/input";
+import {MatIcon} from "@angular/material/icon";
+import {MatIconButton} from "@angular/material/button";
+import {MatMenu, MatMenuTrigger} from "@angular/material/menu";
 
 @Component({
   selector: 'app-config-input',
   standalone: true,
-  imports: [ReactiveFormsModule, MatInput, MatFormField],
+  imports: [ReactiveFormsModule, MatInput, MatFormField, MatIcon, MatIconButton, MatMenu, MatMenuTrigger],
   changeDetection: ChangeDetectionStrategy.Eager,
-  templateUrl: './config-input.component.html'
+  templateUrl: './config-input.component.html',
+  styleUrl: './config-input.component.css'
 })
 export class ConfigInputComponent {
   private configService = inject(ConfigService);
 
   configKey = input.required<string>();
   label = input('');
+  hint = input('');
   placeholder = input('');
   debounceMs = input(500);
   type = input<'text' | 'number'>('text');

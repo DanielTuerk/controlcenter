@@ -1,0 +1,13 @@
+:host ::ng-deep mat-list-item {
+  height: auto !important;
+  overflow: visible !important;
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+
+:host ::ng-deep mat-list-item .mdc-list-item__content,
+:host ::ng-deep mat-list-item .mat-mdc-list-item-unscoped-content {
+  height: auto !important;
+  overflow: visible !important;
+  white-space: normal !important;
+}

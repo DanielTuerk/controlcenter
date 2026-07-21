@@ -9,6 +9,7 @@ import io.github.danieltuerk.controlcenter.persist.repository.RouteSequenceRepos
 import io.github.danieltuerk.controlcenter.persist.repository.ScenarioRepository;
 import io.github.danieltuerk.controlcenter.persist.repository.TrainRepository;
 import io.github.danieltuerk.controlcenter.service.constrution.ConstructionService;
+import io.github.danieltuerk.controlcenter.service.scenario.statistic.ScenarioStatisticManager;
 import io.github.danieltuerk.controlcenter.shared.constrution.Construction;
 import io.github.danieltuerk.controlcenter.shared.constrution.CurrentConstructionChangeEvent;
 import io.github.danieltuerk.controlcenter.shared.scenario.RouteDataChangedEvent;

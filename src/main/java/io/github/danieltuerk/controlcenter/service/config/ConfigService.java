@@ -38,6 +38,11 @@ public class ConfigService {
     private static final String FINISH_ROUTE_DELAY_SECONDS = "FINISH_ROUTE_DELAY_SECONDS";
     private static final String DEFAULT_START_DRIVING_LEVEL = "DEFAULT_START_DRIVING_LEVEL";
     private static final String WAIT_FOR_FREE_TACK_TIMEOUT_IN_MINUTES = "WAIT_FOR_FREE_TACK_TIMEOUT_IN_MINUTES";
+    /**
+     * Maximum number of {@link io.github.danieltuerk.controlcenter.shared.scenario.ScenarioStatisticRun} entries
+     * kept per scenario. Older entries beyond this limit are removed by the periodic cleanup.
+     */
+    private static final String SCENARIO_STATISTIC_MAX_ENTRIES_PER_SCENARIO = "SCENARIO_STATISTIC_MAX_ENTRIES_PER_SCENARIO";
 
     private final ConfigRepository configRepository;
     private final ConfigMapper configMapper;
@@ -101,6 +106,10 @@ public class ConfigService {
 
     public long getWaitForFreeTackTimeoutInMinutes() {
         return Long.parseLong(loadValue(WAIT_FOR_FREE_TACK_TIMEOUT_IN_MINUTES));
+    }
+
+    public int getScenarioStatisticMaxEntriesPerScenario() {
+        return Integer.parseInt(loadValue(SCENARIO_STATISTIC_MAX_ENTRIES_PER_SCENARIO));
     }
 
 }

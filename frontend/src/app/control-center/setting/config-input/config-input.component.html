@@ -2,12 +2,21 @@
   @if (label()) {
     <label>{{ label() }}: </label>
   }
-  <mat-form-field>
+  <mat-form-field subscriptSizing="dynamic">
     <input matInput
            [type]="type()"
            [formControl]="control"
            [placeholder]="placeholder()"
     /></mat-form-field>
+
+  @if (hint()) {
+    <button matIconButton [matMenuTriggerFor]="hintMenu" aria-label="More information">
+      <mat-icon>info</mat-icon>
+    </button>
+    <mat-menu #hintMenu="matMenu">
+      <p class="hint-popover">{{ hint() }}</p>
+    </mat-menu>
+  }
 
   @if (loading) {
     <small>loading...</small>

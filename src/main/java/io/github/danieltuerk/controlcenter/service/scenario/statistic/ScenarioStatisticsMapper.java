@@ -1,4 +1,4 @@
-package io.github.danieltuerk.controlcenter.service.scenario;
+package io.github.danieltuerk.controlcenter.service.scenario.statistic;
 
 import io.github.danieltuerk.controlcenter.persist.entity.ScenarioHistoryEntity;
 import io.github.danieltuerk.controlcenter.shared.scenario.ScenarioStatisticRun;

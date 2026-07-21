@@ -1,4 +1,4 @@
-package io.github.danieltuerk.controlcenter.service.scenario;
+package io.github.danieltuerk.controlcenter.service.scenario.statistic;
 
 import jakarta.enterprise.context.ApplicationScoped;
 

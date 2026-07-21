@@ -2,7 +2,7 @@ package io.github.danieltuerk.controlcenter.api.scenario;
 
 import io.github.danieltuerk.controlcenter.service.scenario.ScenarioManager;
 import io.github.danieltuerk.controlcenter.service.scenario.ScenarioService;
-import io.github.danieltuerk.controlcenter.service.scenario.ScenarioStatisticManager;
+import io.github.danieltuerk.controlcenter.service.scenario.statistic.ScenarioStatisticManager;
 import io.github.danieltuerk.controlcenter.shared.scenario.Scenario;
 import io.github.danieltuerk.controlcenter.shared.scenario.ScenarioStatistic;
 import io.smallrye.common.annotation.Blocking;

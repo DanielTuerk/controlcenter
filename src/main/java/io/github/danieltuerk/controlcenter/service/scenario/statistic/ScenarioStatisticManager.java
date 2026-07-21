@@ -1,9 +1,12 @@
-package io.github.danieltuerk.controlcenter.service.scenario;
+package io.github.danieltuerk.controlcenter.service.scenario.statistic;
 
-import io.github.danieltuerk.controlcenter.service.scenario.statistic.ScenarioStatisticDataProvider;
+import io.github.danieltuerk.controlcenter.service.config.ConfigService;
 import io.github.danieltuerk.controlcenter.shared.scenario.ScenarioStateEvent;
 import io.github.danieltuerk.controlcenter.shared.scenario.ScenarioStatistic;
 import io.github.danieltuerk.controlcenter.shared.scenario.ScenarioStatisticRun;
+import io.quarkus.runtime.Startup;
+import io.quarkus.runtime.StartupEvent;
+import io.quarkus.scheduler.Scheduled;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Observes;
 import jakarta.inject.Inject;
@@ -19,15 +22,29 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 @Slf4j
 @ApplicationScoped
+@Startup
 public class ScenarioStatisticManager {
 
     private final Map<Long, LocalDateTime> startedScenarios = new ConcurrentHashMap<>();
 
     private final ScenarioStatisticDataProvider statisticDataProvider;
+    private final ConfigService configService;
 
     @Inject
-    public ScenarioStatisticManager(ScenarioStatisticDataProvider statisticDataProvider) {
+    public ScenarioStatisticManager(ScenarioStatisticDataProvider statisticDataProvider, ConfigService configService) {
         this.statisticDataProvider = statisticDataProvider;
+        this.configService = configService;
+    }
+
+    void onStart(@Observes StartupEvent event) {
+        cleanupOldEntries();
+    }
+
+    @Scheduled(cron = "0 0 3 * * ?")
+    void cleanupOldEntries() {
+        final var maxEntriesPerScenario = configService.getScenarioStatisticMaxEntriesPerScenario();
+        log.debug("cleanup scenario statistic history, keeping {} entries per scenario", maxEntriesPerScenario);
+        statisticDataProvider.deleteOldestEntriesExceeding(maxEntriesPerScenario);
     }
 
     public void onScenarioStateEvent(@Observes ScenarioStateEvent event) {

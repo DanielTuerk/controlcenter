@@ -2,7 +2,7 @@ package io.github.danieltuerk.controlcenter.api.resource;
 
 import io.github.danieltuerk.controlcenter.api.BaseIt;
 import io.github.danieltuerk.controlcenter.api.ItUtil;
-import io.github.danieltuerk.controlcenter.service.scenario.ScenarioStatisticManager;
+import io.github.danieltuerk.controlcenter.service.scenario.statistic.ScenarioStatisticManager;
 import io.github.danieltuerk.controlcenter.shared.scenario.Scenario;
 import io.github.danieltuerk.controlcenter.shared.scenario.ScenarioDataChangedEvent;
 import io.github.danieltuerk.controlcenter.shared.scenario.ScenarioStateEvent;

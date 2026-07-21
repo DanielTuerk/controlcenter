@@ -2,10 +2,10 @@ package io.github.danieltuerk.controlcenter.service.scenario.statistic;
 
 import io.github.danieltuerk.controlcenter.persist.entity.ScenarioHistoryEntity;
 import io.github.danieltuerk.controlcenter.persist.repository.ScenarioHistoryRepository;
-import io.github.danieltuerk.controlcenter.service.scenario.ScenarioStatisticsMapper;
 import io.github.danieltuerk.controlcenter.shared.scenario.ScenarioStatistic;
 import io.github.danieltuerk.controlcenter.shared.scenario.ScenarioStatisticRun;
 import io.quarkus.cache.CacheInvalidate;
+import io.quarkus.cache.CacheInvalidateAll;
 import io.quarkus.cache.CacheKey;
 import io.quarkus.cache.CacheResult;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -89,5 +89,14 @@ public class ScenarioStatisticDataProvider {
     public void deleteByScenario(@CacheKey long scenarioId) {
         log.info("history ({} items) for scenario {} cleared", scenarioId,
                 repository.deleteByScenario(scenarioId));
+    }
+
+    @CacheInvalidateAll(cacheName = CACHE)
+    @Transactional
+    public void deleteOldestEntriesExceeding(int maxEntriesPerScenario) {
+        final var deleted = repository.deleteOldestExceedingPerScenario(maxEntriesPerScenario);
+        if (deleted > 0) {
+            log.info("cleaned up {} old history entries (keeping {} per scenario)", deleted, maxEntriesPerScenario);
+        }
     }
 }

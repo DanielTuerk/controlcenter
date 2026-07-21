@@ -84,7 +84,7 @@ body {
   display: flex;
   align-items: center;
   gap: 12px;
-  margin-bottom: 4px;
+  margin-bottom: 6px;
 }
 
 .form-row > label {
@@ -95,6 +95,14 @@ body {
 .form-row mat-form-field {
   max-width: 70%;
   min-width: 60%;
+}
+
+/* Compact mat-form-field: the default M3 "fill" appearance reserves a lot of
+   vertical padding for a floating label we don't use here. */
+.mat-mdc-form-field-infix {
+  padding-top: 8px !important;
+  padding-bottom: 8px !important;
+  min-height: unset !important;
 }
 
 .footer-content {

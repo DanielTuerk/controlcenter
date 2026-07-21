@@ -777,7 +777,7 @@ components:
       description: Trains update sent via WebSocket
       type: object
       properties:
-        itemId:
+        trainId:
           type: integer
           format: int64
         type:
@@ -786,25 +786,25 @@ components:
       description: Train status update sent via WebSocket
       type: object
       properties:
-        itemId:
+        trainId:
           type: integer
           format: int64
-        cacheKey:
-          type: string
         direction:
           $ref: "#/components/schemas/DRIVING_DIRECTION"
+        cacheKey:
+          type: string
     TrainDrivingLevelEvent:
       description: Train status update sent via WebSocket
       type: object
       properties:
-        itemId:
+        trainId:
           type: integer
           format: int64
-        cacheKey:
-          type: string
         speed:
           type: integer
           format: int32
+        cacheKey:
+          type: string
     TrainDto:
       type: object
       properties:
@@ -831,12 +831,12 @@ components:
       description: Train status update sent via WebSocket
       type: object
       properties:
-        itemId:
+        trainId:
           type: integer
           format: int64
         function:
           $ref: "#/components/schemas/TrainFunction"
-        active:
+        state:
           type: boolean
         cacheKey:
           type: string
@@ -844,13 +844,13 @@ components:
       description: Train status update sent via WebSocket
       type: object
       properties:
-        itemId:
+        trainId:
           type: integer
           format: int64
-        cacheKey:
-          type: string
         state:
           type: boolean
+        cacheKey:
+          type: string
     TrainInBlockEvent:
       description: train enter or exit block straight event sent via WebSocket
       type: object
@@ -871,13 +871,13 @@ components:
       description: Train status update sent via WebSocket
       type: object
       properties:
-        itemId:
+        trainId:
           type: integer
           format: int64
-        cacheKey:
-          type: string
         state:
           type: boolean
+        cacheKey:
+          type: string
     Turnout:
       description: type for a track part
       type: object
@@ -1394,7 +1394,7 @@ paths:
                 type: string
       summary: Create Bus Dump
       tags:
-        - Dev Tool Resource
+      - Dev Tool Resource
   /api/devtool/bus-dump/list:
     get:
       responses:
@@ -1404,27 +1404,27 @@ paths:
             application/json:
               schema:
                 type: array
-                items: { }
+                items: {}
       summary: List Bus Dumps
       tags:
-        - Dev Tool Resource
+      - Dev Tool Resource
   /api/devtool/bus-dump/load/{fileName}:
     post:
       parameters:
-        - name: fileName
-          in: path
-          required: true
-          schema:
-            type: string
+      - name: fileName
+        in: path
+        required: true
+        schema:
+          type: string
       responses:
         "200":
           description: OK
           content:
             application/json:
-              schema: { }
+              schema: {}
       summary: Load Bus Data Dump
       tags:
-        - Dev Tool Resource
+      - Dev Tool Resource
   /api/devtool/event-dump:
     get:
       responses:
@@ -1436,7 +1436,7 @@ paths:
                 type: string
       summary: Create Event Dump
       tags:
-        - Dev Tool Resource
+      - Dev Tool Resource
   /api/devtool/event-dump/list:
     get:
       responses:
@@ -1446,24 +1446,24 @@ paths:
             application/json:
               schema:
                 type: array
-                items: { }
+                items: {}
       summary: List Event Dumps
       tags:
-        - Dev Tool Resource
+      - Dev Tool Resource
   /api/devtool/event-dump/load/{fileName}:
     post:
       parameters:
-        - name: fileName
-          in: path
-          required: true
-          schema:
-            type: string
+      - name: fileName
+        in: path
+        required: true
+        schema:
+          type: string
       responses:
         "200":
           description: OK
           content:
             application/json:
-              schema: { }
+              schema: {}
       summary: Load Event Dump
       tags:
       - Dev Tool Resource
@@ -1622,10 +1622,10 @@ paths:
           description: OK
           content:
             application/json:
-              schema: { }
+              schema: {}
       summary: Cancel All
       tags:
-        - Scenario Resource
+      - Scenario Resource
   /api/scenarios/schedule-all:
     post:
       responses:
@@ -1713,21 +1713,21 @@ paths:
   /api/scenarios/{id}/cancel:
     post:
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
       responses:
         "200":
           description: OK
           content:
             application/json:
-              schema: { }
+              schema: {}
       summary: Cancel
       tags:
-        - Scenario Resource
+      - Scenario Resource
   /api/scenarios/{id}/schedule:
     post:
       parameters:

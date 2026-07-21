@@ -73,11 +73,11 @@ public class TrainService {
     }
 
     public void onTrainDataChanged(@Observes TrainDataChangedEvent event) {
-        log.info("Train data changed for ID: {}, refreshing service state...", event.getItemId());
+        log.info("Train data changed for ID: {}, refreshing service state...", event.trainId());
 
-        trainManager.getById(event.getItemId())
+        trainManager.getById(event.trainId())
             .ifPresentOrElse(train -> {
-                log.info("Train data found for ID: {}, refreshing train instance...", event.getItemId());
+                log.info("Train data found for ID: {}, refreshing train instance...", event.trainId());
                 var updatedInstance = TrainInstance.of(train);
                 trainInstances.removeIf(instance -> instance.train().getId().equals(train.getId()));
                 trainInstances.add(updatedInstance);
@@ -90,7 +90,7 @@ public class TrainService {
                         log.error("can't register consumer for train {}", updatedInstance.train(), e);
                     }
                 }
-            }, () -> trainInstances.removeIf(y -> y.train().getId() == event.itemId));
+            }, () -> trainInstances.removeIf(y -> y.train().getId() == event.trainId()));
     }
 
     private void reregisterConsumer(final TrainInstance trainInstance, DeviceManager deviceManager) throws DeviceAccessException {
@@ -237,13 +237,6 @@ public class TrainService {
             .orElseThrow(() -> new NotFoundException("no train for id %d exists".formatted(id)));
     }
 
-    /**
-     * TODO Avoid null pointer for non connected device
-     *
-     * @param id id of train
-     * @param additionalAddresses additional addresses
-     * @return {@link TrainModule}
-     */
     private TrainModule getTrainModule(long id, int... additionalAddresses) {
         int address = getTrain(id).getAddress();
         try {

@@ -3,7 +3,7 @@ package io.github.danieltuerk.controlcenter.shared;
 import lombok.Getter;
 
 /**
- * Abstract {@link Event} for a item identified by the ID of the item.
+ * Abstract {@link Event} for an item identified by the ID of the item.
  *
  * @author Daniel Tuerk
  */

@@ -39,7 +39,7 @@ class TrainResourceFunctionTest extends BaseIt {
             .statusCode(200);
 
         // Verify that reregistered consumer emitted a direction event (only checks type + itemId)
-        EVENT_RECEIVER.verifyReceivedEvent(TrainDrivingDirectionEvent.class, "\"itemId\":" + trainId);
+        EVENT_RECEIVER.verifyReceivedEvent(TrainDrivingDirectionEvent.class, "\"trainId\":" + trainId);
     }
 
     @Test
@@ -56,7 +56,7 @@ class TrainResourceFunctionTest extends BaseIt {
             .statusCode(200);
 
         // Verify that reregistered consumer emitted a driving level event (only checks type + itemId)
-        EVENT_RECEIVER.verifyReceivedEvent(TrainDrivingLevelEvent.class, "\"itemId\":" + trainId);
+        EVENT_RECEIVER.verifyReceivedEvent(TrainDrivingLevelEvent.class, "\"trainId\":" + trainId);
     }
 
     @Test
@@ -73,7 +73,7 @@ class TrainResourceFunctionTest extends BaseIt {
             .statusCode(200);
 
         // Verify that reregistered consumer emitted a light state event (only checks type + itemId)
-        EVENT_RECEIVER.verifyReceivedEvent(TrainLightStateEvent.class, "\"itemId\":" + trainId);
+        EVENT_RECEIVER.verifyReceivedEvent(TrainLightStateEvent.class, "\"trainId\":" + trainId);
     }
 
     @Test
@@ -90,6 +90,6 @@ class TrainResourceFunctionTest extends BaseIt {
             .statusCode(200);
 
         // Verify that reregistered consumer emitted a horn state event (only checks type + itemId)
-        EVENT_RECEIVER.verifyReceivedEvent(TrainHornStateEvent.class, "\"itemId\":" + trainId);
+        EVENT_RECEIVER.verifyReceivedEvent(TrainHornStateEvent.class, "\"trainId\":" + trainId);
     }
 }

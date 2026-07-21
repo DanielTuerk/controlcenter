@@ -418,21 +418,21 @@ public class ScenarioExecutionTest extends BaseIt {
     }
 
     private void verifyTrainSpeed(int trainId, int expected) {
-        final var trainDrivingLevelEvent = EVENT_RECEIVER.catchEvent(TrainDrivingLevelEvent.class, s -> s.contains("\"itemId\":%d".formatted(trainId)));
-        assertEquals(trainId, trainDrivingLevelEvent.getItemId());
-        assertEquals(expected, trainDrivingLevelEvent.getSpeed(), "wrong speed for train: %s".formatted(trainId));
+        final var trainDrivingLevelEvent = EVENT_RECEIVER.catchEvent(TrainDrivingLevelEvent.class, s -> s.contains("\"trainId\":%d".formatted(trainId)));
+        assertEquals(trainId, trainDrivingLevelEvent.trainId());
+        assertEquals(expected, trainDrivingLevelEvent.speed(), "wrong speed for train: %s".formatted(trainId));
     }
 
     private void verifyTrainLight(int trainId) {
-        final var trainDrivingLevelEvent = EVENT_RECEIVER.catchEvent(TrainLightStateEvent.class, s -> s.contains("{\"itemId\":%d".formatted(trainId)));
-        assertEquals(trainId, trainDrivingLevelEvent.getItemId());
-        assertTrue(trainDrivingLevelEvent.isState(), "wrong light state for train: %s".formatted(trainId));
+        final var trainDrivingLevelEvent = EVENT_RECEIVER.catchEvent(TrainLightStateEvent.class, s -> s.contains("{\"trainId\":%d".formatted(trainId)));
+        assertEquals(trainId, trainDrivingLevelEvent.trainId());
+        assertTrue(trainDrivingLevelEvent.state(), "wrong light state for train: %s".formatted(trainId));
     }
 
     private void verifyTrainDrivingDirection(int trainId, TrainDrivingDirectionEvent.DRIVING_DIRECTION expected) {
-        final var trainDrivingLevelEvent = EVENT_RECEIVER.catchEvent(TrainDrivingDirectionEvent.class, s -> s.contains("{\"itemId\":%d".formatted(trainId)));
-        assertEquals(trainId, trainDrivingLevelEvent.getItemId());
-        assertEquals(expected, trainDrivingLevelEvent.getDirection(), "wrong direction of train: %s".formatted(trainId));
+        final var trainDrivingLevelEvent = EVENT_RECEIVER.catchEvent(TrainDrivingDirectionEvent.class, s -> s.contains("{\"trainId\":%d".formatted(trainId)));
+        assertEquals(trainId, trainDrivingLevelEvent.trainId());
+        assertEquals(expected, trainDrivingLevelEvent.direction(), "wrong direction of train: %s".formatted(trainId));
     }
 
     private static void startScenario(long scenarioId) {

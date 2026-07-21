@@ -1,7 +1,7 @@
 package io.github.danieltuerk.controlcenter.shared.train;
 
 import io.github.danieltuerk.controlcenter.shared.AbstractItemEvent;
-import lombok.Getter;
+import io.github.danieltuerk.controlcenter.shared.Event;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
@@ -10,23 +10,8 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
  *
  * @author Daniel Tuerk
  */
-@Getter
 @Schema(description = "Trains update sent via WebSocket")
 @Tag(ref = "websocket")
-public class TrainDataChangedEvent extends AbstractItemEvent {
+public record TrainDataChangedEvent(long trainId, AbstractItemEvent.ACTION_TYPE type) implements Event {
 
-    private final ACTION_TYPE type;
-
-    public TrainDataChangedEvent(long trainId, ACTION_TYPE type) {
-        super(trainId);
-        this.type = type;
-    }
-
-    @Override
-    public String toString() {
-        return "TrainDataChangedEvent{" +
-            "type=" + type +
-            ", itemId=" + itemId +
-            '}';
-    }
 }

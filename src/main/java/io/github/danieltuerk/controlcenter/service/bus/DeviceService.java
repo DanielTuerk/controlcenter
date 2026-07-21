@@ -72,11 +72,7 @@ public class DeviceService {
     public void disconnect() throws DeviceAccessException {
         if (activeDevice == null) throw new DeviceAccessException("no active device");
         if (!activeDevice.isConnected()) throw new DeviceAccessException("device not connected");
-        try {
-            activeDevice.disconnect();
-        } catch (DeviceAccessException e) {
-            log.error("disconnect", e);
-        }
+        activeDevice.disconnect();
     }
 
     public Optional<Device> getConnectedDevice() {

@@ -86,21 +86,21 @@ export class TrainComponent {
       this.trainSubscription.trainDrivingDirection().subscribe(data => {
         let direction = data.direction;
         if (direction) {
-          this.getTrainData(data.itemId).forward = direction === DRIVINGDIRECTION.Forward;
+          this.getTrainData(data.trainId).forward = direction === DRIVINGDIRECTION.Forward;
         }
       });
       this.trainSubscription.trainDrivingLevel().subscribe(data => {
-        this.getTrainData(data.itemId).drivingLevel = data.speed ?? 0;
+        this.getTrainData(data.trainId).drivingLevel = data.speed ?? 0;
         this.trains.set([...this.trains()]);
       });
       this.trainSubscription.trainLightState().subscribe(data => {
-        this.getTrainData(data.itemId).light = data.state!;
+        this.getTrainData(data.trainId).light = data.state!;
       });
       this.trainSubscription.trainHornState().subscribe(data => {
-        this.getTrainData(data.itemId).horn = data.state!;
+        this.getTrainData(data.trainId).horn = data.state!;
       });
       this.trainSubscription.trainFunctionState().subscribe(data => {
-        this.getTrainData(data.itemId).functionStates.set(data.function!.id!, data.active!);
+        this.getTrainData(data.trainId).functionStates.set(data.function!.id!, data.state!);
       });
     });
   }

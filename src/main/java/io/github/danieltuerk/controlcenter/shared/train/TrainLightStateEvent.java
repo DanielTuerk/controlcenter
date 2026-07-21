@@ -1,28 +1,18 @@
 package io.github.danieltuerk.controlcenter.shared.train;
 
-import lombok.Getter;
+import io.github.danieltuerk.controlcenter.shared.CacheKeyHelper;
+import io.github.danieltuerk.controlcenter.shared.StateEvent;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 /**
  * @author Daniel Tuerk
  */
-@Getter
 @Schema(description = "Train status update sent via WebSocket")
 @Tag(ref = "websocket")
-public class TrainLightStateEvent extends TrainStateEvent {
-
-    private final boolean state;
-
-    public TrainLightStateEvent(long itemId, boolean state) {
-        super(itemId);
-        this.state = state;
-    }
-
+public record TrainLightStateEvent(long trainId, boolean state) implements StateEvent {
     @Override
-    public String toString() {
-        return "TrainLightStateEvent{" +
-                "state=" + state +
-                "} " + super.toString();
+    public String getCacheKey() {
+        return CacheKeyHelper.createCacheKey(this.getClass(), this.trainId);
     }
 }

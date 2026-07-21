@@ -61,7 +61,7 @@ class TrainResourceTest extends BaseIt {
             .getLong("id");
 
         // Verify WebSocket event was received
-        EVENT_RECEIVER.verifyReceivedEvent(TrainDataChangedEvent.class, "\"itemId\":" + trainId);
+        EVENT_RECEIVER.verifyReceivedEvent(TrainDataChangedEvent.class, "\"trainId\":" + trainId);
 
         // Verify created
         given()
@@ -121,7 +121,7 @@ class TrainResourceTest extends BaseIt {
             .body("address", equalTo(3));
 
         // Verify WebSocket event was received for update
-        EVENT_RECEIVER.verifyReceivedEvent(TrainDataChangedEvent.class, "\"itemId\":" + trainId);
+        EVENT_RECEIVER.verifyReceivedEvent(TrainDataChangedEvent.class, "\"trainId\":" + trainId);
 
         // Verify update
         given()
@@ -170,7 +170,7 @@ class TrainResourceTest extends BaseIt {
             .statusCode(204);
 
         // Verify delete event
-        EVENT_RECEIVER.verifyReceivedEvent(TrainDataChangedEvent.class, "\"itemId\":" + trainId);
+        EVENT_RECEIVER.verifyReceivedEvent(TrainDataChangedEvent.class, "\"trainId\":" + trainId);
 
         // Verify it is gone
         given()
@@ -231,7 +231,7 @@ class TrainResourceTest extends BaseIt {
             .body("functions.size()", equalTo(1));
 
         // WebSocket/event check
-        EVENT_RECEIVER.verifyReceivedEvent(TrainDataChangedEvent.class, "\"itemId\":" + trainId);
+        EVENT_RECEIVER.verifyReceivedEvent(TrainDataChangedEvent.class, "\"trainId\":" + trainId);
 
         // finally verify persisted state
         given()
@@ -278,7 +278,7 @@ class TrainResourceTest extends BaseIt {
             .body("functions.size()", equalTo(2));
 
         // WebSocket/event check
-        EVENT_RECEIVER.verifyReceivedEvent(TrainDataChangedEvent.class, "\"itemId\":" + trainId);
+        EVENT_RECEIVER.verifyReceivedEvent(TrainDataChangedEvent.class, "\"trainId\":" + trainId);
 
         // finally verify persisted state
         given()
@@ -343,7 +343,7 @@ class TrainResourceTest extends BaseIt {
             .body("functions[0].id", equalTo(idToKeep));
 
         // WebSocket/event check
-        EVENT_RECEIVER.verifyReceivedEvent(TrainDataChangedEvent.class, "\"itemId\":" + trainId);
+        EVENT_RECEIVER.verifyReceivedEvent(TrainDataChangedEvent.class, "\"trainId\":" + trainId);
 
         // finally, verify persisted state
         given()

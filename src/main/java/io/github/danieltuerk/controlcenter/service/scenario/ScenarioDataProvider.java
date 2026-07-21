@@ -70,7 +70,7 @@ public class ScenarioDataProvider {
 
     @CacheInvalidateAll(cacheName = CACHE)
     public void onTrainDataChanged(@Observes TrainDataChangedEvent event) {
-        log.info("Train data changed for ID: {}, refreshing scenarios...", event.getItemId());
+        log.info("Train data changed for ID: {}, refreshing scenarios...", event.trainId());
         fireScenariosChangedEvent();
     }
 

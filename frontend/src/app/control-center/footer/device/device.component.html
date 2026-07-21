@@ -1,7 +1,7 @@
 <mat-form-field class="no-subscript">
-  <mat-label>Select device</mat-label>
   <mat-select [(ngModel)]="selectedDevice"
     [disabled]="isConnected()"
+    placeholder="Select device"
     name="device">
     @for (device of devices(); track device.id) {
       <mat-option [value]="device">{{ device.key }}</mat-option>

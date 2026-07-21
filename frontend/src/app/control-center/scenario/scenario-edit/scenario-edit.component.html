@@ -50,8 +50,7 @@
           <label style="padding-top: 5px;">Routes: </label>
           <div style="width: 100%">
             <mat-form-field>
-              <mat-label>select route to add ...</mat-label>
-              <mat-select #routeSelect>
+              <mat-select #routeSelect placeholder="select route to add ...">
                 @for (opt of routes(); track opt.id) {
                   <mat-option [value]="opt"> {{ opt.name }}</mat-option>
                 }

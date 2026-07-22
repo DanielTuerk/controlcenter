@@ -11,16 +11,24 @@ Software to control a model railroad construction with selectrix.
 - scenarios: define and run automated routes/sequences
 
 ### Supported Format: SX1
+### Supported Language: English
 
 ## Downloads
 
 Native executables for Linux and Windows are built automatically and attached to each [GitHub Release](../../releases).
 
 > **_NOTE:_** The Windows executable is not code-signed. Windows SmartScreen will show an
-> "unknown publisher" warning ("Der Computer wurde durch Windows geschützt") on first launch.
+> "unknown publisher" warning ("Windows protected your PC") on first launch.
 > Click **More info → Run anyway** (or right-click the file → Properties → check
 > "Unblock" before running) to start it anyway.
 
+## Usage
+
+Start the executable and open http://localhost:8080/.
+
+The data is stored in your user home. (folder: ```.cc```)
+
+Documentation isn't available for now, please try it out yourself. ;)
 
 ## Development
 

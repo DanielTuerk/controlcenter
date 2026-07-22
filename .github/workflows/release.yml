@@ -1,0 +1,94 @@
+# Builds native (Mandrel) executables for Linux and Windows and attaches
+# them as assets to the GitHub Release that triggered this workflow.
+
+name: Release
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: write
+
+jobs:
+  native-linux:
+    name: Build native executable (Linux)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout controlcenter
+        uses: actions/checkout@v5
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+
+      - name: Set up Mandrel
+        uses: graalvm/setup-graalvm@v1
+        with:
+          java-version: '21'
+          distribution: 'mandrel'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Install native build dependencies
+        run: sudo apt-get update && sudo apt-get install -y build-essential zlib1g-dev
+
+      - name: Build native executable
+        # No container-build here: native-image runs directly on the runner
+        # using the Mandrel toolchain set up above.
+        run: ./mvnw -B clean package -Dquarkus.native.enabled=true -Pwith-frontend
+
+      - name: Rename artifact
+        run: |
+          mkdir -p release
+          cp target/*-runner "release/controlcenter-${{ github.event.release.tag_name }}-linux-x86_64"
+
+      - name: Upload release asset
+        uses: softprops/action-gh-release@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          files: release/controlcenter-${{ github.event.release.tag_name }}-linux-x86_64
+
+  native-windows:
+    name: Build native executable (Windows)
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout controlcenter
+        uses: actions/checkout@v5
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+
+      - name: Set up Mandrel
+        uses: graalvm/setup-graalvm@v1
+        with:
+          java-version: '21'
+          distribution: 'mandrel'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up MSVC developer environment
+        uses: ilammy/msvc-dev-cmd@v1
+
+      - name: Build native executable
+        # No container-build here: native-image runs directly on the runner
+        # using the Mandrel/MSVC toolchain set up above.
+        run: .\mvnw.cmd -B clean package "-Dquarkus.native.enabled=true" -Pwith-frontend
+
+      - name: Rename artifact
+        run: |
+          New-Item -ItemType Directory -Force -Path release
+          Copy-Item target\*-runner.exe "release\controlcenter-${{ github.event.release.tag_name }}-windows-x86_64.exe"
+
+      - name: Upload release asset
+        uses: softprops/action-gh-release@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          files: release/controlcenter-${{ github.event.release.tag_name }}-windows-x86_64.exe

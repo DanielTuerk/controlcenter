@@ -32,7 +32,7 @@ export class ViewerComponent {
 
       let signal: Signal = <Signal>$trackElement.trackPart;
 
-      let newFuncState = FUNCTION.Hp0;
+      let newFuncState: FUNCTION = FUNCTION.Hp0;
       switch (signal.type) {
         case SIGNALTYPE.Block:
         case SIGNALTYPE.Before:

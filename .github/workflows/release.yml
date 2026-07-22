@@ -80,7 +80,9 @@ jobs:
       - name: Build native executable
         # No container-build here: native-image runs directly on the runner
         # using the Mandrel/MSVC toolchain set up above.
-        run: .\mvnw.cmd -B clean package "-Dquarkus.native.enabled=true" -Pwith-frontend
+        # pom.xml defaults quarkus.native.container-build to true (for the Linux
+        # container build); override it here since Windows can't use that container.
+        run: .\mvnw.cmd -B clean package "-Dquarkus.native.enabled=true" "-Dquarkus.native.container-build=false" -Pwith-frontend
 
       - name: Rename artifact
         run: |

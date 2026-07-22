@@ -1,0 +1,56 @@
+<mat-card appearance="outlined" class="container">
+  <mat-card-header>
+    <mat-card-title>{{ $route().id ? 'Edit' : 'Create' }} route</mat-card-title>
+  </mat-card-header>
+  <form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <mat-card-content>
+      <div class="form-row">
+        <label>Name: </label>
+        <mat-form-field>
+          <input matInput required [formControl]="form.controls.name"/>
+        </mat-form-field>
+      </div>
+      <div class="form-row">
+        <label>Oneway: </label>
+        <mat-checkbox [formControl]="form.controls.oneway"/>
+      </div>
+      <div>
+        <mat-toolbar style="gap: 1rem;">
+          <label>Track: </label>
+
+          <mat-button-toggle-group name="selectType"  (change)="onToggleChange($event)">
+            <mat-button-toggle [value]="SELECT_TYPE.START" [style.background-color]="COLOR_START">
+              Start
+            </mat-button-toggle>
+            <mat-button-toggle [value]="SELECT_TYPE.END" [style.background-color]="COLOR_END">
+              End
+            </mat-button-toggle>
+            <mat-button-toggle [value]="SELECT_TYPE.WAYPOINT" [style.background-color]="COLOR_WAYPOINT">
+              Waypoint
+            </mat-button-toggle>
+          </mat-button-toggle-group>
+          Status:
+          @if (trackStatus) {
+            <app-success-icon/>
+          } @else {
+            <app-error-icon/>
+          }
+        </mat-toolbar>
+        @if (showViewer) {
+          <app-track-viewer-svg
+            [overrideIsConnected]="true"
+            [overrideUseEvents]="false"
+            (trackPartClicked)="onTrackPartClicked($event)"
+            (trackPartsReady)="onTrackReady($event)"> style="overflow: auto">
+          </app-track-viewer-svg>
+        }
+
+        <br/>
+      </div>
+    </mat-card-content>
+    <mat-card-footer>
+      <button matButton="outlined" type="button" routerLink="/cc/scenario">Back</button>
+      <button matButton="outlined">Apply</button>
+    </mat-card-footer>
+  </form>
+</mat-card>

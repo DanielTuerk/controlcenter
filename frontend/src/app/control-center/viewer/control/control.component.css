@@ -1,0 +1,23 @@
+:host {
+  display: block;
+  height: 100%;
+  overflow: hidden;
+}
+
+.full-height-tabs {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.full-height-tabs ::ng-deep .mat-mdc-tab-body-wrapper {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.full-height-tabs ::ng-deep .mat-mdc-tab-body-content {
+  overflow-y: auto;
+  scrollbar-gutter: stable;
+  height: 100%;
+}

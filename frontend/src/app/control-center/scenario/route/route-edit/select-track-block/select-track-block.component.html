@@ -1,0 +1,8 @@
+<h2 mat-dialog-title>Select end block</h2>
+<mat-dialog-content>
+  <app-track-block-select [trackBlocks]="trackBlocks()" [(selected)]="selectedBlock"></app-track-block-select>
+</mat-dialog-content>
+<mat-dialog-actions>
+  <button matButton mat-dialog-close>Cancel</button>
+  <button matButton mat-dialog-close cdkFocusInitial [mat-dialog-close]="selectedBlock">Confirm</button>
+</mat-dialog-actions>

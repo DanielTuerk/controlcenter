@@ -1,0 +1,80 @@
+import {ChangeDetectionStrategy, Component, effect, inject, OnDestroy} from '@angular/core';
+import {DecimalPipe} from "@angular/common";
+import {BusService} from "../../shared/bus.service";
+import {WebSocketService} from "../../shared/websocket/websocket.service";
+import {BusSubscription} from "../../shared/websocket/bus.subscription";
+import {DeviceService} from "../../shared/device.service";
+
+@Component({
+  selector: 'app-bus-monitor',
+  imports: [
+    DecimalPipe
+],
+  templateUrl: './bus-monitor.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
+  styleUrl: './bus-monitor.component.css'
+})
+export class BusMonitorComponent implements OnDestroy {
+
+  private busSubscription = inject(BusSubscription);
+  private webSocketService = inject(WebSocketService);
+  private busService = inject(BusService);
+  private deviceService = inject(DeviceService);
+
+  protected isConnected = this.deviceService.isConnected;
+  protected buses: Bus[] = [];
+
+  constructor() {
+    this.buses = [
+      {number: 0, rows: this.createRows()},
+      {number: 1, rows: this.createRows()}
+    ];
+
+    effect(() => {
+      if (this.isConnected()) {
+        this.busService.startTrackingBus(this.webSocketService.getClientId());
+      } else {
+        this.busService.stopTrackingBus(this.webSocketService.getClientId());
+      }
+    });
+
+    this.busSubscription.busDataEvent().subscribe(busDataEvent => {
+      if (busDataEvent.address !== undefined && busDataEvent.data !== undefined) {
+        this.buses.filter(bus => bus.number == busDataEvent.bus)
+        .flatMap(bus => bus.rows.filter(addressRow => addressRow.address == busDataEvent.address))
+        .forEach(addressRow => {
+          for (let i = 0; i < 8; i++) {
+            addressRow.bits[i] = ((busDataEvent.data! >> i) & 1) === 1;
+          }
+        })
+      }
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.busService.stopTrackingBus(this.webSocketService.getClientId());
+  }
+
+  private createRows(): AddressRow[] {
+    return Array.from({length: 111},
+      (_, i) => (
+        {address: i + 1, bits: Array(8).fill(false)}
+      )
+    );
+  }
+
+  protected toggleBit(bus: Bus, rowIndex: number, bitIndex: number, state: boolean): void {
+    this.busService.sendBusBit({bus: bus.number, address: rowIndex, bit: bitIndex, state: state});
+  }
+
+}
+
+export interface Bus {
+  number: number;
+  rows: AddressRow[];
+}
+
+export interface AddressRow {
+  address: number;
+  bits: boolean[];
+}

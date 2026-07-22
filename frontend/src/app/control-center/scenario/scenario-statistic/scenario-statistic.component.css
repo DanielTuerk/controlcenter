@@ -1,0 +1,108 @@
+.container {
+  margin-top: 1rem;
+}
+
+.bar-chart-title {
+  margin-bottom: 0.5rem;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--mat-sys-on-surface);
+}
+
+.bar-chart-empty {
+  color: var(--mat-sys-on-surface-variant);
+  font-size: 0.85rem;
+}
+
+.bar-chart {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.bar-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.bar-track {
+  position: relative;
+  flex: 1 1 auto;
+  height: 16px;
+  border-radius: 4px;
+}
+
+.bar-track:focus-visible {
+  outline: 1px solid var(--mat-sys-outline);
+  outline-offset: 2px;
+}
+
+.gridline {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: var(--mat-sys-outline-variant);
+}
+
+.bar-fill {
+  height: 100%;
+  min-width: 2px;
+  background: var(--mat-sys-primary);
+  border-radius: 0 4px 4px 0;
+}
+
+.bar-track:hover .bar-fill,
+.bar-track:focus-visible .bar-fill {
+  filter: brightness(1.2);
+}
+
+.bar-track[data-tooltip]:hover::after,
+.bar-track[data-tooltip]:focus-visible::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 0;
+  padding: 4px 8px;
+  border-radius: 4px;
+  background: var(--mat-sys-surface-container-highest);
+  color: var(--mat-sys-on-surface);
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  z-index: 1;
+}
+
+.bar-value {
+  flex: 0 0 64px;
+  font-size: 0.8rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.bar-axis-row {
+  margin-top: 2px;
+}
+
+.bar-axis {
+  height: 16px;
+}
+
+.axis-tick {
+  position: absolute;
+  top: 0;
+  transform: translateX(-50%);
+  font-size: 0.7rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--mat-sys-on-surface-variant);
+  white-space: nowrap;
+}
+
+.axis-tick:first-child {
+  transform: translateX(0);
+}
+
+.axis-tick:last-child {
+  transform: translateX(-100%);
+}

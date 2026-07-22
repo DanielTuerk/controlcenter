@@ -1,0 +1,69 @@
+<div class="control-group">
+  <button matMiniFab (click)="scheduleAllScenarios()"
+    [disabled]="!isConnected()">
+    <mat-icon>schedule_send</mat-icon>
+  </button>
+  <button matMiniFab (click)="unscheduleAllScenarios()"
+          [disabled]="!isConnected()">
+    <mat-icon>cancel_schedule_send</mat-icon>
+  </button>
+  <button matMiniFab (click)="stopAllScenarios()"
+    [disabled]="!isConnected()">
+    <mat-icon>stop</mat-icon>
+  </button>
+</div>
+
+@for (scenario of scenarios(); track scenario.scenarioId) {
+  <mat-expansion-panel class="viewer-control-pane-item">
+    <mat-expansion-panel-header  [ngClass]="'run-state-' + (scenario.runState ?? '')">
+      <mat-panel-title class="panel-title">
+        <div class="title-top">
+          <span class="scenario-name">{{ scenario.name }}</span>
+        </div>
+        <div class="title-bottom">
+          <app-scenario-run-state-icon [runState]="scenario.runState"/>
+          <span>
+            <mat-icon style="display: contents;font-size: medium">departure_board</mat-icon>
+            {{ scenario.scheduledExecutionTimeAsText }}
+          </span>
+        </div>
+      </mat-panel-title>
+    </mat-expansion-panel-header>
+    <div class="control-group">
+      <button matMiniFab (click)="scheduleScenario(scenario)"
+        [disabled]="!canBeScheduled(scenario.scenarioId)">
+        <mat-icon>schedule_send</mat-icon>
+      </button>
+      <button matMiniFab (click)="unscheduleScenario(scenario)"
+              [disabled]="!canBeUnscheduled(scenario.scenarioId)">
+        <mat-icon>cancel_schedule_send</mat-icon>
+      </button>
+      <button matMiniFab (click)="startScenario(scenario)"
+        [disabled]="!canBeStarted(scenario.scenarioId)">
+        <mat-icon>play_circle</mat-icon>
+      </button>
+      <button matMiniFab (click)="stopScenario(scenario)"
+        [disabled]="!canBeStopped(scenario.scenarioId)">
+        <mat-icon>stop</mat-icon>
+      </button>
+    </div>
+    <div class="route-container">
+      @for (route of scenario.routes; track route.name) {
+        <div
+          style="width: 90%;padding: 2px"
+          [ngClass]="'run-state-' + (route.runState ?? '')">
+          <div>
+            <app-route-run-state-icon [runState]="route.runState"/>
+            <span>{{ route.name }}</span>
+          </div>
+        @if (route.message?.trim()) {
+          <div>
+            {{ route.message }}
+          </div>
+        }
+      </div>
+    }
+  </div>
+</mat-expansion-panel>
+}
+<br/>

@@ -1,0 +1,10 @@
+<h2 mat-dialog-title>Edit {{ dialogData.trackPart.trackPartType }} ({{ dialogData.trackPart.id }})</h2>
+<form [formGroup]="form" (ngSubmit)="this.onSubmit()">
+  <mat-dialog-content>
+    <ng-template #outlet></ng-template>
+  </mat-dialog-content>
+  <mat-dialog-actions>
+    <button matButton mat-dialog-close>Cancel</button>
+    <button matButton mat-dialog-close type="submit" cdkFocusInitial>Confirm</button>
+  </mat-dialog-actions>
+</form>

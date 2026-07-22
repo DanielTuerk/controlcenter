@@ -1,0 +1,64 @@
+
+<mat-card-header>
+  <mat-card-title>Constructions</mat-card-title>
+</mat-card-header>
+<mat-card-content>
+  <br>
+  <mat-form-field>
+    <mat-label>Default construction</mat-label>
+      <mat-select [(ngModel)]="defaultConstruction"
+        (selectionChange)="updateDefaultConstruction()"
+        name="construction">
+        @for (construction of constructions(); track construction.id) {
+          <mat-option
+            [value]="construction">{{ construction.name }}
+          </mat-option>
+        }
+      </mat-select>
+  </mat-form-field>
+  <p>
+    <button matButton="outlined" routerLink="create">
+      <mat-icon>add</mat-icon>
+      Create
+    </button>
+  </p>
+  <table mat-table [dataSource]="constructions()" class="mat-elevation-z8">
+
+    <ng-container matColumnDef="id">
+      <th mat-header-cell *matHeaderCellDef> Id</th>
+      <td mat-cell *matCellDef="let element"> {{ element.id }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="name">
+      <th mat-header-cell *matHeaderCellDef> Name</th>
+      <td mat-cell *matCellDef="let element">
+        {{ element.name }}
+        @if (isCurrentConstruction(element)) {
+          <mat-chip>current</mat-chip>
+        }
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="action">
+      <th mat-header-cell *matHeaderCellDef></th>
+      <td mat-cell *matCellDef="let construction">
+        <button matIconButton [routerLink]="[construction.id]">
+          <mat-icon>edit</mat-icon>
+        </button>
+        @if (!isCurrentConstruction(construction)) {
+          <button matIconButton>
+            <mat-icon (click)="deleteConstruction(construction)">delete</mat-icon>
+          </button>
+          &nbsp;
+          <button matMiniFab>
+            <mat-icon (click)="selectCurrentConstruction(construction)">logout</mat-icon>
+          </button>
+        }
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let _row; columns: displayedColumns;"></tr>
+  </table>
+
+</mat-card-content>

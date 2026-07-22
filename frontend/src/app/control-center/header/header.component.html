@@ -1,0 +1,56 @@
+<header class="header-bg">
+  <mat-toolbar style="gap: 3px; display: flex; background: transparent">
+    <span>Control Center</span>
+    <span style="flex: 1"></span>
+
+    <div class="nav-full">
+      <button routerLink="viewer" matButton="filled">
+        <mat-icon>visibility</mat-icon>
+        Viewer
+      </button>
+      <button routerLink="editor" matButton="filled">
+        <mat-icon>border_color</mat-icon>
+        Editor
+      </button>
+      <button routerLink="train" matButton="filled">
+        <mat-icon>train</mat-icon>
+        Trains
+      </button>
+      <button routerLink="scenario" matButton="filled">
+        <mat-icon>map</mat-icon>
+        Scenarios
+      </button>
+      <button routerLink="station" matButton="filled">
+        <mat-icon>departure_board</mat-icon>
+        Station-Board
+      </button>
+    </div>
+
+    <button class="nav-collapsed" matIconButton [matMenuTriggerFor]="navMenu">
+      <mat-icon>menu</mat-icon>
+    </button>
+
+    <mat-menu #navMenu="matMenu">
+      <button mat-menu-item routerLink="viewer">
+        <mat-icon>visibility</mat-icon>Viewer
+      </button>
+      <button mat-menu-item routerLink="editor">
+        <mat-icon>border_color</mat-icon>Editor
+      </button>
+      <button mat-menu-item routerLink="train">
+        <mat-icon>train</mat-icon>Trains
+      </button>
+      <button mat-menu-item routerLink="scenario">
+        <mat-icon>map</mat-icon>Scenarios
+      </button>
+      <button mat-menu-item routerLink="station">
+        <mat-icon>departure_board</mat-icon>Station-Board
+      </button>
+    </mat-menu>
+
+    <mat-divider [vertical]="true"></mat-divider>
+    <button routerLink="settings/common" matMiniFab>
+      <mat-icon>settings</mat-icon>
+    </button>
+  </mat-toolbar>
+</header>

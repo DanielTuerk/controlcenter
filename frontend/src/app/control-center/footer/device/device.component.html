@@ -1,0 +1,24 @@
+<mat-form-field class="no-subscript">
+  <mat-select [(ngModel)]="selectedDevice"
+    [disabled]="isConnected()"
+    placeholder="Select device"
+    name="device">
+    @for (device of devices(); track device.id) {
+      <mat-option [value]="device">{{ device.key }}</mat-option>
+    }
+  </mat-select>
+</mat-form-field>
+<button matMiniFab routerLink="settings/device" [disabled]="isConnected()">
+  <mat-icon>edit</mat-icon>
+</button>
+<button matIconButton
+        [matTooltip]="'toggle connection'"
+        [disabled]="!selectedDevice"
+        (click)="onConnectionToggle()">
+  <mat-icon>@if (isConnected()) {
+    power_off
+  } @else {
+    power
+  }
+  </mat-icon>
+</button>

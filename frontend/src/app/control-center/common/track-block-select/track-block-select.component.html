@@ -1,0 +1,10 @@
+<mat-form-field appearance="fill">
+  <mat-select [value]="selected()" (selectionChange)="onChange($event.value)">
+    <mat-option [value]="null">{{ emptyLabel() }}</mat-option>
+    @for (trackBlock of trackBlocks(); track trackBlock) {
+      <mat-option [value]="trackBlock">
+        {{ displayFn()(trackBlock) }}
+      </mat-option>
+    }
+  </mat-select>
+</mat-form-field>

@@ -1,0 +1,9 @@
+<h3>Select construction</h3>
+
+@for (construction of constructions(); track construction; let i = $index) {
+  <li>
+    <button (click)="selectCurrentConstruction(construction)">{{ construction.name }}</button>
+  </li>
+}
+
+<app-create-construction/>

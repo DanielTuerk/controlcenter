@@ -1,0 +1,98 @@
+<mat-card appearance="outlined" class="container">
+  <mat-card-header>
+    <mat-card-title>Edit train</mat-card-title>
+  </mat-card-header>
+  <form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <mat-card-content>
+      <div class="form-row">
+        <label>Name: </label>
+        <mat-form-field>
+          <input matInput required [formControl]="form.controls.name"/>
+        </mat-form-field>
+      </div>
+      <div class="form-row">
+        <label>Address: </label>
+        <mat-form-field>
+          <input matInput required [formControl]="form.controls.address"/>
+        </mat-form-field>
+      </div>
+
+      <h3>Functions</h3>
+
+      <p>
+        <button type="button" matButton="outlined" (click)="addTrainFunction()">
+          <mat-icon>add</mat-icon>
+          Add
+        </button>
+      </p>
+      <table mat-table [dataSource]="trainFunction()" class="mat-elevation-z8">
+
+        <ng-container matColumnDef="alias">
+          <th mat-header-cell *matHeaderCellDef> Alias</th>
+          <td mat-cell *matCellDef="let element">
+            <input matInput
+                   [(ngModel)]="element.alias"
+                   [ngModelOptions]="{ standalone: true }"
+                   placeholder="Alias"/>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="address">
+          <th mat-header-cell *matHeaderCellDef> Address</th>
+          <td mat-cell *matCellDef="let element" style="white-space: pre-line;">
+            <input matInput
+                   type="number"
+                   min="1"
+                   max="110"
+                   [ngModel]="element.configuration?.address ?? ''"
+                   (ngModelChange)="updateAddress(element, $event)"
+                   [ngModelOptions]="{ standalone: true }"
+                   placeholder="Address"/>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="bit">
+          <th mat-header-cell *matHeaderCellDef> Bit</th>
+          <td mat-cell *matCellDef="let element" style="white-space: pre-line;">
+            <input matInput
+                   type="number"
+                   min="1"
+                   max="8"
+                   step="1"
+
+                   [ngModel]="element.configuration?.bit ?? ''"
+                   (ngModelChange)="updateBit(element, $event)"
+                   [ngModelOptions]="{ standalone: true }"
+                   placeholder="Bit"/>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="state">
+          <th mat-header-cell *matHeaderCellDef> State</th>
+          <td mat-cell *matCellDef="let element">
+            <mat-checkbox
+              [ngModel]="element.configuration?.bitState"
+              (ngModelChange)="updateBitState(element, $event)"
+              [ngModelOptions]="{ standalone: true }">
+            </mat-checkbox>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="action">
+          <th mat-header-cell *matHeaderCellDef></th>
+          <td mat-cell *matCellDef="let route">
+            <mat-icon (click)="deleteTrainFunction(route)">delete</mat-icon>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let _row; columns: displayedColumns;"></tr>
+      </table>
+
+    </mat-card-content>
+    <mat-card-footer>
+      <button matButton="outlined" type="button" routerLink="../">Back</button>
+      <button matButton="outlined">Apply</button>
+    </mat-card-footer>
+  </form>
+</mat-card>

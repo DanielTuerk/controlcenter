@@ -1,0 +1,59 @@
+<mat-card appearance="outlined" class="container">
+  <mat-card-header>
+    <mat-card-title>Scenarios</mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+    <p>
+      <button matButton="outlined" routerLink="create">
+        <mat-icon>add</mat-icon>
+        Create
+      </button>
+    </p>
+    <table mat-table [dataSource]="scenarios()" class="mat-elevation-z8">
+
+      <ng-container matColumnDef="id">
+        <th mat-header-cell *matHeaderCellDef> Id </th>
+        <td mat-cell *matCellDef="let element"> {{element.id}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef> Name </th>
+        <td mat-cell *matCellDef="let element"> {{element.name}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="train">
+        <th mat-header-cell *matHeaderCellDef> Train</th>
+        <td mat-cell *matCellDef="let element"> {{ element.train?.name }}
+          <train-direction-icon [forward]="element.trainDrivingDirection === DRIVINGDIRECTION1.Forward"/> {{ element.startDrivingLevel }}
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="cron">
+        <th mat-header-cell *matHeaderCellDef> Cron </th>
+        <td mat-cell *matCellDef="let element"> {{element.cron}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="action">
+        <th mat-header-cell *matHeaderCellDef></th>
+        <td mat-cell *matCellDef="let scenario">
+          <button matIconButton [routerLink]="[scenario.id]">
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button matIconButton (click)="deleteScenario(scenario)">
+            <mat-icon>delete</mat-icon>
+          </button>
+          <button matIconButton [routerLink]="[scenario.id, 'statistic']">
+            <mat-icon>bar_chart</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let _row; columns: displayedColumns;"></tr>
+    </table>
+
+  </mat-card-content>
+</mat-card>
+<br/>
+<app-route></app-route>
+<br/>

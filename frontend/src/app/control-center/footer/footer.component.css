@@ -1,0 +1,18 @@
+:host {
+  display: block;
+  background-color: #001d36;
+  border-top: 1px solid #000;
+}
+
+mat-divider {
+  height: -webkit-fill-available;
+  align-self: center;
+}
+
+.copyright {
+  text-align: center;
+  /*padding: 1rem;*/
+  font-size: 0.7rem;
+  color: #666;
+}
+

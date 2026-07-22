@@ -1,0 +1,62 @@
+<mat-card appearance="outlined">
+  <mat-card-header>
+    <mat-card-title>Edit block ({{ trackBlockId() }})</mat-card-title>
+  </mat-card-header>
+  <form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <mat-card-content>
+      <div class="form-row">
+        <label>Name: </label>
+        <mat-form-field>
+          <input matInput required [formControl]="form.controls.name"/>
+        </mat-form-field>
+      </div>
+      <div class="form-row">
+        <label>Address: </label>
+        <mat-form-field>
+          <input matInput required [formControl]="form.controls.address"/>
+        </mat-form-field>
+      </div>
+      <div class="form-row">
+        <label>Bit: </label>
+        <mat-form-field>
+          <input matInput required [formControl]="form.controls.bit"/>
+        </mat-form-field>
+      </div>
+      <div class="form-row">
+        <label>Feedback: </label>
+        <mat-checkbox required formControlName="feedback"></mat-checkbox>
+      </div>
+
+      <hr/>
+
+      <h3>Driving Level adjustment</h3>
+      <div class="form-row">
+        <label>Type: </label>
+        <mat-form-field>
+          <mat-select required formControlName="drivingLevelAdjustType">
+            @for (opt of drivingLevelOptions(); track $index) {
+              <mat-option [value]="opt"> {{ opt }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="form-row">
+        <label>Forward driving level: </label>
+        <mat-form-field>
+          <input matInput [formControl]="form.controls.forwardDrivingLevel"/>
+        </mat-form-field>
+      </div>
+      <div class="form-row">
+        <label>backward driving level: </label>
+        <mat-form-field>
+          <input matInput [formControl]="form.controls.backwardDrivingLevel"/>
+        </mat-form-field>
+      </div>
+      <br/>
+    </mat-card-content>
+    <mat-card-footer>
+      <button matButton="outlined" type="button" routerLink="../">Back</button>
+      <button matButton="outlined" style="margin-left: auto;">Apply</button>
+    </mat-card-footer>
+  </form>
+</mat-card>

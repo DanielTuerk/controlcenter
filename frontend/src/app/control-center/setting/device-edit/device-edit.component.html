@@ -1,0 +1,39 @@
+<mat-card-header>
+  <mat-card-title>Device</mat-card-title>
+</mat-card-header>
+<form [formGroup]="form" (ngSubmit)="onSubmit()">
+  <mat-card-content>
+    <div class="form-row">
+      <label>Key: </label>
+      <mat-form-field>
+        <input matInput required [formControl]="form.controls.key"/>
+      </mat-form-field>
+    </div>
+    <div class="form-row">
+      <label>Type: </label>
+      <mat-form-field>
+        <mat-select required [formControl]="form.controls.type">
+          @for (deviceType of DEVICE_TYPES; track $index) {
+            <mat-option [value]="deviceType">{{deviceType}}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+    </div>
+    <div>
+      available:
+      <mat-icon (click)="reloadAvailableDevices()">refresh</mat-icon>
+      <ul>
+        @for (device of availableDevices(); track device.port) {
+          <li>
+            {{ device.port }}: {{ device.name }}
+          </li>
+        }
+      </ul>
+
+    </div>
+  </mat-card-content>
+  <mat-card-footer>
+    <button matButton="outlined" type="button" routerLink="../">Back</button>
+    <button matButton="outlined">Apply</button>
+  </mat-card-footer>
+</form>

@@ -1,0 +1,105 @@
+package io.github.danieltuerk.controlcenter.service.scenario;
+
+import io.github.danieltuerk.controlcenter.shared.scenario.TrackNotFoundException;
+import io.github.danieltuerk.controlcenter.shared.track.model.AbstractTrackPart;
+import io.github.danieltuerk.controlcenter.shared.track.model.BlockStraight;
+import io.github.danieltuerk.controlcenter.shared.track.model.Curve;
+import io.github.danieltuerk.controlcenter.shared.track.model.Curve.DIRECTION;
+import io.github.danieltuerk.controlcenter.shared.track.model.TrackBlock;
+import io.quarkus.test.junit.QuarkusTest;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import java.util.List;
+
+/**
+ * Test {@link TrackBuilder} for {@link Curve}.
+ *
+ * @author Daniel Tuerk
+ */
+@QuarkusTest
+public class TrackBuilderCurveTest extends AbstractTrackBuilderTest {
+
+    private TrackBlock endBlock;
+    private TrackBlock startBlock;
+
+    @BeforeEach
+    public void beforeMethod() {
+        startBlock = createTrackBlock(20, 1);
+        endBlock = createTrackBlock(30, 3);
+    }
+
+    /**
+     * <pre>
+     * S
+     * # E
+     * </pre>
+     */
+    @Test
+    public void testCurve_TopRight() throws TrackNotFoundException {
+        BlockStraight startBlockStraight = createVerticalBlockStraight(1, 1, startBlock);
+
+        testSimpleCurve(List.of(
+            startBlockStraight,
+                createCurve(1, 2, Curve.DIRECTION.TOP_RIGHT),
+            createHorizontalBlockStraight(2, 2, endBlock)),
+            startBlockStraight, endBlock
+        );
+    }
+
+    /**
+     * <pre>
+     *   S
+     * E #
+     * </pre>
+     */
+    @Test
+    public void testCurve_TopLeft() throws TrackNotFoundException {
+        BlockStraight startBlockStraight = createVerticalBlockStraight(2, 1, startBlock);
+
+        testSimpleCurve(List.of(
+            startBlockStraight,
+                createCurve(2, 2, DIRECTION.TOP_LEFT),
+            createHorizontalBlockStraight(1, 2, endBlock)), startBlockStraight, endBlock);
+    }
+
+    /**
+     * <pre>
+     * # E
+     * S
+     * </pre>
+     */
+    @Test
+    public void testCurve_BottomRight() throws TrackNotFoundException {
+        BlockStraight startBlockStraight = createVerticalBlockStraight(1, 2, startBlock);
+
+        testSimpleCurve(List.of(
+            startBlockStraight,
+                createCurve(1, 1, DIRECTION.BOTTOM_RIGHT),
+            createHorizontalBlockStraight(2, 1, endBlock)),
+            startBlockStraight, endBlock);
+    }
+
+    /**
+     * <pre>
+     * E #
+     *   S
+     * </pre>
+     */
+    @Test
+    public void testCurve_BottomLeft() throws TrackNotFoundException {
+        BlockStraight startBlockStraight = createVerticalBlockStraight(2, 2, startBlock);
+
+        testSimpleCurve(List.of(
+            createHorizontalBlockStraight(1, 1, endBlock),
+                createCurve(2, 1, DIRECTION.BOTTOM_LEFT),
+            startBlockStraight),
+            startBlockStraight, endBlock);
+    }
+
+    private void testSimpleCurve(List<? extends AbstractTrackPart> trackParts,
+        BlockStraight startBlockStraight, TrackBlock endBlock) throws TrackNotFoundException {
+        testSimpleTrack(trackParts, startBlockStraight, endBlock, 3);
+    }
+
+}

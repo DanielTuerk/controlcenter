@@ -1,0 +1,43 @@
+{
+  "name": "essentials-practice",
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "ng": "ng",
+    "start": "ng serve",
+    "start:dev": "ng serve --proxy-config proxyconfig.json",
+    "build": "ng build",
+    "watch": "ng build --watch --configuration development",
+    "test": "ng test",
+    "openapi:generate": "openapi-generator-cli generate -i openapi.yaml -g typescript-angular -o src/shared/openapi-gen",
+    "generate:api": "node scripts/generate-api.js",
+    "generate:api-and-fetch": "node scripts/generate-api-and-fetch.js"
+  },
+  "private": true,
+  "dependencies": {
+    "@angular/animations": "^22.0.2",
+    "@angular/cdk": "^22.0.2",
+    "@angular/common": "^22.0.2",
+    "@angular/compiler": "^22.0.2",
+    "@angular/core": "^22.0.2",
+    "@angular/forms": "^22.0.2",
+    "@angular/material": "^22.0.2",
+    "@angular/platform-browser": "^22.0.2",
+    "@angular/platform-browser-dynamic": "^22.0.2",
+    "@angular/router": "^22.0.2",
+    "cron-parser": "^5.4.0",
+    "node-int64": "^0.4.0",
+    "rxjs": "~7.8.0",
+    "tslib": "^2.3.0",
+    "zone.js": "~0.15.0"
+  },
+  "devDependencies": {
+    "@angular/build": "^22.0.3",
+    "@angular/cli": "^22.0.3",
+    "@angular/compiler-cli": "^22.0.2",
+    "@openapitools/openapi-generator-cli": "^2.32.0",
+    "jsdom": "^29.1.1",
+    "typescript": "~6.0.3",
+    "vitest": "^4.0.8"
+  }
+}

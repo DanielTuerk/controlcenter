@@ -1,0 +1,15 @@
+<mat-sidenav-container class="setting-nav">
+  <mat-sidenav mode="side" opened>
+    <mat-nav-list>
+        <a mat-list-item routerLink="common">Common</a>
+        <a mat-list-item routerLink="device">Devices</a>
+        <a mat-list-item routerLink="construction">Constructions</a>
+      <a mat-list-item routerLink="scenario">Scenarios</a>
+    </mat-nav-list>
+    </mat-sidenav>
+  <mat-sidenav-content style="height: 100%">
+    <mat-card appearance="outlined" class="container">
+      <router-outlet></router-outlet>
+    </mat-card>
+  </mat-sidenav-content>
+</mat-sidenav-container>

@@ -1,0 +1,19 @@
+/*mat-sidenav {*/
+/*  width: 180px;*/
+/*}*/
+
+.mat-sidenav {
+  width: fit-content;
+  min-width: unset;
+  max-width: unset;
+  white-space: nowrap;
+}
+
+.setting-nav {
+  height: 90%;
+  margin-top: 1rem;
+}
+
+.container {
+  padding: 1rem;
+}

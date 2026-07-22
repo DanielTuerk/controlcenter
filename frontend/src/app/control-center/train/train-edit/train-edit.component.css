@@ -1,0 +1,17 @@
+.container {
+  margin-top: 1rem;
+}
+
+table input {
+  background: var(--mat-sys-surface-container-lowest);
+  border: none;
+  border-bottom: 1px solid var(--mat-sys-outline);
+  color: var(--mat-sys-on-surface);
+  font-size: 1rem;
+  padding: 4px 0;
+  outline: none;
+}
+
+table input:focus {
+  border-bottom: 2px solid var(--mat-sys-primary);
+}

@@ -1,0 +1,49 @@
+<div class="viewer-track-content">
+  <mat-toolbar style="width: 100%">
+    Mode:&nbsp;
+    <mat-button-toggle-group name="editType" [(ngModel)]="editType" (ngModelChange)="onEditTypeChanged()">
+      <mat-button-toggle [value]="EDIT_TYPE.ADD">
+        <mat-icon>add</mat-icon>
+      </mat-button-toggle>
+      <mat-button-toggle [value]="EDIT_TYPE.DELETE" [disabled]="pendingChanges()">
+        <mat-icon>delete</mat-icon>
+      </mat-button-toggle>
+      <mat-button-toggle [value]="EDIT_TYPE.MOVE">
+        <mat-icon>open_with</mat-icon>
+      </mat-button-toggle>
+      <mat-button-toggle [value]="EDIT_TYPE.ROTATE">
+        <mat-icon>rotate_90_degrees_ccw</mat-icon>
+      </mat-button-toggle>
+      <mat-button-toggle [value]="EDIT_TYPE.EDIT" [disabled]="pendingChanges()">
+        <mat-icon>edit</mat-icon>
+      </mat-button-toggle>
+
+    </mat-button-toggle-group>
+
+    <button matMiniFab style="margin-left: 10px"
+            [disabled]="!pendingChanges()"
+            (click)="save()">
+      <mat-icon>save</mat-icon>
+    </button>
+    <button matMiniFab style="margin-left: 10px"
+            [disabled]="!pendingChanges()"
+            (click)="revert()">
+      <mat-icon>undo</mat-icon>
+    </button>
+  </mat-toolbar>
+
+  <mat-expansion-panel hideToggle #addPanel>
+    <svg #paletteSvg
+         height="140" width="420"
+         class="paletteSvg"></svg>
+  </mat-expansion-panel>
+
+  <app-track-viewer-svg #trackViewer
+                        style="overflow: auto"
+                        [overrideIsConnected]="true"
+                        [overrideUseEvents]="false"
+                        (trackPartClicked)="onTrackPartClicked($event)"
+                        (mousemove)="mouseOverTrackViewer($event)"
+                        (click)="onTrackViewerClicked()">
+  </app-track-viewer-svg>
+</div>

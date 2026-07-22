@@ -1,0 +1,28 @@
+<button matButton="outlined"
+          [matTooltip]="'change system format'"
+          [textContent]="systemFormat()"
+          [disabled]="!isConnected()"
+          (click)="onSystemFormat()"></button>
+
+<button matIconButton
+          [matTooltip]="'toggle rail voltage'"
+          [disabled]="!isConnected()"
+          (click)="onRailVoltageToggle()">
+    @if (railVoltageEnabled()) {
+      <span class="voltage-off"><mat-icon>electric_bolt</mat-icon></span>
+    } @else {
+      <span class="voltage-on"><mat-icon>electric_bolt</mat-icon></span>
+    }
+  </button>
+
+<button matIconButton routerLink="bus-monitor"
+          [matTooltip]="'open bus monitor'"
+          [disabled]="!isConnected()">
+    <mat-icon>monitor</mat-icon>
+  </button>
+<button matIconButton
+          [matTooltip]="'send bus data'"
+          [disabled]="!isConnected()"
+          (click)="sendBusData()">
+    <mat-icon>send</mat-icon>
+  </button>

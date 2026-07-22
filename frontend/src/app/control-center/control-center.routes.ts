@@ -1,0 +1,73 @@
+import {Routes} from "@angular/router";
+import {TrainComponent} from "./train/train.component";
+import {TrainEditComponent} from "./train/train-edit/train-edit.component";
+import {ScenarioComponent} from "./scenario/scenario.component";
+import {ViewerComponent} from "./viewer/viewer.component";
+import {EditorComponent} from "./editor/editor.component";
+import {SettingComponent} from "./setting/setting.component";
+import {ScenarioEditComponent} from "./scenario/scenario-edit/scenario-edit.component";
+import {ScenarioStatisticComponent} from "./scenario/scenario-statistic/scenario-statistic.component";
+import {routes as settingRoutes} from "./setting/setting.routes";
+import {routes as editorRoutes} from "./editor/editor.routes";
+import {StationComponent} from "./station/station.component";
+import {RouteEditComponent} from "./scenario/route/route-edit/route-edit.component";
+import {BusMonitorComponent} from "./bus-monitor/bus-monitor.component";
+import {DevToolsComponent} from "./dev-tools/dev-tools.component";
+
+export const routes: Routes = [
+  {
+    path: '',
+    redirectTo: 'viewer',
+    pathMatch: 'full'
+  },
+  {
+    path: 'dev',
+    component: DevToolsComponent
+  },
+  {
+    path: 'train',
+    component: TrainComponent
+  },
+  {
+    path: 'train/:trainId',
+    component: TrainEditComponent
+  },
+  {
+    path: 'scenario',
+    component: ScenarioComponent
+  },
+  {
+    path: 'scenario/:scenarioId',
+    component: ScenarioEditComponent
+  },
+  {
+    path: 'scenario/:scenarioId/statistic',
+    component: ScenarioStatisticComponent
+  },
+  {
+    path: 'scenario/route/:routeId',
+    component: RouteEditComponent
+  },
+  {
+    path: 'viewer',
+    component: ViewerComponent
+  },
+  {
+    path: 'editor',
+    component: EditorComponent,
+    children: editorRoutes
+  },
+  {
+    path: 'station',
+    component: StationComponent
+  },
+  {
+    path: 'settings',
+    component: SettingComponent,
+    children: settingRoutes
+  },
+  {
+    path: 'bus-monitor',
+    component: BusMonitorComponent
+  }
+];

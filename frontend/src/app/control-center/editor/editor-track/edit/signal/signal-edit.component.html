@@ -1,0 +1,190 @@
+<mat-card appearance="outlined">
+  <mat-card-header>
+    <mat-card-title>Lights</mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+    <br/>
+    <mat-button-toggle-group name="signalType" [(ngModel)]="selectedSignalType">
+      <mat-button-toggle value="{{SIGNALTYPE.Block}}">
+        {{ SIGNALTYPE.Block }}
+      </mat-button-toggle>
+      <mat-button-toggle value="{{SIGNALTYPE.Enter}}">
+        {{ SIGNALTYPE.Enter }}
+      </mat-button-toggle>
+      <mat-button-toggle value="{{SIGNALTYPE.Exit}}">
+        {{ SIGNALTYPE.Exit }}
+      </mat-button-toggle>
+      <mat-button-toggle value="{{SIGNALTYPE.Before}}">
+        {{ SIGNALTYPE.Before }}
+      </mat-button-toggle>
+    </mat-button-toggle-group>
+
+    <div class="signalSvgContainer">
+      @switch (selectedSignalType) {
+        @case (SIGNALTYPE.Block) {
+          <svg width="100px">
+            <polygon points="15 10 25 0 55 0 65 10 65 120 15 120" style="fill: gray; stroke: black;"></polygon>
+            <circle style="stroke: white; fill: red; stroke-width: 2px;" cx="27.5" cy="100" r="8"></circle>
+            <text x="0px" y="105px">r1</text>
+            <circle style="stroke: white; fill: limegreen; stroke-width: 2px;" cx="50" cy="100" r="8"></circle>
+            <text x="67px" y="105px">g1</text>
+          </svg>
+        }
+        @case (SIGNALTYPE.Enter) {
+          <svg width="100px">
+            <polygon points="15 10 25 0 55 0 65 10 65 120 15 120" style="fill: gray; stroke: black;"></polygon>
+            <circle style="stroke: white; fill: red; stroke-width: 2px;" cx="27.5" cy="100" r="8"></circle>
+            <text x="0px" y="105px">r1</text>
+            <circle style="stroke: white; fill: yellow; stroke-width: 2px;" cx="50" cy="100" r="8"></circle>
+            <text x="67px" y="105px">y1</text>
+            <circle style="stroke: white; fill: limegreen; stroke-width: 2px;" cx="50" cy="18" r="8"></circle>
+            <text x="67px" y="18px">g1</text>
+          </svg>
+        }
+        @case (SIGNALTYPE.Exit) {
+          <svg width="100px">
+            <polygon points="15 10 25 0 55 0 65 10 65 120 15 120" style="fill: gray; stroke: black;"></polygon>
+            <circle style="stroke: white; fill: red; stroke-width: 2px;" cx="27.5" cy="40" r="8"></circle>
+            <text x="0px" y="45px">r1</text>
+            <circle style="stroke: white; fill: red; stroke-width: 2px;" cx="50" cy="40" r="8"></circle>
+            <text x="67px" y="45px">r2</text>
+            <circle style="stroke: white; fill: white; stroke-width: 2px;" cx="50" cy="60" r="8"></circle>
+            <text x="67px" y="65px">w</text>
+            <circle style="stroke: white; fill: white; stroke-width: 2px;" cx="27.5" cy="78" r="8"></circle>
+            <text x="0px" y="84px">w</text>
+            <circle style="stroke: white; fill: yellow; stroke-width: 2px;" cx="27.5" cy="100" r="8"></circle>
+            <text x="0px" y="105px">y1</text>
+            <circle style="stroke: white; fill: limegreen; stroke-width: 2px;" cx="27.5" cy="18" r="8"></circle>
+            <text x="0px" y="18px">g1</text>
+          </svg>
+        }
+        @case (SIGNALTYPE.Before) {
+          <svg width="130px">
+            <polygon points="15 50 65 0 85 0 105 20 105 40 55 90 35 90 15 70"
+            style="fill: gray; stroke: black;"></polygon>
+            <circle style="stroke: white; fill: yellow; stroke-width: 2px;" cx="60" cy="25" r="8"></circle>
+            <text x="20px" y="28px">y1</text>
+            <circle style="stroke: white; fill: limegreen; stroke-width: 2px;" cx="60" cy="65" r="8"></circle>
+            <text x="85px" y="68px">g1</text>
+            <circle style="stroke: white; fill: yellow; stroke-width: 2px;" cx="30" cy="65" r="8"></circle>
+            <text x="0px" y="68px">y2</text>
+            <circle style="stroke: white; fill: limegreen; stroke-width: 2px;" cx="90" cy="25" r="8"></circle>
+            <text x="110px" y="28px">g2</text>
+          </svg>
+        }
+      }
+    </div>
+
+    @if (selectedSignalType !== SIGNALTYPE.Before) {
+      <div class="lightContainer">
+        <label>RED1</label>
+        <mat-form-field class="small-field">
+          <mat-label>Address</mat-label>
+          <input matInput inputmode="numeric" [maxLength]="3" [formControl]="red1AddressFormField"/>
+        </mat-form-field>
+        <mat-form-field class="small-field">
+          <mat-label>Bit</mat-label>
+          <input matInput [formControl]="red1BitFormField"/>
+        </mat-form-field>
+        <mat-checkbox [formControl]="red1BitStateFormField"/>
+        <mat-label>ON</mat-label>
+      </div>
+    }
+    @if (selectedSignalType === SIGNALTYPE.Exit) {
+      <div class="lightContainer">
+        <label>RED2</label>
+        <mat-form-field class="small-field">
+          <mat-label>Address</mat-label>
+          <input matInput [formControl]="red2AddressFormField"/>
+        </mat-form-field>
+        <mat-form-field class="small-field">
+          <mat-label>Bit</mat-label>
+          <input matInput [formControl]="red2BitFormField"/>
+        </mat-form-field>
+        <mat-checkbox [formControl]="red2BitStateFormField"/>
+        <mat-label>ON</mat-label>
+      </div>
+    }
+    <div class="lightContainer">
+      <label>GREEN1</label>
+      <mat-form-field class="small-field">
+        <mat-label>Address</mat-label>
+        <input matInput [formControl]="green1AddressFormField"/>
+      </mat-form-field>
+      <mat-form-field class="small-field">
+        <mat-label>Bit</mat-label>
+        <input matInput [formControl]="green1BitFormField"/>
+      </mat-form-field>
+      <mat-checkbox [formControl]="green1BitStateFormField"/>
+      <mat-label>ON</mat-label>
+    </div>
+    @if (selectedSignalType === SIGNALTYPE.Before) {
+      <div class="lightContainer">
+        <label>GREEN2</label>
+        <mat-form-field class="small-field">
+          <mat-label>Address</mat-label>
+          <input matInput [formControl]="green2AddressFormField"/>
+        </mat-form-field>
+        <mat-form-field class="small-field">
+          <mat-label>Bit</mat-label>
+          <input matInput [formControl]="green2BitFormField"/>
+        </mat-form-field>
+        <mat-checkbox [formControl]="green2BitStateFormField"/>
+        <mat-label>ON</mat-label>
+      </div>
+    }
+    @if (selectedSignalType !== SIGNALTYPE.Block) {
+      <div class="lightContainer">
+        <label>YELLOW1</label>
+        <mat-form-field class="small-field">
+          <mat-label>Address</mat-label>
+          <input matInput [formControl]="yellow1AddressFormField"/>
+        </mat-form-field>
+        <mat-form-field class="small-field">
+          <mat-label>Bit</mat-label>
+          <input matInput [formControl]="yellow1BitFormField"/>
+        </mat-form-field>
+        <mat-checkbox [formControl]="yellow1BitStateFormField"/>
+        <mat-label>ON</mat-label>
+      </div>
+    }
+    @if (selectedSignalType === SIGNALTYPE.Before) {
+      <div class="lightContainer">
+        <label>YELLOW2</label>
+        <mat-form-field class="small-field">
+          <mat-label>Address</mat-label>
+          <input matInput [formControl]="yellow2AddressFormField"/>
+        </mat-form-field>
+        <mat-form-field class="small-field">
+          <mat-label>Bit</mat-label>
+          <input matInput [formControl]="yellow2BitFormField"/>
+        </mat-form-field>
+        <mat-checkbox [formControl]="yellow2BitStateFormField"/>
+        <mat-label>ON</mat-label>
+      </div>
+    }
+    @if (selectedSignalType === SIGNALTYPE.Exit) {
+      <div class="lightContainer">
+        <label>WHITE</label>
+        <mat-form-field class="small-field">
+          <mat-label>Address</mat-label>
+          <input matInput [formControl]="whiteAddressFormField"/>
+        </mat-form-field>
+        <mat-form-field class="small-field">
+          <mat-label>Bit</mat-label>
+          <input matInput [formControl]="whiteBitFormField"/>
+        </mat-form-field>
+        <mat-checkbox [formControl]="whiteBitStateFormField"/>
+        <mat-label>ON</mat-label>
+      </div>
+    }
+  </mat-card-content>
+</mat-card>
+<mat-card appearance="outlined">
+  <mat-card-content>
+    <div class="form-row">
+      <label>Stop Block: </label>
+      <app-track-block-select [trackBlocks]="trackBlocks()" [(selected)]="selectedStopBlock"></app-track-block-select>
+    </div>
+  </mat-card-content>
+</mat-card>

@@ -1,0 +1,46 @@
+<mat-card appearance="outlined" class="container">
+  <mat-card-header>
+    <mat-card-title>Statistics for {{ scenario().name }}</mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+    <div>
+      Runs: {{ statistic().total }}
+      <app-success-icon/>
+      {{ statistic().successful }}
+      <app-error-icon/>
+      {{ statistic().failed }}
+    </div>
+    <div>
+      <p>Last run: {{ statistic().lastRun | date:'dd.MM.yyyy HH:mm:ss' }}</p>
+      <p>Average time: {{ averageRunTime() | date:'HH:mm:ss':'UTC' }}</p>
+    </div>
+    <hr/>
+    <h3 class="bar-chart-title">Successful run durations</h3>
+    @if (runBars().length > 0) {
+      <div class="bar-chart">
+        @for (bar of runBars(); track $index) {
+          <div class="bar-row">
+            <div class="bar-track" [attr.data-tooltip]="bar.tooltip" tabindex="0">
+              @for (tick of chartTicks(); track tick.position) {
+                <span class="gridline" [style.left.%]="tick.position"></span>
+              }
+              <div class="bar-fill" [style.width.%]="bar.widthPercent"></div>
+            </div>
+            <span class="bar-value">{{ bar.valueDate | date:'HH:mm:ss':'UTC' }}</span>
+          </div>
+        }
+        <div class="bar-row bar-axis-row">
+          <div class="bar-track bar-axis">
+            @for (tick of chartTicks(); track tick.position) {
+              <span class="axis-tick" [style.left.%]="tick.position">{{ tick.value | date:'HH:mm:ss':'UTC' }}</span>
+            }
+          </div>
+          <span class="bar-value"></span>
+        </div>
+      </div>
+    } @else {
+      <p class="bar-chart-empty">No successful runs yet.</p>
+    }
+  </mat-card-content>
+</mat-card>
+

@@ -1,0 +1,115 @@
+package io.github.danieltuerk.controlcenter.service.config;
+
+
+import io.github.danieltuerk.controlcenter.api.config.ConfigItem;
+import io.github.danieltuerk.controlcenter.persist.entity.ConfigValueEntity;
+import io.github.danieltuerk.controlcenter.persist.repository.ConfigRepository;
+import io.github.danieltuerk.controlcenter.shared.config.ConfigNotAvailableException;
+import io.github.danieltuerk.controlcenter.shared.scenario.Route;
+import io.github.danieltuerk.controlcenter.shared.train.Train;
+import io.quarkus.runtime.Startup;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.context.control.ActivateRequestContext;
+import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.logging.log4j.util.Strings;
+
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+/**
+ * @author Daniel Tuerk
+ */
+@ApplicationScoped
+@Startup
+@Slf4j
+public class ConfigService {
+
+    private static final String CONSTRUCTION_DEFAULT = "construction.default";
+    private static final String HP_0_AFTER_TRAIN_PASS_DELAY_IN_SECONDS = "HP0_AFTER_TRAIN_PASS_DELAY_IN_SECONDS";
+    /**
+     * Delay to start the {@link Train} for a started {@link Route}.
+     */
+    private static final String START_TRAIN_DELAY_SECONDS = "START_TRAIN_DELAY_SECONDS";
+    /**
+     * Delay to wait to finish the {@link Route} for a stopped {@link Train} at {@link Route} end.
+     */
+    private static final String FINISH_ROUTE_DELAY_SECONDS = "FINISH_ROUTE_DELAY_SECONDS";
+    private static final String DEFAULT_START_DRIVING_LEVEL = "DEFAULT_START_DRIVING_LEVEL";
+    private static final String WAIT_FOR_FREE_TACK_TIMEOUT_IN_MINUTES = "WAIT_FOR_FREE_TACK_TIMEOUT_IN_MINUTES";
+    /**
+     * Maximum number of {@link io.github.danieltuerk.controlcenter.shared.scenario.ScenarioStatisticRun} entries
+     * kept per scenario. Older entries beyond this limit are removed by the periodic cleanup.
+     */
+    private static final String SCENARIO_STATISTIC_MAX_ENTRIES_PER_SCENARIO = "SCENARIO_STATISTIC_MAX_ENTRIES_PER_SCENARIO";
+
+    private final ConfigRepository configRepository;
+    private final ConfigMapper configMapper;
+
+    public ConfigService(ConfigRepository configRepository, ConfigMapper configMapper) {
+        this.configRepository = configRepository;
+        this.configMapper = configMapper;
+    }
+
+    public Set<ConfigItem> findAll() {
+        return configRepository.listAll().stream()
+            .map(configMapper::toDto)
+            .collect(Collectors.toSet());
+    }
+
+    @ActivateRequestContext
+    public String loadValue(String configKey) throws ConfigNotAvailableException {
+        return configRepository.findByIdOptional(configKey)
+            .orElseThrow(() -> new ConfigNotAvailableException(configKey))
+            .value;
+    }
+
+    @Transactional
+    public void saveValue(String configKey, String value) {
+        var configValueEntity = configRepository.findByIdOptional(configKey)
+            .orElseGet(() -> {
+                var entity = new ConfigValueEntity();
+                entity.key = configKey;
+                entity.value = value;
+                return entity;
+            });
+        configValueEntity.value = value;
+        configRepository.persist(configValueEntity);
+    }
+
+    public Optional<Long> getDefaultConstructionId() {
+        try {
+            final var s = loadValue(CONSTRUCTION_DEFAULT);
+            return Optional.ofNullable(Strings.isEmpty(s) ? null : Long.parseLong(s));
+        } catch (ConfigNotAvailableException e) {
+            log.debug("Config not available: {}", CONSTRUCTION_DEFAULT);
+            return Optional.empty();
+        }
+    }
+
+    public long getHp0AfterTrainPassDelayInSeconds() {
+        return Long.parseLong(loadValue(HP_0_AFTER_TRAIN_PASS_DELAY_IN_SECONDS));
+    }
+
+    public int getDefaultStartDrivingLevel() {
+        return Integer.parseInt(loadValue(DEFAULT_START_DRIVING_LEVEL));
+    }
+
+    public long getStartTrainDelaySeconds() {
+        return Long.parseLong(loadValue(START_TRAIN_DELAY_SECONDS));
+    }
+
+    public long getFinishRouteDelaySeconds() {
+        return Long.parseLong(loadValue(FINISH_ROUTE_DELAY_SECONDS));
+    }
+
+    public long getWaitForFreeTackTimeoutInMinutes() {
+        return Long.parseLong(loadValue(WAIT_FOR_FREE_TACK_TIMEOUT_IN_MINUTES));
+    }
+
+    public int getScenarioStatisticMaxEntriesPerScenario() {
+        return Integer.parseInt(loadValue(SCENARIO_STATISTIC_MAX_ENTRIES_PER_SCENARIO));
+    }
+
+}

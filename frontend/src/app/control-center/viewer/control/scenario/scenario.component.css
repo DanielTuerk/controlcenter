@@ -1,0 +1,97 @@
+.panel-title {
+  display: flex;
+  flex-direction: column;
+  min-width: 0; /* avoid overflow in flex-Layouts */
+}
+
+.title-top {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.title-bottom {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: medium;
+}
+
+.control-group {
+  margin: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.route-container {
+  padding-top: 5px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.run-state-SCHEDULED {
+  background: #8f8b5a;
+}
+
+.run-state-PREPARED {
+  background: #8f8b5a;
+}
+
+.run-state-STOPPED {
+}
+
+.run-state-RESERVED {
+  background: rgb(85 108 115);
+}
+
+.run-state-RUNNING {
+  background: #748595;
+}
+
+.run-state-SKIPPED {
+  background: #555e5d;
+}
+
+.run-state-PAUSED {
+  background: #225685;
+}
+
+.run-state-FINISHED {
+  background: #1e7724;
+}
+
+.run-state-SUCESS {
+  background: #1e7724;
+}
+
+.run-state-FAILED {
+  background: #6e3333;
+}
+
+mat-expansion-panel-header.run-state-SCHEDULED,
+mat-expansion-panel-header.run-state-PREPARED {
+  --header-bg: #7a7607;
+}
+
+mat-expansion-panel-header.run-state-RUNNING {
+  --header-bg: #748595;
+}
+
+mat-expansion-panel-header.run-state-SKIPPED {
+  --header-bg: #555e5d;
+}
+
+mat-expansion-panel-header.run-state-PAUSED {
+  --header-bg: #225685;
+}
+
+mat-expansion-panel-header.run-state-FINISHED,
+mat-expansion-panel-header.run-state-SUCESS {
+  --header-bg: #1e7724;
+}
+
+mat-expansion-panel-header.run-state-FAILED {
+  --header-bg: #6e3333;
+}

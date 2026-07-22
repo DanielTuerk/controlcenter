@@ -1,0 +1,2269 @@
+---
+openapi: 3.1.0
+components:
+  schemas:
+    ACTION_TYPE:
+      type: string
+      enum:
+      - CREATE
+      - UPDATE
+      - DELETE
+    AbstractTrackPart:
+      oneOf:
+      - $ref: "#/components/schemas/BlockStraight"
+      - $ref: "#/components/schemas/Straight"
+      - $ref: "#/components/schemas/Curve"
+      - $ref: "#/components/schemas/Signal"
+      - $ref: "#/components/schemas/Turnout"
+      - $ref: "#/components/schemas/Uncoupler"
+      discriminator:
+        propertyName: trackPartType
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        gridPosition:
+          $ref: "#/components/schemas/GridPosition"
+        trackPartType:
+          type: string
+        rotationAngle:
+          type: number
+          format: double
+      required:
+      - trackPartType
+    Add:
+      type: object
+      required:
+      - trackPart
+      properties:
+        trackPart:
+          $ref: "#/components/schemas/AbstractTrackPart"
+    AvailableDevice:
+      type: object
+      properties:
+        port:
+          type: string
+        name:
+          type: string
+    BlockStraight:
+      allOf:
+      - $ref: "#/components/schemas/Straight"
+      description: type for a track part
+      type: object
+      properties:
+        blockLength:
+          type: integer
+          format: int32
+        leftTrackBlock:
+          $ref: "#/components/schemas/TrackBlock"
+        middleTrackBlock:
+          $ref: "#/components/schemas/TrackBlock"
+        rightTrackBlock:
+          $ref: "#/components/schemas/TrackBlock"
+        endGridPosition:
+          $ref: "#/components/schemas/GridPosition"
+        gridLength:
+          type: integer
+          format: int32
+        allTrackBlocks:
+          type: array
+          items:
+            $ref: "#/components/schemas/TrackBlock"
+    BusBitDto:
+      type: object
+      properties:
+        bus:
+          type: integer
+          format: int32
+        address:
+          type: integer
+          format: int32
+        bit:
+          type: integer
+          format: int32
+        state:
+          type: boolean
+    BusDataConfiguration:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        bus:
+          type: integer
+          format: int32
+        address:
+          type: integer
+          format: int32
+        bit:
+          type: integer
+          format: int32
+        bitState:
+          type: boolean
+    BusDataDto:
+      type: object
+      properties:
+        bus:
+          type: integer
+          format: int32
+        address:
+          type: integer
+          format: int32
+        value:
+          type: integer
+          format: int32
+    BusDataEvent:
+      description: bus data update sent via WebSocket
+      type: object
+      properties:
+        bus:
+          type: integer
+          format: int32
+        address:
+          type: integer
+          format: int32
+        data:
+          type: integer
+          format: int32
+        cacheKey:
+          type: string
+    CATEGORY:
+      type: string
+      enum:
+      - ARRIVAL
+      - DEPARTURE
+    ChangeTrackDto:
+      type: object
+      properties:
+        addActions:
+          type: array
+          items:
+            $ref: "#/components/schemas/Add"
+        moveActions:
+          type: array
+          items:
+            $ref: "#/components/schemas/Move"
+        rotateActions:
+          type: array
+          items:
+            $ref: "#/components/schemas/Rotate"
+        empty:
+          type: boolean
+    ConfigItem:
+      type: object
+      properties:
+        key:
+          type: string
+        value:
+          type: string
+    Construction:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        inAutomaticMode:
+          type: boolean
+    ConstructionDataChangedEvent:
+      description: Construction update sent via WebSocket
+      type: object
+      properties:
+        itemId:
+          type: integer
+          format: int64
+    ConstructionDto:
+      type: object
+      properties:
+        name:
+          type: string
+    CurrentConstructionChangeEvent:
+      description: Train status update sent via WebSocket
+      type: object
+      properties:
+        cacheKey:
+          type: string
+        construction:
+          $ref: "#/components/schemas/Construction"
+      required:
+      - construction
+    Curve:
+      description: type for a track part
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        gridPosition:
+          $ref: "#/components/schemas/GridPosition"
+        trackPartType:
+          type: string
+        direction:
+          $ref: "#/components/schemas/DIRECTION1"
+        nextGridPosition:
+          $ref: "#/components/schemas/GridPosition"
+        lastGridPosition:
+          $ref: "#/components/schemas/GridPosition"
+        rotationAngle:
+          type: number
+          format: double
+      required:
+      - trackPartType
+    DEVICE_TYPE:
+      type: string
+      enum:
+      - SERIAL
+      - TEST
+    DIRECTION:
+      type: string
+      enum:
+      - HORIZONTAL
+      - VERTICAL
+    DIRECTION1:
+      type: string
+      enum:
+      - BOTTOM_RIGHT
+      - BOTTOM_LEFT
+      - TOP_LEFT
+      - TOP_RIGHT
+    DIRECTION2:
+      type: string
+      enum:
+      - RIGHT
+      - LEFT
+    DRIVING_DIRECTION:
+      type: string
+      enum:
+      - FORWARD
+      - BACKWARD
+    DRIVING_DIRECTION1:
+      type: string
+      enum:
+      - FORWARD
+      - BACKWARD
+    DRIVING_LEVEL_ADJUST_TYPE:
+      type: string
+      enum:
+      - NONE
+      - ENTER
+      - EXIT
+    DeviceConnectionEvent:
+      description: bus status update sent via WebSocket
+      type: object
+      properties:
+        deviceInfo:
+          $ref: "#/components/schemas/DeviceInfo"
+        connected:
+          type: boolean
+        cacheKey:
+          type: string
+    DeviceDataChangedEvent:
+      description: Device update sent via WebSocket
+      type: object
+      properties:
+        itemId:
+          type: integer
+          format: int64
+    DeviceInfo:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        key:
+          type: string
+        type:
+          $ref: "#/components/schemas/DEVICE_TYPE"
+    EventConfiguration:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        stateOnConfig:
+          $ref: "#/components/schemas/BusDataConfiguration"
+        stateOffConfig:
+          $ref: "#/components/schemas/BusDataConfiguration"
+    FUNCTION:
+      type: string
+      enum:
+      - HP0
+      - HP1
+      - HP2
+      - HP0_SH1
+    GridPosition:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        x:
+          type: integer
+          format: int32
+        "y":
+          type: integer
+          format: int32
+    LocalDateTime:
+      type: string
+      format: date-time
+      examples:
+      - 2022-03-10T12:15:50
+    Move:
+      type: object
+      required:
+      - trackPartId
+      - gridPosition
+      properties:
+        trackPartId:
+          type: integer
+          format: int64
+        gridPosition:
+          $ref: "#/components/schemas/GridPosition"
+    PLAYER_STATE:
+      type: string
+      enum:
+      - START
+      - STOP
+    PRESENTATION:
+      type: string
+      enum:
+      - LEFT_TO_RIGHT
+      - RIGHT_TO_LEFT
+      - BOTTOM_TO_TOP
+      - TOP_TO_BOTTOM
+    PlayerEvent:
+      description: bus status update sent via WebSocket
+      type: object
+      properties:
+        cacheKey:
+          type: string
+        state:
+          $ref: "#/components/schemas/PLAYER_STATE"
+    RECORDING_STATE:
+      type: string
+      enum:
+      - START
+      - STOP
+    ROUTE_RUN_STATE:
+      type: string
+      enum:
+      - PREPARED
+      - RESERVED
+      - RUNNING
+      - FINISHED
+      - FAILED
+      - SKIPPED
+      - CANCELED
+    RUN_STATE:
+      type: string
+      enum:
+      - NONE
+      - SCHEDULED
+      - RUNNING
+      - PAUSED
+      - STOPPED
+      - SUCCESS
+      - FAILED
+    RailVoltageEvent:
+      description: railvoltage status update sent via WebSocket
+      type: object
+      properties:
+        cacheKey:
+          type: string
+        state:
+          type: boolean
+    RecordingEvent:
+      description: bus status update sent via WebSocket
+      type: object
+      properties:
+        cacheKey:
+          type: string
+        state:
+          $ref: "#/components/schemas/RECORDING_STATE"
+        filePath:
+          type: string
+    Rotate:
+      type: object
+      required:
+      - trackPartId
+      properties:
+        trackPartId:
+          type: integer
+          format: int64
+        value:
+          type: string
+    Route:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        start:
+          $ref: "#/components/schemas/BlockStraight"
+        end:
+          $ref: "#/components/schemas/TrackBlock"
+        oneway:
+          type: boolean
+        waypoints:
+          type: array
+          items:
+            $ref: "#/components/schemas/GridPosition"
+        track:
+          $ref: "#/components/schemas/Track"
+        allTrackBlocksToDrive:
+          type: array
+          uniqueItems: true
+          items:
+            $ref: "#/components/schemas/TrackBlock"
+    RouteDataChangedEvent:
+      description: route update sent via WebSocket
+      type: object
+      properties:
+        itemId:
+          type: integer
+          format: int64
+        type:
+          $ref: "#/components/schemas/ACTION_TYPE"
+    RouteSequence:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        position:
+          type: integer
+          format: int32
+        route:
+          $ref: "#/components/schemas/Route"
+        endDelayInSeconds:
+          type: integer
+          format: int32
+    RouteStateEvent:
+      description: scenario status update sent via WebSocket
+      type: object
+      properties:
+        scenarioId:
+          type: integer
+          format: int64
+        routeSequenceId:
+          type: integer
+          format: int64
+        state:
+          $ref: "#/components/schemas/ROUTE_RUN_STATE"
+        message:
+          type: string
+        cacheKey:
+          type: string
+    RoutesChangedEvent:
+      description: routes changed update sent via WebSocket
+      type: object
+      properties:
+        dirty:
+          type: boolean
+    SIGNAL_TYPE:
+      type: string
+      enum:
+      - BLOCK
+      - ENTER
+      - EXIT
+      - BEFORE
+    STATE:
+      type: string
+      enum:
+      - SUCCESS
+      - FAILED
+    SYSTEM_FORMAT:
+      type: string
+      enum:
+      - UNKNOWN
+      - ONLY_SX1
+      - SX1_SX2
+      - SX1_SX2_DCC
+      - ONLY_DCC
+      - SX1_SX2_MM
+      - ONLY_MM
+      - SX1_SX2_DCC_MM
+    Scenario:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        cron:
+          type: string
+        train:
+          $ref: "#/components/schemas/Train"
+        trainDrivingDirection:
+          $ref: "#/components/schemas/DRIVING_DIRECTION1"
+        startDrivingLevel:
+          type: integer
+          format: int32
+        routeSequences:
+          type: array
+          items:
+            $ref: "#/components/schemas/RouteSequence"
+        stationPlatformStartId:
+          type: integer
+          format: int64
+        stationPlatformEndId:
+          type: integer
+          format: int64
+    ScenarioDataChangedEvent:
+      description: scenario status update sent via WebSocket
+      type: object
+      properties:
+        itemId:
+          type: integer
+          format: int64
+        type:
+          $ref: "#/components/schemas/ACTION_TYPE"
+    ScenarioScheduleEvent:
+      description: scenario scheduling state sent via WebSocket
+      type: object
+      properties:
+        scenarioId:
+          type: integer
+          format: int64
+        "on":
+          type: boolean
+        cron:
+          type:
+          - string
+          - "null"
+    ScenarioStateEvent:
+      description: scenario status update sent via WebSocket
+      type: object
+      properties:
+        itemId:
+          type: integer
+          format: int64
+        cacheKey:
+          type: string
+        state:
+          $ref: "#/components/schemas/RUN_STATE"
+        nextScheduleTimeText:
+          type: string
+    ScenarioStatistic:
+      type: object
+      properties:
+        scenarioId:
+          type: integer
+          format: int64
+        lastRun:
+          $ref: "#/components/schemas/LocalDateTime"
+        total:
+          type: integer
+          format: int32
+        failed:
+          type: integer
+          format: int32
+        successful:
+          type: integer
+          format: int32
+        averageRunTimeInMillis:
+          type: number
+          format: double
+        runs:
+          type: array
+          items:
+            $ref: "#/components/schemas/ScenarioStatisticRun"
+    ScenarioStatisticRun:
+      type: object
+      properties:
+        start:
+          $ref: "#/components/schemas/LocalDateTime"
+        end:
+          $ref: "#/components/schemas/LocalDateTime"
+        averageRunTimeInMillis:
+          type: number
+          format: double
+        state:
+          $ref: "#/components/schemas/STATE"
+    ScenariosChangedEvent:
+      description: scenarios changed update sent via WebSocket
+      type: object
+      properties:
+        dirty:
+          type: boolean
+    Signal:
+      allOf:
+      - $ref: "#/components/schemas/Straight"
+      description: type for a track part
+      type: object
+      properties:
+        type:
+          $ref: "#/components/schemas/SIGNAL_TYPE"
+        signalConfigRed1:
+          $ref: "#/components/schemas/BusDataConfiguration"
+        signalConfigRed2:
+          $ref: "#/components/schemas/BusDataConfiguration"
+        signalConfigGreen1:
+          $ref: "#/components/schemas/BusDataConfiguration"
+        signalConfigGreen2:
+          $ref: "#/components/schemas/BusDataConfiguration"
+        signalConfigYellow1:
+          $ref: "#/components/schemas/BusDataConfiguration"
+        signalConfigYellow2:
+          $ref: "#/components/schemas/BusDataConfiguration"
+        signalConfigWhite:
+          $ref: "#/components/schemas/BusDataConfiguration"
+        stopBlock:
+          $ref: "#/components/schemas/TrackBlock"
+    SignalFunctionStateEvent:
+      description: track status update sent via WebSocket
+      type: object
+      properties:
+        signalId:
+          type: integer
+          format: int64
+        signalFunction:
+          $ref: "#/components/schemas/FUNCTION"
+        cacheKey:
+          type: string
+    StationBoardChangedEvent:
+      description: station status update sent via WebSocket
+      type: object
+      properties:
+        CATEGORY:
+          $ref: "#/components/schemas/CATEGORY"
+        stationId:
+          type: integer
+          format: int64
+        type:
+          $ref: "#/components/schemas/CATEGORY"
+    StationDataChangedEvent:
+      description: station status update sent via WebSocket
+      type: object
+      properties:
+        itemId:
+          type: integer
+          format: int64
+    Straight:
+      description: type for a track part
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        gridPosition:
+          $ref: "#/components/schemas/GridPosition"
+        trackPartType:
+          type: string
+        direction:
+          $ref: "#/components/schemas/DIRECTION"
+      required:
+      - trackPartType
+    SystemFormatEvent:
+      description: system format update sent via WebSocket
+      type: object
+      properties:
+        cacheKey:
+          type: string
+        systemFormat:
+          $ref: "#/components/schemas/SYSTEM_FORMAT"
+    Track:
+      type: object
+      properties:
+        trackBlocks:
+          type: array
+          uniqueItems: true
+          items:
+            $ref: "#/components/schemas/TrackBlock"
+        trackFunctions:
+          type: array
+          items:
+            $ref: "#/components/schemas/BusDataConfiguration"
+        gridPositions:
+          type: array
+          items:
+            $ref: "#/components/schemas/GridPosition"
+        length:
+          type: integer
+          format: int32
+    TrackBlock:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        blockFunction:
+          $ref: "#/components/schemas/BusDataConfiguration"
+        name:
+          type: string
+        forwardTargetDrivingLevel:
+          type: integer
+          format: int32
+        backwardTargetDrivingLevel:
+          type: integer
+          format: int32
+        drivingLevelAdjustType:
+          $ref: "#/components/schemas/DRIVING_LEVEL_ADJUST_TYPE"
+        feedback:
+          type: boolean
+        displayValue:
+          type: string
+    TrackBlockDataChangedEvent:
+      description: Track-block update sent via WebSocket
+      type: object
+      properties:
+        itemId:
+          type: integer
+          format: int64
+        type:
+          $ref: "#/components/schemas/ACTION_TYPE"
+    TrackChangedEvent:
+      description: Track update sent via WebSocket
+      type: object
+      properties:
+        dirty:
+          type: boolean
+    TrackPartBlockEvent:
+      description: track status update sent via WebSocket
+      type: object
+      properties:
+        trackPartId:
+          type: integer
+          format: int64
+        occupied:
+          type: boolean
+        cacheKey:
+          type: string
+    TrackPartDataChangedEvent:
+      description: Track-part update sent via WebSocket
+      type: object
+      properties:
+        itemId:
+          type: integer
+          format: int64
+    TrackPartStateEvent:
+      description: track status update sent via WebSocket
+      type: object
+      properties:
+        trackPartId:
+          type: integer
+          format: int64
+        configuration:
+          $ref: "#/components/schemas/BusDataConfiguration"
+        state:
+          type: boolean
+        cacheKey:
+          type: string
+    Train:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        address:
+          type: integer
+          format: int32
+        name:
+          type: string
+        functions:
+          type: array
+          uniqueItems: true
+          items:
+            $ref: "#/components/schemas/TrainFunction"
+        addressByte:
+          type: integer
+          format: int8
+    TrainDataChangedEvent:
+      description: Trains update sent via WebSocket
+      type: object
+      properties:
+        trainId:
+          type: integer
+          format: int64
+        type:
+          $ref: "#/components/schemas/ACTION_TYPE"
+    TrainDrivingDirectionEvent:
+      description: Train status update sent via WebSocket
+      type: object
+      properties:
+        trainId:
+          type: integer
+          format: int64
+        direction:
+          $ref: "#/components/schemas/DRIVING_DIRECTION"
+        cacheKey:
+          type: string
+    TrainDrivingLevelEvent:
+      description: Train status update sent via WebSocket
+      type: object
+      properties:
+        trainId:
+          type: integer
+          format: int64
+        speed:
+          type: integer
+          format: int32
+        cacheKey:
+          type: string
+    TrainDto:
+      type: object
+      properties:
+        name:
+          type: string
+        address:
+          type: integer
+          format: int32
+        functions:
+          type: array
+          items:
+            $ref: "#/components/schemas/TrainFunction"
+    TrainFunction:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        alias:
+          type: string
+        configuration:
+          $ref: "#/components/schemas/BusDataConfiguration"
+    TrainFunctionStateEvent:
+      description: Train status update sent via WebSocket
+      type: object
+      properties:
+        trainId:
+          type: integer
+          format: int64
+        function:
+          $ref: "#/components/schemas/TrainFunction"
+        state:
+          type: boolean
+        cacheKey:
+          type: string
+    TrainHornStateEvent:
+      description: Train status update sent via WebSocket
+      type: object
+      properties:
+        trainId:
+          type: integer
+          format: int64
+        state:
+          type: boolean
+        cacheKey:
+          type: string
+    TrainInBlockEvent:
+      description: train enter or exit block straight event sent via WebSocket
+      type: object
+      properties:
+        trackPartId:
+          type: integer
+          format: int64
+        enter:
+          type: boolean
+        trainAddress:
+          type: integer
+          format: int32
+        trainDirection:
+          $ref: "#/components/schemas/DRIVING_DIRECTION1"
+        cacheKey:
+          type: string
+    TrainLightStateEvent:
+      description: Train status update sent via WebSocket
+      type: object
+      properties:
+        trainId:
+          type: integer
+          format: int64
+        state:
+          type: boolean
+        cacheKey:
+          type: string
+    Turnout:
+      description: type for a track part
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        gridPosition:
+          $ref: "#/components/schemas/GridPosition"
+        trackPartType:
+          type: string
+        currentDirection:
+          $ref: "#/components/schemas/DIRECTION2"
+        currentPresentation:
+          $ref: "#/components/schemas/PRESENTATION"
+        toggleFunction:
+          $ref: "#/components/schemas/BusDataConfiguration"
+        eventConfiguration:
+          $ref: "#/components/schemas/EventConfiguration"
+        nextGridPositionForStateBranchToLeft:
+          $ref: "#/components/schemas/GridPosition"
+        nextGridPositionForStateBranchToRight:
+          $ref: "#/components/schemas/GridPosition"
+      required:
+      - trackPartType
+    Uncoupler:
+      allOf:
+      - $ref: "#/components/schemas/Straight"
+      description: type for a track part
+      type: object
+      properties:
+        toggleFunction:
+          $ref: "#/components/schemas/BusDataConfiguration"
+        eventConfiguration:
+          $ref: "#/components/schemas/EventConfiguration"
+    WsClient:
+      type: object
+      properties:
+        clientId:
+          type: string
+tags:
+- name: Websocket DTOs
+paths:
+  /api/bus/bus-address-data:
+    get:
+      parameters:
+      - name: address
+        in: query
+        schema:
+          type: integer
+          format: int32
+      - name: bus
+        in: query
+        schema:
+          type: integer
+          format: int32
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: integer
+                format: int32
+      summary: Bus Data
+      tags:
+      - Bus Resource
+  /api/bus/bus-bit:
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BusBitDto"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: {}
+        "400":
+          description: Bad Request
+      summary: Bus Data
+      tags:
+      - Bus Resource
+  /api/bus/bus-data:
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BusDataDto"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: {}
+        "400":
+          description: Bad Request
+      summary: Bus Data
+      tags:
+      - Bus Resource
+  /api/bus/railvoltage:
+    post:
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: {}
+      summary: Update Rail Voltage
+      tags:
+      - Bus Resource
+    get:
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: boolean
+      summary: Fetch Railvoltage State
+      tags:
+      - Bus Resource
+  /api/bus/start-tracking-bus:
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/WsClient"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: {}
+        "400":
+          description: Bad Request
+      summary: Start Tracking Bus
+      tags:
+      - Bus Resource
+  /api/bus/stop-tracking-bus:
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/WsClient"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: {}
+        "400":
+          description: Bad Request
+      summary: Stop Tracking Bus
+      tags:
+      - Bus Resource
+  /api/bus/system-format:
+    post:
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: {}
+      summary: Switch System Format
+      tags:
+      - Bus Resource
+    get:
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SYSTEM_FORMAT"
+      summary: Fetch System Format State
+      tags:
+      - Bus Resource
+  /api/config:
+    get:
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                uniqueItems: true
+                items:
+                  $ref: "#/components/schemas/ConfigItem"
+      summary: List All
+      tags:
+      - Config Resource
+  /api/config/{key}:
+    put:
+      parameters:
+      - name: key
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          text/plain:
+            schema:
+              type: string
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: {}
+      summary: Update
+      tags:
+      - Config Resource
+    get:
+      parameters:
+      - name: key
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            text/plain:
+              schema:
+                type: string
+      summary: Load Value
+      tags:
+      - Config Resource
+  /api/constructions:
+    get:
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Construction"
+      summary: List All
+      tags:
+      - Construction Resource
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ConstructionDto"
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Construction"
+          description: Created
+        "400":
+          description: Bad Request
+      summary: Create
+      tags:
+      - Construction Resource
+  /api/constructions/{id}:
+    put:
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ConstructionDto"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Construction"
+        "400":
+          description: Bad Request
+      summary: Update
+      tags:
+      - Construction Resource
+    get:
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Construction"
+      summary: Get By Id
+      tags:
+      - Construction Resource
+    delete:
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: {}
+      summary: Delete
+      tags:
+      - Construction Resource
+  /api/current-construction:
+    post:
+      requestBody:
+        content:
+          text/plain:
+            schema:
+              type: integer
+              format: int64
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Construction"
+      summary: Set Current
+      tags:
+      - Current Construction Resource
+    get:
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Construction"
+      summary: Get Current
+      tags:
+      - Current Construction Resource
+  /api/devices:
+    get:
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/DeviceInfo"
+      summary: List All
+      tags:
+      - Device Resource
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DeviceInfo"
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeviceInfo"
+          description: Created
+        "400":
+          description: Bad Request
+      summary: Create
+      tags:
+      - Device Resource
+  /api/devices/available:
+    get:
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/AvailableDevice"
+      summary: Get Available
+      tags:
+      - Device Resource
+  /api/devices/disconnect:
+    post:
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: {}
+      summary: Disconnect
+      tags:
+      - Device Resource
+  /api/devices/{id}:
+    put:
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DeviceInfo"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeviceInfo"
+        "400":
+          description: Bad Request
+      summary: Update
+      tags:
+      - Device Resource
+    get:
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeviceInfo"
+      summary: Get By Id
+      tags:
+      - Device Resource
+    delete:
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: {}
+      summary: Delete
+      tags:
+      - Device Resource
+  /api/devices/{id}/connect:
+    post:
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: {}
+      summary: Connect
+      tags:
+      - Device Resource
+  /api/devtool/bus-dump:
+    get:
+      responses:
+        "200":
+          description: OK
+          content:
+            text/plain:
+              schema:
+                type: string
+      summary: Create Bus Dump
+      tags:
+      - Dev Tool Resource
+  /api/devtool/bus-dump/list:
+    get:
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: {}
+      summary: List Bus Dumps
+      tags:
+      - Dev Tool Resource
+  /api/devtool/bus-dump/load/{fileName}:
+    post:
+      parameters:
+      - name: fileName
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: {}
+      summary: Load Bus Data Dump
+      tags:
+      - Dev Tool Resource
+  /api/devtool/event-dump:
+    get:
+      responses:
+        "200":
+          description: OK
+          content:
+            text/plain:
+              schema:
+                type: string
+      summary: Create Event Dump
+      tags:
+      - Dev Tool Resource
+  /api/devtool/event-dump/list:
+    get:
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: {}
+      summary: List Event Dumps
+      tags:
+      - Dev Tool Resource
+  /api/devtool/event-dump/load/{fileName}:
+    post:
+      parameters:
+      - name: fileName
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: {}
+      summary: Load Event Dump
+      tags:
+      - Dev Tool Resource
+  /api/routes:
+    get:
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Route"
+      summary: List All
+      tags:
+      - Route Resource
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Route"
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Route"
+          description: Created
+        "400":
+          description: Bad Request
+      summary: Create
+      tags:
+      - Route Resource
+  /api/routes/build-track:
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Route"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Track"
+        "400":
+          description: Bad Request
+      summary: Build Track
+      tags:
+      - Route Resource
+  /api/routes/{id}:
+    put:
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Route"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Route"
+        "400":
+          description: Bad Request
+      summary: Update
+      tags:
+      - Route Resource
+    get:
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Route"
+      summary: Get By Id
+      tags:
+      - Route Resource
+    delete:
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: {}
+      summary: Delete
+      tags:
+      - Route Resource
+  /api/scenarios:
+    get:
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Scenario"
+      summary: List All
+      tags:
+      - Scenario Resource
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Scenario"
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Scenario"
+          description: Created
+        "400":
+          description: Bad Request
+      summary: Create
+      tags:
+      - Scenario Resource
+  /api/scenarios/cancel-all:
+    post:
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: {}
+      summary: Cancel All
+      tags:
+      - Scenario Resource
+  /api/scenarios/schedule-all:
+    post:
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: {}
+      summary: Schedule All
+      tags:
+      - Scenario Resource
+  /api/scenarios/unschedule-all:
+    post:
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: {}
+      summary: Unschedule All
+      tags:
+      - Scenario Resource
+  /api/scenarios/{id}:
+    put:
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Scenario"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Scenario"
+        "400":
+          description: Bad Request
+      summary: Update
+      tags:
+      - Scenario Resource
+    get:
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Scenario"
+      summary: Get By Id
+      tags:
+      - Scenario Resource
+    delete:
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: {}
+      summary: Delete
+      tags:
+      - Scenario Resource
+  /api/scenarios/{id}/cancel:
+    post:
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: {}
+      summary: Cancel
+      tags:
+      - Scenario Resource
+  /api/scenarios/{id}/schedule:
+    post:
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: {}
+      summary: Schedule
+      tags:
+      - Scenario Resource
+  /api/scenarios/{id}/start:
+    post:
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: {}
+      summary: Start
+      tags:
+      - Scenario Resource
+  /api/scenarios/{id}/statistic:
+    get:
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ScenarioStatistic"
+      summary: Scenario Statistic
+      tags:
+      - Scenario Resource
+  /api/scenarios/{id}/unschedule:
+    post:
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: {}
+      summary: Unschedule
+      tags:
+      - Scenario Resource
+  /api/track:
+    get:
+      tags:
+      - track
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/AbstractTrackPart"
+      summary: List All
+    put:
+      tags:
+      - track
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ChangeTrackDto"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: {}
+        "400":
+          description: Bad Request
+      summary: Change
+  /api/track-block:
+    get:
+      tags:
+      - track
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/TrackBlock"
+      summary: List All
+    post:
+      tags:
+      - track
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TrackBlock"
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TrackBlock"
+          description: Created
+        "400":
+          description: Bad Request
+      summary: Create
+  /api/track-block/{id}:
+    put:
+      tags:
+      - track
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TrackBlock"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: {}
+        "400":
+          description: Bad Request
+      summary: Update
+    get:
+      tags:
+      - track
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TrackBlock"
+      summary: Get By Id
+    delete:
+      tags:
+      - track
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: {}
+      summary: Delete
+  /api/track/{id}:
+    put:
+      tags:
+      - track
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AbstractTrackPart"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: {}
+        "400":
+          description: Bad Request
+      summary: Update
+    get:
+      tags:
+      - track
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AbstractTrackPart"
+      summary: Load Track Part
+    delete:
+      tags:
+      - track
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: {}
+      summary: Delete
+  /api/track/{id}/switch-signal:
+    post:
+      tags:
+      - track
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          text/plain:
+            schema:
+              $ref: "#/components/schemas/FUNCTION"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: {}
+      summary: Switch Signal
+  /api/track/{id}/toggle:
+    post:
+      tags:
+      - track
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: {}
+      summary: Toggle Track Part
+  /api/trains:
+    get:
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Train"
+      summary: List All
+      tags:
+      - Train Resource
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TrainDto"
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Train"
+          description: Created
+        "400":
+          description: Bad Request
+      summary: Create
+      tags:
+      - Train Resource
+  /api/trains/{id}:
+    put:
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TrainDto"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Train"
+        "400":
+          description: Bad Request
+      summary: Update
+      tags:
+      - Train Resource
+    get:
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Train"
+      summary: Get By Id
+      tags:
+      - Train Resource
+    delete:
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: {}
+      summary: Delete
+      tags:
+      - Train Resource
+  /api/trains/{id}/direction:
+    post:
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          text/plain:
+            schema:
+              $ref: "#/components/schemas/DRIVING_DIRECTION1"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: {}
+      summary: Update Driving Direction
+      tags:
+      - Train Resource
+  /api/trains/{id}/functions/{functionId}:
+    post:
+      parameters:
+      - name: functionId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          text/plain:
+            schema:
+              type: boolean
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: {}
+      summary: Toggle Function State
+      tags:
+      - Train Resource
+  /api/trains/{id}/horn:
+    post:
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          text/plain:
+            schema:
+              type: boolean
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: {}
+      summary: Toggle Horn
+      tags:
+      - Train Resource
+  /api/trains/{id}/level:
+    post:
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          text/plain:
+            schema:
+              type: integer
+              format: int32
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: {}
+      summary: Update Driving Direction
+      tags:
+      - Train Resource
+  /api/trains/{id}/light:
+    post:
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          text/plain:
+            schema:
+              type: boolean
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: {}
+      summary: Toggle Light
+      tags:
+      - Train Resource
+  /docs:
+    get:
+      summary: WebSocket DTO example
+      description: This documents the TrainUpdate DTO used in WebSocket messages.
+      tags:
+      - Websocket DTOs
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: {}
+info:
+  title: controlcenter API
+  version: 0.3-SNAPSHOT

@@ -1,0 +1,54 @@
+.bus-container {
+  display: flex;
+  gap: 10px;
+}
+
+.bus {
+  flex: 1;
+  border: 1px solid #ccc;
+  padding: 12px;
+  overflow-y: auto;
+}
+
+.address-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.address-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border: 1px solid #ddd;
+  padding: 4px;
+  min-width: 120px;
+}
+
+.address {
+  font-weight: bold;
+  margin-bottom: 2px;
+}
+
+.bits {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+button {
+  width: 28px;
+  height: 28px;
+  border: 1px solid #aaa;
+  background-color: #eee;
+  cursor: pointer;
+
+  transition: transform 1s ease, background-color 1s ease;
+}
+
+button.active {
+  background-color: #4caf50;
+  color: white;
+
+  transform: scale(1.1);
+}

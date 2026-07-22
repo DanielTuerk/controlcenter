@@ -1,0 +1,37 @@
+import {Curve, TrackPartStateEvent} from "../../../../../../shared/openapi-gen";
+import {AbstractTrackComponentBuilder} from "../abstract-track-component-builder";
+
+export class CurveBuilder extends AbstractTrackComponentBuilder<Curve, TrackPartStateEvent, TrackPartStateEvent> {
+  override update(trackPart: Curve, event: TrackPartStateEvent): void {
+    throw new Error("Method not implemented.");
+  }
+
+  doBuild(trackPart: Curve, baseX: number, baseY: number, event: TrackPartStateEvent | null = null): Element {
+    const cx = baseX + AbstractTrackComponentBuilder.TILE / 2;
+    const cy = baseY + AbstractTrackComponentBuilder.BASE_HEIGHT / 2;
+    let degree;
+    switch (trackPart.direction) {
+      case 'BOTTOM_RIGHT':
+        degree = 270;
+        break;
+      case 'BOTTOM_LEFT':
+        degree = 0;
+        break;
+      case 'TOP_LEFT':
+        degree = 90;
+        break;
+      case 'TOP_RIGHT':
+        degree = 180;
+        break;
+    }
+
+    const rect = this.createElement('path');
+    rect.setAttribute('d', `M ${baseX} ${cy} L ${cx} ${cy} L ${cx} ${cy + AbstractTrackComponentBuilder.TILE / 2}`);
+    rect.setAttribute('stroke', `${AbstractTrackComponentBuilder.BASE_COLOR}`);
+    rect.setAttribute('stroke-width', `${AbstractTrackComponentBuilder.BASE_HEIGHT}`);
+    rect.setAttribute('fill', 'none');
+    rect.setAttribute('transform', `rotate(${degree} ${cx} ${cy})`);
+    return rect;
+  }
+
+}

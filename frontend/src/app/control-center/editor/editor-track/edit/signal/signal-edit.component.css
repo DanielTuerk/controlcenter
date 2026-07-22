@@ -1,0 +1,33 @@
+.signalSvgContainer {
+  padding-top: 10px;
+}
+
+.small-field {
+  width: calc(10ch + 18px);
+  min-width: 60px;
+  max-width: 100px;
+}
+
+.small-field .mat-form-field-infix {
+  padding: 0 6px;
+  box-sizing: border-box;
+}
+
+.small-field input.mat-input-element {
+  padding: 0;
+  height: 1.8em;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.lightContainer {
+  padding: 8px;
+}
+
+.lightContainer * {
+  padding-left: 8px;
+}
+
+svg text {
+  fill: white;
+}

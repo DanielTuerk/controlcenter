@@ -1,0 +1,232 @@
+@use '@angular/material' as mat;
+
+$_cc-blue-primary: (
+  0: #000000,
+  10: #001d36,
+  20: #003259,
+  25: #003d6b,
+  30: #004980,
+  35: #005494,
+  40: #0060a9,
+  50: #2478c9,
+  60: #4191e4,
+  70: #5cacff,
+  80: #4a9eff,
+  90: #96baea,
+  95: #88b6ed,
+  98: #7fbcff,
+  99: #99c5fa,
+  100: #acd2ff,
+);
+
+html {
+  @include mat.theme((
+    color: (
+      primary: $_cc-blue-primary,
+      tertiary: mat.$orange-palette,
+      theme-type: dark,
+    ),
+    typography: Roboto,
+    density: 0,
+  ));
+
+  --mat-sys-surface: #1e1f22;
+  --mat-sys-surface-dim: #1e1f22;
+  --mat-sys-surface-bright: #3b3d42;
+  --mat-sys-surface-container-lowest: #18191c;
+  --mat-sys-surface-container-low: #24262a;
+  --mat-sys-surface-container: #2b2d30;
+  --mat-sys-surface-container-high: #313438;
+  --mat-sys-surface-container-highest: #383a3f;
+  --mat-sys-on-surface: #dfe1e5;
+  --mat-sys-on-surface-variant: #9da0a5;
+  --mat-sys-outline: #43454a;
+  --mat-sys-outline-variant: #3d3f44;
+  --mat-sys-surface-tint: #1a3558;
+  --mat-card-container-color: var(--mat-sys-surface-container);
+}
+
+body {
+  height: 100vh;
+  margin: 0;
+
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+
+  background: var(--mat-sys-surface-container-low);
+  color: var(--mat-sys-on-surface);
+}
+
+.mat-mdc-snack-bar-container.snackbar-common {
+  --mat-snack-bar-container-color: var(--mat-sys-surface-container-high);
+  --mat-snack-bar-button-color: while;
+}
+
+.mat-mdc-snack-bar-container.snackbar-error {
+  --mat-snack-bar-container-color: #c0392b;
+  --mat-snack-bar-button-color: white;
+}
+
+.mat-mdc-snack-bar-container.snackbar-success {
+  --mat-snack-bar-container-color: #4a7c3f;
+  --mat-snack-bar-button-color: white;
+}
+
+.container {
+  justify-content: center;
+  margin-left: 2rem;
+  margin-right: 2rem;
+}
+
+/* Uniform layout for simple "label + control" rows in mat-card edit forms:
+   labels stack in a fixed-width left column so the controls that follow
+   line up in a single vertical column across all rows. */
+.form-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 6px;
+}
+
+.form-row > label {
+  flex: 0 0 200px;
+  text-align: right;
+}
+
+.form-row mat-form-field {
+  max-width: 70%;
+  min-width: 60%;
+}
+
+/* Compact mat-form-field: the default M3 "fill" appearance reserves a lot of
+   vertical padding for a floating label we don't use here. */
+.mat-mdc-form-field-infix {
+  padding-top: 8px !important;
+  padding-bottom: 8px !important;
+  min-height: unset !important;
+}
+
+/* Material vertically aligns the field's content (text + select arrow, etc.)
+   to the text baseline by default. That looks fine at the default (tall)
+   field height, but once the field is this short it makes suffix icons like
+   the mat-select arrow look pushed down / cramped against the underline. */
+.mat-mdc-text-field-wrapper {
+  align-items: center !important;
+}
+
+.footer-content {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0.4em;
+}
+
+mat-expansion-panel {
+  border-style: solid;
+  border-width: 1px;
+  border-color: var(--mat-sys-on-surface-variant);
+  --mat-expansion-container-shape: 6px;
+}
+
+mat-expansion-panel.viewer-control-pane-item {
+  margin: 1rem;
+  background-color: var(--mat-sys-surface-container-high)
+}
+
+mat-expansion-panel-header {
+  background: var(--header-bg, var(--mat-expansion-container-background-color, var(--mat-sys-surface)));
+  transition: filter 150ms ease;
+}
+
+/* Material's own :hover rule outranks any component-level background override
+   (e.g. .run-state-*), so it wipes it back to a plain state-layer background
+   on hover. Force the header to keep its actual background and only brighten
+   it instead. Components can set --header-bg to color the header. */
+mat-expansion-panel-header:not([aria-disabled=true]):hover {
+  background: var(--header-bg, var(--mat-expansion-container-background-color, var(--mat-sys-surface))) !important;
+  filter: brightness(1.2);
+}
+
+mat-card-header, .mat-card-header {
+  background-color:  var(--mat-sys-surface-container-lowest);
+  border-radius: var(--mat-card-elevated-container-shape, var(--mat-sys-corner-medium)) var(--mat-card-elevated-container-shape, var(--mat-sys-corner-medium)) 0 0;
+}
+
+mat-card-header.mat-mdc-card-header {
+  padding-bottom: 10px;
+}
+
+mat-card-footer, .mat-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px;
+  background-color:  var(--mat-sys-surface-container-lowest);
+  border-radius: 0 0 var(--mat-card-elevated-container-shape, var(--mat-sys-corner-medium)) var(--mat-card-elevated-container-shape, var(--mat-sys-corner-medium));
+}
+
+.icon {
+  font-size: medium;
+  display: contents;
+}
+
+button[matMiniFab] {
+  color: var(--mat-sys-secondary);
+  box-shadow: none;
+
+  /* suppress elevation on all states */
+  --mat-fab-small-container-elevation-shadow: none;
+  --mat-fab-small-focus-container-elevation-shadow: none;
+  --mat-fab-small-hover-container-elevation-shadow: none;
+  --mat-fab-small-pressed-container-elevation-shadow: none;
+
+  /* dampen hover/focus/pressed state-layer overlays */
+  --mat-fab-small-hover-state-layer-opacity: 0.06;
+  --mat-fab-small-focus-state-layer-opacity: 0.08;
+  --mat-fab-small-pressed-state-layer-opacity: 0.10;
+}
+
+/* subtle focus ring instead of the default bright white outline */
+.mat-mdc-mini-fab .mat-focus-indicator::after {
+  border-width: 1px !important;
+  border-color: var(--mat-sys-outline) !important;
+  box-shadow: none !important;
+}
+
+button[matIconButton],
+button[matMiniFab],
+button[matFab],
+button[matButton] {
+  vertical-align: middle;
+}
+
+button[matButton="filled"] {
+  --mat-button-filled-container-color: var(--mat-sys-surface-tint);
+  --mat-button-filled-label-text-color: white;
+  --mat-button-filled-state-layer-color: white;
+  color: white;
+}
+
+button[matIconButton] mat-icon,
+button[matMiniFab] mat-icon,
+button[matFab] mat-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+button[matIconButton] mat-icon {
+  color: var(--mat-sys-on-surface);
+}
+
+button[matIconButton]:disabled mat-icon {
+  color: var(--mat-sys-on-surface-variant);
+  opacity: 0.4;
+}
+
+:root {
+  @include mat.tooltip-overrides((
+    container-color: var(--mat-sys-surface-container-lowest),
+    supporting-text-color: var(--mat-sys-on-surface),
+  ));
+}

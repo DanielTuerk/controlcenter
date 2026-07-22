@@ -1,0 +1,19 @@
+<mat-card appearance="outlined">
+  <mat-card-header>
+    <mat-card-title>Edit Construction</mat-card-title>
+  </mat-card-header>
+  <form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <mat-card-content>
+      <div class="form-row">
+        <label>Name: </label>
+        <mat-form-field>
+          <input matInput required [formControl]="form.controls.name"/>
+        </mat-form-field>
+      </div>
+    </mat-card-content>
+    <mat-card-footer>
+      <button matButton="outlined" type="button" routerLink="../">Back</button>
+      <button matButton="outlined">Apply</button>
+    </mat-card-footer>
+  </form>
+</mat-card>

@@ -263,31 +263,6 @@
                 </configuration>
             </plugin>
 
-            <!-- Copy build output into Quarkus -->
-            <plugin>
-                <artifactId>maven-resources-plugin</artifactId>
-                <version>3.3.1</version>
-
-                <executions>
-                    <execution>
-                        <id>copy-frontend</id>
-                        <phase>generate-resources</phase>
-                        <goals>
-                            <goal>copy-resources</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${project.basedir}/src/main/resources/META-INF/resources</outputDirectory>
-                            <resources>
-                                <resource>
-                                    <directory>frontend/dist/essentials-practice/browser</directory>
-                                    <filtering>false</filtering>
-                                </resource>
-                            </resources>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-
             <plugin>
                 <artifactId>maven-clean-plugin</artifactId>
                 <version>3.2.0</version>
@@ -366,6 +341,31 @@
                                 <phase>generate-resources</phase>
                                 <configuration>
                                     <arguments>run build</arguments>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                    <!-- Copy build output into Quarkus (must run after npm build above) -->
+                    <plugin>
+                        <artifactId>maven-resources-plugin</artifactId>
+                        <version>3.3.1</version>
+
+                        <executions>
+                            <execution>
+                                <id>copy-frontend</id>
+                                <phase>generate-resources</phase>
+                                <goals>
+                                    <goal>copy-resources</goal>
+                                </goals>
+                                <configuration>
+                                    <outputDirectory>${project.basedir}/src/main/resources/META-INF/resources</outputDirectory>
+                                    <resources>
+                                        <resource>
+                                            <directory>frontend/dist/essentials-practice/browser</directory>
+                                            <filtering>false</filtering>
+                                        </resource>
+                                    </resources>
                                 </configuration>
                             </execution>
                         </executions>

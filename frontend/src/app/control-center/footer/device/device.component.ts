@@ -8,7 +8,7 @@ import {DeviceSubscription} from "../../../shared/websocket/device.subscription"
 import {MatIcon} from "@angular/material/icon";
 import {MatIconButton, MatMiniFabButton} from "@angular/material/button";
 import {RouterLink} from "@angular/router";
-import {MatFormField, MatLabel} from "@angular/material/input";
+import {MatFormField} from "@angular/material/input";
 import {MatOption} from "@angular/material/core";
 import {MatTooltip} from "@angular/material/tooltip";
 
@@ -16,7 +16,6 @@ import {MatTooltip} from "@angular/material/tooltip";
   selector: 'app-device',
   imports: [
     MatFormField,
-    MatLabel,
     MatSelect,
     MatOption,
     FormsModule,

@@ -2,7 +2,7 @@ import {ChangeDetectionStrategy, Component, effect, inject, input, signal} from 
 import {Router, RouterLink} from "@angular/router";
 import {MatCard, MatCardContent, MatCardFooter, MatCardHeader, MatCardTitle} from "@angular/material/card";
 import {FormBuilder, FormControl, FormsModule, ReactiveFormsModule} from "@angular/forms";
-import {MatFormField, MatInput, MatLabel} from "@angular/material/input";
+import {MatFormField, MatInput} from "@angular/material/input";
 import {FloatLabelType} from "@angular/material/form-field";
 import {MatButton, MatMiniFabButton} from "@angular/material/button";
 import {DRIVINGDIRECTION1, Route, RouteSequence, Scenario, Train} from "../../../../shared/openapi-gen";
@@ -35,8 +35,7 @@ import {RouteService} from "../../../shared/route.service";
     MatList,
     MatListItem,
     MatIcon,
-    MatMiniFabButton,
-    MatLabel
+    MatMiniFabButton
 ],
   templateUrl: './scenario-edit.component.html',
   changeDetection: ChangeDetectionStrategy.Eager,

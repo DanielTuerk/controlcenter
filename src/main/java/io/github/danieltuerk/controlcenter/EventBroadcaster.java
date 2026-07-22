@@ -5,7 +5,12 @@ import io.github.danieltuerk.controlcenter.shared.Event;
 import io.github.danieltuerk.controlcenter.shared.EventCache;
 import io.github.danieltuerk.controlcenter.shared.StateEvent;
 import io.github.danieltuerk.controlcenter.shared.bus.BusDataEvent;
-import io.quarkus.websockets.next.*;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.quarkus.websockets.next.OnBinaryMessage;
+import io.quarkus.websockets.next.OnClose;
+import io.quarkus.websockets.next.OnOpen;
+import io.quarkus.websockets.next.WebSocket;
+import io.quarkus.websockets.next.WebSocketConnection;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
@@ -27,17 +32,20 @@ public class EventBroadcaster {
     private final EventCache eventCache;
     private final Set<WebSocketConnection> connections = new CopyOnWriteArraySet<>();
     private final ObjectMapper objectMapper;
+    private final MeterRegistry meterRegistry;
 
     @Inject
-    public EventBroadcaster(ObjectMapper objectMapper, EventCache eventCache) {
+    public EventBroadcaster(ObjectMapper objectMapper, EventCache eventCache, MeterRegistry meterRegistry) {
         this.objectMapper = objectMapper;
         this.eventCache = eventCache;
+        this.meterRegistry = meterRegistry;
     }
 
     @OnOpen
     public void onOpen(WebSocketConnection connection) {
         connections.add(connection);
         log.debug("Client connected: {}", connection.id());
+        meterRegistry.counter(MetricConstants.WEBSOCKET_CONNECTIONS_OPENED_TOTAL).increment();
 
         connection.sendText("clientId: %s".formatted(connection.id()))
             .subscribe().with(
@@ -57,10 +65,11 @@ public class EventBroadcaster {
     public void onClose(WebSocketConnection connection) {
         connections.remove(connection);
         log.debug("Client disconnected: {}", connection.id());
+        meterRegistry.counter(MetricConstants.WEBSOCKET_CONNECTIONS_CLOSED_TOTAL).increment();
     }
 
     @OnBinaryMessage
-    public void onBinaryMessage(WebSocketConnection connection, byte[] data) {
+    public void onBinaryMessage(WebSocketConnection ignored1, byte[] ignored2) {
     }
 
     /***
@@ -84,6 +93,8 @@ public class EventBroadcaster {
     }
 
     private void sendEvent(Event event, Set<WebSocketConnection> connections) {
+        meterRegistry.counter(MetricConstants.EVENTS_BROADCAST_TOTAL, "type", event.getClass().getSimpleName())
+                .increment();
         String json;
         try {
             json = objectMapper.writeValueAsString(event);

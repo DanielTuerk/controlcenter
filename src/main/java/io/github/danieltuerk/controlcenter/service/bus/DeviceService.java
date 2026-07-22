@@ -1,15 +1,21 @@
 package io.github.danieltuerk.controlcenter.service.bus;
 
 import io.github.danieltuerk.controlcenter.EventBroadcaster;
+import io.github.danieltuerk.controlcenter.MetricConstants;
 import io.github.danieltuerk.controlcenter.shared.bus.RailVoltageEvent;
 import io.github.danieltuerk.controlcenter.shared.bus.SystemFormatEvent;
 import io.github.danieltuerk.controlcenter.shared.device.DeviceConnectionEvent;
 import io.github.danieltuerk.controlcenter.shared.device.DeviceDataChangedEvent;
 import io.github.danieltuerk.controlcenter.shared.device.DeviceInfo;
-import io.github.danieltuerk.selectrix4java.device.*;
+import io.github.danieltuerk.selectrix4java.device.Device;
+import io.github.danieltuerk.selectrix4java.device.DeviceAccessException;
+import io.github.danieltuerk.selectrix4java.device.DeviceConnectionListener;
 import io.github.danieltuerk.selectrix4java.device.DeviceManager;
 import io.github.danieltuerk.selectrix4java.device.DeviceManager.DEVICE_TYPE;
+import io.github.danieltuerk.selectrix4java.device.RailVoltageListener;
+import io.github.danieltuerk.selectrix4java.device.SystemFormatListener;
 import io.github.danieltuerk.selectrix4java.device.serial.SerialDevice;
+import io.micrometer.core.instrument.MeterRegistry;
 import io.quarkus.runtime.Startup;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Observes;
@@ -32,22 +38,28 @@ public class DeviceService {
     private final RailVoltageListener railVoltageListener;
     private final SystemFormatListener systemFormatListener;
     private final BusService busService;
+    private final MeterRegistry meterRegistry;
     private Device activeDevice;
     private DeviceInfo activeDeviceInfo;
 
     @Inject
     public DeviceService(DeviceManager selectrixDeviceManager,
                          final EventBroadcaster eventBroadcaster,
-                         io.github.danieltuerk.controlcenter.service.bus.DeviceManager deviceManager, BusService busService) {
+                         io.github.danieltuerk.controlcenter.service.bus.DeviceManager deviceManager, BusService busService,
+                         MeterRegistry meterRegistry) {
         this.deviceManager = deviceManager;
         this.selectrixDeviceManager = selectrixDeviceManager;
         this.eventBroadcaster = eventBroadcaster;
         this.busService = busService;
+        this.meterRegistry = meterRegistry;
 
         initConnectionListener();
 
         railVoltageListener = isOn -> eventBroadcaster.fireEvent(new RailVoltageEvent(isOn));
         systemFormatListener = systemFormat -> eventBroadcaster.fireEvent(new SystemFormatEvent(systemFormat));
+
+        meterRegistry.gauge(MetricConstants.DEVICE_CONNECTED, this,
+                deviceService -> deviceService.getConnectedDevice().isPresent() ? 1 : 0);
     }
 
     public void onDeviceDataChanged(@Observes DeviceDataChangedEvent evt) {
@@ -67,12 +79,14 @@ public class DeviceService {
         if (activeDevice == null) throw new DeviceAccessException("no active device");
         if (activeDevice.isConnected()) throw new DeviceAccessException("device already connected");
         activeDevice.connect();
+        meterRegistry.counter(MetricConstants.DEVICE_CONNECT_TOTAL).increment();
     }
 
     public void disconnect() throws DeviceAccessException {
         if (activeDevice == null) throw new DeviceAccessException("no active device");
         if (!activeDevice.isConnected()) throw new DeviceAccessException("device not connected");
         activeDevice.disconnect();
+        meterRegistry.counter(MetricConstants.DEVICE_DISCONNECT_TOTAL).increment();
     }
 
     public Optional<Device> getConnectedDevice() {

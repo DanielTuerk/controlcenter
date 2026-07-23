@@ -26,4 +26,4 @@ jobs:
           cache: maven
 
       - name: Build and test with Maven
-        run: ./mvnw -B verify -Pwith-frontend
+        run: ./mvnw -B verify -Pwith-frontend -Dquarkus.native.enabled=true

@@ -49,11 +49,11 @@ export class BlockStraightBuilder extends AbstractTrackComponentBuilder<BlockStr
     let blockColor = event && event.occupied ? BLOCK_COLOR_OCCUPIED : BLOCK_COLOR_FREE;
     let rect, text;
     if (trackPart.direction === DIRECTION.Vertical) {
-      rect = this.baseRect(baseX + 2, baseY - 9, blockThickness, blockSize, blockColor, null);
+      rect = this.baseRect(baseX + 1.75, baseY - 9, blockThickness, blockSize, blockColor, null);
       text = this.text(trainDisplayValue, baseX + 12, baseY - 8,
         `rotate(90 ${baseX + AbstractTrackComponentBuilder.TILE} ${baseY - 4})`);
     } else {
-      rect = this.baseRect(baseX, baseY - 7.5, blockSize, blockThickness, blockColor, null);
+      rect = this.baseRect(baseX, baseY - 7.25, blockSize, blockThickness, blockColor, null);
       text = this.text(trainDisplayValue, baseX - 8, baseY - 12, null);
     }
     text.id = `track-part-${trackPart.id}-feedback-text`;

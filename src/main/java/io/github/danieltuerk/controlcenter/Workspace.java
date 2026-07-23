@@ -13,7 +13,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Stream;
 
 @Slf4j
@@ -88,6 +92,8 @@ public class Workspace {
     }
 
     public BusDump loadBusDump(String busDumpFile) {
+        checkFileName(busDumpFile);
+
         Path jsonFile = dumpFolder.resolve(busDumpFile);
         try {
             return objectMapper.readValue(jsonFile.toFile(), BusDump.class);
@@ -106,13 +112,8 @@ public class Workspace {
         return listDumps(EVENT_DUMP_PREFIX);
     }
 
-    private record RawDumpEntry(String clazzName, Map<String, Object> events) {
-    }
-
-    private record RawEventDump(List<RawDumpEntry> entries) {
-    }
-
     public EventDump loadEventDump(String eventDumpFile) {
+        checkFileName(eventDumpFile);
         Path jsonFile = dumpFolder.resolve(eventDumpFile);
         try {
             RawEventDump rawEventDump = objectMapper.readValue(jsonFile.toFile(), RawEventDump.class);
@@ -131,6 +132,18 @@ public class Workspace {
             log.error("Could not read event dump file: {}", jsonFile, e);
             throw new RuntimeException(e);
         }
+    }
+
+    private static void checkFileName(String eventDumpFile) {
+        if (eventDumpFile.contains("..") || eventDumpFile.contains("/") || eventDumpFile.contains("\\")) {
+            throw new IllegalArgumentException("Invalid filename");
+        }
+    }
+
+    private record RawDumpEntry(String clazzName, Map<String, Object> events) {
+    }
+
+    private record RawEventDump(List<RawDumpEntry> entries) {
     }
 
 }

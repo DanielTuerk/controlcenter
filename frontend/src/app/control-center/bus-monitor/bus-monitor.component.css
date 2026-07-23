@@ -40,7 +40,7 @@ button {
   width: 28px;
   height: 28px;
   border: 1px solid #aaa;
-  background-color: #eee;
+  background-color: #9c9898;
   cursor: pointer;
 
   transition: transform 1s ease, background-color 1s ease;

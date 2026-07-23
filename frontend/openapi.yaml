@@ -983,6 +983,19 @@ paths:
       summary: Bus Data
       tags:
       - Bus Resource
+  /api/bus/playback/list:
+    get:
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { }
+      summary: List Playbacks
+      tags:
+        - Bus Resource
   /api/bus/railvoltage:
     post:
       responses:
@@ -1005,6 +1018,38 @@ paths:
       summary: Fetch Railvoltage State
       tags:
       - Bus Resource
+  /api/bus/start-bus-player:
+    post:
+      parameters:
+        - name: playbackSpeed
+          in: query
+          schema:
+            type: integer
+            format: int32
+        - name: record
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { }
+      summary: Start Bus Player
+      tags:
+        - Bus Resource
+  /api/bus/start-recording-bus:
+    post:
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { }
+      summary: Start Recording Bus
+      tags:
+        - Bus Resource
   /api/bus/start-tracking-bus:
     post:
       requestBody:
@@ -1024,6 +1069,28 @@ paths:
       summary: Start Tracking Bus
       tags:
       - Bus Resource
+  /api/bus/stop-bus-player:
+    post:
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { }
+      summary: Stop Bus Player
+      tags:
+        - Bus Resource
+  /api/bus/stop-recording-bus:
+    post:
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { }
+      summary: Stop Recording Bus
+      tags:
+        - Bus Resource
   /api/bus/stop-tracking-bus:
     post:
       requestBody:
@@ -2266,4 +2333,4 @@ paths:
               schema: {}
 info:
   title: controlcenter API
-  version: 0.3-SNAPSHOT
+  version: 0.3.2-SNAPSHOT

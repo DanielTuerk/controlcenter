@@ -1,11 +1,12 @@
 <button matIconButton
-        [disabled]="!isConnected()"
+        [disabled]="!isConnected() || isPlaying()"
         (click)="onRecordingToggle()"
-        [matTooltip]="'record bus to file'">
-  <mat-icon style="color: rgb(207 102 102 / 0.58)">radio_button_checked</mat-icon>
+        [matTooltip]="isRecording() ? 'stop recording' : 'record bus to file'">
+  <mat-icon class="record-icon" [class.recording]="isRecording()">radio_button_checked</mat-icon>
 </button>
 <button matIconButton
-        [disabled]="!isConnected()"
-        [matTooltip]="'play file'">
-  <mat-icon>play_circle</mat-icon>
+        [disabled]="!isConnected() || isRecording()"
+        (click)="onPlayToggle()"
+        [matTooltip]="isPlaying() ? 'stop playback' : 'playback existing record'">
+  <mat-icon class="play-icon" [class.playing]="isPlaying()">play_circle</mat-icon>
 </button>

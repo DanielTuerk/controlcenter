@@ -1,0 +1,13 @@
+<h2 mat-dialog-title>Playback</h2>
+
+<mat-dialog-content>
+  <label>Playback speed: {{ playbackSpeed() }}</label>
+  <br/>
+  <mat-slider min="1" max="25" step="1" showTickMarks discrete>
+    <input matSliderThumb [value]="playbackSpeed()" (valueChange)="playbackSpeed.set($event)">
+  </mat-slider>
+
+  @for (record of records(); track record) {
+    <button matButton class="record-entry" (click)="onSelectRecord(record)">{{ record }}</button>
+  }
+</mat-dialog-content>

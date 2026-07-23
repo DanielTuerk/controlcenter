@@ -6,12 +6,19 @@ import io.github.danieltuerk.selectrix4java.device.Device.SYSTEM_FORMAT;
 import io.github.danieltuerk.selectrix4java.device.DeviceAccessException;
 import io.smallrye.common.annotation.Blocking;
 import jakarta.inject.Inject;
-import jakarta.ws.rs.*;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponseSchema;
+
+import java.util.List;
 
 @Slf4j
 @Path("/api/bus")
@@ -99,8 +106,39 @@ public class BusResource {
         }
     }
 
-    // TODO recorder
-    // TODO player
+    @POST
+    @Path("/start-recording-bus")
+    public Response startRecordingBus() {
+        busService.startRecording();
+        return Response.ok().build();
+    }
 
+    @POST
+    @Path("/stop-recording-bus")
+    public Response stopRecordingBus() {
+        busService.stopRecording();
+        return Response.ok().build();
+    }
+
+    @POST
+    @Path("/start-bus-player")
+    public Response startBusPlayer(@QueryParam("record") String record, @QueryParam("playbackSpeed") int playbackSpeed) {
+        busService.startPlayer(record, playbackSpeed);
+        return Response.ok().build();
+    }
+
+    @POST
+    @Path("/stop-bus-player")
+    public Response stopBusPlayer() {
+        busService.stopPlayer();
+        return Response.ok().build();
+    }
+
+    @APIResponseSchema(List.class)
+    @GET
+    @Path("/playback/list")
+    public Response listPlaybacks() {
+        return Response.ok(busService.getRecords()).build();
+    }
 }
 

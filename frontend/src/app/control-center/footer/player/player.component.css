@@ -1,0 +1,25 @@
+.record-icon {
+  color: rgb(207 102 102 / 0.58);
+}
+
+.record-icon.recording {
+  color: #ff1111;
+  animation: record-blink 0.8s step-start infinite;
+}
+
+.play-icon.playing {
+  color: #11dd44;
+  animation: play-blink 0.8s step-start infinite;
+}
+
+@keyframes record-blink {
+  50% {
+    opacity: 0.2;
+  }
+}
+
+@keyframes play-blink {
+  50% {
+    opacity: 0.2;
+  }
+}

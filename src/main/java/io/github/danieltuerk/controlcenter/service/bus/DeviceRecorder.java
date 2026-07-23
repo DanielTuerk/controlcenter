@@ -1,13 +1,14 @@
 package io.github.danieltuerk.controlcenter.service.bus;
 
 import io.github.danieltuerk.controlcenter.EventBroadcaster;
-import io.github.danieltuerk.controlcenter.service.LocalFileService;
+import io.github.danieltuerk.controlcenter.Workspace;
 import io.github.danieltuerk.controlcenter.shared.bus.RecordingEvent;
 import io.github.danieltuerk.selectrix4java.data.recording.IsRecordable;
 import io.github.danieltuerk.selectrix4java.device.Device;
 import io.github.danieltuerk.selectrix4java.device.DeviceAccessException;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.nio.file.Path;
@@ -19,21 +20,19 @@ import java.nio.file.Path;
 @ApplicationScoped
 public class DeviceRecorder {
 
-    private static final String FOLDER = "/record/";
-
     private final EventBroadcaster eventBroadcaster;
+    @Getter
     private final Path destinationFolder;
 
     private IsRecordable recordable;
 
     @Inject
-    public DeviceRecorder(LocalFileService localFileService, EventBroadcaster eventBroadcaster) {
+    public DeviceRecorder(EventBroadcaster eventBroadcaster, Workspace workspace) {
         this.eventBroadcaster = eventBroadcaster;
-        this.destinationFolder = localFileService.getDir(FOLDER);
+        this.destinationFolder = workspace.getRecordFolder();
     }
 
-    public void startRecording(Device device, String fileName) {
-        // TODO file name
+    public void startRecording(Device device) {
         if (device instanceof IsRecordable) {
             this.recordable = (IsRecordable) device;
         } else {
@@ -60,7 +59,4 @@ public class DeviceRecorder {
         }
     }
 
-    public Path getDestinationFolder() {
-        return destinationFolder;
-    }
 }

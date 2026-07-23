@@ -1,0 +1,10 @@
+mat-dialog-content {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.record-entry {
+  justify-content: flex-start;
+  text-align: left;
+}

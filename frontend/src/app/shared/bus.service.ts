@@ -81,6 +81,58 @@ export class BusService {
     ).subscribe();
   }
 
+  startRecording() {
+    return this.callBusAction('start-recording-bus')
+      .pipe(
+        catchError((err: any) => {
+          this.snackBar.showError(`can't start recording: ${err.message}`);
+          return EMPTY
+        })
+      ).subscribe();
+  }
+
+  stopRecording() {
+    return this.callBusAction('stop-recording-bus')
+      .pipe(
+        catchError((err: any) => {
+          this.snackBar.showError(`can't stop recording: ${err.message}`);
+        return EMPTY
+      })
+    ).subscribe();
+  }
+
+  startPlayer(record: string, playbackSpeed: number) {
+    return this.httpClient.post<null>('/api/bus/start-bus-player', null, {
+      params: {record, playbackSpeed}
+    })
+      .pipe(
+        catchError((err: any) => {
+          this.snackBar.showError(`can't start player: ${err.message}`);
+          return EMPTY
+        })
+      ).subscribe();
+  }
+
+  stopPlayer() {
+    return this.callBusAction('stop-bus-player')
+      .pipe(
+        catchError((err: any) => {
+          this.snackBar.showError(`can't stop player: ${err.message}`);
+          return EMPTY
+        })
+      ).subscribe();
+  }
+
+  listRecords() {
+    return this.httpClient.get<string[]>('/api/bus/playback/list')
+      .pipe(
+        catchError((err: any) => {
+          this.snackBar.showError(`can't fetch records: ${err.message}`);
+          return EMPTY
+        })
+      );
+  }
+
   private callBusAction(path: string, body:any=null) {
     return this.httpClient.post<null>('/api/bus/' + path, body)
   }

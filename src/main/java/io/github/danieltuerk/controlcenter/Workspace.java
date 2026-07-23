@@ -5,6 +5,7 @@ import io.github.danieltuerk.controlcenter.shared.StateEvent;
 import io.quarkus.runtime.StartupEvent;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Observes;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
@@ -18,6 +19,8 @@ import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Slf4j
@@ -25,6 +28,7 @@ import java.util.stream.Stream;
 public class Workspace {
 
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss");
+    private static final String RECORD_PREFIX = "record";
     private static final String BUS_DUMP_PREFIX = "bus";
     private static final String EVENT_DUMP_PREFIX = "event";
 
@@ -37,16 +41,20 @@ public class Workspace {
     }
 
     private final Path dumpFolder;
+    @Getter
+    private final Path recordFolder;
 
     private final ObjectMapper objectMapper;
 
     public Workspace(@ConfigProperty(name = "home.dir") Path homeDir, ObjectMapper objectMapper) {
         dumpFolder = Path.of(homeDir + "/dump");
+        recordFolder = Path.of(homeDir + "/record");
         this.objectMapper = objectMapper;
     }
 
     void onStart(@Observes StartupEvent event) {
         createPath(dumpFolder);
+        createPath(recordFolder);
     }
 
     private void createPath(Path path) {
@@ -59,7 +67,7 @@ public class Workspace {
 
     private String createDump(String prefix, Object dump) {
         Path jsonFile = dumpFolder.resolve(
-                ("%s_%s.json").formatted(prefix, LocalDateTime.now().format(DATE_TIME_FORMATTER)));
+                createFileName(prefix));
 
         try {
             objectMapper.writeValue(jsonFile.toFile(), dump);
@@ -68,6 +76,10 @@ public class Workspace {
             log.error("Could not write dump file: {}", jsonFile, e);
             throw new RuntimeException(e);
         }
+    }
+
+    private static String createFileName(String prefix) {
+        return ("%s_%s.json").formatted(prefix, LocalDateTime.now().format(DATE_TIME_FORMATTER));
     }
 
     private List<String> listDumps(String prefix) {
@@ -132,6 +144,31 @@ public class Workspace {
             log.error("Could not read event dump file: {}", jsonFile, e);
             throw new RuntimeException(e);
         }
+    }
+
+    public List<String> listRecords() {
+        try (Stream<Path> stream = Files.list(recordFolder)) {
+            return stream
+                    .filter(Files::isRegularFile)
+                    .filter(path -> path.getFileName().toString().startsWith(RECORD_PREFIX))
+                    .map(path -> path.getFileName().toString())
+                    .collect(Collectors.toList());
+        } catch (IOException e) {
+            log.error("check files of records", e);
+        }
+        return List.of();
+    }
+
+    public Optional<Path> recordByFileName(String fileName) {
+        try (Stream<Path> stream = Files.list(recordFolder)) {
+            return stream
+                    .filter(Files::isRegularFile)
+                    .filter(x -> x.getFileName().toString().equals(fileName))
+                    .findFirst();
+        } catch (IOException e) {
+            log.error("check files of records", e);
+        }
+        return Optional.empty();
     }
 
     private static void checkFileName(String eventDumpFile) {

@@ -15,16 +15,10 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * @author Daniel Tuerk
@@ -174,55 +168,49 @@ public class BusService {
                 .orElseThrow(() -> new DeviceAccessException("not connected"));
     }
 
-    public void startRecording(String fileName) {
+    public void startRecording() {
         deviceService.getConnectedDevice()
-            .ifPresent(device -> deviceRecorder.startRecording(device, null));
+                .ifPresent(deviceRecorder::startRecording);
     }
 
     public void stopRecording() {
         deviceRecorder.stopRecording();
     }
 
-    public void startPlayer(String absoluteFilePath, int playbackSpeed) {
-        deviceService.getConnectedDevice().ifPresent(device -> {
+    public void startPlayer(String fileName, int playbackSpeed) {
+        deviceService.getConnectedDevice().ifPresentOrElse(device ->
+                workspace.recordByFileName(fileName).ifPresentOrElse(path -> {
+                    busDataPlayer = new BusDataPlayer(device.getBusDataDispatcher(), device.getBusDataChannel(), playbackSpeed);
+                    busDataPlayer.addListener(new BusDataPlayerListener() {
+                        @Override
+                        public void playbackStarted() {
+                            log.info("playback started");
+                            eventBroadcaster.fireEvent(new PlayerEvent(PlayerEvent.PLAYER_STATE.START));
+                        }
 
-            busDataPlayer = new BusDataPlayer(device.getBusDataDispatcher(), device.getBusDataChannel(),
-                playbackSpeed);
-            busDataPlayer.addListener(new BusDataPlayerListener() {
-                @Override
-                public void playbackStarted() {
-                    log.info("playback started");
-                    eventBroadcaster.fireEvent(new PlayerEvent(PlayerEvent.PLAYER_STATE.START));
-                }
+                        @Override
+                        public void playbackStopped() {
+                            log.info("playback stopped");
+                            eventBroadcaster.fireEvent(new PlayerEvent(PlayerEvent.PLAYER_STATE.STOP));
+                        }
+                    });
+                    try {
+                        busDataPlayer.start(path);
+                    } catch (Exception e) {
+                        log.error("can't start player", e);
+                    }
 
-                @Override
-                public void playbackStopped() {
-                    log.info("playback stopped");
-                    eventBroadcaster.fireEvent(new PlayerEvent(PlayerEvent.PLAYER_STATE.STOP));
-                }
-            });
-            try {
-                busDataPlayer.start(Paths.get(absoluteFilePath));
-            } catch (Exception e) {
-                log.error("can't start player", e);
-            }
-        });
+                }, () -> log.error("no record found: {}", fileName)), () -> log.error("no device connected"));
     }
 
     public void stopPlayer() {
-        busDataPlayer.stop();
+        if (busDataPlayer != null) {
+            busDataPlayer.stop();
+        }
     }
 
     public List<String> getRecords() {
-        try (Stream<Path> stream = Files.list(deviceRecorder.getDestinationFolder())) {
-            return stream
-                .filter(Files::isRegularFile)
-                .map(Path::toString)
-                .collect(Collectors.toList());
-        } catch (IOException e) {
-            log.error("check files of records", e);
-        }
-        return List.of();
+        return workspace.listRecords();
     }
 
     private static void sendDataFromDump(Device device, int bus, byte[] busDump) throws DeviceAccessException {

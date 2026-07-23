@@ -2,9 +2,11 @@ import {Component, computed, effect, inject, input, signal} from '@angular/core'
 import {DatePipe, formatDate} from '@angular/common';
 import {ScenarioService} from "../../../shared/scenario.service";
 import {Scenario, ScenarioStatistic} from "../../../../shared/openapi-gen";
-import {MatCard, MatCardContent, MatCardHeader, MatCardTitle} from "@angular/material/card";
+import {MatCard, MatCardContent, MatCardFooter, MatCardHeader, MatCardTitle} from "@angular/material/card";
 import {SuccessIconComponent} from "../../../shared/component/SuccessIconComponent";
 import {ErrorIconComponent} from "../../../shared/component/ErrorIconComponent";
+import {MatButton} from "@angular/material/button";
+import {RouterLink} from "@angular/router";
 
 interface RunBar {
   widthPercent: number;
@@ -43,7 +45,10 @@ function niceCeilMillis(millis: number): number {
     MatCardTitle,
     SuccessIconComponent,
     ErrorIconComponent,
-    DatePipe
+    DatePipe,
+    MatButton,
+    MatCardFooter,
+    RouterLink
   ],
   templateUrl: './scenario-statistic.component.html',
   styleUrl: './scenario-statistic.component.css',

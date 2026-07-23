@@ -149,7 +149,7 @@ public class BusService {
 
     public int fetchBusData(int busNr, int address) throws DeviceAccessException {
         final var device = fetchDevice();
-        return Byte.valueOf(device.getBusAddress(busNr, (byte) address).getData()).intValue();
+        return Byte.valueOf(device.getBusAddress(busNr, address).getData()).intValue();
     }
 
     public String dumpBusData() throws DeviceAccessException {

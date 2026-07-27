@@ -6,7 +6,10 @@ import {MatIconModule} from '@angular/material/icon';
   standalone: true,
   imports: [MatIconModule],
   changeDetection: ChangeDetectionStrategy.Eager,
-  styles: [`:host { display: flex; align-items: center; }`],
+  styles: [`
+    :host { display: flex; align-items: center; }
+    .icon { width: 18px; height: 18px; font-size: 18px; }
+  `],
   template: `
     @if (icon()) {
       <mat-icon class="icon">{{ icon() }}</mat-icon>

@@ -23,8 +23,12 @@
 
       <ng-container matColumnDef="train">
         <th mat-header-cell *matHeaderCellDef> Train</th>
-        <td mat-cell *matCellDef="let element"> {{ element.train?.name }}
-          <train-direction-icon [forward]="element.trainDrivingDirection === DRIVINGDIRECTION1.Forward"/> {{ element.startDrivingLevel }}
+        <td mat-cell *matCellDef="let element">
+          <span class="train-cell">
+            {{ element.train?.name }}:
+            <train-direction-icon [forward]="element.trainDrivingDirection === DRIVINGDIRECTION1.Forward"/>
+            {{ element.startDrivingLevel }}
+          </span>
         </td>
       </ng-container>
 

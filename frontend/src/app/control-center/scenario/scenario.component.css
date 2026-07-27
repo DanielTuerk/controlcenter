@@ -5,3 +5,9 @@
 .anchor-nav {
   margin-top: 1rem;
 }
+
+.train-cell {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}

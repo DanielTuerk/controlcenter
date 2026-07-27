@@ -11,6 +11,7 @@ import {MatDialog} from "@angular/material/dialog";
 import {ScenarioService} from "../../shared/scenario.service";
 import {ConfirmDialogComponent} from "../common/confirm-dialog/confirm-dialog.component";
 import {RouteComponent} from "./route/route.component";
+import {StationComponent} from "./station/station.component";
 import {TrainDirectionIcon} from "../common/trainDirectionIcon";
 import {ScenarioSubscription} from "../../shared/websocket/scenario.subscription";
 
@@ -27,6 +28,7 @@ import {ScenarioSubscription} from "../../shared/websocket/scenario.subscription
     MatButton,
     MatIconButton,
     RouteComponent,
+    StationComponent,
     TrainDirectionIcon
   ],
   templateUrl: './scenario.component.html',

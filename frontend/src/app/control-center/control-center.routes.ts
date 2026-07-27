@@ -11,6 +11,7 @@ import {routes as settingRoutes} from "./setting/setting.routes";
 import {routes as editorRoutes} from "./editor/editor.routes";
 import {StationComponent} from "./station/station.component";
 import {RouteEditComponent} from "./scenario/route/route-edit/route-edit.component";
+import {StationEditComponent} from "./scenario/station/station-edit/station-edit.component";
 import {BusMonitorComponent} from "./bus-monitor/bus-monitor.component";
 import {DevToolsComponent} from "./dev-tools/dev-tools.component";
 
@@ -47,6 +48,10 @@ export const routes: Routes = [
   {
     path: 'scenario/route/:routeId',
     component: RouteEditComponent
+  },
+  {
+    path: 'scenario/station/:stationId',
+    component: StationEditComponent
   },
   {
     path: 'viewer',

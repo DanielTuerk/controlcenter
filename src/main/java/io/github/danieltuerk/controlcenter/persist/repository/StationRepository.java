@@ -17,12 +17,4 @@ public class StationRepository implements PanacheRepository<StationEntity> {
         return listAll(Sort.by("name"));
     }
 
-    public StationEntity findByPlatformId(long platformId) {
-        // TODO
-        return getEntityManager()
-            .createQuery("SELECT s FROM STATION_PLATFORM p JOIN p.station s WHERE p.id = :platformId", StationEntity.class)
-            .setParameter("platformId", platformId)
-            .getSingleResult();
-    }
-
 }

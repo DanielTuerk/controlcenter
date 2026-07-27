@@ -626,6 +626,18 @@ components:
           $ref: "#/components/schemas/FUNCTION"
         cacheKey:
           type: string
+    Station:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        platforms:
+          type: array
+          items:
+            $ref: "#/components/schemas/StationPlatform"
     StationBoardChangedEvent:
       description: station status update sent via WebSocket
       type: object
@@ -644,6 +656,40 @@ components:
         itemId:
           type: integer
           format: int64
+    StationDto:
+      type: object
+      properties:
+        name:
+          type: string
+        platforms:
+          type: array
+          items:
+            $ref: "#/components/schemas/StationPlatformDto"
+    StationPlatform:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        trackBlocks:
+          type: array
+          items:
+            $ref: "#/components/schemas/TrackBlock"
+    StationPlatformDto:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        trackBlockIds:
+          type: array
+          items:
+            type: integer
+            format: int64
     Straight:
       description: type for a track part
       type: object
@@ -992,10 +1038,10 @@ paths:
             application/json:
               schema:
                 type: array
-                items: { }
+                items: {}
       summary: List Playbacks
       tags:
-        - Bus Resource
+      - Bus Resource
   /api/bus/railvoltage:
     post:
       responses:
@@ -1021,24 +1067,24 @@ paths:
   /api/bus/start-bus-player:
     post:
       parameters:
-        - name: playbackSpeed
-          in: query
-          schema:
-            type: integer
-            format: int32
-        - name: record
-          in: query
-          schema:
-            type: string
+      - name: playbackSpeed
+        in: query
+        schema:
+          type: integer
+          format: int32
+      - name: record
+        in: query
+        schema:
+          type: string
       responses:
         "200":
           description: OK
           content:
             application/json:
-              schema: { }
+              schema: {}
       summary: Start Bus Player
       tags:
-        - Bus Resource
+      - Bus Resource
   /api/bus/start-recording-bus:
     post:
       responses:
@@ -1046,10 +1092,10 @@ paths:
           description: OK
           content:
             application/json:
-              schema: { }
+              schema: {}
       summary: Start Recording Bus
       tags:
-        - Bus Resource
+      - Bus Resource
   /api/bus/start-tracking-bus:
     post:
       requestBody:
@@ -1076,10 +1122,10 @@ paths:
           description: OK
           content:
             application/json:
-              schema: { }
+              schema: {}
       summary: Stop Bus Player
       tags:
-        - Bus Resource
+      - Bus Resource
   /api/bus/stop-recording-bus:
     post:
       responses:
@@ -1087,10 +1133,10 @@ paths:
           description: OK
           content:
             application/json:
-              schema: { }
+              schema: {}
       summary: Stop Recording Bus
       tags:
-        - Bus Resource
+      - Bus Resource
   /api/bus/stop-tracking-bus:
     post:
       requestBody:
@@ -1868,6 +1914,101 @@ paths:
       summary: Unschedule
       tags:
       - Scenario Resource
+  /api/stations:
+    get:
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Station"
+      summary: List All
+      tags:
+      - Station Resource
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/StationDto"
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Station"
+          description: Created
+        "400":
+          description: Bad Request
+      summary: Create
+      tags:
+      - Station Resource
+  /api/stations/{id}:
+    put:
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/StationDto"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Station"
+        "400":
+          description: Bad Request
+      summary: Update
+      tags:
+      - Station Resource
+    get:
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Station"
+      summary: Get By Id
+      tags:
+      - Station Resource
+    delete:
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: {}
+      summary: Delete
+      tags:
+      - Station Resource
   /api/track:
     get:
       tags:

@@ -70,6 +70,8 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/TrackBlock"
+        displayValue:
+          type: string
     BusBitDto:
       type: object
       properties:

@@ -88,6 +88,14 @@ public class BlockStraight extends Straight implements MultipleGridPosition {
             .collect(Collectors.toList());
     }
 
+    @SuppressWarnings("unused")
+    public String getDisplayValue() {
+        return Stream.of(leftTrackBlock, middleTrackBlock, rightTrackBlock)
+                .filter(Objects::nonNull)
+                .map(TrackBlock::getDisplayValue)
+                .collect(Collectors.joining(", "));
+    }
+
     @Override
     public String toString() {
         return "BlockStraight{" + "blockLength=" + blockLength

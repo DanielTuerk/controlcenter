@@ -3,10 +3,10 @@ package io.github.danieltuerk.controlcenter.service.station;
 import io.github.danieltuerk.controlcenter.api.station.StationDto;
 import io.github.danieltuerk.controlcenter.persist.entity.StationEntity;
 import io.github.danieltuerk.controlcenter.persist.entity.StationPlatformEntity;
-import io.github.danieltuerk.controlcenter.persist.entity.track.TrackBlockEntity;
+import io.github.danieltuerk.controlcenter.persist.entity.track.BlockStraightEntity;
 import io.github.danieltuerk.controlcenter.persist.repository.StationPlatformRepository;
 import io.github.danieltuerk.controlcenter.persist.repository.StationRepository;
-import io.github.danieltuerk.controlcenter.persist.repository.track.TrackBlockRepository;
+import io.github.danieltuerk.controlcenter.persist.repository.track.TrackPartRepository;
 import io.github.danieltuerk.controlcenter.shared.station.Station;
 import io.quarkus.cache.CacheInvalidateAll;
 import io.quarkus.cache.CacheResult;
@@ -30,16 +30,16 @@ public class StationDataProvider {
 
     private final StationRepository stationRepository;
     private final StationPlatformRepository stationPlatformRepository;
-    private final TrackBlockRepository trackBlockRepository;
+    private final TrackPartRepository trackPartRepository;
     private final StationMapper stationMapper;
 
     public StationDataProvider(StationRepository stationRepository,
                                 StationPlatformRepository stationPlatformRepository,
-                                TrackBlockRepository trackBlockRepository,
+                                TrackPartRepository trackPartRepository,
                                 StationMapper stationMapper) {
         this.stationRepository = stationRepository;
         this.stationPlatformRepository = stationPlatformRepository;
-        this.trackBlockRepository = trackBlockRepository;
+        this.trackPartRepository = trackPartRepository;
         this.stationMapper = stationMapper;
     }
 
@@ -128,20 +128,20 @@ public class StationDataProvider {
                 platformEntity.station = stationEntity;
             }
             platformEntity.name = platformDto.name();
-            platformEntity.trackBlocks = resolveTrackBlocks(platformDto.trackBlockIds());
+            platformEntity.blockStraights = resolveBlockStraights(platformDto.blockStraightIds());
             stationPlatformRepository.persist(platformEntity);
             platforms.add(platformEntity);
         }
         stationEntity.platforms = platforms;
     }
 
-    private List<TrackBlockEntity> resolveTrackBlocks(List<Long> trackBlockIds) {
-        if (trackBlockIds == null) {
+    private List<BlockStraightEntity> resolveBlockStraights(List<Long> blockStraightIds) {
+        if (blockStraightIds == null) {
             return new ArrayList<>();
         }
-        return trackBlockIds.stream()
-            .map(id -> trackBlockRepository.findByIdOptional(id)
-                .orElseThrow(() -> new EntityNotFoundException("track block " + id + " not found")))
+        return blockStraightIds.stream()
+            .map(id -> (BlockStraightEntity) trackPartRepository.findByIdOptional(id)
+                .orElseThrow(() -> new EntityNotFoundException("block straight " + id + " not found")))
             .collect(Collectors.toList());
     }
 }

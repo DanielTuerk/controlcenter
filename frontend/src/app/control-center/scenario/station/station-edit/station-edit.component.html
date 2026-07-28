@@ -31,23 +31,23 @@
               </div>
 
               <div class="form-row">
-                <label>Track blocks: </label>
+                <label>Block straights: </label>
                 <mat-form-field>
-                  <mat-select #trackBlockSelect placeholder="select track block to add ...">
-                    @for (opt of trackBlocks(); track opt.id) {
-                      <mat-option [value]="opt"> {{ opt.name }}</mat-option>
+                  <mat-select #blockStraightSelect placeholder="select block straight to add ...">
+                    @for (opt of blockStraights(); track opt.id) {
+                      <mat-option [value]="opt"> {{ opt.displayValue }}</mat-option>
                     }
                   </mat-select>
                 </mat-form-field>
-                <button type="button" matMiniFab (click)="addTrackBlock(platform, trackBlockSelect.value)">
+                <button type="button" matMiniFab (click)="addBlockStraight(platform, blockStraightSelect.value)">
                   <mat-icon>add</mat-icon>
                 </button>
               </div>
 
               <mat-list style="align-content: center">
-                @for (trackBlock of platform.trackBlocks; track trackBlock.id) {
-                  <mat-list-item> {{ trackBlock.name }}
-                    <mat-icon (click)="removeTrackBlock(platform, trackBlock)">delete</mat-icon>
+                @for (blockStraight of platform.blockStraights; track blockStraight.id) {
+                  <mat-list-item> {{ blockStraight.displayValue }}
+                    <mat-icon (click)="removeBlockStraight(platform, blockStraight)">delete</mat-icon>
                   </mat-list-item>
                 }
               </mat-list>

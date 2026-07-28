@@ -10,7 +10,7 @@ import {MatList, MatListItem} from "@angular/material/list";
 import {MatIcon} from "@angular/material/icon";
 import {Router, RouterLink} from "@angular/router";
 import {SnackBar} from "../../../common/snack-bar.component";
-import {Station, StationPlatform, TrackBlock} from "../../../../../shared/openapi-gen";
+import {BlockStraight, Station, StationPlatform} from "../../../../../shared/openapi-gen";
 import {StationService} from "../../../../shared/station.service";
 import {TrackService} from "../../../../shared/track.service";
 
@@ -48,7 +48,7 @@ export class StationEditComponent {
 
   stationId = input.required<Number>();
   station = signal<Station>({});
-  trackBlocks = signal<TrackBlock[]>([]);
+  blockStraights = signal<BlockStraight[]>([]);
 
   readonly hideRequiredControl = new FormControl(false);
   readonly floatLabelControl = new FormControl('auto' as FloatLabelType);
@@ -67,12 +67,12 @@ export class StationEditComponent {
         });
       }
     });
-    this.loadTrackBlocks();
+    this.loadBlockStraights();
   }
 
-  private loadTrackBlocks() {
-    this.trackService.loadTrackBlocks().subscribe(data => {
-      this.trackBlocks.set(data as unknown as TrackBlock[]);
+  private loadBlockStraights() {
+    this.trackService.fetchTrackParts().subscribe(data => {
+      this.blockStraights.set((data as any[]).filter(part => part.trackPartType === 'BlockStraight') as BlockStraight[]);
     });
   }
 
@@ -81,7 +81,7 @@ export class StationEditComponent {
       const platforms = station.platforms ?? [];
       return {
         ...station,
-        platforms: [...platforms, {id: undefined, name: '', trackBlocks: []}]
+        platforms: [...platforms, {id: undefined, name: '', blockStraights: []}]
       };
     });
   }
@@ -93,23 +93,23 @@ export class StationEditComponent {
     });
   }
 
-  protected addTrackBlock(platform: StationPlatform, trackBlock: TrackBlock | undefined) {
-    if (!trackBlock) {
+  protected addBlockStraight(platform: StationPlatform, blockStraight: BlockStraight | undefined) {
+    if (!blockStraight) {
       return;
     }
     this.updatePlatform(platform, p => {
-      const trackBlocks = p.trackBlocks ?? [];
-      if (trackBlocks.some(tb => tb.id === trackBlock.id)) {
+      const blockStraights = p.blockStraights ?? [];
+      if (blockStraights.some(bs => bs.id === blockStraight.id)) {
         return p;
       }
-      return {...p, trackBlocks: [...trackBlocks, trackBlock]};
+      return {...p, blockStraights: [...blockStraights, blockStraight]};
     });
   }
 
-  protected removeTrackBlock(platform: StationPlatform, trackBlock: TrackBlock) {
+  protected removeBlockStraight(platform: StationPlatform, blockStraight: BlockStraight) {
     this.updatePlatform(platform, p => ({
       ...p,
-      trackBlocks: (p.trackBlocks ?? []).filter(tb => tb !== trackBlock)
+      blockStraights: (p.blockStraights ?? []).filter(bs => bs !== blockStraight)
     }));
   }
 

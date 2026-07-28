@@ -675,10 +675,10 @@ components:
           format: int64
         name:
           type: string
-        trackBlocks:
+        blockStraights:
           type: array
           items:
-            $ref: "#/components/schemas/TrackBlock"
+            $ref: "#/components/schemas/BlockStraight"
     StationPlatformDto:
       type: object
       properties:
@@ -687,7 +687,7 @@ components:
           format: int64
         name:
           type: string
-        trackBlockIds:
+        blockStraightIds:
           type: array
           items:
             type: integer

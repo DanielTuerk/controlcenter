@@ -7,6 +7,6 @@ import java.util.List;
  */
 public record StationDto(String name, List<StationPlatformDto> platforms) {
 
-    public record StationPlatformDto(Long id, String name, List<Long> trackBlockIds) {
+    public record StationPlatformDto(Long id, String name, List<Long> blockStraightIds) {
     }
 }

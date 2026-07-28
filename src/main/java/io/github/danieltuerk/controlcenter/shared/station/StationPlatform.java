@@ -2,7 +2,7 @@ package io.github.danieltuerk.controlcenter.shared.station;
 
 
 import io.github.danieltuerk.controlcenter.shared.track.model.AbstractDto;
-import io.github.danieltuerk.controlcenter.shared.track.model.TrackBlock;
+import io.github.danieltuerk.controlcenter.shared.track.model.BlockStraight;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +13,7 @@ import java.util.List;
 public class StationPlatform extends AbstractDto {
 
     private String name;
-    private List<TrackBlock> trackBlocks;
+    private List<BlockStraight> blockStraights;
 
     public String getName() {
         return name;
@@ -23,14 +23,14 @@ public class StationPlatform extends AbstractDto {
         this.name = name;
     }
 
-    public List<TrackBlock> getTrackBlocks() {
-        if (trackBlocks == null) {
+    public List<BlockStraight> getBlockStraights() {
+        if (blockStraights == null) {
             return new ArrayList<>();
         }
-        return trackBlocks;
+        return blockStraights;
     }
 
-    public void setTrackBlocks(List<TrackBlock> trackBlocks) {
-        this.trackBlocks = trackBlocks;
+    public void setBlockStraights(List<BlockStraight> blockStraights) {
+        this.blockStraights = blockStraights;
     }
 }

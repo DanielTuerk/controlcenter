@@ -63,7 +63,7 @@ export class StationService {
       platforms: (station.platforms ?? []).map(platform => ({
         id: platform.id,
         name: platform.name!,
-        trackBlockIds: (platform.trackBlocks ?? []).map(trackBlock => trackBlock.id!)
+        blockStraightIds: (platform.blockStraights ?? []).map(blockStraight => blockStraight.id!)
       }))
     };
   }

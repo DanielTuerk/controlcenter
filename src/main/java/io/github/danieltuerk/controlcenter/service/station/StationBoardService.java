@@ -18,6 +18,8 @@ import io.github.danieltuerk.controlcenter.shared.station.StationBoardDepartureE
 import io.github.danieltuerk.controlcenter.shared.station.StationBoardEvent;
 import io.github.danieltuerk.controlcenter.shared.station.StationDataChangedEvent;
 import io.github.danieltuerk.controlcenter.shared.station.StationPlatform;
+import io.vertx.core.Context;
+import io.vertx.core.Vertx;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Observes;
 import lombok.extern.slf4j.Slf4j;
@@ -54,10 +56,12 @@ public class StationBoardService {
     private final EventBroadcaster eventBroadcaster;
     private final StationBoardEventFactory<StationBoardDepartureEvent> departureEventFactory;
     private final StationBoardEventFactory<StationBoardArrivalEvent> arrivalEventFactory;
+    private final Vertx vertx;
 
     public StationBoardService(ScenarioManager scenarioManager, TrackDataProvider trackDataProvider,
                                ConstructionService constructionService, StationManager stationManager,
-                               EventBroadcaster eventBroadcaster, ScenarioStatisticManager scenarioStatisticManager) {
+                               EventBroadcaster eventBroadcaster, ScenarioStatisticManager scenarioStatisticManager,
+                               Vertx vertx) {
         this.scenarioManager = scenarioManager;
         this.trackDataProvider = trackDataProvider;
         this.constructionService = constructionService;
@@ -65,14 +69,30 @@ public class StationBoardService {
         this.eventBroadcaster = eventBroadcaster;
         this.departureEventFactory = new StationBoardEventFactory.DepartureEventFactory();
         this.arrivalEventFactory = new StationBoardEventFactory.ArrivalEventFactory(scenarioStatisticManager);
+        this.vertx = vertx;
+    }
+
+    /**
+     * Runs the given action, offloading it to a worker thread when called from a Vert.x event loop thread,
+     * since the scenario/station lookups below block on cached data and must not run there.
+     */
+    private void runBlockingSafe(Runnable action) {
+        if (Context.isOnEventLoopThread()) {
+            vertx.executeBlocking(() -> {
+                action.run();
+                return null;
+            }, false).onFailure(e -> log.error("failed to process station board update", e));
+        } else {
+            action.run();
+        }
     }
 
     public void onScenariosChangedEventChanged(@Observes ScenariosChangedEvent event) {
-        init();
+        runBlockingSafe(this::init);
     }
 
     public void onStationDataChangedEventChanged(@Observes StationDataChangedEvent event) {
-        init();
+        runBlockingSafe(this::init);
     }
 
     private void init() {
@@ -80,41 +100,52 @@ public class StationBoardService {
         final var stations = stationManager.load();
 
         scenarios.forEach(scenario -> {
-            final var start = scenario.getRouteSequences().getFirst().getRoute().getStart();
-            final var end = trackDataProvider.findBlockStraightOfTrackBlock(
-                            constructionService.getCurrentConstruction()
-                                    .map(Construction::getId)
-                                    .orElseThrow(() -> new IllegalArgumentException("no current construction")),
-                            scenario.getRouteSequences().getLast().getRoute().getEnd())
-                    .orElseThrow(() -> new IllegalArgumentException("no end for route"));
+            if (scenario.getRouteSequences().isEmpty()) {
+                log.debug("skipping scenario without route sequences: {}", scenario.getId());
+                return;
+            }
 
-            var departurePlatforms = stations.stream()
-                    .flatMap(station -> station.getPlatforms().stream())
-                    .filter(stationPlatform -> stationPlatform.getBlockStraights().contains(start))
-                    .collect(Collectors.toSet());
+            try {
+                final var start = scenario.getRouteSequences().getFirst().getRoute().getStart();
+                final var end = trackDataProvider.findBlockStraightOfTrackBlock(
+                                constructionService.getCurrentConstruction()
+                                        .map(Construction::getId)
+                                        .orElseThrow(() -> new IllegalArgumentException("no current construction")),
+                                scenario.getRouteSequences().getLast().getRoute().getEnd())
+                        .orElseThrow(() -> new IllegalArgumentException("no end for route"));
 
-            var arrivalPlatforms = stations.stream()
-                    .flatMap(station -> station.getPlatforms().stream())
-                    .filter(stationPlatform -> stationPlatform.getBlockStraights().contains(end))
-                    .collect(Collectors.toSet());
+                var departurePlatforms = stations.stream()
+                        .flatMap(station -> station.getPlatforms().stream())
+                        .filter(stationPlatform -> stationPlatform.getBlockStraights().contains(start))
+                        .collect(Collectors.toSet());
 
-            scenarioIdToPlatform.put(scenario.getId(), new ScenarioPlatform(departurePlatforms, arrivalPlatforms));
+                var arrivalPlatforms = stations.stream()
+                        .flatMap(station -> station.getPlatforms().stream())
+                        .filter(stationPlatform -> stationPlatform.getBlockStraights().contains(end))
+                        .collect(Collectors.toSet());
+
+                scenarioIdToPlatform.put(scenario.getId(), new ScenarioPlatform(departurePlatforms, arrivalPlatforms));
+            } catch (IllegalArgumentException e) {
+                log.warn("skipping scenario {} for station board: {}", scenario.getId(), e.getMessage());
+            }
         });
     }
 
     public void onScenarioScheduleEventChanged(@Observes ScenarioScheduleEvent event) {
         if (!event.on()) {
-            final var scenarioId = event.scenarioId();
-            final var scenarioById = scenarioManager.getScenarioById(scenarioId)
-                    .orElseThrow(() -> new IllegalArgumentException("no scenario for id: " + scenarioId));
-            final var train = scenarioById.getTrain().getName();
-            final var scheduledStartTime = timeFromCron(scenarioById.getCron());
+            runBlockingSafe(() -> {
+                final var scenarioId = event.scenarioId();
+                final var scenarioById = scenarioManager.getScenarioById(scenarioId)
+                        .orElseThrow(() -> new IllegalArgumentException("no scenario for id: " + scenarioId));
+                final var train = scenarioById.getTrain().getName();
+                final var scheduledStartTime = timeFromCron(scenarioById.getCron());
 
-            fireStationBoardEvents(scenarioById, scenarioIdToPlatform.get(scenarioId).departurePlatforms(),
-                    train, scheduledStartTime, arrivalStationsOfScenario(scenarioById), departureEventFactory, INFO_TEXT_TRAIN_CANCELLED);
+                fireStationBoardEvents(scenarioById, scenarioIdToPlatform.get(scenarioId).departurePlatforms(),
+                        train, scheduledStartTime, arrivalStationsOfScenario(scenarioById), departureEventFactory, INFO_TEXT_TRAIN_CANCELLED);
 
-            fireStationBoardEvents(scenarioById, scenarioIdToPlatform.get(scenarioId).arrivalPlatforms(),
-                    train, scheduledStartTime, departureStationsOfScenario(scenarioById), arrivalEventFactory, INFO_TEXT_TRAIN_CANCELLED);
+                fireStationBoardEvents(scenarioById, scenarioIdToPlatform.get(scenarioId).arrivalPlatforms(),
+                        train, scheduledStartTime, departureStationsOfScenario(scenarioById), arrivalEventFactory, INFO_TEXT_TRAIN_CANCELLED);
+            });
         }
     }
 
@@ -146,6 +177,10 @@ public class StationBoardService {
     public void onScenarioStateEventChanged(@Observes ScenarioStateEvent event) {
         if (!scenarioIdToPlatform.containsKey(event.getItemId())) return;
 
+        runBlockingSafe(() -> handleScenarioStateEvent(event));
+    }
+
+    private void handleScenarioStateEvent(ScenarioStateEvent event) {
         final var scenarioById = scenarioManager.getScenarioById(event.getItemId())
                 .orElseThrow(() -> new IllegalArgumentException("no scenario for id: " + event.getItemId()));
         final var train = scenarioById.getTrain().getName();
@@ -202,11 +237,13 @@ public class StationBoardService {
             // send station event for the arrival station by the running scenario by each route to get a delay calculated
             final var scenarioId = event.scenarioId();
             if (scenarioStartTimes.containsKey(scenarioId)) {
-                final var startTime = scenarioStartTimes.get(scenarioId);
-                scenarioManager.getScenarioById(scenarioId).ifPresent(scenario -> {
-                    final var train = scenario.getTrain().getName();
-                    fireStationBoardEvents(scenario, scenarioIdToPlatform.get(scenarioId).arrivalPlatforms(),
-                            train, startTime, departureStationsOfScenario(scenario), arrivalEventFactory, informationByStart(startTime));
+                runBlockingSafe(() -> {
+                    final var startTime = scenarioStartTimes.get(scenarioId);
+                    scenarioManager.getScenarioById(scenarioId).ifPresent(scenario -> {
+                        final var train = scenario.getTrain().getName();
+                        fireStationBoardEvents(scenario, scenarioIdToPlatform.get(scenarioId).arrivalPlatforms(),
+                                train, startTime, departureStationsOfScenario(scenario), arrivalEventFactory, informationByStart(startTime));
+                    });
                 });
             }
         }

@@ -2,6 +2,8 @@ package io.github.danieltuerk.controlcenter.shared.station;
 
 
 import io.github.danieltuerk.controlcenter.shared.track.model.AbstractDto;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,19 +11,13 @@ import java.util.List;
 /**
  * @author Daniel Tuerk
  */
+@Setter
 public class Station extends AbstractDto {
 
+    @Getter
     private String name;
 
     private List<StationPlatform> platforms;
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
 
     public List<StationPlatform> getPlatforms() {
         if (platforms == null) {
@@ -30,7 +26,4 @@ public class Station extends AbstractDto {
         return platforms;
     }
 
-    public void setPlatforms(List<StationPlatform> platforms) {
-        this.platforms = platforms;
-    }
 }

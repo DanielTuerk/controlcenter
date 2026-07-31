@@ -16,7 +16,9 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
  */
 @Schema(description = "scenario status update sent via WebSocket")
 @Tag(ref = "websocket")
-public record RouteStateEvent(Long scenarioId, Long routeSequenceId, ROUTE_RUN_STATE state,
+public record RouteStateEvent(Long scenarioId,
+                              Long routeSequenceId,
+                              ROUTE_RUN_STATE state,
                               String message) implements StateEvent {
 
     public RouteStateEvent(Long scenarioId, Long routeSequenceId, ROUTE_RUN_STATE state) {

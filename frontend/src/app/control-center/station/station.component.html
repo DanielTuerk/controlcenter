@@ -1,10 +1,105 @@
 <mat-card appearance="outlined" class="container">
   <mat-card-header>
-    <mat-card-title>Station Board</mat-card-title>
+    <div class="header-row">
+      <mat-card-title>Station Board</mat-card-title>
+      <button matIconButton (click)="openPopout()" title="Open in new window">
+        <mat-icon>open_in_new</mat-icon>
+      </button>
+    </div>
   </mat-card-header>
   <mat-card-content>
+    <br/>
+    <mat-form-field appearance="outline" class="station-filter">
+      <mat-label>Station</mat-label>
+      <mat-select [value]="selectedStationId()" (selectionChange)="onStationSelectionChange($event)">
+        <mat-option [value]="ALL_STATIONS">All stations</mat-option>
+        @for (station of stations(); track station.id) {
+          <mat-option [value]="station.id">{{ station.name }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
 
-    <p>station works!</p>
+    <div class="board">
+      <div class="board-column">
+        <h3>Arrival</h3>
+        <table mat-table [dataSource]="filteredArrivals()" class="mat-elevation-z8">
+
+          <ng-container matColumnDef="station">
+            <th mat-header-cell *matHeaderCellDef> Station</th>
+            <td mat-cell *matCellDef="let element"> {{ element.stationInfo?.stationId }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="platform">
+            <th mat-header-cell *matHeaderCellDef> Platform</th>
+            <td mat-cell *matCellDef="let element"> {{ element.stationInfo?.platform }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="train">
+            <th mat-header-cell *matHeaderCellDef> Train</th>
+            <td mat-cell *matCellDef="let element"> {{ element.stationInfo?.train }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="time">
+            <th mat-header-cell *matHeaderCellDef> Time</th>
+            <td mat-cell *matCellDef="let element"> {{ element.stationInfo?.timeText }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="source">
+            <th mat-header-cell *matHeaderCellDef> From</th>
+            <td mat-cell *matCellDef="let element"> {{ element.sourceStationName }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="information">
+            <th mat-header-cell *matHeaderCellDef> Information</th>
+            <td mat-cell *matCellDef="let element"> {{ element.stationInfo?.information }}</td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="arrivalColumns"></tr>
+          <tr mat-row *matRowDef="let _row; columns: arrivalColumns;"></tr>
+        </table>
+      </div>
+
+      <mat-divider [vertical]="true"></mat-divider>
+
+      <div class="board-column">
+        <h3>Departure</h3>
+        <table mat-table [dataSource]="filteredDepartures()" class="mat-elevation-z8">
+
+          <ng-container matColumnDef="station">
+            <th mat-header-cell *matHeaderCellDef> Station</th>
+            <td mat-cell *matCellDef="let element"> {{ element.stationInfo?.stationId }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="platform">
+            <th mat-header-cell *matHeaderCellDef> Platform</th>
+            <td mat-cell *matCellDef="let element"> {{ element.stationInfo?.platform }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="train">
+            <th mat-header-cell *matHeaderCellDef> Train</th>
+            <td mat-cell *matCellDef="let element"> {{ element.stationInfo?.train }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="time">
+            <th mat-header-cell *matHeaderCellDef> Time</th>
+            <td mat-cell *matCellDef="let element"> {{ element.stationInfo?.timeText }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="target">
+            <th mat-header-cell *matHeaderCellDef> To</th>
+            <td mat-cell *matCellDef="let element"> {{ element.target }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="information">
+            <th mat-header-cell *matHeaderCellDef> Information</th>
+            <td mat-cell *matCellDef="let element"> {{ element.stationInfo?.information }}</td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="departureColumns"></tr>
+          <tr mat-row *matRowDef="let _row; columns: departureColumns;"></tr>
+        </table>
+      </div>
+    </div>
 
   </mat-card-content>
 </mat-card>

@@ -17,7 +17,7 @@ public class ScenarioStateEventPublisher {
     }
 
     public void fireEvent(Long scenarioId, Scenario.RUN_STATE state) {
-        final var event = new ScenarioStateEvent(scenarioId, state, null);
+        final var event = new ScenarioStateEvent(scenarioId, state);
         scenarioStateEvent.fire(event);
         eventBroadcaster.fireEvent(event);
     }

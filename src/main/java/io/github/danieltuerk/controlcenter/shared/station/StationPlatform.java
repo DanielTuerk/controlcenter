@@ -3,6 +3,8 @@ package io.github.danieltuerk.controlcenter.shared.station;
 
 import io.github.danieltuerk.controlcenter.shared.track.model.AbstractDto;
 import io.github.danieltuerk.controlcenter.shared.track.model.BlockStraight;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,18 +12,12 @@ import java.util.List;
 /**
  * @author Daniel Tuerk
  */
+@Setter
 public class StationPlatform extends AbstractDto {
 
+    @Getter
     private String name;
     private List<BlockStraight> blockStraights;
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
 
     public List<BlockStraight> getBlockStraights() {
         if (blockStraights == null) {
@@ -30,7 +26,4 @@ public class StationPlatform extends AbstractDto {
         return blockStraights;
     }
 
-    public void setBlockStraights(List<BlockStraight> blockStraights) {
-        this.blockStraights = blockStraights;
-    }
 }

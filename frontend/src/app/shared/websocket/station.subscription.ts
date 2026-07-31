@@ -1,5 +1,9 @@
 import {Injectable} from '@angular/core';
-import {StationBoardChangedEvent, StationDataChangedEvent} from "../../../shared/openapi-gen";
+import {
+  StationBoardArrivalEvent,
+  StationBoardDepartureEvent,
+  StationDataChangedEvent
+} from "../../../shared/openapi-gen";
 import {Subscription} from "./subscription";
 
 @Injectable({
@@ -7,7 +11,8 @@ import {Subscription} from "./subscription";
 })
 export class StationSubscription extends Subscription {
 
-  readonly stationBoardChanged = this.createEventAccessor<StationBoardChangedEvent>('StationBoardChangedEvent');
+  readonly stationBoardArrival = this.createEventAccessor<StationBoardArrivalEvent>('StationBoardArrivalEvent', true);
+  readonly stationBoardDeparture = this.createEventAccessor<StationBoardDepartureEvent>('StationBoardDepartureEvent', true);
   readonly stationDataChanged = this.createEventAccessor<StationDataChangedEvent>('StationDataChangedEvent');
 
 }

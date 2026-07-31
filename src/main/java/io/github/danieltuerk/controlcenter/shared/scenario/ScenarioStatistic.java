@@ -11,6 +11,6 @@ public record ScenarioStatistic(long scenarioId,
                                 int total,
                                 int failed,
                                 int successful,
-                                double averageRunTimeInMillis,
+                                long averageRunTimeInMillis,
                                 List<ScenarioStatisticRun> runs) {
 }

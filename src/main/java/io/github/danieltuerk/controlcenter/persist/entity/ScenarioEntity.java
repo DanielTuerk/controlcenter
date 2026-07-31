@@ -1,7 +1,13 @@
 package io.github.danieltuerk.controlcenter.persist.entity;
 
 import io.github.danieltuerk.controlcenter.shared.train.Train;
-import jakarta.persistence.*;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OrderBy;
+import jakarta.persistence.Table;
 
 import java.util.List;
 
@@ -35,9 +41,5 @@ public class ScenarioEntity extends AbstractEntity {
     @OneToMany(mappedBy = "scenario", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @OrderBy("position ASC")
     public List<RouteSequenceEntity> routeSequences;
-
-    public Long stationPlatformStartId;
-
-    public Long stationPlatformEndId;
 
 }

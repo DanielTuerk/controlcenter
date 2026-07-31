@@ -130,11 +130,6 @@ components:
           format: int32
         cacheKey:
           type: string
-    CATEGORY:
-      type: string
-      enum:
-      - ARRIVAL
-      - DEPARTURE
     ChangeTrackDto:
       type: object
       properties:
@@ -510,12 +505,6 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/RouteSequence"
-        stationPlatformStartId:
-          type: integer
-          format: int64
-        stationPlatformEndId:
-          type: integer
-          format: int64
     ScenarioDataChangedEvent:
       description: scenario status update sent via WebSocket
       type: object
@@ -549,8 +538,6 @@ components:
           type: string
         state:
           $ref: "#/components/schemas/RUN_STATE"
-        nextScheduleTimeText:
-          type: string
     ScenarioStatistic:
       type: object
       properties:
@@ -569,8 +556,8 @@ components:
           type: integer
           format: int32
         averageRunTimeInMillis:
-          type: number
-          format: double
+          type: integer
+          format: int64
         runs:
           type: array
           items:
@@ -583,8 +570,8 @@ components:
         end:
           $ref: "#/components/schemas/LocalDateTime"
         averageRunTimeInMillis:
-          type: number
-          format: double
+          type: integer
+          format: int64
         state:
           $ref: "#/components/schemas/STATE"
     ScenariosChangedEvent:
@@ -640,17 +627,32 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/StationPlatform"
-    StationBoardChangedEvent:
-      description: station status update sent via WebSocket
+    StationBoardArrivalEvent:
+      description: station board event for arrival via WebSocket
       type: object
       properties:
-        CATEGORY:
-          $ref: "#/components/schemas/CATEGORY"
-        stationId:
+        ttlInMs:
           type: integer
           format: int64
-        type:
-          $ref: "#/components/schemas/CATEGORY"
+        stationInfo:
+          $ref: "#/components/schemas/StationInfo"
+        sourceStationName:
+          type: string
+        cacheKey:
+          type: string
+    StationBoardDepartureEvent:
+      description: station board event for departure via WebSocket
+      type: object
+      properties:
+        ttlInMs:
+          type: integer
+          format: int64
+        stationInfo:
+          $ref: "#/components/schemas/StationInfo"
+        target:
+          type: string
+        cacheKey:
+          type: string
     StationDataChangedEvent:
       description: station status update sent via WebSocket
       type: object
@@ -667,6 +669,22 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/StationPlatformDto"
+    StationInfo:
+      type: object
+      properties:
+        stationId:
+          type: integer
+          format: int64
+        platform:
+          type: string
+        train:
+          type: string
+        timeText:
+          type: string
+        information:
+          type: string
+        key:
+          type: string
     StationPlatform:
       type: object
       properties:

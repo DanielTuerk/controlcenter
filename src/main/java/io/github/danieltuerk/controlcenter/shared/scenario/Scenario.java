@@ -57,8 +57,6 @@ public class Scenario extends AbstractDto {
     private Integer startDrivingLevel;
     @Getter(AccessLevel.NONE)
     private List<RouteSequence> routeSequences;
-    private Long stationPlatformStartId;
-    private Long stationPlatformEndId;
 
     public List<RouteSequence> getRouteSequences() {
         if (routeSequences == null) {
@@ -77,8 +75,6 @@ public class Scenario extends AbstractDto {
             ", trainDrivingDirection=" + trainDrivingDirection +
             ", startDrivingLevel=" + startDrivingLevel +
             ", routeSequences=" + routeSequences.stream().map(RouteSequence::getId).collect(Collectors.toSet()) +
-            ", stationPlatformStartId=" + stationPlatformStartId +
-            ", stationPlatformEndId=" + stationPlatformEndId +
             '}';
     }
 }

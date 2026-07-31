@@ -20,6 +20,7 @@ import io.github.danieltuerk.controlcenter.shared.train.TrainDataChangedEvent;
 import io.quarkus.cache.CacheInvalidateAll;
 import io.quarkus.cache.CacheResult;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.event.Event;
 import jakarta.enterprise.event.Observes;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
@@ -42,11 +43,12 @@ public class ScenarioDataProvider {
     private final ConstructionRepository constructionRepository;
     private final ScenarioMapper dataMapper;
     private final EventBroadcaster eventBroadcaster;
+    private final Event<ScenariosChangedEvent> scenariosChangedEvent;
 
     public ScenarioDataProvider(RouteSequenceRepository routeSequenceRepository, ScenarioRepository scenarioRepository,
                                 ScenarioStatisticManager scenarioStatisticManager, TrainRepository trainRepository,
                                 ConstructionService constructionService, ConstructionRepository constructionRepository,
-                                ScenarioMapper dataMapper, EventBroadcaster eventBroadcaster) {
+                                ScenarioMapper dataMapper, EventBroadcaster eventBroadcaster, Event<ScenariosChangedEvent> scenariosChangedEvent) {
         this.routeSequenceRepository = routeSequenceRepository;
         this.scenarioRepository = scenarioRepository;
         this.scenarioStatisticManager = scenarioStatisticManager;
@@ -55,6 +57,7 @@ public class ScenarioDataProvider {
         this.constructionRepository = constructionRepository;
         this.dataMapper = dataMapper;
         this.eventBroadcaster = eventBroadcaster;
+        this.scenariosChangedEvent = scenariosChangedEvent;
     }
 
     @CacheInvalidateAll(cacheName = CACHE)
@@ -109,8 +112,6 @@ public class ScenarioDataProvider {
                 .ifPresent(train -> scenarioEntity.train = train);
         }
         scenarioEntity.startDrivingLevel = scenario.getStartDrivingLevel();
-        scenarioEntity.stationPlatformStartId = scenario.getStationPlatformStartId();
-        scenarioEntity.stationPlatformEndId = scenario.getStationPlatformEndId();
         scenarioEntity.trainDrivingDirection = scenario.getTrainDrivingDirection();
 
         scenarioEntity.routeSequences = new ArrayList<>();
@@ -157,8 +158,6 @@ public class ScenarioDataProvider {
         scenarioEntity.cron = scenario.getCron();
         trainRepository.getTrainById(scenario.getTrain().getId()).ifPresent(train -> scenarioEntity.train = train);
         scenarioEntity.startDrivingLevel = scenario.getStartDrivingLevel();
-        scenarioEntity.stationPlatformStartId = scenario.getStationPlatformStartId();
-        scenarioEntity.stationPlatformEndId = scenario.getStationPlatformEndId();
         scenarioEntity.trainDrivingDirection = scenario.getTrainDrivingDirection();
 
         createOrUpdateRouteSequences(scenario.getRouteSequences(), scenarioEntity);
@@ -168,7 +167,9 @@ public class ScenarioDataProvider {
     }
 
     private void fireScenariosChangedEvent() {
-        eventBroadcaster.fireEvent(new ScenariosChangedEvent(false));
+        final var event = new ScenariosChangedEvent(false);
+        scenariosChangedEvent.fire(event);
+        eventBroadcaster.fireEvent(event);
     }
 
     private ConstructionEntity currentConstructionEntity() {

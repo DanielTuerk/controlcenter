@@ -10,10 +10,17 @@ import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import jakarta.inject.Inject;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 
 import static io.restassured.RestAssured.given;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.isA;
+import static org.hamcrest.Matchers.notNullValue;
 
 @QuarkusTest
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -247,9 +254,9 @@ class ScenarioResourceTest extends BaseIt {
         // drive the statistic aggregation the same way a real scenario run does,
         // without having to simulate the full hardware/route execution flow
         scenarioStatisticManager.onScenarioStateEvent(
-                new ScenarioStateEvent(scenarioId, Scenario.RUN_STATE.RUNNING, null));
+                new ScenarioStateEvent(scenarioId, Scenario.RUN_STATE.RUNNING));
         scenarioStatisticManager.onScenarioStateEvent(
-                new ScenarioStateEvent(scenarioId, Scenario.RUN_STATE.SUCCESS, null));
+                new ScenarioStateEvent(scenarioId, Scenario.RUN_STATE.SUCCESS));
 
         given()
                 .pathParam("id", scenarioId)

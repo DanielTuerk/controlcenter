@@ -8,6 +8,7 @@ import io.github.danieltuerk.selectrix4java.device.DeviceManager;
 import io.quarkus.runtime.Startup;
 import io.quarkus.scheduler.Scheduler;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.event.Event;
 import jakarta.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import org.quartz.CronExpression;
@@ -36,6 +37,7 @@ public class ScenarioService {
     private final ScenarioExecutor scenarioExecutor;
     private final ScenarioStateEventPublisher eventPublisher;
     private final EventBroadcaster eventBroadcaster;
+    private final Event<ScenarioScheduleEvent> scenarioScheduleEvent;
 
     /**
      * Mapping of scenario id to {@link TriggerKey}s to unschedule running jobs.
@@ -45,13 +47,14 @@ public class ScenarioService {
     @Inject
     public ScenarioService(ScenarioManager scenarioManager, DeviceManager deviceManager, Scheduler scheduler,
                            ScenarioExecutor scenarioExecutor, ScenarioStateEventPublisher eventPublisher,
-                           EventBroadcaster eventBroadcaster) {
+                           EventBroadcaster eventBroadcaster, Event<ScenarioScheduleEvent> scenarioScheduleEvent) {
         this.scenarioManager = scenarioManager;
         this.deviceManager = deviceManager;
         this.scheduler = scheduler;
         this.scenarioExecutor = scenarioExecutor;
         this.eventPublisher = eventPublisher;
         this.eventBroadcaster = eventBroadcaster;
+        this.scenarioScheduleEvent = scenarioScheduleEvent;
     }
 
     public void start(Scenario scenario) {
@@ -81,7 +84,9 @@ public class ScenarioService {
             .schedule()
         );
 
-        eventBroadcaster.fireEvent(ScenarioScheduleEvent.scheduled(scenarioId, cron));
+        final var scheduleEvent = ScenarioScheduleEvent.scheduled(scenarioId, cron);
+        eventBroadcaster.fireEvent(scheduleEvent);
+        scenarioScheduleEvent.fire(scheduleEvent);
         eventPublisher.fireEvent(scenarioId, Scenario.RUN_STATE.SCHEDULED);
     }
 
@@ -108,7 +113,12 @@ public class ScenarioService {
         if (scenarioTriggerKeys.containsKey(scenarioId)) {
             scheduler.unscheduleJob(jobIdentity(scenarioId));
             scenarioTriggerKeys.remove(scenarioId);
-            eventBroadcaster.fireEvent(ScenarioScheduleEvent.unscheduled(scenarioId));
+
+            final var scheduleEvent = ScenarioScheduleEvent.unscheduled(scenarioId);
+            scenarioScheduleEvent.fire(scheduleEvent);
+            eventBroadcaster.fireEvent(scheduleEvent);
+
+            eventPublisher.fireEvent(scenarioId, Scenario.RUN_STATE.NONE);
         }
     }
 

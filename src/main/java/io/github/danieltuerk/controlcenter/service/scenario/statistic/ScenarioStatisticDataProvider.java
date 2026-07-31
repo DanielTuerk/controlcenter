@@ -60,12 +60,13 @@ public class ScenarioStatisticDataProvider {
                 .collect(Collectors.toSet());
     }
 
-    private double averageRuntime(Set<ScenarioStatisticRun> successfulRuns) {
+    private long averageRuntime(Set<ScenarioStatisticRun> successfulRuns) {
         // TODO get rid of min and max values
         // TODO or new field for computedRuntime
         return successfulRuns.stream()
                 .map(ScenarioStatisticRun::averageRunTimeInMillis)
-                .collect(Collectors.averagingDouble(Double::doubleValue));
+                .collect(Collectors.averagingLong(Long::longValue))
+                .longValue();
     }
 
     @CacheInvalidate(cacheName = CACHE)

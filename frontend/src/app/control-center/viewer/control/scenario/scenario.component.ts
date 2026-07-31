@@ -196,8 +196,7 @@ export class ScenarioComponent {
 
   protected canBeStopped(scenarioId: number) {
     return this.isConnected() &&
-      (this.scenarioById(scenarioId)?.runState === RUNSTATE.Running
-        || this.scenarioById(scenarioId)?.runState === RUNSTATE.Scheduled);
+      (this.scenarioById(scenarioId)?.runState === RUNSTATE.Running);
   }
 
   protected canBeUnscheduled(scenarioId: number) {

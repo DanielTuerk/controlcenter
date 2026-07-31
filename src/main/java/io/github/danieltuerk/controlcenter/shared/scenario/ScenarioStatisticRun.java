@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 
 public record ScenarioStatisticRun(LocalDateTime start,
                                    LocalDateTime end,
-                                   double averageRunTimeInMillis,
+                                   long averageRunTimeInMillis,
                                    STATE state) {
     public enum STATE {SUCCESS, FAILED}
 }

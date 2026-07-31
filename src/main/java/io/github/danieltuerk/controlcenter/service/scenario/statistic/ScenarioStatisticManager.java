@@ -16,6 +16,7 @@ import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author Daniel Tuerk
@@ -73,6 +74,12 @@ public class ScenarioStatisticManager {
 
     public void deleteEntriesOfScenario(Long scenarioId) {
         statisticDataProvider.deleteByScenario(scenarioId);
+    }
+
+    public long averageExecutionTimeInMs(Long scenarioId) {
+        return statisticDataProvider.fetch(scenarioId)
+                .map(ScenarioStatistic::averageRunTimeInMillis)
+                .orElse(TimeUnit.MINUTES.toMillis(2));
     }
 
     private void addRun(ScenarioStateEvent event, ScenarioStatisticRun.STATE state) {

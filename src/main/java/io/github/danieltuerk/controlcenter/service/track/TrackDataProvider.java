@@ -1,12 +1,32 @@
 package io.github.danieltuerk.controlcenter.service.track;
 
 import io.github.danieltuerk.controlcenter.api.track.ChangeTrackDto;
-import io.github.danieltuerk.controlcenter.persist.entity.track.*;
+import io.github.danieltuerk.controlcenter.persist.entity.track.AbstractTrackPartEntity;
+import io.github.danieltuerk.controlcenter.persist.entity.track.BlockStraightEntity;
+import io.github.danieltuerk.controlcenter.persist.entity.track.BusDataConfigurationEntity;
+import io.github.danieltuerk.controlcenter.persist.entity.track.CurveEntity;
+import io.github.danieltuerk.controlcenter.persist.entity.track.GridPositionEntity;
+import io.github.danieltuerk.controlcenter.persist.entity.track.HasToggleFunctionEntity;
+import io.github.danieltuerk.controlcenter.persist.entity.track.SignalEntity;
+import io.github.danieltuerk.controlcenter.persist.entity.track.StraightEntity;
+import io.github.danieltuerk.controlcenter.persist.entity.track.TrackBlockEntity;
+import io.github.danieltuerk.controlcenter.persist.entity.track.TurnoutEntity;
+import io.github.danieltuerk.controlcenter.persist.entity.track.UncouplerEntity;
 import io.github.danieltuerk.controlcenter.persist.repository.track.GridPositionRepository;
 import io.github.danieltuerk.controlcenter.persist.repository.track.TrackPartRepository;
 import io.github.danieltuerk.controlcenter.service.track.block.TrackBlockDataProvider;
 import io.github.danieltuerk.controlcenter.shared.constrution.CurrentConstructionChangeEvent;
-import io.github.danieltuerk.controlcenter.shared.track.model.*;
+import io.github.danieltuerk.controlcenter.shared.track.model.AbstractTrackPart;
+import io.github.danieltuerk.controlcenter.shared.track.model.BlockStraight;
+import io.github.danieltuerk.controlcenter.shared.track.model.BusDataConfiguration;
+import io.github.danieltuerk.controlcenter.shared.track.model.Curve;
+import io.github.danieltuerk.controlcenter.shared.track.model.GridPosition;
+import io.github.danieltuerk.controlcenter.shared.track.model.HasToggleFunction;
+import io.github.danieltuerk.controlcenter.shared.track.model.Signal;
+import io.github.danieltuerk.controlcenter.shared.track.model.Straight;
+import io.github.danieltuerk.controlcenter.shared.track.model.TrackBlock;
+import io.github.danieltuerk.controlcenter.shared.track.model.Turnout;
+import io.github.danieltuerk.controlcenter.shared.track.model.Uncoupler;
 import io.quarkus.cache.CacheInvalidateAll;
 import io.quarkus.cache.CacheResult;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -17,6 +37,7 @@ import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Collection;
+import java.util.Optional;
 
 @Slf4j
 @ApplicationScoped
@@ -66,6 +87,15 @@ public class TrackDataProvider {
                 default -> throw new IllegalStateException("Unexpected value: " + entity);
             })
             .toList();
+    }
+
+    public Optional<BlockStraight> findBlockStraightOfTrackBlock(long constructionId, TrackBlock trackBlock) {
+        return loadTrack(constructionId).stream().filter(abstractTrackPart -> {
+            if (abstractTrackPart instanceof BlockStraight blockStraight) {
+                return blockStraight.getAllTrackBlocks().contains(trackBlock);
+            }
+            return false;
+        }).findFirst().map(x -> (BlockStraight) x);
     }
 
     @CacheInvalidateAll(cacheName = CACHE)

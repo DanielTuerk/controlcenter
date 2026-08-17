@@ -57,9 +57,12 @@ export class DeviceEditComponent {
 
   constructor() {
     effect(() => {
-      this.deviceService.loadDevice(this.deviceId()).subscribe(data => {
-        this.setDevice(data);
-      });
+      let deviceId = this.deviceId();
+      if (deviceId && deviceId.toString() != "create") {
+        this.deviceService.loadDevice(deviceId).subscribe(data => {
+          this.setDevice(data);
+        });
+      }
     });
     this.reloadAvailableDevices();
   }

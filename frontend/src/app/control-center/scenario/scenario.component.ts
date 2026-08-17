@@ -60,4 +60,14 @@ export class ScenarioComponent {
   }
 
   protected readonly DRIVINGDIRECTION1 = DRIVINGDIRECTION1;
+
+  /**
+   * Scrolls to the section with the given id instead of following the anchor's href.
+   * A plain fragment href (e.g. "#stations") resolves against the document's <base href="/">
+   * rather than the current route, which would trigger a full app reload instead of a scroll.
+   */
+  scrollToAnchor(event: Event, id: string) {
+    event.preventDefault();
+    document.getElementById(id)?.scrollIntoView({behavior: 'smooth', block: 'start'});
+  }
 }

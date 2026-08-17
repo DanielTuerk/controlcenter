@@ -3,7 +3,19 @@
 }
 
 .anchor-nav {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
   margin-top: 1rem;
+}
+
+.anchor-nav a {
+  text-decoration: none;
+  color: var(--mat-sys-primary);
+}
+
+.anchor-nav a:hover {
+  text-decoration: underline;
 }
 
 .train-cell {

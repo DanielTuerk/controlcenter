@@ -1,4 +1,9 @@
-<mat-card appearance="outlined" class="container">
+<nav class="anchor-nav">
+  <a href="#scenarios" (click)="scrollToAnchor($event, 'scenarios')">Scenarios</a>
+  <a href="#routes" (click)="scrollToAnchor($event, 'routes')">Routes</a>
+  <a href="#stations" (click)="scrollToAnchor($event, 'stations')">Stations</a>
+</nav>
+<mat-card id="scenarios" appearance="outlined" class="container">
   <mat-card-header>
     <mat-card-title>Scenarios</mat-card-title>
   </mat-card-header>

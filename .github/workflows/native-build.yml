@@ -6,6 +6,7 @@ name: Native Build
 on:
   push:
     branches: [ master ]
+  workflow_dispatch: {}
 
 concurrency:
   group: native-build-${{ github.ref }}
@@ -43,7 +44,7 @@ jobs:
       - name: Build native executable
         # No container-build here: native-image runs directly on the runner
         # using the Mandrel toolchain set up above.
-        run: ./mvnw -B clean package -Dquarkus.native.enabled=true -Pwith-frontend
+        run: ./mvnw -B -U clean package -Dquarkus.native.enabled=true -Pwith-frontend
         env:
           PACKAGES_READ_TOKEN: ${{ secrets.PACKAGES_READ_TOKEN }}
 
@@ -90,7 +91,7 @@ jobs:
       - name: Build native executable
         # No container-build here: native-image runs directly on the runner
         # using the Mandrel toolchain set up above.
-        run: ./mvnw -B clean package -Dquarkus.native.enabled=true -Pwith-frontend
+        run: ./mvnw -B -U clean package -Dquarkus.native.enabled=true -Pwith-frontend
         env:
           PACKAGES_READ_TOKEN: ${{ secrets.PACKAGES_READ_TOKEN }}
 
@@ -139,7 +140,7 @@ jobs:
         # using the Mandrel/MSVC toolchain set up above.
         # pom.xml defaults quarkus.native.container-build to true (for the Linux
         # container build); override it here since Windows can't use that container.
-        run: .\mvnw.cmd -B clean package "-Dquarkus.native.enabled=true" "-Dquarkus.native.container-build=false" -Pwith-frontend
+        run: .\mvnw.cmd -B -U clean package "-Dquarkus.native.enabled=true" "-Dquarkus.native.container-build=false" -Pwith-frontend
         env:
           PACKAGES_READ_TOKEN: ${{ secrets.PACKAGES_READ_TOKEN }}
 

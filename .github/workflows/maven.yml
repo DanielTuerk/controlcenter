@@ -28,6 +28,6 @@ jobs:
           server-password: PACKAGES_READ_TOKEN
 
       - name: Build and test with Maven
-        run: ./mvnw -B verify -Pwith-frontend -Dquarkus.native.enabled=true
+        run: ./mvnw -B -U verify -Pwith-frontend -Dquarkus.native.enabled=true
         env:
           PACKAGES_READ_TOKEN: ${{ secrets.PACKAGES_READ_TOKEN }}

@@ -36,6 +36,23 @@
         <lombok.version>1.18.46</lombok.version>
     </properties>
 
+    <!-- serves master-branch SNAPSHOT builds of selectrix4java (published by its own
+         snapshot-publish.yml workflow); requires a GitHub token with read:packages,
+         see README for local settings.xml setup -->
+    <repositories>
+        <repository>
+            <id>github</id>
+            <name>selectrix4java (GitHub Packages)</name>
+            <url>https://maven.pkg.github.com/DanielTuerk/selectrix4java</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
+
     <dependencyManagement>
         <dependencies>
             <dependency>

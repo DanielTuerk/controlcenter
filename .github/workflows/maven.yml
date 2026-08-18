@@ -23,6 +23,11 @@ jobs:
           distribution: temurin
           java-version: '25'
           cache: maven
+          server-id: github
+          server-username: DanielTuerk
+          server-password: PACKAGES_READ_TOKEN
 
       - name: Build and test with Maven
         run: ./mvnw -B verify -Pwith-frontend -Dquarkus.native.enabled=true
+        env:
+          PACKAGES_READ_TOKEN: ${{ secrets.PACKAGES_READ_TOKEN }}

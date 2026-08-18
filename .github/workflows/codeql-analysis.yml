@@ -39,6 +39,9 @@ jobs:
           distribution: temurin
           java-version: '25'
           cache: maven
+          server-id: github
+          server-username: DanielTuerk
+          server-password: PACKAGES_READ_TOKEN
 
       # Initializes the CodeQL tools for scanning.
       - name: Initialize CodeQL
@@ -49,6 +52,8 @@ jobs:
       - name: Build backend
         if: matrix.language == 'java'
         run: ./mvnw -B package -DskipTests
+        env:
+          PACKAGES_READ_TOKEN: ${{ secrets.PACKAGES_READ_TOKEN }}
 
       - name: Autobuild
         if: matrix.language == 'javascript-typescript'

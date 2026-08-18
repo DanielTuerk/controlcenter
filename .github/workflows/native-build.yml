@@ -26,6 +26,9 @@ jobs:
           distribution: temurin
           java-version: '25'
           cache: maven
+          server-id: github
+          server-username: DanielTuerk
+          server-password: PACKAGES_READ_TOKEN
 
       - name: Set up Mandrel
         uses: graalvm/setup-graalvm@v1
@@ -41,6 +44,8 @@ jobs:
         # No container-build here: native-image runs directly on the runner
         # using the Mandrel toolchain set up above.
         run: ./mvnw -B clean package -Dquarkus.native.enabled=true -Pwith-frontend
+        env:
+          PACKAGES_READ_TOKEN: ${{ secrets.PACKAGES_READ_TOKEN }}
 
       - name: Rename artifact
         run: |
@@ -68,6 +73,9 @@ jobs:
           distribution: temurin
           java-version: '25'
           cache: maven
+          server-id: github
+          server-username: DanielTuerk
+          server-password: PACKAGES_READ_TOKEN
 
       - name: Set up Mandrel
         uses: graalvm/setup-graalvm@v1
@@ -83,6 +91,8 @@ jobs:
         # No container-build here: native-image runs directly on the runner
         # using the Mandrel toolchain set up above.
         run: ./mvnw -B clean package -Dquarkus.native.enabled=true -Pwith-frontend
+        env:
+          PACKAGES_READ_TOKEN: ${{ secrets.PACKAGES_READ_TOKEN }}
 
       - name: Rename artifact
         run: |
@@ -110,6 +120,9 @@ jobs:
           distribution: temurin
           java-version: '25'
           cache: maven
+          server-id: github
+          server-username: DanielTuerk
+          server-password: PACKAGES_READ_TOKEN
 
       - name: Set up Mandrel
         uses: graalvm/setup-graalvm@v1
@@ -127,6 +140,8 @@ jobs:
         # pom.xml defaults quarkus.native.container-build to true (for the Linux
         # container build); override it here since Windows can't use that container.
         run: .\mvnw.cmd -B clean package "-Dquarkus.native.enabled=true" "-Dquarkus.native.container-build=false" -Pwith-frontend
+        env:
+          PACKAGES_READ_TOKEN: ${{ secrets.PACKAGES_READ_TOKEN }}
 
       - name: Rename artifact
         run: |

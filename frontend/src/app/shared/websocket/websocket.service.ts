@@ -3,7 +3,10 @@ import {delay, Observable, of, ReplaySubject} from 'rxjs';
 
 @Injectable({providedIn: 'root'})
 export class WebSocketService {
-  private URL = 'ws://localhost:8080/websocket';
+  // derive from the page origin so remote access (e.g. browser on desktop, backend on
+  // raspberry pi) connects to the right host; in dev mode the ng serve proxy forwards
+  // /websocket to the backend (see proxyconfig.json)
+  private URL = `${window.location.protocol === 'https:' ? 'wss:' : 'ws:'}//${window.location.host}/websocket`;
   private socket!: WebSocket;
   private subscriptions = new Map<string, ReplaySubject<any>>();
   private clientId?: string;

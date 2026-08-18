@@ -23,8 +23,6 @@
         <!-- Native Image -->
         <quarkus.native.builder-image>quay.io/quarkus/ubi9-quarkus-mandrel-builder-image:jdk-25
         </quarkus.native.builder-image>
-        <quarkus.native.additional-build-args>--initialize-at-run-time=com.fazecast.jSerialComm.SerialPort
-        </quarkus.native.additional-build-args>
         <quarkus.native.container-build>true</quarkus.native.container-build>
 
         <compiler-plugin.version>3.14.0</compiler-plugin.version>

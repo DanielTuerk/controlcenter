@@ -4,7 +4,7 @@ import io.github.danieltuerk.controlcenter.EventBroadcaster;
 import io.github.danieltuerk.controlcenter.shared.device.AvailableDevice;
 import io.github.danieltuerk.controlcenter.shared.device.DeviceDataChangedEvent;
 import io.github.danieltuerk.controlcenter.shared.device.DeviceInfo;
-import io.github.danieltuerk.selectrix4java.jna.SerialPortLister;
+import io.github.danieltuerk.selectrix4java.device.serial.SerialPortLister;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Event;
 import jakarta.inject.Inject;

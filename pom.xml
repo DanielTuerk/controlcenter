@@ -21,7 +21,7 @@
         <maven.compiler.release>25</maven.compiler.release>
 
         <!-- Native Image -->
-        <quarkus.native.builder-image>quay.io/quarkus/ubi9-quarkus-mandrel-builder-image:jdk-21
+        <quarkus.native.builder-image>quay.io/quarkus/ubi9-quarkus-mandrel-builder-image:jdk-25
         </quarkus.native.builder-image>
         <quarkus.native.additional-build-args>--initialize-at-run-time=com.fazecast.jSerialComm.SerialPort
         </quarkus.native.additional-build-args>

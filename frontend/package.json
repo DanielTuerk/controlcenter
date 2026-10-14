@@ -33,7 +33,7 @@
   },
   "devDependencies": {
     "@angular/build": "^22.0.3",
-    "@angular/cli": "^22.0.3",
+    "@angular/cli": "^22.2.2",
     "@angular/compiler-cli": "^22.0.2",
     "@openapitools/openapi-generator-cli": "^2.32.0",
     "jsdom": "^29.1.1",
